@@ -14,6 +14,4 @@ FROM nginx:stable-alpine
 COPY --from=build /build/build /usr/share/nginx/html
 COPY .docker/nginx.conf /etc/nginx/conf.d/default.conf
 
-WORKDIR /app
-
 CMD ["nginx", "-g", "daemon off;"]
