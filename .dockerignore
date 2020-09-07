@@ -3,6 +3,7 @@
 Dockerfile
 .dockerignore
 
+.git
 .gitignore
 
 # .gitignore stuff
