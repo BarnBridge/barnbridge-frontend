@@ -3,7 +3,7 @@ FROM node:12.18 AS build
 WORKDIR /build
 
 COPY package.json package-lock.json ./
-RUN npm install
+RUN npm ci
 
 COPY . .
 
