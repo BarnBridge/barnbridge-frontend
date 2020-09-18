@@ -1,0 +1,130 @@
+.container {
+    position: relative;
+    height: 100%;
+    min-height: inherit;
+}
+
+.container:before {
+    content: '';
+    display: block;
+    min-height: inherit;
+    background: linear-gradient(360deg, #fff 0%, rgba(255, 255, 255, 0.1) 110.19%), linear-gradient(270deg, #5c76ef 0%, #ff4339 51.56%, #ffc945 100%), #fff;
+    opacity: 0.2;
+}
+
+.logo {
+    position: absolute;
+    top: 40px;
+    left: 40px;
+}
+
+.boxWrap {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    max-width: 820px;
+    height: 100%;
+    max-height: 550px;
+    padding: 10px;
+}
+
+.box {
+    display: grid;
+    grid-template-rows: 120px auto;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    box-shadow: 10px 20px 100px rgba(48, 75, 128, 0.2);
+    border-radius: 5px;
+}
+
+.boxLabel {
+    padding: 50px 10% 30px;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 38px;
+    line-height: 46px;
+    color: #13202b;
+}
+
+.boxContent {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, calc(50% - 3px));
+    grid-gap: 6px;
+    padding: 0 10%;
+    margin-bottom: 30px;
+    overflow-y: scroll;
+}
+
+@media only screen and (max-width: 480px) {
+    .boxLabel {
+        font-size: 30px;
+    }
+
+    .boxContent {
+        grid-template-columns: repeat(auto-fill, 100%);
+    }
+}
+
+.boxItem {
+    position: relative;
+    display: grid;
+    align-items: center;
+    justify-content: center;
+    grid-template-columns: 24px auto;
+    grid-gap: 10px;
+    height: 90px;
+    background: #fff;
+    border: 1px solid #e0e5f0;
+    border-radius: 5px;
+    outline: none;
+}
+
+.boxItem:focus {
+    border-image-slice: 1;
+    border-image-source: linear-gradient(90deg, #5c76ef 0%, #ff4339 50%, #ffc945 100%);
+    box-shadow: 10px 20px 100px rgba(48, 75, 128, 0.2);
+}
+
+.boxItem img {
+    width: 24px;
+    height: 24px;
+}
+
+.boxItem span {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 24px;
+}
+
+.noteBlock {
+    position: absolute;
+    bottom: 40px;
+    left: 32px;
+    right: 32px;
+    display: flex;
+    flex-direction: row;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 18px;
+    color: #a0a4bb;
+}
+
+.noteRow:nth-child(1) {
+    margin: 3px 6px 0 0;
+}
+
+.noteRow:nth-child(2) {
+    display: flex;
+    flex-direction: column;
+}
+
+.noteLabel {
+    font-weight: bold;
+    font-size: 16px;
+    line-height: 24px;
+}
+
