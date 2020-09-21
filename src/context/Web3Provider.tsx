@@ -38,7 +38,7 @@ export type Web3Connector = {
 }
 
 const InjectedWeb3Connector = new InjectedConnector({
-  supportedChainIds: [CHAIN_ID, 3, 4, 5, 42],
+  supportedChainIds: [CHAIN_ID],
 });
 
 export const Web3Connectors: Web3Connector[] = [
@@ -146,8 +146,13 @@ export const Web3Connectors: Web3Connector[] = [
 export type Web3ContextType = {
   connectors: Web3Connector[];
   isActive: boolean;
+  connector?: Web3Connector;
   account?: string | null;
-  connector?: AbstractConnector | null;
+  network?: {
+    chainId: number;
+    name: string;
+  };
+  tried: boolean;
   connect: (connectorName: string) => void;
   disconnect: () => void;
 };
@@ -155,8 +160,10 @@ export type Web3ContextType = {
 const Web3Context = React.createContext<Web3ContextType>({
     connectors: [],
     isActive: false,
+    connector: undefined,
     account: null,
-    connector: null,
+    network: undefined,
+    tried: false,
     connect: () => null,
     disconnect: () => null,
   })
@@ -166,9 +173,9 @@ export function useWeb3(): Web3ContextType {
   return React.useContext(Web3Context);
 }
 
-const Web3ProviderInner: React.FunctionComponent<{}> = props => {
+const Web3ProviderInner: React.FunctionComponent = props => {
   const web3 = useWeb3React();
-  const [tried, setTried] = React.useState<Boolean>(false);
+  const [tried, setTried] = React.useState<boolean>(false);
 
   async function connect(connectorId: string) {
     const web3Connector = Web3Connectors.find(c => c.id === connectorId);
@@ -202,23 +209,40 @@ const Web3ProviderInner: React.FunctionComponent<{}> = props => {
     }
   }, [tried, web3.active]);
 
+  const value = {
+    get connectors() {
+      return [...Web3Connectors];
+    },
+    get isActive() {
+      return web3.active;
+    },
+    get connector() {
+      if (!web3.connector) {
+        return undefined;
+      }
+
+      return Web3Connectors.find(c => c.connector === web3.connector);
+    },
+    get account() {
+      return web3.account;
+    },
+    get network() {
+      return web3.library?.network;
+    },
+    tried,
+    connect,
+    disconnect,
+  };
+
   return (
-    <Web3Context.Provider value={{
-      connectors: [...Web3Connectors],
-      isActive: web3.active,
-      account: web3.account,
-      connector: web3.connector,
-      connect,
-      disconnect,
-    }}>
+    <Web3Context.Provider value={value}>
       {props.children}
     </Web3Context.Provider>
   );
 };
 
-const Web3Provider: React.FunctionComponent<{}> = props => {
+const Web3Provider: React.FunctionComponent = props => {
   function getLibrary(provider: any): EthWeb3Provider {
-    console.log('getLibrary', provider);
     const library = new EthWeb3Provider(provider);
     library.pollingInterval = 12000;
     return library;

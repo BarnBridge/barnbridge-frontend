@@ -1,2 +1,23 @@
 .container {
+    min-height: 100vh;
+}
+
+.sider {
+    box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4);
+}
+
+.sider :global .ant-layout-sider-children {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 0;
+}
+
+.logo {
+    margin-bottom: 65px;
+}
+
+.main {
+    padding: 32px 64px;
+    background-color: #f8f8f8;
 }
