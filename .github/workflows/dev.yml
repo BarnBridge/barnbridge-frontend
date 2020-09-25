@@ -27,6 +27,14 @@ jobs:
       run: npm ci
     - name: Build
       run: npm run build
+      env:
+        REACT_APP_HTML_TITLE: BarnBridge
+        REACT_APP_WEB3_CHAIN_ID: 4
+        REACT_APP_WEB3_POLLING_INTERVAL: 12000
+        REACT_APP_WEB3_RPC_URL: https://mainnet.infura.io/v3/60ab76e16df54c808e50a79975b4779f
+        REACT_APP_WEB3_FORTMATIC_API_KEY: pk_test_A6260FCBAA2EBDFB
+        REACT_APP_WEB3_PORTIS_APP_ID: e9be171c-2b7f-4ff0-8db9-327707511ee2
+        REACT_APP_WEB3_SQUARELINK_CLIENT_ID: 5f2a2233db82b06b24f9
 
     - name: Save artifacts
       uses: actions/upload-artifact@v2
