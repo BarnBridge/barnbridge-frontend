@@ -1,0 +1,54 @@
+name: Deploy dev
+
+on:
+  push:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup Nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install dependencies
+      run: npm ci
+    - name: Build
+      run: npm run build
+
+    - name: Save artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: frontend
+        path: build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Get artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: frontend
+
+    - name: Configure AWS credetials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy static site to S3
+      run: aws s3 sync public s3://dev-devappbarnbridgecom-origin --delete
