@@ -1,0 +1,68 @@
+.component {
+
+}
+
+.label {
+    margin-bottom: 16px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ff4339;
+}
+
+.row {
+    display: inline-grid;
+    grid-template-columns: auto auto auto;
+    grid-gap: 3px;
+    height: 60px;
+    margin-bottom: 64px;
+}
+
+.col {
+    padding: 0 32px;
+    border-right: 1px solid #e3e4e6;
+}
+
+.col:first-child {
+    padding-left: 0;
+}
+
+.col:last-child {
+    border-right: none;
+}
+
+.rewardLabel {
+    margin-bottom: 4px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #5a6166;
+}
+
+.rewardValue {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.rewardValue span {
+    margin-right: 8px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 32px;
+    color: #060a0d;
+}
+
+.rewardValue svg {
+    width: 24px;
+    height: 24px;
+    color: #ff4339;
+}

@@ -1,2 +1,42 @@
-.container {
+.view {
+}
+
+.stat_widgets {
+    display: inline-grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-gap: 32px;
+    width: 100%;
+    margin-bottom: 64px;
+}
+
+.pools_label {
+    margin-bottom: 16px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 40px;
+    color: #000;
+}
+
+.overview_label {
+    margin-bottom: 32px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #717980;
+}
+
+.pools_list {
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    grid-gap: 32px;
+    width: 100%;
+}
+
+.data_rows {
+    display: grid;
+    grid-gap: 16px;
 }
