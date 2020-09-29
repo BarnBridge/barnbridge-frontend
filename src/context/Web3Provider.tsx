@@ -28,7 +28,7 @@ import AuthereumLogo from 'resources/img/aethereum-logo.svg';
 
 const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
 const POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
-const RPC_URL = process.env.REACT_APP_WEB3_RPC_URL!;
+const RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL);
 
 export type Web3Connector = {
   id: string;
@@ -147,7 +147,7 @@ export type Web3ContextType = {
   connectors: Web3Connector[];
   isActive: boolean;
   connector?: Web3Connector;
-  account?: string | null;
+  account?: string;
   network?: {
     chainId: number;
     name: string;
@@ -158,16 +158,15 @@ export type Web3ContextType = {
 };
 
 const Web3Context = React.createContext<Web3ContextType>({
-    connectors: [],
-    isActive: false,
-    connector: undefined,
-    account: null,
-    network: undefined,
-    tried: false,
-    connect: () => null,
-    disconnect: () => null,
-  })
-;
+  connectors: [],
+  isActive: false,
+  connector: undefined,
+  account: undefined,
+  network: undefined,
+  tried: false,
+  connect: () => null,
+  disconnect: () => null,
+});
 
 export function useWeb3(): Web3ContextType {
   return React.useContext(Web3Context);
@@ -224,7 +223,7 @@ const Web3ProviderInner: React.FunctionComponent = props => {
       return Web3Connectors.find(c => c.connector === web3.connector);
     },
     get account() {
-      return web3.account;
+      return web3.account ?? undefined;
     },
     get network() {
       return web3.library?.network;

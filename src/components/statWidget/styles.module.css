@@ -1,0 +1,47 @@
+.card {
+    min-width: 200px;
+    min-height: 168px;
+    background: #fff;
+    box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+    border-radius: 4px;
+}
+
+.firstRow {
+    justify-content: space-between;
+    margin-bottom: 44px;
+}
+
+.label {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ff4339;
+}
+
+.infoIcon {
+    width: 16px;
+    height: 16px;
+    color: #aaafb3;
+}
+
+.value {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 32px;
+    color: #060a0d;
+}
+
+.hint {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    color: #5a6166;
+}

@@ -1,0 +1,51 @@
+.component {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-gap: 6px;
+    padding: 24px;
+    background: #fff;
+    box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+    border-radius: 4px;
+}
+
+.col {
+    height: 44px;
+    align-items: center;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #060a0d;
+}
+
+.col:nth-child(1) {
+    display: flex;
+    flex-direction: row;
+}
+
+.label {
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #717980;
+}
+
+.value span {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #5A6166;
+}
+
+.logo svg {
+    width: 24px;
+    height: 24px;
+}
+
+.name {
+    margin-left: 16px;
+}

@@ -22457,7 +22457,7 @@ tr.ant-table-expanded-row .ant-descriptions-view table {
   position: absolute;
   z-index: 1070;
   display: block;
-  max-width: 250px;
+  max-width: 500px;
   visibility: visible;
 }
 .ant-tooltip-hidden {
