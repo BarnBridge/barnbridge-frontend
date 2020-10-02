@@ -34,6 +34,8 @@ export type Web3ContractsType = {
     potentialReward?: BigNumber;
     lpTokenValue?: BigNumber;
     totalStaked?: BigNumber;
+    totalStakedInETH?: BigNumber;
+    bondPrice?: BigNumber;
     bondReward?: BigNumber;
     totalBondReward?: BigNumber;
     poolBalanceDUS?: BigNumber;
@@ -131,7 +133,32 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       return undefined;
     }
 
-    return yfPoolSize.plus(yflpPoolSize.multipliedBy(tokenValue));
+    return getHumanValue(yfPoolSize.plus(yflpPoolSize.multipliedBy(tokenValue)), 18);
+  }
+
+  function totalStakedInETH(): BigNumber | undefined {
+    const ts = totalStaked();
+    const ethValue = ethOracleContract.value;
+
+    if (!ts || !ethValue) {
+      return undefined;
+    }
+
+    return ts.div(ethValue);
+  }
+
+  function bondPrice(): BigNumber | undefined {
+    const bondReserve = uniswapV2Contract?.bondReserve;
+    const bondDecimals = bondContract?.decimals;
+    const usdcReserve = uniswapV2Contract?.usdcReserve;
+    const usdcDecimals = usdcContract?.decimals;
+
+    if (!bondReserve || !usdcReserve || !bondDecimals || !usdcDecimals) {
+      return undefined;
+    }
+
+    return getHumanValue(usdcReserve, usdcDecimals)
+      ?.div(getHumanValue(bondReserve, bondDecimals)!);
   }
 
   function bondReward(): BigNumber | undefined {
@@ -281,6 +308,12 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       },
       get totalStaked(): BigNumber | undefined {
         return totalStaked();
+      },
+      get totalStakedInETH(): BigNumber | undefined {
+        return totalStakedInETH();
+      },
+      get bondPrice(): BigNumber | undefined {
+        return bondPrice();
       },
       get bondReward(): BigNumber | undefined {
         return bondReward();

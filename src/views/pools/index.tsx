@@ -1,6 +1,5 @@
 import React from 'react';
 import * as Antd from 'antd';
-import BigNumber from 'bignumber.js';
 
 import StatWidget from 'components/stat-widget';
 import DataRow from 'components/data-row';
@@ -20,7 +19,7 @@ import { ReactComponent as BONDIcon } from 'resources/svg/coins/bond.svg';
 import s from './styles.module.css';
 
 const PoolsView: React.FunctionComponent<{}> = props => {
-  const { aggregated, yf, yflp, bond, ethOracle, staking } = useWeb3Contracts();
+  const { aggregated, yf, yflp, bond, staking } = useWeb3Contracts();
   const [untilNextEpoch] = useWeekCountdown(staking?.epochEnd);
 
   return (
@@ -35,14 +34,14 @@ const PoolsView: React.FunctionComponent<{}> = props => {
         <StatWidget
           label="Total Value Locked"
           value={`$ ${formatBigValue(aggregated.totalStaked, 2)}`}
-          hint={formatBigValue(new BigNumber(100007))} />
+          hint={`${formatBigValue(aggregated.totalStakedInETH)} ETH`} />
         <StatWidget
           label="Bond Rewards"
           value={formatBigValue(aggregated.bondReward)}
-          hint={`out of ${formatBigValue(aggregated.totalBondReward, 2)}`} />
+          hint={`out of ${formatBigValue(aggregated.totalBondReward, 0)}`} />
         <StatWidget
           label="Bond Price"
-          value={`$ ${formatBigValue(ethOracle?.value, 2)}`}
+          value={`$ ${formatBigValue(aggregated.bondPrice, 2)}`}
           hint="updated 3 minutes ago" />
         <StatWidget
           label="Time Left"
