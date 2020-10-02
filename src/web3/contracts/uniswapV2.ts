@@ -13,6 +13,7 @@ export type UniswapV2Contract = {
   usdcReserve?: BigNumber;
   bondReserve?: BigNumber;
   balance?: BigNumber;
+  lastBlockTime?: number;
 };
 
 const Contract = createContract(
@@ -28,6 +29,7 @@ const InitialDataState: UniswapV2Contract = {
   usdcReserve: undefined,
   bondReserve: undefined,
   balance: undefined,
+  lastBlockTime: undefined,
 };
 
 export function useUniswapV2Contract(account?: string): UniswapV2Contract {
@@ -50,6 +52,8 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
         bondReserve = new BigNumber(reserves[0]);
       }
 
+      const lastBlockTime = Number(reserves[2]) * 1000;
+
       setData(prevState => ({
         ...prevState,
         symbol,
@@ -58,6 +62,7 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
         decimals: Number(decimals),
         usdcReserve,
         bondReserve,
+        lastBlockTime,
       }));
     })();
   }, []);
