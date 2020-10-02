@@ -11,6 +11,7 @@ export type UniswapV2Contract = {
   totalSupply?: BigNumber;
   decimals?: number;
   usdcReserve?: BigNumber;
+  bondReserve?: BigNumber;
   balance?: BigNumber;
 };
 
@@ -25,6 +26,7 @@ const InitialDataState: UniswapV2Contract = {
   totalSupply: undefined,
   decimals: undefined,
   usdcReserve: undefined,
+  bondReserve: undefined,
   balance: undefined,
 };
 
@@ -38,11 +40,14 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
       ]);
 
       let usdcReserve: BigNumber | undefined = undefined;
+      let bondReserve: BigNumber | undefined = undefined;
 
       if (String(token0).toLowerCase() === CONTRACT_USDC_ADDR) {
         usdcReserve = new BigNumber(reserves[0]);
+        bondReserve = new BigNumber(reserves[1]);
       } else if (String(token1).toLowerCase() === CONTRACT_USDC_ADDR) {
         usdcReserve = new BigNumber(reserves[1]);
+        bondReserve = new BigNumber(reserves[0]);
       }
 
       setData(prevState => ({
@@ -52,6 +57,7 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
         totalSupply: new BigNumber(totalSupply),
         decimals: Number(decimals),
         usdcReserve,
+        bondReserve,
       }));
     })();
   }, []);

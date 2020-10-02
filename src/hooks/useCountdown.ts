@@ -1,5 +1,5 @@
 import React from 'react';
-import { endOfWeek, formatDuration, intervalToDuration } from 'date-fns';
+import { formatDuration, intervalToDuration } from 'date-fns';
 
 export function useWeekCountdown(endDate?: number): string[] {
   const [countdown, setCountdown] = React.useState<string>('');
