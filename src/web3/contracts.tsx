@@ -108,16 +108,17 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }
 
   function lpTokenValue(): BigNumber | undefined {
-    const ubReserve = uniswapV2Contract?.reserves?.[0];
+    const usdcReserve = uniswapV2Contract?.usdcReserve;
     const ubTotalSupply = uniswapV2Contract?.totalSupply;
+    const ubDecimals = uniswapV2Contract?.decimals;
     const usdcDecimals = usdcContract?.decimals;
 
-    if (!ubReserve || !ubTotalSupply || !usdcDecimals) {
+    if (!usdcReserve || !ubTotalSupply || !usdcDecimals || !ubDecimals) {
       return undefined;
     }
 
-    return getHumanValue(ubReserve, usdcDecimals)
-      ?.div(ubTotalSupply)
+    return getHumanValue(usdcReserve, usdcDecimals)
+      ?.div(getHumanValue(ubTotalSupply, ubDecimals)!)
       .multipliedBy(2);
   }
 
