@@ -3,12 +3,14 @@ import BigNumber from 'bignumber.js';
 
 import { batchCallContract, callContract, createContract } from 'web3/utils';
 
+const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
+
 export type UniswapV2Contract = {
   symbol?: string;
   name?: string;
   totalSupply?: BigNumber;
   decimals?: number;
-  reserves?: BigNumber[];
+  usdcReserve?: BigNumber;
   balance?: BigNumber;
 };
 
@@ -22,7 +24,7 @@ const InitialDataState: UniswapV2Contract = {
   name: undefined,
   totalSupply: undefined,
   decimals: undefined,
-  reserves: undefined,
+  usdcReserve: undefined,
   balance: undefined,
 };
 
@@ -31,9 +33,17 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
 
   React.useEffect(() => {
     (async () => {
-      const [symbol, name, totalSupply, decimals, reserves] = await batchCallContract(Contract, [
-        'symbol', 'name', 'totalSupply', 'decimals', 'getReserves',
+      const [symbol, name, totalSupply, decimals, reserves, token0, token1] = await batchCallContract(Contract, [
+        'symbol', 'name', 'totalSupply', 'decimals', 'getReserves', 'token0', 'token1',
       ]);
+
+      let usdcReserve: BigNumber | undefined = undefined;
+
+      if (String(token0).toLowerCase() === CONTRACT_USDC_ADDR) {
+        usdcReserve = new BigNumber(reserves[0]);
+      } else if (String(token1).toLowerCase() === CONTRACT_USDC_ADDR) {
+        usdcReserve = new BigNumber(reserves[1]);
+      }
 
       setData(prevState => ({
         ...prevState,
@@ -41,7 +51,7 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
         name,
         totalSupply: new BigNumber(totalSupply),
         decimals: Number(decimals),
-        reserves: reserves ? [new BigNumber(reserves[0]), new BigNumber(reserves[1])] : undefined,
+        usdcReserve,
       }));
     })();
   }, []);
