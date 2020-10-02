@@ -34,6 +34,7 @@
     grid-template-columns: auto auto;
     grid-gap: 32px;
     width: 100%;
+    margin-bottom: 32px;
 }
 
 .data_rows {

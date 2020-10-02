@@ -1,0 +1,15 @@
+.component {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.component svg {
+    width: 40px;
+    height: 40px;
+}
+
+.component svg:not(:first-child) {
+    margin-left: -20px;
+}

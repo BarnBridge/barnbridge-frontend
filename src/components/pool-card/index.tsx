@@ -4,6 +4,8 @@ import BigNumber from 'bignumber.js';
 
 import s from './styles.module.css';
 
+import IconsSet from 'components/icons-set';
+
 export type PoolCardProps = {
   names: string[];
   icons: React.ReactNode[];
@@ -22,9 +24,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   return (
     <div className={s.component}>
       <div className={s.pool_header}>
-        <div className={s.pool_avatars}>
-          {props.icons}
-        </div>
+        <IconsSet className={s.pool_avatars} icons={props.icons} />
         <div className={s.pool_info}>
           <div className={s.pool_label}>{props.names?.join('/') ?? '-'}</div>
           <div className={s.pool_epoch}>EPOCH {props.currentEpoch ?? '-'}/{props.totalEpochs ?? '-'}</div>

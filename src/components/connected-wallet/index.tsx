@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import { useWeb3 } from 'context/Web3Provider';
+import { useWeb3 } from 'web3/provider';
 
 import { ReactComponent as BellSvg } from 'resources/svg/bell.svg';
 import { ReactComponent as AvatarSvg } from 'resources/svg/avatar.svg';
