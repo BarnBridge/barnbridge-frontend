@@ -70,13 +70,13 @@ export function useStakingContract(account?: string): StakingContract {
       const [currentEpoch, epoch1Start, epochDuration] = await batchCallContract(Contract,
         ['getCurrentEpoch', 'epoch1Start', 'epochDuration']);
       const daiPoolSize = await callContract(Contract, 'getEpochPoolSize',
-        CONTRACT_DAI_ADDR, currentEpoch);
+        [CONTRACT_DAI_ADDR, currentEpoch]);
       const usdcPoolSize = await callContract(Contract, 'getEpochPoolSize',
-        CONTRACT_USDC_ADDR, currentEpoch);
+        [CONTRACT_USDC_ADDR, currentEpoch]);
       const susdPoolSize = await callContract(Contract, 'getEpochPoolSize',
-        CONTRACT_SUSD_ADDR, currentEpoch);
+        [CONTRACT_SUSD_ADDR, currentEpoch]);
       const uniswapV2PoolSize = await callContract(Contract, 'getEpochPoolSize',
-        CONTRACT_UNISWAP_V2_ADDR, currentEpoch);
+        [CONTRACT_UNISWAP_V2_ADDR, currentEpoch]);
 
       setData(prevState => ({
         ...prevState!,
@@ -109,22 +109,22 @@ export function useStakingContract(account?: string): StakingContract {
 
     (async () => {
       const daiBalance = await callContract(Contract, 'balanceOf',
-        account, CONTRACT_DAI_ADDR);
+        [account, CONTRACT_DAI_ADDR]);
       const usdcBalance = await callContract(Contract, 'balanceOf',
-        account, CONTRACT_USDC_ADDR);
+        [account, CONTRACT_USDC_ADDR]);
       const susdBalance = await callContract(Contract, 'balanceOf',
-        account, CONTRACT_SUSD_ADDR);
+        [account, CONTRACT_SUSD_ADDR]);
       const uniswapV2Balance = await callContract(Contract, 'balanceOf',
-        account, CONTRACT_UNISWAP_V2_ADDR);
+        [account, CONTRACT_UNISWAP_V2_ADDR]);
 
       const daiEpochUserBalance = await callContract(Contract, 'getEpochUserBalance',
-        account, CONTRACT_DAI_ADDR, data.currentEpoch);
+        [account, CONTRACT_DAI_ADDR, data.currentEpoch]);
       const usdcEpochUserBalance = await callContract(Contract, 'getEpochUserBalance',
-        account, CONTRACT_USDC_ADDR, data.currentEpoch);
+        [account, CONTRACT_USDC_ADDR, data.currentEpoch]);
       const susdEpochUserBalance = await callContract(Contract, 'getEpochUserBalance',
-        account, CONTRACT_SUSD_ADDR, data.currentEpoch);
+        [account, CONTRACT_SUSD_ADDR, data.currentEpoch]);
       const uniswapV2EpochUserBalance = await callContract(Contract, 'getEpochUserBalance',
-        account, CONTRACT_UNISWAP_V2_ADDR, data.currentEpoch);
+        [account, CONTRACT_UNISWAP_V2_ADDR, data.currentEpoch]);
 
       setData(prevState => ({
         ...prevState!,

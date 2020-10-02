@@ -48,7 +48,7 @@ export function useBONDContract(account?: string): BONDContract {
     }
 
     (async () => {
-      const balance = await callContract(Contract, 'balanceOf', account);
+      const balance = await callContract(Contract, 'balanceOf', [account]);
 
       setData(prevState => ({
         ...prevState,

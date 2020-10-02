@@ -21,10 +21,10 @@ export function createContract(abi: any, address: string, rpcUrl: string = getRp
   return contract;
 }
 
-export function callContract(contract: EthContract, methodName: string, ...args: any[]): Promise<any> {
+export function callContract(contract: EthContract, methodName: string, methodArgs: any[], callArgs?: Record<string, any>): Promise<any> {
   return contract
-    ?.methods[methodName](...args)
-    ?.call()
+    ?.methods[methodName](...methodArgs)
+    ?.call(callArgs)
     ?.catch((e: any) => {
       console.error(`${methodName}.call`, e);
       return Promise.reject(e);

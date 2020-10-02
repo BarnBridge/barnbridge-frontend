@@ -33,12 +33,11 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
 
   React.useEffect(() => {
     (async () => {
-      const [totalEpochs, bondRewards, currentEpoch, massHarvest] = await batchCallContract(Contract, [
-        'NR_OF_EPOCHS', 'TOTAL_DISTRIBUTED_AMOUNT', 'getCurrentEpoch', 'massHarvest',
+      const [totalEpochs, bondRewards, currentEpoch] = await batchCallContract(Contract, [
+        'NR_OF_EPOCHS', 'TOTAL_DISTRIBUTED_AMOUNT', 'getCurrentEpoch',
       ]);
-      const poolSize = await callContract(Contract, 'getPoolSize', currentEpoch);
+      const poolSize = await callContract(Contract, 'getPoolSize', [currentEpoch]);
 
-      console.log('massHarvest', massHarvest);
       setData(prevState => ({
         ...prevState,
         totalEpochs,
@@ -46,7 +45,6 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
         epochReward: (new BigNumber(bondRewards)).div(totalEpochs),
         currentEpoch: Number(currentEpoch),
         poolSize: new BigNumber(poolSize),
-        currentReward: new BigNumber(massHarvest),
       }));
     })();
   }, []);
@@ -57,11 +55,13 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
     }
 
     (async () => {
-      const epochStake = await callContract(Contract, 'getEpochStake', account, data.currentEpoch);
+      const epochStake = await callContract(Contract, 'getEpochStake', [account, data.currentEpoch]);
+      const massHarvest = await callContract(Contract, 'massHarvest', [], { from: account });
 
       setData(prevState => ({
         ...prevState,
         epochStake: new BigNumber(epochStake),
+        currentReward: new BigNumber(massHarvest),
       }));
     })();
   }, [account, data?.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps

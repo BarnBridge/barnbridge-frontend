@@ -46,7 +46,7 @@ export function useDAIContract(account?: string): DAIContract {
     }
 
     (async () => {
-      const balance = await callContract(Contract, 'balanceOf', account);
+      const balance = await callContract(Contract, 'balanceOf', [account]);
 
       setData(prevState => ({
         ...prevState,
