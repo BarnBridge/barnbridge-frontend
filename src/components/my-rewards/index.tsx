@@ -3,10 +3,15 @@ import React from 'react';
 import { ReactComponent as Logo } from 'resources/svg/logo.svg';
 
 import s from './styles.module.css';
-import { useWeb3Contracts } from 'context/Web3Contracts';
 
-const MyRewards: React.FunctionComponent = props => {
-  const web3c = useWeb3Contracts();
+export type MyRewardsProps = {
+  currentReward: string;
+  bondBalance: string;
+  potentialReward: string;
+};
+
+const MyRewards: React.FunctionComponent<MyRewardsProps> = props => {
+  const { currentReward, bondBalance, potentialReward } = props;
 
   return (
     <div className={s.component}>
@@ -15,21 +20,21 @@ const MyRewards: React.FunctionComponent = props => {
         <div className={s.col}>
           <div className={s.rewardLabel}>Current reward</div>
           <div className={s.rewardValue}>
-            <span>{web3c.yf?.currentReward?.plus(web3c.yflp?.currentReward || 0).toFormat(3) || '-'}</span>
+            <span>{currentReward}</span>
             <Logo />
           </div>
         </div>
         <div className={s.col}>
           <div className={s.rewardLabel}>BOND balance</div>
           <div className={s.rewardValue}>
-            <span>{web3c.bond?.balance?.toFormat(3) || '-'}</span>
+            <span>{bondBalance}</span>
             <Logo />
           </div>
         </div>
         <div className={s.col}>
           <div className={s.rewardLabel}>Potential reward this epoch</div>
           <div className={s.rewardValue}>
-            <span>{web3c.aggregated.potentialReward?.toFormat(3) || '-'}</span>
+            <span>{potentialReward}</span>
             <Logo />
           </div>
         </div>

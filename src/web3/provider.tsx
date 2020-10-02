@@ -14,6 +14,8 @@ import { TorusConnector } from '@web3-react/torus-connector';
 import { AuthereumConnector } from '@web3-react/authereum-connector';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 
+import { getRpcUrl } from 'web3/utils';
+
 import MetamaskLogo from 'resources/img/metamask-logo.svg';
 import TrustWalletLogo from 'resources/img/trustwallet-logo.png';
 import WalletConnectLogo from 'resources/img/walletconnect-logo.svg';
@@ -28,7 +30,6 @@ import AuthereumLogo from 'resources/img/aethereum-logo.svg';
 
 const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
 const POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
-const RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL);
 
 export type Web3Connector = {
   id: string;
@@ -60,7 +61,7 @@ export const Web3Connectors: Web3Connector[] = [
     logo: WalletConnectLogo,
     connector: new WalletConnectConnector({
       rpc: {
-        [CHAIN_ID]: RPC_URL,
+        [CHAIN_ID]: getRpcUrl(),
       },
       bridge: 'https://bridge.walletconnect.org',
       qrcode: true,
@@ -72,7 +73,7 @@ export const Web3Connectors: Web3Connector[] = [
     name: 'Coinbase Wallet',
     logo: CoinbaseWalletLogo,
     connector: new WalletLinkConnector({
-      url: RPC_URL,
+      url: getRpcUrl(),
       appName: 'barnbridge',
     }),
   },
@@ -82,7 +83,7 @@ export const Web3Connectors: Web3Connector[] = [
     logo: LedgerLogo,
     connector: new LedgerConnector({
       chainId: CHAIN_ID,
-      url: RPC_URL,
+      url: getRpcUrl(),
       pollingInterval: POLLING_INTERVAL,
     }),
   },
@@ -92,7 +93,7 @@ export const Web3Connectors: Web3Connector[] = [
     logo: TrezorLogo,
     connector: new TrezorConnector({
       chainId: CHAIN_ID,
-      url: RPC_URL,
+      url: getRpcUrl(),
       pollingInterval: POLLING_INTERVAL,
       manifestEmail: 'dummy@abc.xyz',
       manifestAppUrl: 'https://8rg3h.csb.app/',
@@ -184,11 +185,11 @@ const Web3ProviderInner: React.FunctionComponent = props => {
     }
   }
 
-  function disconnect(): void {
+  function disconnect() {
     web3.deactivate();
   }
 
-  React.useEffect(() => {
+  function activateInjected() {
     InjectedWeb3Connector.isAuthorized()
       .then((isAuthorized: boolean) => {
         if (isAuthorized) {
@@ -200,7 +201,11 @@ const Web3ProviderInner: React.FunctionComponent = props => {
           setTried(true);
         }
       });
-  }, []);
+  }
+
+  React.useEffect(() => {
+    activateInjected();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     if (!tried && web3.active) {

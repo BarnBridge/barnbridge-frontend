@@ -15,15 +15,6 @@
     margin-right: 24px;
 }
 
-.pool_avatars svg {
-    width: 40px;
-    height: 40px;
-}
-
-.pool_avatars svg:not(:first-child) {
-    margin-left: -20px;
-}
-
 .pool_info {
     display: flex;
     flex-direction: column;

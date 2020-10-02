@@ -9,8 +9,8 @@ import BondsView from 'views/bonds';
 import PoolsView from 'views/pools';
 import VotingView from 'views/voting';
 
-import SiderNavLink from 'components/siderNavLink';
-import ConnectedWallet from 'components/connectedWallet';
+import SiderNavLink from 'components/sider-nav-link';
+import ConnectedWallet from 'components/connected-wallet';
 
 import { ReactComponent as LogoSvg } from 'resources/svg/logo.svg';
 import { ReactComponent as HomeSvg } from 'resources/svg/home.svg';
