@@ -33,7 +33,7 @@ export type Web3ContractsType = {
     currentReward?: BigNumber;
     potentialReward?: BigNumber;
     lpTokenValue?: BigNumber;
-    totalStacked?: BigNumber;
+    totalStaked?: BigNumber;
     bondReward?: BigNumber;
     totalBondReward?: BigNumber;
     poolBalanceDUS?: BigNumber;
@@ -121,7 +121,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       .multipliedBy(2);
   }
 
-  function totalStacked(): BigNumber | undefined {
+  function totalStaked(): BigNumber | undefined {
     const yfPoolSize = yfContract?.poolSize;
     const yflpPoolSize = yflpContract?.poolSize;
     const tokenValue = lpTokenValue();
@@ -278,8 +278,8 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       get lpTokenValue(): BigNumber | undefined {
         return lpTokenValue();
       },
-      get totalStacked(): BigNumber | undefined {
-        return totalStacked();
+      get totalStaked(): BigNumber | undefined {
+        return totalStaked();
       },
       get bondReward(): BigNumber | undefined {
         return bondReward();
