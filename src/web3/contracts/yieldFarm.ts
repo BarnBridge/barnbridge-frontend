@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { batchCallContract, callContract, createContract } from 'web3/utils';
+import { batchCallContract, callContract, createContract, getHumanValue } from 'web3/utils';
 
 export type YieldFarmContract = {
   totalEpochs?: number;
@@ -61,7 +61,7 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
       setData(prevState => ({
         ...prevState,
         epochStake: new BigNumber(epochStake),
-        currentReward: new BigNumber(massHarvest),
+        currentReward: getHumanValue(new BigNumber(massHarvest), 18),
       }));
     })();
   }, [account, data?.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps
