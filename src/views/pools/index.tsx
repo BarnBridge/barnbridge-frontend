@@ -34,7 +34,7 @@ const PoolsView: React.FunctionComponent<{}> = props => {
       <div className={s.stat_widgets}>
         <StatWidget
           label="Total Value Locked"
-          value={`$ ${formatBigValue(aggregated.potentialReward, 2)}`}
+          value={`$ ${formatBigValue(aggregated.totalStaked, 2)}`}
           hint={formatBigValue(new BigNumber(100007))} />
         <StatWidget
           label="Bond Rewards"
