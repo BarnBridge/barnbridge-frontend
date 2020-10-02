@@ -38,6 +38,7 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
       ]);
       const poolSize = await callContract(Contract, 'getPoolSize', currentEpoch);
 
+      console.log('massHarvest', massHarvest);
       setData(prevState => ({
         ...prevState,
         totalEpochs,

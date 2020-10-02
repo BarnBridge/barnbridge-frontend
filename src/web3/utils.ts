@@ -59,10 +59,18 @@ export function batchCallContract(contract: EthContract, methodNames: string[], 
   return Promise.all(promises);
 }
 
+export function getExponentValue(decimals: number = 0): BigNumber {
+  return new BigNumber(10).pow(decimals);
+}
+
 export function getHumanValue(value?: BigNumber, decimals: number = 0): BigNumber | undefined {
-  return value?.div(new BigNumber(10).pow(decimals));
+  return value?.div(getExponentValue(decimals));
 }
 
 export function formatBigValue(value?: BigNumber, decimals: number = 3, defaultValue: string = '-'): string {
   return value ? value.toFormat(decimals) : defaultValue;
+}
+
+export function assertValues(...values: any[]): boolean {
+  return !values.some(value => value === undefined || value === null);
 }
