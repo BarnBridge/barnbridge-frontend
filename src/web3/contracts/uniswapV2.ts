@@ -52,7 +52,7 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
     }
 
     (async () => {
-      const balance = await callContract(Contract, 'balanceOf', account);
+      const balance = await callContract(Contract, 'balanceOf', [account]);
 
       setData(prevState => ({
         ...prevState!,
