@@ -11,7 +11,7 @@ import { SUSDContract, useSUSDContract } from 'web3/contracts/susd';
 import { BONDContract, useBONDContract } from 'web3/contracts/bond';
 import { UniswapV2Contract, useUniswapV2Contract } from 'web3/contracts/uniswapV2';
 import { EthOracleContract, useETHOracleContract } from 'web3/contracts/ethOracle';
-import { getHumanValue } from 'web3/utils';
+import { assertValues, getExponentValue, getHumanValue } from 'web3/utils';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
@@ -159,27 +159,39 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }
 
   function poolBalanceDUS(): BigNumber | undefined {
-    const a = stakingContract?.dai.poolSize;
-    const b = stakingContract?.susd.poolSize;
-    const c = stakingContract?.usdc.poolSize;
+    const daiPoolSize = stakingContract?.dai.poolSize;
+    const daiDecimals = daiContract?.decimals;
 
-    if (!a || !b || !c) {
+    const usdcPoolSize = stakingContract?.usdc.poolSize;
+    const usdcDecimals = usdcContract?.decimals;
+
+    const susdPoolSize = stakingContract?.susd.poolSize;
+    const susdDecimals = susdContract?.decimals;
+
+    if (!assertValues(
+      daiPoolSize,
+      daiDecimals,
+      usdcPoolSize,
+      usdcDecimals,
+      susdPoolSize,
+      susdDecimals,
+    )) {
       return undefined;
     }
 
-    const d = new BigNumber(10).pow(daiContract?.decimals || 0);
-    const e = new BigNumber(10).pow(susdContract?.decimals || 0);
-    const f = new BigNumber(10).pow(usdcContract?.decimals || 0);
+    const daiBalance = daiPoolSize!.div(getExponentValue(daiDecimals));
+    const usdcBalance = usdcPoolSize!.div(getExponentValue(usdcDecimals));
+    const susdBalance = susdPoolSize!.div(getExponentValue(susdDecimals));
 
-    return a.div(d).plus(b.div(e)).plus(c.div(f));
+    return daiBalance.plus(usdcBalance).plus(susdBalance);
   }
 
   function poolBalanceDUSShares(): number[] | undefined {
-    const a = stakingContract?.dai.poolSize;
-    const b = stakingContract?.susd.poolSize;
-    const c = stakingContract?.usdc.poolSize;
+    const daiPoolSize = stakingContract?.dai.poolSize;
+    const usdcPoolSize = stakingContract?.usdc.poolSize;
+    const susdPoolSize = stakingContract?.susd.poolSize;
 
-    if (!a || !b || !c) {
+    if (!daiPoolSize || !usdcPoolSize || !susdPoolSize) {
       return undefined;
     }
 
@@ -190,50 +202,60 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     }
 
     return [
-      parseFloat(c.multipliedBy(100).div(total).toFormat(3)),
-      parseFloat(a.multipliedBy(100).div(total).toFormat(3)),
-      parseFloat(b.multipliedBy(100).div(total).toFormat(3)),
+      parseFloat(daiPoolSize.multipliedBy(100).div(total).toFormat(3)),
+      parseFloat(usdcPoolSize.multipliedBy(100).div(total).toFormat(3)),
+      parseFloat(susdPoolSize.multipliedBy(100).div(total).toFormat(3)),
     ];
   }
 
   function myPoolBalanceDUS(): BigNumber | undefined {
-    const a = stakingContract?.dai.epochUserBalance;
-    const b = stakingContract?.susd.epochUserBalance;
-    const c = stakingContract?.usdc.epochUserBalance;
+    const daiEpochUserBalance = stakingContract?.dai.epochUserBalance;
+    const daiDecimals = daiContract?.decimals;
 
-    if (!a || !b || !c) {
+    const usdcEpochUserBalance = stakingContract?.usdc.epochUserBalance;
+    const usdcDecimals = usdcContract?.decimals;
+
+    const susdEpochUserBalance = stakingContract?.susd.epochUserBalance;
+    const susdDecimals = susdContract?.decimals;
+
+    if (!assertValues(
+      daiEpochUserBalance,
+      daiDecimals,
+      usdcEpochUserBalance,
+      usdcDecimals,
+      susdEpochUserBalance,
+      susdDecimals,
+    )) {
       return undefined;
     }
 
-    const d = new BigNumber(10).pow(daiContract?.decimals || 0);
-    const e = new BigNumber(10).pow(susdContract?.decimals || 0);
-    const f = new BigNumber(10).pow(usdcContract?.decimals || 0);
+    const daiBalance = daiEpochUserBalance!.div(getExponentValue(daiDecimals));
+    const usdcBalance = usdcEpochUserBalance!.div(getExponentValue(usdcDecimals));
+    const susdBalance = susdEpochUserBalance!.div(getExponentValue(susdDecimals));
 
-    return a.div(d).plus(b.div(e)).plus(c.div(f));
+    return daiBalance.plus(usdcBalance).plus(susdBalance);
   }
 
   function poolBalanceUB(): BigNumber | undefined {
-    const a = stakingContract?.uniswap_v2.poolSize;
+    const uniswapV2PoolSize = stakingContract?.uniswap_v2.poolSize;
+    const uniswapV2Decimals = uniswapV2Contract?.decimals;
 
-    if (!a) {
+    if (!assertValues(uniswapV2PoolSize, uniswapV2Decimals)) {
       return undefined;
     }
 
-    const d = new BigNumber(10).pow(uniswapV2Contract?.decimals || 0);
-
-    return a.div(d);
+    return uniswapV2PoolSize!.div(getExponentValue(uniswapV2Decimals));
   }
 
   function myPoolBalanceUB(): BigNumber | undefined {
-    const a = stakingContract?.uniswap_v2.epochUserBalance;
+    const uniswapV2EpochUserBalance = stakingContract?.uniswap_v2.poolSize;
+    const uniswapV2Decimals = uniswapV2Contract?.decimals;
 
-    if (!a) {
+    if (!assertValues(uniswapV2EpochUserBalance, uniswapV2Decimals)) {
       return undefined;
     }
 
-    const d = new BigNumber(10).pow(uniswapV2Contract?.decimals || 0);
-
-    return a.div(d);
+    return uniswapV2EpochUserBalance!.div(getExponentValue(uniswapV2Decimals));
   }
 
   const value = {

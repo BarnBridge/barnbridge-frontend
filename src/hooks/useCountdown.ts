@@ -1,30 +1,26 @@
 import React from 'react';
 import { endOfWeek, formatDuration, intervalToDuration } from 'date-fns';
 
-export function useWeekCountdown(): string[] {
+export function useWeekCountdown(endDate?: number): string[] {
   const [countdown, setCountdown] = React.useState<string>('');
 
   React.useEffect(() => {
-    let end = endOfWeek(new Date(), {
-      weekStartsOn: 1,
-    });
+    if (!endDate) {
+      return;
+    }
 
     const intervalID = setInterval(() => {
       const start = new Date();
 
       let duration = intervalToDuration({
         start,
-        end,
+        end: new Date(endDate),
       });
 
       if (duration < 0) {
-        end = endOfWeek(start, {
-          weekStartsOn: 1,
-        });
-
         duration = intervalToDuration({
           start,
-          end,
+          end: new Date(endDate),
         });
       }
 
@@ -50,7 +46,7 @@ export function useWeekCountdown(): string[] {
     return () => {
       clearInterval(intervalID);
     };
-  }, []);
+  }, [endDate]);
 
   return [countdown];
 }

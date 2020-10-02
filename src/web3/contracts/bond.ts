@@ -1,13 +1,14 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { batchCallContract, callContract, createContract } from 'web3/utils';
+import { batchCallContract, callContract, createContract, getHumanValue } from 'web3/utils';
 
 export type BONDContract = {
   symbol?: string;
   decimals?: number;
   totalSupply?: BigNumber;
   balance?: BigNumber;
+  balanceValue?: BigNumber;
 };
 
 const Contract = createContract(
@@ -20,6 +21,7 @@ const InitialDataState: BONDContract = {
   totalSupply: undefined,
   decimals: undefined,
   balance: undefined,
+  balanceValue: undefined,
 };
 
 export function useBONDContract(account?: string): BONDContract {
@@ -51,9 +53,10 @@ export function useBONDContract(account?: string): BONDContract {
       setData(prevState => ({
         ...prevState,
         balance: new BigNumber(balance),
+        balanceValue: getHumanValue(new BigNumber(balance), data.decimals),
       }));
     })();
-  }, [account]);
+  }, [account, data.decimals]);
 
   return data;
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { callContract, createContract } from 'web3/utils';
+import { batchCallContract, callContract, createContract } from 'web3/utils';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR);
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR);
@@ -9,6 +9,7 @@ const CONTRACT_UNISWAP_V2_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V
 
 export type StakingContract = {
   currentEpoch?: number;
+  epochEnd?: number;
   dai: {
     poolSize?: BigNumber;
     balance?: BigNumber;
@@ -38,6 +39,7 @@ const Contract = createContract(
 
 const InitialDataState: StakingContract = {
   currentEpoch: undefined,
+  epochEnd: undefined,
   dai: {
     poolSize: undefined,
     balance: undefined,
@@ -65,7 +67,8 @@ export function useStakingContract(account?: string): StakingContract {
 
   React.useEffect(() => {
     (async () => {
-      const currentEpoch = await callContract(Contract, 'getCurrentEpoch');
+      const [currentEpoch, epoch1Start, epochDuration] = await batchCallContract(Contract,
+        ['getCurrentEpoch', 'epoch1Start', 'epochDuration']);
       const daiPoolSize = await callContract(Contract, 'getEpochPoolSize',
         CONTRACT_DAI_ADDR, currentEpoch);
       const usdcPoolSize = await callContract(Contract, 'getEpochPoolSize',
@@ -78,6 +81,7 @@ export function useStakingContract(account?: string): StakingContract {
       setData(prevState => ({
         ...prevState!,
         currentEpoch: Number(currentEpoch),
+        epochEnd: (Number(epoch1Start) + (Number(currentEpoch) * Number(epochDuration))) * 1000,
         dai: {
           ...prevState?.dai!,
           poolSize: new BigNumber(daiPoolSize),

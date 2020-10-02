@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
+import BigNumber from 'bignumber.js';
 
 import StatWidget from 'components/stat-widget';
 import DataRow from 'components/data-row';
@@ -19,14 +20,14 @@ import { ReactComponent as BONDIcon } from 'resources/svg/coins/bond.svg';
 import s from './styles.module.css';
 
 const PoolsView: React.FunctionComponent<{}> = props => {
-  const { aggregated, yf, yflp, bond, ethOracle } = useWeb3Contracts();
-  const [untilNextEpoch] = useWeekCountdown();
+  const { aggregated, yf, yflp, bond, ethOracle, staking } = useWeb3Contracts();
+  const [untilNextEpoch] = useWeekCountdown(staking?.epochEnd);
 
   return (
     <div className={s.view}>
       <MyRewards
         currentReward={formatBigValue(aggregated.currentReward)}
-        bondBalance={formatBigValue(bond?.balance)}
+        bondBalance={formatBigValue(bond?.balanceValue)}
         potentialReward={formatBigValue(aggregated.potentialReward)}
       />
 
@@ -34,7 +35,7 @@ const PoolsView: React.FunctionComponent<{}> = props => {
         <StatWidget
           label="Total Value Locked"
           value={`$ ${formatBigValue(aggregated.potentialReward, 2)}`}
-          hint="100,007" />
+          hint={formatBigValue(new BigNumber(100007))} />
         <StatWidget
           label="Bond Rewards"
           value={formatBigValue(aggregated.bondReward)}
