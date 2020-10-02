@@ -17,9 +17,10 @@ import { ReactComponent as SUSDIcon } from 'resources/svg/coins/susd.svg';
 import { ReactComponent as BONDIcon } from 'resources/svg/coins/bond.svg';
 
 import s from './styles.module.css';
+import { formatDistance } from 'date-fns';
 
 const PoolsView: React.FunctionComponent<{}> = props => {
-  const { aggregated, yf, yflp, bond, staking } = useWeb3Contracts();
+  const { aggregated, yf, yflp, bond, staking, uniswapV2 } = useWeb3Contracts();
   const [untilNextEpoch] = useWeekCountdown(staking?.epochEnd);
 
   return (
@@ -42,7 +43,9 @@ const PoolsView: React.FunctionComponent<{}> = props => {
         <StatWidget
           label="Bond Price"
           value={`$ ${formatBigValue(aggregated.bondPrice, 2)}`}
-          hint="updated 3 minutes ago" />
+          hint={uniswapV2?.lastBlockTime ? formatDistance(new Date(uniswapV2.lastBlockTime), new Date(), {
+            addSuffix: true,
+          }) : '-'} />
         <StatWidget
           label="Time Left"
           value={untilNextEpoch}
