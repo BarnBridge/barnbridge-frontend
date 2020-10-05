@@ -1,10 +1,15 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { useWeb3Contracts } from 'context/Web3Contracts';
 
-import StatWidget from 'components/statWidget';
-import DataRow from 'components/DataRow';
+import StatWidget from 'components/stat-widget';
+import DataRow from 'components/data-row';
 import MyRewards from 'components/my-rewards';
+import PoolCard from 'components/pool-card';
+import PoolTransactions from 'components/pool-transactions';
+
+import { useWeekCountdown } from 'hooks/useCountdown';
+import { useWeb3Contracts } from 'web3/contracts';
+import { formatBigValue } from 'web3/utils';
 
 import { ReactComponent as USDCIcon } from 'resources/svg/coins/usdc.svg';
 import { ReactComponent as DAIIcon } from 'resources/svg/coins/dai.svg';
@@ -12,30 +17,39 @@ import { ReactComponent as SUSDIcon } from 'resources/svg/coins/susd.svg';
 import { ReactComponent as BONDIcon } from 'resources/svg/coins/bond.svg';
 
 import s from './styles.module.css';
-import PoolCard from 'components/pool-card';
-import { useWeekCountdown } from 'hooks/useCountdown';
+import { formatDistance } from 'date-fns';
 
 const PoolsView: React.FunctionComponent<{}> = props => {
-  const web3c = useWeb3Contracts();
-  const [untilNextEpoch] = useWeekCountdown();
+  const { aggregated, yf, yflp, bond, staking, uniswapV2 } = useWeb3Contracts();
+  const [untilNextEpoch] = useWeekCountdown(staking?.epochEnd);
 
   return (
     <div className={s.view}>
-      <MyRewards />
+      <MyRewards
+        currentReward={formatBigValue(aggregated.currentReward)}
+        bondBalance={formatBigValue(bond?.balanceValue)}
+        potentialReward={formatBigValue(aggregated.potentialReward)}
+      />
 
       <div className={s.stat_widgets}>
         <StatWidget
-          label="Total Staked"
-          value={`$ ${web3c.aggregated.potentialReward?.toFormat(3) || '-'}`}
-          hint="100,007" />
+          label="Total Value Locked"
+          value={`$ ${formatBigValue(aggregated.totalStaked, 2)}`}
+          hint={`${formatBigValue(aggregated.totalStakedInETH)} ETH`} />
         <StatWidget
           label="Bond Rewards"
-          value={web3c.aggregated.bondReward?.toFormat(3) || '-'}
-          hint={`out of ${web3c.aggregated.totalBondReward?.toFormat() || '-'}`} />
+          value={formatBigValue(aggregated.bondReward)}
+          hint={`out of ${formatBigValue(aggregated.totalBondReward, 0)}`} />
         <StatWidget
-          label={`Epoch ${web3c.yf?.currentEpoch ?? '-'}/${web3c.yf?.meta.totalEpochs ?? '-'}`}
+          label="Bond Price"
+          value={`$ ${formatBigValue(aggregated.bondPrice, 2)}`}
+          hint={uniswapV2?.lastBlockTime ? formatDistance(new Date(uniswapV2.lastBlockTime), new Date(), {
+            addSuffix: true,
+          }) : '-'} />
+        <StatWidget
+          label="Time Left"
           value={untilNextEpoch}
-          hint="left until next epoch" />
+          hint="until next epoch" />
       </div>
 
       <div className={s.pools_label}>Pools</div>
@@ -46,13 +60,13 @@ const PoolsView: React.FunctionComponent<{}> = props => {
           names={['USDC', 'DAI', 'sUSD']}
           icons={[<USDCIcon key="usdc" />, <DAIIcon key="dai" />, <SUSDIcon key="susd" />]}
           colors={['#4f6ae6', '#ffd160', '#1e1a31']}
-          currentEpoch={web3c.yf?.currentEpoch}
-          totalEpochs={web3c.yf?.meta.totalEpochs}
-          reward={web3c.yf?.meta.epochReward}
-          potentialReward={web3c.aggregated.potentialReward}
-          balance={web3c.aggregated.poolBalanceDUS}
-          balanceShare={web3c.aggregated.poolBalanceDUSShares}
-          myBalance={web3c.aggregated.myPoolBalanceDUS}
+          currentEpoch={yf?.currentEpoch}
+          totalEpochs={yf?.totalEpochs}
+          reward={yf?.epochReward}
+          potentialReward={aggregated.potentialReward}
+          balance={aggregated.poolBalanceDUS}
+          balanceShare={aggregated.poolBalanceDUSShares}
+          myBalance={aggregated.myPoolBalanceDUS}
           myBalanceShare={[50, 30, 20]}
         />
 
@@ -60,16 +74,18 @@ const PoolsView: React.FunctionComponent<{}> = props => {
           names={['USDC_BOND_UNI_LP']}
           icons={[<BONDIcon key="bond" />]}
           colors={['#ff4339']}
-          currentEpoch={web3c.yflp?.currentEpoch}
-          totalEpochs={web3c.yflp?.meta.totalEpochs}
-          reward={web3c.yflp?.meta.epochReward}
-          potentialReward={web3c.aggregated.potentialReward}
-          balance={web3c.aggregated.poolBalanceUB}
+          currentEpoch={yflp?.currentEpoch}
+          totalEpochs={yflp?.totalEpochs}
+          reward={yflp?.epochReward}
+          potentialReward={aggregated.potentialReward}
+          balance={aggregated.poolBalanceUB}
           balanceShare={[100]}
-          myBalance={web3c.aggregated.myPoolBalanceUB}
+          myBalance={aggregated.myPoolBalanceUB}
           myBalanceShare={[100]}
         />
       </div>
+
+      <PoolTransactions />
 
       <Antd.Tabs defaultActiveKey="deposit">
         <Antd.Tabs.TabPane key="deposit" tab="Deposit">

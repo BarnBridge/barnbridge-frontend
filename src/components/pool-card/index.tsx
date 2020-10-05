@@ -4,6 +4,9 @@ import BigNumber from 'bignumber.js';
 
 import s from './styles.module.css';
 
+import IconsSet from 'components/icons-set';
+import { formatBigValue } from 'web3/utils';
+
 export type PoolCardProps = {
   names: string[];
   icons: React.ReactNode[];
@@ -22,9 +25,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   return (
     <div className={s.component}>
       <div className={s.pool_header}>
-        <div className={s.pool_avatars}>
-          {props.icons}
-        </div>
+        <IconsSet className={s.pool_avatars} icons={props.icons} />
         <div className={s.pool_info}>
           <div className={s.pool_label}>{props.names?.join('/') ?? '-'}</div>
           <div className={s.pool_epoch}>EPOCH {props.currentEpoch ?? '-'}/{props.totalEpochs ?? '-'}</div>
@@ -58,7 +59,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             <div className={s.balance_tooltip}>
               {props.icons[index]}
               <span>{props.names[index]}:</span>
-              <span>$ 300.000,00</span>
+              <span>$ {formatBigValue(new BigNumber(300000))}</span>
             </div>
           )}>
             <div style={{ width: `${share ?? 0}%`, backgroundColor: props.colors[index] }} />
@@ -77,7 +78,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             <div className={s.balance_tooltip}>
               {props.icons[index]}
               <span>{props.names[index]}:</span>
-              <span>$ 300.000,00</span>
+              <span>$ {formatBigValue(new BigNumber(300000))}</span>
             </div>
           )}>
             <div style={{ width: `${share ?? 0}%`, backgroundColor: props.colors[index] }} />
