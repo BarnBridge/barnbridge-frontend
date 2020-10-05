@@ -28,6 +28,7 @@ jobs:
     - name: Build
       run: npm run build
       env:
+        CI: false
         REACT_APP_HTML_TITLE: BarnBridge
         REACT_APP_WEB3_CHAIN_ID: 4
         REACT_APP_WEB3_POLLING_INTERVAL: 12000
