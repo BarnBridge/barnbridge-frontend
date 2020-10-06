@@ -1,37 +1,37 @@
 import React from 'react';
-import * as Antd from 'antd';
+import { formatDistance } from 'date-fns';
 
-import StatWidget from 'components/stat-widget';
-import DataRow from 'components/data-row';
 import MyRewards from 'components/my-rewards';
-import PoolCard from 'components/pool-card';
-import PoolTransactions from 'components/pool-transactions';
+import StatWidget from 'components/stat-widget';
+import PoolStak from 'components/pool-stak';
+import PoolOverview from 'components/pool-overview';
 
 import { useWeekCountdown } from 'hooks/useCountdown';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBigValue } from 'web3/utils';
 
-import { ReactComponent as USDCIcon } from 'resources/svg/coins/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/coins/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/coins/susd.svg';
-import { ReactComponent as BONDIcon } from 'resources/svg/coins/bond.svg';
+import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
+import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
+import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
+import { ReactComponent as UNIIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
-import { formatDistance } from 'date-fns';
 
 const PoolsView: React.FunctionComponent<{}> = props => {
-  const { aggregated, yf, yflp, bond, staking, uniswapV2 } = useWeb3Contracts();
+  const { aggregated, staking, uniswapV2 } = useWeb3Contracts();
   const [untilNextEpoch] = useWeekCountdown(staking?.epochEnd);
+
+  const [activeStaking, setActiveStaking] = React.useState<string | undefined>();
+
+  function handleStakBack() {
+    setActiveStaking(undefined);
+  }
 
   return (
     <div className={s.view}>
-      <MyRewards
-        currentReward={formatBigValue(aggregated.currentReward)}
-        bondBalance={formatBigValue(bond?.balanceValue)}
-        potentialReward={formatBigValue(aggregated.potentialReward)}
-      />
+      <MyRewards />
 
-      <div className={s.stat_widgets}>
+      <div className={s.statWidgets}>
         <StatWidget
           label="Total Value Locked"
           value={`$ ${formatBigValue(aggregated.totalStaked, 2)}`}
@@ -52,55 +52,61 @@ const PoolsView: React.FunctionComponent<{}> = props => {
           hint="until next epoch" />
       </div>
 
-      <div className={s.pools_label}>Pools</div>
-      <div className={s.overview_label}>Overview</div>
-
-      <div className={s.pools_list}>
-        <PoolCard
-          names={['USDC', 'DAI', 'sUSD']}
-          icons={[<USDCIcon key="usdc" />, <DAIIcon key="dai" />, <SUSDIcon key="susd" />]}
-          colors={['#4f6ae6', '#ffd160', '#1e1a31']}
-          currentEpoch={yf?.currentEpoch}
-          totalEpochs={yf?.totalEpochs}
-          reward={yf?.epochReward}
-          potentialReward={aggregated.potentialReward}
-          balance={aggregated.poolBalanceDUS}
-          balanceShare={aggregated.poolBalanceDUSShares}
-          myBalance={aggregated.myPoolBalanceDUS}
-          myBalanceShare={[50, 30, 20]}
+      {!activeStaking && (
+        <PoolOverview onPoolStackSelect={setActiveStaking} />
+      )}
+      {activeStaking === 'uds' && (
+        <PoolStak
+          loading={false}
+          label="USDC/DAI/sUSD"
+          tokens={[
+            String(process.env.REACT_APP_CONTRACT_USDC_ADDR),
+            String(process.env.REACT_APP_CONTRACT_DAI_ADDR),
+            String(process.env.REACT_APP_CONTRACT_SUSD_ADDR),
+          ]}
+          summary={[
+            {
+              logo: <USDCIcon />,
+              name: 'USDC',
+              walletBalance: '800',
+              stakedBalance: '100',
+              enabled: true,
+            },
+            {
+              logo: <DAIIcon />,
+              name: 'DAI',
+              walletBalance: '800',
+              stakedBalance: '100',
+              enabled: false,
+            },
+            {
+              logo: <SUSDIcon />,
+              name: 'sUSD',
+              walletBalance: '800',
+              stakedBalance: '100',
+              enabled: false,
+            },
+          ]}
+          onBack={handleStakBack}
         />
-
-        <PoolCard
-          names={['USDC_BOND_UNI_LP']}
-          icons={[<BONDIcon key="bond" />]}
-          colors={['#ff4339']}
-          currentEpoch={yflp?.currentEpoch}
-          totalEpochs={yflp?.totalEpochs}
-          reward={yflp?.epochReward}
-          potentialReward={aggregated.potentialReward}
-          balance={aggregated.poolBalanceUB}
-          balanceShare={[100]}
-          myBalance={aggregated.myPoolBalanceUB}
-          myBalanceShare={[100]}
+      )}
+      {activeStaking === 'uni' && (
+        <PoolStak
+          loading={false}
+          label="USDC_BOND_UNI_LP"
+          tokens={[String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR)]}
+          summary={[
+            {
+              logo: <UNIIcon />,
+              name: 'USDC_BOND_UNI_LP',
+              walletBalance: '800',
+              stakedBalance: '100',
+              enabled: false,
+            },
+          ]}
+          onBack={handleStakBack}
         />
-      </div>
-
-      <PoolTransactions />
-
-      <Antd.Tabs defaultActiveKey="deposit">
-        <Antd.Tabs.TabPane key="deposit" tab="Deposit">
-
-          <div className={s.data_rows}>
-            <DataRow logo={<USDCIcon />} name="USDC" rewards={100} balance={100} enabled={true} />
-            <DataRow logo={<DAIIcon />} name="DAI" rewards={0} balance={0} enabled={false} />
-            <DataRow logo={<SUSDIcon />} name="sUSD" rewards={0} balance={0} enabled={false} />
-          </div>
-
-        </Antd.Tabs.TabPane>
-        <Antd.Tabs.TabPane key="withdraw" tab="Withdraw">
-          WITHDRAW
-        </Antd.Tabs.TabPane>
-      </Antd.Tabs>
+      )}
     </div>
   );
 };

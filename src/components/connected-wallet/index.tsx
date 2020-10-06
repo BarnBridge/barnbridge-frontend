@@ -15,19 +15,16 @@ const ConnectedWallet: React.FunctionComponent = props => {
   const web3 = useWeb3();
   const [visibleModal, setVisibleModal] = React.useState<boolean>(false);
 
-  function handleConnectWallet(ev: React.MouseEvent) {
-    ev.preventDefault();
+  function handleConnectWallet() {
     setVisibleModal(true);
   }
 
-  async function handleProviderClick(connectorId: string, ev: React.MouseEvent) {
-    ev.preventDefault();
+  async function handleProviderClick(connectorId: string) {
     setVisibleModal(false);
     web3.connect(connectorId);
   }
 
-  function handleDisconnect(ev: React.MouseEvent) {
-    ev.preventDefault();
+  function handleDisconnect() {
     web3.disconnect();
   }
 

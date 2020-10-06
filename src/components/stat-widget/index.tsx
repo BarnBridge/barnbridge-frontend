@@ -23,14 +23,14 @@ const StatWidget: React.FunctionComponent<StatWidgetProps> = props => {
       {props.value && (
         <Antd.Row>
           <Antd.Col>
-            <div className={s.value}>{props.value}</div>
+            <div className={s.value} text-elipsis="true">{props.value}</div>
           </Antd.Col>
         </Antd.Row>
       )}
       {props.hint && (
         <Antd.Row>
           <Antd.Col>
-            <div className={s.hint}>{props.hint}</div>
+            <div className={s.hint} text-elipsis="true">{props.hint}</div>
           </Antd.Col>
         </Antd.Row>
       )}

@@ -1,50 +1,11 @@
-.chartWidget {
+.component {
     background: #fff;
     box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
     border-radius: 4px;
     margin-bottom: 32px;
 }
 
-.chartWidgetHead {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-    height: 89px;
-    padding: 12px 24px;
-    border-bottom: 1px solid #e3e4e6;
-}
-
-.chartWidgetHeadLabel {
-    display: flex;
-    flex-direction: row;
-}
-
-.chartWidgetIconSet {
-    margin-right: 8px;
-}
-
-.chartWidgetHeadFilters > button {
-    margin-left: 24px;
-}
-
-.wrapChart {
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 350px;
-    padding: 24px;
-}
-
-.tableWidget {
-    background: #fff;
-    box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
-    border-radius: 4px;
-    margin-bottom: 32px;
-}
-
-.tableWidgetHead {
+.header {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -54,7 +15,7 @@
     border-bottom: 1px solid #e3e4e6;
 }
 
-.tableWidgetHeadLabel {
+.headerLabel {
     font-family: Montserrat;
     font-style: normal;
     font-weight: 600;
@@ -63,7 +24,7 @@
     color: #060a0d;
 }
 
-.tableWidgetHeadFilters > button {
+.filters > button {
     margin-left: 24px;
 }
 

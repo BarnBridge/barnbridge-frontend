@@ -11,7 +11,7 @@ import { SUSDContract, useSUSDContract } from 'web3/contracts/susd';
 import { BONDContract, useBONDContract } from 'web3/contracts/bond';
 import { UniswapV2Contract, useUniswapV2Contract } from 'web3/contracts/uniswapV2';
 import { EthOracleContract, useETHOracleContract } from 'web3/contracts/ethOracle';
-import { assertValues, getExponentValue, getHumanValue } from 'web3/utils';
+import { assertValues, getHumanValue } from 'web3/utils';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
@@ -19,38 +19,36 @@ const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLo
 const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
 const CONTRACT_UNISWAP_V2_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
 
+type OptionalBigNumber = BigNumber | undefined;
+
 export type Web3ContractsType = {
-  yf?: YieldFarmContract;
-  yflp?: YieldFarmLPContract;
-  staking?: StakingContract;
-  dai?: DAIContract;
-  usdc?: USDCContract;
-  susd?: SUSDContract;
-  bond?: BONDContract;
-  uniswapV2?: UniswapV2Contract;
-  ethOracle?: EthOracleContract;
+  yf: YieldFarmContract;
+  yflp: YieldFarmLPContract;
+  staking: StakingContract;
+  dai: DAIContract;
+  usdc: USDCContract;
+  susd: SUSDContract;
+  bond: BONDContract;
+  uniswapV2: UniswapV2Contract;
+  ethOracle: EthOracleContract;
   aggregated: {
-    currentReward?: BigNumber;
-    potentialReward?: BigNumber;
-    lpTokenValue?: BigNumber;
+    totalCurrentReward?: BigNumber;
+    totalPotentialReward?: BigNumber;
     totalStaked?: BigNumber;
     totalStakedInETH?: BigNumber;
-    bondPrice?: BigNumber;
     bondReward?: BigNumber;
     totalBondReward?: BigNumber;
-    poolBalanceDUS?: BigNumber;
-    poolBalanceDUSShares?: number[];
-    myPoolBalanceDUS?: BigNumber;
-    poolBalanceUB?: BigNumber;
-    myPoolBalanceUB?: BigNumber;
+    bondPrice?: BigNumber;
+    poolBalanceUDS?: BigNumber;
+    poolBalanceUDSShares?: number[] | undefined;
+    myPoolBalanceUDS?: BigNumber;
+    poolBalanceUNI?: BigNumber;
+    myPoolBalanceUNI?: BigNumber;
   };
-  getContractByToken(token: string): any | undefined;
+  getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber;
 };
 
-const Web3ContractsContext = React.createContext<Web3ContractsType>({
-  aggregated: {},
-  getContractByToken: () => undefined,
-});
+const Web3ContractsContext = React.createContext<Web3ContractsType>({} as any);
 
 export function useWeb3Contracts(): Web3ContractsType {
   return React.useContext(Web3ContractsContext);
@@ -69,221 +67,218 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   const uniswapV2Contract = useUniswapV2Contract(account);
   const ethOracleContract = useETHOracleContract();
 
-  function getContractByToken(token: string): any | undefined {
+  function getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber {
+    let decimals: number | undefined;
+    let multiplier: OptionalBigNumber;
+
     switch (token.toLowerCase()) {
       case CONTRACT_DAI_ADDR:
-        return daiContract;
+        decimals = daiContract.decimals;
+        break;
       case CONTRACT_USDC_ADDR:
-        return usdcContract;
+        decimals = usdcContract.decimals;
+        break;
       case CONTRACT_SUSD_ADDR:
-        return susdContract;
+        decimals = susdContract.decimals;
+        break;
       case CONTRACT_BOND_ADDR:
-        return bondContract;
+        decimals = bondContract.decimals;
+        break;
       case CONTRACT_UNISWAP_V2_ADDR:
-        return uniswapV2Contract;
+        decimals = uniswapV2Contract.decimals;
+        multiplier = yflpTokenValue();
+        break;
       default:
         return undefined;
     }
-  }
 
-  function currentReward(): BigNumber {
-    const yfReward = yfContract?.currentReward ?? new BigNumber(0);
-    const yflpReward = yflpContract?.currentReward ?? new BigNumber(0);
-
-    return yfReward.plus(yflpReward);
-  }
-
-  function potentialReward(): BigNumber | undefined {
-    if (!yfContract || !yflpContract) {
+    if (!assertValues(value, decimals)) {
       return undefined;
     }
 
-    const yf_pr = !yfContract.poolSize?.eq(0) ? yfContract.epochStake
-      ?.div(yfContract.poolSize!)
-      ?.multipliedBy(yfContract.epochReward!) : new BigNumber(0);
-
-    const yflp_pr = !yflpContract.poolSize?.eq(0) ? yflpContract.epochStake
-      ?.div(yflpContract.poolSize!)
-      ?.multipliedBy(yflpContract.epochReward!) : new BigNumber(0);
-
-    return yf_pr?.plus(yflp_pr!);
+    return getHumanValue(value, decimals)
+      ?.multipliedBy(multiplier ?? 1);
   }
 
-  function lpTokenValue(): BigNumber | undefined {
+  function yfTokenValue(): OptionalBigNumber {
+    return new BigNumber(1);
+  }
+
+  function yflpTokenValue(): OptionalBigNumber {
     const usdcReserve = uniswapV2Contract?.usdcReserve;
-    const ubTotalSupply = uniswapV2Contract?.totalSupply;
-    const ubDecimals = uniswapV2Contract?.decimals;
-    const usdcDecimals = usdcContract?.decimals;
+    const uniTotalSupply = uniswapV2Contract?.totalSupply;
 
-    if (!usdcReserve || !ubTotalSupply || !usdcDecimals || !ubDecimals) {
+    if (!assertValues(usdcReserve, uniTotalSupply)) {
       return undefined;
     }
 
-    return getHumanValue(usdcReserve, usdcDecimals)
-      ?.div(getHumanValue(ubTotalSupply, ubDecimals)!)
+    return usdcReserve!
+      .div(uniTotalSupply!)
       .multipliedBy(2);
   }
 
-  function totalStaked(): BigNumber | undefined {
-    const yfPoolSize = yfContract?.poolSize;
-    const yflpPoolSize = yflpContract?.poolSize;
-    const tokenValue = lpTokenValue();
+  function yfStakedValue() {
+    const poolSize = yfContract.poolSize;
+    const tokenValue = yfTokenValue();
 
-    if (!yfPoolSize || !yflpPoolSize || !tokenValue) {
+    if (!assertValues(poolSize, tokenValue)) {
       return undefined;
     }
 
-    return getHumanValue(yfPoolSize.plus(yflpPoolSize.multipliedBy(tokenValue)), 18);
+    return poolSize!.multipliedBy(tokenValue!);
   }
 
-  function totalStakedInETH(): BigNumber | undefined {
-    const ts = totalStaked();
+  function yflpStakedValue() {
+    const poolSize = yflpContract.poolSize;
+    const tokenValue = yflpTokenValue();
+
+    if (!assertValues(poolSize, tokenValue)) {
+      return undefined;
+    }
+
+    return poolSize!.multipliedBy(tokenValue!);
+  }
+
+  function totalCurrentReward(): OptionalBigNumber {
+    const yfCurrentReward = yfContract.currentReward;
+    const yflpCurrentReward = yflpContract.currentReward;
+
+    if (!assertValues(yfCurrentReward, yflpCurrentReward)) {
+      return undefined;
+    }
+
+    return yfCurrentReward!.plus(yflpCurrentReward!);
+  }
+
+  function totalPotentialReward(): OptionalBigNumber {
+    const yfPotentialReward = yfContract.potentialReward;
+    const yflpPotentialReward = yflpContract.potentialReward;
+
+    if (!assertValues(yfPotentialReward, yflpPotentialReward)) {
+      return undefined;
+    }
+
+    return yfPotentialReward!.plus(yflpPotentialReward!);
+  }
+
+  function totalStaked(): OptionalBigNumber {
+    const yfStaked = yfStakedValue();
+    const yflpStaked = yflpStakedValue();
+
+    if (!assertValues(yfStaked, yflpStaked)) {
+      return undefined;
+    }
+
+    return yfStaked!.plus(yflpStaked!);
+  }
+
+  function totalStakedInETH(): OptionalBigNumber {
+    const staked = totalStaked();
     const ethValue = ethOracleContract.value;
 
-    if (!ts || !ethValue) {
+    if (!assertValues(staked, ethValue)) {
       return undefined;
     }
 
-    return ts.div(ethValue);
+    return staked!.div(ethValue!);
   }
 
-  function bondPrice(): BigNumber | undefined {
-    const bondReserve = uniswapV2Contract?.bondReserve;
-    const bondDecimals = bondContract?.decimals;
-    const usdcReserve = uniswapV2Contract?.usdcReserve;
-    const usdcDecimals = usdcContract?.decimals;
+  function bondReward(): OptionalBigNumber {
+    const yfbBondReward = yfContract.bondReward;
+    const yflpBondReward = yflpContract.bondReward;
 
-    if (!bondReserve || !usdcReserve || !bondDecimals || !usdcDecimals) {
+    if (!assertValues(yfbBondReward, yflpBondReward)) {
       return undefined;
     }
 
-    return getHumanValue(usdcReserve, usdcDecimals)
-      ?.div(getHumanValue(bondReserve, bondDecimals)!);
+    return yfbBondReward!.plus(yflpBondReward!);
   }
 
-  function bondReward(): BigNumber | undefined {
-    const yfEpochReward = yfContract?.epochReward;
-    const yfPrevEpoch = (yfContract?.currentEpoch || 1) - 1;
-    const yflpEpochReward = yflpContract?.epochReward;
-    const yflpPrevEpoch = (yflpContract?.currentEpoch || 1) - 1;
+  function totalBondReward(): OptionalBigNumber {
+    const yfTotalRewards = yfContract.totalRewards;
+    const yflpTotalRewards = yflpContract.totalRewards;
 
-    if (!yfEpochReward || !yflpEpochReward) {
+    if (!assertValues(yfTotalRewards, yflpTotalRewards)) {
       return undefined;
     }
 
-    return yfEpochReward.multipliedBy(yfPrevEpoch)
-      .plus(yflpEpochReward.multipliedBy(yflpPrevEpoch));
+    return yfTotalRewards!.plus(yflpTotalRewards!);
   }
 
-  function totalBondReward(): BigNumber | undefined {
-    const yfBondRewards = yfContract?.bondRewards;
-    const yflpBondRewards = yflpContract?.bondRewards;
+  function bondPrice(): OptionalBigNumber {
+    const bondReserve = uniswapV2Contract.bondReserve;
+    const usdcReserve = uniswapV2Contract.usdcReserve;
 
-    if (!yfBondRewards || !yflpBondRewards) {
+    if (!assertValues(bondReserve, usdcReserve)) {
       return undefined;
     }
 
-    return yfBondRewards.plus(yflpBondRewards);
+    return usdcReserve!.div(bondReserve!);
   }
 
-  function poolBalanceDUS(): BigNumber | undefined {
-    const daiPoolSize = stakingContract?.dai.poolSize;
-    const daiDecimals = daiContract?.decimals;
+  function poolBalanceUDS(): OptionalBigNumber {
+    const usdcPoolSize = stakingContract.usdc.epochPoolSize;
+    const daiPoolSize = stakingContract.dai.epochPoolSize;
+    const susdPoolSize = stakingContract.susd.epochPoolSize;
 
-    const usdcPoolSize = stakingContract?.usdc.poolSize;
-    const usdcDecimals = usdcContract?.decimals;
-
-    const susdPoolSize = stakingContract?.susd.poolSize;
-    const susdDecimals = susdContract?.decimals;
-
-    if (!assertValues(
-      daiPoolSize,
-      daiDecimals,
-      usdcPoolSize,
-      usdcDecimals,
-      susdPoolSize,
-      susdDecimals,
-    )) {
+    if (!assertValues(usdcPoolSize, daiPoolSize, susdPoolSize)) {
       return undefined;
     }
 
-    const daiBalance = daiPoolSize!.div(getExponentValue(daiDecimals));
-    const usdcBalance = usdcPoolSize!.div(getExponentValue(usdcDecimals));
-    const susdBalance = susdPoolSize!.div(getExponentValue(susdDecimals));
-
-    return daiBalance.plus(usdcBalance).plus(susdBalance);
+    return usdcPoolSize!
+      .plus(daiPoolSize!)
+      .plus(susdPoolSize!);
   }
 
-  function poolBalanceDUSShares(): number[] | undefined {
-    const daiPoolSize = stakingContract?.dai.poolSize;
-    const usdcPoolSize = stakingContract?.usdc.poolSize;
-    const susdPoolSize = stakingContract?.susd.poolSize;
+  function poolBalanceUDSShares(): number[] | undefined {
+    const usdcPoolSize = stakingContract.usdc.epochPoolSize;
+    const daiPoolSize = stakingContract.dai.epochPoolSize;
+    const susdPoolSize = stakingContract.susd.epochPoolSize;
+    const totalBalance = poolBalanceUDS();
 
-    if (!daiPoolSize || !usdcPoolSize || !susdPoolSize) {
-      return undefined;
-    }
-
-    const total = poolBalanceDUS();
-
-    if (!total) {
+    if (!assertValues(usdcPoolSize, daiPoolSize, susdPoolSize, totalBalance)) {
       return undefined;
     }
 
     return [
-      parseFloat(daiPoolSize.multipliedBy(100).div(total).toFormat(3)),
-      parseFloat(usdcPoolSize.multipliedBy(100).div(total).toFormat(3)),
-      parseFloat(susdPoolSize.multipliedBy(100).div(total).toFormat(3)),
+      usdcPoolSize!.multipliedBy(100).div(totalBalance!).toNumber(),
+      daiPoolSize!.multipliedBy(100).div(totalBalance!).toNumber(),
+      susdPoolSize!.multipliedBy(100).div(totalBalance!).toNumber(),
     ];
   }
 
-  function myPoolBalanceDUS(): BigNumber | undefined {
-    const daiEpochUserBalance = stakingContract?.dai.epochUserBalance;
-    const daiDecimals = daiContract?.decimals;
+  function myPoolBalanceUDS(): OptionalBigNumber {
+    const usdcEpochUserBalance = stakingContract.usdc.epochUserBalance;
+    const daiEpochUserBalance = stakingContract.dai.epochUserBalance;
+    const susdEpochUserBalance = stakingContract.susd.epochUserBalance;
 
-    const usdcEpochUserBalance = stakingContract?.usdc.epochUserBalance;
-    const usdcDecimals = usdcContract?.decimals;
-
-    const susdEpochUserBalance = stakingContract?.susd.epochUserBalance;
-    const susdDecimals = susdContract?.decimals;
-
-    if (!assertValues(
-      daiEpochUserBalance,
-      daiDecimals,
-      usdcEpochUserBalance,
-      usdcDecimals,
-      susdEpochUserBalance,
-      susdDecimals,
-    )) {
+    if (!assertValues(usdcEpochUserBalance, daiEpochUserBalance, susdEpochUserBalance)) {
       return undefined;
     }
 
-    const daiBalance = daiEpochUserBalance!.div(getExponentValue(daiDecimals));
-    const usdcBalance = usdcEpochUserBalance!.div(getExponentValue(usdcDecimals));
-    const susdBalance = susdEpochUserBalance!.div(getExponentValue(susdDecimals));
-
-    return daiBalance.plus(usdcBalance).plus(susdBalance);
+    return usdcEpochUserBalance!
+      .plus(daiEpochUserBalance!)
+      .plus(susdEpochUserBalance!);
   }
 
-  function poolBalanceUB(): BigNumber | undefined {
-    const uniswapV2PoolSize = stakingContract?.uniswap_v2.poolSize;
-    const uniswapV2Decimals = uniswapV2Contract?.decimals;
+  function poolBalanceUNI(): OptionalBigNumber {
+    const uniEpochPoolSize = stakingContract.uniswap_v2.epochPoolSize;
 
-    if (!assertValues(uniswapV2PoolSize, uniswapV2Decimals)) {
+    if (!assertValues(uniEpochPoolSize)) {
       return undefined;
     }
 
-    return uniswapV2PoolSize!.div(getExponentValue(uniswapV2Decimals));
+    return uniEpochPoolSize;
   }
 
-  function myPoolBalanceUB(): BigNumber | undefined {
-    const uniswapV2EpochUserBalance = stakingContract?.uniswap_v2.poolSize;
-    const uniswapV2Decimals = uniswapV2Contract?.decimals;
+  function myPoolBalanceUNI(): OptionalBigNumber {
+    const uniEpochPoolSize = stakingContract.uniswap_v2.epochPoolSize;
 
-    if (!assertValues(uniswapV2EpochUserBalance, uniswapV2Decimals)) {
+    if (!assertValues(uniEpochPoolSize)) {
       return undefined;
     }
 
-    return uniswapV2EpochUserBalance!.div(getExponentValue(uniswapV2Decimals));
+    return uniEpochPoolSize;
   }
 
   const value = {
@@ -297,51 +292,47 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     uniswapV2: uniswapV2Contract,
     ethOracle: ethOracleContract,
     aggregated: {
-      get currentReward(): BigNumber {
-        return currentReward();
+      get totalCurrentReward(): OptionalBigNumber {
+        return totalCurrentReward();
       },
-      get potentialReward(): BigNumber | undefined {
-        return potentialReward();
+      get totalPotentialReward(): OptionalBigNumber {
+        return totalPotentialReward();
       },
-      get lpTokenValue(): BigNumber | undefined {
-        return lpTokenValue();
-      },
-      get totalStaked(): BigNumber | undefined {
+      get totalStaked(): OptionalBigNumber {
         return totalStaked();
       },
-      get totalStakedInETH(): BigNumber | undefined {
+      get totalStakedInETH(): OptionalBigNumber {
         return totalStakedInETH();
       },
-      get bondPrice(): BigNumber | undefined {
-        return bondPrice();
-      },
-      get bondReward(): BigNumber | undefined {
+      get bondReward(): OptionalBigNumber {
         return bondReward();
       },
-      get totalBondReward(): BigNumber | undefined {
+      get totalBondReward(): OptionalBigNumber {
         return totalBondReward();
       },
-      get poolBalanceDUS(): BigNumber | undefined {
-        return poolBalanceDUS();
+      get bondPrice(): OptionalBigNumber {
+        return bondPrice();
       },
-      get poolBalanceDUSShares(): number[] | undefined {
-        return poolBalanceDUSShares();
+      get poolBalanceUDS(): OptionalBigNumber {
+        return poolBalanceUDS();
       },
-      get myPoolBalanceDUS(): BigNumber | undefined {
-        return myPoolBalanceDUS();
+      get poolBalanceUDSShares(): number[] | undefined {
+        return poolBalanceUDSShares();
       },
-      get poolBalanceUB(): BigNumber | undefined {
-        return poolBalanceUB();
+      get myPoolBalanceUDS(): OptionalBigNumber {
+        return myPoolBalanceUDS();
       },
-      get myPoolBalanceUB(): BigNumber | undefined {
-        return myPoolBalanceUB();
+      get poolBalanceUNI(): OptionalBigNumber {
+        return poolBalanceUNI();
+      },
+      get myPoolBalanceUNI(): OptionalBigNumber {
+        return myPoolBalanceUNI();
       },
     },
-    getContractByToken,
+    getTokenHumanValue,
   };
 
   console.log(value);
-
   return (
     <Web3ContractsContext.Provider value={value}>
       {props.children}

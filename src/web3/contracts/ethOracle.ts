@@ -1,13 +1,18 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { batchCallContract, createContract, getHumanValue, getRpcUrl } from 'web3/utils';
+import { batchContract, createContract, getHumanValue, getRpcUrl } from 'web3/utils';
 
 export type EthOracleContract = {
   name?: string;
   decimals?: number;
-  latestAnswer?: BigNumber;
   value?: BigNumber;
+};
+
+const InitialDataState: EthOracleContract = {
+  name: undefined,
+  decimals: undefined,
+  value: undefined,
 };
 
 const Contract = createContract(
@@ -16,28 +21,22 @@ const Contract = createContract(
   getRpcUrl(1),
 );
 
-const InitialDataState: EthOracleContract = {
-  name: undefined,
-  decimals: undefined,
-  latestAnswer: undefined,
-  value: undefined,
-};
-
 export function useETHOracleContract(): EthOracleContract {
   const [data, setData] = React.useState<EthOracleContract>(InitialDataState);
 
   React.useEffect(() => {
     (async () => {
-      const [description, decimals, latestAnswer] = await batchCallContract(Contract, [
-        'description', 'decimals', 'latestAnswer',
+      const [name, decimals, value] = await batchContract(Contract, [
+        'description',
+        'decimals',
+        'latestAnswer',
       ]);
 
       setData(prevState => ({
         ...prevState,
-        name: description,
+        name,
         decimals: Number(decimals),
-        latestAnswer: new BigNumber(latestAnswer),
-        value: getHumanValue(new BigNumber(latestAnswer), Number(decimals)),
+        value: getHumanValue(new BigNumber(value), Number(decimals)),
       }));
     })();
   }, []);

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createContract } from 'web3/utils';
+import { assertValues, createContract } from 'web3/utils';
 
 export type CommunityVaultContract = {};
 
@@ -18,7 +18,7 @@ export function useCommunityVaultContract(account?: string): CommunityVaultContr
   }, []);
 
   React.useEffect(() => {
-    if (!account) {
+    if (!assertValues(account)) {
       return;
     }
   }, [account]);

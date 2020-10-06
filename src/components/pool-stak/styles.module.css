@@ -1,0 +1,33 @@
+.component {
+
+}
+
+.headerLabel {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 32px;
+    line-height: 40px;
+    color: #000;
+}
+
+.backSvg svg {
+    width: 21px;
+    height: 21px;
+    margin-right: 10px;
+    line-height: 21px;
+    color: #aaafb3;
+}
+
+.dataRows {
+    display: grid;
+    grid-gap: 16px;
+}
+
+.tabs {
+    margin: 32px 0 64px;
+}
