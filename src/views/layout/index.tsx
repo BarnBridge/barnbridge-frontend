@@ -13,9 +13,9 @@ import ConnectedWallet from 'components/connected-wallet';
 
 import { ReactComponent as LogoSvg } from 'resources/svg/logo.svg';
 // import { ReactComponent as HomeSvg } from 'resources/svg/home.svg';
-import { ReactComponent as BondsSvg } from 'resources/svg/bonds.svg';
-import { ReactComponent as PoolsSvg } from 'resources/svg/pools.svg';
-import { ReactComponent as VotingSvg } from 'resources/svg/voting.svg';
+import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
+import { ReactComponent as PoolsSvg } from 'resources/svg/icons/pools.svg';
+import { ReactComponent as VotingSvg } from 'resources/svg/icons/voting.svg';
 
 const LayoutView: React.FunctionComponent = props => {
   return (

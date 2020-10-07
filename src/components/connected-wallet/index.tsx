@@ -3,11 +3,11 @@ import * as Antd from 'antd';
 
 import { useWeb3 } from 'web3/provider';
 
-import { ReactComponent as BellSvg } from 'resources/svg/bell.svg';
+import { ReactComponent as BellSvg } from 'resources/svg/icons/bell.svg';
 import { ReactComponent as AvatarSvg } from 'resources/svg/avatar.svg';
-import { ReactComponent as GlobeSvg } from 'resources/svg/globe.svg';
-import { ReactComponent as WalletSvg } from 'resources/svg/wallet.svg';
-import { ReactComponent as NetworkSvg } from 'resources/svg/network.svg';
+import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
+import { ReactComponent as WalletSvg } from 'resources/svg/icons/wallet.svg';
+import { ReactComponent as NetworkSvg } from 'resources/svg/icons/network.svg';
 
 import s from './styles.module.css';
 

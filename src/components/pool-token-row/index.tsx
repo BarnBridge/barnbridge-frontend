@@ -2,8 +2,8 @@ import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
 
-import { ReactComponent as ChevronTopSvg } from 'resources/svg/chevron-top.svg';
-import { ReactComponent as ChevronRightSvg } from 'resources/svg/chevron-right.svg';
+import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
+import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
 import s from './styles.module.css';
 
