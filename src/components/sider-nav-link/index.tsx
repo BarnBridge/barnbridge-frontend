@@ -18,8 +18,7 @@ const SiderNavLink: React.FunctionComponent<SiderNavLinkProps> = props => {
     exact: props.path === '/',
   }));
 
-  function handleSiderBtnClick(ev: React.MouseEvent) {
-    ev.preventDefault();
+  function handleSiderBtnClick() {
     history.push(props.path);
   }
 

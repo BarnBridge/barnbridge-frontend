@@ -1,0 +1,155 @@
+.component {
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 40px);
+    grid-gap: 6px;
+    padding: 24px;
+    background: #fff;
+    box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+    border-radius: 4px;
+}
+
+.col {
+    height: 44px;
+    align-items: center;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #060a0d;
+}
+
+.col:nth-child(1) {
+    display: flex;
+    flex-direction: row;
+}
+
+.label {
+    margin-bottom: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #717980;
+}
+
+.value span {
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #5a6166;
+}
+
+.logo svg {
+    width: 24px;
+    height: 24px;
+}
+
+.name {
+    margin-left: 16px;
+}
+
+.arrow {
+    width: 40px;
+    height: 40px;
+    background: #f8f8f9;
+    border-radius: 4px;
+}
+
+.body {
+    overflow: hidden;
+    max-height: 100%;
+    border-top: 1px solid #e3e4e6;
+    background: #fff;
+    box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+    border-radius: 0 0 4px 4px;
+    padding: 24px;
+    transition: transform 0.3s ease-out;
+    height: auto;
+    transform: scaleY(1);
+    transform-origin: top;
+}
+
+.body.collapsed {
+    height: 0;
+    padding: 0;
+    transform: scaleY(0);
+}
+
+.row1 {
+    display: inline-flex;
+    grid-gap: 64px;
+    grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.col1 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.col2 {
+    display: grid;
+    grid-gap: 16px;
+    grid-template-columns: minmax(0, 356px) minmax(0, 356px);
+}
+
+.amountLabel {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    color: #717980;
+}
+
+.gweiLabel {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    color: #717980;
+}
+
+.gweiItem {
+    width: 356px;
+    height: 92px;
+    background: #fff;
+    border: 1px solid #ff4339;
+    box-sizing: border-box;
+    border-radius: 4px;
+}
+
+.gweiOption {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #000;
+}
+
+.gweiPrice {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #717980;
+}
+
+.gweiPrice strong {
+    font-weight: 600;
+    font-size: 16px;
+    color: #000;
+}

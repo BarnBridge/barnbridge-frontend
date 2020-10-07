@@ -28,3 +28,17 @@ button {
 #root {
     min-height: 100vh;
 }
+
+[text-elipsis] {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.ant-modal .ant-modal-footer:empty {
+    display: none;
+}
+
+.ant-modal .ant-modal-close {
+    color: #aaafb3;
+}

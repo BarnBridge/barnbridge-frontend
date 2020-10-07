@@ -1,6 +1,7 @@
 import { EthContract } from 'web3/types';
 import Web3EthContract from 'web3-eth-contract';
 import BigNumber from 'bignumber.js';
+import { isString } from 'lodash';
 
 export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)) {
   const rpcId = String(process.env.REACT_APP_WEB3_RPC_ID);
@@ -21,42 +22,76 @@ export function createContract(abi: any, address: string, rpcUrl: string = getRp
   return contract;
 }
 
-export function callContract(contract: EthContract, methodName: string, methodArgs: any[], callArgs?: Record<string, any>): Promise<any> {
-  return contract
-    ?.methods[methodName](...methodArgs)
-    ?.call(callArgs)
-    ?.catch((e: any) => {
-      console.error(`${methodName}.call`, e);
-      return Promise.reject(e);
-    });
-}
+type BatchMethodConfig = {
+  method: string;
+  methodArgs?: any[];
+  callArgs?: Record<string, any>;
+};
 
-export function batchCallContract(contract: EthContract, methodNames: string[], ...args: any[]): Promise<any[]> {
+export type BatchMethod = string | BatchMethodConfig;
+
+export function batchContract(contract: EthContract, methods: BatchMethod[]): Promise<any[]> {
   const batch = new contract.BatchRequest!();
-  const promises = methodNames
-    .map(methodName => {
-      return new Promise(resolve => {
-        const method = contract?.methods[methodName];
 
-        if (!method) {
-          resolve(undefined);
-        }
+  const promises = methods.map((method: BatchMethod) => {
+    return new Promise(resolve => {
+      let methodName: string;
+      let methodArgs: any[] = [];
+      let callArgs: Record<string, any> = {};
 
-        const request = method().call.request((err: Error, data: string) => {
+      if (isString(method)) {
+        methodName = method as string;
+      } else {
+        methodName = (method as BatchMethodConfig).method;
+        methodArgs = (method as BatchMethodConfig).methodArgs ?? [];
+        callArgs = (method as BatchMethodConfig).callArgs ?? {};
+      }
+
+      const contractMethod = contract.methods[methodName];
+
+      if (!contractMethod) {
+        return resolve(undefined);
+      }
+
+      const request = contractMethod(...methodArgs).call
+        .request(callArgs, (err: Error, data: string) => {
           if (err) {
-            console.error(err);
+            console.error(`${method}.call`, err);
+            return resolve(undefined);
           }
 
           resolve(data);
         });
 
-        batch.add(request);
-      });
+      batch.add(request);
     });
+  });
 
   batch.execute();
 
   return Promise.all(promises);
+}
+
+export function sendContract(contract: EthContract, method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+  return new Promise((resolve, reject) => {
+    const clonedContract: EthContract = contract.clone();
+    clonedContract.setProvider?.((window as any).ethereum);
+
+    const contractMethod = clonedContract.methods[method];
+
+    if (!contractMethod) {
+      return resolve(undefined);
+    }
+
+    contractMethod(...methodArgs)
+      ?.send(sendArgs, (err: Error, data: string) => {
+        if (err) {
+          return reject(err);
+        }
+
+        resolve(data);
+      });
+  });
 }
 
 export function getExponentValue(decimals: number = 0): BigNumber {
@@ -73,4 +108,8 @@ export function formatBigValue(value?: BigNumber, decimals: number = 3, defaultV
 
 export function assertValues(...values: any[]): boolean {
   return !values.some(value => value === undefined || value === null);
+}
+
+export function shortenAddr(addr: string) {
+  return [String(addr).slice(0, 6), String(addr).slice(-4)].join('...');
 }

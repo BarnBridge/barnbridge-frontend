@@ -1,63 +1,53 @@
 .component {
-    padding: 24px;
     background: #fff;
     box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
     border-radius: 4px;
 }
 
-.pool_header {
+.row1 {
     display: flex;
     flex-direction: row;
-    margin-bottom: 40px;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px;
+    border-bottom: 1px solid #e3e4e6;
 }
 
-.pool_avatars {
-    margin-right: 24px;
+.row2 {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    border-bottom: 1px solid #e3e4e6;
 }
 
-.pool_info {
+.row2 .col1 {
+    width: 50%;
+    padding: 24px;
+    border-right: 1px solid #e3e4e6;
+}
+
+.row2 .col2 {
+    width: 50%;
+    padding: 24px;
+}
+
+.row3 {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    justify-content: center;
+    padding: 24px;
+    border-bottom: 1px solid #e3e4e6;
 }
 
-.pool_label {
-    font-family: Montserrat;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #060a0d;
+.row4 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
 }
 
-.pool_epoch {
-    font-family: Montserrat;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-    color: #ff4339;
-}
-
-.reward_row {
-    display: inline-grid;
-    grid-template-columns: auto auto auto;
-    height: 45px;
-    margin-bottom: 32px;
-}
-
-.reward_delimiter {
-    width: 1px;
-    height: 100%;
-    background-color: #e3e4e6;
-    margin: 0 32px;
-}
-
-.reward_label {
-    margin-bottom: 5px;
+.row_label {
+    margin-bottom: 4px;
     font-family: Montserrat;
     font-style: normal;
     font-weight: 600;
@@ -68,45 +58,23 @@
     color: #717980;
 }
 
-.reward_value {
+.row_value {
+    margin-bottom: 8px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #060a0d;
+}
+
+.row_value_2 {
     font-family: Montserrat;
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
     line-height: 24px;
-    color: #5a6166;
-}
-
-.reward_value span {
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #060a0d;
-}
-
-.balance_row {
-    height: 45px;
-    margin-bottom: 16px;
-}
-
-.balance_label {
-    font-family: Montserrat;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 12px;
-    line-height: 16px;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
     color: #717980;
-}
-
-.balance_value {
-    font-family: Montserrat;
-    font-style: normal;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #060a0d;
 }
 
 .pool_stack_bar {
@@ -178,4 +146,39 @@
     font-size: 16px;
     line-height: 24px;
     color: #060a0d;
+}
+
+.stakingBtn {
+    margin: 0 0 0 auto;
+}
+
+.pool_avatars {
+    margin-right: 24px;
+}
+
+.pool_info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.pool_label {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #060a0d;
+}
+
+.pool_epoch {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #ff4339;
 }

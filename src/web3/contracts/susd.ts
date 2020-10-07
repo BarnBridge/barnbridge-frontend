@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { batchCallContract, callContract, createContract } from 'web3/utils';
+import { assertValues, batchContract, createContract, getHumanValue } from 'web3/utils';
 
 export type SUSDContract = {
   symbol?: string;
@@ -10,11 +10,6 @@ export type SUSDContract = {
   balance?: BigNumber;
 };
 
-const Contract = createContract(
-  require('web3/abi/susd.json'),
-  String(process.env.REACT_APP_CONTRACT_SUSD_ADDR),
-);
-
 const InitialDataState: SUSDContract = {
   symbol: undefined,
   decimals: undefined,
@@ -22,38 +17,47 @@ const InitialDataState: SUSDContract = {
   balance: undefined,
 };
 
+const Contract = createContract(
+  require('web3/abi/susd.json'),
+  String(process.env.REACT_APP_CONTRACT_SUSD_ADDR),
+);
+
 export function useSUSDContract(account?: string): SUSDContract {
   const [data, setData] = React.useState<SUSDContract>(InitialDataState);
 
   React.useEffect(() => {
     (async () => {
-      const [symbol, decimals, totalSupply] = await batchCallContract(Contract, [
-        'symbol', 'decimals', 'totalSupply',
+      const [symbol, decimals, totalSupply] = await batchContract(Contract, [
+        'symbol',
+        'decimals',
+        'totalSupply',
       ]);
 
       setData(prevState => ({
         ...prevState,
         symbol,
         decimals: Number(decimals),
-        totalSupply: new BigNumber(totalSupply),
+        totalSupply: getHumanValue(new BigNumber(totalSupply), Number(decimals)),
       }));
     })();
   }, []);
 
   React.useEffect(() => {
-    if (!account) {
+    if (!assertValues(account, data.decimals)) {
       return;
     }
 
     (async () => {
-      const balance = await callContract(Contract, 'balanceOf', [account]);
+      const [balance] = await batchContract(Contract, [
+        { method: 'balanceOf', methodArgs: [account] },
+      ]);
 
       setData(prevState => ({
         ...prevState,
-        balance: new BigNumber(balance),
+        balance: getHumanValue(new BigNumber(balance), data.decimals),
       }));
     })();
-  }, [account]);
+  }, [account, data.decimals]);
 
   return data;
 }
