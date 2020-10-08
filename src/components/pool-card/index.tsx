@@ -1,6 +1,5 @@
 import React from 'react';
 import * as Antd from 'antd';
-import BigNumber from 'bignumber.js';
 
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
@@ -18,13 +17,19 @@ import s from './styles.module.css';
 export type PoolCardProps = {
   stableToken?: boolean;
   lpToken?: boolean;
-  balanceShare?: number[];
-  myBalanceShare: number[];
   onStaking: () => void;
 };
 
+type TokenBalanceShare = {
+  icon: React.ReactNode;
+  name: string;
+  value: string;
+  share: number;
+  color: string;
+};
+
 const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
-  const { aggregated, yf, yflp } = useWeb3Contracts();
+  const { yf, yflp, staking } = useWeb3Contracts();
 
   const { stableToken = false, lpToken = false } = props;
 
@@ -86,53 +91,187 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const balance = React.useMemo<string>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(aggregated.poolBalanceUDS)}`;
+      return `$ ${formatBigValue(yf.nextPoolSize)}`;
     } else if (lpToken) {
-      return `${formatBigValue(aggregated.poolBalanceUNI)} USDC_BOND_UNI_LP`;
+      return `${formatBigValue(yflp.nextPoolSize)} USDC_BOND_UNI_LP`;
     }
 
     return '-';
-  }, [stableToken, lpToken, aggregated]);
+  }, [stableToken, lpToken, yf, yflp]);
 
   const effectiveBalance = React.useMemo<string>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(aggregated.effectivePoolBalanceUDS)}`;
+      return `$ ${formatBigValue(yf.poolSize)}`;
     } else if (lpToken) {
-      return formatBigValue(aggregated.effectivePoolBalanceUNI);
+      return formatBigValue(yflp.poolSize);
     }
 
     return '-';
-  }, [stableToken, lpToken, aggregated]);
+  }, [stableToken, lpToken, yf, yflp]);
+
+  const balanceShares = React.useMemo<TokenBalanceShare[]>(() => {
+    const shares: TokenBalanceShare[] = [];
+
+    if (stableToken) {
+      if (yf.nextPoolSize) {
+        const usdcShare = staking.usdc.nextEpochPoolSize
+          ?.multipliedBy(100)
+          .div(yf.nextPoolSize)
+          .toNumber();
+
+        if (usdcShare) {
+          shares.push({
+            icon: <USDCIcon />,
+            name: 'USDC',
+            value: `$ ${formatBigValue(staking.usdc.nextEpochPoolSize)}`,
+            share: usdcShare,
+            color: '#4f6ae6',
+          });
+        }
+
+        const daiShare = staking.dai.nextEpochPoolSize
+          ?.multipliedBy(100)
+          .div(yf.nextPoolSize)
+          .toNumber();
+
+        if (daiShare) {
+          shares.push({
+            icon: <DAIIcon />,
+            name: 'DAI',
+            value: `$ ${formatBigValue(staking.dai.nextEpochPoolSize)}`,
+            share: daiShare,
+            color: '#ffd160',
+          });
+        }
+
+        const susdShare = staking.susd.nextEpochPoolSize
+          ?.multipliedBy(100)
+          .div(yf.nextPoolSize)
+          .toNumber() ?? 0;
+
+        if (susdShare) {
+          shares.push({
+            icon: <SUSDIcon />,
+            name: 'SUSD',
+            value: `$ ${formatBigValue(staking.susd.nextEpochPoolSize)}`,
+            share: susdShare,
+            color: '#1e1a31',
+          });
+        }
+      }
+    } else if (lpToken) {
+      if (yflp.nextPoolSize) {
+        const uniShare = staking.uniswap_v2.nextEpochPoolSize
+          ?.multipliedBy(100)
+          .div(yflp.nextPoolSize)
+          .toNumber();
+
+        if (uniShare) {
+          shares.push({
+            icon: <UNIIcon />,
+            name: 'USDC_BOND_UNI_LP',
+            value: `${formatBigValue(staking.uniswap_v2.nextEpochPoolSize)} USDC_BOND_UNI_LP`,
+            share: uniShare,
+            color: '#ff4339',
+          });
+        }
+      }
+    }
+
+    return shares;
+  }, [stableToken, lpToken, yf, yflp, staking]);
 
   const myBalance = React.useMemo<string>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(aggregated.myPoolBalanceUDS)}`;
+      return `$ ${formatBigValue(yf.nextEpochStake)}`;
     } else if (lpToken) {
-      return `${formatBigValue(aggregated.myPoolBalanceUNI)} USDC_BOND_UNI_LP`;
+      return `${formatBigValue(yflp.nextEpochStake)} USDC_BOND_UNI_LP`;
     }
 
     return '-';
-  }, [stableToken, lpToken, aggregated]);
+  }, [stableToken, lpToken, yf, yflp]);
 
   const myEffectiveBalance = React.useMemo<string>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(aggregated.myEffectivePoolBalanceUDS)}`;
+      return `$ ${formatBigValue(yf.epochStake)}`;
     } else if (lpToken) {
-      return formatBigValue(aggregated.myEffectivePoolBalanceUNI);
+      return formatBigValue(yflp.epochStake);
     }
 
     return '-';
-  }, [stableToken, lpToken, aggregated]);
+  }, [stableToken, lpToken, yf, yflp]);
 
-  const colors = React.useMemo<string[]>(() => {
+  const myBalanceShares = React.useMemo<TokenBalanceShare[]>(() => {
+    const shares: TokenBalanceShare[] = [];
+
     if (stableToken) {
-      return ['#4f6ae6', '#ffd160', '#1e1a31'];
+      if (yf.nextEpochStake) {
+        const usdcShare = staking.usdc.nextEpochUserBalance
+          ?.multipliedBy(100)
+          .div(yf.nextEpochStake)
+          .toNumber();
+
+        if (usdcShare) {
+          shares.push({
+            icon: <USDCIcon />,
+            name: 'USDC',
+            value: `$ ${formatBigValue(staking.usdc.nextEpochUserBalance)}`,
+            share: usdcShare,
+            color: '#4f6ae6',
+          });
+        }
+
+        const daiShare = staking.dai.nextEpochUserBalance
+          ?.multipliedBy(100)
+          .div(yf.nextEpochStake)
+          .toNumber();
+
+        if (daiShare) {
+          shares.push({
+            icon: <DAIIcon />,
+            name: 'DAI',
+            value: `$ ${formatBigValue(staking.dai.nextEpochUserBalance)}`,
+            share: daiShare,
+            color: '#ffd160',
+          });
+        }
+
+        const susdShare = staking.susd.nextEpochUserBalance
+          ?.multipliedBy(100)
+          .div(yf.nextEpochStake)
+          .toNumber() ?? 0;
+
+        if (susdShare) {
+          shares.push({
+            icon: <SUSDIcon />,
+            name: 'SUSD',
+            value: `$ ${formatBigValue(staking.susd.nextEpochUserBalance)}`,
+            share: susdShare,
+            color: '#1e1a31',
+          });
+        }
+      }
     } else if (lpToken) {
-      return ['#ff4339'];
+      if (yflp.nextEpochStake) {
+        const uniShare = staking.uniswap_v2.nextEpochUserBalance
+          ?.multipliedBy(100)
+          .div(yflp.nextEpochStake)
+          .toNumber();
+
+        if (uniShare) {
+          shares.push({
+            icon: <UNIIcon />,
+            name: 'USDC_BOND_UNI_LP',
+            value: `${formatBigValue(staking.uniswap_v2.nextEpochUserBalance)} USDC_BOND_UNI_LP`,
+            share: uniShare,
+            color: '#ff4339',
+          });
+        }
+      }
     }
 
-    return [];
-  }, [stableToken, lpToken]);
+    return shares;
+  }, [stableToken, lpToken, yf, yflp, staking]);
 
   return (
     <div className={s.component}>
@@ -168,13 +307,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         <div className={s.row_value}>{balance}</div>
         <div className={s.row_value_2}>{effectiveBalance} effective balance</div>
         <div className={s.pool_stack_bar}>
-          {props.balanceShare?.map((share, index) => (
+          {balanceShares.map((tokenShare, index) => (
             <Antd.Tooltip key={index} placement="top" title={(
               <div className={s.balance_tooltip}>
-                <span>$ {formatBigValue(new BigNumber(300000))}</span>
+                <div>{tokenShare.icon}</div>
+                <span>{tokenShare.name}:</span>
+                <span>{tokenShare.value}</span>
               </div>
             )}>
-              <div style={{ width: `${share ?? 0}%`, backgroundColor: colors[index] }} />
+              <div style={{ width: `${tokenShare.share}%`, backgroundColor: tokenShare.color }} />
             </Antd.Tooltip>
           ))}
         </div>
@@ -188,13 +329,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         <div className={s.row_value}>{myBalance}</div>
         <div className={s.row_value_2}>{myEffectiveBalance} effective balance</div>
         <div className={s.pool_stack_bar}>
-          {props.myBalanceShare.map((share, index) => (
+          {myBalanceShares.map((tokenShare, index) => (
             <Antd.Tooltip key={index} placement="top" title={(
               <div className={s.balance_tooltip}>
-                <span>$ {formatBigValue(new BigNumber(300000))}</span>
+                <div>{tokenShare.icon}</div>
+                <span>{tokenShare.name}:</span>
+                <span>{tokenShare.value}</span>
               </div>
             )}>
-              <div style={{ width: `${share ?? 0}%`, backgroundColor: colors[index] }} />
+              <div style={{ width: `${tokenShare.share}%`, backgroundColor: tokenShare.color }} />
             </Antd.Tooltip>
           ))}
         </div>
