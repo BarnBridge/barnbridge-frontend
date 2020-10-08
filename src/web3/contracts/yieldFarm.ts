@@ -9,7 +9,9 @@ export type YieldFarmContract = {
   epochReward?: BigNumber;
   currentEpoch?: number;
   poolSize?: BigNumber;
+  nextPoolSize?: BigNumber;
   epochStake?: BigNumber;
+  nextEpochStake?: BigNumber;
   currentReward?: BigNumber;
   potentialReward?: BigNumber;
   bondReward?: BigNumber;
@@ -41,8 +43,9 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
         'TOTAL_DISTRIBUTED_AMOUNT',
         'getCurrentEpoch',
       ]);
-      const [poolSize] = await batchContract(Contract, [
+      const [poolSize, nextPoolSize] = await batchContract(Contract, [
         { method: 'getPoolSize', methodArgs: [currentEpoch] },
+        { method: 'getPoolSize', methodArgs: [currentEpoch + 1] },
       ]);
 
       setData(prevState => ({
@@ -52,6 +55,7 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
         epochReward: (new BigNumber(totalRewards)).div(totalEpochs),
         currentEpoch: Number(currentEpoch),
         poolSize: getHumanValue(new BigNumber(poolSize), 18), // TODO: get decimals from ? contract
+        nextPoolSize: getHumanValue(new BigNumber(nextPoolSize), 18), // TODO: get decimals from ? contract
       }));
     })();
   }, []);
@@ -62,14 +66,16 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
     }
 
     (async () => {
-      const [epochStake, massHarvest] = await batchContract(Contract, [
+      const [epochStake, nextEpochStake, massHarvest] = await batchContract(Contract, [
         { method: 'getEpochStake', methodArgs: [account, data.currentEpoch] },
+        { method: 'getEpochStake', methodArgs: [account, data.currentEpoch! + 1] },
         { method: 'massHarvest', callArgs: { from: account } },
       ]);
 
       setData(prevState => ({
         ...prevState,
         epochStake: getHumanValue(new BigNumber(epochStake), 18), // TODO: get decimals from ? contract
+        nextEpochStake: getHumanValue(new BigNumber(nextEpochStake), 18), // TODO: get decimals from ? contract
         currentReward: getHumanValue(new BigNumber(massHarvest), 18), // TODO: get decimals from ? contract
       }));
     })();

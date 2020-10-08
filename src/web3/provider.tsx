@@ -176,6 +176,7 @@ export function useWeb3(): Web3ContextType {
 const Web3ProviderInner: React.FunctionComponent = props => {
   const web3 = useWeb3React();
   const [tried, setTried] = React.useState<boolean>(false);
+  const [network, setNetwork] = React.useState<any | undefined>();
 
   async function connect(connectorId: string) {
     const web3Connector = Web3Connectors.find(c => c.id === connectorId);
@@ -213,6 +214,12 @@ const Web3ProviderInner: React.FunctionComponent = props => {
     }
   }, [tried, web3.active]);
 
+  React.useEffect(() => {
+    (web3.library as EthWeb3Provider)
+      ?.detectNetwork()
+      .then(setNetwork);
+  }, [web3.library]);
+
   const value = {
     get connectors() {
       return [...Web3Connectors];
@@ -230,9 +237,7 @@ const Web3ProviderInner: React.FunctionComponent = props => {
     get account() {
       return web3.account ?? undefined;
     },
-    get network() {
-      return web3.library?.network;
-    },
+    network,
     tried,
     connect,
     disconnect,

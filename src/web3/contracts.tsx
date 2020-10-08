@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 import BigNumber from 'bignumber.js';
 
 import { useWeb3 } from 'web3/provider';
@@ -12,6 +12,10 @@ import { BONDContract, useBONDContract } from 'web3/contracts/bond';
 import { UniswapV2Contract, useUniswapV2Contract } from 'web3/contracts/uniswapV2';
 import { EthOracleContract, useETHOracleContract } from 'web3/contracts/ethOracle';
 import { assertValues, getHumanValue } from 'web3/utils';
+
+import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
+import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
+import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
@@ -40,10 +44,14 @@ export type Web3ContractsType = {
     totalBondReward?: BigNumber;
     bondPrice?: BigNumber;
     poolBalanceUDS?: BigNumber;
+    effectivePoolBalanceUDS?: BigNumber;
     poolBalanceUDSShares?: number[] | undefined;
     myPoolBalanceUDS?: BigNumber;
+    myEffectivePoolBalanceUDS?: BigNumber;
     poolBalanceUNI?: BigNumber;
+    effectivePoolBalanceUNI?: BigNumber;
     myPoolBalanceUNI?: BigNumber;
+    myEffectivePoolBalanceUNI?: BigNumber;
   };
   getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber;
 };
@@ -53,6 +61,33 @@ const Web3ContractsContext = React.createContext<Web3ContractsType>({} as any);
 export function useWeb3Contracts(): Web3ContractsType {
   return React.useContext(Web3ContractsContext);
 }
+
+export type TokenInfo = {
+  address: string;
+  icon: React.FunctionComponent;
+};
+
+export const UDS_TOKENS = new Map<string, TokenInfo>([
+  ['USDC', {
+    address: CONTRACT_USDC_ADDR,
+    icon: USDCIcon,
+  }],
+  ['DAI', {
+    address: CONTRACT_DAI_ADDR,
+    icon: DAIIcon,
+  }],
+  ['sUSD', {
+    address: CONTRACT_SUSD_ADDR,
+    icon: SUSDIcon,
+  }],
+]);
+
+export const LP_TOKENS = new Map<string, TokenInfo>([
+  ['USDC_BOND_UNI_LP', {
+    address: CONTRACT_UNISWAP_V2_ADDR,
+    icon: SUSDIcon,
+  }],
+]);
 
 const Web3ContractsProvider: React.FunctionComponent = props => {
   const { account } = useWeb3();
@@ -217,17 +252,23 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }
 
   function poolBalanceUDS(): OptionalBigNumber {
-    const usdcPoolSize = stakingContract.usdc.epochPoolSize;
-    const daiPoolSize = stakingContract.dai.epochPoolSize;
-    const susdPoolSize = stakingContract.susd.epochPoolSize;
+    // const usdcPoolSize = stakingContract.usdc.epochPoolSize;
+    // const daiPoolSize = stakingContract.dai.epochPoolSize;
+    // const susdPoolSize = stakingContract.susd.epochPoolSize;
+    //
+    // if (!assertValues(usdcPoolSize, daiPoolSize, susdPoolSize)) {
+    //   return undefined;
+    // }
+    //
+    // return usdcPoolSize!
+    //   .plus(daiPoolSize!)
+    //   .plus(susdPoolSize!);
+    //
+    return yfContract.nextPoolSize;
+  }
 
-    if (!assertValues(usdcPoolSize, daiPoolSize, susdPoolSize)) {
-      return undefined;
-    }
-
-    return usdcPoolSize!
-      .plus(daiPoolSize!)
-      .plus(susdPoolSize!);
+  function effectivePoolBalanceUDS(): OptionalBigNumber {
+    return yfContract.poolSize;
   }
 
   function poolBalanceUDSShares(): number[] | undefined {
@@ -248,37 +289,53 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }
 
   function myPoolBalanceUDS(): OptionalBigNumber {
-    const usdcEpochUserBalance = stakingContract.usdc.epochUserBalance;
-    const daiEpochUserBalance = stakingContract.dai.epochUserBalance;
-    const susdEpochUserBalance = stakingContract.susd.epochUserBalance;
+    // const usdcEpochUserBalance = stakingContract.usdc.epochUserBalance;
+    // const daiEpochUserBalance = stakingContract.dai.epochUserBalance;
+    // const susdEpochUserBalance = stakingContract.susd.epochUserBalance;
+    //
+    // if (!assertValues(usdcEpochUserBalance, daiEpochUserBalance, susdEpochUserBalance)) {
+    //   return undefined;
+    // }
+    //
+    // return usdcEpochUserBalance!
+    //   .plus(daiEpochUserBalance!)
+    //   .plus(susdEpochUserBalance!);
+    return yfContract.nextEpochStake;
+  }
 
-    if (!assertValues(usdcEpochUserBalance, daiEpochUserBalance, susdEpochUserBalance)) {
-      return undefined;
-    }
-
-    return usdcEpochUserBalance!
-      .plus(daiEpochUserBalance!)
-      .plus(susdEpochUserBalance!);
+  function myEffectivePoolBalanceUDS(): OptionalBigNumber {
+    return yfContract.epochStake;
   }
 
   function poolBalanceUNI(): OptionalBigNumber {
-    const uniEpochPoolSize = stakingContract.uniswap_v2.epochPoolSize;
+    // const uniEpochPoolSize = stakingContract.uniswap_v2.epochPoolSize;
+    //
+    // if (!assertValues(uniEpochPoolSize)) {
+    //   return undefined;
+    // }
+    //
+    // return uniEpochPoolSize;
+    return yflpContract.nextPoolSize;
+  }
 
-    if (!assertValues(uniEpochPoolSize)) {
-      return undefined;
-    }
-
-    return uniEpochPoolSize;
+  function effectivePoolBalanceUNI(): OptionalBigNumber {
+    return yflpContract.poolSize;
   }
 
   function myPoolBalanceUNI(): OptionalBigNumber {
-    const uniEpochPoolSize = stakingContract.uniswap_v2.epochPoolSize;
+    // const uniEpochPoolSize = stakingContract.uniswap_v2.epochPoolSize;
+    //
+    // if (!assertValues(uniEpochPoolSize)) {
+    //   return undefined;
+    // }
+    //
+    // return uniEpochPoolSize;
 
-    if (!assertValues(uniEpochPoolSize)) {
-      return undefined;
-    }
+    return yflpContract.nextEpochStake;
+  }
 
-    return uniEpochPoolSize;
+  function myEffectivePoolBalanceUNI(): OptionalBigNumber {
+    return yflpContract.epochStake;
   }
 
   const value = {
@@ -316,23 +373,34 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       get poolBalanceUDS(): OptionalBigNumber {
         return poolBalanceUDS();
       },
+      get effectivePoolBalanceUDS(): OptionalBigNumber {
+        return effectivePoolBalanceUDS();
+      },
       get poolBalanceUDSShares(): number[] | undefined {
         return poolBalanceUDSShares();
       },
       get myPoolBalanceUDS(): OptionalBigNumber {
         return myPoolBalanceUDS();
       },
+      get myEffectivePoolBalanceUDS(): OptionalBigNumber {
+        return myEffectivePoolBalanceUDS();
+      },
       get poolBalanceUNI(): OptionalBigNumber {
         return poolBalanceUNI();
       },
+      get effectivePoolBalanceUNI(): OptionalBigNumber {
+        return effectivePoolBalanceUNI();
+      },
       get myPoolBalanceUNI(): OptionalBigNumber {
         return myPoolBalanceUNI();
+      },
+      get myEffectivePoolBalanceUNI(): OptionalBigNumber {
+        return myEffectivePoolBalanceUNI();
       },
     },
     getTokenHumanValue,
   };
 
-  console.log(value);
   return (
     <Web3ContractsContext.Provider value={value}>
       {props.children}

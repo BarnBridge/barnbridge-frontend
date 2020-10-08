@@ -13,24 +13,6 @@ import { formatBigValue, shortenAddr } from 'web3/utils';
 //   blockTimestamp_lte: $lt
 // }
 
-const GET_TRANSACTIONS = gql`
-	query {
-		stakingActions (
-			orderBy: blockNumber,
-			orderDirection: desc,
-		) {
-			id
-			type
-			user
-			token
-			amount
-			blockNumber
-			blockTimestamp
-			txHash
-		}
-	}
-`;
-
 export type StakingAction = {
   id: string;
   type: string;
@@ -48,19 +30,40 @@ type QueryData = {
 
 type QueryVars = {};
 
-export function useTransactions() {
-  const [fetch, { loading, data: rawData }] = useLazyQuery<QueryData, QueryVars>(GET_TRANSACTIONS);
+export type UseTransactionsOptions = {
+  token?: string;
+  type?: string;
+};
+
+export function useTransactions(opts?: UseTransactionsOptions) {
+  const query = React.useMemo(() => gql(`
+		query {
+			stakingActions (
+				orderBy: blockNumber,
+				orderDirection: desc,
+				where: {
+				  ${opts?.token ? `token: "${opts.token}"` : ''}
+				  ${opts?.type ? `type: "${opts.type}"` : ''}
+				}
+			) {
+				id
+				type
+				user
+				token
+				amount
+				blockNumber
+				blockTimestamp
+				txHash
+			}
+		}
+  `), [opts]);
+
+  const [fetch, { loading, data: rawData }] = useLazyQuery<QueryData, QueryVars>(query);
 
   const web3cRef = React.useRef<Web3ContractsType>(null as any);
   web3cRef.current = useWeb3Contracts();
 
   const [data, setData] = React.useState<any[]>([]);
-
-  React.useEffect(() => {
-    fetch({
-      variables: {},
-    });
-  }, [fetch]);
 
   React.useEffect(() => {
     if (!rawData) {
@@ -96,5 +99,6 @@ export function useTransactions() {
   return {
     loading,
     data,
+    fetch,
   };
 }

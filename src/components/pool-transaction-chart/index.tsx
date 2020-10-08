@@ -25,21 +25,28 @@ const PeriodFilters: DropdownOption[] = [
   { value: 'all', label: 'All epochs' },
 ];
 
-const ShowFilters: DropdownOption[] = [
+const TypeFilters: DropdownOption[] = [
   { value: 'all', label: 'All transactions' },
-  { value: 'deposit', label: 'Deposits' },
-  { value: 'withdraw', label: 'Withdrawals' },
+  { value: 'DEPOSIT', label: 'Deposits' },
+  { value: 'WITHDRAW', label: 'Withdrawals' },
 ];
 
 export type PoolTransactionChartProps = {};
 
 const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> = props => {
   const web3c = useWeb3Contracts();
-  const { loading, data } = useTransactions();
 
   const [poolFilter, setPoolFilter] = React.useState<string | number>('uds');
   const [periodFilter, setPeriodFilter] = React.useState<string | number>('all');
-  const [showFilter, setShowFilter] = React.useState<string | number>('all');
+  const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
+
+  const { loading, data, fetch } = useTransactions({
+    type: typeFilter !== 'all' ? typeFilter as string : undefined,
+  });
+
+  React.useEffect(() => {
+    fetch();
+  }, [fetch]);
 
   const items = React.useMemo(() => {
     const groups = new Map<string, {
@@ -106,9 +113,9 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
           <Dropdown
             button
             label="Show"
-            items={ShowFilters}
-            selected={showFilter}
-            onSelect={setShowFilter}
+            items={TypeFilters}
+            selected={typeFilter}
+            onSelect={setTypeFilter}
           />
         </div>
       </div>
@@ -127,7 +134,7 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
               <ReCharts.Tooltip />
               <ReCharts.Legend align="right" verticalAlign="top" iconType="circle" />
               <ReCharts.Line dataKey="deposit" name="Deposits" type="monotone" stroke="#ff4339" />
-              <ReCharts.Line dataKey="withdraw" name="Withdraws" type="monotone" stroke="#4f6ae6" />
+              <ReCharts.Line dataKey="withdraw" name="Withdrawals" type="monotone" stroke="#4f6ae6" />
             </ReCharts.LineChart>
           </ReCharts.ResponsiveContainer>
         )}
