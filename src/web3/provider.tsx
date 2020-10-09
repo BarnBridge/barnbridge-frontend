@@ -16,17 +16,17 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 
 import { getRpcUrl } from 'web3/utils';
 
-import MetamaskLogo from 'resources/img/metamask-logo.svg';
-import TrustWalletLogo from 'resources/img/trustwallet-logo.png';
-import WalletConnectLogo from 'resources/img/walletconnect-logo.svg';
-import CoinbaseWalletLogo from 'resources/img/coinbasewallet-logo.svg';
-import LedgerLogo from 'resources/img/ledger-logo.svg';
-import TrezorLogo from 'resources/img/trezor-logo.png';
-import FortmaticLogo from 'resources/img/fortmatic-logo.png';
-import PortisLogo from 'resources/img/portis-logo.png';
-import SquareLinkLogo from 'resources/img/squarelink-logo.png';
-import TorusLogo from 'resources/img/torus-logo.jpg';
-import AuthereumLogo from 'resources/img/aethereum-logo.svg';
+import MetamaskLogo from 'resources/svg/wallets/metamask-logo.svg';
+import TrustWalletLogo from 'resources/svg/wallets/trustwallet-logo.svg';
+import WalletConnectLogo from 'resources/svg/wallets/walletconnect-logo.svg';
+import CoinbaseWalletLogo from 'resources/svg/wallets/coinbasewallet-logo.svg';
+import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
+import TrezorLogo from 'resources/svg/wallets/trezor-logo.svg';
+import FortmaticLogo from 'resources/svg/wallets/fortmatic-logo.svg';
+import PortisLogo from 'resources/svg/wallets/portis-logo.svg';
+import SquareLinkLogo from 'resources/svg/wallets/squarelink-logo.svg';
+import TorusLogo from 'resources/svg/wallets/torus-logo.svg';
+import AuthereumLogo from 'resources/svg/wallets/aethereum-logo.svg';
 
 const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
 const POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
@@ -176,6 +176,7 @@ export function useWeb3(): Web3ContextType {
 const Web3ProviderInner: React.FunctionComponent = props => {
   const web3 = useWeb3React();
   const [tried, setTried] = React.useState<boolean>(false);
+  const [network, setNetwork] = React.useState<any | undefined>();
 
   async function connect(connectorId: string) {
     const web3Connector = Web3Connectors.find(c => c.id === connectorId);
@@ -213,6 +214,12 @@ const Web3ProviderInner: React.FunctionComponent = props => {
     }
   }, [tried, web3.active]);
 
+  React.useEffect(() => {
+    (web3.library as EthWeb3Provider)
+      ?.detectNetwork()
+      .then(setNetwork);
+  }, [web3.library]);
+
   const value = {
     get connectors() {
       return [...Web3Connectors];
@@ -230,9 +237,7 @@ const Web3ProviderInner: React.FunctionComponent = props => {
     get account() {
       return web3.account ?? undefined;
     },
-    get network() {
-      return web3.library?.network;
-    },
+    network,
     tried,
     connect,
     disconnect,

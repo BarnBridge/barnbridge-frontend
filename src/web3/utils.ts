@@ -3,7 +3,10 @@ import Web3EthContract from 'web3-eth-contract';
 import BigNumber from 'bignumber.js';
 import { isString } from 'lodash';
 
-export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)) {
+export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
+export const ZERO_BIG_NUMBER = new BigNumber(0);
+
+export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
   const rpcId = String(process.env.REACT_APP_WEB3_RPC_ID);
 
   switch (chainId) {
@@ -11,6 +14,34 @@ export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CH
       return `wss://mainnet.infura.io/ws/v3/${rpcId}`;
     case 4:
       return `wss://rinkeby.infura.io/ws/v3/${rpcId}`;
+    default:
+      throw new Error(`Not supported chainId=${chainId}.`);
+  }
+}
+
+export function getEtherscanTxUrl(
+  txHash: string,
+  chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string {
+  switch (chainId) {
+    case 1:
+      return `https://etherscan.io/tx/${txHash}`;
+    case 4:
+      return `https://rinkeby.etherscan.io/tx/${txHash}`;
+    default:
+      throw new Error(`Not supported chainId=${chainId}.`);
+  }
+}
+
+export function getEtherscanAddressUrl(
+  address: string,
+  chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string {
+  switch (chainId) {
+    case 1:
+      return `https://etherscan.io/address/${address}`;
+    case 4:
+      return `https://rinkeby.etherscan.io/address/${address}`;
     default:
       throw new Error(`Not supported chainId=${chainId}.`);
   }
@@ -110,6 +141,6 @@ export function assertValues(...values: any[]): boolean {
   return !values.some(value => value === undefined || value === null);
 }
 
-export function shortenAddr(addr: string) {
-  return [String(addr).slice(0, 6), String(addr).slice(-4)].join('...');
+export function shortenAddr(addr: string, first: number = 6, last: number = 4) {
+  return [String(addr).slice(0, first), String(addr).slice(-last)].join('...');
 }

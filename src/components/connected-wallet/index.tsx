@@ -1,13 +1,17 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import { useWeb3 } from 'web3/provider';
+import Identicon from 'components/identicon';
+import ExternalLink from 'components/externalLink';
 
-import { ReactComponent as BellSvg } from 'resources/svg/bell.svg';
-import { ReactComponent as AvatarSvg } from 'resources/svg/avatar.svg';
-import { ReactComponent as GlobeSvg } from 'resources/svg/globe.svg';
-import { ReactComponent as WalletSvg } from 'resources/svg/wallet.svg';
-import { ReactComponent as NetworkSvg } from 'resources/svg/network.svg';
+import { useWeb3 } from 'web3/provider';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+
+import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
+import { ReactComponent as BellSvg } from 'resources/svg/icons/bell.svg';
+import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
+import { ReactComponent as WalletSvg } from 'resources/svg/icons/wallet.svg';
+import { ReactComponent as NetworkSvg } from 'resources/svg/icons/network.svg';
 
 import s from './styles.module.css';
 
@@ -75,10 +79,13 @@ const ConnectedWallet: React.FunctionComponent = props => {
               <div>
                 <Antd.Row className={s.walletHeader}>
                   <Antd.Col>
-                    <Antd.Avatar icon={<AvatarSvg />} className={s.walletAvatar} />
+                    <Identicon address={web3.account} className={s.walletAvatar} />
                   </Antd.Col>
                   <Antd.Col>
-                    <span className={s.walletHash}>{web3.account!.slice(0, 10)}...{web3.account!.slice(-10)}</span>
+                    <ExternalLink
+                      href={getEtherscanAddressUrl(web3.account!)}
+                      className={s.walletPreviewHash}
+                    >{shortenAddr(web3.account!, 8, 8)}</ExternalLink>
                   </Antd.Col>
                 </Antd.Row>
                 <div className={s.stats}>
@@ -129,10 +136,13 @@ const ConnectedWallet: React.FunctionComponent = props => {
           >
             <Antd.Row className={s.walletPreview}>
               <Antd.Col>
-                <Antd.Avatar icon={<AvatarSvg />} className={s.walletPreviewAvatar} />
+                <Identicon address={web3.account} className={s.walletPreviewAvatar} />
               </Antd.Col>
               <Antd.Col>
-                <span className={s.walletPreviewHash}>{web3.account!.slice(0, 4)}...{web3.account!.slice(-3)}</span>
+                <span className={s.walletPreviewHash}>{shortenAddr(web3.account!, 4, 4)}</span>
+              </Antd.Col>
+              <Antd.Col>
+                <ChevronTopSvg className={s.walletPreviewArrow} />
               </Antd.Col>
             </Antd.Row>
           </Antd.Popover>

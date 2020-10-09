@@ -2,8 +2,8 @@ import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
 
-import { ReactComponent as ChevronTopSvg } from 'resources/svg/chevron-top.svg';
-import { ReactComponent as ChevronRightSvg } from 'resources/svg/chevron-right.svg';
+import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
+import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
 import s from './styles.module.css';
 
@@ -13,6 +13,7 @@ export type PoolTokenRowProps = {
   walletBalance: string;
   stakedBalance: string;
   enabled: boolean;
+  onTokenEnable: (enabled: boolean) => void;
 }
 
 const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
@@ -20,6 +21,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
   function toggleExpanded() {
     setExpanded(prevState => !prevState);
+  }
+
+  function handleSwitchChange(checked: boolean) {
+    props.onTokenEnable?.(checked);
   }
 
   return (
@@ -32,7 +37,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         <div className={s.col}>
           <div className={s.label}>Wallet Balance</div>
           <div className={s.value}>
-            {props.walletBalance} <span>BOND</span>
+            {props.walletBalance} <span>USDC</span>
           </div>
         </div>
         <div className={s.col}>
@@ -42,7 +47,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         </div>
         <div className={s.col}>
           <div className={s.label}>ENABLE TOKEN</div>
-          <div className={s.value}><Antd.Switch checked={props.enabled} /></div>
+          <div className={s.value}><Antd.Switch checked={props.enabled} onChange={handleSwitchChange} /></div>
         </div>
         <div className={s.col}>
           <Antd.Button

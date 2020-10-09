@@ -87,24 +87,27 @@
 }
 
 .walletPreview {
-
+    cursor: pointer;
 }
 
 .walletPreviewAvatar {
     width: 24px;
     height: 24px;
     margin-right: 8px;
-}
-
-.walletPreviewAvatar svg {
-    width: 100%;
-    height: 100%;
+    border-radius: 4px;
 }
 
 .walletPreviewHash {
     font-size: 16px;
     line-height: 24px;
     color: #000;
+}
+
+.walletPreviewArrow {
+    width: 10px;
+    height: 10px;
+    margin-left: 10px;
+    transform: rotate(180deg);
 }
 
 .walletHeader {
@@ -116,11 +119,7 @@
     width: 40px;
     height: 40px;
     margin-right: 16px;
-}
-
-.walletAvatar svg {
-    width: 100%;
-    height: 100%;
+    border-radius: 8px;
 }
 
 .walletHash {

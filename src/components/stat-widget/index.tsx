@@ -3,7 +3,7 @@ import * as Antd from 'antd';
 
 import s from './styles.module.css';
 
-import { ReactComponent as InfoCircleSvg } from 'resources/svg/info-circle.svg';
+import { ReactComponent as InfoCircleSvg } from 'resources/svg/icons/info-circle.svg';
 
 export type StatWidgetProps = {
   label: string;

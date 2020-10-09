@@ -7,13 +7,8 @@ import PoolStak from 'components/pool-stak';
 import PoolOverview from 'components/pool-overview';
 
 import { useWeekCountdown } from 'hooks/useCountdown';
-import { useWeb3Contracts } from 'web3/contracts';
+import { LP_TOKENS, UDS_TOKENS, useWeb3Contracts } from 'web3/contracts';
 import { formatBigValue } from 'web3/utils';
-
-import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
-import { ReactComponent as UNIIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
 
@@ -58,52 +53,14 @@ const PoolsView: React.FunctionComponent<{}> = props => {
       {activeStaking === 'uds' && (
         <PoolStak
           loading={false}
-          label="USDC/DAI/sUSD"
-          tokens={[
-            String(process.env.REACT_APP_CONTRACT_USDC_ADDR),
-            String(process.env.REACT_APP_CONTRACT_DAI_ADDR),
-            String(process.env.REACT_APP_CONTRACT_SUSD_ADDR),
-          ]}
-          summary={[
-            {
-              logo: <USDCIcon />,
-              name: 'USDC',
-              walletBalance: '800',
-              stakedBalance: '100',
-              enabled: true,
-            },
-            {
-              logo: <DAIIcon />,
-              name: 'DAI',
-              walletBalance: '800',
-              stakedBalance: '100',
-              enabled: false,
-            },
-            {
-              logo: <SUSDIcon />,
-              name: 'sUSD',
-              walletBalance: '800',
-              stakedBalance: '100',
-              enabled: false,
-            },
-          ]}
+          tokens={UDS_TOKENS}
           onBack={handleStakBack}
         />
       )}
       {activeStaking === 'uni' && (
         <PoolStak
           loading={false}
-          label="USDC_BOND_UNI_LP"
-          tokens={[String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR)]}
-          summary={[
-            {
-              logo: <UNIIcon />,
-              name: 'USDC_BOND_UNI_LP',
-              walletBalance: '800',
-              stakedBalance: '100',
-              enabled: false,
-            },
-          ]}
+          tokens={LP_TOKENS}
           onBack={handleStakBack}
         />
       )}
