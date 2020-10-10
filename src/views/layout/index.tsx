@@ -9,7 +9,6 @@ import PoolsView from 'views/pools';
 import VotingView from 'views/voting';
 
 import SiderNavLink from 'components/sider-nav-link';
-import ConnectedWallet from 'components/connected-wallet';
 
 import { ReactComponent as LogoSvg } from 'resources/svg/logo.svg';
 // import { ReactComponent as HomeSvg } from 'resources/svg/home.svg';
@@ -29,7 +28,6 @@ const LayoutView: React.FunctionComponent = props => {
       </Antd.Layout.Sider>
       <Antd.Layout className={s.main}>
         <Antd.Layout.Content>
-          <ConnectedWallet />
           <Switch>
             <Route path="/pools" component={PoolsView} />
             <Route path="/voting" component={VotingView} />

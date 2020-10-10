@@ -219,7 +219,7 @@ const Web3ProviderInner: React.FunctionComponent = props => {
       ?.detectNetwork()
       .then(setNetwork);
   }, [web3.library]);
-
+  
   const value = {
     get connectors() {
       return [...Web3Connectors];

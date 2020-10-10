@@ -1,13 +1,15 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { assertValues, batchContract, createContract, getHumanValue } from 'web3/utils';
+import { assertValues, batchContract, createContract, getHumanValue, sendContract } from 'web3/utils';
 
 export type SUSDContract = {
   symbol?: string;
   decimals?: number;
   totalSupply?: BigNumber;
   balance?: BigNumber;
+  allowance?: BigNumber;
+  approveSend: (value: BigNumber) => void;
 };
 
 const InitialDataState: SUSDContract = {
@@ -15,6 +17,8 @@ const InitialDataState: SUSDContract = {
   decimals: undefined,
   totalSupply: undefined,
   balance: undefined,
+  allowance: undefined,
+  approveSend: () => null,
 };
 
 const Contract = createContract(
@@ -48,16 +52,34 @@ export function useSUSDContract(account?: string): SUSDContract {
     }
 
     (async () => {
-      const [balance] = await batchContract(Contract, [
+      const [balance, allowance] = await batchContract(Contract, [
         { method: 'balanceOf', methodArgs: [account] },
+        { method: 'allowance', methodArgs: [account, process.env.REACT_APP_CONTRACT_STAKING_ADDR] },
       ]);
 
       setData(prevState => ({
         ...prevState,
         balance: getHumanValue(new BigNumber(balance), data.decimals),
+        allowance: new BigNumber(allowance),
       }));
     })();
   }, [account, data.decimals]);
 
-  return data;
+  function approveSend(value: BigNumber) {
+    if (!assertValues(account)) {
+      return;
+    }
+
+    return sendContract(Contract, 'approve', [
+      process.env.REACT_APP_CONTRACT_STAKING_ADDR,
+      value,
+    ], {
+      from: account,
+    });
+  }
+
+  return {
+    ...data,
+    approveSend,
+  };
 }

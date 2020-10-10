@@ -1,6 +1,25 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import * as Antd from 'antd';
+import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import cx from 'classnames';
+import BigNumber from 'bignumber.js';
+
+import {
+  TOKEN_DAI_KEY,
+  TOKEN_SUSD_KEY,
+  TOKEN_UNISWAP_KEY,
+  TOKEN_USDC_KEY,
+  TokenInfo,
+  TokenKeys,
+  TOKENS_MAP,
+  useWeb3Contracts,
+} from 'web3/contracts';
+import { useWeb3 } from 'web3/provider';
+import { formatBigValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+
+import InfoBox from 'components/info-box';
+import InfoTooltip from 'components/info-tooltip';
+import NumericInput from 'components/numeric-input';
 
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
@@ -8,93 +27,293 @@ import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-r
 import s from './styles.module.css';
 
 export type PoolTokenRowProps = {
-  logo: React.ReactNode;
-  name: string;
-  walletBalance: string;
-  stakedBalance: string;
-  enabled: boolean;
-  onTokenEnable: (enabled: boolean) => void;
+  token: TokenKeys;
+  stableToken?: boolean;
+  lpToken?: boolean;
+  type: 'deposit' | 'withdraw';
 }
 
+type StateType = TokenInfo & {
+  walletBalance?: BigNumber;
+  stakedBalance?: BigNumber;
+  effectiveStakedBalance?: BigNumber;
+  enabled?: boolean;
+  amount: number;
+  gasAmount: number;
+  expanded: boolean;
+};
+
+const InitialState: StateType = {
+  address: '-',
+  icon: null,
+  name: '-',
+  enabled: false,
+  amount: 0,
+  gasAmount: 920,
+  expanded: false,
+};
+
 const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
-  const [expanded, setExpanded] = React.useState<boolean>(false);
+  const web3 = useWeb3();
+  const web3c = useWeb3Contracts();
+
+  const [expanded, setExpanded] = React.useState<boolean>(props.lpToken ?? false);
+  const [state, setState] = React.useState<StateType>(InitialState);
+
+  React.useEffect(() => {
+    const tokenInfo = TOKENS_MAP.get(props.token);
+
+    if (tokenInfo) {
+      setState(prevState => ({
+        ...prevState,
+        ...tokenInfo,
+      }));
+    }
+  }, [props.token]);
+
+  React.useEffect(() => {
+    switch (props.token) {
+      case TOKEN_USDC_KEY:
+        setState(prevState => ({
+          ...prevState,
+          walletBalance: web3c.usdc.balance,
+          stakedBalance: web3c.staking.usdc.balance,
+          effectiveStakedBalance: web3c.staking.usdc.epochPoolSize,
+          enabled: web3c.usdc.allowance?.isEqualTo(MAX_UINT_256),
+        }));
+        break;
+      case TOKEN_DAI_KEY:
+        setState(prevState => ({
+          ...prevState,
+          walletBalance: web3c.dai.balance,
+          stakedBalance: web3c.staking.dai.balance,
+          effectiveStakedBalance: web3c.staking.dai.epochPoolSize,
+          enabled: web3c.dai.allowance?.isEqualTo(MAX_UINT_256),
+        }));
+        break;
+      case TOKEN_SUSD_KEY:
+        setState(prevState => ({
+          ...prevState,
+          walletBalance: web3c.susd.balance,
+          stakedBalance: web3c.staking.susd.balance,
+          effectiveStakedBalance: web3c.staking.susd.epochPoolSize,
+          enabled: web3c.susd.allowance?.isEqualTo(MAX_UINT_256),
+        }));
+        break;
+      case TOKEN_UNISWAP_KEY:
+        setState(prevState => ({
+          ...prevState,
+          walletBalance: web3c.uniswapV2.balance,
+          stakedBalance: web3c.staking.uniswap_v2.balance,
+          effectiveStakedBalance: web3c.staking.uniswap_v2.epochPoolSize,
+          enabled: web3c.uniswapV2.allowance?.isEqualTo(MAX_UINT_256),
+        }));
+        break;
+      default:
+        break;
+    }
+  }, [web3c, props.token]);
 
   function toggleExpanded() {
     setExpanded(prevState => !prevState);
   }
 
   function handleSwitchChange(checked: boolean) {
-    props.onTokenEnable?.(checked);
+    const value = checked ? MAX_UINT_256 : ZERO_BIG_NUMBER;
+
+    switch (props.token) {
+      case TOKEN_USDC_KEY:
+        web3c.usdc.approveSend(value);
+        break;
+      case TOKEN_DAI_KEY:
+        web3c.dai.approveSend(value);
+        break;
+      case TOKEN_SUSD_KEY:
+        web3c.susd.approveSend(value);
+        break;
+      case TOKEN_UNISWAP_KEY:
+        web3c.uniswapV2.approveSend(value);
+        break;
+      default:
+        break;
+    }
   }
+
+  function handleAmountChange(ev: ChangeEvent<HTMLInputElement>) {
+    ev.persist();
+
+    setState(prevState => ({
+      ...prevState,
+      amount: Number(ev.target.value ?? 0),
+    }));
+  }
+
+  function handleGasAmountChange(ev: RadioChangeEvent) {
+    setState(prevState => ({
+      ...prevState,
+      gasAmount: ev.target.value,
+    }));
+  }
+
+  function handleInputMaxClick() {
+    setState(prevState => ({
+      ...prevState,
+      amount: prevState.walletBalance?.toNumber() ?? 0,
+    }));
+  }
+
+  function handleSliderChange(value: number) {
+    setState(prevState => ({
+      ...prevState,
+      amount: value,
+    }));
+  }
+
+  function handleDeposit() {
+    const tokenInfo = TOKENS_MAP.get(props.token);
+
+    if (tokenInfo && web3.account) {
+      web3c.staking.depositSend(tokenInfo.address, web3.account, state.amount, state.gasAmount / 10, 6);
+    }
+  }
+
+  function handleWithdraw() {
+    const tokenInfo = TOKENS_MAP.get(props.token);
+
+    if (tokenInfo && web3.account) {
+      web3c.staking.withdrawSend(tokenInfo.address, web3.account, state.amount, state.gasAmount / 10, 6);
+    }
+  }
+
+  const gasOptions = [
+    { label: 'Very fast', value: 900 },
+    { label: 'Fast', value: 700 },
+    { label: 'Standard', value: 500 },
+    { label: 'Slow', value: 300 },
+  ];
 
   return (
     <div className={s.component}>
       <div className={s.header}>
         <div className={s.col}>
-          <div className={s.logo}>{props.logo}</div>
-          <div className={s.name}>{props.name}</div>
+          <div className={s.logo}>{state.icon}</div>
+          <div className={s.name}>{state.name}</div>
         </div>
-        <div className={s.col}>
-          <div className={s.label}>Wallet Balance</div>
-          <div className={s.value}>
-            {props.walletBalance} <span>USDC</span>
+        {props.stableToken ? (
+          <div className={s.col}>
+            <div className={s.label}>WALLET BALANCE</div>
+            <div className={s.value}>{formatBigValue(state.walletBalance)}</div>
           </div>
-        </div>
-        <div className={s.col}>
-          <div className={s.label}>Staked Balance</div>
-          <div className={s.value}>
-            {props.stakedBalance} <span>{props.name}</span></div>
-        </div>
+        ) : <div />}
         <div className={s.col}>
           <div className={s.label}>ENABLE TOKEN</div>
-          <div className={s.value}><Antd.Switch checked={props.enabled} onChange={handleSwitchChange} /></div>
+          <div className={s.value}>
+            <Antd.Switch
+              checked={state.enabled}
+              loading={state.enabled === undefined}
+              onChange={handleSwitchChange} />
+          </div>
         </div>
-        <div className={s.col}>
-          <Antd.Button
-            className={s.arrow}
-            icon={expanded ? <ChevronTopSvg /> : <ChevronRightSvg />}
-            onClick={toggleExpanded}
-          />
-        </div>
+        {props.stableToken && (
+          <div className={s.col}>
+            <Antd.Button
+              className={s.arrow}
+              icon={expanded ? <ChevronTopSvg /> : <ChevronRightSvg />}
+              onClick={toggleExpanded}
+            />
+          </div>
+        )}
       </div>
       <div className={cx(s.body, !expanded && s.collapsed)}>
-        <div className={s.row1}>
-          <div className={s.col1}>
-            <div className={s.amountLabel}>Amount</div>
-            <Antd.Input addonBefore={<span>{props.logo} {props.name}</span>} placeholder="0 (Max 800)" />
-            <Antd.Slider />
-            <Antd.Alert type="info" showIcon
-                        message="Deposits made after previous epoch starts will be considered in the next epoch" />
-          </div>
-
-          <div className={s.col2}>
-            <div className={s.gweiLabel}>Gas Fee (Gwei)</div>
-            <Antd.Radio.Group value={920} onChange={() => null}>
-              <div className={s.gweiItem}>
-                <div className={s.gweiOption}>Very Fast</div>
-                <div className={s.gweiPrice}><strong>920</strong> ~0.2 ETH</div>
-                <Antd.Radio value={920} />
-              </div>
-              <div className={s.gweiItem}>
-                <div className={s.gweiOption}>Fast</div>
-                <div className={s.gweiPrice}><strong>500</strong> ~0.14 ETH</div>
-                <Antd.Radio value={500} />
-              </div>
-              <div className={s.gweiItem}>
-                <div className={s.gweiOption}>Standard</div>
-                <div className={s.gweiPrice}><strong>400</strong> ~0.12 ETH</div>
-                <Antd.Radio value={400} />
-              </div>
-              <div className={s.gweiItem}>
-                <div className={s.gweiOption}>Slow</div>
-                <div className={s.gweiPrice}><strong>300</strong> ~0.097 ETH</div>
-                <Antd.Radio value={300} />
-              </div>
+        <Antd.Row className={s.balanceRow}>
+          <Antd.Col flex="auto">
+            <div className={s.balanceLabel}>STAKED BALANCE</div>
+            <div className={s.balanceValue}>{formatBigValue(state.stakedBalance)}</div>
+          </Antd.Col>
+          <Antd.Col flex="auto">
+            <div className={s.balanceLabel}>EFFECTIVE STACKED BALANCE <InfoTooltip /></div>
+            <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance)}</div>
+          </Antd.Col>
+          {props.lpToken && (
+            <Antd.Col flex="auto">
+              <div className={s.balanceLabel}>WALLET BALANCE</div>
+              <div className={s.balanceValue}>{formatBigValue(state.walletBalance)}</div>
+            </Antd.Col>
+          )}
+        </Antd.Row>
+        <Antd.Row className={s.inputRow}>
+          <Antd.Col flex="50%">
+            <div className={s.inputLabel}>Amount</div>
+            <div className={s.inputValue}>
+              <NumericInput
+                addonBefore={
+                  <span className={s.addonWrap}>
+                    <span className={s.addonIcon}>{state.icon}</span>
+                    <span className={s.addonLabel}>{state.name}</span>
+                  </span>
+                }
+                addonAfter={
+                  <Antd.Button
+                    className={s.inputMaxBtn}
+                    disabled={!state.walletBalance}
+                    onClick={handleInputMaxClick}>MAX</Antd.Button>
+                }
+                placeholder="0 (Max 800)"
+                value={state.amount}
+                onChange={handleAmountChange}
+              />
+              <Antd.Slider
+                className={s.amountSlider}
+                disabled={!state.walletBalance}
+                min={0}
+                max={state.walletBalance?.toNumber() ?? 0}
+                value={state.amount}
+                onChange={handleSliderChange}
+              />
+              {props.type === 'deposit' && (
+                <InfoBox text="Deposits made after previous epoch starts will be considered in the next epoch" />
+              )}
+              {props.type === 'withdraw' && (
+                <InfoBox text="Withdrawal before the end of the epoch means you can't harvest the rewards" />
+              )}
+            </div>
+          </Antd.Col>
+          <Antd.Col flex="50%">
+            <div className={s.inputLabel}>Gas Fee<InfoTooltip /></div>
+            <Antd.Radio.Group
+              className={s.gasGroup}
+              value={state.gasAmount}
+              onChange={handleGasAmountChange}>
+              {gasOptions.map(option => (
+                <Antd.Radio.Button key={option.value} className={s.gasOption} value={option.value}>
+                  <div>
+                    <div className={s.gasOptionName}>{option.label}</div>
+                    <div className={s.gasOptionValue}>{option.value} Gwei</div>
+                  </div>
+                  <div className={s.gasOptionRadio} />
+                </Antd.Radio.Button>
+              ))}
             </Antd.Radio.Group>
-          </div>
-        </div>
-
-        <Antd.Button className={s.row2}>Deposit 0 {props.name}</Antd.Button>
+          </Antd.Col>
+        </Antd.Row>
+        <Antd.Row className={s.actionRow}>
+          {props.type === 'deposit' && (
+            <Antd.Button
+              type="primary"
+              className={s.actionBtn}
+              disabled={!state.enabled || state.amount === 0}
+              onClick={handleDeposit}>Deposit
+            </Antd.Button>
+          )}
+          {props.type === 'withdraw' && (
+            <Antd.Button
+              type="primary"
+              className={s.actionBtn}
+              disabled={state.amount === 0}
+              onClick={handleWithdraw}>Withdraw
+            </Antd.Button>
+          )}
+        </Antd.Row>
       </div>
     </div>
   );

@@ -5,7 +5,7 @@
 
 .header {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 40px);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 40px);
     grid-gap: 6px;
     padding: 24px;
     background: #fff;
@@ -38,7 +38,7 @@
     color: #717980;
 }
 
-.value span {
+.value {
     font-style: normal;
     font-weight: normal;
     font-size: 14px;
@@ -69,7 +69,7 @@
     background: #fff;
     box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
     border-radius: 0 0 4px 4px;
-    padding: 24px;
+    /*padding: 24px;*/
     transition: transform 0.3s ease-out;
     height: auto;
     transform: scaleY(1);
@@ -80,6 +80,11 @@
     height: 0;
     padding: 0;
     transform: scaleY(0);
+}
+
+.row1 {
+    height: 92px;
+    border-bottom: 1px solid #e3e4e6;
 }
 
 .row1 {
@@ -101,7 +106,44 @@
     grid-template-columns: minmax(0, 356px) minmax(0, 356px);
 }
 
-.amountLabel {
+.balanceRow {
+    border-bottom: 1px solid #e3e4e6;
+}
+
+.balanceRow :global .ant-col {
+    padding: 24px;
+}
+
+.balanceRow :global .ant-col:not(:first-child) {
+    border-left: 1px solid #e3e4e6;
+}
+
+.balanceLabel {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 16px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: #717980;
+}
+
+.balanceValue {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 24px;
+    color: #060a0d;
+}
+
+.inputRow :global .ant-col {
+    padding: 24px;
+}
+
+.inputLabel {
+    margin-bottom: 8px;
     font-family: Montserrat;
     font-style: normal;
     font-weight: 600;
@@ -110,25 +152,85 @@
     color: #717980;
 }
 
-.gweiLabel {
+.inputValue :global .ant-input {
+    border-right: none;
+}
+
+.inputValue :global .ant-input-group-addon {
+    padding: 12px;
+}
+
+.inputMaxBtn {
+    width: 100px;
+    height: 38px;
+    background: rgba(255, 67, 57, 0.1);
+    border-radius: 4px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+    color: #ff4339;
+}
+
+.addonWrap {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.addonIcon {
+    height: 24px;
+}
+
+.addonIcon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.addonLabel {
+    margin-left: 8px;
     font-family: Montserrat;
     font-style: normal;
     font-weight: 600;
     font-size: 12px;
     line-height: 16px;
-    color: #717980;
+    color: #060a0d;
 }
 
-.gweiItem {
-    width: 356px;
+.amountSlider {
+    margin: 24px 0;
+}
+
+.gasGroup {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-row: 2;
+    grid-gap: 16px;
+}
+
+.gasOption {
     height: 92px;
+    padding: 24px 32px;
     background: #fff;
-    border: 1px solid #ff4339;
+    border: 1px solid #e3e4e6;
     box-sizing: border-box;
     border-radius: 4px;
 }
 
-.gweiOption {
+.gasOption > span {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.gasOption:global(.ant-radio-button-wrapper-checked) .gasOptionRadio {
+    border: 8px solid #ff4339;
+}
+
+.gasOptionName {
     font-family: Montserrat;
     font-style: normal;
     font-weight: 600;
@@ -139,17 +241,34 @@
     color: #000;
 }
 
-.gweiPrice {
+.gasOptionValue {
     font-family: Montserrat;
     font-style: normal;
-    font-weight: normal;
-    font-size: 14px;
-    line-height: 24px;
-    color: #717980;
-}
-
-.gweiPrice strong {
     font-weight: 600;
     font-size: 16px;
+    line-height: 24px;
     color: #000;
+}
+
+.gasOptionRadio {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e3e4e6;
+    border-radius: 50%;
+}
+
+.gasOptionRadio :global .ant-radio-inner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e3e4e6;
+}
+
+.actionRow {
+    padding: 8px 24px 24px;
+}
+
+.actionBtn {
+    width: 180px;
+    height: 64px;
+    box-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
 }

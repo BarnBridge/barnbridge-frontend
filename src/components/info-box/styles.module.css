@@ -1,0 +1,30 @@
+.component {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    min-height: 80px;
+    padding: 16px 24px;
+    background: #f6f8fe;
+    border-radius: 4px;
+}
+
+.icon {
+    width: 24px;
+    height: 24px;
+    margin-right: 16px;
+    color: #95a6ef;
+}
+
+.icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.text {
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 14px;
+    line-height: 24px;
+    color: #4f6ae5;
+}

@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { assertValues, batchContract, createContract, getHumanValue } from 'web3/utils';
+import { assertValues, batchContract, createContract, getHumanValue, sendContract } from 'web3/utils';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR);
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR);
@@ -39,6 +39,8 @@ export type StakingContract = {
     epochUserBalance?: BigNumber;
     nextEpochUserBalance?: BigNumber;
   };
+  depositSend: (token: string, account: string, amount: number, gasPrice: number, decimals: number) => void;
+  withdrawSend: (token: string, account: string, amount: number, gasPrice: number, decimals: number) => void;
 };
 
 const InitialDataState: StakingContract = {
@@ -72,6 +74,8 @@ const InitialDataState: StakingContract = {
     epochUserBalance: undefined,
     nextEpochUserBalance: undefined,
   },
+  depositSend: () => null,
+  withdrawSend: () => null,
 };
 
 const Contract = createContract(
@@ -202,5 +206,37 @@ export function useStakingContract(account?: string): StakingContract {
     })();
   }, [account, data.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  return data;
+  function depositSend(token: string, account: string, amount: number, gasPrice: number, decimals: number) {
+    if (!assertValues(account)) {
+      return;
+    }
+
+    return sendContract(Contract, 'deposit', [
+      token,
+      (new BigNumber(amount)).multipliedBy(new BigNumber(10).pow(decimals))
+    ], {
+      from: account,
+      gasPrice: (new BigNumber(gasPrice).multipliedBy(new BigNumber(10).pow(9))).toNumber(),
+    });
+  }
+
+  function withdrawSend(token: string, account: string, amount: number, gasPrice: number, decimals: number) {
+    if (!assertValues(account)) {
+      return;
+    }
+
+    return sendContract(Contract, 'withdraw', [
+      token,
+      (new BigNumber(amount)).multipliedBy(new BigNumber(10).pow(decimals))
+    ], {
+      from: account,
+      gasPrice: (new BigNumber(gasPrice).multipliedBy(new BigNumber(10).pow(9))).toNumber(),
+    });
+  }
+
+  return {
+    ...data,
+    depositSend,
+    withdrawSend,
+  };
 }

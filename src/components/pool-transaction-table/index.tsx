@@ -5,10 +5,10 @@ import { capitalize } from 'lodash';
 
 import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
-
-import { TokenInfo } from 'web3/contracts';
 import { getEtherscanTxUrl } from 'web3/utils';
 import { useTransactions } from 'hooks/useTransactions';
+
+import { TOKEN_DAI_KEY, TOKEN_SUSD_KEY, TOKEN_UNISWAP_KEY, TOKEN_USDC_KEY, TOKENS_MAP } from 'web3/contracts';
 
 import s from './styles.module.css';
 
@@ -49,14 +49,15 @@ const Columns: ColumnsType<any> = [
 
 export type PoolTransactionTableProps = {
   label: string;
-  tokens: Map<string, TokenInfo>;
+  stableToken?: boolean;
+  lpToken?: boolean;
 };
 
 const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> = props => {
   const [tokenFilter, setTokenFilter] = React.useState<string | number>('all');
   const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
 
-  const { loading, data, fetch } = useTransactions({
+  const { loading, data, isEnd, fetch, fetchMore } = useTransactions({
     token: tokenFilter !== 'all' ? tokenFilter as string : undefined,
     type: typeFilter !== 'all' ? typeFilter as string : undefined,
   });
@@ -64,16 +65,24 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
   const tokenFilterOptions = React.useMemo<DropdownOption[]>(() => {
     return [
       { value: 'all', label: 'All tokens' },
-      ...Array.from(props.tokens.entries()).map(entry => ({
-        value: entry[1].address,
-        label: entry[0],
-      })),
+      ...props.stableToken ? [
+        { value: TOKENS_MAP.get(TOKEN_USDC_KEY)?.address ?? TOKEN_USDC_KEY, label: TOKEN_USDC_KEY },
+        { value: TOKENS_MAP.get(TOKEN_DAI_KEY)?.address ?? TOKEN_DAI_KEY, label: TOKEN_DAI_KEY },
+        { value: TOKENS_MAP.get(TOKEN_SUSD_KEY)?.address ?? TOKEN_SUSD_KEY, label: TOKEN_SUSD_KEY },
+      ] : [],
+      ...props.lpToken ? [
+        { value: TOKENS_MAP.get(TOKEN_UNISWAP_KEY)?.address ?? TOKEN_UNISWAP_KEY, label: TOKEN_UNISWAP_KEY },
+      ] : [],
     ];
-  }, [props.tokens]);
+  }, [props.stableToken, props.lpToken]);
 
   React.useEffect(() => {
     fetch();
   }, [fetch]);
+
+  function handleLoadMore() {
+    fetchMore();
+  }
 
   return (
     <div className={s.component}>
@@ -103,6 +112,12 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
         rowKey="txHash"
         dataSource={data}
         pagination={false}
+        footer={!isEnd ? () => (
+          <Antd.Button
+            type="default"
+            disabled={loading}
+            onClick={handleLoadMore}>Loading more</Antd.Button>
+        ) : undefined}
       />
     </div>
   );

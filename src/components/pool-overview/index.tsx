@@ -1,10 +1,10 @@
 import React from 'react';
 
+import { LP_TOKEN_KEY, STABLE_TOKEN_KEY } from 'web3/contracts';
+
 import PoolCard from 'components/pool-card';
 import PoolTransactionChart from 'components/pool-transaction-chart';
 import PoolTransactionTable from 'components/pool-transaction-table';
-
-import { LP_TOKENS, TokenInfo, UDS_TOKENS } from 'web3/contracts';
 
 import s from './styles.module.css';
 
@@ -14,11 +14,11 @@ export type PoolOverviewProps = {
 
 const PoolOverview: React.FunctionComponent<PoolOverviewProps> = props => {
   function handleUDSStaking() {
-    props.onPoolStackSelect?.('uds');
+    props.onPoolStackSelect?.(STABLE_TOKEN_KEY);
   }
 
   function handleUNIStaking() {
-    props.onPoolStackSelect?.('uni');
+    props.onPoolStackSelect?.(LP_TOKEN_KEY);
   }
 
   return (
@@ -31,13 +31,7 @@ const PoolOverview: React.FunctionComponent<PoolOverviewProps> = props => {
       </div>
 
       <PoolTransactionChart />
-      <PoolTransactionTable
-        label="Transactions"
-        tokens={new Map<string, TokenInfo>([
-          ...Array.from(UDS_TOKENS),
-          ...Array.from(LP_TOKENS),
-        ])}
-      />
+      <PoolTransactionTable label="Transactions" stableToken lpToken />
     </div>
   );
 };

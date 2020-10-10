@@ -6,13 +6,8 @@ import BigNumber from 'bignumber.js';
 import IconsSet from 'components/icons-set';
 import Dropdown, { DropdownOption } from 'components/dropdown';
 
-import { useWeb3Contracts } from 'web3/contracts';
+import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 import { useTransactions } from 'hooks/useTransactions';
-
-import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
-import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
 
@@ -91,11 +86,9 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       <div className={s.header}>
         <div className={s.headerLabel}>
           <IconsSet className={s.iconSet} icons={[
-            poolFilter === 'uds' && <USDCIcon key="usdc" />,
-            poolFilter === 'uds' && <DAIIcon key="dai" />,
-            poolFilter === 'uds' && <SUSDIcon key="susd" />,
-            poolFilter === 'uni' && <UNISWAPIcon key="uni" />,
-          ]} />
+            ...poolFilter === 'uds' ? UDS_ICON_SET : [],
+            ...poolFilter === 'uni' ? LP_ICON_SET : [],
+          ].filter(Boolean)} />
           <Dropdown
             items={PoolFilters}
             selected={poolFilter}

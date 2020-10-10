@@ -5,18 +5,14 @@ import { useWeb3 } from 'web3/provider';
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
-import { useWeb3Contracts } from 'web3/contracts';
+import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 import { formatBigValue } from 'web3/utils';
 
 import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
-import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
-import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
 
-const MyRewards: React.FunctionComponent = props => {
+const PoolRewards: React.FunctionComponent = props => {
   const { isActive } = useWeb3();
   const { yf, yflp, bond, aggregated } = useWeb3Contracts();
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
@@ -80,8 +76,7 @@ const MyRewards: React.FunctionComponent = props => {
         <div className={s.modalSubHeader}>Select the pool you want to harvest your reward from</div>
         <div className={s.modalBody}>
           <Antd.Button className={s.modalOption} type="ghost" onClick={onYFHarvest}>
-            <IconsSet className={s.modalOptionIcons}
-                      icons={[<USDCIcon key="usdc" />, <DAIIcon key="dai" />, <SUSDIcon key="susd" />]} />
+            <IconsSet className={s.modalOptionIcons} icons={UDS_ICON_SET} />
             <div className={s.modalOptionLabel}>USDC/DAI/sUSD</div>
             <div className={s.modalOptionRewardLabel}>REWARD</div>
             <div className={s.modalOptionRewardValue}>
@@ -89,7 +84,7 @@ const MyRewards: React.FunctionComponent = props => {
             </div>
           </Antd.Button>
           <Antd.Button className={s.modalOption} type="ghost" onClick={onYFLPHarvest}>
-            <IconsSet className={s.modalOptionIcons} icons={[<UNISWAPIcon key="uniswap" />]} />
+            <IconsSet className={s.modalOptionIcons} icons={LP_ICON_SET} />
             <div className={s.modalOptionLabel}>USDC_BOND_UNI_LP</div>
             <div className={s.modalOptionRewardLabel}>REWARD</div>
             <div className={s.modalOptionRewardValue}>
@@ -102,4 +97,4 @@ const MyRewards: React.FunctionComponent = props => {
   );
 };
 
-export default MyRewards;
+export default PoolRewards;

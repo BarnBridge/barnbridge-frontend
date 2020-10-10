@@ -1,0 +1,7 @@
+.component {
+    display: inline-grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
+    grid-gap: 32px;
+    width: 100%;
+    margin-bottom: 64px;
+}
