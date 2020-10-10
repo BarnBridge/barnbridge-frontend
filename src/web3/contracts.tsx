@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { useWeb3 } from 'web3/provider';
@@ -16,6 +16,7 @@ import { assertValues, getHumanValue } from 'web3/utils';
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
 import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
 import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
+import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
@@ -53,10 +54,47 @@ export function useWeb3Contracts(): Web3ContractsType {
   return React.useContext(Web3ContractsContext);
 }
 
+export const UDS_ICON_SET = [USDCIcon, DAIIcon, SUSDIcon];
+export const LP_ICON_SET = [UNISWAPIcon];
+
+export const STABLE_TOKEN_KEY = 'stableToken';
+export const LP_TOKEN_KEY = 'lpToken';
+
+export const TOKEN_USDC_KEY = 'USDC';
+export const TOKEN_DAI_KEY = 'DAI';
+export const TOKEN_SUSD_KEY = 'sUSD';
+export const TOKEN_UNISWAP_KEY = 'USDC_BOND_UNI_LP';
+
+export type TokenKeys = 'USDC' | 'DAI' | 'sUSD' | 'USDC_BOND_UNI_LP';
+
 export type TokenInfo = {
   address: string;
-  icon: React.FunctionComponent;
+  icon: React.ReactNode;
+  name?: string;
 };
+
+export const TOKENS_MAP = new Map<TokenKeys, TokenInfo>([
+  [TOKEN_USDC_KEY, {
+    address: CONTRACT_USDC_ADDR,
+    icon: <USDCIcon />,
+    name: TOKEN_USDC_KEY,
+  }],
+  [TOKEN_DAI_KEY, {
+    address: CONTRACT_DAI_ADDR,
+    icon: <DAIIcon />,
+    name: TOKEN_DAI_KEY,
+  }],
+  [TOKEN_SUSD_KEY, {
+    address: CONTRACT_SUSD_ADDR,
+    icon: <SUSDIcon />,
+    name: TOKEN_SUSD_KEY,
+  }],
+  [TOKEN_UNISWAP_KEY, {
+    address: CONTRACT_UNISWAP_V2_ADDR,
+    icon: <UNISWAPIcon />,
+    name: TOKEN_UNISWAP_KEY,
+  }],
+]);
 
 export const UDS_TOKENS = new Map<string, TokenInfo>([
   ['USDC', {
@@ -76,7 +114,7 @@ export const UDS_TOKENS = new Map<string, TokenInfo>([
 export const LP_TOKENS = new Map<string, TokenInfo>([
   ['USDC_BOND_UNI_LP', {
     address: CONTRACT_UNISWAP_V2_ADDR,
-    icon: SUSDIcon,
+    icon: UNISWAPIcon,
   }],
 ]);
 
@@ -241,23 +279,6 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
     return usdcReserve!.div(bondReserve!);
   }
-
-  // function poolBalanceUDSShares(): number[] | undefined {
-  //   const usdcPoolSize = stakingContract.usdc.epochPoolSize;
-  //   const daiPoolSize = stakingContract.dai.epochPoolSize;
-  //   const susdPoolSize = stakingContract.susd.epochPoolSize;
-  //   const totalBalance = poolBalanceUDS();
-  //
-  //   if (!assertValues(usdcPoolSize, daiPoolSize, susdPoolSize, totalBalance)) {
-  //     return undefined;
-  //   }
-  //
-  //   return [
-  //     usdcPoolSize!.multipliedBy(100).div(totalBalance!).toNumber(),
-  //     daiPoolSize!.multipliedBy(100).div(totalBalance!).toNumber(),
-  //     susdPoolSize!.multipliedBy(100).div(totalBalance!).toNumber(),
-  //   ];
-  // }
 
   const value = {
     yf: yfContract,

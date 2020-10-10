@@ -5,7 +5,7 @@ import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
 import { formatBigValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
+import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
 import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
@@ -13,6 +13,7 @@ import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
 import { ReactComponent as UNIIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
+import { useWeb3 } from 'web3/provider';
 
 export type PoolCardProps = {
   stableToken?: boolean;
@@ -29,21 +30,16 @@ type TokenBalanceShare = {
 };
 
 const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
+  const web3 = useWeb3();
   const { yf, yflp, staking } = useWeb3Contracts();
 
   const { stableToken = false, lpToken = false } = props;
 
-  const icons = React.useMemo<React.ReactNode[]>(() => {
+  const icons = React.useMemo<React.ComponentType<any>[]>(() => {
     if (stableToken) {
-      return [
-        <USDCIcon key="usdc" />,
-        <DAIIcon key="dai" />,
-        <SUSDIcon key="susd" />,
-      ];
+      return UDS_ICON_SET;
     } else if (lpToken) {
-      return [
-        <UNIIcon key="uniswap" />,
-      ];
+      return LP_ICON_SET;
     }
 
     return [];
@@ -68,6 +64,14 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
     return '-';
   }, [stableToken, lpToken, yf, yflp]);
+
+  const isStakingEnabled = React.useMemo<boolean>(() => {
+    if (lpToken) {
+      return yflp.currentEpoch! > 0;
+    }
+
+    return true;
+  }, [lpToken, yflp]);
 
   const epochReward = React.useMemo<string>(() => {
     if (stableToken) {
@@ -281,7 +285,13 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           <div className={s.pool_label}>{nameLabel}</div>
           <div className={s.pool_epoch}>{epochLabel}</div>
         </div>
-        <Antd.Button className={s.stakingBtn} type="primary" onClick={props.onStaking}>Staking</Antd.Button>
+        {web3.isActive && (
+          <Antd.Button
+            type="primary"
+            className={s.stakingBtn}
+            disabled={!isStakingEnabled}
+            onClick={props.onStaking}>Staking</Antd.Button>
+        )}
       </div>
 
       <div className={s.row2}>

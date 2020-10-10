@@ -1,7 +1,8 @@
-import { EthContract } from 'web3/types';
 import Web3EthContract from 'web3-eth-contract';
 import BigNumber from 'bignumber.js';
 import { isString } from 'lodash';
+
+import { EthContract } from 'web3/types';
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);

@@ -4,16 +4,16 @@ import cx from 'classnames';
 import s from './styles.module.css';
 
 export type IconsSetProps = {
-  icons: React.ReactNode[];
+  icons: React.ComponentType<any>[];
   className?: string;
 };
 
 const IconsSet: React.FunctionComponent<IconsSetProps> = props => {
-  const { icons, className } = props;
-
   return (
-    <div className={cx(s.component, className)}>
-      {icons}
+    <div className={cx(s.component, props.className)}>
+      {props.icons?.map((C, idx) =>
+        React.createElement(C, { key: idx }, null),
+      )}
     </div>
   );
 };

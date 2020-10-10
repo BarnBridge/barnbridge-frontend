@@ -5,36 +5,17 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 import PoolTokenRow from 'components/pool-token-row';
 import PoolTransactionTable from 'components/pool-transaction-table';
 
-import { TokenInfo, useWeb3Contracts } from 'web3/contracts';
+import { TOKEN_DAI_KEY, TOKEN_SUSD_KEY, TOKEN_UNISWAP_KEY, TOKEN_USDC_KEY } from 'web3/contracts';
 
 import s from './styles.module.css';
-import { formatBigValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
-
-export type SummaryItem = {
-  logo: React.ReactNode;
-  name: string;
-  walletBalance: string;
-  stakedBalance: string;
-  enabled: boolean;
-};
 
 export type PoolStakProps = {
-  loading: boolean;
-  tokens: Map<string, TokenInfo>;
+  stableToken?: boolean;
+  lpToken?: boolean;
   onBack: () => void;
 };
 
 const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
-  const web3c = useWeb3Contracts();
-  const tokens = React.useMemo(() => Array.from(props.tokens), [props.tokens]);
-  const label = React.useMemo(() => {
-    return tokens.map(([name, info]) => name).join('/');
-  }, [tokens]);
-
-  function handleTokenEnable(enabled: boolean) {
-    web3c.usdc.approveSend(enabled ? MAX_UINT_256 : ZERO_BIG_NUMBER);
-  }
-
   return (
     <div className={s.component}>
       <Antd.Button
@@ -42,32 +23,46 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
         className={s.headerLabel}
         icon={<ArrowLeftOutlined className={s.backSvg} />}
         onClick={props.onBack}
-      >{label}</Antd.Button>
+      >
+        {props.stableToken && <span>USDC/DAI/sUSD</span>}
+        {props.lpToken && <span>USDC_BOND_UNI_LP</span>}
+      </Antd.Button>
 
       <Antd.Tabs className={s.tabs} defaultActiveKey="deposit">
         <Antd.Tabs.TabPane key="deposit" tab="Deposit">
           <div className={s.dataRows}>
-            {tokens.map(([name, tokenInfo]) => (
-              <PoolTokenRow
-                key={name}
-                logo={<tokenInfo.icon />}
-                name={name}
-                walletBalance={formatBigValue(web3c.usdc.balance)}
-                stakedBalance={formatBigValue(web3c.staking.usdc.balance)}
-                enabled={!web3c.usdc.allowance?.isEqualTo(ZERO_BIG_NUMBER)}
-                onTokenEnable={handleTokenEnable} />
-            ))}
+            {props.stableToken && (
+              <>
+                <PoolTokenRow stableToken token={TOKEN_USDC_KEY} type="deposit" />
+                <PoolTokenRow stableToken token={TOKEN_DAI_KEY} type="deposit" />
+                <PoolTokenRow stableToken token={TOKEN_SUSD_KEY} type="deposit" />
+              </>
+            )}
+            {props.lpToken && (
+              <PoolTokenRow lpToken token={TOKEN_UNISWAP_KEY} type="deposit" />
+            )}
           </div>
         </Antd.Tabs.TabPane>
         <Antd.Tabs.TabPane key="withdraw" tab="Withdraw">
-          WITHDRAW
+          <div className={s.dataRows}>
+            {props.stableToken && (
+              <>
+                <PoolTokenRow stableToken token={TOKEN_USDC_KEY} type="withdraw" />
+                <PoolTokenRow stableToken token={TOKEN_DAI_KEY} type="withdraw" />
+                <PoolTokenRow stableToken token={TOKEN_SUSD_KEY} type="withdraw" />
+              </>
+            )}
+            {props.lpToken && (
+              <PoolTokenRow lpToken token={TOKEN_UNISWAP_KEY} type="withdraw" />
+            )}
+          </div>
         </Antd.Tabs.TabPane>
       </Antd.Tabs>
 
       <PoolTransactionTable
         label="My Transactions"
-        tokens={props.tokens}
-      />
+        stableToken={props.stableToken}
+        lpToken={props.lpToken} />
     </div>
   );
 };

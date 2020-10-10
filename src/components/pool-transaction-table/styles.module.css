@@ -53,3 +53,8 @@
 .table :global .ant-table-tbody > tr > td a {
     color: #4f6ae6;
 }
+
+.table :global .ant-table-footer {
+    display: flex;
+    justify-content: center;
+}
