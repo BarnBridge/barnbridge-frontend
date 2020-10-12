@@ -16,6 +16,8 @@ const PoolRewards: React.FunctionComponent = props => {
   const { isActive } = useWeb3();
   const { yf, yflp, bond, aggregated } = useWeb3Contracts();
   const [modalVisible, setModalVisible] = React.useState<boolean>(false);
+  const [yfHarvesting, setYFHarvesting] = React.useState<boolean>(false);
+  const [yflpHarvesting, setYFLPHarvesting] = React.useState<boolean>(false);
 
   function onHarvestClick() {
     setModalVisible(true);
@@ -25,12 +27,28 @@ const PoolRewards: React.FunctionComponent = props => {
     setModalVisible(false);
   }
 
-  function onYFHarvest() {
-    console.log('onYFHarvest', yf.massHarvestSend());
+  async function onYFHarvest() {
+    setYFHarvesting(true);
+
+    try {
+      await yf.massHarvestSend();
+      setModalVisible(false);
+    } catch (e) {
+    }
+
+    setYFHarvesting(false);
   }
 
-  function onYFLPHarvest() {
-    console.log('onYFLPHarvest', yflp.massHarvestSend());
+  async function onYFLPHarvest() {
+    setYFLPHarvesting(true);
+
+    try {
+      await yflp.massHarvestSend();
+      setModalVisible(false);
+    } catch (e) {
+    }
+
+    setYFLPHarvesting(false);
   }
 
   return (
@@ -45,7 +63,11 @@ const PoolRewards: React.FunctionComponent = props => {
             </div>
           </div>
           {isActive && (
-            <Antd.Button type="primary" className={s.harvestBtn} onClick={onHarvestClick}>Harvest</Antd.Button>
+            <Antd.Button
+              type="primary"
+              className={s.harvestBtn}
+              disabled={aggregated.totalCurrentReward?.isEqualTo(0) !== false}
+              onClick={onHarvestClick}>Harvest</Antd.Button>
           )}
         </div>
         <div className={s.col}>
@@ -75,7 +97,12 @@ const PoolRewards: React.FunctionComponent = props => {
         <div className={s.modalHeader}>Harvest your reward</div>
         <div className={s.modalSubHeader}>Select the pool you want to harvest your reward from</div>
         <div className={s.modalBody}>
-          <Antd.Button className={s.modalOption} type="ghost" onClick={onYFHarvest}>
+          <Antd.Button
+            className={s.modalOption}
+            type="ghost"
+            loading={yfHarvesting}
+            disabled={yf?.currentReward?.isEqualTo(0) !== false}
+            onClick={onYFHarvest}>
             <IconsSet className={s.modalOptionIcons} icons={UDS_ICON_SET} />
             <div className={s.modalOptionLabel}>USDC/DAI/sUSD</div>
             <div className={s.modalOptionRewardLabel}>REWARD</div>
@@ -83,7 +110,12 @@ const PoolRewards: React.FunctionComponent = props => {
               <strong>{formatBigValue(yf?.currentReward)}</strong> BOND
             </div>
           </Antd.Button>
-          <Antd.Button className={s.modalOption} type="ghost" onClick={onYFLPHarvest}>
+          <Antd.Button
+            className={s.modalOption}
+            type="ghost"
+            loading={yflpHarvesting}
+            disabled={yflp?.currentReward?.isEqualTo(0) !== false}
+            onClick={onYFLPHarvest}>
             <IconsSet className={s.modalOptionIcons} icons={LP_ICON_SET} />
             <div className={s.modalOptionLabel}>USDC_BOND_UNI_LP</div>
             <div className={s.modalOptionRewardLabel}>REWARD</div>

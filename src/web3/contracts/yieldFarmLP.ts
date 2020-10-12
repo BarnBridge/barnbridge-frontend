@@ -25,14 +25,7 @@ const Contract = createContract(
 
 export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
   const [data, setData] = React.useState<YieldFarmLPContract>({} as any);
-
-  function massHarvestSend() {
-    if (!assertValues(account)) {
-      return;
-    }
-
-    return sendContract(Contract, 'massHarvest', [], { from: account });
-  }
+  const [version, setVersion] = React.useState<number>(0);
 
   React.useEffect(() => {
     (async () => {
@@ -56,7 +49,7 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
         nextPoolSize: getHumanValue(new BigNumber(nextPoolSize), 18), // TODO: get decimals from ? contract
       }));
     })();
-  }, []);
+  }, [version]);
 
   React.useEffect(() => {
     if (!assertValues(account, data.currentEpoch)) {
@@ -77,7 +70,7 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
         currentReward: getHumanValue(new BigNumber(massHarvest), 18), // TODO: get decimals from ? contract
       }));
     })();
-  }, [account, data.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [account, data.currentEpoch, version]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     if (!assertValues(data.epochStake, data.poolSize, data.epochReward)) {
@@ -92,7 +85,7 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
       ...prevState,
       potentialReward,
     }));
-  }, [data.epochStake, data.poolSize, data.epochReward]);
+  }, [data.epochStake, data.poolSize, data.epochReward, version]);
 
   React.useEffect(() => {
     if (!assertValues(data.epochReward, data.currentEpoch)) {
@@ -103,7 +96,20 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
       ...prevState,
       bondReward: data.epochReward!.multipliedBy(data.currentEpoch! - 1),
     }));
-  }, [data.epochReward, data.currentEpoch]);
+  }, [data.epochReward, data.currentEpoch, version]);
+
+  function massHarvestSend() {
+    if (!assertValues(account)) {
+      return;
+    }
+
+    return sendContract(Contract, 'massHarvest', [], {
+      from: account,
+    })
+      .then(async () => {
+        setVersion(prevState => prevState + 1);
+      });
+  }
 
   return {
     ...data,

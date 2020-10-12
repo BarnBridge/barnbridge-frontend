@@ -6,6 +6,7 @@ import PoolTokenRow from 'components/pool-token-row';
 import PoolTransactionTable from 'components/pool-transaction-table';
 
 import { TOKEN_DAI_KEY, TOKEN_SUSD_KEY, TOKEN_UNISWAP_KEY, TOKEN_USDC_KEY } from 'web3/contracts';
+import { useEthGasPrice } from 'context/useEthGas';
 
 import s from './styles.module.css';
 
@@ -16,6 +17,12 @@ export type PoolStakProps = {
 };
 
 const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
+  const ethGasPrice = useEthGasPrice();
+
+  React.useEffect(() => {
+    ethGasPrice.load();
+  }, []);
+
   return (
     <div className={s.component}>
       <Antd.Button

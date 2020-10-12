@@ -16,6 +16,7 @@ import {
 } from 'web3/contracts';
 import { useWeb3 } from 'web3/provider';
 import { formatBigValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useEthGasPrice } from 'context/useEthGas';
 
 import InfoBox from 'components/info-box';
 import InfoTooltip from 'components/info-tooltip';
@@ -47,17 +48,22 @@ const InitialState: StateType = {
   address: '-',
   icon: null,
   name: '-',
+  decimals: 0,
   enabled: false,
   amount: 0,
-  gasAmount: 920,
+  gasAmount: 0,
   expanded: false,
 };
 
 const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   const web3 = useWeb3();
   const web3c = useWeb3Contracts();
+  const ethGasPrice = useEthGasPrice();
 
   const [expanded, setExpanded] = React.useState<boolean>(props.lpToken ?? false);
+  const [enabling, setEnabling] = React.useState<boolean>(false);
+  const [depositing, setDepositing] = React.useState<boolean>(false);
+  const [withdrawing, setWithdrawing] = React.useState<boolean>(false);
   const [state, setState] = React.useState<StateType>(InitialState);
 
   React.useEffect(() => {
@@ -118,25 +124,32 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setExpanded(prevState => !prevState);
   }
 
-  function handleSwitchChange(checked: boolean) {
+  async function handleSwitchChange(checked: boolean) {
     const value = checked ? MAX_UINT_256 : ZERO_BIG_NUMBER;
 
-    switch (props.token) {
-      case TOKEN_USDC_KEY:
-        web3c.usdc.approveSend(value);
-        break;
-      case TOKEN_DAI_KEY:
-        web3c.dai.approveSend(value);
-        break;
-      case TOKEN_SUSD_KEY:
-        web3c.susd.approveSend(value);
-        break;
-      case TOKEN_UNISWAP_KEY:
-        web3c.uniswapV2.approveSend(value);
-        break;
-      default:
-        break;
+    setEnabling(true);
+
+    try {
+      switch (props.token) {
+        case TOKEN_USDC_KEY:
+          await web3c.usdc.approveSend(value);
+          break;
+        case TOKEN_DAI_KEY:
+          await web3c.dai.approveSend(value);
+          break;
+        case TOKEN_SUSD_KEY:
+          await web3c.susd.approveSend(value);
+          break;
+        case TOKEN_UNISWAP_KEY:
+          await web3c.uniswapV2.approveSend(value);
+          break;
+        default:
+          break;
+      }
+    } catch (e) {
     }
+
+    setEnabling(false);
   }
 
   function handleAmountChange(ev: ChangeEvent<HTMLInputElement>) {
@@ -169,28 +182,63 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     }));
   }
 
-  function handleDeposit() {
+  async function handleDeposit() {
     const tokenInfo = TOKENS_MAP.get(props.token);
 
-    if (tokenInfo && web3.account) {
-      web3c.staking.depositSend(tokenInfo.address, web3.account, state.amount, state.gasAmount / 10, 6);
+    if (!tokenInfo || !web3.account) {
+      return;
     }
+
+    setDepositing(true);
+
+    try {
+      await web3c.staking.depositSend(tokenInfo, web3.account, state.amount, state.gasAmount);
+      setState(prevState => ({
+        ...prevState,
+        amount: 0,
+        gasAmount: gasOptions[2]?.value ?? 0,
+      }));
+    } catch (e) {
+    }
+
+    setDepositing(false);
   }
 
-  function handleWithdraw() {
+  async function handleWithdraw() {
     const tokenInfo = TOKENS_MAP.get(props.token);
 
-    if (tokenInfo && web3.account) {
-      web3c.staking.withdrawSend(tokenInfo.address, web3.account, state.amount, state.gasAmount / 10, 6);
+    if (!tokenInfo || !web3.account) {
+      return;
     }
+
+    setWithdrawing(true);
+
+    try {
+      await web3c.staking.withdrawSend(tokenInfo, web3.account, state.amount, state.gasAmount);
+      setState(prevState => ({
+        ...prevState,
+        amount: 0,
+        gasAmount: gasOptions[2]?.value ?? 0,
+      }));
+    } catch (e) {
+    }
+
+    setWithdrawing(false);
   }
 
-  const gasOptions = [
-    { label: 'Very fast', value: 900 },
-    { label: 'Fast', value: 700 },
-    { label: 'Standard', value: 500 },
-    { label: 'Slow', value: 300 },
-  ];
+  const gasOptions = React.useMemo(() => [
+    { label: 'Very fast', value: ethGasPrice.price.fastest },
+    { label: 'Fast', value: ethGasPrice.price.fast },
+    { label: 'Standard', value: ethGasPrice.price.average },
+    { label: 'Slow', value: ethGasPrice.price.safeLow },
+  ], [ethGasPrice]);
+
+  React.useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      gasAmount: gasOptions[2].value,
+    }));
+  }, [gasOptions]);
 
   return (
     <div className={s.component}>
@@ -210,7 +258,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           <div className={s.value}>
             <Antd.Switch
               checked={state.enabled}
-              loading={state.enabled === undefined}
+              loading={state.enabled === undefined || enabling}
               onChange={handleSwitchChange} />
           </div>
         </div>
@@ -258,7 +306,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                     disabled={!state.walletBalance}
                     onClick={handleInputMaxClick}>MAX</Antd.Button>
                 }
-                placeholder="0 (Max 800)"
+                placeholder={state.walletBalance ? `0 (Max ${state.walletBalance.toNumber()})` : '0'}
                 value={state.amount}
                 onChange={handleAmountChange}
               />
@@ -285,7 +333,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               value={state.gasAmount}
               onChange={handleGasAmountChange}>
               {gasOptions.map(option => (
-                <Antd.Radio.Button key={option.value} className={s.gasOption} value={option.value}>
+                <Antd.Radio.Button key={option.label} className={s.gasOption} value={option.value}>
                   <div>
                     <div className={s.gasOptionName}>{option.label}</div>
                     <div className={s.gasOptionValue}>{option.value} Gwei</div>
@@ -301,6 +349,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
             <Antd.Button
               type="primary"
               className={s.actionBtn}
+              loading={depositing}
               disabled={!state.enabled || state.amount === 0}
               onClick={handleDeposit}>Deposit
             </Antd.Button>
@@ -309,6 +358,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
             <Antd.Button
               type="primary"
               className={s.actionBtn}
+              loading={withdrawing}
               disabled={state.amount === 0}
               onClick={handleWithdraw}>Withdraw
             </Antd.Button>
