@@ -1,7 +1,15 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { assertValues, batchContract, createContract, getHumanValue, sendContract } from 'web3/utils';
+import {
+  assertValues,
+  batchContract,
+  createContract,
+  getHumanValue,
+  getNonHumanValue,
+  sendContract,
+} from 'web3/utils';
+import { TokenInfo } from 'web3/contracts';
 
 const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR);
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR);
@@ -39,8 +47,8 @@ export type StakingContract = {
     epochUserBalance?: BigNumber;
     nextEpochUserBalance?: BigNumber;
   };
-  depositSend: (token: string, account: string, amount: number, gasPrice: number, decimals: number) => void;
-  withdrawSend: (token: string, account: string, amount: number, gasPrice: number, decimals: number) => void;
+  depositSend: (tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) => void;
+  withdrawSend: (tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) => void;
 };
 
 const InitialDataState: StakingContract = {
@@ -85,6 +93,7 @@ const Contract = createContract(
 
 export function useStakingContract(account?: string): StakingContract {
   const [data, setData] = React.useState<StakingContract>(InitialDataState);
+  const [version, setVersion] = React.useState<number>(0);
 
   React.useEffect(() => {
     (async () => {
@@ -140,7 +149,7 @@ export function useStakingContract(account?: string): StakingContract {
         },
       }));
     })();
-  }, []);
+  }, [version]);
 
   React.useEffect(() => {
     if (!assertValues(account, data.currentEpoch)) {
@@ -204,34 +213,40 @@ export function useStakingContract(account?: string): StakingContract {
         },
       }));
     })();
-  }, [account, data.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [account, data.currentEpoch, version]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function depositSend(token: string, account: string, amount: number, gasPrice: number, decimals: number) {
+  function depositSend(tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) {
     if (!assertValues(account)) {
       return;
     }
 
     return sendContract(Contract, 'deposit', [
-      token,
-      (new BigNumber(amount)).multipliedBy(new BigNumber(10).pow(decimals))
+      tokenInfo.address,
+      getNonHumanValue(amount, tokenInfo.decimals),
     ], {
       from: account,
-      gasPrice: (new BigNumber(gasPrice).multipliedBy(new BigNumber(10).pow(9))).toNumber(),
-    });
+      gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
+    })
+      .then(async () => {
+        setVersion(prevState => prevState + 1);
+      });
   }
 
-  function withdrawSend(token: string, account: string, amount: number, gasPrice: number, decimals: number) {
+  function withdrawSend(tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) {
     if (!assertValues(account)) {
       return;
     }
 
     return sendContract(Contract, 'withdraw', [
-      token,
-      (new BigNumber(amount)).multipliedBy(new BigNumber(10).pow(decimals))
+      tokenInfo.address,
+      getNonHumanValue(amount, tokenInfo.decimals),
     ], {
       from: account,
-      gasPrice: (new BigNumber(gasPrice).multipliedBy(new BigNumber(10).pow(9))).toNumber(),
-    });
+      gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
+    })
+      .then(async () => {
+        setVersion(prevState => prevState + 1);
+      });
   }
 
   return {

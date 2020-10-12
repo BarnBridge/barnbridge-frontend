@@ -9,16 +9,7 @@ export type DAIContract = {
   totalSupply?: BigNumber;
   balance?: BigNumber;
   allowance?: BigNumber;
-  approveSend: (value: BigNumber) => void;
-};
-
-const InitialDataState: DAIContract = {
-  symbol: undefined,
-  decimals: undefined,
-  totalSupply: undefined,
-  balance: undefined,
-  allowance: undefined,
-  approveSend: () => null,
+  approveSend: (value: BigNumber) => Promise<any>;
 };
 
 const Contract = createContract(
@@ -27,7 +18,7 @@ const Contract = createContract(
 );
 
 export function useDAIContract(account?: string): DAIContract {
-  const [data, setData] = React.useState<DAIContract>(InitialDataState);
+  const [data, setData] = React.useState<DAIContract>({} as any);
 
   React.useEffect(() => {
     (async () => {
@@ -65,9 +56,9 @@ export function useDAIContract(account?: string): DAIContract {
     })();
   }, [account, data.decimals]);
 
-  function approveSend(value: BigNumber) {
+  const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
     if (!assertValues(account)) {
-      return;
+      return Promise.reject();
     }
 
     return sendContract(Contract, 'approve', [
@@ -75,11 +66,21 @@ export function useDAIContract(account?: string): DAIContract {
       value,
     ], {
       from: account,
-    });
-  }
+    })
+      .then(async () => {
+        const [allowance] = await batchContract(Contract, [
+          { method: 'allowance', methodArgs: [account, process.env.REACT_APP_CONTRACT_STAKING_ADDR] },
+        ]);
 
-  return {
+        setData(prevState => ({
+          ...prevState,
+          allowance: new BigNumber(allowance),
+        }));
+      });
+  }, [account]);
+
+  return React.useMemo(() => ({
     ...data,
     approveSend,
-  };
+  }), [data, approveSend]);
 }

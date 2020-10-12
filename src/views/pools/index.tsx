@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { LP_TOKEN_KEY, STABLE_TOKEN_KEY } from 'web3/contracts';
+import EthGasPriceProvider from 'context/useEthGas';
 
 import ConnectedWallet from 'components/connected-wallet';
 import PoolRewards from 'components/pool-rewards';
@@ -25,12 +26,14 @@ const PoolsView: React.FunctionComponent<{}> = props => {
       {!activeStaking && (
         <PoolOverview onPoolStackSelect={setActiveStaking} />
       )}
-      {activeStaking === STABLE_TOKEN_KEY && (
-        <PoolStak stableToken onBack={handleStakBack} />
-      )}
-      {activeStaking === LP_TOKEN_KEY && (
-        <PoolStak lpToken onBack={handleStakBack} />
-      )}
+      <EthGasPriceProvider>
+        {activeStaking === STABLE_TOKEN_KEY && (
+          <PoolStak stableToken onBack={handleStakBack} />
+        )}
+        {activeStaking === LP_TOKEN_KEY && (
+          <PoolStak lpToken onBack={handleStakBack} />
+        )}
+      </EthGasPriceProvider>
     </div>
   );
 };

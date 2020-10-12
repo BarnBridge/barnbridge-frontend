@@ -14,19 +14,7 @@ export type UniswapV2Contract = {
   balance?: BigNumber;
   lastBlockTime?: number;
   allowance?: BigNumber;
-  approveSend: (value: BigNumber) => void;
-};
-
-const InitialDataState: UniswapV2Contract = {
-  symbol: undefined,
-  decimals: undefined,
-  totalSupply: undefined,
-  usdcReserve: undefined,
-  bondReserve: undefined,
-  balance: undefined,
-  lastBlockTime: undefined,
-  allowance: undefined,
-  approveSend: () => null,
+  approveSend: (value: BigNumber) => Promise<any>;
 };
 
 const Contract = createContract(
@@ -35,7 +23,7 @@ const Contract = createContract(
 );
 
 export function useUniswapV2Contract(account?: string): UniswapV2Contract {
-  const [data, setData] = React.useState<UniswapV2Contract>(InitialDataState);
+  const [data, setData] = React.useState<UniswapV2Contract>({} as any);
 
   React.useEffect(() => {
     (async () => {
@@ -90,9 +78,9 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
     })();
   }, [account, data.decimals]);
 
-  function approveSend(value: BigNumber) {
+  const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
     if (!assertValues(account)) {
-      return;
+      return Promise.reject();
     }
 
     return sendContract(Contract, 'approve', [
@@ -100,11 +88,21 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
       value,
     ], {
       from: account,
-    });
-  }
+    })
+      .then(async () => {
+        const [allowance] = await batchContract(Contract, [
+          { method: 'allowance', methodArgs: [account, process.env.REACT_APP_CONTRACT_STAKING_ADDR] },
+        ]);
 
-  return {
+        setData(prevState => ({
+          ...prevState,
+          allowance: new BigNumber(allowance),
+        }));
+      });
+  }, [account]);
+
+  return React.useMemo(() => ({
     ...data,
     approveSend,
-  };
+  }), [data, approveSend]);
 }

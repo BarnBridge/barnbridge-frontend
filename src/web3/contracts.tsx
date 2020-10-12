@@ -70,7 +70,8 @@ export type TokenKeys = 'USDC' | 'DAI' | 'sUSD' | 'USDC_BOND_UNI_LP';
 export type TokenInfo = {
   address: string;
   icon: React.ReactNode;
-  name?: string;
+  name: string;
+  decimals: number;
 };
 
 export const TOKENS_MAP = new Map<TokenKeys, TokenInfo>([
@@ -78,43 +79,25 @@ export const TOKENS_MAP = new Map<TokenKeys, TokenInfo>([
     address: CONTRACT_USDC_ADDR,
     icon: <USDCIcon />,
     name: TOKEN_USDC_KEY,
+    decimals: 6,
   }],
   [TOKEN_DAI_KEY, {
     address: CONTRACT_DAI_ADDR,
     icon: <DAIIcon />,
     name: TOKEN_DAI_KEY,
+    decimals: 18,
   }],
   [TOKEN_SUSD_KEY, {
     address: CONTRACT_SUSD_ADDR,
     icon: <SUSDIcon />,
     name: TOKEN_SUSD_KEY,
+    decimals: 18,
   }],
   [TOKEN_UNISWAP_KEY, {
     address: CONTRACT_UNISWAP_V2_ADDR,
     icon: <UNISWAPIcon />,
     name: TOKEN_UNISWAP_KEY,
-  }],
-]);
-
-export const UDS_TOKENS = new Map<string, TokenInfo>([
-  ['USDC', {
-    address: CONTRACT_USDC_ADDR,
-    icon: USDCIcon,
-  }],
-  ['DAI', {
-    address: CONTRACT_DAI_ADDR,
-    icon: DAIIcon,
-  }],
-  ['sUSD', {
-    address: CONTRACT_SUSD_ADDR,
-    icon: SUSDIcon,
-  }],
-]);
-
-export const LP_TOKENS = new Map<string, TokenInfo>([
-  ['USDC_BOND_UNI_LP', {
-    address: CONTRACT_UNISWAP_V2_ADDR,
-    icon: UNISWAPIcon,
+    decimals: 18,
   }],
 ]);
 

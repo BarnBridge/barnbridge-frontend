@@ -116,13 +116,12 @@ export function sendContract(contract: EthContract, method: string, methodArgs: 
     }
 
     contractMethod(...methodArgs)
-      ?.send(sendArgs, (err: Error, data: string) => {
+      ?.send(sendArgs, async (err: Error) => {
         if (err) {
           return reject(err);
         }
-
-        resolve(data);
-      });
+      })
+      .then(resolve);
   });
 }
 
@@ -132,6 +131,10 @@ export function getExponentValue(decimals: number = 0): BigNumber {
 
 export function getHumanValue(value?: BigNumber, decimals: number = 0): BigNumber | undefined {
   return value?.div(getExponentValue(decimals));
+}
+
+export function getNonHumanValue(value: BigNumber | number, decimals: number = 0): BigNumber {
+  return (new BigNumber(value)).multipliedBy(getExponentValue(decimals));
 }
 
 export function formatBigValue(value?: BigNumber, decimals: number = 3, defaultValue: string = '-'): string {
