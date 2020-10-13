@@ -1,12 +1,15 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { UnsupportedChainIdError } from '@web3-react/core';
 
+import UnsupportedChainModal from 'components/unsupported-chain-modal';
 import Identicon from 'components/identicon';
 import ExternalLink from 'components/externalLink';
 
 import { useWeb3 } from 'web3/provider';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
+import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as BellSvg } from 'resources/svg/icons/bell.svg';
 import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
@@ -18,14 +21,28 @@ import s from './styles.module.css';
 const ConnectedWallet: React.FunctionComponent = props => {
   const web3 = useWeb3();
   const [visibleModal, setVisibleModal] = React.useState<boolean>(false);
+  const [unsupportedChainVisible, setUnsupportedChainVisible] = React.useState<boolean>(false);
 
   function handleConnectWallet() {
     setVisibleModal(true);
   }
 
+  function handleSwitchWallet() {
+    setUnsupportedChainVisible(false);
+    setVisibleModal(true);
+  }
+
   async function handleProviderClick(connectorId: string) {
     setVisibleModal(false);
-    web3.connect(connectorId);
+
+    try {
+      await web3.connect(connectorId);
+    } catch (error) {
+      console.log({error});
+      if (error instanceof UnsupportedChainIdError) {
+        setUnsupportedChainVisible(true);
+      }
+    }
   }
 
   function handleDisconnect() {
@@ -67,10 +84,32 @@ const ConnectedWallet: React.FunctionComponent = props => {
               ))}
             </div>
           </Antd.Modal>
+          <UnsupportedChainModal
+            visible={unsupportedChainVisible}
+            onSwitchWallet={handleSwitchWallet} />
         </>
       ) : (
         <div className={s.walletBox}>
-          <Antd.Badge dot><BellSvg /></Antd.Badge>
+          <Antd.Popover
+            overlayClassName={s.overlay}
+            placement="bottomRight"
+            content={
+              <div>
+                <Antd.Row className={s.notificationHeader}>
+                  Notifications
+                </Antd.Row>
+                <Antd.Row className={s.notificationBody}>
+                  <div className={s.notificationZero}>
+                    <ZeroNotificationsSvg />
+                    <span>There are no notifications to show</span>
+                  </div>
+                </Antd.Row>
+              </div>
+            }
+            trigger="click"
+          >
+            <Antd.Badge dot count={0} showZero={false}><BellSvg /></Antd.Badge>
+          </Antd.Popover>
           <div className={s.divider} />
           <Antd.Popover
             overlayClassName={s.overlay}

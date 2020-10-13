@@ -21,7 +21,7 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
 
   React.useEffect(() => {
     ethGasPrice.load();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={s.component}>

@@ -36,7 +36,7 @@ const EthGasPriceProvider: React.FunctionComponent = props => {
   const value = React.useMemo(() => ({
     price: values,
     load,
-  }), [values]);
+  }), [values, load]);
 
   return (
     <EthGasPriceContext.Provider value={value}>

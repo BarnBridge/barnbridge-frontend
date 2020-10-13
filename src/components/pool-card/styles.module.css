@@ -77,41 +77,41 @@
     color: #717980;
 }
 
-.pool_stack_bar {
+.pool_stak_bar {
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 8px;
-    margin-bottom: 32px;
+    height: 16px;
+    margin-top: 8px;
     border-radius: 4px;
     background-color: #e3e4e6;
 }
 
-.pool_stack_bar div {
-    height: 8px;
+.pool_stak_bar div {
+    height: 16px;
 }
 
-.pool_stack_bar div:hover {
-    height: 16px;
+.pool_stak_bar div:hover {
+    height: 24px;
     transform: translateY(-4px);
 }
 
-.pool_stack_bar div:first-child {
+.pool_stak_bar div:first-child {
     border-top-left-radius: 4px;
     border-bottom-left-radius: 4px;
 }
 
-.pool_stack_bar div:first-child:hover {
+.pool_stak_bar div:first-child:hover {
     border-top-left-radius: 8px;
     border-bottom-left-radius: 8px;
 }
 
-.pool_stack_bar div:last-child {
+.pool_stak_bar div:last-child {
     border-top-right-radius: 4px;
     border-bottom-right-radius: 4px;
 }
 
-.pool_stack_bar div:last-child:hover {
+.pool_stak_bar div:last-child:hover {
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 }

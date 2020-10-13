@@ -4,7 +4,7 @@ import * as Antd from 'antd';
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
@@ -31,7 +31,7 @@ type TokenBalanceShare = {
 
 const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   const web3 = useWeb3();
-  const { yf, yflp, staking } = useWeb3Contracts();
+  const { yf, yflp, staking, aggregated } = useWeb3Contracts();
 
   const { stableToken = false, lpToken = false } = props;
 
@@ -93,21 +93,29 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     return '-';
   }, [stableToken, lpToken, yf, yflp]);
 
-  const balance = React.useMemo<string>(() => {
+  const balance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.nextPoolSize)}`;
-    } else if (lpToken) {
-      return `${formatBigValue(yflp.nextPoolSize)} USDC_BOND_UNI_LP`;
+    } else if (lpToken && yflp.nextPoolSize) {
+      if (yflp.nextPoolSize.isEqualTo(ZERO_BIG_NUMBER)) {
+        return '0 USDC_BOND_UNI_LP';
+      }
+
+      return <span>{formatBigValue(yflp.nextPoolSize, 3)} x 10<sup>-18</sup> USDC_BOND_UNI_LP</span>;
     }
 
     return '-';
   }, [stableToken, lpToken, yf, yflp]);
 
-  const effectiveBalance = React.useMemo<string>(() => {
+  const effectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.poolSize)}`;
-    } else if (lpToken) {
-      return formatBigValue(yflp.poolSize);
+    } else if (lpToken && yflp.poolSize) {
+      if (yflp.poolSize.isEqualTo(ZERO_BIG_NUMBER)) {
+        return '0';
+      }
+
+      return <span>{formatBigValue(yflp.poolSize)} x 10<sup>-18</sup></span>;
     }
 
     return '-';
@@ -174,7 +182,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <UNIIcon />,
             name: 'USDC_BOND_UNI_LP',
-            value: `${formatBigValue(staking.uniswap_v2.nextEpochPoolSize)} USDC_BOND_UNI_LP`,
+            value: `$ ${formatBigValue(aggregated.lpStakedValue)}`,
             share: uniShare,
             color: '#ff4339',
           });
@@ -183,23 +191,31 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     }
 
     return shares;
-  }, [stableToken, lpToken, yf, yflp, staking]);
+  }, [stableToken, lpToken, yf, yflp, staking, aggregated]);
 
-  const myBalance = React.useMemo<string>(() => {
+  const myBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.nextEpochStake)}`;
-    } else if (lpToken) {
-      return `${formatBigValue(yflp.nextEpochStake)} USDC_BOND_UNI_LP`;
+    } else if (lpToken && yflp.nextEpochStake) {
+      if (yflp.nextEpochStake.isEqualTo(ZERO_BIG_NUMBER)) {
+        return '0 USDC_BOND_UNI_LP';
+      }
+
+      return <span>{formatBigValue(yflp.nextEpochStake)} x 10<sup>-18</sup> USDC_BOND_UNI_LP</span>;
     }
 
     return '-';
   }, [stableToken, lpToken, yf, yflp]);
 
-  const myEffectiveBalance = React.useMemo<string>(() => {
+  const myEffectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.epochStake)}`;
-    } else if (lpToken) {
-      return formatBigValue(yflp.epochStake);
+    } else if (lpToken && yflp.epochStake) {
+      if (yflp.epochStake.isEqualTo(ZERO_BIG_NUMBER)) {
+        return '0';
+      }
+
+      return <span>{formatBigValue(yflp.epochStake)} x 10<sup>-18</sup></span>;
     }
 
     return '-';
@@ -316,7 +332,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         </div>
         <div className={s.row_value}>{balance}</div>
         <div className={s.row_value_2}>{effectiveBalance} effective balance</div>
-        <div className={s.pool_stack_bar}>
+        <div className={s.pool_stak_bar}>
           {balanceShares.map((tokenShare, index) => (
             <Antd.Tooltip key={index} placement="top" title={(
               <div className={s.balance_tooltip}>
@@ -333,12 +349,12 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
       <div className={s.row4}>
         <div className={s.row_label}>
-          <span>MY BALANCE</span>
+          <span>MY POOL BALANCE</span>
           <InfoTooltip />
         </div>
         <div className={s.row_value}>{myBalance}</div>
         <div className={s.row_value_2}>{myEffectiveBalance} effective balance</div>
-        <div className={s.pool_stack_bar}>
+        <div className={s.pool_stak_bar}>
           {myBalanceShares.map((tokenShare, index) => (
             <Antd.Tooltip key={index} placement="top" title={(
               <div className={s.balance_tooltip}>

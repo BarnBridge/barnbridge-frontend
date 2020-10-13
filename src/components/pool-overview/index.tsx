@@ -9,16 +9,16 @@ import PoolTransactionTable from 'components/pool-transaction-table';
 import s from './styles.module.css';
 
 export type PoolOverviewProps = {
-  onPoolStackSelect: (stakKey: string) => void;
+  onPoolStakSelect: (stakKey: string) => void;
 };
 
 const PoolOverview: React.FunctionComponent<PoolOverviewProps> = props => {
   function handleUDSStaking() {
-    props.onPoolStackSelect?.(STABLE_TOKEN_KEY);
+    props.onPoolStakSelect?.(STABLE_TOKEN_KEY);
   }
 
   function handleUNIStaking() {
-    props.onPoolStackSelect?.(LP_TOKEN_KEY);
+    props.onPoolStakSelect?.(LP_TOKEN_KEY);
   }
 
   return (

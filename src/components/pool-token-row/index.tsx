@@ -39,8 +39,8 @@ type StateType = TokenInfo & {
   stakedBalance?: BigNumber;
   effectiveStakedBalance?: BigNumber;
   enabled?: boolean;
-  amount: number;
-  gasAmount: number;
+  amount?: number;
+  gasAmount: string;
   expanded: boolean;
 };
 
@@ -50,8 +50,8 @@ const InitialState: StateType = {
   name: '-',
   decimals: 0,
   enabled: false,
-  amount: 0,
-  gasAmount: 0,
+  amount: undefined,
+  gasAmount: 'Standard',
   expanded: false,
 };
 
@@ -84,8 +84,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           ...prevState,
           walletBalance: web3c.usdc.balance,
           stakedBalance: web3c.staking.usdc.balance,
-          effectiveStakedBalance: web3c.staking.usdc.epochPoolSize,
-          enabled: web3c.usdc.allowance?.isEqualTo(MAX_UINT_256),
+          effectiveStakedBalance: web3c.staking.usdc.epochUserBalance,
+          enabled: web3c.usdc.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
         }));
         break;
       case TOKEN_DAI_KEY:
@@ -93,8 +93,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           ...prevState,
           walletBalance: web3c.dai.balance,
           stakedBalance: web3c.staking.dai.balance,
-          effectiveStakedBalance: web3c.staking.dai.epochPoolSize,
-          enabled: web3c.dai.allowance?.isEqualTo(MAX_UINT_256),
+          effectiveStakedBalance: web3c.staking.dai.epochUserBalance,
+          enabled: web3c.dai.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
         }));
         break;
       case TOKEN_SUSD_KEY:
@@ -102,8 +102,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           ...prevState,
           walletBalance: web3c.susd.balance,
           stakedBalance: web3c.staking.susd.balance,
-          effectiveStakedBalance: web3c.staking.susd.epochPoolSize,
-          enabled: web3c.susd.allowance?.isEqualTo(MAX_UINT_256),
+          effectiveStakedBalance: web3c.staking.susd.epochUserBalance,
+          enabled: web3c.susd.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
         }));
         break;
       case TOKEN_UNISWAP_KEY:
@@ -111,14 +111,24 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           ...prevState,
           walletBalance: web3c.uniswapV2.balance,
           stakedBalance: web3c.staking.uniswap_v2.balance,
-          effectiveStakedBalance: web3c.staking.uniswap_v2.epochPoolSize,
-          enabled: web3c.uniswapV2.allowance?.isEqualTo(MAX_UINT_256),
+          effectiveStakedBalance: web3c.staking.uniswap_v2.epochUserBalance,
+          enabled: web3c.uniswapV2.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
         }));
         break;
       default:
         break;
     }
   }, [web3c, props.token]);
+
+  const activeBalance = React.useMemo<BigNumber | undefined>(() => {
+    if (props.type === 'deposit') {
+      return state.walletBalance;
+    } else if (props.type === 'withdraw') {
+      return state.stakedBalance;
+    }
+
+    return undefined;
+  }, [props.type, state]);
 
   function toggleExpanded() {
     setExpanded(prevState => !prevState);
@@ -171,7 +181,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   function handleInputMaxClick() {
     setState(prevState => ({
       ...prevState,
-      amount: prevState.walletBalance?.toNumber() ?? 0,
+      amount: activeBalance?.toNumber() ?? 0,
     }));
   }
 
@@ -192,12 +202,31 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setDepositing(true);
 
     try {
-      await web3c.staking.depositSend(tokenInfo, web3.account, state.amount, state.gasAmount);
+      await web3c.staking.depositSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
-        amount: 0,
-        gasAmount: gasOptions[2]?.value ?? 0,
+        amount: undefined,
+        gasAmount: 'Standard',
       }));
+
+      switch (tokenInfo.name) {
+        case TOKEN_USDC_KEY:
+          web3c.usdc.reload();
+          web3c.yf.reload();
+          break;
+        case TOKEN_DAI_KEY:
+          web3c.dai.reload();
+          web3c.yf.reload();
+          break;
+        case TOKEN_SUSD_KEY:
+          web3c.susd.reload();
+          web3c.yf.reload();
+          break;
+        case TOKEN_UNISWAP_KEY:
+          web3c.uniswapV2.reload();
+          web3c.yflp.reload();
+          break;
+      }
     } catch (e) {
     }
 
@@ -214,29 +243,48 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setWithdrawing(true);
 
     try {
-      await web3c.staking.withdrawSend(tokenInfo, web3.account, state.amount, state.gasAmount);
+      await web3c.staking.withdrawSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
-        amount: 0,
-        gasAmount: gasOptions[2]?.value ?? 0,
+        amount: undefined,
+        gasAmount: 'Standard',
       }));
+
+      switch (tokenInfo.name) {
+        case TOKEN_USDC_KEY:
+          web3c.usdc.reload();
+          web3c.yf.reload();
+          break;
+        case TOKEN_DAI_KEY:
+          web3c.dai.reload();
+          web3c.yf.reload();
+          break;
+        case TOKEN_SUSD_KEY:
+          web3c.susd.reload();
+          web3c.yf.reload();
+          break;
+        case TOKEN_UNISWAP_KEY:
+          web3c.uniswapV2.reload();
+          web3c.yflp.reload();
+          break;
+      }
     } catch (e) {
     }
 
     setWithdrawing(false);
   }
 
-  const gasOptions = React.useMemo(() => [
-    { label: 'Very fast', value: ethGasPrice.price.fastest },
-    { label: 'Fast', value: ethGasPrice.price.fast },
-    { label: 'Standard', value: ethGasPrice.price.average },
-    { label: 'Slow', value: ethGasPrice.price.safeLow },
-  ], [ethGasPrice]);
+  const gasOptions = React.useMemo<Map<string, number>>(() => new Map<string, number>([
+    ['Very fast', ethGasPrice.price.fastest],
+    ['Fast', ethGasPrice.price.fast],
+    ['Standard', ethGasPrice.price.average],
+    ['Slow', ethGasPrice.price.safeLow],
+  ]), [ethGasPrice]);
 
   React.useEffect(() => {
     setState(prevState => ({
       ...prevState,
-      gasAmount: gasOptions[2].value,
+      gasAmount: 'Standard',
     }));
   }, [gasOptions]);
 
@@ -279,7 +327,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
             <div className={s.balanceValue}>{formatBigValue(state.stakedBalance)}</div>
           </Antd.Col>
           <Antd.Col flex="auto">
-            <div className={s.balanceLabel}>EFFECTIVE STACKED BALANCE <InfoTooltip /></div>
+            <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE <InfoTooltip /></div>
             <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance)}</div>
           </Antd.Col>
           {props.lpToken && (
@@ -303,26 +351,33 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 addonAfter={
                   <Antd.Button
                     className={s.inputMaxBtn}
-                    disabled={!state.walletBalance}
+                    disabled={!activeBalance}
                     onClick={handleInputMaxClick}>MAX</Antd.Button>
                 }
-                placeholder={state.walletBalance ? `0 (Max ${state.walletBalance.toNumber()})` : '0'}
-                value={state.amount}
+                placeholder={activeBalance ? `0 (Max ${activeBalance.toNumber()})` : '0'}
+                value={state.amount ? new Intl.NumberFormat(undefined, {
+                  minimumFractionDigits: 0,
+                  maximumFractionDigits: 18,
+                }).format(state.amount) : undefined}
                 onChange={handleAmountChange}
               />
               <Antd.Slider
                 className={s.amountSlider}
-                disabled={!state.walletBalance}
+                disabled={!activeBalance}
                 min={0}
-                max={state.walletBalance?.toNumber() ?? 0}
+                max={activeBalance?.toNumber() ?? 0}
                 value={state.amount}
+                tipFormatter={value => <span>{new Intl.NumberFormat().format(value!)}</span>}
+                tooltipPlacement="bottom"
+                step={0.01}
                 onChange={handleSliderChange}
               />
               {props.type === 'deposit' && (
-                <InfoBox text="Deposits made after previous epoch starts will be considered in the next epoch" />
+                <InfoBox
+                  text="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
               )}
               {props.type === 'withdraw' && (
-                <InfoBox text="Withdrawal before the end of the epoch means you can't harvest the rewards" />
+                <InfoBox text="Withdrawals before the end of the epoch will decrease your rewards." />
               )}
             </div>
           </Antd.Col>
@@ -332,11 +387,11 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               className={s.gasGroup}
               value={state.gasAmount}
               onChange={handleGasAmountChange}>
-              {gasOptions.map(option => (
-                <Antd.Radio.Button key={option.label} className={s.gasOption} value={option.value}>
+              {Array.from(gasOptions.entries()).map(([label, value]) => (
+                <Antd.Radio.Button key={label} className={s.gasOption} value={label}>
                   <div>
-                    <div className={s.gasOptionName}>{option.label}</div>
-                    <div className={s.gasOptionValue}>{option.value} Gwei</div>
+                    <div className={s.gasOptionName}>{label}</div>
+                    <div className={s.gasOptionValue}>{value} Gwei</div>
                   </div>
                   <div className={s.gasOptionRadio} />
                 </Antd.Radio.Button>

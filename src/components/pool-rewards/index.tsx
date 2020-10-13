@@ -32,6 +32,7 @@ const PoolRewards: React.FunctionComponent = props => {
 
     try {
       await yf.massHarvestSend();
+      bond.reload();
       setModalVisible(false);
     } catch (e) {
     }
@@ -44,6 +45,7 @@ const PoolRewards: React.FunctionComponent = props => {
 
     try {
       await yflp.massHarvestSend();
+      bond.reload();
       setModalVisible(false);
     } catch (e) {
     }
@@ -79,7 +81,7 @@ const PoolRewards: React.FunctionComponent = props => {
         <div className={s.col}>
           <div className={s.blockLabel}>
             Potential reward this epoch
-            <InfoTooltip />
+            <InfoTooltip title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake." />
           </div>
           <div className={s.blockValue} text-elipsis="true">
             {formatBigValue(aggregated.totalPotentialReward)} <BondSvg className={s.bondIcon} />

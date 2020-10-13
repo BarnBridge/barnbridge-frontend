@@ -154,7 +154,7 @@ export type Web3ContextType = {
     name: string;
   };
   tried: boolean;
-  connect: (connectorName: string) => void;
+  connect: (connectorName: string) => Promise<void>;
   disconnect: () => void;
 };
 
@@ -165,7 +165,7 @@ const Web3Context = React.createContext<Web3ContextType>({
   account: undefined,
   network: undefined,
   tried: false,
-  connect: () => null,
+  connect: () => Promise.resolve(),
   disconnect: () => null,
 });
 
@@ -178,12 +178,16 @@ const Web3ProviderInner: React.FunctionComponent = props => {
   const [tried, setTried] = React.useState<boolean>(false);
   const [network, setNetwork] = React.useState<any | undefined>();
 
-  async function connect(connectorId: string) {
-    const web3Connector = Web3Connectors.find(c => c.id === connectorId);
+  function connect(connectorId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const web3Connector = Web3Connectors.find(c => c.id === connectorId);
 
-    if (web3Connector) {
-      await web3.activate(web3Connector.connector);
-    }
+      if (!web3Connector) {
+        return reject();
+      }
+
+      web3.activate(web3Connector.connector, reject).then(resolve);
+    });
   }
 
   function disconnect() {
