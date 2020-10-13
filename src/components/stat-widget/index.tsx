@@ -1,14 +1,15 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import s from './styles.module.css';
+import InfoTooltip from 'components/info-tooltip';
 
-import { ReactComponent as InfoCircleSvg } from 'resources/svg/icons/info-circle.svg';
+import s from './styles.module.css';
 
 export type StatWidgetProps = {
   label: string;
   value?: string;
   hint?: string;
+  help?: string;
 };
 
 const StatWidget: React.FunctionComponent<StatWidgetProps> = props => {
@@ -18,7 +19,9 @@ const StatWidget: React.FunctionComponent<StatWidgetProps> = props => {
         <Antd.Col>
           <div className={s.label}>{props.label}</div>
         </Antd.Col>
-        <Antd.Col><InfoCircleSvg className={s.infoIcon} /></Antd.Col>
+        {props.help && (
+          <Antd.Col><InfoTooltip title={props.help} /></Antd.Col>
+        )}
       </Antd.Row>
       {props.value && (
         <Antd.Row>

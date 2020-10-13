@@ -10,7 +10,7 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
   function handleOnChange(event: ChangeEvent<HTMLInputElement>) {
     const { value } = event.target;
 
-    if (/^\d*(\.\d*)?$/.test(value)) {
+    if ((!isNaN(value as any) && /^\d*(\.\d*)?$/.test(value)) || value === '') {
       props.onChange?.(event);
     }
   }

@@ -8,13 +8,7 @@ export type BONDContract = {
   decimals?: number;
   totalSupply?: BigNumber;
   balance?: BigNumber;
-};
-
-const InitialDataState: BONDContract = {
-  symbol: undefined,
-  decimals: undefined,
-  totalSupply: undefined,
-  balance: undefined,
+  reload: () => void;
 };
 
 const Contract = createContract(
@@ -23,7 +17,8 @@ const Contract = createContract(
 );
 
 export function useBONDContract(account?: string): BONDContract {
-  const [data, setData] = React.useState<BONDContract>(InitialDataState);
+  const [data, setData] = React.useState<BONDContract>({} as any);
+  const [version, setVersion] = React.useState<number>(0);
 
   React.useEffect(() => {
     (async () => {
@@ -57,7 +52,14 @@ export function useBONDContract(account?: string): BONDContract {
         balance: getHumanValue(new BigNumber(balance), data.decimals),
       }));
     })();
-  }, [account, data.decimals]);
+  }, [version, account, data.decimals]);
 
-  return data;
+  const reload = React.useCallback(() => {
+    setVersion(prevState => prevState + 1);
+  }, []);
+
+  return {
+    ...data,
+    reload,
+  };
 }

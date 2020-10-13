@@ -15,6 +15,7 @@ export type UniswapV2Contract = {
   lastBlockTime?: number;
   allowance?: BigNumber;
   approveSend: (value: BigNumber) => Promise<any>;
+  reload: () => void;
 };
 
 const Contract = createContract(
@@ -24,6 +25,7 @@ const Contract = createContract(
 
 export function useUniswapV2Contract(account?: string): UniswapV2Contract {
   const [data, setData] = React.useState<UniswapV2Contract>({} as any);
+  const [version, setVersion] = React.useState<number>(0);
 
   React.useEffect(() => {
     (async () => {
@@ -76,7 +78,7 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
         allowance: new BigNumber(allowance),
       }));
     })();
-  }, [account, data.decimals]);
+  }, [version, account, data.decimals]);
 
   const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
     if (!assertValues(account)) {
@@ -101,8 +103,13 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
       });
   }, [account]);
 
+  const reload = React.useCallback(() => {
+    setVersion(prevState => prevState + 1);
+  }, []);
+
   return React.useMemo(() => ({
     ...data,
     approveSend,
-  }), [data, approveSend]);
+    reload,
+  }), [data, approveSend, reload]);
 }

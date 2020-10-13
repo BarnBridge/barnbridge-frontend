@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { assertValues, batchContract, createContract, getHumanValue, sendContract } from 'web3/utils';
+import { assertValues, batchContract, createContract, getHumanValue, sendContract, ZERO_BIG_NUMBER } from 'web3/utils';
 
 export type YieldFarmLPContract = {
   totalEpochs?: number;
@@ -16,6 +16,7 @@ export type YieldFarmLPContract = {
   potentialReward?: BigNumber;
   bondReward?: BigNumber;
   massHarvestSend: () => void;
+  reload: () => void;
 };
 
 const Contract = createContract(
@@ -70,11 +71,18 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
         currentReward: getHumanValue(new BigNumber(massHarvest), 18), // TODO: get decimals from ? contract
       }));
     })();
-  }, [account, data.currentEpoch, version]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [version, account, data.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     if (!assertValues(data.epochStake, data.poolSize, data.epochReward)) {
       return;
+    }
+
+    if (data.poolSize?.isEqualTo(ZERO_BIG_NUMBER)) {
+      return setData(prevState => ({
+        ...prevState,
+        potentialReward: ZERO_BIG_NUMBER,
+      }));
     }
 
     const potentialReward = data.epochStake!
@@ -85,18 +93,28 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
       ...prevState,
       potentialReward,
     }));
-  }, [data.epochStake, data.poolSize, data.epochReward, version]);
+  }, [version, data.epochStake, data.poolSize, data.epochReward]);
 
   React.useEffect(() => {
     if (!assertValues(data.epochReward, data.currentEpoch)) {
       return;
     }
 
+    let bondReward = ZERO_BIG_NUMBER;
+
+    if (data.currentEpoch! > 0) {
+      bondReward = data.epochReward!.multipliedBy(data.currentEpoch! - 1);
+    }
+
     setData(prevState => ({
       ...prevState,
-      bondReward: data.epochReward!.multipliedBy(data.currentEpoch! - 1),
+      bondReward,
     }));
-  }, [data.epochReward, data.currentEpoch, version]);
+  }, [version, data.epochReward, data.currentEpoch]);
+
+  const reload = React.useCallback(() => {
+    setVersion(prevState => prevState + 1);
+  }, []);
 
   function massHarvestSend() {
     if (!assertValues(account)) {
@@ -107,12 +125,13 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
       from: account,
     })
       .then(async () => {
-        setVersion(prevState => prevState + 1);
+        reload();
       });
   }
 
   return {
     ...data,
     massHarvestSend,
+    reload,
   };
 }

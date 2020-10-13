@@ -1,16 +1,20 @@
 import React from 'react';
-
-import s from './styles.module.css';
+import * as Antd from 'antd';
+import { TooltipPropsWithTitle } from 'antd/lib/tooltip';
 
 import { ReactComponent as InfoCircleSvg } from 'resources/svg/icons/info-circle.svg';
 
-export type InfoTooltipProps = {};
+import s from './styles.module.css';
+
+export type InfoTooltipProps = Partial<TooltipPropsWithTitle> & {};
 
 const InfoTooltip: React.FunctionComponent<InfoTooltipProps> = props => {
+  const { className, ...rest } = props;
+
   return (
-    <div className={s.component}>
-      <InfoCircleSvg />
-    </div>
+    <Antd.Tooltip overlayClassName={s.tooltip} placement="bottom" title="" {...rest}>
+      <div className={s.icon}><InfoCircleSvg /></div>
+    </Antd.Tooltip>
   );
 };
 

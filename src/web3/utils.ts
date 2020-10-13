@@ -121,7 +121,8 @@ export function sendContract(contract: EthContract, method: string, methodArgs: 
           return reject(err);
         }
       })
-      .then(resolve);
+      .then(resolve)
+      .catch(reject);
   });
 }
 

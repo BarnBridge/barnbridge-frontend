@@ -10,6 +10,7 @@ export type DAIContract = {
   balance?: BigNumber;
   allowance?: BigNumber;
   approveSend: (value: BigNumber) => Promise<any>;
+  reload: () => void;
 };
 
 const Contract = createContract(
@@ -19,6 +20,7 @@ const Contract = createContract(
 
 export function useDAIContract(account?: string): DAIContract {
   const [data, setData] = React.useState<DAIContract>({} as any);
+  const [version, setVersion] = React.useState<number>(0);
 
   React.useEffect(() => {
     (async () => {
@@ -54,7 +56,7 @@ export function useDAIContract(account?: string): DAIContract {
         allowance: new BigNumber(allowance),
       }));
     })();
-  }, [account, data.decimals]);
+  }, [version, account, data.decimals]);
 
   const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
     if (!assertValues(account)) {
@@ -79,8 +81,13 @@ export function useDAIContract(account?: string): DAIContract {
       });
   }, [account]);
 
+  const reload = React.useCallback(() => {
+    setVersion(prevState => prevState + 1);
+  }, []);
+
   return React.useMemo(() => ({
     ...data,
     approveSend,
-  }), [data, approveSend]);
+    reload,
+  }), [data, approveSend, reload]);
 }

@@ -24,7 +24,7 @@ const PoolsView: React.FunctionComponent<{}> = props => {
       <PoolRewards />
       <PoolStats />
       {!activeStaking && (
-        <PoolOverview onPoolStackSelect={setActiveStaking} />
+        <PoolOverview onPoolStakSelect={setActiveStaking} />
       )}
       <EthGasPriceProvider>
         {activeStaking === STABLE_TOKEN_KEY && (

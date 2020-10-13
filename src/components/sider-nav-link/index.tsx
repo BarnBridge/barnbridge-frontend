@@ -1,7 +1,6 @@
 import React from 'react';
 import { useHistory, useRouteMatch } from 'react-router-dom';
 import * as Antd from 'antd';
-import cx from 'classnames';
 
 import s from './styles.module.css';
 
@@ -9,6 +8,7 @@ export type SiderNavLinkProps = {
   icon: React.ReactNode;
   label: string;
   path: string;
+  expanded?: boolean;
 };
 
 const SiderNavLink: React.FunctionComponent<SiderNavLinkProps> = props => {
@@ -24,11 +24,20 @@ const SiderNavLink: React.FunctionComponent<SiderNavLinkProps> = props => {
 
   return (
     <Antd.Tooltip title={props.label} placement="right">
-      <Antd.Button
-        type="link"
-        icon={props.icon}
-        className={cx(s.btn, isActivePath && s.active)}
-        onClick={handleSiderBtnClick} />
+      <div className={s.wrap}>
+        {isActivePath && (
+          <div className={s.activeMark} />
+        )}
+        <Antd.Button
+          type="link"
+          icon={props.icon}
+          className={s.btn}
+          onClick={handleSiderBtnClick}>
+          {props.expanded && (
+            <span className={s.label}>{props.label}</span>
+          )}
+        </Antd.Button>
+      </div>
     </Antd.Tooltip>
   );
 };
