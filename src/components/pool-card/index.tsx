@@ -328,7 +328,13 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       <div className={s.row3}>
         <div className={s.row_label}>
           <span>POOL BALANCE</span>
-          <InfoTooltip />
+          <InfoTooltip title={
+            <span>
+              This number shows the total staked balance of the pool, and the effective balance of the pool.
+              <br /><br />
+              When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore pool balance and effective pool balance will differ in most cases.
+            </span>
+          } />
         </div>
         <div className={s.row_value}>{balance}</div>
         <div className={s.row_value_2}>{effectiveBalance} effective balance</div>
@@ -350,7 +356,13 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       <div className={s.row4}>
         <div className={s.row_label}>
           <span>MY POOL BALANCE</span>
-          <InfoTooltip />
+          <InfoTooltip title={
+            <span>
+              This number shows your total staked balance in the pool, and your effective staked balance in the pool.
+              <br /><br />
+              When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore your pool balance and your effective pool balance will differ in most cases.
+            </span>
+          } />
         </div>
         <div className={s.row_value}>{myBalance}</div>
         <div className={s.row_value_2}>{myEffectiveBalance} effective balance</div>

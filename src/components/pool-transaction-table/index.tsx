@@ -10,6 +10,8 @@ import { useTransactions } from 'hooks/useTransactions';
 
 import { TOKEN_DAI_KEY, TOKEN_SUSD_KEY, TOKEN_UNISWAP_KEY, TOKEN_USDC_KEY, TOKENS_MAP } from 'web3/contracts';
 
+import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
+
 import s from './styles.module.css';
 
 const TypeFilters: DropdownOption[] = [
@@ -112,6 +114,14 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
         rowKey="txHash"
         dataSource={data}
         pagination={false}
+        locale={{
+          emptyText: (
+            <div className={s.emptyBlock}>
+              <EmptyBoxSvg />
+              <div className={s.emptyLabel}>There are no transaction to show</div>
+            </div>
+          ),
+        }}
         footer={!isEnd ? () => (
           <Antd.Button
             type="default"

@@ -9,6 +9,8 @@ import Dropdown, { DropdownOption } from 'components/dropdown';
 import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 import { useTransactions } from 'hooks/useTransactions';
 
+import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
+
 import s from './styles.module.css';
 
 const PoolFilters: DropdownOption[] = [
@@ -113,23 +115,32 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
         </div>
       </div>
       <div className={s.chart}>
-        {loading ? (
-          <Antd.Spin />
-        ) : (
-          <ReCharts.ResponsiveContainer width="100%" height={350}>
-            <ReCharts.LineChart
-              data={items}
-              margin={{ top: 24, right: 24, left: 24, bottom: 24 }}
-            >
-              <ReCharts.CartesianGrid vertical={false} strokeDasharray="4px" />
-              <ReCharts.XAxis dataKey="timestamp" tickLine={false} tickMargin={24} />
-              <ReCharts.YAxis tickFormatter={value => new Intl.NumberFormat().format(value)} />
-              <ReCharts.Tooltip />
-              <ReCharts.Legend align="right" verticalAlign="top" iconType="circle" />
-              <ReCharts.Line dataKey="deposit" name="Deposits" type="monotone" stroke="#ff4339" />
-              <ReCharts.Line dataKey="withdraw" name="Withdrawals" type="monotone" stroke="#4f6ae6" />
-            </ReCharts.LineChart>
-          </ReCharts.ResponsiveContainer>
+        {loading && <Antd.Spin />}
+        {!loading && (
+          <>
+            {items.length === 0 && (
+              <div className={s.emptyBlock}>
+                <EmptyChartSvg />
+                <div className={s.emptyLabel}>Not enough data to plot a graph</div>
+              </div>
+            )}
+            {items.length > 0 && (
+              <ReCharts.ResponsiveContainer width="100%" height={350}>
+                <ReCharts.LineChart
+                  data={items}
+                  margin={{ top: 24, right: 24, left: 24, bottom: 24 }}
+                >
+                  <ReCharts.CartesianGrid vertical={false} strokeDasharray="4px" />
+                  <ReCharts.XAxis dataKey="timestamp" tickLine={false} tickMargin={24} />
+                  <ReCharts.YAxis tickFormatter={value => new Intl.NumberFormat().format(value)} />
+                  <ReCharts.Tooltip />
+                  <ReCharts.Legend align="right" verticalAlign="top" iconType="circle" />
+                  <ReCharts.Line dataKey="deposit" name="Deposits" type="monotone" stroke="#ff4339" />
+                  <ReCharts.Line dataKey="withdraw" name="Withdrawals" type="monotone" stroke="#4f6ae6" />
+                </ReCharts.LineChart>
+              </ReCharts.ResponsiveContainer>
+            )}
+          </>
         )}
       </div>
     </div>

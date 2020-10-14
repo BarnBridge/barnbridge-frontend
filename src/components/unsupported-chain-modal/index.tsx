@@ -18,8 +18,7 @@ const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps>
       footer={[]}
     >
       <div className={s.headerLabel}>Wrong network</div>
-      <div className={s.text}>Please switch your wallet network
-        from <b>Ropsten</b> to <b>Mainnet</b> or <b>Rinkeby</b> to use the app
+      <div className={s.text}>Please switch your wallet network to <b>Mainnet</b> to use the app
       </div>
       <div className={s.text}>If you still encounter problems, you may want to switch to a different wallet</div>
       <Antd.Button

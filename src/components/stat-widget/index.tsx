@@ -9,7 +9,7 @@ export type StatWidgetProps = {
   label: string;
   value?: string;
   hint?: string;
-  help?: string;
+  help?: React.ReactNode;
 };
 
 const StatWidget: React.FunctionComponent<StatWidgetProps> = props => {
