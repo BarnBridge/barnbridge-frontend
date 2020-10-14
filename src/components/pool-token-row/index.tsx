@@ -1,4 +1,4 @@
-import React, { ChangeEvent } from 'react';
+import React  from 'react';
 import * as Antd from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import cx from 'classnames';
@@ -39,7 +39,7 @@ type StateType = TokenInfo & {
   stakedBalance?: BigNumber;
   effectiveStakedBalance?: BigNumber;
   enabled?: boolean;
-  amount?: number;
+  amount?: string;
   gasAmount: string;
   expanded: boolean;
 };
@@ -162,12 +162,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setEnabling(false);
   }
 
-  function handleAmountChange(ev: ChangeEvent<HTMLInputElement>) {
-    ev.persist();
-
+  function handleAmountChange(value: string | undefined) {
     setState(prevState => ({
       ...prevState,
-      amount: Number(ev.target.value ?? 0),
+      amount: value,
     }));
   }
 
@@ -181,14 +179,14 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   function handleInputMaxClick() {
     setState(prevState => ({
       ...prevState,
-      amount: activeBalance?.toNumber() ?? 0,
+      amount: activeBalance?.toString(),
     }));
   }
 
   function handleSliderChange(value: number) {
     setState(prevState => ({
       ...prevState,
-      amount: value,
+      amount: String(value),
     }));
   }
 
@@ -202,7 +200,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setDepositing(true);
 
     try {
-      await web3c.staking.depositSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
+      const amount = new BigNumber(state.amount!.replace(/,/gi, ''));
+      await web3c.staking.depositSend(tokenInfo, web3.account, amount, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
         amount: undefined,
@@ -243,7 +242,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setWithdrawing(true);
 
     try {
-      await web3c.staking.withdrawSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
+      const amount = new BigNumber(state.amount!.replace(/,/gi, ''));
+      await web3c.staking.withdrawSend(tokenInfo, web3.account, amount, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
         amount: undefined,
@@ -355,10 +355,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                     onClick={handleInputMaxClick}>MAX</Antd.Button>
                 }
                 placeholder={activeBalance ? `0 (Max ${activeBalance.toNumber()})` : '0'}
-                value={state.amount ? new Intl.NumberFormat(undefined, {
-                  minimumFractionDigits: 0,
-                  maximumFractionDigits: 18,
-                }).format(state.amount) : undefined}
+                numberFormat={{
+                  maximumFractionDigits: state.decimals,
+                }}
+                value={state.amount}
                 onChange={handleAmountChange}
               />
               <Antd.Slider
@@ -366,7 +366,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 disabled={!activeBalance}
                 min={0}
                 max={activeBalance?.toNumber() ?? 0}
-                value={state.amount}
+                value={Number(state.amount)}
                 tipFormatter={value => <span>{new Intl.NumberFormat().format(value!)}</span>}
                 tooltipPlacement="bottom"
                 step={0.01}
@@ -405,7 +405,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               type="primary"
               className={s.actionBtn}
               loading={depositing}
-              disabled={!state.enabled || state.amount === 0}
+              disabled={!state.enabled || state.amount === '0'}
               onClick={handleDeposit}>Deposit
             </Antd.Button>
           )}
@@ -414,7 +414,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               type="primary"
               className={s.actionBtn}
               loading={withdrawing}
-              disabled={state.amount === 0}
+              disabled={state.amount === '0'}
               onClick={handleWithdraw}>Withdraw
             </Antd.Button>
           )}
