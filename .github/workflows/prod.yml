@@ -1,9 +1,9 @@
-name: Deploy dev
+name: Deploy prod
 
 on:
   push:
-    branches:
-    - master
+    tags:
+      - v*
 
 jobs:
   build:
@@ -34,22 +34,22 @@ jobs:
       env:
         CI: false
         REACT_APP_HTML_TITLE: 'BarnBridge'
-        REACT_APP_WEB3_CHAIN_ID: 4
+        REACT_APP_WEB3_CHAIN_ID: 1
         REACT_APP_WEB3_POLLING_INTERVAL: 12000
         REACT_APP_WEB3_RPC_ID: '6c58700fe84943eb83c4cd5c23dff3d8'
         REACT_APP_WEB3_FORTMATIC_API_KEY: 'pk_live_52A66E22976EB055'
         REACT_APP_WEB3_FORTMATIC_SITE_VERIFICATION: 'OHQ0iUG4unpgCMFw'
         REACT_APP_WEB3_PORTIS_APP_ID: 'b0b0f776-bbf6-458c-a175-6483e0c452b7'
         REACT_APP_WEB3_SQUARELINK_CLIENT_ID: '40bed2a45063b4f690c6'
-        REACT_APP_CONTRACT_DAI_ADDR: '0x95fD7265D5a4d8705d62A5840c5a0d69e019DCe4'
-        REACT_APP_CONTRACT_USDC_ADDR: '0x6ddF381aBf26a9c57FBc34fcb9aceb7A101c84de'
-        REACT_APP_CONTRACT_SUSD_ADDR: '0x9ac3462b9A259bAEF295A8C90b2984738fd7AadD'
-        REACT_APP_CONTRACT_BOND_ADDR: '0x64496f51779e400C5E955228E56fA41563Fb4dd8'
-        REACT_APP_CONTRACT_UNISWAP_V2_ADDR: '0x9f11cd3f75920f3ab86ecb12f4f56398c2f854b2'
-        REACT_APP_CONTRACT_STAKING_ADDR: '0x2e93403C675Ccb9C564edf2dC6001233d0650582'
-        REACT_APP_CONTRACT_COMMUNITY_VAULT_ADDR: '0xdbDa402F87E8EaCB22716566008d404873fb5E8c'
-        REACT_APP_CONTRACT_YIELD_FARM_ADDR: '0xeaD740d2ECF52A958381acFDa77D31767BE12De0'
-        REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR: '0xa9c0b16D299C4C2CCaC8968b23069EDC21e430f1'
+        REACT_APP_CONTRACT_DAI_ADDR: '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+        REACT_APP_CONTRACT_USDC_ADDR: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+        REACT_APP_CONTRACT_SUSD_ADDR: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51'
+        REACT_APP_CONTRACT_BOND_ADDR: '0x0391D2021f89DC339F60Fff84546EA23E337750f'
+        REACT_APP_CONTRACT_UNISWAP_V2_ADDR: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244'
+        REACT_APP_CONTRACT_STAKING_ADDR: '0xb0Fa2BeEe3Cf36a7Ac7E99B885b48538Ab364853'
+        REACT_APP_CONTRACT_COMMUNITY_VAULT_ADDR: '0xA3C299eEE1998F45c20010276684921EBE6423D9'
+        REACT_APP_CONTRACT_YIELD_FARM_ADDR: '0xB3F7abF8FA1Df0fF61C5AC38d35e20490419f4bb'
+        REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR: '0xC25c37c387C5C909a94055F4f16184ca325D3a76'
         REACT_APP_CONTRACT_ETH_ORACLE_ADDR: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
         REACT_APP_THEGRAPH_BB_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/barnbridge/barnbridge-contracts'
 
@@ -76,14 +76,14 @@ jobs:
         aws-region: us-east-1
 
     - name: Deploy static site to S3
-      run: ls -l && aws s3 sync . s3://dev-devappbarnbridgecom-origin --delete
+      run: ls -l && aws s3 sync . s3://prod-appbarnbridgecom-origin --delete
 
     - name: Invalidate CloudFront cache
       run: |
         #!/usr/bin/env bash
-        set -eou pipefail
+        set -euo pipefail
 
-        CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'dev.app.barnbridge.com')].Id | [0]" | tr -d \")
+        CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'app.barnbridge.com')].Id | [0]" | tr -d \")
         echo "Clearing cache for ${CF_DIST_ID}..."
         CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
         while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
