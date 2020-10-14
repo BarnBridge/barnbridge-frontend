@@ -47,8 +47,8 @@ export type StakingContract = {
     epochUserBalance?: BigNumber;
     nextEpochUserBalance?: BigNumber;
   };
-  depositSend: (tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) => void;
-  withdrawSend: (tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) => void;
+  depositSend: (tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) => void;
+  withdrawSend: (tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) => void;
 };
 
 const InitialDataState: StakingContract = {
@@ -215,7 +215,7 @@ export function useStakingContract(account?: string): StakingContract {
     })();
   }, [account, data.currentEpoch, version]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function depositSend(tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) {
+  function depositSend(tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) {
     if (!assertValues(account)) {
       return;
     }
@@ -232,7 +232,7 @@ export function useStakingContract(account?: string): StakingContract {
       });
   }
 
-  function withdrawSend(tokenInfo: TokenInfo, account: string, amount: number, gasPrice: number) {
+  function withdrawSend(tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) {
     if (!assertValues(account)) {
       return;
     }
