@@ -73,14 +73,16 @@ const ConnectedWallet: React.FunctionComponent = props => {
             <p className={s.modalNote}>Please select the wallet of your liking</p>
             <div className={s.connectorList}>
               {web3.connectors.map(connector => (
-                <button
+                <Antd.Button
                   key={connector.id}
+                  type="ghost"
                   className={s.connectorBox}
+                  disabled={connector.name !== 'MetaMask'}
                   onClick={handleProviderClick.bind(this, connector.id as any)}
                 >
                   <img src={connector.logo} alt={connector.name} className={s.connectorLogo} />
                   <span className={s.connectorName}>{connector.name}</span>
-                </button>
+                </Antd.Button>
               ))}
             </div>
           </Antd.Modal>

@@ -30,7 +30,13 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
         label="Total Value Locked"
         value={`$ ${totalValueLocked}`}
         hint={`$ ${totalEffectiveStaked} effective locked`}
-        help="This number shows the Total Value Locked across the staking pool(s). It is the USD and ETH conversion of the amounts in the pool balance(s)."
+        help={
+          <span>
+            This number shows the Total Value Locked across the staking pool(s), and the effective Total Value Locked.
+            <br /><br />
+            When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore TVL and effective TVL will differ in most cases.
+          </span>
+        }
       />
       <StatWidget
         label="Bond Rewards"

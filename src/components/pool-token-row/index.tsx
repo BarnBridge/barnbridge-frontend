@@ -1,4 +1,4 @@
-import React  from 'react';
+import React from 'react';
 import * as Antd from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import cx from 'classnames';
@@ -327,7 +327,9 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
             <div className={s.balanceValue}>{formatBigValue(state.stakedBalance)}</div>
           </Antd.Col>
           <Antd.Col flex="auto">
-            <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE <InfoTooltip /></div>
+            <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE
+              <InfoTooltip title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
+            </div>
             <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance)}</div>
           </Antd.Col>
           {props.lpToken && (
@@ -382,7 +384,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
             </div>
           </Antd.Col>
           <Antd.Col flex="50%">
-            <div className={s.inputLabel}>Gas Fee<InfoTooltip /></div>
+            <div className={s.inputLabel}>Gas Fee
+              <InfoTooltip
+                title="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined." />
+            </div>
             <Antd.Radio.Group
               className={s.gasGroup}
               value={state.gasAmount}
@@ -405,7 +410,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               type="primary"
               className={s.actionBtn}
               loading={depositing}
-              disabled={!state.enabled || state.amount === '0'}
+              disabled={!state.enabled || state.amount === '0' || !state.amount}
               onClick={handleDeposit}>Deposit
             </Antd.Button>
           )}
@@ -414,7 +419,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               type="primary"
               className={s.actionBtn}
               loading={withdrawing}
-              disabled={state.amount === '0'}
+              disabled={state.amount === '0' || !state.amount}
               onClick={handleWithdraw}>Withdraw
             </Antd.Button>
           )}
