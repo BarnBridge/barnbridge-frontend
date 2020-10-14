@@ -85,8 +85,8 @@ jobs:
 
         CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'app.barnbridge.com')].Id | [0]" | tr -d \")
         echo "Clearing cache for ${CF_DIST_ID}..."
-        CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
-        while [ $(aws cloudfront get-invalidation --distribution-id $DIST_ID --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
+        CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
+        while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
           echo "CF_DIST_ID=${CF_DIST_ID} CF_INVALIDATION_ID=${CF_INVALIDATION_ID}: Waiting for CloudFront cache invalidation to complete..."
           sleep 5
         done
