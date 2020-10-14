@@ -95,7 +95,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const balance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.nextPoolSize)}`;
+      return `$ ${formatBigValue(yf.nextPoolSize, 2)}`;
     } else if (lpToken && yflp.nextPoolSize) {
       if (yflp.nextPoolSize.isEqualTo(ZERO_BIG_NUMBER)) {
         return '0 USDC_BOND_UNI_LP';
@@ -109,7 +109,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const effectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.poolSize)}`;
+      return `$ ${formatBigValue(yf.poolSize, 2)}`;
     } else if (lpToken && yflp.poolSize) {
       if (yflp.poolSize.isEqualTo(ZERO_BIG_NUMBER)) {
         return '0';
@@ -135,7 +135,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <USDCIcon />,
             name: 'USDC',
-            value: `$ ${formatBigValue(staking.usdc.nextEpochPoolSize)}`,
+            value: `$ ${formatBigValue(staking.usdc.nextEpochPoolSize, 2)}`,
             share: usdcShare,
             color: '#4f6ae6',
           });
@@ -150,7 +150,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <DAIIcon />,
             name: 'DAI',
-            value: `$ ${formatBigValue(staking.dai.nextEpochPoolSize)}`,
+            value: `$ ${formatBigValue(staking.dai.nextEpochPoolSize, 2)}`,
             share: daiShare,
             color: '#ffd160',
           });
@@ -182,7 +182,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <UNIIcon />,
             name: 'USDC_BOND_UNI_LP',
-            value: `$ ${formatBigValue(aggregated.lpStakedValue)}`,
+            value: `$ ${formatBigValue(aggregated.lpStakedValue, 2)}`,
             share: uniShare,
             color: '#ff4339',
           });
@@ -195,7 +195,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const myBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.nextEpochStake)}`;
+      return `$ ${formatBigValue(yf.nextEpochStake, 2)}`;
     } else if (lpToken && yflp.nextEpochStake) {
       if (yflp.nextEpochStake.isEqualTo(ZERO_BIG_NUMBER)) {
         return '0 USDC_BOND_UNI_LP';
@@ -209,7 +209,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const myEffectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.epochStake)}`;
+      return `$ ${formatBigValue(yf.epochStake, 2)}`;
     } else if (lpToken && yflp.epochStake) {
       if (yflp.epochStake.isEqualTo(ZERO_BIG_NUMBER)) {
         return '0';
@@ -235,7 +235,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <USDCIcon />,
             name: 'USDC',
-            value: `$ ${formatBigValue(staking.usdc.nextEpochUserBalance)}`,
+            value: `$ ${formatBigValue(staking.usdc.nextEpochUserBalance, 2)}`,
             share: usdcShare,
             color: '#4f6ae6',
           });
@@ -250,7 +250,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <DAIIcon />,
             name: 'DAI',
-            value: `$ ${formatBigValue(staking.dai.nextEpochUserBalance)}`,
+            value: `$ ${formatBigValue(staking.dai.nextEpochUserBalance, 2)}`,
             share: daiShare,
             color: '#ffd160',
           });
@@ -265,7 +265,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <SUSDIcon />,
             name: 'SUSD',
-            value: `$ ${formatBigValue(staking.susd.nextEpochUserBalance)}`,
+            value: `$ ${formatBigValue(staking.susd.nextEpochUserBalance, 2)}`,
             share: susdShare,
             color: '#1e1a31',
           });

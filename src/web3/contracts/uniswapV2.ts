@@ -56,7 +56,7 @@ export function useUniswapV2Contract(account?: string): UniswapV2Contract {
         totalSupply: getHumanValue(new BigNumber(totalSupply), Number(decimals)),
         usdcReserve: getHumanValue(usdcReserve, 6), // TODO: get decimals from USDC contract
         bondReserve: getHumanValue(bondReserve, 18), // TODO: get decimals from BOND contract
-        lastBlockTime: Number(reserves[2]) * 1000,
+        lastBlockTime: reserves ? Number(reserves[2]) * 1000 : 0,
       }));
     })();
   }, []);

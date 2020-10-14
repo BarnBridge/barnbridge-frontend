@@ -48,11 +48,14 @@ const LayoutView: React.FunctionComponent = props => {
           </Switch>
           <Antd.Layout.Footer className={s.footer}>
             <div className={s.footerLinks}>
-              <ExternalLink href="#">Discord</ExternalLink>
-              <ExternalLink href="#">Twitter</ExternalLink>
-              <ExternalLink href="#">Whitepaper</ExternalLink>
-              <ExternalLink href="#">Github</ExternalLink>
-              <ExternalLink href="#">USDC/BOND Uniswap v2 pool</ExternalLink>
+              <ExternalLink href="http://www.barnbridge.com/">Website</ExternalLink>
+              <ExternalLink href="https://discord.com/invite/FfEhsVk">Discord</ExternalLink>
+              <ExternalLink href="https://twitter.com/barn_bridge">Twitter</ExternalLink>
+              <ExternalLink href="https://github.com/BarnBridge/BarnBridge-Whitepaper">Whitepaper</ExternalLink>
+              <ExternalLink href="https://github.com/BarnBridge/">Github</ExternalLink>
+              <ExternalLink href="https://client.aragon.org/#/barnbridgelaunch/">LaunchDAO</ExternalLink>
+              <ExternalLink href={`https://app.uniswap.org/#/add/${process.env.REACT_APP_CONTRACT_BOND_ADDR}/${process.env.REACT_APP_CONTRACT_USDC_ADDR}`}>Uniswap v2 USDC/BOND add liquidity</ExternalLink>
+              <ExternalLink href={`https://app.uniswap.org/#/swap?inputCurrency=${process.env.REACT_APP_CONTRACT_BOND_ADDR}&outputCurrency=${process.env.REACT_APP_CONTRACT_USDC_ADDR}`}>Uniswap v2 USDC/BOND market</ExternalLink>
             </div>
           </Antd.Layout.Footer>
         </Antd.Layout.Content>
