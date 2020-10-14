@@ -20,5 +20,27 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+    <!-- Google Tag Manager -->
+    <script>(function (w, d, s, l, i) {
+      w[l] = w[l] || [];
+      w[l].push({
+        'gtm.start': new Date().getTime(),
+        event: 'gtm.js',
+      });
+      const f = d.getElementsByTagName(s)[0];
+      const j = d.createElement(s);
+      const dl = l !== 'dataLayer' ? `&l=${l}` : '';
+      j.src = `https://www.googletagmanager.com/gtm.js?id=${i}${dl}`;
+      j.async = true;
+      f.parentNode.insertBefore(j, f);
+    })(window, document, 'script', 'dataLayer', '%REACT_APP_GOOGLE_TAG_MANAGER_ID%');</script>
+    <!-- End Google Tag Manager -->
+    <!-- Google Tag Manager (noscript) -->
+    <noscript>
+      <iframe width="0" height="0"
+              src="https://www.googletagmanager.com/ns.html?id=%REACT_APP_GOOGLE_TAG_MANAGER_ID%"
+              style="display: none; visibility: hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
   </body>
 </html>

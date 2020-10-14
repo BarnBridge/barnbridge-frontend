@@ -52,6 +52,7 @@ jobs:
         REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR: '0xa9c0b16D299C4C2CCaC8968b23069EDC21e430f1'
         REACT_APP_CONTRACT_ETH_ORACLE_ADDR: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419'
         REACT_APP_THEGRAPH_BB_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/barnbridge/barnbridge-contracts'
+        REACT_APP_GOOGLE_TAG_MANAGER_ID: 'GTM-T6RVRCR'
 
     - name: Save artifacts
       uses: actions/upload-artifact@v2
