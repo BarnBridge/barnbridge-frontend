@@ -236,11 +236,11 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     const yfStaked = yfStakedValue();
     const yflpStaked = yflpStakedValue();
 
-    if (!assertValues(yfStaked, yflpStaked)) {
+    if (!yfStaked && !yflpStaked) {
       return undefined;
     }
 
-    return yfStaked!.plus(yflpStaked!);
+    return yfStaked!.plus(yflpStaked ?? ZERO_BIG_NUMBER);
   }
 
   function totalStakedInETH(): OptionalBigNumber {
@@ -258,11 +258,11 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     const yfStaked = yfEffectiveStakedValue();
     const yflpStaked = yflpEffectiveStakedValue();
 
-    if (!assertValues(yfStaked, yflpStaked)) {
+    if (!yfStaked && !yflpStaked) {
       return undefined;
     }
 
-    return yfStaked!.plus(yflpStaked!);
+    return yfStaked!.plus(yflpStaked ?? ZERO_BIG_NUMBER);
   }
 
   function bondReward(): OptionalBigNumber {

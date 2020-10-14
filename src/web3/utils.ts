@@ -48,10 +48,14 @@ export function getEtherscanAddressUrl(
   }
 }
 
-export function createContract(abi: any, address: string, rpcUrl: string = getRpcUrl()): EthContract {
-  const contract: EthContract = new (Web3EthContract as any)(abi, address);
-  contract.setProvider?.(rpcUrl);
-  return contract;
+export function createContract(abi: any, address: string, rpcUrl: string = getRpcUrl()): EthContract | undefined {
+  try {
+    const contract: EthContract = new (Web3EthContract as any)(abi, address);
+    contract.setProvider?.(rpcUrl);
+    return contract;
+  } catch (e) {
+    return undefined;
+  }
 }
 
 type BatchMethodConfig = {
@@ -62,7 +66,11 @@ type BatchMethodConfig = {
 
 export type BatchMethod = string | BatchMethodConfig;
 
-export function batchContract(contract: EthContract, methods: BatchMethod[]): Promise<any[]> {
+export function batchContract(contract: EthContract | undefined, methods: BatchMethod[]): Promise<any[]> {
+  if (!contract) {
+    return Promise.resolve([]);
+  }
+
   const batch = new contract.BatchRequest!();
 
   const promises = methods.map((method: BatchMethod) => {
@@ -85,17 +93,21 @@ export function batchContract(contract: EthContract, methods: BatchMethod[]): Pr
         return resolve(undefined);
       }
 
-      const request = contractMethod(...methodArgs).call
-        .request(callArgs, (err: Error, data: string) => {
-          if (err) {
-            console.error(`${method}.call`, err);
-            return resolve(undefined);
-          }
+      try {
+        const request = contractMethod(...methodArgs).call
+          .request(callArgs, (err: Error, data: string) => {
+            if (err) {
+              console.error(`${method}.call`, err);
+              return resolve(undefined);
+            }
 
-          resolve(data);
-        });
+            resolve(data);
+          });
 
-      batch.add(request);
+        batch.add(request);
+      } catch (e) {
+        return resolve(undefined);
+      }
     });
   });
 
@@ -104,7 +116,11 @@ export function batchContract(contract: EthContract, methods: BatchMethod[]): Pr
   return Promise.all(promises);
 }
 
-export function sendContract(contract: EthContract, method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+export function sendContract(contract: EthContract | undefined, method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+  if (!contract) {
+    return Promise.reject();
+  }
+
   return new Promise((resolve, reject) => {
     const clonedContract: EthContract = contract.clone();
     clonedContract.setProvider?.((window as any).ethereum);

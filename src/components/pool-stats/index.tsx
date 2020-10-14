@@ -22,7 +22,7 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   const bondPrice = formatBigValue(aggregated.bondPrice, 2);
   const bondPriceTimestamp = uniswapV2?.lastBlockTime ? formatDistance(new Date(uniswapV2.lastBlockTime), new Date(), {
     addSuffix: true,
-  }) : '-';
+  }) : '';
 
   return (
     <div className={s.component}>
