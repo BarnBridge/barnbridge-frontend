@@ -34,7 +34,7 @@ jobs:
       env:
         CI: false
         REACT_APP_HTML_TITLE: 'BarnBridge'
-        REACT_APP_WEB3_CHAIN_ID: 4
+        REACT_APP_WEB3_CHAIN_ID: 1
         REACT_APP_WEB3_POLLING_INTERVAL: 12000
         REACT_APP_WEB3_RPC_ID: '6c58700fe84943eb83c4cd5c23dff3d8'
         REACT_APP_WEB3_FORTMATIC_API_KEY: 'pk_live_52A66E22976EB055'
