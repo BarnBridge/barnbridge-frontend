@@ -101,7 +101,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         return '0 USDC_BOND_UNI_LP';
       }
 
-      return <span>{formatBigValue(yflp.nextPoolSize, 3)} x 10<sup>-18</sup> USDC_BOND_UNI_LP</span>;
+      return <span>{formatBigValue(yflp.nextPoolSize, 18)} USDC_BOND_UNI_LP</span>;
     }
 
     return '-';
@@ -115,7 +115,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         return '0';
       }
 
-      return <span>{formatBigValue(yflp.poolSize)} x 10<sup>-18</sup></span>;
+      return <span>{formatBigValue(yflp.poolSize, 18)}</span>;
     }
 
     return '-';
@@ -201,7 +201,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         return '0 USDC_BOND_UNI_LP';
       }
 
-      return <span>{formatBigValue(yflp.nextEpochStake)} x 10<sup>-18</sup> USDC_BOND_UNI_LP</span>;
+      return <span>{formatBigValue(yflp.nextEpochStake, 18)} USDC_BOND_UNI_LP</span>;
     }
 
     return '-';
@@ -215,7 +215,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         return '0';
       }
 
-      return <span>{formatBigValue(yflp.epochStake)} x 10<sup>-18</sup></span>;
+      return <span>{formatBigValue(yflp.epochStake, 18)}</span>;
     }
 
     return '-';
