@@ -48,8 +48,11 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
 
         let rtnValue = new BigNumber(bgn.toFixed(props.numberFormat?.maximumFractionDigits ?? 18)).toFormat();
 
-        if (String(newValue).endsWith('.')) {
-          rtnValue += '.';
+        const match = newValue.match(/(\.$)|(\.)\d*0$/gi);
+
+        if (match) {
+          newValue = value.replace(/(\.\w*)/gi, '');
+          rtnValue = newValue + match[0];
         }
 
         props.onChange?.(rtnValue, event);
@@ -60,7 +63,7 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
 
   const value = React.useMemo(() => {
     try {
-      const val = String(props.value).replace(/,/gi, '');
+      let val = String(props.value).replace(/,/gi, '');
       const bgn = new BigNumber(val);
 
       if (isNaN(bgn.toNumber())) {
@@ -69,8 +72,11 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
 
       let newValue = new BigNumber(bgn.toFixed(props.numberFormat?.maximumFractionDigits ?? 18)).toFormat();
 
-      if (String(props.value).endsWith('.')) {
-        newValue += '.';
+      const match = String(props.value).match(/(\.$)|(\.)\d*0$/gi);
+
+      if (match) {
+        val = String(props.value).replace(/(\.\w*)/gi, '');
+        newValue = val + match[0];
       }
 
       return newValue;
