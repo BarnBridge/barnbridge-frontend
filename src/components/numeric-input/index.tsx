@@ -62,6 +62,12 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
 
   function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
     const val = event.target.value;
+
+    if (val === '') {
+      onChangeRef.current?.(undefined);
+      return;
+    }
+
     const bnValue = new BigNumber(val.replace(/,/g, ''));
 
     if (bnValue.toFormat() !== val) {
