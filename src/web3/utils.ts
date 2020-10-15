@@ -154,8 +154,8 @@ export function getNonHumanValue(value: BigNumber | number, decimals: number = 0
   return (new BigNumber(value)).multipliedBy(getExponentValue(decimals));
 }
 
-export function formatBigValue(value?: BigNumber, decimals: number = 3, defaultValue: string = '-'): string {
-  return value ? value.toFormat(decimals) : defaultValue;
+export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultValue: string = '-'): string {
+  return value ? new BigNumber(value.toFixed(decimals)).toFormat() : defaultValue;
 }
 
 export function assertValues(...values: any[]): boolean {

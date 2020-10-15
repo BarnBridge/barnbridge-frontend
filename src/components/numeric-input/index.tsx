@@ -63,8 +63,10 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
   function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
     const val = event.target.value;
 
-    if (val === '') {
+    if (val === '' || val === '.') {
+      stateRef.current = '';
       onChangeRef.current?.(undefined);
+      forceRender({});
       return;
     }
 
