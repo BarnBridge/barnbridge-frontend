@@ -15,7 +15,7 @@ import {
   useWeb3Contracts,
 } from 'web3/contracts';
 import { useWeb3 } from 'web3/provider';
-import { formatBigValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import { formatBigValue, getHumanValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useEthGasPrice } from 'context/useEthGas';
 
 import InfoBox from 'components/info-box';
@@ -130,6 +130,21 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     return undefined;
   }, [props.type, state]);
 
+  const maxAmount = React.useMemo<number>(() => {
+    return getNonHumanValue(activeBalance ?? 0, state.decimals).toNumber();
+  }, [activeBalance, state.decimals]);
+
+  const sliderStep = React.useMemo<number>(() => {
+    switch (props.token) {
+      case TOKEN_USDC_KEY:
+      case TOKEN_DAI_KEY:
+      case TOKEN_SUSD_KEY:
+        return 10 ** state.decimals;
+      case TOKEN_UNISWAP_KEY:
+        return 1;
+    }
+  }, [props.token, state.decimals]);
+
   function toggleExpanded() {
     setExpanded(prevState => !prevState);
   }
@@ -186,7 +201,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   function handleSliderChange(value: number) {
     setState(prevState => ({
       ...prevState,
-      amount: new BigNumber(value),
+      amount: value === maxAmount ? activeBalance : getHumanValue(new BigNumber(value), state.decimals),
     }));
   }
 
@@ -298,7 +313,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         {props.stableToken ? (
           <div className={s.col}>
             <div className={s.label}>WALLET BALANCE</div>
-            <div className={s.value}>{formatBigValue(state.walletBalance)}</div>
+            <div className={s.value}>{formatBigValue(state.walletBalance, state.decimals)}</div>
           </div>
         ) : <div />}
         <div className={s.col}>
@@ -324,19 +339,19 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         <Antd.Row className={s.balanceRow}>
           <Antd.Col flex="auto">
             <div className={s.balanceLabel}>STAKED BALANCE</div>
-            <div className={s.balanceValue}>{formatBigValue(state.stakedBalance)}</div>
+            <div className={s.balanceValue}>{formatBigValue(state.stakedBalance, state.decimals)}</div>
           </Antd.Col>
           <Antd.Col flex="auto">
             <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE
               <InfoTooltip
                 title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
             </div>
-            <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance)}</div>
+            <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance, state.decimals)}</div>
           </Antd.Col>
           {props.lpToken && (
             <Antd.Col flex="auto">
               <div className={s.balanceLabel}>WALLET BALANCE</div>
-              <div className={s.balanceValue}>{formatBigValue(state.walletBalance)}</div>
+              <div className={s.balanceValue}>{formatBigValue(state.walletBalance, state.decimals)}</div>
             </Antd.Col>
           )}
         </Antd.Row>
@@ -366,11 +381,12 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 className={s.amountSlider}
                 disabled={!activeBalance}
                 min={0}
-                max={activeBalance?.toNumber() ?? 0}
-                value={state.amount?.toNumber() ?? 0}
-                tipFormatter={value => <span>{new Intl.NumberFormat().format(value!)}</span>}
+                max={maxAmount}
+                value={getNonHumanValue(state.amount ?? 0, state.decimals).toNumber() ?? 0}
+                tipFormatter={value =>
+                  <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, state.decimals), state.decimals)}</span>}
                 tooltipPlacement="bottom"
-                step={0.01}
+                step={sliderStep}
                 onChange={handleSliderChange}
               />
               {props.type === 'deposit' && (
