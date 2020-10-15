@@ -57,6 +57,7 @@
 .table :global .ant-table-footer {
     display: flex;
     justify-content: center;
+    background-color: #fff;
 }
 
 .emptyBlock {
@@ -77,4 +78,16 @@
     line-height: 24px;
     text-align: center;
     color: #717980;
+}
+
+.moreBtn {
+    width: 243px;
+    height: 48px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+    color: #fff;
 }

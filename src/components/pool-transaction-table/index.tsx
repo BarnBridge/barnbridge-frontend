@@ -124,9 +124,10 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
         }}
         footer={!isEnd ? () => (
           <Antd.Button
-            type="default"
+            type="primary"
+            className={s.moreBtn}
             disabled={loading}
-            onClick={handleLoadMore}>Loading more</Antd.Button>
+            onClick={handleLoadMore}>Show more transactions</Antd.Button>
         ) : undefined}
       />
     </div>
