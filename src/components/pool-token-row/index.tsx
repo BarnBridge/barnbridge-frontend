@@ -39,7 +39,7 @@ type StateType = TokenInfo & {
   stakedBalance?: BigNumber;
   effectiveStakedBalance?: BigNumber;
   enabled?: boolean;
-  amount?: string;
+  amount?: BigNumber;
   gasAmount: string;
   expanded: boolean;
 };
@@ -162,7 +162,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setEnabling(false);
   }
 
-  function handleAmountChange(value: string | undefined) {
+  function handleAmountChange(value: BigNumber | undefined) {
     setState(prevState => ({
       ...prevState,
       amount: value,
@@ -179,14 +179,14 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   function handleInputMaxClick() {
     setState(prevState => ({
       ...prevState,
-      amount: activeBalance?.toString(),
+      amount: activeBalance,
     }));
   }
 
   function handleSliderChange(value: number) {
     setState(prevState => ({
       ...prevState,
-      amount: String(value),
+      amount: new BigNumber(value),
     }));
   }
 
@@ -200,8 +200,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setDepositing(true);
 
     try {
-      const amount = new BigNumber(state.amount!.replace(/,/gi, ''));
-      await web3c.staking.depositSend(tokenInfo, web3.account, amount, gasOptions.get(state.gasAmount)!);
+      await web3c.staking.depositSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
         amount: undefined,
@@ -242,8 +241,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setWithdrawing(true);
 
     try {
-      const amount = new BigNumber(state.amount!.replace(/,/gi, ''));
-      await web3c.staking.withdrawSend(tokenInfo, web3.account, amount, gasOptions.get(state.gasAmount)!);
+      await web3c.staking.withdrawSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
         amount: undefined,
@@ -288,6 +286,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     }));
   }, [gasOptions]);
 
+  const noAmount = React.useMemo(() => !state.amount || state.amount?.isEqualTo(ZERO_BIG_NUMBER), [state.amount]);
+
   return (
     <div className={s.component}>
       <div className={s.header}>
@@ -328,7 +328,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           </Antd.Col>
           <Antd.Col flex="auto">
             <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE
-              <InfoTooltip title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
+              <InfoTooltip
+                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
             </div>
             <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance)}</div>
           </Antd.Col>
@@ -356,10 +357,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                     disabled={!activeBalance}
                     onClick={handleInputMaxClick}>MAX</Antd.Button>
                 }
-                placeholder={activeBalance ? `0 (Max ${activeBalance.toNumber()})` : '0'}
-                numberFormat={{
-                  maximumFractionDigits: state.decimals,
-                }}
+                placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
+                maximumFractionDigits={state.decimals}
                 value={state.amount}
                 onChange={handleAmountChange}
               />
@@ -368,7 +367,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 disabled={!activeBalance}
                 min={0}
                 max={activeBalance?.toNumber() ?? 0}
-                value={Number(state.amount)}
+                value={state.amount?.toNumber()}
                 tipFormatter={value => <span>{new Intl.NumberFormat().format(value!)}</span>}
                 tooltipPlacement="bottom"
                 step={0.01}
@@ -410,7 +409,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               type="primary"
               className={s.actionBtn}
               loading={depositing}
-              disabled={!state.enabled || state.amount === '0' || !state.amount}
+              disabled={!state.enabled || noAmount}
               onClick={handleDeposit}>Deposit
             </Antd.Button>
           )}
@@ -419,7 +418,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               type="primary"
               className={s.actionBtn}
               loading={withdrawing}
-              disabled={state.amount === '0' || !state.amount}
+              disabled={noAmount}
               onClick={handleWithdraw}>Withdraw
             </Antd.Button>
           )}
