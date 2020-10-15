@@ -8,64 +8,6 @@
 
 }
 
-.modal :global .ant-modal-footer {
-    display: none;
-}
-
-.modalLabel {
-    margin-bottom: 4px;
-    font-weight: bold;
-    font-size: 24px;
-    line-height: 32px;
-    color: #060a0d;
-}
-
-.modalNote {
-    margin-bottom: 32px;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
-    color: #717980;
-}
-
-.connectorList {
-    display: grid;
-    grid-gap: 6px;
-    grid-template-columns: repeat(auto-fill, calc(50% - 3px));
-    width: 100%;
-    height: 300px;
-    background: #fff;
-    overflow: scroll;
-}
-
-.connectorBox {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 96px;
-    background: #fff;
-    border: 1px solid #e3e4e6;
-    border-radius: 4px;
-}
-
-.connectorBox:hover {
-    border: 1px solid #ff4339;
-    box-shadow: 0 16px 32px rgba(255, 67, 57, 0.04);
-}
-
-.connectorLogo {
-    width: 32px;
-    height: 32px;
-}
-
-.connectorName {
-    margin-left: 6px;
-    font-weight: bold;
-    font-size: 16px;
-    line-height: 32px;
-    color: #13202b;
-}
-
 .overlay {
     width: 320px;
 }

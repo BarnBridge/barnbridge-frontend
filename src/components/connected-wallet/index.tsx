@@ -2,11 +2,12 @@ import React from 'react';
 import * as Antd from 'antd';
 import { UnsupportedChainIdError } from '@web3-react/core';
 
+import ConnectWalletModal from 'components/connect-wallet-modal';
 import UnsupportedChainModal from 'components/unsupported-chain-modal';
 import Identicon from 'components/identicon';
 import ExternalLink from 'components/externalLink';
 
-import { useWeb3 } from 'web3/provider';
+import { useWeb3, Web3Connector } from 'web3/provider';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
@@ -20,25 +21,24 @@ import s from './styles.module.css';
 
 const ConnectedWallet: React.FunctionComponent = props => {
   const web3 = useWeb3();
-  const [visibleModal, setVisibleModal] = React.useState<boolean>(false);
+  const [connectWalletVisible, setConnectWalletVisible] = React.useState<boolean>(false);
   const [unsupportedChainVisible, setUnsupportedChainVisible] = React.useState<boolean>(false);
 
   function handleConnectWallet() {
-    setVisibleModal(true);
+    setConnectWalletVisible(true);
   }
 
   function handleSwitchWallet() {
     setUnsupportedChainVisible(false);
-    setVisibleModal(true);
+    setConnectWalletVisible(true);
   }
 
-  async function handleProviderClick(connectorId: string) {
-    setVisibleModal(false);
+  async function handleConnectorSelect(connector: Web3Connector) {
+    setConnectWalletVisible(false);
 
     try {
-      await web3.connect(connectorId);
+      await web3.connect(connector.id);
     } catch (error) {
-      console.log({error});
       if (error instanceof UnsupportedChainIdError) {
         setUnsupportedChainVisible(true);
       }
@@ -61,33 +61,14 @@ const ConnectedWallet: React.FunctionComponent = props => {
             Connect Wallet
           </Antd.Button>
 
-          <Antd.Modal
-            className={s.modal}
-            visible={visibleModal}
-            centered
-            closable
-            onCancel={() => setVisibleModal(false)}
-            footer={[]}
-          >
-            <p className={s.modalLabel}>Connect Wallet</p>
-            <p className={s.modalNote}>Please select the wallet of your liking</p>
-            <div className={s.connectorList}>
-              {web3.connectors.map(connector => (
-                <Antd.Button
-                  key={connector.id}
-                  type="ghost"
-                  className={s.connectorBox}
-                  disabled={connector.name !== 'MetaMask'}
-                  onClick={handleProviderClick.bind(this, connector.id as any)}
-                >
-                  <img src={connector.logo} alt={connector.name} className={s.connectorLogo} />
-                  <span className={s.connectorName}>{connector.name}</span>
-                </Antd.Button>
-              ))}
-            </div>
-          </Antd.Modal>
+          <ConnectWalletModal
+            visible={connectWalletVisible}
+            connectors={web3.connectors}
+            onCancel={() => setConnectWalletVisible(false)}
+            onConnectorSelect={handleConnectorSelect} />
           <UnsupportedChainModal
             visible={unsupportedChainVisible}
+            onCancel={() => setUnsupportedChainVisible(false)}
             onSwitchWallet={handleSwitchWallet} />
         </>
       ) : (

@@ -1,21 +1,23 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { ModalProps } from 'antd/lib/modal';
 
 import s from './styles.module.css';
 
-export type UnsupportedChainModalProps = {
-  visible: boolean;
+export type UnsupportedChainModalProps = ModalProps & {
   onSwitchWallet: () => void;
 };
 
 const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps> = props => {
+  const { onSwitchWallet, ...modalProps } = props;
+
   return (
     <Antd.Modal
       className={s.component}
-      visible={props.visible}
       centered
       closable={false}
       footer={[]}
+      {...modalProps}
     >
       <div className={s.headerLabel}>Wrong network</div>
       <div className={s.text}>Please switch your wallet network to <b>Mainnet</b> to use the app
@@ -24,7 +26,7 @@ const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps>
       <Antd.Button
         type="ghost"
         className={s.switchBtn}
-        onClick={props.onSwitchWallet}
+        onClick={onSwitchWallet}
       >Switch wallet</Antd.Button>
     </Antd.Modal>
   );
