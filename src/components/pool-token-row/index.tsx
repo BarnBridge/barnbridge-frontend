@@ -367,7 +367,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 disabled={!activeBalance}
                 min={0}
                 max={activeBalance?.toNumber() ?? 0}
-                value={state.amount?.toNumber()}
+                value={state.amount?.toNumber() ?? 0}
                 tipFormatter={value => <span>{new Intl.NumberFormat().format(value!)}</span>}
                 tooltipPlacement="bottom"
                 step={0.01}
