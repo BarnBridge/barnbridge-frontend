@@ -7,16 +7,12 @@ import Web3ContractsProvider from 'web3/contracts';
 import TheGraphProvider from 'context/TheGraph';
 
 import LayoutView from 'views/layout';
+import MobileNotAvailable from 'components/mobile-not-available';
 
 const App: React.FunctionComponent = () => {
   if (isMobile) {
     return (
-      <div className="mobile-not-available-wrap">
-        <p>BarnBridge</p>
-        <p>Yield Farming</p>
-        <p>is currently not available</p>
-        <p>on mobile and tablet</p>
-      </div>
+      <MobileNotAvailable />
     );
   }
 

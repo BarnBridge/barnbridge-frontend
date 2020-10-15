@@ -42,34 +42,3 @@ button {
 .ant-modal .ant-modal-close {
     color: #aaafb3;
 }
-
-.mobile-not-available-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: inherit;
-    padding: 24px;
-    background-color: #13202b;
-}
-
-.mobile-not-available-wrap p {
-    margin: 0 0 8px;
-    font-family: Montserrat;
-    font-style: normal;
-    font-size: 24px;
-    line-height: 32px;
-    color: #fff;
-    text-align: center;
-}
-
-.mobile-not-available-wrap p:nth-child(1),
-.mobile-not-available-wrap p:nth-child(2) {
-    font-weight: bold;
-    font-size: 38px;
-    line-height: 40px;
-}
-
-.mobile-not-available-wrap p:nth-child(2) {
-    margin: 0 0 24px;
-}
