@@ -11,37 +11,41 @@ export type NumericInputProps = Omit<InputProps, 'value' | 'onChange'> & {
   onChange: (value: BigNumber | undefined) => void;
 };
 
+function removeComma(value: string): string {
+  return value.replace(/,/g, '');
+}
+
 const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
   const { maximumFractionDigits, ...inputProps } = props;
 
   const [, forceRender] = React.useState<{}>({});
-  const stateRef = React.useRef<string>('');
+  const valueRef = React.useRef<string>('');
   const onChangeRef = React.useRef<Function | undefined>();
   onChangeRef.current = props.onChange;
 
-  const stateVal = stateRef.current;
+  const stateVal = valueRef.current;
 
   React.useEffect(() => {
     const val = props.value;
 
-    stateRef.current = val !== undefined ? val.toFormat() : '';
+    valueRef.current = val !== undefined ? val.toFormat() : '';
     forceRender({});
   }, [props.value]);
 
   React.useEffect(() => {
-    if (stateRef.current === '') {
+    if (valueRef.current === '') {
       onChangeRef.current?.(undefined);
       return;
     }
 
-    const val = stateRef.current.replace(/,/g, '');
+    const val = removeComma(valueRef.current);
     const bnValue = new BigNumber(val);
 
-    if (bnValue.toFormat().replace(/,/g, '') !== val) {
+    if (removeComma(bnValue.toFormat()) !== val) {
       return;
     }
 
-    stateRef.current = bnValue.toFormat();
+    valueRef.current = bnValue.toFormat();
     onChangeRef.current?.(bnValue);
   }, [stateVal]);
 
@@ -55,22 +59,22 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
     }
 
     if (new RegExp(rx, 'g').test(val)) {
-      stateRef.current = val;
+      valueRef.current = val;
       forceRender({});
     }
   }
 
   function handleBlur(event: React.FocusEvent<HTMLInputElement>) {
-    const val = event.target.value;
+    const val = removeComma(event.target.value);
 
     if (val === '' || val === '.') {
-      stateRef.current = '';
+      valueRef.current = '';
       onChangeRef.current?.(undefined);
       forceRender({});
       return;
     }
 
-    const bnValue = new BigNumber(val.replace(/,/g, ''));
+    const bnValue = new BigNumber(val);
 
     if (bnValue.toFormat() !== val) {
       onChangeRef.current?.(bnValue);
@@ -83,7 +87,7 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
       className={s.component}
       onChange={handleChange}
       onBlur={handleBlur}
-      value={stateRef.current}
+      value={valueRef.current}
     />
   );
 };
