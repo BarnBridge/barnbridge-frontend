@@ -1,10 +1,12 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
 import { formatBigValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWeb3 } from 'web3/provider';
 import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
@@ -13,12 +15,10 @@ import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
 import { ReactComponent as UNIIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
-import { useWeb3 } from 'web3/provider';
 
 export type PoolCardProps = {
   stableToken?: boolean;
   lpToken?: boolean;
-  onStaking: () => void;
 };
 
 type TokenBalanceShare = {
@@ -30,6 +30,7 @@ type TokenBalanceShare = {
 };
 
 const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
+  const history = useHistory();
   const web3 = useWeb3();
   const { yf, yflp, staking, aggregated } = useWeb3Contracts();
 
@@ -293,6 +294,14 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     return shares;
   }, [stableToken, lpToken, yf, yflp, staking]);
 
+  function handleStacking() {
+    if (stableToken) {
+      history.push('/pools/stable-token');
+    } else if (lpToken) {
+      history.push('/pools/lp-token');
+    }
+  }
+
   return (
     <div className={s.component}>
       <div className={s.row1}>
@@ -306,7 +315,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             type="primary"
             className={s.stakingBtn}
             disabled={!isStakingEnabled}
-            onClick={props.onStaking}>Staking</Antd.Button>
+            onClick={handleStacking}>Staking</Antd.Button>
         )}
       </div>
 
