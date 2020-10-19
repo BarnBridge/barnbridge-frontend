@@ -14,7 +14,13 @@
 
 .icon {
     display: inline-block;
+    width: 16px;
+    height: 16px;
     margin-left: 8px;
-    vertical-align: sub;
     color: #aaafb3;
+}
+
+.icon svg {
+    width: 100%;
+    height: 100%;
 }

@@ -116,7 +116,7 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
       ...prevState,
       bondReward,
     }));
-  }, [version, data.epochReward, data.currentEpoch]);
+  }, [version, data.epochReward, data.currentEpoch, data.totalEpochs]);
 
   const reload = React.useCallback(() => {
     setVersion(prevState => prevState + 1);
