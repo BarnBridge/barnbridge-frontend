@@ -4,7 +4,7 @@ import StayTuned from 'components/stay-tuned';
 
 import s from './styles.module.css';
 
-const VotingView: React.FunctionComponent<{}> = props => {
+const VotingView: React.FunctionComponent = () => {
   return (
     <div className={s.container}>
       <StayTuned />

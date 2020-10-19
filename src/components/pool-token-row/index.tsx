@@ -325,7 +325,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               onChange={handleSwitchChange} />
           </div>
         </div>
-        {props.stableToken && (
+        {props.stableToken && state.enabled && (
           <div className={s.col}>
             <Antd.Button
               className={s.arrow}
@@ -335,111 +335,113 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           </div>
         )}
       </div>
-      <div className={cx(s.body, !expanded && s.collapsed)}>
-        <Antd.Row className={s.balanceRow}>
-          <Antd.Col flex="auto">
-            <div className={s.balanceLabel}>STAKED BALANCE</div>
-            <div className={s.balanceValue}>{formatBigValue(state.stakedBalance, state.decimals)}</div>
-          </Antd.Col>
-          <Antd.Col flex="auto">
-            <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE
-              <InfoTooltip
-                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
-            </div>
-            <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance, state.decimals)}</div>
-          </Antd.Col>
-          {props.lpToken && (
+      {state.enabled && (
+        <div className={cx(s.body, !expanded && s.collapsed)}>
+          <Antd.Row className={s.balanceRow}>
             <Antd.Col flex="auto">
-              <div className={s.balanceLabel}>WALLET BALANCE</div>
-              <div className={s.balanceValue}>{formatBigValue(state.walletBalance, state.decimals)}</div>
+              <div className={s.balanceLabel}>STAKED BALANCE</div>
+              <div className={s.balanceValue}>{formatBigValue(state.stakedBalance, state.decimals)}</div>
             </Antd.Col>
-          )}
-        </Antd.Row>
-        <Antd.Row className={s.inputRow}>
-          <Antd.Col flex="50%">
-            <div className={s.inputLabel}>Amount</div>
-            <div className={s.inputValue}>
-              <NumericInput
-                addonBefore={
-                  <span className={s.addonWrap}>
+            <Antd.Col flex="auto">
+              <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE
+                <InfoTooltip
+                  title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
+              </div>
+              <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance, state.decimals)}</div>
+            </Antd.Col>
+            {props.lpToken && (
+              <Antd.Col flex="auto">
+                <div className={s.balanceLabel}>WALLET BALANCE</div>
+                <div className={s.balanceValue}>{formatBigValue(state.walletBalance, state.decimals)}</div>
+              </Antd.Col>
+            )}
+          </Antd.Row>
+          <Antd.Row className={s.inputRow}>
+            <Antd.Col flex="50%">
+              <div className={s.inputLabel}>Amount</div>
+              <div className={s.inputValue}>
+                <NumericInput
+                  addonBefore={
+                    <span className={s.addonWrap}>
                     <span className={s.addonIcon}>{state.icon}</span>
                     <span className={s.addonLabel}>{state.name}</span>
                   </span>
-                }
-                addonAfter={
-                  <Antd.Button
-                    className={s.inputMaxBtn}
-                    disabled={!activeBalance}
-                    onClick={handleInputMaxClick}>MAX</Antd.Button>
-                }
-                placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
-                maximumFractionDigits={state.decimals}
-                value={state.amount}
-                onChange={handleAmountChange}
-              />
-              <Antd.Slider
-                className={s.amountSlider}
-                disabled={!activeBalance}
-                min={0}
-                max={maxAmount}
-                value={getNonHumanValue(state.amount ?? 0, state.decimals).toNumber() ?? 0}
-                tipFormatter={value =>
-                  <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, state.decimals), state.decimals)}</span>}
-                tooltipPlacement="bottom"
-                step={sliderStep}
-                onChange={handleSliderChange}
-              />
-              {props.type === 'deposit' && (
-                <InfoBox
-                  text="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
-              )}
-              {props.type === 'withdraw' && (
-                <InfoBox text="Withdrawals before the end of the epoch will decrease your rewards." />
-              )}
-            </div>
-          </Antd.Col>
-          <Antd.Col flex="50%">
-            <div className={s.inputLabel}>Gas Fee
-              <InfoTooltip
-                title="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined." />
-            </div>
-            <Antd.Radio.Group
-              className={s.gasGroup}
-              value={state.gasAmount}
-              onChange={handleGasAmountChange}>
-              {Array.from(gasOptions.entries()).map(([label, value]) => (
-                <Antd.Radio.Button key={label} className={s.gasOption} value={label}>
-                  <div>
-                    <div className={s.gasOptionName}>{label}</div>
-                    <div className={s.gasOptionValue}>{value} Gwei</div>
-                  </div>
-                  <div className={s.gasOptionRadio} />
-                </Antd.Radio.Button>
-              ))}
-            </Antd.Radio.Group>
-          </Antd.Col>
-        </Antd.Row>
-        <Antd.Row className={s.actionRow}>
-          {props.type === 'deposit' && (
-            <Antd.Button
-              type="primary"
-              className={s.actionBtn}
-              loading={depositing}
-              disabled={!state.enabled || noAmount}
-              onClick={handleDeposit}>Deposit
-            </Antd.Button>
-          )}
-          {props.type === 'withdraw' && (
-            <Antd.Button
-              type="primary"
-              className={s.actionBtn}
-              loading={withdrawing}
-              disabled={noAmount}
-              onClick={handleWithdraw}>Withdraw
-            </Antd.Button>
-          )}
-        </Antd.Row>
-      </div>
+                  }
+                  addonAfter={
+                    <Antd.Button
+                      className={s.inputMaxBtn}
+                      disabled={!activeBalance}
+                      onClick={handleInputMaxClick}>MAX</Antd.Button>
+                  }
+                  placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
+                  maximumFractionDigits={state.decimals}
+                  value={state.amount}
+                  onChange={handleAmountChange}
+                />
+                <Antd.Slider
+                  className={s.amountSlider}
+                  disabled={!activeBalance}
+                  min={0}
+                  max={maxAmount}
+                  value={getNonHumanValue(state.amount ?? 0, state.decimals).toNumber() ?? 0}
+                  tipFormatter={value =>
+                    <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, state.decimals), state.decimals)}</span>}
+                  tooltipPlacement="bottom"
+                  step={sliderStep}
+                  onChange={handleSliderChange}
+                />
+                {props.type === 'deposit' && (
+                  <InfoBox
+                    text="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+                )}
+                {props.type === 'withdraw' && (
+                  <InfoBox text="Withdrawals before the end of the epoch will decrease your rewards." />
+                )}
+              </div>
+            </Antd.Col>
+            <Antd.Col flex="50%">
+              <div className={s.inputLabel}>Gas Fee
+                <InfoTooltip
+                  title="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined." />
+              </div>
+              <Antd.Radio.Group
+                className={s.gasGroup}
+                value={state.gasAmount}
+                onChange={handleGasAmountChange}>
+                {Array.from(gasOptions.entries()).map(([label, value]) => (
+                  <Antd.Radio.Button key={label} className={s.gasOption} value={label}>
+                    <div>
+                      <div className={s.gasOptionName}>{label}</div>
+                      <div className={s.gasOptionValue}>{value} Gwei</div>
+                    </div>
+                    <div className={s.gasOptionRadio} />
+                  </Antd.Radio.Button>
+                ))}
+              </Antd.Radio.Group>
+            </Antd.Col>
+          </Antd.Row>
+          <Antd.Row className={s.actionRow}>
+            {props.type === 'deposit' && (
+              <Antd.Button
+                type="primary"
+                className={s.actionBtn}
+                loading={depositing}
+                disabled={!state.enabled || noAmount}
+                onClick={handleDeposit}>Deposit
+              </Antd.Button>
+            )}
+            {props.type === 'withdraw' && (
+              <Antd.Button
+                type="primary"
+                className={s.actionBtn}
+                loading={withdrawing}
+                disabled={noAmount}
+                onClick={handleWithdraw}>Withdraw
+              </Antd.Button>
+            )}
+          </Antd.Row>
+        </div>
+      )}
     </div>
   );
 };

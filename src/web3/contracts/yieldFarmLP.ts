@@ -30,11 +30,16 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
 
   React.useEffect(() => {
     (async () => {
-      const [totalEpochs, totalRewards, currentEpoch] = await batchContract(Contract, [
+      let [totalEpochs, totalRewards, currentEpoch] = await batchContract(Contract, [
         'NR_OF_EPOCHS',
         'TOTAL_DISTRIBUTED_AMOUNT',
         'getCurrentEpoch',
       ]);
+
+      if (currentEpoch > totalEpochs) {
+        currentEpoch = totalEpochs;
+      }
+
       const [poolSize, nextPoolSize] = await batchContract(Contract, [
         { method: 'getPoolSize', methodArgs: [currentEpoch] },
         { method: 'getPoolSize', methodArgs: [currentEpoch + 1] },
@@ -103,14 +108,15 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
     let bondReward = ZERO_BIG_NUMBER;
 
     if (data.currentEpoch! > 0) {
-      bondReward = data.epochReward!.multipliedBy(data.currentEpoch! - 1);
+      const bondEpoch = data.currentEpoch === data.totalEpochs ? data.currentEpoch : data.currentEpoch! - 1;
+      bondReward = data.epochReward!.multipliedBy(bondEpoch!);
     }
 
     setData(prevState => ({
       ...prevState,
       bondReward,
     }));
-  }, [version, data.epochReward, data.currentEpoch]);
+  }, [version, data.epochReward, data.currentEpoch, data.totalEpochs]);
 
   const reload = React.useCallback(() => {
     setVersion(prevState => prevState + 1);

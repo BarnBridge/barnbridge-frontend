@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
@@ -13,15 +14,19 @@ import s from './styles.module.css';
 export type PoolStakProps = {
   stableToken?: boolean;
   lpToken?: boolean;
-  onBack: () => void;
 };
 
 const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
   const ethGasPrice = useEthGasPrice();
+  const history = useHistory();
 
   React.useEffect(() => {
     ethGasPrice.load();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function goBack() {
+    history.replace('/pools');
+  }
 
   return (
     <div className={s.component}>
@@ -29,7 +34,7 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
         type="link"
         className={s.headerLabel}
         icon={<ArrowLeftOutlined className={s.backSvg} />}
-        onClick={props.onBack}
+        onClick={goBack}
       >
         {props.stableToken && <span>USDC/DAI/sUSD</span>}
         {props.lpToken && <span>USDC_BOND_UNI_LP</span>}

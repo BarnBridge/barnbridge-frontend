@@ -221,7 +221,15 @@ const Web3ProviderInner: React.FunctionComponent = props => {
   React.useEffect(() => {
     (web3.library as EthWeb3Provider)
       ?.detectNetwork()
-      .then(setNetwork);
+      .then(network => {
+        Object.assign(network, {
+          name: ({
+            1: 'Mainnet',
+            4: 'Rinkeby',
+          } as any)[network.chainId] ?? network.name,
+        });
+        setNetwork(network);
+      });
   }, [web3.library]);
 
   const value = {

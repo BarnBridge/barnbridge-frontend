@@ -1,7 +1,4 @@
 .component {
-    position: absolute;
-    right: 64px;
-    top: 32px;
 }
 
 .connectBtn {
@@ -14,6 +11,10 @@
 
 .overlay :global .ant-popover-inner-content {
     padding: 0;
+}
+
+.notificationBtn {
+    cursor: pointer;
 }
 
 .notificationHeader {
