@@ -123,15 +123,15 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     switch (token.toLowerCase()) {
       case CONTRACT_DAI_ADDR:
         decimals = daiContract.decimals;
+        multiplier = yfTokenValue();
         break;
       case CONTRACT_USDC_ADDR:
         decimals = usdcContract.decimals;
+        multiplier = yfTokenValue();
         break;
       case CONTRACT_SUSD_ADDR:
         decimals = susdContract.decimals;
-        break;
-      case CONTRACT_BOND_ADDR:
-        decimals = bondContract.decimals;
+        multiplier = yfTokenValue();
         break;
       case CONTRACT_UNISWAP_V2_ADDR:
         decimals = uniswapV2Contract.decimals;

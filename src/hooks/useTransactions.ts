@@ -107,7 +107,9 @@ export function useTransactions(opts?: UseTransactionsOptions) {
           return web3cRef.current.getTokenHumanValue(item.token, new BigNumber(item.amount));
         },
         get amountFormat() {
-          return formatBigValue(web3cRef.current.getTokenHumanValue(item.token, new BigNumber(item.amount)));
+          const amountValue = web3cRef.current.getTokenHumanValue(item.token, new BigNumber(item.amount));
+
+          return amountValue ? `$ ${formatBigValue(amountValue)}` : '-';
         },
       };
     });

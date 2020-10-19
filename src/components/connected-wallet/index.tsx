@@ -91,7 +91,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
             }
             trigger="click"
           >
-            <Antd.Badge dot count={0} showZero={false}><BellSvg /></Antd.Badge>
+            <Antd.Badge className={s.notificationBtn} dot count={0} showZero={false}><BellSvg /></Antd.Badge>
           </Antd.Popover>
           <div className={s.divider} />
           <Antd.Popover
