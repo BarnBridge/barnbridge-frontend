@@ -1,4 +1,4 @@
-name: Deploy dev
+name: Development Environment
 
 on:
   push:
@@ -11,6 +11,17 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v2
+
+    - name: Notify Slack
+      if: success()
+      id: slack
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel_id: C01D16VJ84C
+        status: BUILD STARTED
+        color: warning
 
     - name: Setup Nodejs
       uses: actions/setup-node@v1
@@ -59,10 +70,43 @@ jobs:
         name: frontend
         path: build
 
+    - name: Notify Slack success
+      if: success()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: BUILD SUCCESSFUL
+        color: good
+
+    - name: Notify Slack failure
+      if: failure()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: BUILD FAILED
+        color: danger
+
   deploy:
     needs: build
     runs-on: ubuntu-latest
     steps:
+    - name: Notify Slack
+      if: success()
+      id: slack
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT STARTED
+        color: warning
+
     - name: Get artifacts
       uses: actions/download-artifact@v2
       with:
@@ -90,3 +134,25 @@ jobs:
           echo "CF_DIST_ID=${CF_DIST_ID} CF_INVALIDATION_ID=${CF_INVALIDATION_ID}: Waiting for CloudFront cache invalidation to complete..."
           sleep 5
         done
+
+    - name: Notify Slack success
+      if: success()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT SUCCESSFUL
+        color: good
+
+    - name: Notify Slack failure
+      if: failure()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT FAILED
+        color: danger
