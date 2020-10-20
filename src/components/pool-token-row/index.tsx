@@ -85,7 +85,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           walletBalance: web3c.usdc.balance,
           stakedBalance: web3c.staking.usdc.balance,
           effectiveStakedBalance: web3c.staking.usdc.epochUserBalance,
-          enabled: web3c.usdc.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
+          enabled: web3c.usdc.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
       case TOKEN_DAI_KEY:
@@ -94,7 +94,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           walletBalance: web3c.dai.balance,
           stakedBalance: web3c.staking.dai.balance,
           effectiveStakedBalance: web3c.staking.dai.epochUserBalance,
-          enabled: web3c.dai.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
+          enabled: web3c.dai.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
       case TOKEN_SUSD_KEY:
@@ -103,7 +103,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           walletBalance: web3c.susd.balance,
           stakedBalance: web3c.staking.susd.balance,
           effectiveStakedBalance: web3c.staking.susd.epochUserBalance,
-          enabled: web3c.susd.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
+          enabled: web3c.susd.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
       case TOKEN_UNISWAP_KEY:
@@ -112,7 +112,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           walletBalance: web3c.uniswapV2.balance,
           stakedBalance: web3c.staking.uniswap_v2.balance,
           effectiveStakedBalance: web3c.staking.uniswap_v2.epochUserBalance,
-          enabled: web3c.uniswapV2.allowance?.isEqualTo(ZERO_BIG_NUMBER) !== true,
+          enabled: web3c.uniswapV2.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
       default:

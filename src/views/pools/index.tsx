@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import * as Antd from 'antd';
 
 import EthGasPriceProvider from 'context/useEthGas';
+import { useWeb3 } from 'web3/provider';
 
 import WarnerBanner from 'components/warner-banner';
 import ConnectedWallet from 'components/connected-wallet';
@@ -14,6 +15,8 @@ import PoolOverview from 'components/pool-overview';
 import s from './styles.module.css';
 
 const PoolsView: React.FunctionComponent = () => {
+  const web3 = useWeb3();
+
   return (
     <div className={s.view}>
       <WarnerBanner
@@ -36,12 +39,16 @@ const PoolsView: React.FunctionComponent = () => {
           <Route path="/pools" exact render={() => (
             <PoolOverview />
           )} />
-          <Route path="/pools/stable-token" exact render={() => (
-            <PoolStak stableToken />
-          )} />
-          <Route path="/pools/lp-token" exact render={() => (
-            <PoolStak lpToken />
-          )} />
+          {web3.isActive && (
+            <>
+              <Route path="/pools/stable-token" exact render={() => (
+                <PoolStak stableToken />
+              )} />
+              <Route path="/pools/lp-token" exact render={() => (
+                <PoolStak lpToken />
+              )} />
+            </>
+          )}
         </Switch>
       </EthGasPriceProvider>
     </div>
