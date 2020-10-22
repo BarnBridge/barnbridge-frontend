@@ -13,11 +13,12 @@
 }
 
 .icon {
+    flex: none;
     display: inline-block;
     width: 16px;
     height: 16px;
     margin-left: 8px;
-    color: #aaafb3;
+    color: var(--text-color-4);
 }
 
 .icon svg {

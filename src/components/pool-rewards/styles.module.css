@@ -11,20 +11,18 @@
     line-height: 16px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #ff4339;
+    color: var(--text-color-3);
 }
 
 .row {
     display: inline-grid;
-    grid-template-columns: auto auto auto auto;
+    grid-template-columns: repeat(3, auto);
     grid-gap: 3px;
-    height: 60px;
-    margin-bottom: 64px;
 }
 
 .col {
     padding: 0 32px;
-    border-right: 1px solid #e3e4e6;
+    border-right: 1px solid var(--border-color-1);
 }
 
 .col:first-child {
@@ -45,7 +43,7 @@
     font-weight: normal;
     font-size: 14px;
     line-height: 24px;
-    color: #5a6166;
+    color: var(--text-color-2);
 }
 
 .blockValue {
@@ -58,16 +56,36 @@
     font-weight: bold;
     font-size: 24px;
     line-height: 32px;
-    color: #060a0d;
+    color: var(--text-color-1);
 }
 
 .bondIcon {
     width: 24px;
     height: 24px;
-    color: #ff4339;
+    color: var(--text-color-3);
     margin-left: 8px;
 }
 
 .harvestBtn {
     margin-left: 24px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .row {
+        grid-template-columns: repeat(1, auto);
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .col {
+        margin: 0 0 12px;
+        padding: 0 0 12px;
+        border: none;
+        border-bottom: 1px solid var(--border-color-1);
+    }
+
+    .harvestBtn {
+        margin: 28px 0 0 24px;
+    }
 }

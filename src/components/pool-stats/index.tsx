@@ -1,4 +1,5 @@
 import React from 'react';
+import cx from 'classnames';
 import { formatDistance } from 'date-fns';
 
 import { formatBigValue } from 'web3/utils';
@@ -9,7 +10,9 @@ import StatWidget from 'components/stat-widget';
 
 import s from './styles.module.css';
 
-export type PoolStatsProps = {};
+export type PoolStatsProps = {
+  className?: string;
+};
 
 const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   const { aggregated, staking, uniswapV2 } = useWeb3Contracts();
@@ -25,7 +28,7 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   }) : '';
 
   return (
-    <div className={s.component}>
+    <div className={cx(s.component, props.className)}>
       <StatWidget
         label="Total Value Locked"
         value={`$ ${totalValueLocked}`}

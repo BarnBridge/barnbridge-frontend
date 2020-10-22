@@ -1,0 +1,10 @@
+.component {
+    opacity: 0;
+    transition: none;
+    white-space: nowrap;
+}
+
+.visible {
+    opacity: 1;
+    transition: opacity 0.6s ease;
+}

@@ -185,7 +185,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             name: 'USDC_BOND_UNI_LP',
             value: `$ ${formatBigValue(aggregated.lpStakedValue, 2)}`,
             share: uniShare,
-            color: '#ff4339',
+            color: 'var(--text-color-3)',
           });
         }
       }
@@ -285,7 +285,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             name: 'USDC_BOND_UNI_LP',
             value: `${formatBigValue(staking.uniswap_v2.nextEpochUserBalance)} USDC_BOND_UNI_LP`,
             share: uniShare,
-            color: '#ff4339',
+            color: 'var(--text-color-3)',
           });
         }
       }
@@ -326,12 +326,14 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             <span>{epochReward}</span>
           </div>
         </div>
-        <div className={s.col2}>
-          <div className={s.row_label}>MY POTENTIAL REWARD</div>
-          <div className={s.row_value}>
-            <span>{potentialReward}</span>
+        {web3.isActive && (
+          <div className={s.col2}>
+            <div className={s.row_label}>MY POTENTIAL REWARD</div>
+            <div className={s.row_value}>
+              <span>{potentialReward}</span>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       <div className={s.row3}>
@@ -362,33 +364,35 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         </div>
       </div>
 
-      <div className={s.row4}>
-        <div className={s.row_label}>
-          <span>MY POOL BALANCE</span>
-          <InfoTooltip title={
-            <span>
+      {web3.isActive && (
+        <div className={s.row4}>
+          <div className={s.row_label}>
+            <span>MY POOL BALANCE</span>
+            <InfoTooltip title={
+              <span>
               This number shows your total staked balance in the pool, and your effective staked balance in the pool.
               <br /><br />
               When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore your pool balance and your effective pool balance will differ in most cases.
             </span>
-          } />
+            } />
+          </div>
+          <div className={s.row_value}>{myBalance}</div>
+          <div className={s.row_value_2}>{myEffectiveBalance} effective balance</div>
+          <div className={s.pool_stak_bar}>
+            {myBalanceShares.map((tokenShare, index) => (
+              <Antd.Tooltip key={index} placement="top" title={(
+                <div className={s.balance_tooltip}>
+                  <div>{tokenShare.icon}</div>
+                  <span>{tokenShare.name}:</span>
+                  <span>{tokenShare.value}</span>
+                </div>
+              )}>
+                <div style={{ width: `${tokenShare.share}%`, backgroundColor: tokenShare.color }} />
+              </Antd.Tooltip>
+            ))}
+          </div>
         </div>
-        <div className={s.row_value}>{myBalance}</div>
-        <div className={s.row_value_2}>{myEffectiveBalance} effective balance</div>
-        <div className={s.pool_stak_bar}>
-          {myBalanceShares.map((tokenShare, index) => (
-            <Antd.Tooltip key={index} placement="top" title={(
-              <div className={s.balance_tooltip}>
-                <div>{tokenShare.icon}</div>
-                <span>{tokenShare.name}:</span>
-                <span>{tokenShare.value}</span>
-              </div>
-            )}>
-              <div style={{ width: `${tokenShare.share}%`, backgroundColor: tokenShare.color }} />
-            </Antd.Tooltip>
-          ))}
-        </div>
-      </div>
+      )}
     </div>
   );
 };

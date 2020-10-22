@@ -1,14 +1,16 @@
-.card {
-    min-width: 200px;
-    min-height: 168px;
-    background: #fff;
-    box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+.component {
+    background-color: var(--bg-color-2);
+    box-shadow: 0 0 0.5px var(--shadow-color-1);
+    border-color: var(--border-color-1);
     border-radius: 4px;
 }
 
-.firstRow {
+.header {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
     justify-content: space-between;
-    margin-bottom: 44px;
+    height: 32px;
 }
 
 .label {
@@ -19,23 +21,45 @@
     line-height: 16px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #ff4339;
+    color: var(--text-color-3);
 }
 
 .value {
+    margin-top: 28px;
     font-family: Montserrat;
     font-style: normal;
     font-weight: bold;
     font-size: 24px;
     line-height: 32px;
-    color: #060a0d;
+    color: var(--text-color-1);
 }
 
 .hint {
+    margin-top: 4px;
     font-family: Montserrat;
     font-style: normal;
     font-weight: normal;
     font-size: 16px;
     line-height: 24px;
-    color: #5a6166;
+    color: var(--text-color-2);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .component :global .ant-card-body {
+        padding: 16px;
+    }
+
+    .value {
+        margin-top: 16px;
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    .hint {
+        margin-top: 8px;
+        font-size: 12px;
+        line-height: 16px;
+        color: var(--text-color-2);
+    }
 }

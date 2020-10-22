@@ -9,14 +9,27 @@
     padding: 0 12px 0 0;
 }
 
+.active .activeMark {
+    visibility: visible;
+}
+
+.active .btn svg {
+    color: var(--text-color-2);
+}
+
+.active .label {
+    color: var(--text-color-2);
+}
+
 .activeMark {
     position: absolute;
     top: 0;
     left: 0;
     width: 4px;
     height: 48px;
-    background: #ff4339;
+    background-color: var(--bg-color-3);
     border-radius: 0 4px 4px 0;
+    visibility: hidden;
 }
 
 .btn {
@@ -27,12 +40,19 @@
     margin: 0 0 0 12px;
     padding: 13px;
     border: none;
-    color: #aaafb3;
+}
+
+.btn svg {
+    color: var(--text-color-4);
 }
 
 .btn:hover {
-    background: rgba(255, 67, 57, 0.08) !important;
-    color: #ff4339;
+    background-color: rgba(255, 67, 57, 0.08) !important;
+    color: var(--text-color-3);
+}
+
+.btn svg {
+    min-width: 24px;
 }
 
 .label {
@@ -42,5 +62,5 @@
     font-weight: normal;
     font-size: 14px;
     line-height: 24px;
-    color: #717980;
+    color: var(--text-color-2);
 }

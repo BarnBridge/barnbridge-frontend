@@ -4,7 +4,8 @@
 }
 
 .component :global .ant-input-group-addon {
-    border-color: #e3e4e6;
+    background-color: var(--bg-color-1);
+    border-color: var(--border-color-1);
 }
 
 .component :global .ant-input {
@@ -15,6 +16,7 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #13202b;
-    border-color: #e3e4e6;
+    color: var(--text-color-1);
+    background-color: var(--bg-color-1);
+    border-color: var(--border-color-1);
 }

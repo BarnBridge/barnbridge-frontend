@@ -3,5 +3,12 @@
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
     grid-gap: 32px;
     width: 100%;
-    margin-bottom: 64px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .component {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-gap: 6px;
+    }
 }

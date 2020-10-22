@@ -26,6 +26,7 @@
     ]
   },
   "dependencies": {
+    "@animated-burgers/burger-squeeze": "1.1.2",
     "@ethersproject/providers": "5.0.12",
     "@web3-react/authereum-connector": "6.1.6",
     "@web3-react/core": "6.1.1",

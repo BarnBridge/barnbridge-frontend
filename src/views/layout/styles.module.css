@@ -4,8 +4,11 @@
 
 .main {
     position: relative;
+    background-color: var(--bg-color-1);
+}
+
+.content {
     padding: 32px 64px;
-    background-color: #f8f8f8;
 }
 
 .footer {
@@ -21,5 +24,20 @@
     font-weight: 600;
     font-size: 14px;
     line-height: 24px;
-    color: #aaafb3;
+    color: var(--text-color-4);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .siderNav {
+        display: none;
+    }
+
+    .content {
+        padding: 32px 8px 64px;
+    }
+
+    .footer {
+        display: none;
+    }
 }

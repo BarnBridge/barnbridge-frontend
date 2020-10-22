@@ -19,7 +19,7 @@
     font-weight: bold;
     font-size: 32px;
     line-height: 40px;
-    color: #13202b;
+    color: var(--text-color-1);
 }
 
 .text {
@@ -28,5 +28,5 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #717980;
+    color: var(--text-color-2);
 }

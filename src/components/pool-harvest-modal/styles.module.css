@@ -8,7 +8,7 @@
     font-weight: bold;
     font-size: 24px;
     line-height: 32px;
-    color: #060a0d;
+    color: var(--text-color-1);
 }
 
 .note {
@@ -18,7 +18,7 @@
     font-weight: normal;
     font-size: 16px;
     line-height: 24px;
-    color: #717980;
+    color: var(--text-color-2);
 }
 
 .body {
@@ -35,8 +35,8 @@
     align-items: flex-start;
     height: auto;
     padding: 24px;
-    background: #fff;
-    border: 1px solid #e3e4e6;
+    background-color: #fff;
+    border: 1px solid var(--border-color-1);
     box-sizing: border-box;
     border-radius: 4px;
 }
@@ -63,7 +63,7 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #060a0d;
+    color: var(--text-color-1);
 }
 
 .optionRewardLabel {
@@ -75,7 +75,7 @@
     line-height: 16px;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: #717980;
+    color: var(--text-color-2);
 }
 
 .optionRewardValue {
@@ -90,5 +90,5 @@
 .optionRewardValue strong {
     font-weight: 600;
     font-size: 16px;
-    color: #060a0d;
+    color: var(--text-color-1);
 }
