@@ -36,6 +36,10 @@ button {
     text-overflow: ellipsis;
 }
 
+.ant-modal .ant-modal-body {
+    background-color: var(--bg-color-2) !important;
+}
+
 .ant-modal .ant-modal-footer:empty {
     display: none;
 }

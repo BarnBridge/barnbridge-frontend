@@ -14,11 +14,11 @@
 }
 
 .active .btn svg {
-    color: var(--text-color-1);
+    color: var(--text-color-2);
 }
 
 .active .label {
-    color: var(--text-color-1);
+    color: var(--text-color-2);
 }
 
 .activeMark {
