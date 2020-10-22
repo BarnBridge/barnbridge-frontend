@@ -2,6 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { UnsupportedChainIdError } from '@web3-react/core';
 
+import { useTheme } from 'components/theme-provider';
 import ConnectWalletModal from 'components/connect-wallet-modal';
 import UnsupportedChainModal from 'components/unsupported-chain-modal';
 import Identicon from 'components/identicon';
@@ -11,6 +12,7 @@ import { useWeb3, Web3Connector } from 'web3/provider';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
+import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as BellSvg } from 'resources/svg/icons/bell.svg';
 import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
@@ -20,6 +22,7 @@ import { ReactComponent as NetworkSvg } from 'resources/svg/icons/network.svg';
 import s from './styles.module.css';
 
 const ConnectedWallet: React.FunctionComponent = props => {
+  const { isDarkTheme } = useTheme();
   const web3 = useWeb3();
   const [connectWalletVisible, setConnectWalletVisible] = React.useState<boolean>(false);
   const [unsupportedChainVisible, setUnsupportedChainVisible] = React.useState<boolean>(false);
@@ -83,7 +86,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
                 </Antd.Row>
                 <Antd.Row className={s.notificationBody}>
                   <div className={s.notificationZero}>
-                    <ZeroNotificationsSvg />
+                    {isDarkTheme ? <ZeroNotificationsDarkSvg /> : <ZeroNotificationsSvg />}
                     <span>There are no notifications to show</span>
                   </div>
                 </Antd.Row>

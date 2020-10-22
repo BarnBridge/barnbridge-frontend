@@ -114,6 +114,7 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
         rowKey="txHash"
         dataSource={data}
         pagination={false}
+        scroll={{ x: true }}
         locale={{
           emptyText: (
             <div className={s.emptyBlock}>

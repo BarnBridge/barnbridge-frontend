@@ -8,7 +8,7 @@
     font-weight: bold;
     font-size: 32px;
     line-height: 40px;
-    color: #000;
+    color: var(--text-color-5);
 }
 
 .labelOverview {
@@ -18,13 +18,31 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #717980;
+    color: var(--text-color-2);
 }
 
 .cards {
     display: inline-grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-gap: 32px;
     width: 100%;
     margin-bottom: 32px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .labelPools {
+        margin-bottom: 8px;
+        font-size: 24px;
+        line-height: 32px;
+    }
+
+    .labelOverview {
+        margin-bottom: 16px;
+        font-size: 14px;
+    }
+
+    .cards {
+        grid-template-columns: repeat(1, minmax(0, 1fr));
+    }
 }

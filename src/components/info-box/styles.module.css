@@ -4,7 +4,7 @@
     align-items: center;
     min-height: 80px;
     padding: 16px 24px;
-    background: #f6f8fe;
+    background-color: var(--bg-color-5);
     border-radius: 4px;
 }
 
@@ -12,7 +12,7 @@
     width: 24px;
     height: 24px;
     margin-right: 16px;
-    color: #95a6ef;
+    color: var(--text-color-7);
 }
 
 .icon svg {
@@ -26,5 +26,5 @@
     font-weight: normal;
     font-size: 14px;
     line-height: 24px;
-    color: #4f6ae5;
+    color: var(--text-color-8);
 }

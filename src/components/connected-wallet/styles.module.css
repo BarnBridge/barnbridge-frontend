@@ -11,6 +11,11 @@
 
 .overlay :global .ant-popover-inner-content {
     padding: 0;
+    box-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.64);
+}
+
+.overlay :global .ant-popover-arrow {
+    border-color: var(--bg-color-2) !important;
 }
 
 .notificationBtn {
@@ -19,17 +24,20 @@
 
 .notificationHeader {
     padding: 24px;
-    border-bottom: 1px solid #e3e4e6;
+    border-bottom: 1px solid var(--border-color-1);
     font-family: Montserrat;
     font-style: normal;
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #060a0d;
+    background-color: var(--bg-color-2);
+    color: var(--text-color-1);
 }
 
 .notificationBody {
     padding: 24px;
+    background-color: var(--bg-color-2);
+    color: var(--text-color-1);
 }
 
 .notificationZero {
@@ -52,7 +60,7 @@
     font-size: 16px;
     line-height: 24px;
     text-align: center;
-    color: #717980;
+    color: var(--text-color-2);
 }
 
 .walletBox {
@@ -64,7 +72,7 @@
     width: 1px;
     height: auto;
     margin: 0 24px;
-    background: #e3e4e6;
+    background-color: #e3e4e6;
 }
 
 .walletPreview {
@@ -81,7 +89,7 @@
 .walletPreviewHash {
     font-size: 16px;
     line-height: 24px;
-    color: #000;
+    color: var(--text-color-6);
 }
 
 .walletPreviewArrow {
@@ -94,6 +102,7 @@
 .walletHeader {
     padding: 24px;
     align-items: center;
+    background-color: var(--bg-color-2);
 }
 
 .walletAvatar {
@@ -113,8 +122,9 @@
 
 .stats {
     padding: 24px;
-    border-top: 1px solid #e3e4e6;
-    border-bottom: 1px solid #e3e4e6;
+    background-color: var(--bg-color-2);
+    border-top: 1px solid var(--border-color-1);
+    border-bottom: 1px solid var(--border-color-1);
 }
 
 .statRow {
@@ -132,26 +142,26 @@
     width: 24px;
     height: 24px;
     margin-right: 8px;
-    color: #aaafb3;
+    color: var(--text-color-4);
 }
 
 .statName {
     flex-grow: 1;
     font-size: 16px;
     line-height: 24px;
-    color: #717980;
+    color: var(--text-color-2);
 }
 
 .statValue {
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #13202b;
+    color: var(--text-color-1);
 }
 
 .statTag {
     margin: 0;
-    background: rgba(0, 211, 149, 0.1);
+    background-color: rgba(0, 211, 149, 0.1);
     font-weight: 600;
     font-size: 12px;
     line-height: 24px;
@@ -162,15 +172,16 @@
 
 .disconnectBtnRow {
     padding: 24px;
+    background-color: var(--bg-color-2);
 }
 
 .disconnectBtn {
     width: 100%;
     height: 48px;
-    background: rgba(255, 67, 57, 0.1);
+    background-color: rgba(255, 67, 57, 0.1);
     font-weight: bold;
     font-size: 14px;
     line-height: 24px;
     text-align: center;
-    color: #ff4339;
+    color: var(--text-color-3);
 }

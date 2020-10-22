@@ -1,6 +1,6 @@
 .component {
-    background: #fff;
-    box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+    background-color: var(--bg-color-2);
+    box-shadow: 0 0 0.5px var(--shadow-color-1);
     border-radius: 4px;
     margin-bottom: 32px;
 }
@@ -10,9 +10,9 @@
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
-    height: 89px;
+    min-height: 89px;
     padding: 12px 24px;
-    border-bottom: 1px solid #e3e4e6;
+    border-bottom: 1px solid var(--border-color-1);
 }
 
 .headerLabel {
@@ -53,5 +53,35 @@
     font-size: 16px;
     line-height: 24px;
     text-align: center;
-    color: #717980;
+    color: var(--text-color-2);
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 0;
+    }
+
+    .headerLabel {
+        padding: 16px;
+    }
+
+    .filters {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        width: 100%;
+        padding: 16px;
+        border-top: 1px solid var(--border-color-1);
+    }
+
+    .filters button {
+        margin-left: 0;
+    }
+
+    .filters button + button {
+        margin-top: 16px;
+    }
 }

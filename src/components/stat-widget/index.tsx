@@ -14,28 +14,18 @@ export type StatWidgetProps = {
 
 const StatWidget: React.FunctionComponent<StatWidgetProps> = props => {
   return (
-    <Antd.Card className={s.card}>
-      <Antd.Row className={s.firstRow}>
-        <Antd.Col>
-          <div className={s.label}>{props.label}</div>
-        </Antd.Col>
+    <Antd.Card className={s.component}>
+      <div className={s.header}>
+        <div className={s.label}>{props.label}</div>
         {props.help && (
-          <Antd.Col><InfoTooltip title={props.help} /></Antd.Col>
+          <InfoTooltip title={props.help} />
         )}
-      </Antd.Row>
+      </div>
       {props.value && (
-        <Antd.Row>
-          <Antd.Col>
-            <div className={s.value} text-elipsis="true">{props.value}</div>
-          </Antd.Col>
-        </Antd.Row>
+        <div className={s.value} text-elipsis="true">{props.value}</div>
       )}
       {props.hint && (
-        <Antd.Row>
-          <Antd.Col>
-            <div className={s.hint} text-elipsis="true">{props.hint}</div>
-          </Antd.Col>
-        </Antd.Row>
+        <div className={s.hint} text-elipsis="true">{props.hint}</div>
       )}
     </Antd.Card>
   );

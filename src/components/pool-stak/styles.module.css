@@ -12,7 +12,7 @@
     font-weight: bold;
     font-size: 32px;
     line-height: 40px;
-    color: #000;
+    color: var(--text-color-1);
 }
 
 .backSvg svg {
@@ -20,7 +20,7 @@
     height: 21px;
     margin-right: 10px;
     line-height: 21px;
-    color: #aaafb3;
+    color: var(--text-color-4);
 }
 
 .dataRows {
@@ -30,4 +30,16 @@
 
 .tabs {
     margin: 32px 0 64px;
+}
+
+.tabs :global .ant-tabs-nav:before {
+    border-bottom: none;
+}
+
+.tabs :global .ant-tabs-tab {
+    color: var(--text-color-2);
+}
+
+.tabs :global .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--text-color-1);
 }

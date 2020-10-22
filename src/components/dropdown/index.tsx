@@ -54,7 +54,7 @@ const Dropdown: React.FunctionComponent<DropdownProps> = props => {
           {selectedItem && (
             <span className={s.selected}>{selectedItem?.label}</span>
           )}
-          <CaretDownOutlined />
+          <CaretDownOutlined className={s.caret} />
         </Antd.Button>
       ) : (
         <a href="?" onClick={e => e.preventDefault()}>

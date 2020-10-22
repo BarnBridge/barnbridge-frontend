@@ -7,7 +7,7 @@
     font-weight: bold;
     font-size: 24px;
     line-height: 32px;
-    color: #060a0d;
+    color: var(--text-color-1);
 }
 
 .headerNote {
@@ -15,7 +15,7 @@
     font-weight: 600;
     font-size: 16px;
     line-height: 24px;
-    color: #717980;
+    color: var(--text-color-2);
 }
 
 .connectorList {
@@ -24,7 +24,7 @@
     grid-template-columns: repeat(auto-fill, calc(50% - 3px));
     width: 100%;
     height: 300px;
-    background: #fff;
+    background-color: #fff;
     overflow: scroll;
 }
 
@@ -33,8 +33,8 @@
     align-items: center;
     justify-content: center;
     height: 96px;
-    background: #fff;
-    border: 1px solid #e3e4e6;
+    background-color: #fff;
+    border: 1px solid var(--border-color-1);
     border-radius: 4px;
 }
 
