@@ -304,3 +304,40 @@
 .actionBtn:hover {
     background-color: var(--bg-color-6);
 }
+
+.innerCol1,
+.innerCol2 {
+    flex: 0 0 50%;
+}
+
+.walletBlnc {
+    display: none;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .header {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 40px);
+    }
+
+    .col:nth-child(2) {
+        display: none;
+    }
+
+    .innerCol1,
+    .innerCol2 {
+        flex: 0 0 100%;
+    }
+
+    .gasOption {
+        padding: 24px 16px;
+    }
+
+    .walletBlnc {
+        display: block;
+    }
+
+    .balanceRow :global .ant-col {
+        border-left: none !important;
+    }
+}

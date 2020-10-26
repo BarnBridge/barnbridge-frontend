@@ -338,6 +338,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       {state.enabled && (
         <div className={cx(s.body, !expanded && s.collapsed)}>
           <Antd.Row className={s.balanceRow}>
+            <Antd.Col flex="auto" className={s.walletBlnc}>
+              <div className={s.balanceLabel}>WALLET BALANCE</div>
+              <div className={s.balanceValue}>{formatBigValue(state.walletBalance, state.decimals)}</div>
+            </Antd.Col>
             <Antd.Col flex="auto">
               <div className={s.balanceLabel}>STAKED BALANCE</div>
               <div className={s.balanceValue}>{formatBigValue(state.stakedBalance, state.decimals)}</div>
@@ -357,7 +361,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
             )}
           </Antd.Row>
           <Antd.Row className={s.inputRow}>
-            <Antd.Col flex="50%">
+            <Antd.Col className={s.innerCol1}>
               <div className={s.inputLabel}>Amount</div>
               <div className={s.inputValue}>
                 <NumericInput
@@ -399,7 +403,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 )}
               </div>
             </Antd.Col>
-            <Antd.Col flex="50%">
+            <Antd.Col className={s.innerCol2}>
               <div className={s.inputLabel}>Gas Fee
                 <InfoTooltip
                   title="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined." />

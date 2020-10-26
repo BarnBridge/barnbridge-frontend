@@ -35,7 +35,7 @@
     align-items: flex-start;
     height: auto;
     padding: 24px;
-    background-color: #fff;
+    background-color: var(--bg-color-1);
     border: 1px solid var(--border-color-1);
     box-sizing: border-box;
     border-radius: 4px;
