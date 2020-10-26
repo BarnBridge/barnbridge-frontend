@@ -29,7 +29,7 @@ const ThemeProvider: React.FunctionComponent = props => {
         setTheme(DEFAULT_THEME_KEY);
       }
     },
-  }), [theme]);
+  }), [theme, setTheme]);
 
   React.useEffect(() => {
     Array.from(document.body.classList.values())
