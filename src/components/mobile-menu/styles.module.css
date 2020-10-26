@@ -23,17 +23,23 @@
 }
 
 .themeToggle {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    right: 0;
     display: flex;
     flex-direction: row;
     align-items: center;
     width: 100%;
-    margin: 0 0 24px 0;
+    margin: 0;
     padding: 0 24px 0;
+    color: var(--text-color-2);
     white-space: nowrap;
-    color: var(--text-color-1);
 }
 
-.themeToggle button {
+.themeToggle svg {
+    min-width: 24px;
+    min-height: 24px;
     margin: 0 12px 0 0;
 }
 

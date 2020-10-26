@@ -42,10 +42,12 @@
     width: 100%;
     margin: 0 0 24px 0;
     padding: 0 24px 0;
-    color: var(--bg-color-3)
+    color: var(--text-color-2);
 }
 
-.themeToggle button {
+.themeToggle svg {
+    min-width: 24px;
+    min-height: 24px;
     margin: 0 12px 0 0;
 }
 

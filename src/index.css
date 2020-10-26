@@ -5,7 +5,13 @@
 
 @font-face {
     font-family: Montserrat;
-    font-weight: bold;
+    font-weight: 600;
+    src: url('resources/fonts/Montserrat-SemiBold.ttf');
+}
+
+@font-face {
+    font-family: Montserrat;
+    font-weight: 700;
     src: url('resources/fonts/Montserrat-Bold.ttf');
 }
 
@@ -20,6 +26,10 @@ body {
 * {
     box-sizing: border-box;
     transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+svg, svg * {
+    transition: none !important;
 }
 
 button {
@@ -64,6 +74,7 @@ button {
     --text-color-6: #4f6ae6;
     --text-color-7: #95a6ef;
     --text-color-8: #f6ae5;
+    --text-color-9: #7288ea;
 
     --border-color-1: #e3e4e6;
     --border-color-2: #e3e4e6;

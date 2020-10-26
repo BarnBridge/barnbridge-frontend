@@ -5,7 +5,7 @@ import * as Antd from 'antd';
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
-import { formatBigValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { formatBigValue } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
 import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 
@@ -98,29 +98,21 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.nextPoolSize, 2)}`;
     } else if (lpToken && yflp.nextPoolSize) {
-      if (yflp.nextPoolSize.isEqualTo(ZERO_BIG_NUMBER)) {
-        return '0 USDC_BOND_UNI_LP';
-      }
-
-      return <span>{formatBigValue(yflp.nextPoolSize, 18)} USDC_BOND_UNI_LP</span>;
+      return `$ ${formatBigValue(aggregated.lpStakedValue, 2)}`;
     }
 
     return '-';
-  }, [stableToken, lpToken, yf, yflp]);
+  }, [stableToken, lpToken, yf, yflp, aggregated]);
 
   const effectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.poolSize, 2)}`;
     } else if (lpToken && yflp.poolSize) {
-      if (yflp.poolSize.isEqualTo(ZERO_BIG_NUMBER)) {
-        return '0';
-      }
-
-      return <span>{formatBigValue(yflp.poolSize, 18)}</span>;
+      return `$ ${formatBigValue(aggregated.lpEffectiveStakedValue, 2)}`;
     }
 
     return '-';
-  }, [stableToken, lpToken, yf, yflp]);
+  }, [stableToken, lpToken, yf, yflp, aggregated]);
 
   const balanceShares = React.useMemo<TokenBalanceShare[]>(() => {
     const shares: TokenBalanceShare[] = [];
@@ -183,7 +175,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <UNIIcon />,
             name: 'USDC_BOND_UNI_LP',
-            value: `$ ${formatBigValue(aggregated.lpStakedValue, 2)}`,
+            value: formatBigValue(yflp.nextPoolSize, 18),
             share: uniShare,
             color: 'var(--text-color-3)',
           });
@@ -192,35 +184,27 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     }
 
     return shares;
-  }, [stableToken, lpToken, yf, yflp, staking, aggregated]);
+  }, [stableToken, lpToken, yf, yflp, staking]);
 
   const myBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.nextEpochStake, 2)}`;
     } else if (lpToken && yflp.nextEpochStake) {
-      if (yflp.nextEpochStake.isEqualTo(ZERO_BIG_NUMBER)) {
-        return '0 USDC_BOND_UNI_LP';
-      }
-
-      return <span>{formatBigValue(yflp.nextEpochStake, 18)} USDC_BOND_UNI_LP</span>;
+      return `$ ${formatBigValue(aggregated.mylpStakedValue, 2)}`;
     }
 
     return '-';
-  }, [stableToken, lpToken, yf, yflp]);
+  }, [stableToken, lpToken, yf, yflp, aggregated]);
 
   const myEffectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return `$ ${formatBigValue(yf.epochStake, 2)}`;
     } else if (lpToken && yflp.epochStake) {
-      if (yflp.epochStake.isEqualTo(ZERO_BIG_NUMBER)) {
-        return '0';
-      }
-
-      return <span>{formatBigValue(yflp.epochStake, 18)}</span>;
+      return `$ ${formatBigValue(aggregated.mylpEffectiveStakedValue, 2)}`;
     }
 
     return '-';
-  }, [stableToken, lpToken, yf, yflp]);
+  }, [stableToken, lpToken, yf, yflp, aggregated]);
 
   const myBalanceShares = React.useMemo<TokenBalanceShare[]>(() => {
     const shares: TokenBalanceShare[] = [];
@@ -283,7 +267,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: <UNIIcon />,
             name: 'USDC_BOND_UNI_LP',
-            value: `${formatBigValue(staking.uniswap_v2.nextEpochUserBalance)} USDC_BOND_UNI_LP`,
+            value: formatBigValue(yflp.nextEpochStake, 18),
             share: uniShare,
             color: 'var(--text-color-3)',
           });

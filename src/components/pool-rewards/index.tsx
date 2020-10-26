@@ -41,7 +41,7 @@ const PoolRewards: React.FunctionComponent = props => {
               type="primary"
               className={s.harvestBtn}
               disabled={aggregated.totalCurrentReward?.isEqualTo(0) !== false}
-              onClick={onHarvestClick}>Harvest</Antd.Button>
+              onClick={onHarvestClick}>Claim</Antd.Button>
           )}
         </div>
         <div className={s.col}>

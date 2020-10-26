@@ -8,7 +8,7 @@ import s from './styles.module.css';
 export type StatWidgetProps = {
   label: string;
   value?: string;
-  hint?: string;
+  hint?: React.ReactNode | string;
   help?: React.ReactNode;
 };
 

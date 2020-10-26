@@ -50,8 +50,8 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
       footer={[]}
       {...modalProps}
     >
-      <div className={s.header}>Harvest your reward</div>
-      <div className={s.note}>Select the pool you want to harvest your reward from</div>
+      <div className={s.header}>Claim your reward</div>
+      <div className={s.note}>Select the pool you want to claim your reward from</div>
       <div className={s.body}>
         <Antd.Button
           className={s.option}

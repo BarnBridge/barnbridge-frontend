@@ -10,6 +10,8 @@ import FadeBlock from 'components/fade-block';
 import { ReactComponent as LogoSvg } from 'resources/svg/logo.svg';
 import { ReactComponent as BarnBridgeSvg } from 'resources/svg/barnbridge.svg';
 import { ReactComponent as ArrowCircleRightSvg } from 'resources/svg/icons/arrow-circle-right.svg';
+import { ReactComponent as MoonSvg } from 'resources/svg/icons/moon.svg';
+import { ReactComponent as SunSvg } from 'resources/svg/icons/sun.svg';
 
 import s from './styles.module.css';
 
@@ -26,7 +28,7 @@ const SiderNav: React.FunctionComponent<SiderNavProps> = props => {
     setExpanded(prevState => !prevState);
   }
 
-  function handleDarkThemeChange() {
+  function handleThemeToggle() {
     toggleDarkTheme();
   }
 
@@ -50,12 +52,13 @@ const SiderNav: React.FunctionComponent<SiderNavProps> = props => {
         <SiderNavLink key={link.path} {...link} expanded={expanded} tooltip />
       ))}
 
-      <FadeBlock className={s.themeToggle} visible={expanded}>
-        <Antd.Switch
-          title="Dark Theme"
-          checked={isDarkTheme}
-          onChange={handleDarkThemeChange} />Dark Theme
-      </FadeBlock>
+      <Antd.Button type="link" className={s.themeToggle} onClick={handleThemeToggle}>
+        {!isDarkTheme ? <MoonSvg /> : <SunSvg />}
+        <FadeBlock visible={expanded}>
+          {!isDarkTheme ? 'Dark' : 'Light'} Theme
+        </FadeBlock>
+      </Antd.Button>
+
       <Antd.Button
         className={s.expandBtn}
         type="link"

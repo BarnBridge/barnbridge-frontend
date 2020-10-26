@@ -7,6 +7,11 @@
     background-color: var(--bg-color-1);
 }
 
+:global .mobile-menu-open  :local .main {
+    max-height: 100vh;
+    overflow: hidden;
+}
+
 .content {
     padding: 32px 64px;
 }
