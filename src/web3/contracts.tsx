@@ -42,6 +42,9 @@ export type Web3ContractsType = {
     totalEffectiveStaked?: BigNumber;
     totalStakedInETH?: BigNumber;
     lpStakedValue?: BigNumber;
+    lpEffectiveStakedValue?: BigNumber;
+    mylpStakedValue?: BigNumber;
+    mylpEffectiveStakedValue?: BigNumber;
     bondReward?: BigNumber;
     totalBondReward?: BigNumber;
     bondPrice?: BigNumber;
@@ -209,6 +212,28 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return poolSize!.multipliedBy(tokenValue!);
   }
 
+  function mylpStakedValue() {
+    const poolSize = yflpContract.nextEpochStake;
+    const tokenValue = yflpTokenValue();
+
+    if (!assertValues(poolSize, tokenValue)) {
+      return undefined;
+    }
+
+    return poolSize!.multipliedBy(tokenValue!);
+  }
+
+  function mylpEffectiveStakedValue() {
+    const poolSize = yflpContract.epochStake;
+    const tokenValue = yflpTokenValue();
+
+    if (!assertValues(poolSize, tokenValue)) {
+      return undefined;
+    }
+
+    return poolSize!.multipliedBy(tokenValue!);
+  }
+
   function totalCurrentReward(): OptionalBigNumber {
     const yfCurrentReward = yfContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfContract.currentReward;
     const yflpCurrentReward = yflpContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yflpContract.currentReward;
@@ -325,6 +350,15 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       },
       get lpStakedValue(): OptionalBigNumber {
         return yflpStakedValue();
+      },
+      get lpEffectiveStakedValue(): OptionalBigNumber {
+        return yflpEffectiveStakedValue();
+      },
+      get mylpStakedValue(): OptionalBigNumber {
+        return mylpStakedValue();
+      },
+      get mylpEffectiveStakedValue(): OptionalBigNumber {
+        return mylpEffectiveStakedValue();
       },
       get bondReward(): OptionalBigNumber {
         return bondReward();

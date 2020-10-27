@@ -5,6 +5,15 @@
     width: 100%;
 }
 
+.link {
+    font-weight: 600;
+    color: var(--text-color-6);
+}
+
+.link:hover {
+    color: var(--text-color-9);
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
     .component {

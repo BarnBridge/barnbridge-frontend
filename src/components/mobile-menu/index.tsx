@@ -15,6 +15,8 @@ import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
 
 import s from './styles.module.css';
 import { useTheme } from 'components/theme-provider';
+import { ReactComponent as MoonSvg } from 'resources/svg/icons/moon.svg';
+import { ReactComponent as SunSvg } from 'resources/svg/icons/sun.svg';
 
 const SiderNavLinks: SiderNavLinkProps[] = [
   {
@@ -46,9 +48,21 @@ const MobileMenu: React.FunctionComponent = () => {
     setIsOpen(false);
   }
 
-  function handleDarkThemeChange() {
+  function handleThemeToggle() {
     toggleDarkTheme();
   }
+
+  React.useEffect(() => {
+    if (isOpen) {
+      if (!document.body.classList.contains('mobile-menu-open')) {
+        document.body.classList.add('mobile-menu-open');
+      }
+    } else {
+      if (document.body.classList.contains('mobile-menu-open')) {
+        document.body.classList.remove('mobile-menu-open');
+      }
+    }
+  }, [isOpen]);
 
   return (
     <div className={s.component}>
@@ -61,12 +75,6 @@ const MobileMenu: React.FunctionComponent = () => {
       <div className={cx(s.mask, { [s.maskOpen]: isOpen })} />
       <div className={cx(s.menuList, { [s.menuListOpen]: isOpen })}>
         <LogoWithName className={s.innerLogo} />
-        <div className={s.themeToggle}>
-          <Antd.Switch
-            title="Dark Theme"
-            checked={isDarkTheme}
-            onChange={handleDarkThemeChange} />Dark Theme
-        </div>
         {SiderNavLinks.map(link => (
           <SiderNavLink
             key={link.path}
@@ -75,6 +83,13 @@ const MobileMenu: React.FunctionComponent = () => {
             onClick={handleLinkClick}
           />
         ))}
+
+        <Antd.Button type="link" className={s.themeToggle} onClick={handleThemeToggle}>
+          {!isDarkTheme ? <MoonSvg /> : <SunSvg />}
+          <FadeBlock visible={isOpen}>
+            {!isDarkTheme ? 'Dark' : 'Light'} Theme
+          </FadeBlock>
+        </Antd.Button>
       </div>
     </div>
   );
