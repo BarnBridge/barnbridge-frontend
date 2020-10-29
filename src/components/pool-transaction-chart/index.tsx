@@ -55,12 +55,12 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
     const filters = [{ value: 'all', label: 'All epochs' }];
 
     if (poolFilter === 'stable') {
-      for (let i = -1; i < web3c.staking.currentEpoch!; i++) {
-        filters.push({ value: String(i), label: `Epoch ${i + 1}` });
+      for (let i = 0; i <= web3c.staking.currentEpoch!; i++) {
+        filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     } else if (poolFilter === 'lp') {
-      for (let i = 0; i < web3c.staking.currentEpoch! - 1; i++) {
-        filters.push({ value: String(i), label: `Epoch ${i + 1}` });
+      for (let i = 1; i <= web3c.staking.currentEpoch! - 1; i++) {
+        filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     }
 
