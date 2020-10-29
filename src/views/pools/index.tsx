@@ -11,6 +11,7 @@ import PoolRewards from 'components/pool-rewards';
 import PoolStats from 'components/pool-stats';
 import PoolStak from 'components/pool-stak';
 import PoolOverview from 'components/pool-overview';
+import PoolTransactionsProvider from 'components/pool-transactions-provider';
 
 import s from './styles.module.css';
 
@@ -56,21 +57,23 @@ const PoolsView: React.FunctionComponent = () => {
       <PoolStats className={s.stats} />
 
       <EthGasPriceProvider>
-        <Switch>
-          <Route path="/pools" exact render={() => (
-            <PoolOverview />
-          )} />
-          {web3.isActive && (
-            <>
-              <Route path="/pools/stable-token" exact render={() => (
-                <PoolStak stableToken />
-              )} />
-              <Route path="/pools/lp-token" exact render={() => (
-                <PoolStak lpToken />
-              )} />
-            </>
-          )}
-        </Switch>
+        <PoolTransactionsProvider>
+          <Switch>
+            <Route path="/pools" exact render={() => (
+              <PoolOverview />
+            )} />
+            {web3.isActive && (
+              <>
+                <Route path="/pools/stable-token" exact render={() => (
+                  <PoolStak stableToken />
+                )} />
+                <Route path="/pools/lp-token" exact render={() => (
+                  <PoolStak lpToken />
+                )} />
+              </>
+            )}
+          </Switch>
+        </PoolTransactionsProvider>
       </EthGasPriceProvider>
     </div>
   );

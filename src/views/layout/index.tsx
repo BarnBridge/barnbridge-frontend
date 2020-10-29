@@ -13,6 +13,8 @@ import { SiderNavLinkProps } from 'components/sider-nav-link';
 import MobileMenu from 'components/mobile-menu';
 import ExternalLink from 'components/externalLink';
 
+import { CONTRACT_BOND_ADDR, CONTRACT_USDC_ADDR } from 'web3/contracts';
+
 import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
 import { ReactComponent as PoolsSvg } from 'resources/svg/icons/pools.svg';
 import { ReactComponent as VotingSvg } from 'resources/svg/icons/voting.svg';
@@ -60,11 +62,13 @@ const LayoutView: React.FunctionComponent = () => {
                 <ExternalLink href="https://github.com/BarnBridge/">Github</ExternalLink>
                 <ExternalLink href="https://client.aragon.org/#/barnbridgelaunch/">LaunchDAO</ExternalLink>
                 <ExternalLink
-                  href={`https://app.uniswap.org/#/add/${process.env.REACT_APP_CONTRACT_BOND_ADDR}/${process.env.REACT_APP_CONTRACT_USDC_ADDR}`}>Uniswap
-                  v2 USDC/BOND add liquidity</ExternalLink>
+                  href={`https://app.uniswap.org/#/add/${CONTRACT_BOND_ADDR}/${CONTRACT_USDC_ADDR}`}>
+                  Uniswap v2 USDC/BOND add liquidity
+                </ExternalLink>
                 <ExternalLink
-                  href={`https://app.uniswap.org/#/swap?inputCurrency=${process.env.REACT_APP_CONTRACT_BOND_ADDR}&outputCurrency=${process.env.REACT_APP_CONTRACT_USDC_ADDR}`}>Uniswap
-                  v2 USDC/BOND market</ExternalLink>
+                  href={`https://app.uniswap.org/#/swap?inputCurrency=${CONTRACT_BOND_ADDR}&outputCurrency=${CONTRACT_USDC_ADDR}`}>
+                  Uniswap v2 USDC/BOND market
+                </ExternalLink>
               </div>
             </Antd.Layout.Footer>
           </Antd.Layout.Content>

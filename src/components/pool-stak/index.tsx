@@ -73,6 +73,7 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
 
       <PoolTransactionTable
         label="My Transactions"
+        ownTransactions
         stableToken={props.stableToken}
         lpToken={props.lpToken} />
     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 
 import { formatBigValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
+import { CONTRACT_BOND_ADDR, CONTRACT_USDC_ADDR, useWeb3Contracts } from 'web3/contracts';
 import { useWeekCountdown } from 'hooks/useCountdown';
 
 import StatWidget from 'components/stat-widget';
@@ -16,7 +16,11 @@ export type PoolStatsProps = {
 
 const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   const { aggregated, staking } = useWeb3Contracts();
-  const [untilNextEpoch] = useWeekCountdown(staking?.epochEnd);
+  const epochEnd = React.useMemo<number | undefined>(() => {
+    const [, end] = staking.getEpochPeriod(staking.currentEpoch!);
+    return end;
+  }, [staking]);
+  const [untilNextEpoch] = useWeekCountdown(epochEnd);
 
   const totalValueLocked = formatBigValue(aggregated.totalStaked, 2);
   const totalEffectiveStaked = formatBigValue(aggregated.totalEffectiveStaked, 2);
@@ -48,7 +52,9 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
         label="Bond Price"
         value={`$ ${bondPrice}`}
         hint={(
-          <ExternalLink href={`https://app.uniswap.org/#/swap?inputCurrency=${process.env.REACT_APP_CONTRACT_BOND_ADDR}&outputCurrency=${process.env.REACT_APP_CONTRACT_USDC_ADDR}`} className={s.link}>Uniswap market</ExternalLink>
+          <ExternalLink
+            href={`https://app.uniswap.org/#/swap?inputCurrency=${CONTRACT_BOND_ADDR}&outputCurrency=${CONTRACT_USDC_ADDR}`}
+            className={s.link}>Uniswap market</ExternalLink>
         )} />
       <StatWidget
         label="Time Left"

@@ -1,6 +1,6 @@
 import Web3EthContract from 'web3-eth-contract';
 import BigNumber from 'bignumber.js';
-import { isString } from 'lodash';
+import isString from 'lodash/isString';
 
 import { EthContract } from 'web3/types';
 
@@ -154,8 +154,8 @@ export function getNonHumanValue(value: BigNumber | number, decimals: number = 0
   return (new BigNumber(value)).multipliedBy(getExponentValue(decimals));
 }
 
-export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultValue: string = '-'): string {
-  return value ? new BigNumber(value.toFixed(decimals)).toFormat() : defaultValue;
+export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultValue: string = '-', minDecimals: number | undefined = undefined): string {
+  return value ? new BigNumber(value.toFixed(decimals)).toFormat(minDecimals) : defaultValue;
 }
 
 export function assertValues(...values: any[]): boolean {

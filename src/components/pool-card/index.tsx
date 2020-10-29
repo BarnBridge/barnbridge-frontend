@@ -7,7 +7,7 @@ import IconsSet from 'components/icons-set';
 
 import { formatBigValue } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
-import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
+import { LP_ICON_SET, STABLE_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
 import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
@@ -38,7 +38,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const icons = React.useMemo<React.ComponentType<any>[]>(() => {
     if (stableToken) {
-      return UDS_ICON_SET;
+      return STABLE_ICON_SET;
     } else if (lpToken) {
       return LP_ICON_SET;
     }

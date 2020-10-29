@@ -68,6 +68,20 @@
     background-color: var(--bg-color-2);
 }
 
+.table :global .ant-table-pagination.ant-pagination {
+    margin: 24px;
+}
+
+.table :global .ant-pagination-total-text {
+    margin-right: auto;
+    color: var(--text-color-1);
+}
+
+.table .icon {
+    width: 24px;
+    height: 24px;
+}
+
 .emptyBlock {
     display: flex;
     flex-direction: column;

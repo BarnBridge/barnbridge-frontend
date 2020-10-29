@@ -1,10 +1,12 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { UnsupportedChainIdError } from '@web3-react/core';
+import { NoEthereumProviderError } from '@web3-react/injected-connector';
 
 import { useTheme } from 'components/theme-provider';
 import ConnectWalletModal from 'components/connect-wallet-modal';
 import UnsupportedChainModal from 'components/unsupported-chain-modal';
+import InstallMetaMaskModal from 'components/install-metamask-modal';
 import Identicon from 'components/identicon';
 import ExternalLink from 'components/externalLink';
 
@@ -26,6 +28,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
   const web3 = useWeb3();
   const [connectWalletVisible, setConnectWalletVisible] = React.useState<boolean>(false);
   const [unsupportedChainVisible, setUnsupportedChainVisible] = React.useState<boolean>(false);
+  const [installMetaMaskVisible, setInstallMetaMaskVisible] = React.useState<boolean>(false);
 
   function handleConnectWallet() {
     setConnectWalletVisible(true);
@@ -44,7 +47,8 @@ const ConnectedWallet: React.FunctionComponent = props => {
     } catch (error) {
       if (error instanceof UnsupportedChainIdError) {
         setUnsupportedChainVisible(true);
-      }
+      } else if (error instanceof NoEthereumProviderError)
+        setInstallMetaMaskVisible(true);
     }
   }
 
@@ -73,6 +77,10 @@ const ConnectedWallet: React.FunctionComponent = props => {
             visible={unsupportedChainVisible}
             onCancel={() => setUnsupportedChainVisible(false)}
             onSwitchWallet={handleSwitchWallet} />
+          <InstallMetaMaskModal
+            visible={installMetaMaskVisible}
+            onCancel={() => setInstallMetaMaskVisible(false)}
+          />
         </>
       ) : (
         <div className={s.walletBox}>
