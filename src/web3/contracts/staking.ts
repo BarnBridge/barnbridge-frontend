@@ -267,7 +267,7 @@ export function useStakingContract(account?: string): StakingContract {
   }
 
   function getEpochPeriod(epoch: number): number[] {
-    const start = data.epoch1Start! + (epoch * data.epochDuration!);
+    const start = data.epoch1Start! + ((epoch-1) * data.epochDuration!);
     const end = start + data.epochDuration!;
 
     return [start, end];
