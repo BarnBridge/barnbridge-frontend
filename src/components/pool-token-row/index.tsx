@@ -399,7 +399,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                     text="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
                 )}
                 {props.type === 'withdraw' && (
-                  <InfoBox text="Withdrawals before the end of the epoch will decrease your rewards." />
+                  <InfoBox text="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
                 )}
               </div>
             </Antd.Col>

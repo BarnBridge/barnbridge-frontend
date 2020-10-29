@@ -1,0 +1,59 @@
+.component {
+}
+
+.headerLabel {
+    margin-bottom: 16px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 24px;
+    line-height: 32px;
+    color: var(--text-color-1);
+}
+
+.text {
+    margin-bottom: 16px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 16px;
+    line-height: 24px;
+    color: var(--text-color-2);
+}
+
+.footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.switchBtn {
+    width: 190px;
+    height: 48px;
+    margin: 10px 0;
+    padding: 12px 32px !important;
+    background-color: rgba(255, 67, 57, 0.1);
+    border-radius: 4px;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px !important;
+    text-align: center;
+    color: var(--text-color-3);
+}
+
+.backBtn {
+    width: 130px;
+    height: 48px;
+    margin: 10px 0;
+    padding: 12px 32px !important;
+    font-family: Montserrat;
+    font-style: normal;
+    font-weight: bold;
+    font-size: 14px;
+    line-height: 24px;
+    text-align: center;
+    color: var(--text-color-3);
+}

@@ -18,10 +18,11 @@ import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
 import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
 import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
 
-const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
-const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
-const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase();
-const CONTRACT_UNISWAP_V2_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
+export const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
+export const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
+export const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase();
+export const CONTRACT_UNISWAP_V2_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
+export const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
 
 type OptionalBigNumber = BigNumber | undefined;
 
@@ -50,6 +51,7 @@ export type Web3ContractsType = {
     bondPrice?: BigNumber;
   };
   getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber;
+  getTokenUsdValue(token: string, value?: BigNumber): OptionalBigNumber;
 };
 
 const Web3ContractsContext = React.createContext<Web3ContractsType>({} as any);
@@ -58,11 +60,8 @@ export function useWeb3Contracts(): Web3ContractsType {
   return React.useContext(Web3ContractsContext);
 }
 
-export const UDS_ICON_SET = [USDCIcon, DAIIcon, SUSDIcon];
+export const STABLE_ICON_SET = [USDCIcon, DAIIcon, SUSDIcon];
 export const LP_ICON_SET = [UNISWAPIcon];
-
-export const STABLE_TOKEN_KEY = 'stableToken';
-export const LP_TOKEN_KEY = 'lpToken';
 
 export const TOKEN_USDC_KEY = 'USDC';
 export const TOKEN_DAI_KEY = 'DAI';
@@ -120,15 +119,42 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   function getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber {
     let decimals: number | undefined;
+
+    switch (token.toLowerCase()) {
+      case CONTRACT_USDC_ADDR:
+        decimals = usdcContract.decimals;
+        break;
+      case CONTRACT_DAI_ADDR:
+        decimals = daiContract.decimals;
+        break;
+      case CONTRACT_SUSD_ADDR:
+        decimals = susdContract.decimals;
+        break;
+      case CONTRACT_UNISWAP_V2_ADDR:
+        decimals = uniswapV2Contract.decimals;
+        break;
+      default:
+        return undefined;
+    }
+
+    if (!assertValues(value, decimals)) {
+      return undefined;
+    }
+
+    return getHumanValue(value, decimals);
+  }
+
+  function getTokenUsdValue(token: string, value?: BigNumber): OptionalBigNumber {
+    let decimals: number | undefined;
     let multiplier: OptionalBigNumber;
 
     switch (token.toLowerCase()) {
-      case CONTRACT_DAI_ADDR:
-        decimals = daiContract.decimals;
-        multiplier = yfTokenValue();
-        break;
       case CONTRACT_USDC_ADDR:
         decimals = usdcContract.decimals;
+        multiplier = yfTokenValue();
+        break;
+      case CONTRACT_DAI_ADDR:
+        decimals = daiContract.decimals;
         multiplier = yfTokenValue();
         break;
       case CONTRACT_SUSD_ADDR:
@@ -371,6 +397,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       },
     },
     getTokenHumanValue,
+    getTokenUsdValue,
   };
 
   return (

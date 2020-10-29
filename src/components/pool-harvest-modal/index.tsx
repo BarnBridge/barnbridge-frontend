@@ -2,7 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
-import { LP_ICON_SET, UDS_ICON_SET, useWeb3Contracts } from 'web3/contracts';
+import { LP_ICON_SET, STABLE_ICON_SET, useWeb3Contracts } from 'web3/contracts';
 import { formatBigValue } from 'web3/utils';
 
 import IconsSet from 'components/icons-set';
@@ -59,7 +59,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           loading={yfHarvesting}
           disabled={yf?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFHarvest}>
-          <IconsSet className={s.optionIcons} icons={UDS_ICON_SET} />
+          <IconsSet className={s.optionIcons} icons={STABLE_ICON_SET} />
           <div className={s.optionLabel}>USDC/DAI/sUSD</div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
