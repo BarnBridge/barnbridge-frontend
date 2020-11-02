@@ -20,7 +20,7 @@ import NumericInput from 'components/numeric-input';
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-token-row/styles.module.css';
 
 export type PoolTokenRowProps = {
   token: TokenMeta;

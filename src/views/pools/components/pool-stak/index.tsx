@@ -3,8 +3,8 @@ import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import { ArrowLeftOutlined } from '@ant-design/icons';
 
-import PoolTokenRow from 'components/pool-token-row';
-import PoolTransactionTable from 'components/pool-transaction-table';
+import PoolTokenRow from 'views/pools/components/pool-token-row';
+import PoolTransactionTable from 'views/pools/components/pool-transaction-table';
 import { useEthGasPrice } from 'context/useEthGas';
 
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -12,7 +12,7 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-stak/styles.module.css';
 
 export type PoolStakProps = {
   stableToken?: boolean;

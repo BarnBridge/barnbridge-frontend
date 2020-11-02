@@ -13,7 +13,7 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-card/styles.module.css';
 
 export type PoolCardProps = {
   stableToken?: boolean;

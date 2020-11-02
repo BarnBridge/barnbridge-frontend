@@ -11,7 +11,7 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import IconsSet from 'components/icons-set';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-harvest-modal/styles.module.css';
 
 export type PoolHarvestModalProps = ModalProps & {};
 

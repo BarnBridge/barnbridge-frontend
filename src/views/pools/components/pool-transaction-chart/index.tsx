@@ -12,7 +12,7 @@ import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import reduce from 'lodash/fp/reduce';
 
-import { PoolTransaction, usePoolTransactions } from 'components/pool-transactions-provider';
+import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 import IconsSet from 'components/icons-set';
 import Dropdown, { DropdownOption } from 'components/dropdown';
 
@@ -24,7 +24,7 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-transaction-chart/styles.module.css';
 
 const PoolFilters: DropdownOption[] = [
   {

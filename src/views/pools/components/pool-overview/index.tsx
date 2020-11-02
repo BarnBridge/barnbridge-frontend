@@ -1,10 +1,10 @@
 import React from 'react';
 
-import PoolCard from 'components/pool-card';
-import PoolTransactionChart from 'components/pool-transaction-chart';
-import PoolTransactionTable from 'components/pool-transaction-table';
+import PoolCard from 'views/pools/components/pool-card';
+import PoolTransactionChart from 'views/pools/components/pool-transaction-chart';
+import PoolTransactionTable from 'views/pools/components/pool-transaction-table';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-overview/styles.module.css';
 
 const PoolOverview: React.FunctionComponent = () => {
   return (

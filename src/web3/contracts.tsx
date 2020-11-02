@@ -2,8 +2,8 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { assertValues, getHumanValue, getTokenMeta, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
-import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { useYieldFarmContract, YieldFarmContractType } from 'web3/contracts/yieldFarm';
+import { useYieldFarmLPContract, YieldFarmLPContractType } from 'web3/contracts/yieldFarmLP';
 import { StakingContractType, useStakingContract } from 'web3/contracts/staking';
 import { USDCContractType, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { DAIContractType, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
@@ -14,8 +14,8 @@ import { BONDContractType, useBONDContract } from 'web3/contracts/bond';
 type OptionalBigNumber = BigNumber | undefined;
 
 export type Web3ContractsType = {
-  yf: YieldFarmContract;
-  yflp: YieldFarmLPContract;
+  yf: YieldFarmContractType;
+  yflp: YieldFarmLPContractType;
   staking: StakingContractType;
   usdc: USDCContractType;
   dai: DAIContractType;

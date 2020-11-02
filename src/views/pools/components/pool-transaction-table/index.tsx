@@ -9,7 +9,7 @@ import filter from 'lodash/fp/filter';
 
 import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
-import { PoolTransaction, usePoolTransactions } from 'components/pool-transactions-provider';
+import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
 import { formatBigValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
@@ -21,7 +21,7 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-transaction-table/styles.module.css';
 
 const TypeFilters: DropdownOption[] = [
   { value: 'all', label: 'All transactions' },
@@ -34,8 +34,11 @@ const Columns: ColumnsType<any> = [
     title: '',
     dataIndex: 'token',
     width: 24,
+    className: s.iconCol,
     render: (value: string) => {
-      return getTokenMeta(value)?.icon;
+      return (
+        <div className={s.icon}>{getTokenMeta(value)?.icon}</div>
+      );
     },
   },
   {

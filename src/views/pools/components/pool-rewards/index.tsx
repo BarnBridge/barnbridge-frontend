@@ -6,11 +6,11 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { formatBigValue } from 'web3/utils';
 
 import InfoTooltip from 'components/info-tooltip';
-import PoolHarvestModal from 'components/pool-harvest-modal';
+import PoolHarvestModal from 'views/pools/components/pool-harvest-modal';
 
 import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-rewards/styles.module.css';
 
 const PoolRewards: React.FunctionComponent = props => {
   const { isActive } = useWeb3();

@@ -13,7 +13,7 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 
-export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
+export function getWSRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
   const WEB3_RPC_ID = String(process.env.REACT_APP_WEB3_RPC_ID);
 
   switch (chainId) {
@@ -21,6 +21,19 @@ export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CH
       return `wss://mainnet.infura.io/ws/v3/${WEB3_RPC_ID}`;
     case 4:
       return `wss://rinkeby.infura.io/ws/v3/${WEB3_RPC_ID}`;
+    default:
+      throw new Error(`Not supported chainId=${chainId}.`);
+  }
+}
+
+export function getHttpsRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
+  const WEB3_RPC_ID = String(process.env.REACT_APP_WEB3_RPC_ID);
+
+  switch (chainId) {
+    case 1:
+      return `https://mainnet.infura.io/v3/${WEB3_RPC_ID}`;
+    case 4:
+      return `https://rinkeby.infura.io/v3/${WEB3_RPC_ID}`;
     default:
       throw new Error(`Not supported chainId=${chainId}.`);
   }
@@ -54,7 +67,7 @@ export function getEtherscanAddressUrl(
   }
 }
 
-export function createContract(abi: any, address: string, rpcUrl: string = getRpcUrl()): EthContract | undefined {
+export function createContract(abi: any, address: string, rpcUrl: string = getWSRpcUrl()): EthContract | undefined {
   try {
     const contract: EthContract = new (Web3EthContract as any)(abi, address);
     contract.setProvider?.(rpcUrl);

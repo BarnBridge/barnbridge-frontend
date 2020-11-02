@@ -7,11 +7,11 @@ import EthGasPriceProvider from 'context/useEthGas';
 import { useWeb3 } from 'web3/provider';
 import { useWarnings } from 'components/warnings';
 import ConnectedWallet from 'components/connected-wallet';
-import PoolRewards from 'components/pool-rewards';
-import PoolStats from 'components/pool-stats';
-import PoolStak from 'components/pool-stak';
-import PoolOverview from 'components/pool-overview';
-import PoolTransactionsProvider from 'components/pool-transactions-provider';
+import PoolRewards from 'views/pools/components/pool-rewards';
+import PoolStats from 'views/pools/components/pool-stats';
+import PoolStak from 'views/pools/components/pool-stak';
+import PoolOverview from 'views/pools/components/pool-overview';
+import PoolTransactionsProvider from 'views/pools/components/pool-transactions-provider';
 
 import s from './styles.module.css';
 

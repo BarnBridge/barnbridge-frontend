@@ -10,7 +10,7 @@ import { useWeekCountdown } from 'hooks/useCountdown';
 import StatWidget from 'components/stat-widget';
 import ExternalLink from 'components/externalLink';
 
-import s from './styles.module.css';
+import s from 'views/pools/components/pool-stats/styles.module.css';
 
 export type PoolStatsProps = {
   className?: string;

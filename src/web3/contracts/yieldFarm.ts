@@ -2,7 +2,9 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { assertValues, batchContract, createContract, getHumanValue, sendContract, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWeb3 } from 'web3/provider';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import { useVersion } from 'hooks/useVersion';
 
 export const CONTRACT_YIELD_FARM_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR);
 
@@ -11,7 +13,7 @@ const Contract = createContract(
   CONTRACT_YIELD_FARM_ADDR,
 );
 
-export type YieldFarmContract = {
+export type YieldFarmContractType = {
   totalEpochs?: number;
   totalRewards?: BigNumber;
   epochReward?: BigNumber;
@@ -27,9 +29,11 @@ export type YieldFarmContract = {
   reload: () => void;
 };
 
-export function useYieldFarmContract(account?: string): YieldFarmContract {
-  const [data, setData] = React.useState<YieldFarmContract>({} as any);
-  const [version, setVersion] = React.useState<number>(0);
+export function useYieldFarmContract(): YieldFarmContractType {
+  const { account } = useWeb3();
+  const { version, incVersion } = useVersion();
+
+  const [data, setData] = React.useState<YieldFarmContractType>({} as any);
 
   React.useEffect(() => {
     (async () => {
@@ -61,7 +65,35 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
   }, [version]);
 
   React.useEffect(() => {
+    if (!assertValues(data.epochReward, data.currentEpoch)) {
+      setData(prevState => ({
+        ...prevState,
+        bondReward: undefined,
+      }));
+      return;
+    }
+
+    let bondReward = ZERO_BIG_NUMBER;
+
+    if (data.currentEpoch! > 0) {
+      const bondEpoch = data.currentEpoch === data.totalEpochs ? data.currentEpoch : data.currentEpoch! - 1;
+      bondReward = data.epochReward!.multipliedBy(bondEpoch!);
+    }
+
+    setData(prevState => ({
+      ...prevState,
+      bondReward,
+    }));
+  }, [version, data.epochReward, data.currentEpoch, data.totalEpochs]);
+
+  React.useEffect(() => {
     if (!assertValues(account, data.currentEpoch)) {
+      setData(prevState => ({
+        ...prevState,
+        epochStake: undefined,
+        nextEpochStake: undefined,
+        currentReward: undefined,
+      }));
       return;
     }
 
@@ -83,14 +115,19 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
 
   React.useEffect(() => {
     if (!assertValues(data.epochStake, data.poolSize, data.epochReward)) {
+      setData(prevState => ({
+        ...prevState,
+        potentialReward: undefined,
+      }));
       return;
     }
 
     if (data.poolSize?.isEqualTo(ZERO_BIG_NUMBER)) {
-      return setData(prevState => ({
+      setData(prevState => ({
         ...prevState,
         potentialReward: ZERO_BIG_NUMBER,
       }));
+      return;
     }
 
     const potentialReward = data.epochStake!
@@ -103,29 +140,7 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
     }));
   }, [version, data.epochStake, data.poolSize, data.epochReward]);
 
-  React.useEffect(() => {
-    if (!assertValues(data.epochReward, data.currentEpoch)) {
-      return;
-    }
-
-    let bondReward = ZERO_BIG_NUMBER;
-
-    if (data.currentEpoch! > 0) {
-      const bondEpoch = data.currentEpoch === data.totalEpochs ? data.currentEpoch : data.currentEpoch! - 1;
-      bondReward = data.epochReward!.multipliedBy(bondEpoch!);
-    }
-
-    setData(prevState => ({
-      ...prevState,
-      bondReward,
-    }));
-  }, [version, data.epochReward, data.currentEpoch, data.totalEpochs]);
-
-  const reload = React.useCallback(() => {
-    setVersion(prevState => prevState + 1);
-  }, []);
-
-  function massHarvestSend() {
+  const massHarvestSend = React.useCallback(() => {
     if (!assertValues(account)) {
       return;
     }
@@ -134,13 +149,13 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
       from: account,
     })
       .then(async () => {
-        reload();
+        incVersion();
       });
-  }
+  }, [account, incVersion]);
 
-  return {
+  return React.useMemo(() => ({
     ...data,
     massHarvestSend,
-    reload,
-  };
+    reload: incVersion,
+  }), [data, massHarvestSend, incVersion]);
 }

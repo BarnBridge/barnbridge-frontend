@@ -62,6 +62,12 @@
     color: var(--text-color-6);
 }
 
+.table :global .ant-table-cell {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .table :global .ant-table-footer {
     display: flex;
     justify-content: center;
@@ -77,9 +83,13 @@
     color: var(--text-color-1);
 }
 
-.table .icon {
+.table .icon svg {
     width: 24px;
     height: 24px;
+}
+
+.iconCol {
+    max-width: 72px;
 }
 
 .emptyBlock {
@@ -148,8 +158,11 @@
     }
 
     .table :global .ant-table-tbody > tr > td {
-        min-width: 170px;
         font-size: 14px;
         color: var(--text-color-1);
+    }
+
+    .table :global .ant-pagination-total-text {
+        display: none;
     }
 }

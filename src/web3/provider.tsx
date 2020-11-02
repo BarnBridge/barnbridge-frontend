@@ -13,7 +13,7 @@ import { TorusConnector } from '@web3-react/torus-connector';
 import { AuthereumConnector } from '@web3-react/authereum-connector';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 
-import { getRpcUrl } from 'web3/utils';
+import { getHttpsRpcUrl, getWSRpcUrl } from 'web3/utils';
 
 import MetamaskLogo from 'resources/svg/wallets/metamask-logo.svg';
 import TrustWalletLogo from 'resources/svg/wallets/trustwallet-logo.svg';
@@ -59,7 +59,7 @@ export const Web3Connectors: Web3Connector[] = [
     logo: WalletConnectLogo,
     connector: new WalletConnectConnector({
       rpc: {
-        [WEB3_CHAIN_ID]: getRpcUrl(),
+        [WEB3_CHAIN_ID]: getWSRpcUrl(),
       },
       bridge: 'https://bridge.walletconnect.org',
       qrcode: true,
@@ -73,7 +73,7 @@ export const Web3Connectors: Web3Connector[] = [
     logo: LedgerLogo,
     connector: new LedgerConnector({
       chainId: WEB3_CHAIN_ID,
-      url: getRpcUrl(),
+      url: getHttpsRpcUrl(),
       pollingInterval: WEB3_POLLING_INTERVAL,
     }),
     enabled: true,
@@ -90,7 +90,7 @@ export const Web3Connectors: Web3Connector[] = [
     name: 'Coinbase Wallet',
     logo: CoinbaseWalletLogo,
     connector: new WalletLinkConnector({
-      url: getRpcUrl(),
+      url: getWSRpcUrl(),
       appName: 'barnbridge',
     }),
     enabled: false,
@@ -101,7 +101,7 @@ export const Web3Connectors: Web3Connector[] = [
     logo: TrezorLogo,
     connector: new TrezorConnector({
       chainId: WEB3_CHAIN_ID,
-      url: getRpcUrl(),
+      url: getWSRpcUrl(),
       pollingInterval: WEB3_POLLING_INTERVAL,
       manifestEmail: 'dummy@abc.xyz',
       manifestAppUrl: 'https://8rg3h.csb.app/',
