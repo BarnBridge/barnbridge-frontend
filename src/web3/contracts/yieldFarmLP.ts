@@ -36,7 +36,7 @@ export function useYieldFarmLPContract(account?: string): YieldFarmLPContract {
         'getCurrentEpoch',
       ]);
 
-      if (currentEpoch > totalEpochs) {
+      if (Number(currentEpoch) > Number(totalEpochs)) {
         currentEpoch = totalEpochs;
       }
 
