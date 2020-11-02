@@ -2,6 +2,14 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { assertValues, batchContract, createContract, getHumanValue, sendContract, ZERO_BIG_NUMBER } from 'web3/utils';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+
+export const CONTRACT_YIELD_FARM_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR);
+
+const Contract = createContract(
+  require('web3/abi/yield_farm.json'),
+  CONTRACT_YIELD_FARM_ADDR,
+);
 
 export type YieldFarmContract = {
   totalEpochs?: number;
@@ -18,11 +26,6 @@ export type YieldFarmContract = {
   massHarvestSend: () => void;
   reload: () => void;
 };
-
-const Contract = createContract(
-  require('web3/abi/yield_farm.json'),
-  String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR),
-);
 
 export function useYieldFarmContract(account?: string): YieldFarmContract {
   const [data, setData] = React.useState<YieldFarmContract>({} as any);
@@ -51,8 +54,8 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
         totalRewards: new BigNumber(totalRewards),
         epochReward: (new BigNumber(totalRewards)).div(totalEpochs),
         currentEpoch: Number(currentEpoch),
-        poolSize: getHumanValue(new BigNumber(poolSize), 18), // TODO: get decimals from ? contract
-        nextPoolSize: getHumanValue(new BigNumber(nextPoolSize), 18), // TODO: get decimals from ? contract
+        poolSize: getHumanValue(new BigNumber(poolSize), BONDTokenMeta.decimals),
+        nextPoolSize: getHumanValue(new BigNumber(nextPoolSize), BONDTokenMeta.decimals),
       }));
     })();
   }, [version]);
@@ -71,9 +74,9 @@ export function useYieldFarmContract(account?: string): YieldFarmContract {
 
       setData(prevState => ({
         ...prevState,
-        epochStake: getHumanValue(new BigNumber(epochStake), 18), // TODO: get decimals from ? contract
-        nextEpochStake: getHumanValue(new BigNumber(nextEpochStake), 18), // TODO: get decimals from ? contract
-        currentReward: getHumanValue(new BigNumber(massHarvest), 18), // TODO: get decimals from ? contract
+        epochStake: getHumanValue(new BigNumber(epochStake), BONDTokenMeta.decimals),
+        nextEpochStake: getHumanValue(new BigNumber(nextEpochStake), BONDTokenMeta.decimals),
+        currentReward: getHumanValue(new BigNumber(massHarvest), BONDTokenMeta.decimals),
       }));
     })();
   }, [version, account, data.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps

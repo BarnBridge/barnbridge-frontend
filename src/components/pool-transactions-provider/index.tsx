@@ -5,6 +5,7 @@ import { useSessionStorage } from 'react-use-storage';
 import BigNumber from 'bignumber.js';
 import first from 'lodash/first';
 
+import { getTokenHumanValue } from 'web3/utils';
 import { useWeb3Contracts, Web3ContractsType } from 'web3/contracts';
 
 export type StakingAction = {
@@ -106,7 +107,7 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
             return web3cRef.current.getTokenUsdValue(item.token, this.amount);
           },
           get tokenAmount() {
-            return web3cRef.current.getTokenHumanValue(item.token, this.amount);
+            return getTokenHumanValue(item.token, this.amount);
           },
         };
       }));
@@ -152,7 +153,7 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
               return web3cRef.current.getTokenUsdValue(item.token, this.amount);
             },
             get tokenAmount() {
-              return web3cRef.current.getTokenHumanValue(item.token, this.amount);
+              return getTokenHumanValue(item.token, this.amount);
             },
           };
 

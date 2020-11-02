@@ -4,18 +4,13 @@ import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import cx from 'classnames';
 import BigNumber from 'bignumber.js';
 
-import {
-  TOKEN_DAI_KEY,
-  TOKEN_SUSD_KEY,
-  TOKEN_UNISWAP_KEY,
-  TOKEN_USDC_KEY,
-  TokenInfo,
-  TokenKeys,
-  TOKENS_MAP,
-  useWeb3Contracts,
-} from 'web3/contracts';
-import { useWeb3 } from 'web3/provider';
+import { TokenMeta } from 'web3/types';
 import { formatBigValue, getHumanValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 import { useEthGasPrice } from 'context/useEthGas';
 
 import InfoBox from 'components/info-box';
@@ -28,13 +23,13 @@ import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-r
 import s from './styles.module.css';
 
 export type PoolTokenRowProps = {
-  token: TokenKeys;
+  token: TokenMeta;
   stableToken?: boolean;
   lpToken?: boolean;
   type: 'deposit' | 'withdraw';
 }
 
-type StateType = TokenInfo & {
+type StateType = {
   walletBalance?: BigNumber;
   stakedBalance?: BigNumber;
   effectiveStakedBalance?: BigNumber;
@@ -45,10 +40,9 @@ type StateType = TokenInfo & {
 };
 
 const InitialState: StateType = {
-  address: '-',
-  icon: null,
-  name: '-',
-  decimals: 0,
+  walletBalance: undefined,
+  stakedBalance: undefined,
+  effectiveStakedBalance: undefined,
   enabled: false,
   amount: undefined,
   gasAmount: 'Standard',
@@ -56,30 +50,18 @@ const InitialState: StateType = {
 };
 
 const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
-  const web3 = useWeb3();
   const web3c = useWeb3Contracts();
   const ethGasPrice = useEthGasPrice();
 
+  const [state, setState] = React.useState<StateType>(InitialState);
   const [expanded, setExpanded] = React.useState<boolean>(props.lpToken ?? false);
   const [enabling, setEnabling] = React.useState<boolean>(false);
   const [depositing, setDepositing] = React.useState<boolean>(false);
   const [withdrawing, setWithdrawing] = React.useState<boolean>(false);
-  const [state, setState] = React.useState<StateType>(InitialState);
-
-  React.useEffect(() => {
-    const tokenInfo = TOKENS_MAP.get(props.token);
-
-    if (tokenInfo) {
-      setState(prevState => ({
-        ...prevState,
-        ...tokenInfo,
-      }));
-    }
-  }, [props.token]);
 
   React.useEffect(() => {
     switch (props.token) {
-      case TOKEN_USDC_KEY:
+      case USDCTokenMeta:
         setState(prevState => ({
           ...prevState,
           walletBalance: web3c.usdc.balance,
@@ -88,7 +70,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           enabled: web3c.usdc.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
-      case TOKEN_DAI_KEY:
+      case DAITokenMeta:
         setState(prevState => ({
           ...prevState,
           walletBalance: web3c.dai.balance,
@@ -97,7 +79,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           enabled: web3c.dai.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
-      case TOKEN_SUSD_KEY:
+      case SUSDTokenMeta:
         setState(prevState => ({
           ...prevState,
           walletBalance: web3c.susd.balance,
@@ -106,7 +88,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           enabled: web3c.susd.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
-      case TOKEN_UNISWAP_KEY:
+      case UNISWAPTokenMeta:
         setState(prevState => ({
           ...prevState,
           walletBalance: web3c.uniswapV2.balance,
@@ -131,19 +113,21 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   }, [props.type, state]);
 
   const maxAmount = React.useMemo<number>(() => {
-    return getNonHumanValue(activeBalance ?? 0, state.decimals).toNumber();
-  }, [activeBalance, state.decimals]);
+    return getNonHumanValue(activeBalance ?? 0, props.token.decimals).toNumber();
+  }, [activeBalance, props.token]);
 
   const sliderStep = React.useMemo<number>(() => {
     switch (props.token) {
-      case TOKEN_USDC_KEY:
-      case TOKEN_DAI_KEY:
-      case TOKEN_SUSD_KEY:
-        return 10 ** state.decimals;
-      case TOKEN_UNISWAP_KEY:
+      case USDCTokenMeta:
+      case DAITokenMeta:
+      case SUSDTokenMeta:
+        return 10 ** props.token.decimals;
+      case UNISWAPTokenMeta:
         return 1;
+      default:
+        return 0;
     }
-  }, [props.token, state.decimals]);
+  }, [props.token]);
 
   function toggleExpanded() {
     setExpanded(prevState => !prevState);
@@ -156,16 +140,16 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
     try {
       switch (props.token) {
-        case TOKEN_USDC_KEY:
+        case USDCTokenMeta:
           await web3c.usdc.approveSend(value);
           break;
-        case TOKEN_DAI_KEY:
+        case DAITokenMeta:
           await web3c.dai.approveSend(value);
           break;
-        case TOKEN_SUSD_KEY:
+        case SUSDTokenMeta:
           await web3c.susd.approveSend(value);
           break;
-        case TOKEN_UNISWAP_KEY:
+        case UNISWAPTokenMeta:
           await web3c.uniswapV2.approveSend(value);
           break;
         default:
@@ -201,41 +185,35 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   function handleSliderChange(value: number) {
     setState(prevState => ({
       ...prevState,
-      amount: value === maxAmount ? activeBalance : getHumanValue(new BigNumber(value), state.decimals),
+      amount: value === maxAmount ? activeBalance : getHumanValue(new BigNumber(value), props.token.decimals),
     }));
   }
 
   async function handleDeposit() {
-    const tokenInfo = TOKENS_MAP.get(props.token);
-
-    if (!tokenInfo || !web3.account) {
-      return;
-    }
-
     setDepositing(true);
 
     try {
-      await web3c.staking.depositSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
+      await web3c.staking.depositSend(props.token, state.amount!, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
         amount: undefined,
         gasAmount: 'Standard',
       }));
 
-      switch (tokenInfo.name) {
-        case TOKEN_USDC_KEY:
+      switch (props.token) {
+        case USDCTokenMeta:
           web3c.usdc.reload();
           web3c.yf.reload();
           break;
-        case TOKEN_DAI_KEY:
+        case DAITokenMeta:
           web3c.dai.reload();
           web3c.yf.reload();
           break;
-        case TOKEN_SUSD_KEY:
+        case SUSDTokenMeta:
           web3c.susd.reload();
           web3c.yf.reload();
           break;
-        case TOKEN_UNISWAP_KEY:
+        case UNISWAPTokenMeta:
           web3c.uniswapV2.reload();
           web3c.yflp.reload();
           break;
@@ -247,36 +225,30 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   }
 
   async function handleWithdraw() {
-    const tokenInfo = TOKENS_MAP.get(props.token);
-
-    if (!tokenInfo || !web3.account) {
-      return;
-    }
-
     setWithdrawing(true);
 
     try {
-      await web3c.staking.withdrawSend(tokenInfo, web3.account, state.amount!, gasOptions.get(state.gasAmount)!);
+      await web3c.staking.withdrawSend(props.token, state.amount!, gasOptions.get(state.gasAmount)!);
       setState(prevState => ({
         ...prevState,
         amount: undefined,
         gasAmount: 'Standard',
       }));
 
-      switch (tokenInfo.name) {
-        case TOKEN_USDC_KEY:
+      switch (props.token) {
+        case USDCTokenMeta:
           web3c.usdc.reload();
           web3c.yf.reload();
           break;
-        case TOKEN_DAI_KEY:
+        case DAITokenMeta:
           web3c.dai.reload();
           web3c.yf.reload();
           break;
-        case TOKEN_SUSD_KEY:
+        case SUSDTokenMeta:
           web3c.susd.reload();
           web3c.yf.reload();
           break;
-        case TOKEN_UNISWAP_KEY:
+        case UNISWAPTokenMeta:
           web3c.uniswapV2.reload();
           web3c.yflp.reload();
           break;
@@ -307,13 +279,13 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     <div className={s.component}>
       <div className={s.header}>
         <div className={s.col}>
-          <div className={s.logo}>{state.icon}</div>
-          <div className={s.name}>{state.name}</div>
+          <div className={s.logo}>{props.token.icon}</div>
+          <div className={s.name}>{props.token.name}</div>
         </div>
         {props.stableToken ? (
           <div className={s.col}>
             <div className={s.label}>WALLET BALANCE</div>
-            <div className={s.value}>{formatBigValue(state.walletBalance, state.decimals)}</div>
+            <div className={s.value}>{formatBigValue(state.walletBalance, props.token.decimals)}</div>
           </div>
         ) : <div />}
         <div className={s.col}>
@@ -340,23 +312,23 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           <Antd.Row className={s.balanceRow}>
             <Antd.Col flex="auto" className={s.walletBlnc}>
               <div className={s.balanceLabel}>WALLET BALANCE</div>
-              <div className={s.balanceValue}>{formatBigValue(state.walletBalance, state.decimals)}</div>
+              <div className={s.balanceValue}>{formatBigValue(state.walletBalance, props.token.decimals)}</div>
             </Antd.Col>
             <Antd.Col flex="auto">
               <div className={s.balanceLabel}>STAKED BALANCE</div>
-              <div className={s.balanceValue}>{formatBigValue(state.stakedBalance, state.decimals)}</div>
+              <div className={s.balanceValue}>{formatBigValue(state.stakedBalance, props.token.decimals)}</div>
             </Antd.Col>
             <Antd.Col flex="auto">
               <div className={s.balanceLabel}>EFFECTIVE STAKED BALANCE
                 <InfoTooltip
                   title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
               </div>
-              <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance, state.decimals)}</div>
+              <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance, props.token.decimals)}</div>
             </Antd.Col>
             {props.lpToken && (
               <Antd.Col flex="auto">
                 <div className={s.balanceLabel}>WALLET BALANCE</div>
-                <div className={s.balanceValue}>{formatBigValue(state.walletBalance, state.decimals)}</div>
+                <div className={s.balanceValue}>{formatBigValue(state.walletBalance, props.token.decimals)}</div>
               </Antd.Col>
             )}
           </Antd.Row>
@@ -367,8 +339,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 <NumericInput
                   addonBefore={
                     <span className={s.addonWrap}>
-                    <span className={s.addonIcon}>{state.icon}</span>
-                    <span className={s.addonLabel}>{state.name}</span>
+                    <span className={s.addonIcon}>{props.token.icon}</span>
+                    <span className={s.addonLabel}>{props.token.name}</span>
                   </span>
                   }
                   addonAfter={
@@ -378,7 +350,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                       onClick={handleInputMaxClick}>MAX</Antd.Button>
                   }
                   placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
-                  maximumFractionDigits={state.decimals}
+                  maximumFractionDigits={props.token.decimals}
                   value={state.amount}
                   onChange={handleAmountChange}
                 />
@@ -387,9 +359,9 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                   disabled={!activeBalance}
                   min={0}
                   max={maxAmount}
-                  value={getNonHumanValue(state.amount ?? 0, state.decimals).toNumber() ?? 0}
+                  value={getNonHumanValue(state.amount ?? 0, props.token.decimals).toNumber() ?? 0}
                   tipFormatter={value =>
-                    <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, state.decimals), state.decimals)}</span>}
+                    <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, props.token.decimals), props.token.decimals)}</span>}
                   tooltipPlacement="bottom"
                   step={sliderStep}
                   onChange={handleSliderChange}
@@ -399,7 +371,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                     text="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
                 )}
                 {props.type === 'withdraw' && (
-                  <InfoBox text="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+                  <InfoBox
+                    text="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
                 )}
               </div>
             </Antd.Col>

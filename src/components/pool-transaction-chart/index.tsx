@@ -16,23 +16,31 @@ import { PoolTransaction, usePoolTransactions } from 'components/pool-transactio
 import IconsSet from 'components/icons-set';
 import Dropdown, { DropdownOption } from 'components/dropdown';
 
-import {
-  CONTRACT_DAI_ADDR,
-  CONTRACT_SUSD_ADDR,
-  CONTRACT_UNISWAP_V2_ADDR,
-  CONTRACT_USDC_ADDR,
-  LP_ICON_SET,
-  STABLE_ICON_SET,
-  useWeb3Contracts,
-} from 'web3/contracts';
+import { useWeb3Contracts } from 'web3/contracts';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import s from './styles.module.css';
 
 const PoolFilters: DropdownOption[] = [
-  { value: 'stable', label: 'USDC/DAI/sUSD' },
-  { value: 'lp', label: 'USDC_BOND_UNI_LP' },
+  {
+    value: 'stable',
+    label: [
+      USDCTokenMeta.name,
+      DAITokenMeta.name,
+      SUSDTokenMeta.name,
+    ].join('/'),
+  },
+  {
+    value: 'lp',
+    label: [
+      UNISWAPTokenMeta.name,
+    ].join('/'),
+  },
 ];
 
 const TypeFilters: DropdownOption[] = [
@@ -80,15 +88,15 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       // filter stable tokens
       poolFilter === 'stable'
         ? filter((item: PoolTransaction) => [
-          CONTRACT_USDC_ADDR,
-          CONTRACT_DAI_ADDR,
-          CONTRACT_SUSD_ADDR,
+          USDCTokenMeta.address,
+          DAITokenMeta.address,
+          SUSDTokenMeta.address,
         ].includes(item.token))
         : (t: PoolTransaction[]) => t,
       // filter lp tokens
       poolFilter === 'lp'
         ? filter((item: PoolTransaction) => [
-          CONTRACT_UNISWAP_V2_ADDR,
+          UNISWAPTokenMeta.address,
         ].includes(item.token))
         : (t: PoolTransaction[]) => t,
       // filter by transaction type
@@ -141,8 +149,14 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       <div className={s.header}>
         <div className={s.headerLabel}>
           <IconsSet className={s.iconSet} icons={[
-            ...poolFilter === 'stable' ? STABLE_ICON_SET : [],
-            ...poolFilter === 'lp' ? LP_ICON_SET : [],
+            ...poolFilter === 'stable' ? [
+              USDCTokenMeta.icon,
+              DAITokenMeta.icon,
+              SUSDTokenMeta.icon,
+            ] : [],
+            ...poolFilter === 'lp' ? [
+              UNISWAPTokenMeta.icon,
+            ] : [],
           ].filter(Boolean)} />
           <Dropdown
             items={PoolFilters}

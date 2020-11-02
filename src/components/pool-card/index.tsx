@@ -7,12 +7,11 @@ import IconsSet from 'components/icons-set';
 
 import { formatBigValue } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
-import { LP_ICON_SET, STABLE_ICON_SET, useWeb3Contracts } from 'web3/contracts';
-
-import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
-import { ReactComponent as UNIIcon } from 'resources/svg/tokens/uniswap.svg';
+import { useWeb3Contracts } from 'web3/contracts';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import s from './styles.module.css';
 
@@ -36,11 +35,11 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const { stableToken = false, lpToken = false } = props;
 
-  const icons = React.useMemo<React.ComponentType<any>[]>(() => {
+  const icons = React.useMemo<React.ReactNode[]>(() => {
     if (stableToken) {
-      return STABLE_ICON_SET;
+      return [USDCTokenMeta.icon, DAITokenMeta.icon, SUSDTokenMeta.icon];
     } else if (lpToken) {
-      return LP_ICON_SET;
+      return [UNISWAPTokenMeta.icon];
     }
 
     return [];
@@ -48,9 +47,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const nameLabel = React.useMemo<string>(() => {
     if (stableToken) {
-      return 'USDC/DAI/sUSD';
+      return [USDCTokenMeta.name, DAITokenMeta.name, SUSDTokenMeta.name].join('/');
     } else if (lpToken) {
-      return 'USDC_BOND_UNI_LP';
+      return [UNISWAPTokenMeta.name].join('/');
     }
 
     return '-';
@@ -126,8 +125,8 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (usdcShare) {
           shares.push({
-            icon: <USDCIcon />,
-            name: 'USDC',
+            icon: USDCTokenMeta.icon,
+            name: USDCTokenMeta.name,
             value: `$ ${formatBigValue(staking.usdc.nextEpochPoolSize, 2)}`,
             share: usdcShare,
             color: '#4f6ae6',
@@ -141,8 +140,8 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (daiShare) {
           shares.push({
-            icon: <DAIIcon />,
-            name: 'DAI',
+            icon: DAITokenMeta.icon,
+            name: DAITokenMeta.name,
             value: `$ ${formatBigValue(staking.dai.nextEpochPoolSize, 2)}`,
             share: daiShare,
             color: '#ffd160',
@@ -156,8 +155,8 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (susdShare) {
           shares.push({
-            icon: <SUSDIcon />,
-            name: 'SUSD',
+            icon: SUSDTokenMeta.icon,
+            name: SUSDTokenMeta.name,
             value: `$ ${formatBigValue(staking.susd.nextEpochPoolSize)}`,
             share: susdShare,
             color: '#1e1a31',
@@ -173,9 +172,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (uniShare) {
           shares.push({
-            icon: <UNIIcon />,
-            name: 'USDC_BOND_UNI_LP',
-            value: formatBigValue(yflp.nextPoolSize, 18),
+            icon: UNISWAPTokenMeta.icon,
+            name: UNISWAPTokenMeta.name,
+            value: formatBigValue(yflp.nextPoolSize, UNISWAPTokenMeta.decimals),
             share: uniShare,
             color: 'var(--text-color-3)',
           });
@@ -218,8 +217,8 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (usdcShare) {
           shares.push({
-            icon: <USDCIcon />,
-            name: 'USDC',
+            icon: USDCTokenMeta.icon,
+            name: USDCTokenMeta.name,
             value: `$ ${formatBigValue(staking.usdc.nextEpochUserBalance, 2)}`,
             share: usdcShare,
             color: '#4f6ae6',
@@ -233,8 +232,8 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (daiShare) {
           shares.push({
-            icon: <DAIIcon />,
-            name: 'DAI',
+            icon: DAITokenMeta.icon,
+            name: DAITokenMeta.name,
             value: `$ ${formatBigValue(staking.dai.nextEpochUserBalance, 2)}`,
             share: daiShare,
             color: '#ffd160',
@@ -248,8 +247,8 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (susdShare) {
           shares.push({
-            icon: <SUSDIcon />,
-            name: 'SUSD',
+            icon: SUSDTokenMeta.icon,
+            name: SUSDTokenMeta.name,
             value: `$ ${formatBigValue(staking.susd.nextEpochUserBalance, 2)}`,
             share: susdShare,
             color: '#1e1a31',
@@ -265,9 +264,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
         if (uniShare) {
           shares.push({
-            icon: <UNIIcon />,
-            name: 'USDC_BOND_UNI_LP',
-            value: formatBigValue(yflp.nextEpochStake, 18),
+            icon: UNISWAPTokenMeta.icon,
+            name: UNISWAPTokenMeta.name,
+            value: formatBigValue(yflp.nextEpochStake, UNISWAPTokenMeta.decimals),
             share: uniShare,
             color: 'var(--text-color-3)',
           });

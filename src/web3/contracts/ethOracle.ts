@@ -3,6 +3,14 @@ import BigNumber from 'bignumber.js';
 
 import { batchContract, createContract, getHumanValue, getRpcUrl } from 'web3/utils';
 
+export const CONTRACT_ETH_ORACLE_ADDR = String(process.env.REACT_APP_CONTRACT_ETH_ORACLE_ADDR);
+
+const Contract = createContract(
+  require('web3/abi/eth_oracle.json'),
+  CONTRACT_ETH_ORACLE_ADDR,
+  getRpcUrl(1),
+);
+
 export type EthOracleContract = {
   name?: string;
   decimals?: number;
@@ -14,12 +22,6 @@ const InitialDataState: EthOracleContract = {
   decimals: undefined,
   value: undefined,
 };
-
-const Contract = createContract(
-  require('web3/abi/eth_oracle.json'),
-  String(process.env.REACT_APP_CONTRACT_ETH_ORACLE_ADDR),
-  getRpcUrl(1),
-);
 
 export function useETHOracleContract(): EthOracleContract {
   const [data, setData] = React.useState<EthOracleContract>(InitialDataState);

@@ -11,25 +11,15 @@ import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
 import { PoolTransaction, usePoolTransactions } from 'components/pool-transactions-provider';
 
-import { formatBigValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
-import {
-  CONTRACT_DAI_ADDR,
-  CONTRACT_SUSD_ADDR,
-  CONTRACT_UNISWAP_V2_ADDR,
-  CONTRACT_USDC_ADDR,
-  TOKEN_DAI_KEY,
-  TOKEN_SUSD_KEY,
-  TOKEN_UNISWAP_KEY,
-  TOKEN_USDC_KEY,
-  useWeb3Contracts,
-} from 'web3/contracts';
+import { formatBigValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
+import { useWeb3Contracts } from 'web3/contracts';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
-import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
-import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
 
 import s from './styles.module.css';
 
@@ -45,16 +35,7 @@ const Columns: ColumnsType<any> = [
     dataIndex: 'token',
     width: 24,
     render: (value: string) => {
-      switch (value) {
-        case CONTRACT_USDC_ADDR:
-          return (<USDCIcon className={s.icon} />);
-        case CONTRACT_DAI_ADDR:
-          return (<DAIIcon className={s.icon} />);
-        case CONTRACT_SUSD_ADDR:
-          return (<SUSDIcon className={s.icon} />);
-        case CONTRACT_UNISWAP_V2_ADDR:
-          return (<UNISWAPIcon className={s.icon} />);
-      }
+      return getTokenMeta(value)?.icon;
     },
   },
   {
@@ -89,14 +70,13 @@ const Columns: ColumnsType<any> = [
     },
     align: 'right',
     render: (value: BigNumber, record: PoolTransaction) => {
+      const tokenMeta = getTokenMeta(record.token);
+
       return (
         <Antd.Tooltip title={(
           <span>
             <strong>{record.tokenAmount?.toFormat()}</strong>&nbsp;
-            {record.token === CONTRACT_USDC_ADDR && 'USDC'}
-            {record.token === CONTRACT_DAI_ADDR && 'DAI'}
-            {record.token === CONTRACT_SUSD_ADDR && 'SUSD'}
-            {record.token === CONTRACT_UNISWAP_V2_ADDR && 'USDC_BOND_UNI_LP'}
+            {tokenMeta?.name}
           </span>
         )}>
           ${formatBigValue(value, 2, '-', 2)}
@@ -132,12 +112,12 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
     return [
       { value: 'all', label: 'All tokens' },
       ...props.stableToken ? [
-        { value: CONTRACT_USDC_ADDR, label: TOKEN_USDC_KEY },
-        { value: CONTRACT_DAI_ADDR, label: TOKEN_DAI_KEY },
-        { value: CONTRACT_SUSD_ADDR, label: TOKEN_SUSD_KEY },
+        { value: USDCTokenMeta.address, label: USDCTokenMeta.name },
+        { value: DAITokenMeta.address, label: DAITokenMeta.name },
+        { value: SUSDTokenMeta.address, label: SUSDTokenMeta.name },
       ] : [],
       ...props.lpToken ? [
-        { value: CONTRACT_UNISWAP_V2_ADDR, label: TOKEN_UNISWAP_KEY },
+        { value: UNISWAPTokenMeta.address, label: UNISWAPTokenMeta.name },
       ] : [],
     ];
   }, [props.stableToken, props.lpToken]);

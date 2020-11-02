@@ -1,20 +1,26 @@
+import React from 'react';
 import Web3EthContract from 'web3-eth-contract';
 import BigNumber from 'bignumber.js';
 import isString from 'lodash/isString';
 
-import { EthContract } from 'web3/types';
+import { EthContract, TokenMeta } from 'web3/types';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 
 export function getRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
-  const rpcId = String(process.env.REACT_APP_WEB3_RPC_ID);
+  const WEB3_RPC_ID = String(process.env.REACT_APP_WEB3_RPC_ID);
 
   switch (chainId) {
     case 1:
-      return `wss://mainnet.infura.io/ws/v3/${rpcId}`;
+      return `wss://mainnet.infura.io/ws/v3/${WEB3_RPC_ID}`;
     case 4:
-      return `wss://rinkeby.infura.io/ws/v3/${rpcId}`;
+      return `wss://rinkeby.infura.io/ws/v3/${WEB3_RPC_ID}`;
     default:
       throw new Error(`Not supported chainId=${chainId}.`);
   }
@@ -165,3 +171,50 @@ export function assertValues(...values: any[]): boolean {
 export function shortenAddr(addr: string, first: number = 6, last: number = 4) {
   return [String(addr).slice(0, first), String(addr).slice(-last)].join('...');
 }
+
+export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
+  switch (tokenAddr.toLowerCase()) {
+    case USDCTokenMeta.address:
+      return USDCTokenMeta;
+    case DAITokenMeta.address:
+      return DAITokenMeta;
+    case SUSDTokenMeta.address:
+      return SUSDTokenMeta;
+    case UNISWAPTokenMeta.address:
+      return UNISWAPTokenMeta;
+    case BONDTokenMeta.address:
+      return BONDTokenMeta;
+    default:
+      return undefined;
+  }
+}
+
+export function getTokenHumanValue(tokenAddr: string, value?: BigNumber): BigNumber | undefined {
+  const tokenMeta = getTokenMeta(tokenAddr);
+
+  if (!assertValues(value, tokenMeta)) {
+    return undefined;
+  }
+
+  return getHumanValue(value, tokenMeta?.decimals);
+}
+
+export const STABLE_TOKEN_ICONS: React.ReactNode[] = [
+  USDCTokenMeta.icon,
+  DAITokenMeta.icon,
+  SUSDTokenMeta.icon,
+];
+
+export const STABLE_TOKEN_NAMES: string[] = [
+  USDCTokenMeta.name,
+  DAITokenMeta.name,
+  SUSDTokenMeta.name,
+];
+
+export const LP_TOKEN_ICONS: React.ReactNode[] = [
+  UNISWAPTokenMeta.icon,
+];
+
+export const LP_TOKEN_NAMES: React.ReactNode[] = [
+  UNISWAPTokenMeta.name,
+];

@@ -1,7 +1,6 @@
 import React from 'react';
 import { useWeb3React, Web3ReactProvider } from '@web3-react/core';
 import { Web3Provider as EthWeb3Provider } from '@ethersproject/providers';
-
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 import { WalletLinkConnector } from '@web3-react/walletlink-connector';
@@ -28,18 +27,22 @@ import SquareLinkLogo from 'resources/svg/wallets/squarelink-logo.svg';
 import TorusLogo from 'resources/svg/wallets/torus-logo.svg';
 import AuthereumLogo from 'resources/svg/wallets/aethereum-logo.svg';
 
-const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
-const POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
+const WEB3_CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
+const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
+const WEB3_FORTMATIC_API_KEY = String(process.env.REACT_APP_WEB3_FORTMATIC_API_KEY);
+const WEB3_PORTIS_APP_ID = String(process.env.REACT_APP_WEB3_PORTIS_APP_ID);
+const WEB3_SQUARELINK_CLIENT_ID = String(process.env.REACT_APP_WEB3_SQUARELINK_CLIENT_ID);
 
 export type Web3Connector = {
   id: string;
   name: string;
   logo: string;
   connector: AbstractConnector;
+  enabled: boolean;
 }
 
 const InjectedWeb3Connector = new InjectedConnector({
-  supportedChainIds: [CHAIN_ID],
+  supportedChainIds: [WEB3_CHAIN_ID],
 });
 
 export const Web3Connectors: Web3Connector[] = [
@@ -48,12 +51,7 @@ export const Web3Connectors: Web3Connector[] = [
     name: 'MetaMask',
     logo: MetamaskLogo,
     connector: InjectedWeb3Connector,
-  },
-  {
-    id: 'trustwallet',
-    name: 'TrustWallet',
-    logo: TrustWalletLogo,
-    connector: InjectedWeb3Connector,
+    enabled: true,
   },
   {
     id: 'walletconnect',
@@ -61,12 +59,31 @@ export const Web3Connectors: Web3Connector[] = [
     logo: WalletConnectLogo,
     connector: new WalletConnectConnector({
       rpc: {
-        [CHAIN_ID]: getRpcUrl(),
+        [WEB3_CHAIN_ID]: getRpcUrl(),
       },
       bridge: 'https://bridge.walletconnect.org',
       qrcode: true,
-      pollingInterval: POLLING_INTERVAL,
+      pollingInterval: WEB3_POLLING_INTERVAL,
     }),
+    enabled: true,
+  },
+  {
+    id: 'ledger',
+    name: 'Ledger',
+    logo: LedgerLogo,
+    connector: new LedgerConnector({
+      chainId: WEB3_CHAIN_ID,
+      url: getRpcUrl(),
+      pollingInterval: WEB3_POLLING_INTERVAL,
+    }),
+    enabled: true,
+  },
+  {
+    id: 'trustwallet',
+    name: 'TrustWallet',
+    logo: TrustWalletLogo,
+    connector: InjectedWeb3Connector,
+    enabled: false,
   },
   {
     id: 'walletlink',
@@ -76,71 +93,68 @@ export const Web3Connectors: Web3Connector[] = [
       url: getRpcUrl(),
       appName: 'barnbridge',
     }),
-  },
-  {
-    id: 'ledger',
-    name: 'Ledger',
-    logo: LedgerLogo,
-    connector: new LedgerConnector({
-      chainId: CHAIN_ID,
-      url: getRpcUrl(),
-      pollingInterval: POLLING_INTERVAL,
-    }),
+    enabled: false,
   },
   {
     id: 'trezor',
     name: 'Trezor',
     logo: TrezorLogo,
     connector: new TrezorConnector({
-      chainId: CHAIN_ID,
+      chainId: WEB3_CHAIN_ID,
       url: getRpcUrl(),
-      pollingInterval: POLLING_INTERVAL,
+      pollingInterval: WEB3_POLLING_INTERVAL,
       manifestEmail: 'dummy@abc.xyz',
       manifestAppUrl: 'https://8rg3h.csb.app/',
     }),
+    enabled: false,
   },
   {
     id: 'fortmatic',
     name: 'Fortmatic',
     logo: FortmaticLogo,
     connector: new FortmaticConnector({
-      chainId: CHAIN_ID,
-      apiKey: process.env.REACT_APP_WEB3_FORTMATIC_API_KEY!,
+      chainId: WEB3_CHAIN_ID,
+      apiKey: WEB3_FORTMATIC_API_KEY,
     }),
+    enabled: false,
   },
   {
     id: 'portis',
     name: 'Portis',
     logo: PortisLogo,
     connector: new PortisConnector({
-      dAppId: process.env.REACT_APP_WEB3_PORTIS_APP_ID!,
+      dAppId: WEB3_PORTIS_APP_ID,
       networks: [1, 100],
     }),
+    enabled: false,
   },
   {
     id: 'squarelink',
     name: 'SquareLink',
     logo: SquareLinkLogo,
     connector: new SquarelinkConnector({
-      clientId: process.env.REACT_APP_WEB3_SQUARELINK_CLIENT_ID!,
+      clientId: WEB3_SQUARELINK_CLIENT_ID,
       networks: [1, 100],
     }),
+    enabled: false,
   },
   {
     id: 'torus',
     name: 'Torus',
     logo: TorusLogo,
     connector: new TorusConnector({
-      chainId: CHAIN_ID,
+      chainId: WEB3_CHAIN_ID,
     }),
+    enabled: false,
   },
   {
     id: 'authereum',
     name: 'Authereum',
     logo: AuthereumLogo,
     connector: new AuthereumConnector({
-      chainId: CHAIN_ID,
+      chainId: WEB3_CHAIN_ID,
     }),
+    enabled: false,
   },
 ];
 

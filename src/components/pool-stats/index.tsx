@@ -2,7 +2,9 @@ import React from 'react';
 import cx from 'classnames';
 
 import { formatBigValue } from 'web3/utils';
-import { CONTRACT_BOND_ADDR, CONTRACT_USDC_ADDR, useWeb3Contracts } from 'web3/contracts';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { useWeekCountdown } from 'hooks/useCountdown';
 
 import StatWidget from 'components/stat-widget';
@@ -53,7 +55,7 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
         value={`$ ${bondPrice}`}
         hint={(
           <ExternalLink
-            href={`https://app.uniswap.org/#/swap?inputCurrency=${CONTRACT_BOND_ADDR}&outputCurrency=${CONTRACT_USDC_ADDR}`}
+            href={`https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`}
             className={s.link}>Uniswap market</ExternalLink>
         )} />
       <StatWidget

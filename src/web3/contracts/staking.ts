@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { TokenMeta } from 'web3/types';
 import {
   assertValues,
   batchContract,
@@ -9,15 +10,16 @@ import {
   getNonHumanValue,
   sendContract,
 } from 'web3/utils';
-import {
-  CONTRACT_DAI_ADDR,
-  CONTRACT_SUSD_ADDR,
-  CONTRACT_UNISWAP_V2_ADDR,
-  CONTRACT_USDC_ADDR,
-  TokenInfo,
-} from 'web3/contracts';
+import { useWeb3 } from 'web3/provider';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { useVersion } from 'hooks/useVersion';
 
-export type StakingContract = {
+export const CONTRACT_STAKING_ADDR = String(process.env.REACT_APP_CONTRACT_STAKING_ADDR);
+
+export type StakingContractType = {
   epoch1Start?: number;
   epochDuration?: number;
   currentEpoch?: number;
@@ -50,13 +52,13 @@ export type StakingContract = {
     epochUserBalance?: BigNumber;
     nextEpochUserBalance?: BigNumber;
   };
-  depositSend: (tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) => void;
-  withdrawSend: (tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) => void;
+  depositSend: (tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => void;
+  withdrawSend: (tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => void;
   getEpochAt: (timestamp: number) => number | undefined;
   getEpochPeriod: (epoch: number) => number[];
 };
 
-const InitialDataState: StakingContract = {
+const InitialData: StakingContractType = {
   epoch1Start: undefined,
   epochDuration: undefined,
   currentEpoch: undefined,
@@ -96,12 +98,14 @@ const InitialDataState: StakingContract = {
 
 const Contract = createContract(
   require('web3/abi/staking.json'),
-  String(process.env.REACT_APP_CONTRACT_STAKING_ADDR),
+  CONTRACT_STAKING_ADDR,
 );
 
-export function useStakingContract(account?: string): StakingContract {
-  const [data, setData] = React.useState<StakingContract>(InitialDataState);
-  const [version, setVersion] = React.useState<number>(0);
+export function useStakingContract(): StakingContractType {
+  const { account } = useWeb3();
+  const { version, incVersion } = useVersion();
+
+  const [data, setData] = React.useState<StakingContractType>(InitialData);
 
   React.useEffect(() => {
     (async () => {
@@ -121,14 +125,14 @@ export function useStakingContract(account?: string): StakingContract {
         uniEpochPoolSize,
         uniNextEpochPoolSize,
       ] = await batchContract(Contract, [
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_USDC_ADDR, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_USDC_ADDR, currentEpoch + 1] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_DAI_ADDR, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_DAI_ADDR, currentEpoch + 1] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_SUSD_ADDR, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_SUSD_ADDR, currentEpoch + 1] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_UNISWAP_V2_ADDR, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [CONTRACT_UNISWAP_V2_ADDR, currentEpoch + 1] },
+        { method: 'getEpochPoolSize', methodArgs: [USDCTokenMeta.address, currentEpoch] },
+        { method: 'getEpochPoolSize', methodArgs: [USDCTokenMeta.address, currentEpoch + 1] },
+        { method: 'getEpochPoolSize', methodArgs: [DAITokenMeta.address, currentEpoch] },
+        { method: 'getEpochPoolSize', methodArgs: [DAITokenMeta.address, currentEpoch + 1] },
+        { method: 'getEpochPoolSize', methodArgs: [SUSDTokenMeta.address, currentEpoch] },
+        { method: 'getEpochPoolSize', methodArgs: [SUSDTokenMeta.address, currentEpoch + 1] },
+        { method: 'getEpochPoolSize', methodArgs: [UNISWAPTokenMeta.address, currentEpoch] },
+        { method: 'getEpochPoolSize', methodArgs: [UNISWAPTokenMeta.address, currentEpoch + 1] },
       ]);
 
       setData(prevState => ({
@@ -138,23 +142,23 @@ export function useStakingContract(account?: string): StakingContract {
         currentEpoch: Number(currentEpoch),
         usdc: {
           ...prevState.usdc,
-          epochPoolSize: getHumanValue(new BigNumber(usdcEpochPoolSize), 6), // TODO: get decimals from USDC contract
-          nextEpochPoolSize: getHumanValue(new BigNumber(usdcNextEpochPoolSize), 6), // TODO: get decimals from USDC contract
+          epochPoolSize: getHumanValue(new BigNumber(usdcEpochPoolSize), USDCTokenMeta.decimals),
+          nextEpochPoolSize: getHumanValue(new BigNumber(usdcNextEpochPoolSize), USDCTokenMeta.decimals),
         },
         dai: {
           ...prevState.dai,
-          epochPoolSize: getHumanValue(new BigNumber(daiEpochPoolSize), 18), // TODO: get decimals from DAI contract
-          nextEpochPoolSize: getHumanValue(new BigNumber(daiNextEpochPoolSize), 18), // TODO: get decimals from DAI contract
+          epochPoolSize: getHumanValue(new BigNumber(daiEpochPoolSize), DAITokenMeta.decimals),
+          nextEpochPoolSize: getHumanValue(new BigNumber(daiNextEpochPoolSize), DAITokenMeta.decimals),
         },
         susd: {
           ...prevState.susd,
-          epochPoolSize: getHumanValue(new BigNumber(susdEpochPoolSize), 18), // TODO: get decimals from SUSD contract
-          nextEpochPoolSize: getHumanValue(new BigNumber(susdNextEpochPoolSize), 18), // TODO: get decimals from SUSD contract
+          epochPoolSize: getHumanValue(new BigNumber(susdEpochPoolSize), SUSDTokenMeta.decimals),
+          nextEpochPoolSize: getHumanValue(new BigNumber(susdNextEpochPoolSize), SUSDTokenMeta.decimals),
         },
         uniswap_v2: {
           ...prevState.uniswap_v2,
-          epochPoolSize: getHumanValue(new BigNumber(uniEpochPoolSize), 18), // TODO: get decimals from UNISWAP V2 contract
-          nextEpochPoolSize: getHumanValue(new BigNumber(uniNextEpochPoolSize), 18), // TODO: get decimals from UNISWAP V2 contract
+          epochPoolSize: getHumanValue(new BigNumber(uniEpochPoolSize), UNISWAPTokenMeta.decimals),
+          nextEpochPoolSize: getHumanValue(new BigNumber(uniNextEpochPoolSize), UNISWAPTokenMeta.decimals),
         },
       }));
     })();
@@ -180,81 +184,81 @@ export function useStakingContract(account?: string): StakingContract {
         uniEpochUserBalance,
         uniNextEpochUserBalance,
       ] = await batchContract(Contract, [
-        { method: 'balanceOf', methodArgs: [account, CONTRACT_USDC_ADDR] },
-        { method: 'balanceOf', methodArgs: [account, CONTRACT_DAI_ADDR] },
-        { method: 'balanceOf', methodArgs: [account, CONTRACT_SUSD_ADDR] },
-        { method: 'balanceOf', methodArgs: [account, CONTRACT_UNISWAP_V2_ADDR] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_USDC_ADDR, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_USDC_ADDR, data.currentEpoch! + 1] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_DAI_ADDR, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_DAI_ADDR, data.currentEpoch! + 1] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_SUSD_ADDR, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_SUSD_ADDR, data.currentEpoch! + 1] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_UNISWAP_V2_ADDR, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, CONTRACT_UNISWAP_V2_ADDR, data.currentEpoch! + 1] },
+        { method: 'balanceOf', methodArgs: [account, USDCTokenMeta.address] },
+        { method: 'balanceOf', methodArgs: [account, DAITokenMeta.address] },
+        { method: 'balanceOf', methodArgs: [account, SUSDTokenMeta.address] },
+        { method: 'balanceOf', methodArgs: [account, UNISWAPTokenMeta.address] },
+        { method: 'getEpochUserBalance', methodArgs: [account, USDCTokenMeta.address, data.currentEpoch] },
+        { method: 'getEpochUserBalance', methodArgs: [account, USDCTokenMeta.address, data.currentEpoch! + 1] },
+        { method: 'getEpochUserBalance', methodArgs: [account, DAITokenMeta.address, data.currentEpoch] },
+        { method: 'getEpochUserBalance', methodArgs: [account, DAITokenMeta.address, data.currentEpoch! + 1] },
+        { method: 'getEpochUserBalance', methodArgs: [account, SUSDTokenMeta.address, data.currentEpoch] },
+        { method: 'getEpochUserBalance', methodArgs: [account, SUSDTokenMeta.address, data.currentEpoch! + 1] },
+        { method: 'getEpochUserBalance', methodArgs: [account, UNISWAPTokenMeta.address, data.currentEpoch] },
+        { method: 'getEpochUserBalance', methodArgs: [account, UNISWAPTokenMeta.address, data.currentEpoch! + 1] },
       ]);
 
       setData(prevState => ({
         ...prevState,
         usdc: {
           ...prevState.usdc,
-          balance: getHumanValue(new BigNumber(usdcBalance), 6), // TODO: get decimals from USDC contract
-          epochUserBalance: getHumanValue(new BigNumber(usdcEpochUserBalance), 6), // TODO: get decimals from USDC contract
-          nextEpochUserBalance: getHumanValue(new BigNumber(usdcNextEpochUserBalance), 6), // TODO: get decimals from USDC contract
+          balance: getHumanValue(new BigNumber(usdcBalance), USDCTokenMeta.decimals),
+          epochUserBalance: getHumanValue(new BigNumber(usdcEpochUserBalance), USDCTokenMeta.decimals),
+          nextEpochUserBalance: getHumanValue(new BigNumber(usdcNextEpochUserBalance), USDCTokenMeta.decimals),
         },
         dai: {
           ...prevState.dai,
-          balance: getHumanValue(new BigNumber(daiBalance), 18), // TODO: get decimals from DAI contract
-          epochUserBalance: getHumanValue(new BigNumber(daiEpochUserBalance), 18), // TODO: get decimals from DAI contract
-          nextEpochUserBalance: getHumanValue(new BigNumber(daiNextEpochUserBalance), 18), // TODO: get decimals from DAI contract
+          balance: getHumanValue(new BigNumber(daiBalance), DAITokenMeta.decimals),
+          epochUserBalance: getHumanValue(new BigNumber(daiEpochUserBalance), DAITokenMeta.decimals),
+          nextEpochUserBalance: getHumanValue(new BigNumber(daiNextEpochUserBalance), DAITokenMeta.decimals),
         },
         susd: {
           ...prevState.susd,
-          balance: getHumanValue(new BigNumber(susdBalance), 18), // TODO: get decimals from SUSD contract
-          epochUserBalance: getHumanValue(new BigNumber(susdEpochUserBalance), 18), // TODO: get decimals from SUSD contract
-          nextEpochUserBalance: getHumanValue(new BigNumber(susdNextEpochUserBalance), 18), // TODO: get decimals from SUSD contract
+          balance: getHumanValue(new BigNumber(susdBalance), SUSDTokenMeta.decimals),
+          epochUserBalance: getHumanValue(new BigNumber(susdEpochUserBalance), SUSDTokenMeta.decimals),
+          nextEpochUserBalance: getHumanValue(new BigNumber(susdNextEpochUserBalance), SUSDTokenMeta.decimals),
         },
         uniswap_v2: {
           ...prevState.uniswap_v2,
-          balance: getHumanValue(new BigNumber(uniBalance), 18), // TODO: get decimals from UNISWAP V2 contract
-          epochUserBalance: getHumanValue(new BigNumber(uniEpochUserBalance), 18), // TODO: get decimals from UNISWAP V2 contract
-          nextEpochUserBalance: getHumanValue(new BigNumber(uniNextEpochUserBalance), 18), // TODO: get decimals from UNISWAP V2 contract
+          balance: getHumanValue(new BigNumber(uniBalance), UNISWAPTokenMeta.decimals),
+          epochUserBalance: getHumanValue(new BigNumber(uniEpochUserBalance), UNISWAPTokenMeta.decimals),
+          nextEpochUserBalance: getHumanValue(new BigNumber(uniNextEpochUserBalance), UNISWAPTokenMeta.decimals),
         },
       }));
     })();
   }, [account, data.currentEpoch, version]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function depositSend(tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) {
+  function depositSend(tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) {
     if (!assertValues(account)) {
       return;
     }
 
     return sendContract(Contract, 'deposit', [
-      tokenInfo.address,
-      getNonHumanValue(amount, tokenInfo.decimals),
+      tokenMeta.address,
+      getNonHumanValue(amount, tokenMeta.decimals),
     ], {
       from: account,
       gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
     })
       .then(async () => {
-        setVersion(prevState => prevState + 1);
+        incVersion();
       });
   }
 
-  function withdrawSend(tokenInfo: TokenInfo, account: string, amount: BigNumber, gasPrice: number) {
+  function withdrawSend(tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) {
     if (!assertValues(account)) {
       return;
     }
 
     return sendContract(Contract, 'withdraw', [
-      tokenInfo.address,
-      getNonHumanValue(amount, tokenInfo.decimals),
+      tokenMeta.address,
+      getNonHumanValue(amount, tokenMeta.decimals),
     ], {
       from: account,
       gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
     })
       .then(async () => {
-        setVersion(prevState => prevState + 1);
+        incVersion();
       });
   }
 
@@ -267,7 +271,7 @@ export function useStakingContract(account?: string): StakingContract {
   }
 
   function getEpochPeriod(epoch: number): number[] {
-    const start = data.epoch1Start! + ((epoch-1) * data.epochDuration!);
+    const start = data.epoch1Start! + ((epoch - 1) * data.epochDuration!);
     const end = start + data.epochDuration!;
 
     return [start, end];

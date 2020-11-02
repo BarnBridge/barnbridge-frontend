@@ -5,9 +5,12 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 
 import PoolTokenRow from 'components/pool-token-row';
 import PoolTransactionTable from 'components/pool-transaction-table';
-
-import { TOKEN_DAI_KEY, TOKEN_SUSD_KEY, TOKEN_UNISWAP_KEY, TOKEN_USDC_KEY } from 'web3/contracts';
 import { useEthGasPrice } from 'context/useEthGas';
+
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import s from './styles.module.css';
 
@@ -45,13 +48,13 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
           <div className={s.dataRows}>
             {props.stableToken && (
               <>
-                <PoolTokenRow stableToken token={TOKEN_USDC_KEY} type="deposit" />
-                <PoolTokenRow stableToken token={TOKEN_DAI_KEY} type="deposit" />
-                <PoolTokenRow stableToken token={TOKEN_SUSD_KEY} type="deposit" />
+                <PoolTokenRow stableToken token={USDCTokenMeta} type="deposit" />
+                <PoolTokenRow stableToken token={DAITokenMeta} type="deposit" />
+                <PoolTokenRow stableToken token={SUSDTokenMeta} type="deposit" />
               </>
             )}
             {props.lpToken && (
-              <PoolTokenRow lpToken token={TOKEN_UNISWAP_KEY} type="deposit" />
+              <PoolTokenRow lpToken token={UNISWAPTokenMeta} type="deposit" />
             )}
           </div>
         </Antd.Tabs.TabPane>
@@ -59,13 +62,13 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
           <div className={s.dataRows}>
             {props.stableToken && (
               <>
-                <PoolTokenRow stableToken token={TOKEN_USDC_KEY} type="withdraw" />
-                <PoolTokenRow stableToken token={TOKEN_DAI_KEY} type="withdraw" />
-                <PoolTokenRow stableToken token={TOKEN_SUSD_KEY} type="withdraw" />
+                <PoolTokenRow stableToken token={USDCTokenMeta} type="withdraw" />
+                <PoolTokenRow stableToken token={DAITokenMeta} type="withdraw" />
+                <PoolTokenRow stableToken token={SUSDTokenMeta} type="withdraw" />
               </>
             )}
             {props.lpToken && (
-              <PoolTokenRow lpToken token={TOKEN_UNISWAP_KEY} type="withdraw" />
+              <PoolTokenRow lpToken token={UNISWAPTokenMeta} type="withdraw" />
             )}
           </div>
         </Antd.Tabs.TabPane>

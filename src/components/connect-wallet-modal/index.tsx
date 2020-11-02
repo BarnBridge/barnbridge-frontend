@@ -30,7 +30,7 @@ const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = pro
             key={connector.id}
             type="ghost"
             className={s.connectorBtn}
-            disabled={connector.name !== 'MetaMask'}
+            disabled={!connector.enabled}
             onClick={() => props.onConnectorSelect(connector)}
           >
             <img src={connector.logo} alt={connector.name} className={s.connectorLogo} />
