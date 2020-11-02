@@ -21,6 +21,7 @@ import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
 import s from 'views/pools/components/pool-token-row/styles.module.css';
+import { usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
 export type PoolTokenRowProps = {
   token: TokenMeta;
@@ -52,6 +53,7 @@ const InitialState: StateType = {
 const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   const web3c = useWeb3Contracts();
   const ethGasPrice = useEthGasPrice();
+  const { fetchLast: fetchLastTransactions } = usePoolTransactions();
 
   const [state, setState] = React.useState<StateType>(InitialState);
   const [expanded, setExpanded] = React.useState<boolean>(props.lpToken ?? false);
@@ -194,6 +196,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
     try {
       await web3c.staking.depositSend(props.token, state.amount!, gasOptions.get(state.gasAmount)!);
+      fetchLastTransactions();
+
       setState(prevState => ({
         ...prevState,
         amount: undefined,
@@ -229,6 +233,8 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
     try {
       await web3c.staking.withdrawSend(props.token, state.amount!, gasOptions.get(state.gasAmount)!);
+      fetchLastTransactions();
+
       setState(prevState => ({
         ...prevState,
         amount: undefined,

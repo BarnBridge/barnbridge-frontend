@@ -44,11 +44,13 @@ export type PoolTransaction = {
 export type PoolTransactionsType = {
   transactions: PoolTransaction[];
   loading: boolean;
+  fetchLast: () => void;
 };
 
 const PoolTransactionsContext = React.createContext<PoolTransactionsType>({
   transactions: [],
   loading: false,
+  fetchLast: () => undefined,
 });
 
 export function usePoolTransactions(): PoolTransactionsType {
@@ -174,7 +176,7 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
     ]));
   }
 
-  const [fetch] = useLazyQuery<QueryData, QueryVars>(POOL_TRANSACTIONS_QUERY, {
+  const [fetch, { refetch }] = useLazyQuery<QueryData, QueryVars>(POOL_TRANSACTIONS_QUERY, {
     variables: {
       first: TRANSACTIONS_LIMIT,
       lastBlockNumber: lastBlockNumber ?? 0,
@@ -194,7 +196,10 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
   const value = React.useMemo(() => ({
     transactions,
     loading,
-  }), [transactions, loading]);
+    fetchLast: () => {
+      return refetch();
+    },
+  }), [transactions, loading, refetch]);
 
   return (
     <PoolTransactionsContext.Provider value={value}>
