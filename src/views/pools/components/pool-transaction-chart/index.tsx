@@ -12,10 +12,11 @@ import map from 'lodash/fp/map';
 import filter from 'lodash/fp/filter';
 import reduce from 'lodash/fp/reduce';
 
-import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 import IconsSet from 'components/icons-set';
 import Dropdown, { DropdownOption } from 'components/dropdown';
+import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
+import { LP_TOKEN_ICONS, LP_TOKEN_NAMES, STABLE_TOKEN_ICONS, STABLE_TOKEN_NAMES } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -29,17 +30,11 @@ import s from 'views/pools/components/pool-transaction-chart/styles.module.css';
 const PoolFilters: DropdownOption[] = [
   {
     value: 'stable',
-    label: [
-      USDCTokenMeta.name,
-      DAITokenMeta.name,
-      SUSDTokenMeta.name,
-    ].join('/'),
+    label: STABLE_TOKEN_NAMES.join('/'),
   },
   {
     value: 'lp',
-    label: [
-      UNISWAPTokenMeta.name,
-    ].join('/'),
+    label: LP_TOKEN_NAMES.join('/'),
   },
 ];
 
@@ -149,14 +144,8 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       <div className={s.header}>
         <div className={s.headerLabel}>
           <IconsSet className={s.iconSet} icons={[
-            ...poolFilter === 'stable' ? [
-              USDCTokenMeta.icon,
-              DAITokenMeta.icon,
-              SUSDTokenMeta.icon,
-            ] : [],
-            ...poolFilter === 'lp' ? [
-              UNISWAPTokenMeta.icon,
-            ] : [],
+            ...poolFilter === 'stable' ? STABLE_TOKEN_ICONS : [],
+            ...poolFilter === 'lp' ? LP_TOKEN_ICONS : [],
           ].filter(Boolean)} />
           <Dropdown
             items={PoolFilters}

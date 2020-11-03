@@ -5,7 +5,15 @@ import * as Antd from 'antd';
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
-import { formatBigValue, formatBONDValue, formatUSDValue } from 'web3/utils';
+import {
+  formatBigValue,
+  formatBONDValue,
+  formatUSDValue,
+  LP_TOKEN_ICONS,
+  LP_TOKEN_NAMES,
+  STABLE_TOKEN_ICONS,
+  STABLE_TOKEN_NAMES,
+} from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -37,9 +45,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const icons = React.useMemo<React.ReactNode[]>(() => {
     if (stableToken) {
-      return [USDCTokenMeta.icon, DAITokenMeta.icon, SUSDTokenMeta.icon];
+      return STABLE_TOKEN_ICONS;
     } else if (lpToken) {
-      return [UNISWAPTokenMeta.icon];
+      return LP_TOKEN_ICONS;
     }
 
     return [];
@@ -47,9 +55,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const nameLabel = React.useMemo<string>(() => {
     if (stableToken) {
-      return [USDCTokenMeta.name, DAITokenMeta.name, SUSDTokenMeta.name].join('/');
+      return STABLE_TOKEN_NAMES.join('/');
     } else if (lpToken) {
-      return [UNISWAPTokenMeta.name].join('/');
+      return LP_TOKEN_NAMES.join('/');
     }
 
     return '-';

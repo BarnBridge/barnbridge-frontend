@@ -2,12 +2,8 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
-import { formatBONDValue } from 'web3/utils';
+import { formatBONDValue, LP_TOKEN_ICONS, LP_TOKEN_NAMES, STABLE_TOKEN_ICONS, STABLE_TOKEN_NAMES } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { DAITokenMeta } from 'web3/contracts/dai';
-import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
 
 import IconsSet from 'components/icons-set';
 
@@ -63,16 +59,8 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           loading={yfHarvesting}
           disabled={yf?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFHarvest}>
-          <IconsSet className={s.optionIcons} icons={[
-            USDCTokenMeta.icon,
-            DAITokenMeta.icon,
-            SUSDTokenMeta.icon,
-          ]} />
-          <div className={s.optionLabel}>{[
-            USDCTokenMeta.name,
-            DAITokenMeta.name,
-            SUSDTokenMeta.name,
-          ].join('/')}</div>
+          <IconsSet className={s.optionIcons} icons={STABLE_TOKEN_ICONS} />
+          <div className={s.optionLabel}>{STABLE_TOKEN_NAMES.join('/')}</div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yf?.currentReward)}</strong> BOND
@@ -84,12 +72,8 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           loading={yflpHarvesting}
           disabled={yflp?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFLPHarvest}>
-          <IconsSet className={s.optionIcons} icons={[
-            UNISWAPTokenMeta.icon,
-          ]} />
-          <div className={s.optionLabel}>{[
-            UNISWAPTokenMeta.name,
-          ].join('/')}</div>
+          <IconsSet className={s.optionIcons} icons={LP_TOKEN_ICONS} />
+          <div className={s.optionLabel}>{LP_TOKEN_NAMES.join('/')}</div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yflp?.currentReward)}</strong> BOND
