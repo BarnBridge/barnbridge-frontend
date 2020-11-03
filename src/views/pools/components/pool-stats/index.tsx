@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 
-import { formatBigValue } from 'web3/utils';
+import { formatBONDValue, formatUSDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -24,18 +24,12 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   }, [staking]);
   const [untilNextEpoch] = useWeekCountdown(epochEnd);
 
-  const totalValueLocked = formatBigValue(aggregated.totalStaked, 2);
-  const totalEffectiveStaked = formatBigValue(aggregated.totalEffectiveStaked, 2);
-  const bondRewards = formatBigValue(aggregated.bondReward);
-  const totalBondRewards = formatBigValue(aggregated.totalBondReward, 0);
-  const bondPrice = formatBigValue(aggregated.bondPrice, 2);
-
   return (
     <div className={cx(s.component, props.className)}>
       <StatWidget
         label="Total Value Locked"
-        value={`$ ${totalValueLocked}`}
-        hint={`$ ${totalEffectiveStaked} effective locked`}
+        value={formatUSDValue(aggregated.totalStaked)}
+        hint={`${formatUSDValue(aggregated.totalEffectiveStaked)} effective locked`}
         help={
           <span>
             This number shows the Total Value Locked across the staking pool(s), and the effective Total Value Locked.
@@ -46,13 +40,13 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
       />
       <StatWidget
         label="Bond Rewards"
-        value={bondRewards}
-        hint={`out of ${totalBondRewards}`}
+        value={formatBONDValue(aggregated.bondReward)}
+        hint={`out of ${formatBONDValue(aggregated.totalBondReward)}`}
         help="This number shows the $BOND token rewards distributed so far out of the total of 2,800,000 that are going to be available for Yield Farming."
       />
       <StatWidget
         label="Bond Price"
-        value={`$ ${bondPrice}`}
+        value={formatUSDValue(aggregated.bondPrice)}
         hint={(
           <ExternalLink
             href={`https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`}

@@ -11,7 +11,7 @@ import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
 import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
-import { formatBigValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
+import { formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -82,7 +82,7 @@ const Columns: ColumnsType<any> = [
             {tokenMeta?.name}
           </span>
         )}>
-          ${formatBigValue(value, 2, '-', 2)}
+          {formatUSDValue(value)}
         </Antd.Tooltip>
       );
     },

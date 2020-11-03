@@ -2,7 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
-import { formatBigValue } from 'web3/utils';
+import { formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -75,7 +75,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           ].join('/')}</div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
-            <strong>{formatBigValue(yf?.currentReward)}</strong> BOND
+            <strong>{formatBONDValue(yf?.currentReward)}</strong> BOND
           </div>
         </Antd.Button>
         <Antd.Button
@@ -92,7 +92,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           ].join('/')}</div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
-            <strong>{formatBigValue(yflp?.currentReward)}</strong> BOND
+            <strong>{formatBONDValue(yflp?.currentReward)}</strong> BOND
           </div>
         </Antd.Button>
       </div>

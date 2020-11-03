@@ -3,7 +3,7 @@ import * as Antd from 'antd';
 
 import { useWeb3 } from 'web3/provider';
 import { useWeb3Contracts } from 'web3/contracts';
-import { formatBigValue } from 'web3/utils';
+import { formatBONDValue } from 'web3/utils';
 
 import InfoTooltip from 'components/info-tooltip';
 import PoolHarvestModal from 'views/pools/components/pool-harvest-modal';
@@ -33,7 +33,7 @@ const PoolRewards: React.FunctionComponent = props => {
           <div>
             <div className={s.blockLabel}>Current reward</div>
             <div className={s.blockValue} text-elipsis="true">
-              {formatBigValue(aggregated.totalCurrentReward)} <BondSvg className={s.bondIcon} />
+              {formatBONDValue(aggregated.totalCurrentReward)} <BondSvg className={s.bondIcon} />
             </div>
           </div>
           {isActive && (
@@ -47,7 +47,7 @@ const PoolRewards: React.FunctionComponent = props => {
         <div className={s.col}>
           <div className={s.blockLabel}>BOND balance</div>
           <div className={s.blockValue} text-elipsis="true">
-            {formatBigValue(bond.balance)} <BondSvg className={s.bondIcon} />
+            {formatBONDValue(bond.balance)} <BondSvg className={s.bondIcon} />
           </div>
         </div>
         <div className={s.col}>
@@ -57,7 +57,7 @@ const PoolRewards: React.FunctionComponent = props => {
               title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake." />
           </div>
           <div className={s.blockValue} text-elipsis="true">
-            {formatBigValue(aggregated.totalPotentialReward)} <BondSvg className={s.bondIcon} />
+            {formatBONDValue(aggregated.totalPotentialReward)} <BondSvg className={s.bondIcon} />
           </div>
         </div>
       </div>

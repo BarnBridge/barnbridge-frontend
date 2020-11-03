@@ -177,6 +177,14 @@ export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultV
   return value ? new BigNumber(value.toFixed(decimals)).toFormat(minDecimals) : defaultValue;
 }
 
+export function formatUSDValue(value?: BigNumber): string {
+  return `$ ${formatBigValue(value, 2, '-', 2)}`;
+}
+
+export function formatBONDValue(value?: BigNumber): string {
+  return formatBigValue(value, 4);
+}
+
 export function assertValues(...values: any[]): boolean {
   return !values.some(value => value === undefined || value === null);
 }

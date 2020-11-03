@@ -5,7 +5,7 @@ import * as Antd from 'antd';
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, formatBONDValue, formatUSDValue } from 'web3/utils';
 import { useWeb3 } from 'web3/provider';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -75,9 +75,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const epochReward = React.useMemo<string>(() => {
     if (stableToken) {
-      return `${formatBigValue(yf.epochReward)} BOND`;
+      return `${formatBONDValue(yf.epochReward)} BOND`;
     } else if (lpToken) {
-      return `${formatBigValue(yflp.epochReward)} BOND`;
+      return `${formatBONDValue(yflp.epochReward)} BOND`;
     }
 
     return '-';
@@ -85,9 +85,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const potentialReward = React.useMemo<string>(() => {
     if (stableToken) {
-      return `${formatBigValue(yf.potentialReward)} BOND`;
+      return `${formatBONDValue(yf.potentialReward)} BOND`;
     } else if (lpToken) {
-      return `${formatBigValue(yflp.potentialReward)} BOND`;
+      return `${formatBONDValue(yflp.potentialReward)} BOND`;
     }
 
     return '-';
@@ -95,9 +95,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const balance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.nextPoolSize, 2)}`;
+      return formatUSDValue(yf.nextPoolSize);
     } else if (lpToken && yflp.nextPoolSize) {
-      return `$ ${formatBigValue(aggregated.lpStakedValue, 2)}`;
+      return formatUSDValue(aggregated.lpStakedValue);
     }
 
     return '-';
@@ -105,9 +105,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const effectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.poolSize, 2)}`;
+      return formatUSDValue(yf.poolSize);
     } else if (lpToken && yflp.poolSize) {
-      return `$ ${formatBigValue(aggregated.lpEffectiveStakedValue, 2)}`;
+      return formatUSDValue(aggregated.lpEffectiveStakedValue);
     }
 
     return '-';
@@ -127,7 +127,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: USDCTokenMeta.icon,
             name: USDCTokenMeta.name,
-            value: `$ ${formatBigValue(staking.usdc.nextEpochPoolSize, 2)}`,
+            value: formatUSDValue(staking.usdc.nextEpochPoolSize),
             share: usdcShare,
             color: '#4f6ae6',
           });
@@ -142,7 +142,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: DAITokenMeta.icon,
             name: DAITokenMeta.name,
-            value: `$ ${formatBigValue(staking.dai.nextEpochPoolSize, 2)}`,
+            value: formatUSDValue(staking.dai.nextEpochPoolSize),
             share: daiShare,
             color: '#ffd160',
           });
@@ -157,7 +157,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: SUSDTokenMeta.icon,
             name: SUSDTokenMeta.name,
-            value: `$ ${formatBigValue(staking.susd.nextEpochPoolSize)}`,
+            value: formatUSDValue(staking.susd.nextEpochPoolSize),
             share: susdShare,
             color: '#1e1a31',
           });
@@ -187,9 +187,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const myBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.nextEpochStake, 2)}`;
+      return formatUSDValue(yf.nextEpochStake);
     } else if (lpToken && yflp.nextEpochStake) {
-      return `$ ${formatBigValue(aggregated.mylpStakedValue, 2)}`;
+      return formatUSDValue(aggregated.mylpStakedValue);
     }
 
     return '-';
@@ -197,9 +197,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   const myEffectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
-      return `$ ${formatBigValue(yf.epochStake, 2)}`;
+      return formatUSDValue(yf.epochStake);
     } else if (lpToken && yflp.epochStake) {
-      return `$ ${formatBigValue(aggregated.mylpEffectiveStakedValue, 2)}`;
+      return formatUSDValue(aggregated.mylpEffectiveStakedValue);
     }
 
     return '-';
@@ -219,7 +219,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: USDCTokenMeta.icon,
             name: USDCTokenMeta.name,
-            value: `$ ${formatBigValue(staking.usdc.nextEpochUserBalance, 2)}`,
+            value: formatUSDValue(staking.usdc.nextEpochUserBalance),
             share: usdcShare,
             color: '#4f6ae6',
           });
@@ -234,7 +234,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: DAITokenMeta.icon,
             name: DAITokenMeta.name,
-            value: `$ ${formatBigValue(staking.dai.nextEpochUserBalance, 2)}`,
+            value: formatUSDValue(staking.dai.nextEpochUserBalance),
             share: daiShare,
             color: '#ffd160',
           });
@@ -249,7 +249,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           shares.push({
             icon: SUSDTokenMeta.icon,
             name: SUSDTokenMeta.name,
-            value: `$ ${formatBigValue(staking.susd.nextEpochUserBalance, 2)}`,
+            value: formatUSDValue(staking.susd.nextEpochUserBalance),
             share: susdShare,
             color: '#1e1a31',
           });
