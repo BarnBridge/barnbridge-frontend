@@ -76,7 +76,7 @@ export const Web3Connectors: Web3Connector[] = [
       url: getHttpsRpcUrl(),
       pollingInterval: WEB3_POLLING_INTERVAL,
     }),
-    enabled: true,
+    enabled: false,
   },
   {
     id: 'trustwallet',
