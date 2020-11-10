@@ -21,7 +21,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
@@ -77,7 +77,7 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       selectedEpoch += 1;
     }
 
-    const [epochStart, epochEnd] = web3c.staking.getEpochPeriod(selectedEpoch);
+    const [epochStart, epochEnd] = web3c.staking.getEpochPeriod(selectedEpoch) ?? [];
 
     return pipe(
       // filter stable tokens
@@ -101,6 +101,10 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       // filter by epoch
       periodFilter !== 'all'
         ? filter((item: PoolTransaction) => {
+          if (epochStart === undefined || epochEnd === undefined) {
+            return false;
+          }
+
           return (item.blockTimestamp >= epochStart && item.blockTimestamp < epochEnd);
         })
         : (t: PoolTransaction[]) => t,

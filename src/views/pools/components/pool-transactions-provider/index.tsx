@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 import first from 'lodash/first';
 
 import { getTokenHumanValue } from 'web3/utils';
-import { useWeb3Contracts, Web3ContractsType } from 'web3/contracts';
+import { useWeb3Contracts, Web3Contracts } from 'web3/contracts';
 
 export type StakingAction = {
   id: string;
@@ -84,7 +84,7 @@ const STORAGE_KEY_LAST_BLOCK_NUMBER = 'pool_transactions_lastBlockNumber';
 const STORAGE_KEY_DATA = 'pool_transactions_data';
 
 const PoolTransactionsProvider: React.FunctionComponent = props => {
-  const web3cRef = React.useRef<Web3ContractsType>(null as any);
+  const web3cRef = React.useRef<Web3Contracts>(null as any);
   web3cRef.current = useWeb3Contracts();
 
   const [lastBlockNumber, setLastBlockNumber] = useSessionStorage<number>(STORAGE_KEY_LAST_BLOCK_NUMBER);

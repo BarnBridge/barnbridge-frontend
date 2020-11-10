@@ -1,67 +1,53 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { useReload } from 'hooks/useReload';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useRefState } from 'hooks/useRefState';
 import { TokenMeta } from 'web3/types';
-import {
-  assertValues,
-  batchContract,
-  createContract,
-  getHumanValue,
-  getNonHumanValue,
-  sendContract,
-} from 'web3/utils';
-import { useWeb3 } from 'web3/provider';
+import { getHumanValue, getNonHumanValue } from 'web3/utils';
+import { useWallet } from 'web3/wallet';
+import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
-import { useVersion } from 'hooks/useVersion';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 export const CONTRACT_STAKING_ADDR = String(process.env.REACT_APP_CONTRACT_STAKING_ADDR);
 
-export type StakingContractType = {
+type StakingTokenData = {
+  epochPoolSize?: BigNumber;
+  nextEpochPoolSize?: BigNumber;
+  balance?: BigNumber;
+  epochUserBalance?: BigNumber;
+  nextEpochUserBalance?: BigNumber;
+};
+
+type StakingContractData = {
+  currentEpoch?: number;
   epoch1Start?: number;
   epochDuration?: number;
-  currentEpoch?: number;
-  epochEnd?: number;
-  usdc: {
-    epochPoolSize?: BigNumber;
-    nextEpochPoolSize?: BigNumber;
-    balance?: BigNumber;
-    epochUserBalance?: BigNumber;
-    nextEpochUserBalance?: BigNumber;
-  };
-  dai: {
-    epochPoolSize?: BigNumber;
-    nextEpochPoolSize?: BigNumber;
-    balance?: BigNumber;
-    epochUserBalance?: BigNumber;
-    nextEpochUserBalance?: BigNumber;
-  };
-  susd: {
-    epochPoolSize?: BigNumber;
-    nextEpochPoolSize?: BigNumber;
-    balance?: BigNumber;
-    epochUserBalance?: BigNumber;
-    nextEpochUserBalance?: BigNumber;
-  };
-  uniswap_v2: {
-    epochPoolSize?: BigNumber;
-    nextEpochPoolSize?: BigNumber;
-    balance?: BigNumber;
-    epochUserBalance?: BigNumber;
-    nextEpochUserBalance?: BigNumber;
-  };
+  currentEpochEnd?: number;
+  usdc: StakingTokenData;
+  dai: StakingTokenData;
+  susd: StakingTokenData;
+  uniswap: StakingTokenData;
+};
+
+export type StakingContract = StakingContractData & {
+  contract: Web3Contract;
+  reload(): void;
   depositSend: (tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => void;
   withdrawSend: (tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => void;
   getEpochAt: (timestamp: number) => number | undefined;
-  getEpochPeriod: (epoch: number) => number[];
-};
+  getEpochPeriod: (epoch: number) => [number, number] | undefined;
+}
 
-const InitialData: StakingContractType = {
+const InitialData: StakingContractData = {
+  currentEpoch: undefined,
   epoch1Start: undefined,
   epochDuration: undefined,
-  currentEpoch: undefined,
+  currentEpochEnd: undefined,
   usdc: {
     epochPoolSize: undefined,
     nextEpochPoolSize: undefined,
@@ -83,205 +69,262 @@ const InitialData: StakingContractType = {
     epochUserBalance: undefined,
     nextEpochUserBalance: undefined,
   },
-  uniswap_v2: {
+  uniswap: {
     epochPoolSize: undefined,
     nextEpochPoolSize: undefined,
     balance: undefined,
     epochUserBalance: undefined,
     nextEpochUserBalance: undefined,
   },
-  depositSend: () => null,
-  withdrawSend: () => null,
-  getEpochAt: () => undefined,
-  getEpochPeriod: () => [],
 };
 
-const Contract = createContract(
-  require('web3/abi/staking.json'),
-  CONTRACT_STAKING_ADDR,
-);
+export function useStakingContract(): StakingContract {
+  const [reload] = useReload();
+  const wallet = useWallet();
 
-export function useStakingContract(): StakingContractType {
-  const { account } = useWeb3();
-  const { version, incVersion } = useVersion();
+  const contract = React.useMemo<Web3Contract>(() => {
+    return new Web3Contract(
+      require('web3/abi/staking.json'),
+      CONTRACT_STAKING_ADDR,
+      'STAKING',
+    );
+  }, []);
 
-  const [data, setData] = React.useState<StakingContractType>(InitialData);
+  const [data, setData, dataRef] = useRefState<StakingContractData>(InitialData);
 
-  React.useEffect(() => {
-    (async () => {
-      const [currentEpoch, epoch1Start, epochDuration] = await batchContract(Contract, [
-        'getCurrentEpoch',
-        'epoch1Start',
-        'epochDuration',
-      ]);
+  useAsyncEffect(async () => {
+    const [currentEpoch, epoch1Start, epochDuration] = await contract.batch([
+      {
+        method: 'getCurrentEpoch',
+        transform: (value: string) => Number(value),
+      },
+      {
+        method: 'epoch1Start',
+        transform: (value: string) => Number(value) * 1000,
+      },
+      {
+        method: 'epochDuration',
+        transform: (value: string) => Number(value) * 1000,
+      },
+    ]);
 
-      const [
-        usdcEpochPoolSize,
-        usdcNextEpochPoolSize,
-        daiEpochPoolSize,
-        daiNextEpochPoolSize,
-        susdEpochPoolSize,
-        susdNextEpochPoolSize,
-        uniEpochPoolSize,
-        uniNextEpochPoolSize,
-      ] = await batchContract(Contract, [
-        { method: 'getEpochPoolSize', methodArgs: [USDCTokenMeta.address, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [USDCTokenMeta.address, currentEpoch + 1] },
-        { method: 'getEpochPoolSize', methodArgs: [DAITokenMeta.address, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [DAITokenMeta.address, currentEpoch + 1] },
-        { method: 'getEpochPoolSize', methodArgs: [SUSDTokenMeta.address, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [SUSDTokenMeta.address, currentEpoch + 1] },
-        { method: 'getEpochPoolSize', methodArgs: [UNISWAPTokenMeta.address, currentEpoch] },
-        { method: 'getEpochPoolSize', methodArgs: [UNISWAPTokenMeta.address, currentEpoch + 1] },
-      ]);
+    setData(prevState => ({
+      ...prevState,
+      currentEpoch,
+      epoch1Start,
+      epochDuration,
+      currentEpochEnd: epoch1Start + (currentEpoch * epochDuration),
+    }));
 
-      setData(prevState => ({
-        ...prevState,
-        epoch1Start: Number(epoch1Start) * 1000,
-        epochDuration: Number(epochDuration) * 1000,
-        currentEpoch: Number(currentEpoch),
-        usdc: {
-          ...prevState.usdc,
-          epochPoolSize: getHumanValue(new BigNumber(usdcEpochPoolSize), USDCTokenMeta.decimals),
-          nextEpochPoolSize: getHumanValue(new BigNumber(usdcNextEpochPoolSize), USDCTokenMeta.decimals),
-        },
-        dai: {
-          ...prevState.dai,
-          epochPoolSize: getHumanValue(new BigNumber(daiEpochPoolSize), DAITokenMeta.decimals),
-          nextEpochPoolSize: getHumanValue(new BigNumber(daiNextEpochPoolSize), DAITokenMeta.decimals),
-        },
-        susd: {
-          ...prevState.susd,
-          epochPoolSize: getHumanValue(new BigNumber(susdEpochPoolSize), SUSDTokenMeta.decimals),
-          nextEpochPoolSize: getHumanValue(new BigNumber(susdNextEpochPoolSize), SUSDTokenMeta.decimals),
-        },
-        uniswap_v2: {
-          ...prevState.uniswap_v2,
-          epochPoolSize: getHumanValue(new BigNumber(uniEpochPoolSize), UNISWAPTokenMeta.decimals),
-          nextEpochPoolSize: getHumanValue(new BigNumber(uniNextEpochPoolSize), UNISWAPTokenMeta.decimals),
-        },
-      }));
-    })();
-  }, [version]);
+    const [
+      usdcEpochPoolSize,
+      usdcNextEpochPoolSize,
+      daiEpochPoolSize,
+      daiNextEpochPoolSize,
+      susdEpochPoolSize,
+      susdNextEpochPoolSize,
+      uniEpochPoolSize,
+      uniNextEpochPoolSize,
+    ] = await contract.batch([
+      ...[
+        USDCTokenMeta,
+        DAITokenMeta,
+        SUSDTokenMeta,
+        UNISWAPTokenMeta,
+      ].reduce((ac: BatchContractMethod[], token) => {
+        return [
+          ...ac,
+          {
+            method: 'getEpochPoolSize',
+            methodArgs: [token.address, currentEpoch],
+            transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+          },
+          {
+            method: 'getEpochPoolSize',
+            methodArgs: [token.address, currentEpoch + 1],
+            transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+          },
+        ];
+      }, []),
+    ]);
 
-  React.useEffect(() => {
-    if (!assertValues(account, data.currentEpoch)) {
-      return;
-    }
+    setData(prevState => ({
+      ...prevState,
+      usdc: {
+        ...prevState.usdc,
+        epochPoolSize: usdcEpochPoolSize,
+        nextEpochPoolSize: usdcNextEpochPoolSize,
+      },
+      dai: {
+        ...prevState.dai,
+        epochPoolSize: daiEpochPoolSize,
+        nextEpochPoolSize: daiNextEpochPoolSize,
+      },
+      susd: {
+        ...prevState.susd,
+        epochPoolSize: susdEpochPoolSize,
+        nextEpochPoolSize: susdNextEpochPoolSize,
+      },
+      uniswap: {
+        ...prevState.uniswap,
+        epochPoolSize: uniEpochPoolSize,
+        nextEpochPoolSize: uniNextEpochPoolSize,
+      },
+    }));
+  }, [reload]);
 
-    (async () => {
-      const [
+  useAsyncEffect(async () => {
+    const { currentEpoch } = data;
+
+    let usdcBalance: BigNumber | undefined;
+    let usdcEpochUserBalance: BigNumber | undefined;
+    let usdcNextEpochUserBalance: BigNumber | undefined;
+    let daiBalance: BigNumber | undefined;
+    let daiEpochUserBalance: BigNumber | undefined;
+    let daiNextEpochUserBalance: BigNumber | undefined;
+    let susdBalance: BigNumber | undefined;
+    let susdEpochUserBalance: BigNumber | undefined;
+    let susdNextEpochUserBalance: BigNumber | undefined;
+    let uniswapBalance: BigNumber | undefined;
+    let uniswapEpochUserBalance: BigNumber | undefined;
+    let uniswapNextEpochUserBalance: BigNumber | undefined;
+
+    if (wallet.account && currentEpoch !== undefined) {
+      [
         usdcBalance,
-        daiBalance,
-        susdBalance,
-        uniBalance,
         usdcEpochUserBalance,
         usdcNextEpochUserBalance,
+        daiBalance,
         daiEpochUserBalance,
         daiNextEpochUserBalance,
+        susdBalance,
         susdEpochUserBalance,
         susdNextEpochUserBalance,
-        uniEpochUserBalance,
-        uniNextEpochUserBalance,
-      ] = await batchContract(Contract, [
-        { method: 'balanceOf', methodArgs: [account, USDCTokenMeta.address] },
-        { method: 'balanceOf', methodArgs: [account, DAITokenMeta.address] },
-        { method: 'balanceOf', methodArgs: [account, SUSDTokenMeta.address] },
-        { method: 'balanceOf', methodArgs: [account, UNISWAPTokenMeta.address] },
-        { method: 'getEpochUserBalance', methodArgs: [account, USDCTokenMeta.address, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, USDCTokenMeta.address, data.currentEpoch! + 1] },
-        { method: 'getEpochUserBalance', methodArgs: [account, DAITokenMeta.address, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, DAITokenMeta.address, data.currentEpoch! + 1] },
-        { method: 'getEpochUserBalance', methodArgs: [account, SUSDTokenMeta.address, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, SUSDTokenMeta.address, data.currentEpoch! + 1] },
-        { method: 'getEpochUserBalance', methodArgs: [account, UNISWAPTokenMeta.address, data.currentEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, UNISWAPTokenMeta.address, data.currentEpoch! + 1] },
+        uniswapBalance,
+        uniswapEpochUserBalance,
+        uniswapNextEpochUserBalance,
+      ] = await contract.batch([
+        ...[
+          USDCTokenMeta,
+          DAITokenMeta,
+          SUSDTokenMeta,
+          UNISWAPTokenMeta,
+        ].reduce((ac: BatchContractMethod[], token) => ([
+          ...ac,
+          {
+            method: 'balanceOf',
+            methodArgs: [wallet.account, token.address],
+            transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+          },
+          {
+            method: 'getEpochUserBalance',
+            methodArgs: [wallet.account, token.address, currentEpoch],
+            transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+          },
+          {
+            method: 'getEpochUserBalance',
+            methodArgs: [wallet.account, token.address, currentEpoch + 1],
+            transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+          },
+        ]), []),
       ]);
-
-      setData(prevState => ({
-        ...prevState,
-        usdc: {
-          ...prevState.usdc,
-          balance: getHumanValue(new BigNumber(usdcBalance), USDCTokenMeta.decimals),
-          epochUserBalance: getHumanValue(new BigNumber(usdcEpochUserBalance), USDCTokenMeta.decimals),
-          nextEpochUserBalance: getHumanValue(new BigNumber(usdcNextEpochUserBalance), USDCTokenMeta.decimals),
-        },
-        dai: {
-          ...prevState.dai,
-          balance: getHumanValue(new BigNumber(daiBalance), DAITokenMeta.decimals),
-          epochUserBalance: getHumanValue(new BigNumber(daiEpochUserBalance), DAITokenMeta.decimals),
-          nextEpochUserBalance: getHumanValue(new BigNumber(daiNextEpochUserBalance), DAITokenMeta.decimals),
-        },
-        susd: {
-          ...prevState.susd,
-          balance: getHumanValue(new BigNumber(susdBalance), SUSDTokenMeta.decimals),
-          epochUserBalance: getHumanValue(new BigNumber(susdEpochUserBalance), SUSDTokenMeta.decimals),
-          nextEpochUserBalance: getHumanValue(new BigNumber(susdNextEpochUserBalance), SUSDTokenMeta.decimals),
-        },
-        uniswap_v2: {
-          ...prevState.uniswap_v2,
-          balance: getHumanValue(new BigNumber(uniBalance), UNISWAPTokenMeta.decimals),
-          epochUserBalance: getHumanValue(new BigNumber(uniEpochUserBalance), UNISWAPTokenMeta.decimals),
-          nextEpochUserBalance: getHumanValue(new BigNumber(uniNextEpochUserBalance), UNISWAPTokenMeta.decimals),
-        },
-      }));
-    })();
-  }, [account, data.currentEpoch, version]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  function depositSend(tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) {
-    if (!assertValues(account)) {
-      return;
     }
 
-    return sendContract(Contract, 'deposit', [
+    setData(prevState => ({
+      ...prevState,
+      usdc: {
+        ...prevState.usdc,
+        balance: usdcBalance,
+        epochUserBalance: usdcEpochUserBalance,
+        nextEpochUserBalance: usdcNextEpochUserBalance,
+      },
+      dai: {
+        ...prevState.dai,
+        balance: daiBalance,
+        epochUserBalance: daiEpochUserBalance,
+        nextEpochUserBalance: daiNextEpochUserBalance,
+      },
+      susd: {
+        ...prevState.susd,
+        balance: susdBalance,
+        epochUserBalance: susdEpochUserBalance,
+        nextEpochUserBalance: susdNextEpochUserBalance,
+      },
+      uniswap: {
+        ...prevState.uniswap,
+        balance: uniswapBalance,
+        epochUserBalance: uniswapEpochUserBalance,
+        nextEpochUserBalance: uniswapNextEpochUserBalance,
+      },
+    }));
+  }, [reload, wallet.account, data.currentEpoch]);
+
+  const depositSend = React.useCallback((tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => {
+    if (!wallet.account) {
+      return Promise.reject();
+    }
+
+    return contract.send('deposit', [
       tokenMeta.address,
       getNonHumanValue(amount, tokenMeta.decimals),
     ], {
-      from: account,
+      from: wallet.account,
       gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
-    })
-      .then(async () => {
-        incVersion();
-      });
-  }
+    }).then(reload);
+  }, [reload, contract, wallet.account]);
 
-  function withdrawSend(tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) {
-    if (!assertValues(account)) {
-      return;
+  const withdrawSend = React.useCallback((tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => {
+    if (!wallet.account) {
+      return Promise.reject();
     }
 
-    return sendContract(Contract, 'withdraw', [
+    return contract.send('withdraw', [
       tokenMeta.address,
       getNonHumanValue(amount, tokenMeta.decimals),
     ], {
-      from: account,
+      from: wallet.account,
       gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
-    })
-      .then(async () => {
-        incVersion();
-      });
-  }
+    }).then(reload);
+  }, [reload, contract, wallet.account]);
 
-  function getEpochAt(timestamp: number): number | undefined {
-    if (!data.epoch1Start || !data.epochDuration) {
-      return undefined;
+  const getEpochAt = React.useCallback((timestamp: number): number | undefined => {
+    const { epoch1Start, epochDuration } = dataRef.current;
+
+    if (epoch1Start === undefined || epochDuration === undefined) {
+      return;
     }
 
-    return Math.floor((timestamp - data.epoch1Start) / data.epochDuration);
-  }
+    return Math.floor((timestamp - epoch1Start) / epochDuration);
+  }, [dataRef]);
 
-  function getEpochPeriod(epoch: number): number[] {
-    const start = data.epoch1Start! + ((epoch - 1) * data.epochDuration!);
-    const end = start + data.epochDuration!;
+  const getEpochPeriod = React.useCallback((epoch: number): [number, number] | undefined => {
+    const { epoch1Start, epochDuration } = dataRef.current;
+
+    if (epoch1Start === undefined || epochDuration === undefined) {
+      return;
+    }
+
+    const start = epoch1Start + ((epoch - 1) * epochDuration);
+    const end = start + epochDuration;
 
     return [start, end];
-  }
+  }, [dataRef]);
 
-  return {
+  return React.useMemo<StakingContract>(() => ({
     ...data,
+    contract,
+    reload,
     depositSend,
     withdrawSend,
     getEpochAt,
     getEpochPeriod,
-  };
+  }), [
+    data,
+    contract,
+    reload,
+    depositSend,
+    withdrawSend,
+    getEpochAt,
+    getEpochPeriod,
+  ]);
 }

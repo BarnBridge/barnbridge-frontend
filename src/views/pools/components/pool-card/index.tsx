@@ -14,12 +14,12 @@ import {
   STABLE_TOKEN_ICONS,
   STABLE_TOKEN_NAMES,
 } from 'web3/utils';
-import { useWeb3 } from 'web3/provider';
+import { useWallet } from 'web3/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 import s from 'views/pools/components/pool-card/styles.module.css';
 
@@ -38,7 +38,7 @@ type TokenBalanceShare = {
 
 const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   const history = useHistory();
-  const web3 = useWeb3();
+  const wallet = useWallet();
   const { yf, yflp, staking, aggregated } = useWeb3Contracts();
 
   const { stableToken = false, lpToken = false } = props;
@@ -173,7 +173,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       }
     } else if (lpToken) {
       if (yflp.nextPoolSize) {
-        const uniShare = staking.uniswap_v2.nextEpochPoolSize
+        const uniShare = staking.uniswap.nextEpochPoolSize
           ?.multipliedBy(100)
           .div(yflp.nextPoolSize)
           .toNumber();
@@ -265,7 +265,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       }
     } else if (lpToken) {
       if (yflp.nextEpochStake) {
-        const uniShare = staking.uniswap_v2.nextEpochUserBalance
+        const uniShare = staking.uniswap.nextEpochUserBalance
           ?.multipliedBy(100)
           .div(yflp.nextEpochStake)
           .toNumber();
@@ -301,7 +301,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           <div className={s.pool_label}>{nameLabel}</div>
           <div className={s.pool_epoch}>{epochLabel}</div>
         </div>
-        {web3.isActive && (
+        {wallet.isActive && (
           <Antd.Button
             type="primary"
             className={s.stakingBtn}
@@ -317,7 +317,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             <span>{epochReward}</span>
           </div>
         </div>
-        {web3.isActive && (
+        {wallet.isActive && (
           <div className={s.col2}>
             <div className={s.row_label}>MY POTENTIAL REWARD</div>
             <div className={s.row_value}>
@@ -355,7 +355,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         </div>
       </div>
 
-      {web3.isActive && (
+      {wallet.isActive && (
         <div className={s.row4}>
           <div className={s.row_label}>
             <span>MY POOL BALANCE</span>

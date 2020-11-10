@@ -1,20 +1,17 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { useReload } from 'hooks/useReload';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { TokenMeta } from 'web3/types';
-import { assertValues, batchContract, createContract, getHumanValue, sendContract } from 'web3/utils';
-import { useWeb3 } from 'web3/provider';
+import { getHumanValue } from 'web3/utils';
+import { useWallet } from 'web3/wallet';
+import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
-import { useVersion } from 'hooks/useVersion';
 
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
 
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
-
-const Contract = createContract(
-  require('web3/abi/usdc.json'),
-  CONTRACT_USDC_ADDR,
-);
 
 export const USDCTokenMeta: TokenMeta = {
   icon: <USDCIcon key="usdc" />,
@@ -23,77 +20,84 @@ export const USDCTokenMeta: TokenMeta = {
   decimals: 6,
 };
 
-export type USDCContractType = {
+type USDCContractData = {
   balance?: BigNumber;
   allowance?: BigNumber;
-  approveSend: (value: BigNumber) => Promise<any>;
-  reload: () => void;
 };
 
-const InitialData: USDCContractType = {
+export type USDCContract = USDCContractData & {
+  contract: Web3Contract;
+  reload(): void;
+  approveSend(value: BigNumber): Promise<any>;
+};
+
+const InitialData: USDCContractData = {
   balance: undefined,
   allowance: undefined,
-  approveSend: () => Promise.resolve(),
-  reload: () => undefined,
 };
 
-export function useUSDCContract(): USDCContractType {
-  const { account } = useWeb3();
-  const { version, incVersion } = useVersion();
+export function useUSDCContract(): USDCContract {
+  const [reload] = useReload();
+  const wallet = useWallet();
 
-  const [data, setData] = React.useState<USDCContractType>(InitialData);
+  const contract = React.useMemo<Web3Contract>(() => {
+    return new Web3Contract(
+      require('web3/abi/usdc.json'),
+      CONTRACT_USDC_ADDR,
+      'USDC',
+    );
+  }, []);
 
-  React.useEffect(() => {
-    if (!assertValues(account)) {
-      setData(prevState => ({
-        ...prevState,
-        balance: undefined,
-        allowance: undefined,
-      }));
+  const [data, setData] = React.useState<USDCContractData>(InitialData);
 
-      return;
+  useAsyncEffect(async () => {
+    let balance: BigNumber | undefined;
+    let allowance: BigNumber | undefined;
+
+    if (wallet.account) {
+      [balance, allowance] = await contract.batch([
+        {
+          method: 'balanceOf',
+          methodArgs: [wallet.account],
+          transform: (value: string) => getHumanValue(new BigNumber(value), USDCTokenMeta.decimals),
+        },
+        {
+          method: 'allowance',
+          methodArgs: [wallet.account, CONTRACT_STAKING_ADDR],
+          transform: (value: string) => new BigNumber(value),
+        },
+      ]);
     }
 
-    (async () => {
-      const [balance, allowance] = await batchContract(Contract, [
-        { method: 'balanceOf', methodArgs: [account] },
-        { method: 'allowance', methodArgs: [account, CONTRACT_STAKING_ADDR] },
-      ]);
-
-      setData(prevState => ({
-        ...prevState,
-        balance: getHumanValue(new BigNumber(balance), USDCTokenMeta.decimals),
-        allowance: new BigNumber(allowance),
-      }));
-    })();
-  }, [version, account]);
+    setData(prevState => ({
+      ...prevState,
+      balance,
+      allowance,
+    }));
+  }, [reload, wallet.account]);
 
   const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
-    if (!assertValues(account)) {
+    if (!wallet.account) {
       return Promise.reject();
     }
 
-    return sendContract(Contract, 'approve', [
+    return contract.send('approve', [
       CONTRACT_STAKING_ADDR,
       value,
     ], {
-      from: account,
-    })
-      .then(async () => {
-        const [allowance] = await batchContract(Contract, [
-          { method: 'allowance', methodArgs: [account, CONTRACT_STAKING_ADDR] },
-        ]);
+      from: wallet.account,
+    }).then(reload);
+  }, [reload, contract, wallet.account]);
 
-        setData(prevState => ({
-          ...prevState,
-          allowance: new BigNumber(allowance),
-        }));
-      });
-  }, [account]);
-
-  return React.useMemo(() => ({
+  return React.useMemo<USDCContract>(() => ({
     ...data,
+    contract,
+    reload,
     approveSend,
-    reload: incVersion,
-  }), [data, approveSend, incVersion]);
+  }), [
+    data,
+    contract,
+    reload,
+    approveSend,
+  ]);
 }

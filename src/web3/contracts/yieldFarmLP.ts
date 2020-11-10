@@ -1,162 +1,191 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { assertValues, batchContract, createContract, getHumanValue, sendContract, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3 } from 'web3/provider';
+import { useReload } from 'hooks/useReload';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWallet } from 'web3/wallet';
+import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
-import { useVersion } from 'hooks/useVersion';
 
 export const CONTRACT_YIELD_FARM_LP_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR);
 
-const Contract = createContract(
-  require('web3/abi/yield_farm_lp.json'),
-  CONTRACT_YIELD_FARM_LP_ADDR,
-);
-
-export type YieldFarmLPContractType = {
+type YieldFarmLPContractData = {
   totalEpochs?: number;
   totalRewards?: BigNumber;
   epochReward?: BigNumber;
   currentEpoch?: number;
+  bondReward?: BigNumber;
   poolSize?: BigNumber;
   nextPoolSize?: BigNumber;
   epochStake?: BigNumber;
   nextEpochStake?: BigNumber;
   currentReward?: BigNumber;
   potentialReward?: BigNumber;
-  bondReward?: BigNumber;
+};
+
+export type YieldFarmLPContract = YieldFarmLPContractData & {
+  contract: Web3Contract;
   massHarvestSend: () => void;
   reload: () => void;
 };
 
-export function useYieldFarmLPContract(): YieldFarmLPContractType {
-  const { account } = useWeb3();
-  const { version, incVersion } = useVersion();
+const InitialData: YieldFarmLPContractData = {
+  totalEpochs: undefined,
+  totalRewards: undefined,
+  epochReward: undefined,
+  currentEpoch: undefined,
+  bondReward: undefined,
+  poolSize: undefined,
+  nextPoolSize: undefined,
+  epochStake: undefined,
+  nextEpochStake: undefined,
+  currentReward: undefined,
+  potentialReward: undefined,
+};
 
-  const [data, setData] = React.useState<YieldFarmLPContractType>({} as any);
+export function useYieldFarmLPContract(): YieldFarmLPContract {
+  const [reload] = useReload();
+  const wallet = useWallet();
 
-  React.useEffect(() => {
-    (async () => {
-      let [totalEpochs, totalRewards, currentEpoch] = await batchContract(Contract, [
-        'NR_OF_EPOCHS',
-        'TOTAL_DISTRIBUTED_AMOUNT',
-        'getCurrentEpoch',
+  const contract = React.useMemo<Web3Contract>(() => {
+    return new Web3Contract(
+      require('web3/abi/yield_farm_lp.json'),
+      CONTRACT_YIELD_FARM_LP_ADDR,
+      'YIELD_FARM_LP',
+    );
+  }, []);
+
+  const [data, setData] = React.useState<YieldFarmLPContractData>(InitialData);
+
+  useAsyncEffect(async () => {
+    let [totalEpochs, totalRewards, currentEpoch] = await contract.batch([
+      {
+        method: 'NR_OF_EPOCHS',
+        transform: (value: string) => Number(value),
+      },
+      {
+        method: 'TOTAL_DISTRIBUTED_AMOUNT',
+        transform: (value: string) => new BigNumber(value),
+      },
+      {
+        method: 'getCurrentEpoch',
+        transform: (value: string) => Number(value),
+      },
+    ]);
+
+    currentEpoch = Math.min(currentEpoch, totalEpochs);
+
+    const epochReward = totalEpochs !== 0 ? totalRewards.div(totalEpochs) : ZERO_BIG_NUMBER;
+
+    let bondReward = ZERO_BIG_NUMBER;
+
+    if (currentEpoch > 0) {
+      const bondEpoch = currentEpoch === totalEpochs ? currentEpoch : currentEpoch - 1;
+      bondReward = epochReward.multipliedBy(bondEpoch);
+    }
+
+    setData(prevState => ({
+      ...prevState,
+      totalEpochs,
+      totalRewards,
+      epochReward,
+      currentEpoch,
+      bondReward,
+    }));
+
+    const [poolSize, nextPoolSize] = await contract.batch([
+      {
+        method: 'getPoolSize',
+        methodArgs: [currentEpoch],
+        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      },
+      {
+        method: 'getPoolSize',
+        methodArgs: [currentEpoch + 1],
+        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      },
+    ]);
+
+    setData(prevState => ({
+      ...prevState,
+      poolSize,
+      nextPoolSize,
+    }));
+  }, [reload]);
+
+  useAsyncEffect(async () => {
+    const { currentEpoch } = data;
+
+    let epochStake: BigNumber | undefined;
+    let nextEpochStake: BigNumber | undefined;
+    let currentReward: BigNumber | undefined;
+
+    if (wallet.account && currentEpoch !== undefined) {
+      [epochStake, nextEpochStake, currentReward] = await contract.batch([
+        {
+          method: 'getEpochStake',
+          methodArgs: [wallet.account, data.currentEpoch],
+          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        },
+        {
+          method: 'getEpochStake',
+          methodArgs: [wallet.account, data.currentEpoch! + 1],
+          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        },
+        {
+          method: 'massHarvest',
+          callArgs: { from: wallet.account },
+          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        },
       ]);
+    }
 
-      if (Number(currentEpoch) > Number(totalEpochs)) {
-        currentEpoch = totalEpochs;
+    setData(prevState => ({
+      ...prevState,
+      epochStake,
+      nextEpochStake,
+      currentReward,
+    }));
+  }, [reload, wallet.account, data.currentEpoch]);
+
+  useAsyncEffect(async () => {
+    const { epochStake, poolSize, epochReward } = data;
+
+    let potentialReward: BigNumber | undefined;
+
+    if (epochStake !== undefined && poolSize !== undefined && epochReward !== undefined) {
+      if (poolSize.isEqualTo(ZERO_BIG_NUMBER)) {
+        potentialReward = ZERO_BIG_NUMBER;
+      } else {
+        potentialReward = epochStake.div(poolSize).multipliedBy(epochReward);
       }
-
-      const [poolSize, nextPoolSize] = await batchContract(Contract, [
-        { method: 'getPoolSize', methodArgs: [currentEpoch] },
-        { method: 'getPoolSize', methodArgs: [currentEpoch + 1] },
-      ]);
-
-      setData(prevState => ({
-        ...prevState,
-        totalEpochs: Number(totalEpochs),
-        totalRewards: new BigNumber(totalRewards),
-        epochReward: (new BigNumber(totalRewards)).div(totalEpochs),
-        currentEpoch: Number(currentEpoch),
-        poolSize: getHumanValue(new BigNumber(poolSize), BONDTokenMeta.decimals),
-        nextPoolSize: getHumanValue(new BigNumber(nextPoolSize), BONDTokenMeta.decimals),
-      }));
-    })();
-  }, [version]);
-
-  React.useEffect(() => {
-    if (!assertValues(account, data.currentEpoch)) {
-      setData(prevState => ({
-        ...prevState,
-        epochStake: undefined,
-        nextEpochStake: undefined,
-        currentReward: undefined,
-      }));
-
-      return;
     }
-
-    (async () => {
-      const [epochStake, nextEpochStake, massHarvest] = await batchContract(Contract, [
-        { method: 'getEpochStake', methodArgs: [account, data.currentEpoch] },
-        { method: 'getEpochStake', methodArgs: [account, data.currentEpoch! + 1] },
-        { method: 'massHarvest', callArgs: { from: account } },
-      ]);
-
-      setData(prevState => ({
-        ...prevState,
-        epochStake: getHumanValue(new BigNumber(epochStake), BONDTokenMeta.decimals),
-        nextEpochStake: getHumanValue(new BigNumber(nextEpochStake), BONDTokenMeta.decimals),
-        currentReward: getHumanValue(new BigNumber(massHarvest), BONDTokenMeta.decimals),
-      }));
-    })();
-  }, [version, account, data.currentEpoch]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  React.useEffect(() => {
-    if (!assertValues(data.epochStake, data.poolSize, data.epochReward)) {
-      setData(prevState => ({
-        ...prevState,
-        potentialReward: undefined,
-      }));
-      return;
-    }
-
-    if (data.poolSize?.isEqualTo(ZERO_BIG_NUMBER)) {
-      setData(prevState => ({
-        ...prevState,
-        potentialReward: ZERO_BIG_NUMBER,
-      }));
-      return;
-    }
-
-    const potentialReward = data.epochStake!
-      .div(data.poolSize!)
-      .multipliedBy(data.epochReward!);
-
     setData(prevState => ({
       ...prevState,
       potentialReward,
     }));
-  }, [version, data.epochStake, data.poolSize, data.epochReward]);
-
-  React.useEffect(() => {
-    if (!assertValues(data.epochReward, data.currentEpoch)) {
-      setData(prevState => ({
-        ...prevState,
-        bondReward: undefined,
-      }));
-      return;
-    }
-
-    let bondReward = ZERO_BIG_NUMBER;
-
-    if (data.currentEpoch! > 0) {
-      const bondEpoch = data.currentEpoch === data.totalEpochs ? data.currentEpoch : data.currentEpoch! - 1;
-      bondReward = data.epochReward!.multipliedBy(bondEpoch!);
-    }
-
-    setData(prevState => ({
-      ...prevState,
-      bondReward,
-    }));
-  }, [version, data.epochReward, data.currentEpoch, data.totalEpochs]);
+  }, [reload, data.epochStake, data.poolSize, data.epochReward]);
 
   const massHarvestSend = React.useCallback(() => {
-    if (!assertValues(account)) {
-      return;
+    if (!wallet.account) {
+      return Promise.reject();
     }
 
-    return sendContract(Contract, 'massHarvest', [], {
-      from: account,
-    })
-      .then(async () => {
-        incVersion();
-      });
-  }, [account, incVersion]);
+    return contract.send('massHarvest', [], {
+      from: wallet.account,
+    }).then(reload);
+  }, [reload, contract, wallet.account]);
 
-  return React.useMemo(() => ({
+  return React.useMemo<YieldFarmLPContract>(() => ({
     ...data,
+    contract,
+    reload,
     massHarvestSend,
-    reload: incVersion,
-  }), [data, massHarvestSend, incVersion]);
+  }), [
+    data,
+    contract,
+    reload,
+    massHarvestSend,
+  ]);
 }

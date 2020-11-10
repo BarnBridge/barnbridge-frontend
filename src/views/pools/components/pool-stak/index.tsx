@@ -10,7 +10,7 @@ import { useEthGasPrice } from 'context/useEthGas';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 import s from 'views/pools/components/pool-stak/styles.module.css';
 

@@ -4,7 +4,7 @@ import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
 
 import EthGasPriceProvider from 'context/useEthGas';
-import { useWeb3 } from 'web3/provider';
+import { useWallet } from 'web3/wallet';
 import { useWarnings } from 'components/warnings';
 import ConnectedWallet from 'components/connected-wallet';
 import PoolRewards from 'views/pools/components/pool-rewards';
@@ -16,7 +16,7 @@ import PoolTransactionsProvider from 'views/pools/components/pool-transactions-p
 import s from './styles.module.css';
 
 const PoolsView: React.FunctionComponent = () => {
-  const web3 = useWeb3();
+  const wallet = useWallet();
   const warnings = useWarnings();
 
   React.useEffect(() => {
@@ -46,7 +46,7 @@ const PoolsView: React.FunctionComponent = () => {
       {!isMobile && (
         <Antd.Row className={s.walletRow}>
           <Antd.Col flex="auto">
-            {web3.isActive && <PoolRewards />}
+            {wallet.isActive && <PoolRewards />}
           </Antd.Col>
           <Antd.Col className={s.wallet}>
             <ConnectedWallet />
@@ -62,7 +62,7 @@ const PoolsView: React.FunctionComponent = () => {
             <Route path="/pools" exact render={() => (
               <PoolOverview />
             )} />
-            {web3.isActive && (
+            {wallet.isActive && (
               <>
                 <Route path="/pools/stable-token" exact render={() => (
                   <PoolStak stableToken />

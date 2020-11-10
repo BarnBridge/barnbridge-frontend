@@ -1,19 +1,16 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import { useReload } from 'hooks/useReload';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { TokenMeta } from 'web3/types';
-import { assertValues, batchContract, createContract, getHumanValue } from 'web3/utils';
-import { useWeb3 } from 'web3/provider';
-import { useVersion } from 'hooks/useVersion';
+import { getHumanValue } from 'web3/utils';
+import { useWallet } from 'web3/wallet';
+import Web3Contract from 'web3/contract';
 
 import { ReactComponent as BONDIcon } from 'resources/svg/tokens/bond.svg';
 
 const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
-
-const Contract = createContract(
-  require('web3/abi/bond.json'),
-  CONTRACT_BOND_ADDR,
-);
 
 export const BONDTokenMeta: TokenMeta = {
   icon: <BONDIcon key="bond" />,
@@ -22,46 +19,55 @@ export const BONDTokenMeta: TokenMeta = {
   decimals: 18,
 };
 
-export type BONDContractType = {
+type BONDContractData = {
   balance?: BigNumber;
-  reload: () => void;
 };
 
-const InitialData: BONDContractType = {
+export type BONDContract = BONDContractData & {
+  contract: Web3Contract;
+  reload(): void;
+};
+
+const InitialData: BONDContractData = {
   balance: undefined,
-  reload: () => undefined,
 };
 
-export function useBONDContract(): BONDContractType {
-  const { account } = useWeb3();
-  const { version, incVersion } = useVersion();
+export function useBONDContract(): BONDContract {
+  const [reload] = useReload();
+  const wallet = useWallet();
 
-  const [data, setData] = React.useState<BONDContractType>(InitialData);
+  const contract = React.useMemo<Web3Contract>(() => {
+    return new Web3Contract(
+      require('web3/abi/bond.json'),
+      CONTRACT_BOND_ADDR,
+      'BOND',
+    );
+  }, []);
 
-  React.useEffect(() => {
-    if (!assertValues(account)) {
-      setData(prevState => ({
-        ...prevState,
-        balance: undefined,
-      }));
+  const [data, setData] = React.useState<BONDContractData>(InitialData);
 
-      return;
+  useAsyncEffect(async () => {
+    let balance: BigNumber | undefined = undefined;
+
+    if (wallet.account) {
+      [balance] = await contract.batch([
+        {
+          method: 'balanceOf',
+          methodArgs: [wallet.account],
+          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        },
+      ]);
     }
 
-    (async () => {
-      const [balance] = await batchContract(Contract, [
-        { method: 'balanceOf', methodArgs: [account] },
-      ]);
-
-      setData(prevState => ({
-        ...prevState,
-        balance: getHumanValue(new BigNumber(balance), BONDTokenMeta.decimals),
-      }));
-    })();
-  }, [version, account]);
+    setData(prevState => ({
+      ...prevState,
+      balance,
+    }));
+  }, [reload, contract, wallet.account]);
 
   return React.useMemo(() => ({
     ...data,
-    reload: incVersion,
-  }), [data, incVersion]);
+    contract,
+    reload,
+  }), [data, contract, reload]);
 }

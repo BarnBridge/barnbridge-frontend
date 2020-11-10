@@ -2,26 +2,27 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 
 import { assertValues, getHumanValue, getTokenMeta, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useYieldFarmContract, YieldFarmContractType } from 'web3/contracts/yieldFarm';
-import { useYieldFarmLPContract, YieldFarmLPContractType } from 'web3/contracts/yieldFarmLP';
-import { StakingContractType, useStakingContract } from 'web3/contracts/staking';
-import { USDCContractType, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
-import { DAIContractType, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
-import { SUSDContractType, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta, UniswapV2ContractType, useUniswapV2Contract } from 'web3/contracts/uniswapV2';
-import { BONDContractType, useBONDContract } from 'web3/contracts/bond';
+import Web3Contract from 'web3/contract';
+import { BONDContract, useBONDContract } from 'web3/contracts/bond';
+import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
+import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
+import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
+import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
+import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
+import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 
-type OptionalBigNumber = BigNumber | undefined;
+import UserRejectedModal from 'components/user-rejected-modal';
 
-export type Web3ContractsType = {
-  yf: YieldFarmContractType;
-  yflp: YieldFarmLPContractType;
-  staking: StakingContractType;
-  usdc: USDCContractType;
-  dai: DAIContractType;
-  susd: SUSDContractType;
-  uniswapV2: UniswapV2ContractType;
-  bond: BONDContractType;
+export type Web3ContractsData = {
+  bond: BONDContract;
+  usdc: USDCContract;
+  dai: DAIContract;
+  susd: SUSDContract;
+  uniswap: UNISWAPContract;
+  yf: YieldFarmContract;
+  yflp: YieldFarmLPContract;
+  staking: StakingContract;
   aggregated: {
     totalCurrentReward?: BigNumber;
     totalPotentialReward?: BigNumber;
@@ -35,33 +36,69 @@ export type Web3ContractsType = {
     totalBondReward?: BigNumber;
     bondPrice?: BigNumber;
   };
-  getTokenUsdValue(token: string, value?: BigNumber): OptionalBigNumber;
 };
 
-const Web3ContractsContext = React.createContext<Web3ContractsType>({} as any);
+export type Web3ContractsMethods = {
+  getTokenUsdValue(token: string, value?: BigNumber): BigNumber | undefined;
+};
 
-export function useWeb3Contracts(): Web3ContractsType {
+export type Web3Contracts = Web3ContractsData & Web3ContractsMethods;
+
+const Web3ContractsContext = React.createContext<Web3Contracts>({} as any);
+
+export function useWeb3Contracts(): Web3Contracts {
   return React.useContext(Web3ContractsContext);
 }
 
 const Web3ContractsProvider: React.FunctionComponent = props => {
-  const yfContract = useYieldFarmContract();
-  const yflpContract = useYieldFarmLPContract();
-  const stakingContract = useStakingContract();
+  const bondContract = useBONDContract();
   const daiContract = useDAIContract();
   const usdcContract = useUSDCContract();
   const susdContract = useSUSDContract();
-  const bondContract = useBONDContract();
-  const uniswapV2Contract = useUniswapV2Contract();
+  const uniswapContract = useUNISWAPContract();
+  const yfContract = useYieldFarmContract();
+  const yflpContract = useYieldFarmLPContract();
+  const stakingContract = useStakingContract();
 
-  function getTokenUsdValue(tokenAddr: string, value?: BigNumber): OptionalBigNumber {
+  const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    const contracts = [
+      bondContract.contract,
+      daiContract.contract,
+      usdcContract.contract,
+      susdContract.contract,
+      uniswapContract.contract,
+      yfContract.contract,
+      yflpContract.contract,
+      stakingContract.contract,
+    ];
+
+    function handleError(err: Error & { code: number }, contract: Web3Contract) {
+      if (err.code === 4001) {
+        setUserRejectedVisible(true);
+      }
+    }
+
+    contracts.forEach((contract: Web3Contract) => {
+      contract.on('error', handleError);
+    });
+
+    return () => {
+      contracts.forEach((contract: Web3Contract) => {
+        contract.off('error', handleError);
+      });
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function getTokenUsdValue(tokenAddr: string, value?: BigNumber): BigNumber | undefined {
     const tokenMeta = getTokenMeta(tokenAddr);
 
     if (!assertValues(value, tokenMeta)) {
       return undefined;
     }
 
-    let multiplier: OptionalBigNumber;
+    let multiplier: BigNumber | undefined;
 
     switch (tokenMeta?.address) {
       case USDCTokenMeta.address:
@@ -84,13 +121,13 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       ?.multipliedBy(multiplier ?? 1);
   }
 
-  function yfTokenValue(): OptionalBigNumber {
+  function yfTokenValue(): BigNumber | undefined {
     return new BigNumber(1);
   }
 
-  function yflpTokenValue(): OptionalBigNumber {
-    const usdcReserve = uniswapV2Contract?.usdcReserve;
-    const uniTotalSupply = uniswapV2Contract?.totalSupply;
+  function yflpTokenValue(): BigNumber | undefined {
+    const usdcReserve = uniswapContract?.usdcReserve;
+    const uniTotalSupply = uniswapContract?.totalSupply;
 
     if (!assertValues(usdcReserve, uniTotalSupply)) {
       return undefined;
@@ -167,7 +204,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return poolSize!.multipliedBy(tokenValue!);
   }
 
-  function totalCurrentReward(): OptionalBigNumber {
+  function totalCurrentReward(): BigNumber | undefined {
     const yfCurrentReward = yfContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfContract.currentReward;
     const yflpCurrentReward = yflpContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yflpContract.currentReward;
 
@@ -178,7 +215,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return yfCurrentReward!.plus(yflpCurrentReward!);
   }
 
-  function totalPotentialReward(): OptionalBigNumber {
+  function totalPotentialReward(): BigNumber | undefined {
     const yfPotentialReward = yfContract.potentialReward;
     const yflpPotentialReward = yflpContract.potentialReward;
 
@@ -189,7 +226,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return yfPotentialReward!.plus(yflpPotentialReward!);
   }
 
-  function totalStaked(): OptionalBigNumber {
+  function totalStaked(): BigNumber | undefined {
     const yfStaked = yfStakedValue();
     const yflpStaked = yflpStakedValue();
 
@@ -200,7 +237,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return (yfStaked ?? ZERO_BIG_NUMBER).plus(yflpStaked ?? ZERO_BIG_NUMBER);
   }
 
-  function totalEffectiveStaked(): OptionalBigNumber {
+  function totalEffectiveStaked(): BigNumber | undefined {
     const yfStaked = yfEffectiveStakedValue();
     const yflpStaked = yflpEffectiveStakedValue();
 
@@ -211,7 +248,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return (yfStaked ?? ZERO_BIG_NUMBER).plus(yflpStaked ?? ZERO_BIG_NUMBER);
   }
 
-  function bondReward(): OptionalBigNumber {
+  function bondReward(): BigNumber | undefined {
     const yfbBondReward = yfContract.bondReward;
     const yflpBondReward = yflpContract.bondReward;
 
@@ -222,7 +259,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return yfbBondReward!.plus(yflpBondReward!);
   }
 
-  function totalBondReward(): OptionalBigNumber {
+  function totalBondReward(): BigNumber | undefined {
     const yfTotalRewards = yfContract.totalRewards;
     const yflpTotalRewards = yflpContract.totalRewards;
 
@@ -233,9 +270,9 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     return yfTotalRewards!.plus(yflpTotalRewards!);
   }
 
-  function bondPrice(): OptionalBigNumber {
-    const bondReserve = uniswapV2Contract.bondReserve;
-    const usdcReserve = uniswapV2Contract.usdcReserve;
+  function bondPrice(): BigNumber | undefined {
+    const bondReserve = uniswapContract.bondReserve;
+    const usdcReserve = uniswapContract.usdcReserve;
 
     if (!assertValues(bondReserve, usdcReserve)) {
       return undefined;
@@ -245,46 +282,46 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }
 
   const value = {
-    yf: yfContract,
-    yflp: yflpContract,
-    staking: stakingContract,
+    bond: bondContract,
     usdc: usdcContract,
     dai: daiContract,
     susd: susdContract,
-    bond: bondContract,
-    uniswapV2: uniswapV2Contract,
+    uniswap: uniswapContract,
+    yf: yfContract,
+    yflp: yflpContract,
+    staking: stakingContract,
     aggregated: {
-      get totalCurrentReward(): OptionalBigNumber {
+      get totalCurrentReward(): BigNumber | undefined {
         return totalCurrentReward();
       },
-      get totalPotentialReward(): OptionalBigNumber {
+      get totalPotentialReward(): BigNumber | undefined {
         return totalPotentialReward();
       },
-      get totalStaked(): OptionalBigNumber {
+      get totalStaked(): BigNumber | undefined {
         return totalStaked();
       },
-      get totalEffectiveStaked(): OptionalBigNumber {
+      get totalEffectiveStaked(): BigNumber | undefined {
         return totalEffectiveStaked();
       },
-      get lpStakedValue(): OptionalBigNumber {
+      get lpStakedValue(): BigNumber | undefined {
         return yflpStakedValue();
       },
-      get lpEffectiveStakedValue(): OptionalBigNumber {
+      get lpEffectiveStakedValue(): BigNumber | undefined {
         return yflpEffectiveStakedValue();
       },
-      get mylpStakedValue(): OptionalBigNumber {
+      get mylpStakedValue(): BigNumber | undefined {
         return mylpStakedValue();
       },
-      get mylpEffectiveStakedValue(): OptionalBigNumber {
+      get mylpEffectiveStakedValue(): BigNumber | undefined {
         return mylpEffectiveStakedValue();
       },
-      get bondReward(): OptionalBigNumber {
+      get bondReward(): BigNumber | undefined {
         return bondReward();
       },
-      get totalBondReward(): OptionalBigNumber {
+      get totalBondReward(): BigNumber | undefined {
         return totalBondReward();
       },
-      get bondPrice(): OptionalBigNumber {
+      get bondPrice(): BigNumber | undefined {
         return bondPrice();
       },
     },
@@ -293,6 +330,10 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   return (
     <Web3ContractsContext.Provider value={value}>
+      <UserRejectedModal
+        visible={userRejectedVisible}
+        onCancel={() => setUserRejectedVisible(false)}
+      />
       {props.children}
     </Web3ContractsContext.Provider>
   );

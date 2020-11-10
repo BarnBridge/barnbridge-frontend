@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import { useWeb3 } from 'web3/provider';
+import { useWallet } from 'web3/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue } from 'web3/utils';
 
@@ -13,7 +13,7 @@ import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
 import s from 'views/pools/components/pool-rewards/styles.module.css';
 
 const PoolRewards: React.FunctionComponent = props => {
-  const { isActive } = useWeb3();
+  const wallet = useWallet();
   const { bond, aggregated } = useWeb3Contracts();
   const [harvestVisible, setHarvestVisible] = React.useState<boolean>(false);
 
@@ -36,7 +36,7 @@ const PoolRewards: React.FunctionComponent = props => {
               {formatBONDValue(aggregated.totalCurrentReward)} <BondSvg className={s.bondIcon} />
             </div>
           </div>
-          {isActive && (
+          {wallet.isActive && (
             <Antd.Button
               type="primary"
               className={s.harvestBtn}

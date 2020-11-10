@@ -2,13 +2,13 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
-import { Web3Connector } from 'web3/provider';
+import { WalletConnector } from 'web3/wallet';
 
 import s from './styles.module.css';
 
 export type ConnectWalletModalProps = ModalProps & {
-  connectors: Web3Connector[];
-  onConnectorSelect: (connector: Web3Connector) => void;
+  connectors: WalletConnector[];
+  onConnectorSelect: (connector: WalletConnector) => void;
 };
 
 const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = props => {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import Web3Provider from 'web3/provider';
+import Web3WalletProvider from 'web3/wallet';
 import Web3ContractsProvider from 'web3/contracts';
 import TheGraphProvider from 'context/TheGraph';
 
@@ -12,7 +12,7 @@ import LayoutView from 'views/layout';
 const App: React.FunctionComponent = () => {
   return (
     <ThemeProvider>
-      <Web3Provider>
+      <Web3WalletProvider>
         <Web3ContractsProvider>
           <TheGraphProvider>
             <Router>
@@ -20,7 +20,7 @@ const App: React.FunctionComponent = () => {
             </Router>
           </TheGraphProvider>
         </Web3ContractsProvider>
-      </Web3Provider>
+      </Web3WalletProvider>
     </ThemeProvider>
   );
 };

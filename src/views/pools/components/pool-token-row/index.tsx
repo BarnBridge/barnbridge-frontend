@@ -10,7 +10,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { useEthGasPrice } from 'context/useEthGas';
 
 import InfoBox from 'components/info-box';
@@ -93,10 +93,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       case UNISWAPTokenMeta:
         setState(prevState => ({
           ...prevState,
-          walletBalance: web3c.uniswapV2.balance,
-          stakedBalance: web3c.staking.uniswap_v2.balance,
-          effectiveStakedBalance: web3c.staking.uniswap_v2.epochUserBalance,
-          enabled: web3c.uniswapV2.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
+          walletBalance: web3c.uniswap.balance,
+          stakedBalance: web3c.staking.uniswap.balance,
+          effectiveStakedBalance: web3c.staking.uniswap.epochUserBalance,
+          enabled: web3c.uniswap.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
       default:
@@ -152,7 +152,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           await web3c.susd.approveSend(value);
           break;
         case UNISWAPTokenMeta:
-          await web3c.uniswapV2.approveSend(value);
+          await web3c.uniswap.approveSend(value);
           break;
         default:
           break;
@@ -218,7 +218,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           web3c.yf.reload();
           break;
         case UNISWAPTokenMeta:
-          web3c.uniswapV2.reload();
+          web3c.uniswap.reload();
           web3c.yflp.reload();
           break;
       }
@@ -255,7 +255,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           web3c.yf.reload();
           break;
         case UNISWAPTokenMeta:
-          web3c.uniswapV2.reload();
+          web3c.uniswap.reload();
           web3c.yflp.reload();
           break;
       }

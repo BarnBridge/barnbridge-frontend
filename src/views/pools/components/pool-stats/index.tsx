@@ -19,7 +19,7 @@ export type PoolStatsProps = {
 const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   const { aggregated, staking } = useWeb3Contracts();
   const epochEnd = React.useMemo<number | undefined>(() => {
-    const [, end] = staking.getEpochPeriod(staking.currentEpoch!);
+    const [, end] = staking.getEpochPeriod(staking.currentEpoch!) ?? [];
     return end;
   }, [staking]);
   const [untilNextEpoch] = useWeekCountdown(epochEnd);

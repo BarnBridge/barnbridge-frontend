@@ -1,13 +1,11 @@
 import React from 'react';
-import Web3EthContract from 'web3-eth-contract';
 import BigNumber from 'bignumber.js';
-import isString from 'lodash/isString';
 
-import { EthContract, TokenMeta } from 'web3/types';
+import { TokenMeta } from 'web3/types';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
@@ -67,98 +65,15 @@ export function getEtherscanAddressUrl(
   }
 }
 
-export function createContract(abi: any, address: string, rpcUrl: string = getWSRpcUrl()): EthContract | undefined {
-  try {
-    const contract: EthContract = new (Web3EthContract as any)(abi, address);
-    contract.setProvider?.(rpcUrl);
-    return contract;
-  } catch (e) {
-    return undefined;
+export function getNetworkName(chainId: number | undefined): string {
+  switch (chainId) {
+    case 1:
+      return 'Mainnet';
+    case 4:
+      return 'Rinkeby';
+    default:
+      return '-';
   }
-}
-
-type BatchMethodConfig = {
-  method: string;
-  methodArgs?: any[];
-  callArgs?: Record<string, any>;
-};
-
-export type BatchMethod = string | BatchMethodConfig;
-
-export function batchContract(contract: EthContract | undefined, methods: BatchMethod[]): Promise<any[]> {
-  if (!contract) {
-    return Promise.resolve([]);
-  }
-
-  const batch = new contract.BatchRequest!();
-
-  const promises = methods.map((method: BatchMethod) => {
-    return new Promise(resolve => {
-      let methodName: string;
-      let methodArgs: any[] = [];
-      let callArgs: Record<string, any> = {};
-
-      if (isString(method)) {
-        methodName = method as string;
-      } else {
-        methodName = (method as BatchMethodConfig).method;
-        methodArgs = (method as BatchMethodConfig).methodArgs ?? [];
-        callArgs = (method as BatchMethodConfig).callArgs ?? {};
-      }
-
-      const contractMethod = contract.methods[methodName];
-
-      if (!contractMethod) {
-        return resolve(undefined);
-      }
-
-      try {
-        const request = contractMethod(...methodArgs).call
-          .request(callArgs, (err: Error, data: string) => {
-            if (err) {
-              console.error(`${method}.call`, err);
-              return resolve(undefined);
-            }
-
-            resolve(data);
-          });
-
-        batch.add(request);
-      } catch (e) {
-        return resolve(undefined);
-      }
-    });
-  });
-
-  batch.execute();
-
-  return Promise.all(promises);
-}
-
-export function sendContract(contract: EthContract | undefined, method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
-  if (!contract) {
-    return Promise.reject();
-  }
-
-  return new Promise((resolve, reject) => {
-    const clonedContract: EthContract = contract.clone();
-    clonedContract.setProvider?.((window as any).ethereum);
-
-    const contractMethod = clonedContract.methods[method];
-
-    if (!contractMethod) {
-      return resolve(undefined);
-    }
-
-    contractMethod(...methodArgs)
-      ?.send(sendArgs, async (err: Error) => {
-        if (err) {
-          return reject(err);
-        }
-      })
-      .then(resolve)
-      .catch(reject);
-  });
 }
 
 export function getExponentValue(decimals: number = 0): BigNumber {
@@ -213,11 +128,11 @@ export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
 export function getTokenHumanValue(tokenAddr: string, value?: BigNumber): BigNumber | undefined {
   const tokenMeta = getTokenMeta(tokenAddr);
 
-  if (!assertValues(value, tokenMeta)) {
+  if (tokenMeta === undefined || value === undefined) {
     return undefined;
   }
 
-  return getHumanValue(value, tokenMeta?.decimals);
+  return getHumanValue(value, tokenMeta.decimals);
 }
 
 export const STABLE_TOKEN_ICONS: React.ReactNode[] = [

@@ -12,12 +12,12 @@ import ExternalLink from 'components/externalLink';
 import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
 import { formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
-import { useWeb3 } from 'web3/provider';
+import { useWallet } from 'web3/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswapV2';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
 
@@ -103,11 +103,12 @@ export type PoolTransactionTableProps = {
 
 const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> = props => {
   const { ownTransactions } = props;
-  const { account } = useWeb3();
+  const wallet = useWallet();
   const web3c = useWeb3Contracts();
 
   const [tokenFilter, setTokenFilter] = React.useState<string | number>('all');
   const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
+  const [currentPage, setCurrentPage] = React.useState<number>(1);
 
   const { loading, transactions } = usePoolTransactions();
 
@@ -129,7 +130,7 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
     return pipe(
       // filter by own transactions
       ownTransactions
-        ? filter({ user: account?.toLowerCase() })
+        ? filter({ user: wallet.account?.toLowerCase() })
         : (t: PoolTransaction) => t,
       // filter by transaction token
       tokenFilter !== 'all'
@@ -141,6 +142,10 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
         : (t: PoolTransaction) => t,
     )(transactions);
   }, [transactions, ownTransactions, tokenFilter, typeFilter, web3c.staking]);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    setCurrentPage(1);
+  }, [tokenFilter, typeFilter]);
 
   return (
     <div className={s.component}>
@@ -184,12 +189,16 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
         pagination={{
           pageSize: 10,
           defaultCurrent: 1,
+          current: currentPage,
           total: data.length,
           hideOnSinglePage: true,
           showSizeChanger: false,
           showLessItems: true,
           showTotal: (total: number, range: number[]) => {
             return <span>Showing {range[0]} to {range[1]} out of {total} entries</span>;
+          },
+          onChange: (nextPage: number) => {
+            setCurrentPage(nextPage);
           },
         }}
       />

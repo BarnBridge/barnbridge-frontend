@@ -19,7 +19,8 @@
     ],
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "noEmit": true
+    "noEmit": true,
+    "noFallthroughCasesInSwitch": true
   },
   "include": [
     "src"
