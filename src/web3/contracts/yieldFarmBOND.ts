@@ -132,12 +132,12 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       [epochStake, nextEpochStake, currentReward] = await contract.batch([
         {
           method: 'getEpochStake',
-          methodArgs: [wallet.account, data.currentEpoch],
+          methodArgs: [wallet.account, currentEpoch],
           transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'getEpochStake',
-          methodArgs: [wallet.account, data.currentEpoch! + 1],
+          methodArgs: [wallet.account, currentEpoch + 1],
           transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {

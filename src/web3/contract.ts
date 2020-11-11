@@ -29,6 +29,10 @@ class Web3Contract extends EventEmitter {
     this.name = name;
   }
 
+  setProvider(provider: string) {
+    this.ethContract.setProvider(provider);
+  }
+
   batch(methods: BatchContractMethod[]): Promise<any[]> {
     const batch = new this.ethContract.BatchRequest();
 

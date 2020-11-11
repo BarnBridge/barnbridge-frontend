@@ -99,7 +99,7 @@ export function useUNISWAPContract(): UNISWAPContract {
     }
 
     const lpPrice = usdcReserve
-      ?.div(totalSupply)
+      ?.div(totalSupply ?? 1)
       .multipliedBy(2);
 
     const bondPrice = usdcReserve
