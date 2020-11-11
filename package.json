@@ -45,6 +45,7 @@
     "bignumber.js": "9.0.1",
     "classnames": "2.2.6",
     "date-fns": "2.16.1",
+    "ethereumjs-abi": "0.6.8",
     "graphql": "15.4.0",
     "identicon.js": "2.3.3",
     "lodash": "4.17.20",
