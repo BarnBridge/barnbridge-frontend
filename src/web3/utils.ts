@@ -154,3 +154,11 @@ export const LP_TOKEN_ICONS: React.ReactNode[] = [
 export const LP_TOKEN_NAMES: React.ReactNode[] = [
   UNISWAPTokenMeta.name,
 ];
+
+export const BOND_TOKEN_ICONS: React.ReactNode[] = [
+  BONDTokenMeta.icon,
+];
+
+export const BOND_TOKEN_NAMES: React.ReactNode[] = [
+  BONDTokenMeta.name,
+];

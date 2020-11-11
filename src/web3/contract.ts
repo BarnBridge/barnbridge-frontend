@@ -17,6 +17,8 @@ export type BatchContractMethod = {
   transform?: (value: any) => any;
 };
 
+const WEB3_ERROR_VALUE = 3.9638773911973445e+75;
+
 class Web3Contract extends EventEmitter {
   readonly ethContract: EthContract;
   readonly name: string;
@@ -50,6 +52,11 @@ class Web3Contract extends EventEmitter {
             .request(callArgs, (err: Error, value: string) => {
               if (err) {
                 console.error(`${this.name}:${methodName}.call`, err);
+                return resolve(undefined);
+              }
+
+              if (+value === WEB3_ERROR_VALUE) {
+                console.error(`${this.name}:${methodName}.call`, 'Contract call failure!');
                 return resolve(undefined);
               }
 

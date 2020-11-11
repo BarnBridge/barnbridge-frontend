@@ -8,9 +8,10 @@ import { useWallet } from 'web3/wallet';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_YIELD_FARM_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR);
+export const CONTRACT_YIELD_FARM_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR);
 
-type YieldFarmContractData = {
+type YieldFarmBONDContractData = {
+  delayedEpochs?: number;
   totalEpochs?: number;
   totalReward?: BigNumber;
   epochReward?: BigNumber;
@@ -24,13 +25,14 @@ type YieldFarmContractData = {
   potentialReward?: BigNumber;
 };
 
-export type YieldFarmContract = YieldFarmContractData & {
+export type YieldFarmBONDContract = YieldFarmBONDContractData & {
   contract: Web3Contract;
-  reload: () => void;
   massHarvestSend: () => void;
-}
+  reload: () => void;
+};
 
-const InitialData: YieldFarmContractData = {
+const InitialData: YieldFarmBONDContractData = {
+  delayedEpochs: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
   epochReward: undefined,
@@ -44,22 +46,26 @@ const InitialData: YieldFarmContractData = {
   potentialReward: undefined,
 };
 
-export function useYieldFarmContract(): YieldFarmContract {
+export function useYieldFarmBONDContract(): YieldFarmBONDContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
   const contract = React.useMemo<Web3Contract>(() => {
     return new Web3Contract(
-      require('web3/abi/yield_farm.json'),
-      CONTRACT_YIELD_FARM_ADDR,
-      'YIELD_FARM',
+      require('web3/abi/yield_farm_bond.json'),
+      CONTRACT_YIELD_FARM_BOND_ADDR,
+      'YIELD_FARM_BOND',
     );
   }, []);
 
-  const [data, setData] = React.useState<YieldFarmContractData>(InitialData);
+  const [data, setData] = React.useState<YieldFarmBONDContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    let [totalEpochs, totalReward, currentEpoch] = await contract.batch([
+    let [delayedEpochs, totalEpochs, totalReward, currentEpoch] = await contract.batch([
+      {
+        method: 'EPOCHS_DELAYED_FROM_STAKING_CONTRACT',
+        transform: (value: string) => Number(value),
+      },
       {
         method: 'NR_OF_EPOCHS',
         transform: (value: string) => Number(value),
@@ -87,6 +93,7 @@ export function useYieldFarmContract(): YieldFarmContract {
 
     setData(prevState => ({
       ...prevState,
+      delayedEpochs,
       totalEpochs,
       totalReward,
       epochReward,
@@ -177,7 +184,7 @@ export function useYieldFarmContract(): YieldFarmContract {
     }).then(reload);
   }, [reload, contract, wallet.account]);
 
-  return React.useMemo<YieldFarmContract>(() => ({
+  return React.useMemo<YieldFarmBONDContract>(() => ({
     ...data,
     contract,
     reload,

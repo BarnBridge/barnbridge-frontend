@@ -21,7 +21,8 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
 
-import s from 'views/pools/components/pool-transaction-table/styles.module.css';
+import s from './styles.module.css';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 const TypeFilters: DropdownOption[] = [
   { value: 'all', label: 'All transactions' },
@@ -99,6 +100,7 @@ export type PoolTransactionTableProps = {
   ownTransactions?: boolean;
   stableToken?: boolean;
   lpToken?: boolean;
+  bondToken?: boolean;
 };
 
 const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> = props => {
@@ -123,8 +125,11 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
       ...props.lpToken ? [
         { value: UNISWAPTokenMeta.address, label: UNISWAPTokenMeta.name },
       ] : [],
+      ...props.bondToken ? [
+        { value: BONDTokenMeta.address, label: BONDTokenMeta.name },
+      ] : [],
     ];
-  }, [props.stableToken, props.lpToken]);
+  }, [props.stableToken, props.lpToken, props.bondToken]);
 
   const data = React.useMemo(() => {
     return pipe(

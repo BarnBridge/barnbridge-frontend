@@ -1,4 +1,5 @@
 .component {
+    min-width: 800px;
 }
 
 .header {
@@ -23,7 +24,7 @@
 
 .body {
     display: inline-grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr);
     grid-gap: 24px;
     width: 100%;
 }

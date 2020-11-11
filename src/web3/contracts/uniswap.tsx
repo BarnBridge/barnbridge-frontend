@@ -26,6 +26,9 @@ type UNISWAPContractData = {
   totalSupply?: BigNumber;
   usdcReserve?: BigNumber;
   bondReserve?: BigNumber;
+  stablePrice: BigNumber;
+  lpPrice?: BigNumber;
+  bondPrice?: BigNumber;
   balance?: BigNumber;
   allowance?: BigNumber;
 };
@@ -40,6 +43,9 @@ const InitialData: UNISWAPContractData = {
   totalSupply: undefined,
   usdcReserve: undefined,
   bondReserve: undefined,
+  stablePrice: new BigNumber(1),
+  lpPrice: undefined,
+  bondPrice: undefined,
   balance: undefined,
   allowance: undefined,
 };
@@ -92,11 +98,20 @@ export function useUNISWAPContract(): UNISWAPContract {
       bondReserve = getHumanValue(reserves[0], BONDTokenMeta.decimals);
     }
 
+    const lpPrice = usdcReserve
+      ?.div(totalSupply)
+      .multipliedBy(2);
+
+    const bondPrice = usdcReserve
+      ?.div(bondReserve ?? 1);
+
     setData(prevState => ({
       ...prevState,
       totalSupply,
       usdcReserve,
+      lpPrice,
       bondReserve,
+      bondPrice,
     }));
   }, []);
 

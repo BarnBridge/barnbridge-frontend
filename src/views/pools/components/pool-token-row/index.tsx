@@ -16,17 +16,19 @@ import { useEthGasPrice } from 'context/useEthGas';
 import InfoBox from 'components/info-box';
 import InfoTooltip from 'components/info-tooltip';
 import NumericInput from 'components/numeric-input';
+import { usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
-import s from 'views/pools/components/pool-token-row/styles.module.css';
-import { usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
+import s from './styles.module.css';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 export type PoolTokenRowProps = {
   token: TokenMeta;
   stableToken?: boolean;
   lpToken?: boolean;
+  bondToken?: boolean;
   type: 'deposit' | 'withdraw';
 }
 
@@ -99,6 +101,15 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           enabled: web3c.uniswap.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
         }));
         break;
+      case BONDTokenMeta:
+        setState(prevState => ({
+          ...prevState,
+          walletBalance: web3c.bond.balance,
+          stakedBalance: web3c.staking.bond.balance,
+          effectiveStakedBalance: web3c.staking.bond.epochUserBalance,
+          enabled: web3c.bond.allowance?.gt(ZERO_BIG_NUMBER) ?? false,
+        }));
+        break;
       default:
         break;
     }
@@ -123,6 +134,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       case USDCTokenMeta:
       case DAITokenMeta:
       case SUSDTokenMeta:
+      case BONDTokenMeta:
         return 10 ** props.token.decimals;
       case UNISWAPTokenMeta:
         return 1;
@@ -153,6 +165,9 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           break;
         case UNISWAPTokenMeta:
           await web3c.uniswap.approveSend(value);
+          break;
+        case BONDTokenMeta:
+          await web3c.bond.approveSend(value);
           break;
         default:
           break;
@@ -219,7 +234,11 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           break;
         case UNISWAPTokenMeta:
           web3c.uniswap.reload();
-          web3c.yflp.reload();
+          web3c.yfLP.reload();
+          break;
+        case BONDTokenMeta:
+          web3c.bond.reload();
+          web3c.yfBOND.reload();
           break;
       }
     } catch (e) {
@@ -256,7 +275,11 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           break;
         case UNISWAPTokenMeta:
           web3c.uniswap.reload();
-          web3c.yflp.reload();
+          web3c.yfLP.reload();
+          break;
+        case BONDTokenMeta:
+          web3c.bond.reload();
+          web3c.yfBOND.reload();
           break;
       }
     } catch (e) {
@@ -288,7 +311,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           <div className={s.logo}>{props.token.icon}</div>
           <div className={s.name}>{props.token.name}</div>
         </div>
-        {props.stableToken ? (
+        {(props.stableToken || props.bondToken) ? (
           <div className={s.col}>
             <div className={s.label}>WALLET BALANCE</div>
             <div className={s.value}>{formatBigValue(state.walletBalance, props.token.decimals)}</div>
@@ -303,7 +326,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               onChange={handleSwitchChange} />
           </div>
         </div>
-        {props.stableToken && state.enabled && (
+        {(props.stableToken || props.bondToken) && state.enabled && (
           <div className={s.col}>
             <Antd.Button
               className={s.arrow}

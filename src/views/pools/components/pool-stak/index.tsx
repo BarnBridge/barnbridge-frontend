@@ -7,16 +7,19 @@ import PoolTokenRow from 'views/pools/components/pool-token-row';
 import PoolTransactionTable from 'views/pools/components/pool-transaction-table';
 import { useEthGasPrice } from 'context/useEthGas';
 
+import { BOND_TOKEN_NAMES, LP_TOKEN_NAMES, STABLE_TOKEN_NAMES } from 'web3/utils';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
-import s from 'views/pools/components/pool-stak/styles.module.css';
+import s from './styles.module.css';
 
 export type PoolStakProps = {
   stableToken?: boolean;
   lpToken?: boolean;
+  bondToken?: boolean;
 };
 
 const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
@@ -39,8 +42,9 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
         icon={<ArrowLeftOutlined className={s.backSvg} />}
         onClick={goBack}
       >
-        {props.stableToken && <span>USDC/DAI/sUSD</span>}
-        {props.lpToken && <span>USDC_BOND_UNI_LP</span>}
+        {props.stableToken && STABLE_TOKEN_NAMES.join('/')}
+        {props.lpToken && LP_TOKEN_NAMES.join('/')}
+        {props.bondToken && BOND_TOKEN_NAMES.join('/')}
       </Antd.Button>
 
       <Antd.Tabs className={s.tabs} defaultActiveKey="deposit">
@@ -56,6 +60,9 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
             {props.lpToken && (
               <PoolTokenRow lpToken token={UNISWAPTokenMeta} type="deposit" />
             )}
+            {props.bondToken && (
+              <PoolTokenRow bondToken token={BONDTokenMeta} type="deposit" />
+            )}
           </div>
         </Antd.Tabs.TabPane>
         <Antd.Tabs.TabPane key="withdraw" tab="Withdraw">
@@ -70,6 +77,9 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
             {props.lpToken && (
               <PoolTokenRow lpToken token={UNISWAPTokenMeta} type="withdraw" />
             )}
+            {props.bondToken && (
+              <PoolTokenRow bondToken token={BONDTokenMeta} type="withdraw" />
+            )}
           </div>
         </Antd.Tabs.TabPane>
       </Antd.Tabs>
@@ -78,7 +88,8 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
         label="My Transactions"
         ownTransactions
         stableToken={props.stableToken}
-        lpToken={props.lpToken} />
+        lpToken={props.lpToken}
+        bondToken={props.bondToken} />
     </div>
   );
 };

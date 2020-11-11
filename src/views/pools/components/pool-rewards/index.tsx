@@ -10,7 +10,7 @@ import PoolHarvestModal from 'views/pools/components/pool-harvest-modal';
 
 import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
 
-import s from 'views/pools/components/pool-rewards/styles.module.css';
+import s from './styles.module.css';
 
 const PoolRewards: React.FunctionComponent = props => {
   const wallet = useWallet();

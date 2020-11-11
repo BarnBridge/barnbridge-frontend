@@ -2,21 +2,30 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
-import { formatBONDValue, LP_TOKEN_ICONS, LP_TOKEN_NAMES, STABLE_TOKEN_ICONS, STABLE_TOKEN_NAMES } from 'web3/utils';
+import {
+  BOND_TOKEN_ICONS,
+  BOND_TOKEN_NAMES,
+  formatBONDValue,
+  LP_TOKEN_ICONS,
+  LP_TOKEN_NAMES,
+  STABLE_TOKEN_ICONS,
+  STABLE_TOKEN_NAMES,
+} from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import IconsSet from 'components/icons-set';
 
-import s from 'views/pools/components/pool-harvest-modal/styles.module.css';
+import s from './styles.module.css';
 
 export type PoolHarvestModalProps = ModalProps & {};
 
 const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props => {
   const { ...modalProps } = props;
 
-  const { yf, yflp, bond } = useWeb3Contracts();
+  const { yf, yfLP, yfBOND, bond } = useWeb3Contracts();
   const [yfHarvesting, setYFHarvesting] = React.useState<boolean>(false);
-  const [yflpHarvesting, setYFLPHarvesting] = React.useState<boolean>(false);
+  const [yfLPHarvesting, setYFLPHarvesting] = React.useState<boolean>(false);
+  const [yfBONDHarvesting, setYFBONDHarvesting] = React.useState<boolean>(false);
 
   async function handleYFHarvest() {
     setYFHarvesting(true);
@@ -34,12 +43,24 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
     setYFLPHarvesting(true);
 
     try {
-      await yflp.massHarvestSend();
+      await yfLP.massHarvestSend();
       bond.reload();
     } catch (e) {
     }
 
     setYFLPHarvesting(false);
+  }
+
+  async function handleYFBONDHarvest() {
+    setYFBONDHarvesting(true);
+
+    try {
+      await yfBOND.massHarvestSend();
+      bond.reload();
+    } catch (e) {
+    }
+
+    setYFBONDHarvesting(false);
   }
 
   return (
@@ -69,14 +90,27 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
         <Antd.Button
           className={s.option}
           type="ghost"
-          loading={yflpHarvesting}
-          disabled={yflp?.currentReward?.isEqualTo(0) !== false}
+          loading={yfLPHarvesting}
+          disabled={yfLP?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFLPHarvest}>
           <IconsSet className={s.optionIcons} icons={LP_TOKEN_ICONS} />
           <div className={s.optionLabel}>{LP_TOKEN_NAMES.join('/')}</div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
-            <strong>{formatBONDValue(yflp?.currentReward)}</strong> BOND
+            <strong>{formatBONDValue(yfLP?.currentReward)}</strong> BOND
+          </div>
+        </Antd.Button>
+        <Antd.Button
+          className={s.option}
+          type="ghost"
+          loading={yfBONDHarvesting}
+          disabled={yfBOND?.currentReward?.isEqualTo(0) !== false}
+          onClick={handleYFBONDHarvest}>
+          <IconsSet className={s.optionIcons} icons={BOND_TOKEN_ICONS} />
+          <div className={s.optionLabel}>{BOND_TOKEN_NAMES.join('/')}</div>
+          <div className={s.optionRewardLabel}>REWARD</div>
+          <div className={s.optionRewardValue}>
+            <strong>{formatBONDValue(yfBOND?.currentReward)}</strong> BOND
           </div>
         </Antd.Button>
       </div>

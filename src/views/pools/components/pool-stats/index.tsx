@@ -10,14 +10,14 @@ import { useWeekCountdown } from 'hooks/useCountdown';
 import StatWidget from 'components/stat-widget';
 import ExternalLink from 'components/externalLink';
 
-import s from 'views/pools/components/pool-stats/styles.module.css';
+import s from './styles.module.css';
 
 export type PoolStatsProps = {
   className?: string;
 };
 
 const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
-  const { aggregated, staking } = useWeb3Contracts();
+  const { aggregated, uniswap, staking } = useWeb3Contracts();
   const epochEnd = React.useMemo<number | undefined>(() => {
     const [, end] = staking.getEpochPeriod(staking.currentEpoch!) ?? [];
     return end;
@@ -46,7 +46,7 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
       />
       <StatWidget
         label="Bond Price"
-        value={formatUSDValue(aggregated.bondPrice)}
+        value={formatUSDValue(uniswap.bondPrice)}
         hint={(
           <ExternalLink
             href={`https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`}

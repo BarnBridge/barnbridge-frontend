@@ -1,7 +1,6 @@
 import React from 'react';
 import { useSessionStorage } from 'react-use-storage';
 import { useWeb3React, Web3ReactProvider } from '@web3-react/core';
-import { Web3ReactContextInterface } from '@web3-react/core/dist/types';
 import { Web3Provider as EthWeb3Provider } from '@ethersproject/providers';
 import { InjectedConnector } from '@web3-react/injected-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
@@ -61,6 +60,26 @@ export const WalletConnectors: WalletConnector[] = [
     enabled: true,
   },
   {
+    id: 'walletlink',
+    name: 'Coinbase Wallet',
+    logo: CoinbaseWalletLogo,
+    connector: new WalletLinkConnector({
+      url: getWSRpcUrl(),
+      appName: 'barnbridge',
+    }),
+    enabled: true,
+  },
+  {
+    id: 'portis',
+    name: 'Portis',
+    logo: PortisLogo,
+    connector: new PortisConnector({
+      dAppId: WEB3_PORTIS_APP_ID,
+      networks: [1, 100],
+    }),
+    enabled: true,
+  },
+  {
     id: 'ledger',
     name: 'Ledger',
     logo: LedgerLogo,
@@ -81,26 +100,6 @@ export const WalletConnectors: WalletConnector[] = [
       pollingInterval: WEB3_POLLING_INTERVAL,
       manifestEmail: 'dummy@abc.xyz',
       manifestAppUrl: 'https://8rg3h.csb.app/',
-    }),
-    enabled: false,
-  },
-  {
-    id: 'walletlink',
-    name: 'Coinbase Wallet',
-    logo: CoinbaseWalletLogo,
-    connector: new WalletLinkConnector({
-      url: getWSRpcUrl(),
-      appName: 'barnbridge',
-    }),
-    enabled: false,
-  },
-  {
-    id: 'portis',
-    name: 'Portis',
-    logo: PortisLogo,
-    connector: new PortisConnector({
-      dAppId: WEB3_PORTIS_APP_ID,
-      networks: [1, 100],
     }),
     enabled: false,
   },
@@ -141,8 +140,6 @@ const WalletProvider: React.FunctionComponent = props => {
   const [authProvider, setAuthProvider, remAuthProvider] = useSessionStorage<string | undefined>(STORAGE_WALLET_PROVIDER);
 
   const web3 = useWeb3React<EthWeb3Provider>();
-  const web3Ref = React.useRef<Web3ReactContextInterface<EthWeb3Provider>>(web3);
-  web3Ref.current = web3;
 
   const [initialized, setInitialized] = React.useState<boolean>(false);
 
@@ -154,16 +151,16 @@ const WalletProvider: React.FunctionComponent = props => {
         return reject();
       }
 
-      web3Ref.current.activate(walletConnector.connector, reject)
+      web3.activate(walletConnector.connector, reject)
         .then(() => setAuthProvider(walletConnector.id))
         .then(resolve);
     });
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [web3]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const disconnect = React.useCallback(() => {
     remAuthProvider();
-    web3Ref.current.deactivate();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    web3.deactivate();
+  }, [web3]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useAsyncEffect(async () => {
     if (authProvider) {
@@ -189,24 +186,25 @@ const WalletProvider: React.FunctionComponent = props => {
   const value = React.useMemo<Wallet>(() => ({
     initialized,
     get isActive() {
-      return Boolean(web3Ref.current.active);
+      return web3.active;
     },
     get account() {
-      return web3Ref.current.account ?? undefined;
+      return web3.account ?? undefined;
     },
     get connector() {
-      return WalletConnectors.find(c => c.connector === web3Ref.current.connector);
+      return WalletConnectors.find(c => c.connector === web3.connector);
     },
     get networkId(): number {
-      return web3Ref.current.chainId ?? WEB3_CHAIN_ID;
+      return web3.chainId ?? WEB3_CHAIN_ID;
     },
     get networkName(): string {
-      return getNetworkName(web3Ref.current.chainId);
+      return getNetworkName(web3.chainId);
     },
     connect,
     disconnect,
   }), [
     initialized,
+    web3,
     connect,
     disconnect,
   ]);

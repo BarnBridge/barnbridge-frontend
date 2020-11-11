@@ -1,4 +1,7 @@
-require('dotenv').config();
+require('dotenv').config({
+  path: '.env.development.local',
+});
+
 const fs = require('fs').promises;
 const Axios = require('axios').default;
 
@@ -55,8 +58,9 @@ function PromiseSequence(tasks, cb) {
     ['uniswap_v2', process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR],
     ['staking', process.env.REACT_APP_CONTRACT_STAKING_ADDR],
     ['community_vault', process.env.REACT_APP_CONTRACT_COMMUNITY_VAULT_ADDR],
-    ['yf', process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR],
-    ['yf_lp', process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR],
+    ['yield_farm', process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR],
+    ['yield_farm_lp', process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR],
+    ['yield_farm_bond', process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR],
   ], ([name, address]) => {
     return loadABI(name, address).then(delay);
   });

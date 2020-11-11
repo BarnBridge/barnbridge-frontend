@@ -16,7 +16,14 @@ import IconsSet from 'components/icons-set';
 import Dropdown, { DropdownOption } from 'components/dropdown';
 import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
-import { LP_TOKEN_ICONS, LP_TOKEN_NAMES, STABLE_TOKEN_ICONS, STABLE_TOKEN_NAMES } from 'web3/utils';
+import {
+  BOND_TOKEN_ICONS,
+  BOND_TOKEN_NAMES,
+  LP_TOKEN_ICONS,
+  LP_TOKEN_NAMES,
+  STABLE_TOKEN_ICONS,
+  STABLE_TOKEN_NAMES,
+} from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -25,7 +32,8 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
-import s from 'views/pools/components/pool-transaction-chart/styles.module.css';
+import s from './styles.module.css';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 const PoolFilters: DropdownOption[] = [
   {
@@ -35,6 +43,10 @@ const PoolFilters: DropdownOption[] = [
   {
     value: 'lp',
     label: LP_TOKEN_NAMES.join('/'),
+  },
+  {
+    value: 'bond',
+    label: BOND_TOKEN_NAMES.join('/'),
   },
 ];
 
@@ -62,19 +74,25 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
         filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     } else if (poolFilter === 'lp') {
-      for (let i = 1; i <= web3c.staking.currentEpoch! - 1; i++) {
+      for (let i = 1; i <= web3c.staking.currentEpoch! - web3c.yfLP.delayedEpochs!; i++) {
+        filters.push({ value: String(i), label: `Epoch ${i}` });
+      }
+    } else if (poolFilter === 'bond') {
+      for (let i = 0; i <= web3c.staking.currentEpoch! - web3c.yfBOND.delayedEpochs!; i++) {
         filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     }
 
     return filters;
-  }, [web3c.staking, poolFilter]);
+  }, [web3c.staking, web3c.yfLP, web3c.yfBOND, poolFilter]);
 
   const data = React.useMemo(() => {
     let selectedEpoch = (periodFilter && Number(periodFilter)) || 0;
 
     if (poolFilter === 'lp') {
-      selectedEpoch += 1;
+      selectedEpoch += web3c.yfLP.delayedEpochs!;
+    } else if (poolFilter === 'bond') {
+      selectedEpoch += web3c.yfBOND.delayedEpochs!;
     }
 
     const [epochStart, epochEnd] = web3c.staking.getEpochPeriod(selectedEpoch) ?? [];
@@ -92,6 +110,12 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       poolFilter === 'lp'
         ? filter((item: PoolTransaction) => [
           UNISWAPTokenMeta.address,
+        ].includes(item.token))
+        : (t: PoolTransaction[]) => t,
+      // filter bond tokens
+      poolFilter === 'bond'
+        ? filter((item: PoolTransaction) => [
+          BONDTokenMeta.address,
         ].includes(item.token))
         : (t: PoolTransaction[]) => t,
       // filter by transaction type
@@ -112,7 +136,14 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
       periodFilter === 'all'
         ? groupBy((item: PoolTransaction) => {
           const epoch = web3c.staking.getEpochAt(item.blockTimestamp);
-          const inc = poolFilter === 'stable' ? 1 : 0;
+          let inc = 1;
+
+          if (poolFilter === 'lp') {
+            inc -= web3c.yfLP.delayedEpochs!;
+          } else if (poolFilter === 'bond') {
+            inc -= web3c.yfBOND.delayedEpochs!;
+          }
+
           return epoch !== undefined ? epoch + inc : '-';
         })
         : groupBy((item: PoolTransaction) => format(item.blockTimestamp, 'yyyyMMdd')),
@@ -150,6 +181,7 @@ const PoolTransactionChart: React.FunctionComponent<PoolTransactionChartProps> =
           <IconsSet className={s.iconSet} icons={[
             ...poolFilter === 'stable' ? STABLE_TOKEN_ICONS : [],
             ...poolFilter === 'lp' ? LP_TOKEN_ICONS : [],
+            ...poolFilter === 'bond' ? BOND_TOKEN_ICONS : [],
           ].filter(Boolean)} />
           <Dropdown
             items={PoolFilters}

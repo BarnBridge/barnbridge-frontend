@@ -70,6 +70,9 @@ const PoolsView: React.FunctionComponent = () => {
                 <Route path="/pools/lp-token" exact render={() => (
                   <PoolStak lpToken />
                 )} />
+                <Route path="/pools/bond-token" exact render={() => (
+                  <PoolStak bondToken />
+                )} />
               </>
             )}
           </Switch>

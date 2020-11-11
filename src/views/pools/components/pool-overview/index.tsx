@@ -4,7 +4,7 @@ import PoolCard from 'views/pools/components/pool-card';
 import PoolTransactionChart from 'views/pools/components/pool-transaction-chart';
 import PoolTransactionTable from 'views/pools/components/pool-transaction-table';
 
-import s from 'views/pools/components/pool-overview/styles.module.css';
+import s from './styles.module.css';
 
 const PoolOverview: React.FunctionComponent = () => {
   return (
@@ -14,9 +14,10 @@ const PoolOverview: React.FunctionComponent = () => {
       <div className={s.cards}>
         <PoolCard stableToken />
         <PoolCard lpToken />
+        <PoolCard bondToken />
       </div>
       <PoolTransactionChart />
-      <PoolTransactionTable label="Transactions" stableToken lpToken />
+      <PoolTransactionTable label="Transactions" stableToken lpToken bondToken />
     </div>
   );
 };

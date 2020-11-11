@@ -11,8 +11,9 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 export const CONTRACT_YIELD_FARM_LP_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR);
 
 type YieldFarmLPContractData = {
+  delayedEpochs?: number;
   totalEpochs?: number;
-  totalRewards?: BigNumber;
+  totalReward?: BigNumber;
   epochReward?: BigNumber;
   currentEpoch?: number;
   bondReward?: BigNumber;
@@ -31,8 +32,9 @@ export type YieldFarmLPContract = YieldFarmLPContractData & {
 };
 
 const InitialData: YieldFarmLPContractData = {
+  delayedEpochs: undefined,
   totalEpochs: undefined,
-  totalRewards: undefined,
+  totalReward: undefined,
   epochReward: undefined,
   currentEpoch: undefined,
   bondReward: undefined,
@@ -59,7 +61,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
   const [data, setData] = React.useState<YieldFarmLPContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    let [totalEpochs, totalRewards, currentEpoch] = await contract.batch([
+    let [totalEpochs, totalReward, currentEpoch] = await contract.batch([
       {
         method: 'NR_OF_EPOCHS',
         transform: (value: string) => Number(value),
@@ -76,7 +78,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
 
     currentEpoch = Math.min(currentEpoch, totalEpochs);
 
-    const epochReward = totalEpochs !== 0 ? totalRewards.div(totalEpochs) : ZERO_BIG_NUMBER;
+    const epochReward = totalEpochs !== 0 ? totalReward.div(totalEpochs) : ZERO_BIG_NUMBER;
 
     let bondReward = ZERO_BIG_NUMBER;
 
@@ -87,8 +89,9 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
 
     setData(prevState => ({
       ...prevState,
+      delayedEpochs: 1,
       totalEpochs,
-      totalRewards,
+      totalReward,
       epochReward,
       currentEpoch,
       bondReward,
