@@ -1,407 +1,459 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types';
 
-import { useWeb3 } from 'web3/provider';
+import { getHumanValue, getTokenMeta, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWallet } from 'web3/wallet';
+import Web3Contract, { DEFAULT_CONTRACT_PROVIDER } from 'web3/contract';
+import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
+import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
+import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
+import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
+import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
 import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
 import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
 import { StakingContract, useStakingContract } from 'web3/contracts/staking';
-import { DAIContract, useDAIContract } from 'web3/contracts/dai';
-import { USDCContract, useUSDCContract } from 'web3/contracts/usdc';
-import { SUSDContract, useSUSDContract } from 'web3/contracts/susd';
-import { BONDContract, useBONDContract } from 'web3/contracts/bond';
-import { UniswapV2Contract, useUniswapV2Contract } from 'web3/contracts/uniswapV2';
-import { EthOracleContract, useETHOracleContract } from 'web3/contracts/ethOracle';
-import { assertValues, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 
-import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
-import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
+import UserRejectedModal from 'components/user-rejected-modal';
 
-export const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
-export const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
-export const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase();
-export const CONTRACT_UNISWAP_V2_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
-export const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
-
-type OptionalBigNumber = BigNumber | undefined;
-
-export type Web3ContractsType = {
-  yf: YieldFarmContract;
-  yflp: YieldFarmLPContract;
-  staking: StakingContract;
-  dai: DAIContract;
-  usdc: USDCContract;
-  susd: SUSDContract;
+export type Web3ContractsData = {
   bond: BONDContract;
-  uniswapV2: UniswapV2Contract;
-  ethOracle: EthOracleContract;
+  usdc: USDCContract;
+  dai: DAIContract;
+  susd: SUSDContract;
+  uniswap: UNISWAPContract;
+  yf: YieldFarmContract;
+  yfLP: YieldFarmLPContract;
+  yfBOND: YieldFarmBONDContract;
+  staking: StakingContract;
   aggregated: {
-    totalCurrentReward?: BigNumber;
-    totalPotentialReward?: BigNumber;
+    yfStakedValue?: BigNumber;
+    yfEffectiveStakedValue?: BigNumber;
+    yfLPStakedValue?: BigNumber;
+    myLPStakedValue?: BigNumber;
+    yfLPEffectiveStakedValue?: BigNumber;
+    myLPEffectiveStakedValue?: BigNumber;
+    yfBONDStakedValue?: BigNumber;
+    myBONDStakedValue?: BigNumber;
+    yfBONDEffectiveStakedValue?: BigNumber;
+    myBondEffectiveStakedValue?: BigNumber;
     totalStaked?: BigNumber;
     totalEffectiveStaked?: BigNumber;
-    totalStakedInETH?: BigNumber;
-    lpStakedValue?: BigNumber;
-    lpEffectiveStakedValue?: BigNumber;
-    mylpStakedValue?: BigNumber;
-    mylpEffectiveStakedValue?: BigNumber;
-    bondReward?: BigNumber;
+    totalCurrentReward?: BigNumber;
+    totalPotentialReward?: BigNumber;
     totalBondReward?: BigNumber;
-    bondPrice?: BigNumber;
+    bondReward?: BigNumber;
   };
-  getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber;
-  getTokenUsdValue(token: string, value?: BigNumber): OptionalBigNumber;
 };
 
-const Web3ContractsContext = React.createContext<Web3ContractsType>({} as any);
+export type Web3Contracts = Web3ContractsData & {
+  getTokenUsdValue(token: string, value?: BigNumber): BigNumber | undefined;
+};
 
-export function useWeb3Contracts(): Web3ContractsType {
+const Web3ContractsContext = React.createContext<Web3Contracts>({} as any);
+
+export function useWeb3Contracts(): Web3Contracts {
   return React.useContext(Web3ContractsContext);
 }
 
-export const STABLE_ICON_SET = [USDCIcon, DAIIcon, SUSDIcon];
-export const LP_ICON_SET = [UNISWAPIcon];
-
-export const TOKEN_USDC_KEY = 'USDC';
-export const TOKEN_DAI_KEY = 'DAI';
-export const TOKEN_SUSD_KEY = 'sUSD';
-export const TOKEN_UNISWAP_KEY = 'USDC_BOND_UNI_LP';
-
-export type TokenKeys = 'USDC' | 'DAI' | 'sUSD' | 'USDC_BOND_UNI_LP';
-
-export type TokenInfo = {
-  address: string;
-  icon: React.ReactNode;
-  name: string;
-  decimals: number;
-};
-
-export const TOKENS_MAP = new Map<TokenKeys, TokenInfo>([
-  [TOKEN_USDC_KEY, {
-    address: CONTRACT_USDC_ADDR,
-    icon: <USDCIcon />,
-    name: TOKEN_USDC_KEY,
-    decimals: 6,
-  }],
-  [TOKEN_DAI_KEY, {
-    address: CONTRACT_DAI_ADDR,
-    icon: <DAIIcon />,
-    name: TOKEN_DAI_KEY,
-    decimals: 18,
-  }],
-  [TOKEN_SUSD_KEY, {
-    address: CONTRACT_SUSD_ADDR,
-    icon: <SUSDIcon />,
-    name: TOKEN_SUSD_KEY,
-    decimals: 18,
-  }],
-  [TOKEN_UNISWAP_KEY, {
-    address: CONTRACT_UNISWAP_V2_ADDR,
-    icon: <UNISWAPIcon />,
-    name: TOKEN_UNISWAP_KEY,
-    decimals: 18,
-  }],
-]);
-
 const Web3ContractsProvider: React.FunctionComponent = props => {
-  const { account } = useWeb3();
+  const wallet = useWallet();
+  const bondContract = useBONDContract();
+  const daiContract = useDAIContract();
+  const usdcContract = useUSDCContract();
+  const susdContract = useSUSDContract();
+  const uniswapContract = useUNISWAPContract();
+  const yfContract = useYieldFarmContract();
+  const yfLPContract = useYieldFarmLPContract();
+  const yfBONDContract = useYieldFarmBONDContract();
+  const stakingContract = useStakingContract();
 
-  const yfContract = useYieldFarmContract(account);
-  const yflpContract = useYieldFarmLPContract(account);
-  const stakingContract = useStakingContract(account);
-  const daiContract = useDAIContract(account);
-  const usdcContract = useUSDCContract(account);
-  const susdContract = useSUSDContract(account);
-  const bondContract = useBONDContract(account);
-  const uniswapV2Contract = useUniswapV2Contract(account);
-  const ethOracleContract = useETHOracleContract();
+  const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(false);
 
-  function getTokenHumanValue(token: string, value?: BigNumber): OptionalBigNumber {
-    let decimals: number | undefined;
+  React.useEffect(() => {
+    const contracts = [
+      bondContract.contract,
+      daiContract.contract,
+      usdcContract.contract,
+      susdContract.contract,
+      uniswapContract.contract,
+      yfContract.contract,
+      yfLPContract.contract,
+      yfBONDContract.contract,
+      stakingContract.contract,
+    ];
 
-    switch (token.toLowerCase()) {
-      case CONTRACT_USDC_ADDR:
-        decimals = usdcContract.decimals;
+    function handleError(err: Error & { code: number }, contract: Web3Contract) {
+      if (err.code === 4001) {
+        setUserRejectedVisible(true);
+      }
+    }
+
+    contracts.forEach((contract: Web3Contract) => {
+      contract.on('error', handleError);
+    });
+
+    return () => {
+      contracts.forEach((contract: Web3Contract) => {
+        contract.off('error', handleError);
+      });
+    };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    const contracts = [
+      bondContract.contract,
+      daiContract.contract,
+      usdcContract.contract,
+      susdContract.contract,
+      uniswapContract.contract,
+      yfContract.contract,
+      yfLPContract.contract,
+      yfBONDContract.contract,
+      stakingContract.contract,
+    ];
+
+    if (wallet.connector) {
+      const connector = wallet.connector.connector;
+
+      connector.getProvider()
+        .then(provider => {
+          contracts.forEach(contract => {
+            contract.setProvider(provider);
+          });
+        });
+
+      const onUpdate = (data: ConnectorUpdate) => {
+        // contracts.forEach(contract => {
+        //   contract.setProvider(data.provider);
+        // });
+      };
+
+      connector.on(ConnectorEvent.Update, onUpdate);
+
+      return () => {
+        connector.off(ConnectorEvent.Update, onUpdate);
+      };
+    } else {
+      contracts.forEach(contract => {
+        contract.setProvider(DEFAULT_CONTRACT_PROVIDER);
+      });
+    }
+  }, [wallet.connector]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  function getTokenUsdValue(tokenAddr: string, value: BigNumber | undefined): BigNumber | undefined {
+    const tokenMeta = getTokenMeta(tokenAddr);
+
+    if (value === undefined || tokenMeta === undefined) {
+      return undefined;
+    }
+
+    let multiplier: BigNumber | undefined;
+
+    switch (tokenMeta.address) {
+      case USDCTokenMeta.address:
+      case DAITokenMeta.address:
+      case SUSDTokenMeta.address:
+        multiplier = uniswapContract.stablePrice;
         break;
-      case CONTRACT_DAI_ADDR:
-        decimals = daiContract.decimals;
+      case UNISWAPTokenMeta.address:
+        multiplier = uniswapContract.lpPrice;
         break;
-      case CONTRACT_SUSD_ADDR:
-        decimals = susdContract.decimals;
-        break;
-      case CONTRACT_UNISWAP_V2_ADDR:
-        decimals = uniswapV2Contract.decimals;
+      case BONDTokenMeta.address:
+        multiplier = uniswapContract.bondPrice;
         break;
       default:
         return undefined;
     }
 
-    if (!assertValues(value, decimals)) {
+    if (multiplier === undefined) {
       return undefined;
     }
 
-    return getHumanValue(value, decimals);
-  }
-
-  function getTokenUsdValue(token: string, value?: BigNumber): OptionalBigNumber {
-    let decimals: number | undefined;
-    let multiplier: OptionalBigNumber;
-
-    switch (token.toLowerCase()) {
-      case CONTRACT_USDC_ADDR:
-        decimals = usdcContract.decimals;
-        multiplier = yfTokenValue();
-        break;
-      case CONTRACT_DAI_ADDR:
-        decimals = daiContract.decimals;
-        multiplier = yfTokenValue();
-        break;
-      case CONTRACT_SUSD_ADDR:
-        decimals = susdContract.decimals;
-        multiplier = yfTokenValue();
-        break;
-      case CONTRACT_UNISWAP_V2_ADDR:
-        decimals = uniswapV2Contract.decimals;
-        multiplier = yflpTokenValue();
-        break;
-      default:
-        return undefined;
-    }
-
-    if (!assertValues(value, decimals)) {
-      return undefined;
-    }
-
-    return getHumanValue(value, decimals)
-      ?.multipliedBy(multiplier ?? 1);
-  }
-
-  function yfTokenValue(): OptionalBigNumber {
-    return new BigNumber(1);
-  }
-
-  function yflpTokenValue(): OptionalBigNumber {
-    const usdcReserve = uniswapV2Contract?.usdcReserve;
-    const uniTotalSupply = uniswapV2Contract?.totalSupply;
-
-    if (!assertValues(usdcReserve, uniTotalSupply)) {
-      return undefined;
-    }
-
-    return usdcReserve!
-      .div(uniTotalSupply!)
-      .multipliedBy(2);
+    return getHumanValue(value, tokenMeta.decimals)
+      ?.multipliedBy(multiplier);
   }
 
   function yfStakedValue() {
     const poolSize = yfContract.nextPoolSize;
-    const tokenValue = yfTokenValue();
+    const price = uniswapContract.stablePrice;
 
-    if (!assertValues(poolSize, tokenValue)) {
+    if (poolSize === undefined || price === undefined) {
       return undefined;
     }
 
-    return poolSize!.multipliedBy(tokenValue!);
-  }
-
-  function yflpStakedValue() {
-    const poolSize = yflpContract.nextPoolSize;
-    const tokenValue = yflpTokenValue();
-
-    if (!assertValues(poolSize, tokenValue)) {
-      return undefined;
-    }
-
-    return poolSize!.multipliedBy(tokenValue!);
+    return poolSize.multipliedBy(price);
   }
 
   function yfEffectiveStakedValue() {
     const poolSize = yfContract.poolSize;
-    const tokenValue = yfTokenValue();
+    const price = uniswapContract.stablePrice;
 
-    if (!assertValues(poolSize, tokenValue)) {
+    if (poolSize === undefined || price === undefined) {
       return undefined;
     }
 
-    return poolSize!.multipliedBy(tokenValue!);
+    return poolSize.multipliedBy(price);
   }
 
-  function yflpEffectiveStakedValue() {
-    const poolSize = yflpContract.poolSize;
-    const tokenValue = yflpTokenValue();
+  function yfLPStakedValue() {
+    const poolSize = yfLPContract.nextPoolSize;
+    const price = uniswapContract.lpPrice;
 
-    if (!assertValues(poolSize, tokenValue)) {
+    if (poolSize === undefined || price === undefined) {
       return undefined;
     }
 
-    return poolSize!.multipliedBy(tokenValue!);
+    return poolSize.multipliedBy(price);
   }
 
-  function mylpStakedValue() {
-    const poolSize = yflpContract.nextEpochStake;
-    const tokenValue = yflpTokenValue();
+  function myLPStakedValue() {
+    const epochStake = yfLPContract.nextEpochStake;
+    const price = uniswapContract.lpPrice;
 
-    if (!assertValues(poolSize, tokenValue)) {
+    if (epochStake === undefined || price === undefined) {
       return undefined;
     }
 
-    return poolSize!.multipliedBy(tokenValue!);
+    return epochStake.multipliedBy(price);
   }
 
-  function mylpEffectiveStakedValue() {
-    const poolSize = yflpContract.epochStake;
-    const tokenValue = yflpTokenValue();
+  function yfLPEffectiveStakedValue() {
+    const poolSize = yfLPContract.poolSize;
+    const price = uniswapContract.lpPrice;
 
-    if (!assertValues(poolSize, tokenValue)) {
+    if (poolSize === undefined || price === undefined) {
       return undefined;
     }
 
-    return poolSize!.multipliedBy(tokenValue!);
+    return poolSize.multipliedBy(price);
   }
 
-  function totalCurrentReward(): OptionalBigNumber {
-    const yfCurrentReward = yfContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfContract.currentReward;
-    const yflpCurrentReward = yflpContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yflpContract.currentReward;
+  function myLPEffectiveStakedValue() {
+    const epochStake = yfLPContract.epochStake;
+    const price = uniswapContract.lpPrice;
 
-    if (!assertValues(yfCurrentReward, yflpCurrentReward)) {
+    if (epochStake === undefined || price === undefined) {
       return undefined;
     }
 
-    return yfCurrentReward!.plus(yflpCurrentReward!);
+    return epochStake.multipliedBy(price);
   }
 
-  function totalPotentialReward(): OptionalBigNumber {
-    const yfPotentialReward = yfContract.potentialReward;
-    const yflpPotentialReward = yflpContract.potentialReward;
+  function yfBONDStakedValue() {
+    const poolSize = yfBONDContract.nextPoolSize;
+    const price = uniswapContract.bondPrice;
 
-    if (!assertValues(yfPotentialReward, yflpPotentialReward)) {
+    if (poolSize === undefined || price === undefined) {
       return undefined;
     }
 
-    return yfPotentialReward!.plus(yflpPotentialReward!);
+    return poolSize.multipliedBy(price);
   }
 
-  function totalStaked(): OptionalBigNumber {
+  function myBONDStakedValue() {
+    const epochStake = yfBONDContract.nextEpochStake;
+    const price = uniswapContract.bondPrice;
+
+    if (epochStake === undefined || price === undefined) {
+      return undefined;
+    }
+
+    return epochStake.multipliedBy(price);
+  }
+
+  function yfBONDEffectiveStakedValue() {
+    const poolSize = yfBONDContract.poolSize;
+    const price = uniswapContract.bondPrice;
+
+    if (poolSize === undefined || price === undefined) {
+      return undefined;
+    }
+
+    return poolSize.multipliedBy(price);
+  }
+
+  function myBondEffectiveStakedValue() {
+    const epochStake = yfBONDContract.epochStake;
+    const price = uniswapContract.bondPrice;
+
+    if (epochStake === undefined || price === undefined) {
+      return undefined;
+    }
+
+    return epochStake.multipliedBy(price);
+  }
+
+  function totalStaked(): BigNumber | undefined {
     const yfStaked = yfStakedValue();
-    const yflpStaked = yflpStakedValue();
+    const yfLPStaked = yfLPStakedValue();
+    const yfBONDStaked = yfBONDStakedValue();
 
-    if (!yfStaked) {
+    if (
+      yfStaked === undefined ||
+      yfLPStaked === undefined ||
+      yfBONDStaked === undefined
+    ) {
       return undefined;
     }
 
-    return (yfStaked ?? ZERO_BIG_NUMBER).plus(yflpStaked ?? ZERO_BIG_NUMBER);
+    return yfStaked
+      .plus(yfLPStaked)
+      .plus(yfBONDStaked);
   }
 
-  function totalStakedInETH(): OptionalBigNumber {
-    const staked = totalStaked();
-    const ethValue = ethOracleContract.value;
-
-    if (!assertValues(staked, ethValue)) {
-      return undefined;
-    }
-
-    return staked!.div(ethValue!);
-  }
-
-  function totalEffectiveStaked(): OptionalBigNumber {
+  function totalEffectiveStaked(): BigNumber | undefined {
     const yfStaked = yfEffectiveStakedValue();
-    const yflpStaked = yflpEffectiveStakedValue();
+    const yfLPStaked = yfLPEffectiveStakedValue();
+    const yfBONDStaked = yfBONDEffectiveStakedValue();
 
-    if (!yfStaked) {
+    if (
+      yfStaked === undefined ||
+      yfLPStaked === undefined ||
+      yfBONDStaked === undefined
+    ) {
       return undefined;
     }
 
-    return (yfStaked ?? ZERO_BIG_NUMBER).plus(yflpStaked ?? ZERO_BIG_NUMBER);
+    return yfStaked
+      .plus(yfLPStaked)
+      .plus(yfBONDStaked);
   }
 
-  function bondReward(): OptionalBigNumber {
-    const yfbBondReward = yfContract.bondReward;
-    const yflpBondReward = yflpContract.bondReward;
+  function totalCurrentReward(): BigNumber | undefined {
+    const yfReward = yfContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfContract.currentReward;
+    const yfLPReward = yfLPContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfLPContract.currentReward;
+    const yfBONDReward = yfBONDContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfBONDContract.currentReward;
 
-    if (!assertValues(yfbBondReward, yflpBondReward)) {
-      return undefined;
-    }
+    if (
+      yfReward === undefined ||
+      yfLPReward === undefined ||
+      yfBONDReward === undefined
+    ) return undefined;
 
-    return yfbBondReward!.plus(yflpBondReward!);
+    return yfReward
+      .plus(yfLPReward)
+      .plus(yfBONDReward);
   }
 
-  function totalBondReward(): OptionalBigNumber {
-    const yfTotalRewards = yfContract.totalRewards;
-    const yflpTotalRewards = yflpContract.totalRewards;
+  function totalPotentialReward(): BigNumber | undefined {
+    const yfReward = yfContract.potentialReward;
+    const yfLPReward = yfLPContract.potentialReward;
+    const yfBONDReward = yfBONDContract.potentialReward;
 
-    if (!assertValues(yfTotalRewards, yflpTotalRewards)) {
-      return undefined;
-    }
+    if (
+      yfReward === undefined ||
+      yfLPReward === undefined ||
+      yfBONDReward === undefined
+    ) return undefined;
 
-    return yfTotalRewards!.plus(yflpTotalRewards!);
+    return yfReward
+      .plus(yfLPReward)
+      .plus(yfBONDReward);
   }
 
-  function bondPrice(): OptionalBigNumber {
-    const bondReserve = uniswapV2Contract.bondReserve;
-    const usdcReserve = uniswapV2Contract.usdcReserve;
+  function totalBondReward(): BigNumber | undefined {
+    const yfTotalReward = yfContract.totalReward;
+    const yfLPTotalReward = yfLPContract.totalReward;
+    const yfBONDTotalReward = yfBONDContract.totalReward;
 
-    if (!assertValues(bondReserve, usdcReserve)) {
-      return undefined;
-    }
+    if (
+      yfTotalReward === undefined ||
+      yfLPTotalReward === undefined ||
+      yfBONDTotalReward === undefined
+    ) return undefined;
 
-    return usdcReserve!.div(bondReserve!);
+    return yfTotalReward
+      .plus(yfLPTotalReward)
+      .plus(yfBONDTotalReward);
+  }
+
+  function bondReward(): BigNumber | undefined {
+    const yfReward = yfContract.bondReward;
+    const yfLPReward = yfLPContract.bondReward;
+    const yfBONDReward = yfBONDContract.bondReward;
+
+    if (
+      yfReward === undefined ||
+      yfLPReward === undefined ||
+      yfBONDReward === undefined
+    ) return undefined;
+
+    return yfReward
+      .plus(yfLPReward)
+      .plus(yfBONDReward);
   }
 
   const value = {
-    yf: yfContract,
-    yflp: yflpContract,
-    staking: stakingContract,
+    bond: bondContract,
     usdc: usdcContract,
     dai: daiContract,
     susd: susdContract,
-    bond: bondContract,
-    uniswapV2: uniswapV2Contract,
-    ethOracle: ethOracleContract,
+    uniswap: uniswapContract,
+    yf: yfContract,
+    yfLP: yfLPContract,
+    yfBOND: yfBONDContract,
+    staking: stakingContract,
     aggregated: {
-      get totalCurrentReward(): OptionalBigNumber {
-        return totalCurrentReward();
+      get yfStakedValue(): BigNumber | undefined {
+        return yfStakedValue();
       },
-      get totalPotentialReward(): OptionalBigNumber {
-        return totalPotentialReward();
+      get yfEffectiveStakedValue(): BigNumber | undefined {
+        return yfEffectiveStakedValue();
       },
-      get totalStaked(): OptionalBigNumber {
+      get yfLPStakedValue(): BigNumber | undefined {
+        return yfLPStakedValue();
+      },
+      get myLPStakedValue(): BigNumber | undefined {
+        return myLPStakedValue();
+      },
+      get yfLPEffectiveStakedValue(): BigNumber | undefined {
+        return yfLPEffectiveStakedValue();
+      },
+      get myLPEffectiveStakedValue(): BigNumber | undefined {
+        return myLPEffectiveStakedValue();
+      },
+      get yfBONDStakedValue(): BigNumber | undefined {
+        return yfBONDStakedValue();
+      },
+      get myBONDStakedValue(): BigNumber | undefined {
+        return myBONDStakedValue();
+      },
+      get yfBONDEffectiveStakedValue(): BigNumber | undefined {
+        return yfBONDEffectiveStakedValue();
+      },
+      get myBondEffectiveStakedValue(): BigNumber | undefined {
+        return myBondEffectiveStakedValue();
+      },
+      get totalStaked(): BigNumber | undefined {
         return totalStaked();
       },
-      get totalStakedInETH(): OptionalBigNumber {
-        return totalStakedInETH();
-      },
-      get totalEffectiveStaked(): OptionalBigNumber {
+      get totalEffectiveStaked(): BigNumber | undefined {
         return totalEffectiveStaked();
       },
-      get lpStakedValue(): OptionalBigNumber {
-        return yflpStakedValue();
+      get totalCurrentReward(): BigNumber | undefined {
+        return totalCurrentReward();
       },
-      get lpEffectiveStakedValue(): OptionalBigNumber {
-        return yflpEffectiveStakedValue();
+      get totalPotentialReward(): BigNumber | undefined {
+        return totalPotentialReward();
       },
-      get mylpStakedValue(): OptionalBigNumber {
-        return mylpStakedValue();
-      },
-      get mylpEffectiveStakedValue(): OptionalBigNumber {
-        return mylpEffectiveStakedValue();
-      },
-      get bondReward(): OptionalBigNumber {
-        return bondReward();
-      },
-      get totalBondReward(): OptionalBigNumber {
+      get totalBondReward(): BigNumber | undefined {
         return totalBondReward();
       },
-      get bondPrice(): OptionalBigNumber {
-        return bondPrice();
+      get bondReward(): BigNumber | undefined {
+        return bondReward();
       },
     },
-    getTokenHumanValue,
     getTokenUsdValue,
   };
 
   return (
     <Web3ContractsContext.Provider value={value}>
+      <UserRejectedModal
+        visible={userRejectedVisible}
+        onCancel={() => setUserRejectedVisible(false)}
+      />
       {props.children}
     </Web3ContractsContext.Provider>
   );

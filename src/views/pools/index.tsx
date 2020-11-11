@@ -4,19 +4,19 @@ import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
 
 import EthGasPriceProvider from 'context/useEthGas';
-import { useWeb3 } from 'web3/provider';
+import { useWallet } from 'web3/wallet';
 import { useWarnings } from 'components/warnings';
 import ConnectedWallet from 'components/connected-wallet';
-import PoolRewards from 'components/pool-rewards';
-import PoolStats from 'components/pool-stats';
-import PoolStak from 'components/pool-stak';
-import PoolOverview from 'components/pool-overview';
-import PoolTransactionsProvider from 'components/pool-transactions-provider';
+import PoolRewards from 'views/pools/components/pool-rewards';
+import PoolStats from 'views/pools/components/pool-stats';
+import PoolStak from 'views/pools/components/pool-stak';
+import PoolOverview from 'views/pools/components/pool-overview';
+import PoolTransactionsProvider from 'views/pools/components/pool-transactions-provider';
 
 import s from './styles.module.css';
 
 const PoolsView: React.FunctionComponent = () => {
-  const web3 = useWeb3();
+  const wallet = useWallet();
   const warnings = useWarnings();
 
   React.useEffect(() => {
@@ -46,7 +46,7 @@ const PoolsView: React.FunctionComponent = () => {
       {!isMobile && (
         <Antd.Row className={s.walletRow}>
           <Antd.Col flex="auto">
-            {web3.isActive && <PoolRewards />}
+            {wallet.isActive && <PoolRewards />}
           </Antd.Col>
           <Antd.Col className={s.wallet}>
             <ConnectedWallet />
@@ -62,13 +62,16 @@ const PoolsView: React.FunctionComponent = () => {
             <Route path="/pools" exact render={() => (
               <PoolOverview />
             )} />
-            {web3.isActive && (
+            {wallet.isActive && (
               <>
                 <Route path="/pools/stable-token" exact render={() => (
                   <PoolStak stableToken />
                 )} />
                 <Route path="/pools/lp-token" exact render={() => (
                   <PoolStak lpToken />
+                )} />
+                <Route path="/pools/bond-token" exact render={() => (
+                  <PoolStak bondToken />
                 )} />
               </>
             )}

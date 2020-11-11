@@ -13,7 +13,8 @@ import { SiderNavLinkProps } from 'components/sider-nav-link';
 import MobileMenu from 'components/mobile-menu';
 import ExternalLink from 'components/externalLink';
 
-import { CONTRACT_BOND_ADDR, CONTRACT_USDC_ADDR } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
 
 import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
 import { ReactComponent as PoolsSvg } from 'resources/svg/icons/pools.svg';
@@ -62,11 +63,11 @@ const LayoutView: React.FunctionComponent = () => {
                 <ExternalLink href="https://github.com/BarnBridge/">Github</ExternalLink>
                 <ExternalLink href="https://client.aragon.org/#/barnbridgelaunch/">LaunchDAO</ExternalLink>
                 <ExternalLink
-                  href={`https://app.uniswap.org/#/add/${CONTRACT_BOND_ADDR}/${CONTRACT_USDC_ADDR}`}>
+                  href={`https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`}>
                   Uniswap v2 USDC/BOND add liquidity
                 </ExternalLink>
                 <ExternalLink
-                  href={`https://app.uniswap.org/#/swap?inputCurrency=${CONTRACT_BOND_ADDR}&outputCurrency=${CONTRACT_USDC_ADDR}`}>
+                  href={`https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`}>
                   Uniswap v2 USDC/BOND market
                 </ExternalLink>
               </div>

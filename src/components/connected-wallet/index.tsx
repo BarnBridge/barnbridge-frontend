@@ -10,7 +10,7 @@ import InstallMetaMaskModal from 'components/install-metamask-modal';
 import Identicon from 'components/identicon';
 import ExternalLink from 'components/externalLink';
 
-import { useWeb3, Web3Connector } from 'web3/provider';
+import { useWallet, WalletConnector, WalletConnectors } from 'web3/wallet';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
@@ -25,7 +25,8 @@ import s from './styles.module.css';
 
 const ConnectedWallet: React.FunctionComponent = props => {
   const { isDarkTheme } = useTheme();
-  const web3 = useWeb3();
+  const wallet = useWallet();
+
   const [connectWalletVisible, setConnectWalletVisible] = React.useState<boolean>(false);
   const [unsupportedChainVisible, setUnsupportedChainVisible] = React.useState<boolean>(false);
   const [installMetaMaskVisible, setInstallMetaMaskVisible] = React.useState<boolean>(false);
@@ -39,11 +40,11 @@ const ConnectedWallet: React.FunctionComponent = props => {
     setConnectWalletVisible(true);
   }
 
-  async function handleConnectorSelect(connector: Web3Connector) {
+  async function handleConnectorSelect(connector: WalletConnector) {
     setConnectWalletVisible(false);
 
     try {
-      await web3.connect(connector.id);
+      await wallet.connect(connector.id);
     } catch (error) {
       if (error instanceof UnsupportedChainIdError) {
         setUnsupportedChainVisible(true);
@@ -53,16 +54,16 @@ const ConnectedWallet: React.FunctionComponent = props => {
   }
 
   function handleDisconnect() {
-    web3.disconnect();
+    wallet.disconnect();
   }
 
-  if (!web3.tried) {
+  if (!wallet.initialized) {
     return null;
   }
 
   return (
     <div className={s.component}>
-      {!web3.isActive ? (
+      {!wallet.isActive ? (
         <>
           <Antd.Button type="primary" size="large" className={s.connectBtn} onClick={handleConnectWallet}>
             Connect Wallet
@@ -70,7 +71,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
 
           <ConnectWalletModal
             visible={connectWalletVisible}
-            connectors={web3.connectors}
+            connectors={WalletConnectors}
             onCancel={() => setConnectWalletVisible(false)}
             onConnectorSelect={handleConnectorSelect} />
           <UnsupportedChainModal
@@ -112,13 +113,13 @@ const ConnectedWallet: React.FunctionComponent = props => {
               <div>
                 <Antd.Row className={s.walletHeader}>
                   <Antd.Col>
-                    <Identicon address={web3.account} className={s.walletAvatar} />
+                    <Identicon address={wallet.account} className={s.walletAvatar} />
                   </Antd.Col>
                   <Antd.Col>
                     <ExternalLink
-                      href={getEtherscanAddressUrl(web3.account!)}
+                      href={getEtherscanAddressUrl(wallet.account!)}
                       className={s.walletPreviewHash}
-                    >{shortenAddr(web3.account!, 8, 8)}</ExternalLink>
+                    >{shortenAddr(wallet.account!, 8, 8)}</ExternalLink>
                   </Antd.Col>
                 </Antd.Row>
                 <div className={s.stats}>
@@ -141,7 +142,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
                       <span className={s.statName}>Wallet</span>
                     </Antd.Col>
                     <Antd.Col>
-                      <span className={s.statValue}>{web3.connector?.name}</span>
+                      <span className={s.statValue}>{wallet.connector?.name}</span>
                     </Antd.Col>
                   </Antd.Row>
                   <Antd.Row className={s.statRow}>
@@ -152,7 +153,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
                       <span className={s.statName}>Network</span>
                     </Antd.Col>
                     <Antd.Col>
-                      <span className={s.statValue}>{web3.network?.name}</span>
+                      <span className={s.statValue}>{wallet.networkName}</span>
                     </Antd.Col>
                   </Antd.Row>
                 </div>
@@ -169,10 +170,10 @@ const ConnectedWallet: React.FunctionComponent = props => {
           >
             <Antd.Row className={s.walletPreview}>
               <Antd.Col>
-                <Identicon address={web3.account} className={s.walletPreviewAvatar} />
+                <Identicon address={wallet.account} className={s.walletPreviewAvatar} />
               </Antd.Col>
               <Antd.Col>
-                <span className={s.walletPreviewHash}>{shortenAddr(web3.account!, 4, 4)}</span>
+                <span className={s.walletPreviewHash}>{shortenAddr(wallet.account!, 4, 4)}</span>
               </Antd.Col>
               <Antd.Col>
                 <ChevronTopSvg className={s.walletPreviewArrow} />
