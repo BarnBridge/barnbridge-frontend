@@ -6,8 +6,6 @@ import { getWSRpcUrl } from 'web3/utils';
 
 const Web3EthContract = require('web3-eth-contract');
 
-Web3EthContract.setProvider(getWSRpcUrl());
-
 export type EthContract = Contract & Web3;
 
 export type BatchContractMethod = {
@@ -17,7 +15,11 @@ export type BatchContractMethod = {
   transform?: (value: any) => any;
 };
 
+export const DEFAULT_CONTRACT_PROVIDER = getWSRpcUrl();
+
 const WEB3_ERROR_VALUE = 3.9638773911973445e+75;
+
+Web3EthContract.setProvider(DEFAULT_CONTRACT_PROVIDER);
 
 class Web3Contract extends EventEmitter {
   readonly ethContract: EthContract;
@@ -25,6 +27,7 @@ class Web3Contract extends EventEmitter {
 
   constructor(abi: any, address: string, name: string) {
     super();
+
     this.ethContract = new Web3EthContract(abi, address);
     this.name = name;
   }
@@ -81,10 +84,7 @@ class Web3Contract extends EventEmitter {
 
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     return new Promise((resolve, reject) => {
-      const clonedContract = this.ethContract.clone() as any;
-      clonedContract.setProvider?.((window as any).ethereum);
-
-      const contractMethod = clonedContract.methods[method];
+      const contractMethod = this.ethContract.methods[method];
 
       if (!contractMethod) {
         return resolve(undefined);

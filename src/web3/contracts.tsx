@@ -1,8 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types';
 
 import { getHumanValue, getTokenMeta, ZERO_BIG_NUMBER } from 'web3/utils';
-import Web3Contract from 'web3/contract';
+import { useWallet } from 'web3/wallet';
+import Web3Contract, { DEFAULT_CONTRACT_PROVIDER } from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
@@ -56,6 +58,7 @@ export function useWeb3Contracts(): Web3Contracts {
 }
 
 const Web3ContractsProvider: React.FunctionComponent = props => {
+  const wallet = useWallet();
   const bondContract = useBONDContract();
   const daiContract = useDAIContract();
   const usdcContract = useUSDCContract();
@@ -97,6 +100,47 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       });
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    const contracts = [
+      bondContract.contract,
+      daiContract.contract,
+      usdcContract.contract,
+      susdContract.contract,
+      uniswapContract.contract,
+      yfContract.contract,
+      yfLPContract.contract,
+      yfBONDContract.contract,
+      stakingContract.contract,
+    ];
+
+    if (wallet.connector) {
+      const connector = wallet.connector.connector;
+
+      connector.getProvider()
+        .then(provider => {
+          contracts.forEach(contract => {
+            contract.setProvider(provider);
+          });
+        });
+
+      const onUpdate = (data: ConnectorUpdate) => {
+        // contracts.forEach(contract => {
+        //   contract.setProvider(data.provider);
+        // });
+      };
+
+      connector.on(ConnectorEvent.Update, onUpdate);
+
+      return () => {
+        connector.off(ConnectorEvent.Update, onUpdate);
+      };
+    } else {
+      contracts.forEach(contract => {
+        contract.setProvider(DEFAULT_CONTRACT_PROVIDER);
+      });
+    }
+  }, [wallet.connector]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function getTokenUsdValue(tokenAddr: string, value: BigNumber | undefined): BigNumber | undefined {
     const tokenMeta = getTokenMeta(tokenAddr);
