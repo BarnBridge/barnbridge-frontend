@@ -2,7 +2,7 @@ name: Alpha Environment
 
 on:
   push:
-    tags:
+    branches:
       - master
 
 jobs:
