@@ -27,6 +27,7 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
   const history = useHistory();
 
   React.useEffect(() => {
+    document.documentElement.scrollTop = 0;
     ethGasPrice.load();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 

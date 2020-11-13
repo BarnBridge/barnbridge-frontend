@@ -341,7 +341,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     return shares;
   }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND, staking]);
 
-  function handleStacking() {
+  function handleStaking() {
     if (stableToken) {
       history.push('/pools/stable-token');
     } else if (lpToken) {
@@ -364,7 +364,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             type="primary"
             className={s.stakingBtn}
             disabled={!isStakingEnabled}
-            onClick={handleStacking}>Staking</Antd.Button>
+            onClick={handleStaking}>Staking</Antd.Button>
         )}
       </div>
 

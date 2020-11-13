@@ -2,6 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { MenuInfo } from 'rc-menu/lib/interface';
 import { CaretDownOutlined } from '@ant-design/icons';
+import cx from 'classnames';
 
 import s from './styles.module.css';
 
@@ -11,6 +12,7 @@ export type DropdownOption = {
 };
 
 export type DropdownProps = {
+  className?: string;
   button?: boolean;
   label?: string;
   items: DropdownOption[];
@@ -20,7 +22,7 @@ export type DropdownProps = {
 };
 
 const Dropdown: React.FunctionComponent<DropdownProps> = props => {
-  const { button, label, items, selected, disabled } = props;
+  const { className, button, label, items, selected, disabled } = props;
 
   const propsRef = React.useRef(props);
   propsRef.current = props;
@@ -46,7 +48,7 @@ const Dropdown: React.FunctionComponent<DropdownProps> = props => {
   }, [items, selected]);
 
   return (
-    <Antd.Dropdown className={s.component} overlay={menu} disabled={disabled}>
+    <Antd.Dropdown className={cx(s.component, className)} overlay={menu} disabled={disabled}>
       {button ? (
         <Antd.Button>
           {label && (

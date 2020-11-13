@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types';
 
@@ -84,9 +85,15 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       stakingContract.contract,
     ];
 
-    function handleError(err: Error & { code: number }, contract: Web3Contract) {
+    function handleError(err: Error & { code: number }, contract: Web3Contract, { method }: any) {
+      console.error(`${contract.name}:${method}`, err);
+
       if (err.code === 4001) {
         setUserRejectedVisible(true);
+      } else {
+        Antd.notification.error({
+          message: err.message,
+        });
       }
     }
 

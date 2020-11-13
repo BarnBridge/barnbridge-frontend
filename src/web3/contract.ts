@@ -90,17 +90,23 @@ class Web3Contract extends EventEmitter {
         return resolve(undefined);
       }
 
+      const onError = (err: Error) => {
+        this.emit('error', err, this, {
+          method,
+          methodArgs,
+          sendArgs,
+        });
+        reject(err);
+      };
+
       contractMethod(...methodArgs)
         ?.send(sendArgs, async (err: Error) => {
           if (err) {
-            return reject(err);
+            reject(err);
           }
         })
         .then(resolve)
-        .catch((err: Error) => {
-          this.emit('error', err, this);
-          reject();
-        });
+        .catch(onError);
     });
   }
 }
