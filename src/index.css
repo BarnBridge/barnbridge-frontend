@@ -58,6 +58,10 @@ button {
     color: var(--text-color-4);
 }
 
+.ant-notification-notice {
+    word-break: break-word;
+}
+
 :root {
     --bg-color-1: #f8f8f8;
     --bg-color-2: #fff;
