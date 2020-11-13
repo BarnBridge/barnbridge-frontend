@@ -1,0 +1,159 @@
+name: Alpha Environment
+
+on:
+  push:
+    tags:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Notify Slack
+      if: success()
+      id: slack
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel_id: C01D16VJ84C
+        status: BUILD STARTED
+        color: warning
+
+    - name: Setup Nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: Cache dependencies
+      id: node-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install dependencies
+      if: steps.node-cache.outputs.cache-hit != 'true'
+      run: npm ci
+
+    - name: Build
+      run: npm run build
+      env:
+        CI: false
+        REACT_APP_HTML_TITLE: 'BarnBridge'
+        REACT_APP_WEB3_CHAIN_ID: 1
+        REACT_APP_WEB3_POLLING_INTERVAL: 12000
+        REACT_APP_WEB3_RPC_ID: '6c58700fe84943eb83c4cd5c23dff3d8'
+        REACT_APP_WEB3_PORTIS_APP_ID: 'b0b0f776-bbf6-458c-a175-6483e0c452b7'
+        REACT_APP_WEB3_WALLET_CONNECT_BRIDGE: 'https://bridge.walletconnect.org'
+        REACT_APP_WEB3_COINBASE_WALLET_APP_NAME: 'BarnBridge'
+        REACT_APP_WEB3_TREZOR_EMAIL: 'bogdan@barnbridge.com'
+        REACT_APP_WEB3_TREZOR_APP_URL: 'https://app.barnbridge.com/'
+        REACT_APP_CONTRACT_DAI_ADDR: '0x6B175474E89094C44Da98b954EedeAC495271d0F'
+        REACT_APP_CONTRACT_USDC_ADDR: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48'
+        REACT_APP_CONTRACT_SUSD_ADDR: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51'
+        REACT_APP_CONTRACT_BOND_ADDR: '0x0391D2021f89DC339F60Fff84546EA23E337750f'
+        REACT_APP_CONTRACT_UNISWAP_V2_ADDR: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244'
+        REACT_APP_CONTRACT_STAKING_ADDR: '0xb0Fa2BeEe3Cf36a7Ac7E99B885b48538Ab364853'
+        REACT_APP_CONTRACT_COMMUNITY_VAULT_ADDR: '0xA3C299eEE1998F45c20010276684921EBE6423D9'
+        REACT_APP_CONTRACT_YIELD_FARM_ADDR: '0xB3F7abF8FA1Df0fF61C5AC38d35e20490419f4bb'
+        REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR: '0xC25c37c387C5C909a94055F4f16184ca325D3a76'
+        REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR: '0x3FdFb07472ea4771E1aD66FD3b87b265Cd4ec112'
+        REACT_APP_THEGRAPH_BB_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/barnbridge/barnbridge-contracts'
+
+    - name: Save artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: frontend
+        path: build
+
+    - name: Notify Slack success
+      if: success()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: BUILD SUCCESSFUL
+        color: good
+
+    - name: Notify Slack failure
+      if: failure()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: BUILD FAILED
+        color: danger
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify Slack
+      if: success()
+      id: slack
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT STARTED
+        color: warning
+
+    - name: Get artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: frontend
+
+    - name: Configure AWS credetials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy static site to S3
+      run: ls -l && aws s3 sync . s3://alpha-alphaappbarnbridgecom-origin --delete
+
+    - name: Invalidate CloudFront cache
+      run: |
+        #!/usr/bin/env bash
+        set -euo pipefail
+
+        CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'alpha.app.barnbridge.com')].Id | [0]" | tr -d \")
+        echo "Clearing cache for ${CF_DIST_ID}..."
+        CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
+        while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
+          echo "CF_DIST_ID=${CF_DIST_ID} CF_INVALIDATION_ID=${CF_INVALIDATION_ID}: Waiting for CloudFront cache invalidation to complete..."
+          sleep 5
+        done
+
+    - name: Notify Slack success
+      if: success()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT SUCCESSFUL
+        color: good
+
+    - name: Notify Slack failure
+      if: failure()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT FAILED
+        color: danger
