@@ -4,7 +4,7 @@ import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
 
 import EthGasPriceProvider from 'context/useEthGas';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import { useWarnings } from 'components/warnings';
 import ConnectedWallet from 'components/connected-wallet';
 import PoolRewards from 'views/pools/components/pool-rewards';

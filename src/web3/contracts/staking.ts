@@ -6,7 +6,7 @@ import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useRefState } from 'hooks/useRefState';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue, getNonHumanValue } from 'web3/utils';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';

@@ -1,10 +1,9 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ConnectorEvent, ConnectorUpdate } from '@web3-react/types';
 
 import { getHumanValue, getTokenMeta, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import Web3Contract, { DEFAULT_CONTRACT_PROVIDER } from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
@@ -86,7 +85,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     ];
 
     function handleError(err: Error & { code: number }, contract: Web3Contract, { method }: any) {
-      console.error(`${contract.name}:${method}`, err);
+      console.error(`${contract.name}:${method}`, { error: err });
 
       if (err.code === 4001) {
         setUserRejectedVisible(true);
@@ -121,33 +120,10 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       stakingContract.contract,
     ];
 
-    if (wallet.connector) {
-      const connector = wallet.connector.connector;
-
-      connector.getProvider()
-        .then(provider => {
-          contracts.forEach(contract => {
-            contract.setProvider(provider);
-          });
-        });
-
-      const onUpdate = (data: ConnectorUpdate) => {
-        // contracts.forEach(contract => {
-        //   contract.setProvider(data.provider);
-        // });
-      };
-
-      connector.on(ConnectorEvent.Update, onUpdate);
-
-      return () => {
-        connector.off(ConnectorEvent.Update, onUpdate);
-      };
-    } else {
-      contracts.forEach(contract => {
-        contract.setProvider(DEFAULT_CONTRACT_PROVIDER);
-      });
-    }
-  }, [wallet.connector]); // eslint-disable-line react-hooks/exhaustive-deps
+    contracts.forEach(contract => {
+      contract.setProvider(wallet.provider ?? DEFAULT_CONTRACT_PROVIDER);
+    });
+  }, [wallet.provider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function getTokenUsdValue(tokenAddr: string, value: BigNumber | undefined): BigNumber | undefined {
     const tokenMeta = getTokenMeta(tokenAddr);

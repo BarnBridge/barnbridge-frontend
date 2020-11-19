@@ -16,7 +16,7 @@ import {
   STABLE_TOKEN_ICONS,
   STABLE_TOKEN_NAMES,
 } from 'web3/utils';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';

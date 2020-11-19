@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue } from 'web3/utils';
 

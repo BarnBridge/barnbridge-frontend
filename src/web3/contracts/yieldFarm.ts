@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 

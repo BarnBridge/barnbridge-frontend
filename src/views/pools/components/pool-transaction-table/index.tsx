@@ -12,7 +12,7 @@ import ExternalLink from 'components/externalLink';
 import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
 import { formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
