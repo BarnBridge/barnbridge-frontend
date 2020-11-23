@@ -190,7 +190,7 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    writeToStorage();
+    // writeToStorage();
   }, [transactions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value = React.useMemo(() => ({
