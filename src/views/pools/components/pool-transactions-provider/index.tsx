@@ -123,14 +123,14 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
 
     if (lastTransaction) {
       setLastBlockNumber(lastTransaction.blockNumber);
-      setData(JSON.stringify(transactions.map(t => {
-        const { amount, usdAmount, tokenAmount, ...rest } = t;
+//       setData(JSON.stringify(transactions.map(t => {
+//         const { amount, usdAmount, tokenAmount, ...rest } = t;
 
-        return {
-          ...rest,
-          amount: amount.toFixed(),
-        };
-      })));
+//         return {
+//           ...rest,
+//           amount: amount.toFixed(),
+//         };
+//       })));
     }
   }
 
@@ -190,7 +190,7 @@ const PoolTransactionsProvider: React.FunctionComponent = props => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    // writeToStorage();
+    writeToStorage();
   }, [transactions]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const value = React.useMemo(() => ({
