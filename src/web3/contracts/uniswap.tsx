@@ -5,7 +5,7 @@ import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
-import { useWallet } from 'web3/wallet';
+import { useWallet } from 'wallets/wallet';
 import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';

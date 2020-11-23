@@ -4,7 +4,7 @@ import { ModalProps } from 'antd/lib/modal';
 
 import s from './styles.module.css';
 
-export type InstallMetaMaskModalProps = ModalProps;
+export type InstallMetaMaskModalProps = ModalProps & {};
 
 const InstallMetaMaskModal: React.FunctionComponent<InstallMetaMaskModalProps> = props => {
   const { ...modalProps } = props;

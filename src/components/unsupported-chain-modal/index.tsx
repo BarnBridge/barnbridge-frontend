@@ -2,14 +2,16 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
+import { useWallet } from 'wallets/wallet';
+
 import s from './styles.module.css';
 
-export type UnsupportedChainModalProps = ModalProps & {
-  onSwitchWallet: () => void;
-};
+export type UnsupportedChainModalProps = ModalProps & {};
 
 const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps> = props => {
-  const { onSwitchWallet, ...modalProps } = props;
+  const { ...modalProps } = props;
+
+  const wallet = useWallet();
 
   return (
     <Antd.Modal
@@ -26,7 +28,10 @@ const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps>
       <Antd.Button
         type="ghost"
         className={s.switchBtn}
-        onClick={onSwitchWallet}
+        onClick={(ev: React.MouseEvent<HTMLElement>) => {
+          props.onCancel?.(ev);
+          wallet.showWalletsModal();
+        }}
       >Switch wallet</Antd.Button>
     </Antd.Modal>
   );

@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-import Web3WalletProvider from 'web3/wallet';
+import Web3WalletProvider from 'wallets/wallet';
 import Web3ContractsProvider from 'web3/contracts';
 import TheGraphProvider from 'context/TheGraph';
 
