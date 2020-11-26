@@ -1,5 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import memoize from 'lodash/memoize';
 
 import { TokenMeta } from 'web3/types';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -92,16 +93,12 @@ export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultV
   return value ? new BigNumber(value.toFixed(decimals)).toFormat(minDecimals) : defaultValue;
 }
 
-export function formatUSDValue(value?: BigNumber): string {
-  return `$ ${formatBigValue(value, 2, '-', 2)}`;
+export function formatUSDValue(value?: BigNumber, decimals: number = 2, minDecimals: number = decimals): string {
+  return `$ ${formatBigValue(value, decimals, '-', minDecimals)}`;
 }
 
 export function formatBONDValue(value?: BigNumber): string {
   return formatBigValue(value, 4);
-}
-
-export function assertValues(...values: any[]): boolean {
-  return !values.some(value => value === undefined || value === null);
 }
 
 export function shortenAddr(addr: string, first: number = 6, last: number = 4) {
@@ -125,40 +122,50 @@ export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
   }
 }
 
-export function getTokenHumanValue(tokenAddr: string, value?: BigNumber): BigNumber | undefined {
-  const tokenMeta = getTokenMeta(tokenAddr);
-
-  if (tokenMeta === undefined || value === undefined) {
-    return undefined;
-  }
-
-  return getHumanValue(value, tokenMeta.decimals);
+export enum PoolTypes {
+  STABLE = 'stable',
+  UNILP = 'unilp',
+  BOND = 'bond',
 }
 
-export const STABLE_TOKEN_ICONS: React.ReactNode[] = [
-  USDCTokenMeta.icon,
-  DAITokenMeta.icon,
-  SUSDTokenMeta.icon,
-];
+export const getPoolIcons = memoize((poolType: PoolTypes): React.ReactNode[] => {
+  switch (poolType) {
+    case PoolTypes.STABLE:
+      return [
+        USDCTokenMeta.icon,
+        DAITokenMeta.icon,
+        SUSDTokenMeta.icon,
+      ];
+    case PoolTypes.UNILP:
+      return [
+        UNISWAPTokenMeta.icon,
+      ];
+    case PoolTypes.BOND:
+      return [
+        BONDTokenMeta.icon,
+      ];
+    default:
+      return [];
+  }
+});
 
-export const STABLE_TOKEN_NAMES: string[] = [
-  USDCTokenMeta.name,
-  DAITokenMeta.name,
-  SUSDTokenMeta.name,
-];
-
-export const LP_TOKEN_ICONS: React.ReactNode[] = [
-  UNISWAPTokenMeta.icon,
-];
-
-export const LP_TOKEN_NAMES: React.ReactNode[] = [
-  UNISWAPTokenMeta.name,
-];
-
-export const BOND_TOKEN_ICONS: React.ReactNode[] = [
-  BONDTokenMeta.icon,
-];
-
-export const BOND_TOKEN_NAMES: React.ReactNode[] = [
-  BONDTokenMeta.name,
-];
+export const getPoolNames = memoize((poolType: PoolTypes): string[] => {
+  switch (poolType) {
+    case PoolTypes.STABLE:
+      return [
+        USDCTokenMeta.name,
+        DAITokenMeta.name,
+        SUSDTokenMeta.name,
+      ];
+    case PoolTypes.UNILP:
+      return [
+        UNISWAPTokenMeta.name,
+      ];
+    case PoolTypes.BOND:
+      return [
+        BONDTokenMeta.name,
+      ];
+    default:
+      return [];
+  }
+});

@@ -24,6 +24,8 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
   }, [staking]);
   const [untilNextEpoch] = useWeekCountdown(epochEnd);
 
+  const totalBondReward = formatBONDValue(aggregated.totalBondReward);
+
   return (
     <div className={cx(s.component, props.className)}>
       <StatWidget
@@ -41,8 +43,8 @@ const PoolStats: React.FunctionComponent<PoolStatsProps> = props => {
       <StatWidget
         label="Bond Rewards"
         value={formatBONDValue(aggregated.bondReward)}
-        hint={`out of ${formatBONDValue(aggregated.totalBondReward)}`}
-        help="This number shows the $BOND token rewards distributed so far out of the total of 2,800,000 that are going to be available for Yield Farming."
+        hint={`out of ${totalBondReward}`}
+        help={`This number shows the $BOND token rewards distributed so far out of the total of ${totalBondReward} that are going to be available for Yield Farming.`}
       />
       <StatWidget
         label="Bond Price"

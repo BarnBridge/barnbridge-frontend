@@ -64,7 +64,8 @@ jobs:
         REACT_APP_CONTRACT_YIELD_FARM_ADDR: '0x6d2a7f985c3F4d38d6E651b9DE932F1776443D30'
         REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR: '0x7fA04E9F59590561D7efDf55e64BcB62e96D6717'
         REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR: '0x8a42d8ec7410395D98F96ae11cCbeCF7f89bf0c3'
-        REACT_APP_THEGRAPH_BB_SUBGRAPH_URL: 'https://api.thegraph.com/subgraphs/name/barnbridge/barnbridge-contracts'
+        REACT_APP_TOKEN_API_URL: 'https://tokenapi.barnbridge.com'
+        REACT_APP_TOKEN_API_POOL_INTERVAL: 20000
 
     - name: Save artifacts
       uses: actions/upload-artifact@v2

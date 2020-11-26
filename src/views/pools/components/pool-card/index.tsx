@@ -5,17 +5,7 @@ import * as Antd from 'antd';
 import InfoTooltip from 'components/info-tooltip';
 import IconsSet from 'components/icons-set';
 
-import {
-  BOND_TOKEN_ICONS,
-  BOND_TOKEN_NAMES,
-  formatBigValue,
-  formatBONDValue,
-  formatUSDValue,
-  LP_TOKEN_ICONS,
-  LP_TOKEN_NAMES,
-  STABLE_TOKEN_ICONS,
-  STABLE_TOKEN_NAMES,
-} from 'web3/utils';
+import { formatBigValue, formatBONDValue, formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -28,7 +18,7 @@ import s from './styles.module.css';
 
 export type PoolCardProps = {
   stableToken?: boolean;
-  lpToken?: boolean;
+  unilpToken?: boolean;
   bondToken?: boolean;
 };
 
@@ -45,99 +35,99 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   const wallet = useWallet();
   const { yf, yfLP, yfBOND, staking, aggregated } = useWeb3Contracts();
 
-  const { stableToken = false, lpToken = false, bondToken = false } = props;
+  const { stableToken = false, unilpToken = false, bondToken = false } = props;
 
   const icons = React.useMemo<React.ReactNode[]>(() => {
     if (stableToken) {
-      return STABLE_TOKEN_ICONS;
-    } else if (lpToken) {
-      return LP_TOKEN_ICONS;
+      return getPoolIcons(PoolTypes.STABLE);
+    } else if (unilpToken) {
+      return getPoolIcons(PoolTypes.UNILP);
     } else if (bondToken) {
-      return BOND_TOKEN_ICONS;
+      return getPoolIcons(PoolTypes.BOND);
     }
 
     return [];
-  }, [stableToken, lpToken, bondToken]);
+  }, [stableToken, unilpToken, bondToken]);
 
   const nameLabel = React.useMemo<string>(() => {
     if (stableToken) {
-      return STABLE_TOKEN_NAMES.join('/');
-    } else if (lpToken) {
-      return LP_TOKEN_NAMES.join('/');
+      return getPoolNames(PoolTypes.STABLE).join('/');
+    } else if (unilpToken) {
+      return getPoolNames(PoolTypes.UNILP).join('/');
     } else if (bondToken) {
-      return BOND_TOKEN_NAMES.join('/');
+      return getPoolNames(PoolTypes.BOND).join('/');
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken]);
+  }, [stableToken, unilpToken, bondToken]);
 
   const epochLabel = React.useMemo<string>(() => {
     if (stableToken) {
       return `EPOCH ${yf.currentEpoch ?? '-'}/${yf.totalEpochs ?? '-'}`;
-    } else if (lpToken) {
+    } else if (unilpToken) {
       return `EPOCH ${yfLP.currentEpoch ?? '-'}/${yfLP.totalEpochs ?? '-'}`;
     } else if (bondToken) {
       return `EPOCH ${yfBOND.currentEpoch ?? '-'}/${yfBOND.totalEpochs ?? '-'}`;
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND]);
 
   const isStakingEnabled = React.useMemo<boolean>(() => {
-    if (lpToken) {
+    if (unilpToken) {
       return yfLP.currentEpoch! > 0;
     }
 
     return true;
-  }, [lpToken, yfLP]);
+  }, [unilpToken, yfLP]);
 
   const epochReward = React.useMemo<string>(() => {
     if (stableToken) {
       return `${formatBONDValue(yf.epochReward)} BOND`;
-    } else if (lpToken) {
+    } else if (unilpToken) {
       return `${formatBONDValue(yfLP.epochReward)} BOND`;
     } else if (bondToken) {
       return `${formatBONDValue(yfBOND.epochReward)} BOND`;
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND]);
 
   const potentialReward = React.useMemo<string>(() => {
     if (stableToken) {
       return `${formatBONDValue(yf.potentialReward)} BOND`;
-    } else if (lpToken) {
+    } else if (unilpToken) {
       return `${formatBONDValue(yfLP.potentialReward)} BOND`;
     } else if (bondToken) {
       return `${formatBONDValue(yfBOND.potentialReward)} BOND`;
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND]);
 
   const balance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return formatUSDValue(aggregated.yfStakedValue);
-    } else if (lpToken) {
+    } else if (unilpToken) {
       return formatUSDValue(aggregated.yfLPStakedValue);
     } else if (bondToken) {
       return formatUSDValue(aggregated.yfBONDStakedValue);
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, aggregated]);
+  }, [stableToken, unilpToken, bondToken, aggregated]);
 
   const effectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return formatUSDValue(aggregated.yfEffectiveStakedValue);
-    } else if (lpToken) {
+    } else if (unilpToken) {
       return formatUSDValue(aggregated.yfLPEffectiveStakedValue);
     } else if (bondToken) {
       return formatUSDValue(aggregated.yfBONDEffectiveStakedValue);
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, aggregated]);
+  }, [stableToken, unilpToken, bondToken, aggregated]);
 
   const balanceShares = React.useMemo<TokenBalanceShare[]>(() => {
     const shares: TokenBalanceShare[] = [];
@@ -189,7 +179,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           });
         }
       }
-    } else if (lpToken) {
+    } else if (unilpToken) {
       if (yfLP.nextPoolSize) {
         const uniShare = staking.uniswap.nextEpochPoolSize
           ?.multipliedBy(100)
@@ -226,31 +216,31 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     }
 
     return shares;
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND, staking]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND, staking]);
 
   const myBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return formatUSDValue(yf.nextEpochStake);
-    } else if (lpToken && yfLP.nextEpochStake) {
+    } else if (unilpToken && yfLP.nextEpochStake) {
       return formatUSDValue(aggregated.myLPStakedValue);
     } else if (bondToken && yfBOND.nextEpochStake) {
       return formatUSDValue(aggregated.myBONDStakedValue);
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND, aggregated]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND, aggregated]);
 
   const myEffectiveBalance = React.useMemo<string | React.ReactNode>(() => {
     if (stableToken) {
       return formatUSDValue(yf.epochStake);
-    } else if (lpToken && yfLP.epochStake) {
+    } else if (unilpToken && yfLP.epochStake) {
       return formatUSDValue(aggregated.myLPEffectiveStakedValue);
     } else if (bondToken && yfBOND.epochStake) {
       return formatUSDValue(aggregated.myBondEffectiveStakedValue);
     }
 
     return '-';
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND, aggregated]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND, aggregated]);
 
   const myBalanceShares = React.useMemo<TokenBalanceShare[]>(() => {
     const shares: TokenBalanceShare[] = [];
@@ -302,7 +292,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           });
         }
       }
-    } else if (lpToken) {
+    } else if (unilpToken) {
       if (yfLP.nextEpochStake) {
         const uniShare = staking.uniswap.nextEpochUserBalance
           ?.multipliedBy(100)
@@ -339,15 +329,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     }
 
     return shares;
-  }, [stableToken, lpToken, bondToken, yf, yfLP, yfBOND, staking]);
+  }, [stableToken, unilpToken, bondToken, yf, yfLP, yfBOND, staking]);
 
   function handleStaking() {
     if (stableToken) {
-      history.push('/pools/stable-token');
-    } else if (lpToken) {
-      history.push('/pools/lp-token');
+      history.push('/pools/stable');
+    } else if (unilpToken) {
+      history.push('/pools/unilp');
     } else if (bondToken) {
-      history.push('/pools/bond-token');
+      history.push('/pools/bond');
     }
   }
 
