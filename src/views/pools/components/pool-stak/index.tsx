@@ -65,6 +65,14 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
               <PoolTokenRow bondToken token={BONDTokenMeta} type="deposit" />
             )}
           </div>
+          <PoolTransactionTable
+            className={s.table}
+            label="My Transactions"
+            ownTransactions
+            deposits
+            stableToken={props.stableToken}
+            unilpToken={props.unilpToken}
+            bondToken={props.bondToken} />
         </Antd.Tabs.TabPane>
         <Antd.Tabs.TabPane key="withdraw" tab="Withdraw">
           <div className={s.dataRows}>
@@ -82,15 +90,16 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
               <PoolTokenRow bondToken token={BONDTokenMeta} type="withdraw" />
             )}
           </div>
+          <PoolTransactionTable
+            className={s.table}
+            label="My Transactions"
+            ownTransactions
+            withdrawals
+            stableToken={props.stableToken}
+            unilpToken={props.unilpToken}
+            bondToken={props.bondToken} />
         </Antd.Tabs.TabPane>
       </Antd.Tabs>
-
-      <PoolTransactionTable
-        label="My Transactions"
-        ownTransactions
-        stableToken={props.stableToken}
-        unilpToken={props.unilpToken}
-        bondToken={props.bondToken} />
     </div>
   );
 };

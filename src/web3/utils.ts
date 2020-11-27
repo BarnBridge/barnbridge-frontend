@@ -94,7 +94,14 @@ export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultV
 }
 
 export function formatUSDValue(value?: BigNumber, decimals: number = 2, minDecimals: number = decimals): string {
-  return `$ ${formatBigValue(value, decimals, '-', minDecimals)}`;
+  if (value === undefined) {
+    return '-';
+  }
+
+  const val = BigNumber.isBigNumber(value) ? value : new BigNumber(value);
+  const formattedValue = formatBigValue(val.abs(), decimals, '-', minDecimals);
+
+  return val.isPositive() ? `$${formattedValue}` : `-$${formattedValue}`;
 }
 
 export function formatBONDValue(value?: BigNumber): string {

@@ -107,7 +107,6 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
   }, []);
 
   const load = React.useCallback((query?: PoolTxChartQuery) => {
-    summariesRef.current = [];
     loadedRef.current = false;
     poolFilterRef.current = query?.pool;
     periodFilterRef.current = query?.period;

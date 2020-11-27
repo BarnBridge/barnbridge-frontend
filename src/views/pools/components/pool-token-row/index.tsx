@@ -56,7 +56,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   const ethGasPrice = useEthGasPrice();
 
   const [state, setState] = React.useState<StateType>(InitialState);
-  const [expanded, setExpanded] = React.useState<boolean>(props.unilpToken ?? false);
+  const [expanded, setExpanded] = React.useState<boolean>(false);
   const [enabling, setEnabling] = React.useState<boolean>(false);
   const [depositing, setDepositing] = React.useState<boolean>(false);
   const [withdrawing, setWithdrawing] = React.useState<boolean>(false);
@@ -112,6 +112,12 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         break;
     }
   }, [web3c, props.token]);
+
+  React.useEffect(() => {
+    if (props.unilpToken || props.bondToken) {
+      setExpanded(true);
+    }
+  }, [props.unilpToken, props.bondToken]);
 
   const activeBalance = React.useMemo<BigNumber | undefined>(() => {
     if (props.type === 'deposit') {

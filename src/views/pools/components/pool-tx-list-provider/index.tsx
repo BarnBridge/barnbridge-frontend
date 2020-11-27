@@ -139,6 +139,10 @@ const PoolTxListProvider: React.FunctionComponent = props => {
           endRef.current = true;
         }
       }
+
+      if (stakingActions === null && direction === 'desc') {
+        endRef.current = true;
+      }
     } catch (e) {
       console.error(e);
     }

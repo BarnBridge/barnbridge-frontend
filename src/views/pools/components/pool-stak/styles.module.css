@@ -43,3 +43,7 @@
 .tabs :global .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
     color: var(--text-color-1);
 }
+
+.table {
+    margin-top: 24px;
+}

@@ -93,6 +93,7 @@ const PoolTransactionChartInner: React.FunctionComponent<PoolTransactionChartPro
         .toNumber();
       const withdrawals = (new BigNumber(summary.withdrawals))
         .multipliedBy(price)
+        .multipliedBy(-1)
         .toNumber();
 
       return {
@@ -140,30 +141,36 @@ const PoolTransactionChartInner: React.FunctionComponent<PoolTransactionChartPro
                 <div className={s.emptyLabel}>Not enough data to plot a graph</div>
               </div>
             )}
-            <ReCharts.ResponsiveContainer width="100%" height={350}>
-              <ReCharts.LineChart
-                margin={{ top: 24, right: 24, left: 80, bottom: 24 }}
-                data={data}
-              >
-                <ReCharts.CartesianGrid vertical={false} strokeDasharray="4px" />
-                <ReCharts.XAxis dataKey="timestamp" tickLine={false} tickMargin={24} />
-                <ReCharts.YAxis tickFormatter={(value: any) =>
-                  formatUSDValue(value, 2, 0).replace(/ /gi, '')
-                } />
-                <ReCharts.Tooltip formatter={(value: any) => formatUSDValue(value)} />
-                <ReCharts.Legend
-                  align="right"
-                  verticalAlign="top"
-                  iconType="circle"
-                  wrapperStyle={{ top: 0, right: 12, color: 'var(--text-color-5)' }} />
-                {(typeFilter === 'all' || typeFilter === 'deposits') && (
-                  <ReCharts.Line dataKey="deposits" name="Deposits" type="monotone" stroke="#ff4339" />
-                )}
-                {(typeFilter === 'all' || typeFilter === 'withdrawals') && (
-                  <ReCharts.Line dataKey="withdrawals" name="Withdrawals" type="monotone" stroke="#4f6ae6" />
-                )}
-              </ReCharts.LineChart>
-            </ReCharts.ResponsiveContainer>
+            {data.length > 0 && (
+              <ReCharts.ResponsiveContainer width="100%" height={350}>
+                <ReCharts.BarChart
+                  data={data}
+                  stackOffset="sign"
+                  margin={{
+                    top: 20, right: 0, left: 60, bottom: 12,
+                  }}
+                >
+                  <ReCharts.CartesianGrid vertical={false} stroke="#666" strokeDasharray="3 3" />
+                  <ReCharts.XAxis dataKey="timestamp" tickMargin={24} />
+                  <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={(value: any) =>
+                    formatUSDValue(value, 2, 0)
+                  } />
+                  <ReCharts.Tooltip formatter={(value: any) => formatUSDValue(value)} />
+                  <ReCharts.Legend
+                    align="right"
+                    verticalAlign="top"
+                    iconType="circle"
+                    wrapperStyle={{ top: 0, right: 12, color: 'var(--text-color-5)' }} />
+                  <ReCharts.ReferenceLine y={0} stroke="#666" />
+                  {(typeFilter === 'all' || typeFilter === 'deposits') && (
+                    <ReCharts.Bar dataKey="deposits" name="Deposits" fill="#ff4339" stackId="stack" />
+                  )}
+                  {(typeFilter === 'all' || typeFilter === 'withdrawals') && (
+                    <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" fill="#4f6ae6" stackId="stack" />
+                  )}
+                </ReCharts.BarChart>
+              </ReCharts.ResponsiveContainer>
+            )}
           </>
         )}
       </div>

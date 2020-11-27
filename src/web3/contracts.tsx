@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 
 import { PoolTypes, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
-import Web3Contract, { DEFAULT_CONTRACT_PROVIDER } from 'web3/contract';
+import Web3Contract, { setProvider } from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
@@ -109,21 +109,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    const contracts = [
-      bondContract.contract,
-      daiContract.contract,
-      usdcContract.contract,
-      susdContract.contract,
-      uniswapContract.contract,
-      yfContract.contract,
-      yfLPContract.contract,
-      yfBONDContract.contract,
-      stakingContract.contract,
-    ];
-
-    contracts.forEach(contract => {
-      contract.setProvider(wallet.provider ?? DEFAULT_CONTRACT_PROVIDER);
-    });
+    setProvider(wallet.provider);
   }, [wallet.provider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function getPoolUsdPrice(poolType: PoolTypes): BigNumber | undefined {

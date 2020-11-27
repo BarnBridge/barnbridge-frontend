@@ -4,6 +4,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
+import cx from 'classnames';
 
 import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
@@ -22,10 +23,13 @@ import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
 
 import s from './styles.module.css';
 
+const DEPOSITS_KEY = 'deposits';
+const WITHDRAWALS_KEY = 'withdrawals';
+
 const TypeFilters: DropdownOption[] = [
   { value: 'all', label: 'All transactions' },
-  { value: 'deposits', label: 'Deposits' },
-  { value: 'withdrawals', label: 'Withdrawals' },
+  { value: DEPOSITS_KEY, label: 'Deposits' },
+  { value: WITHDRAWALS_KEY, label: 'Withdrawals' },
 ];
 
 const Columns: ColumnsType<any> = [
@@ -86,8 +90,11 @@ const Columns: ColumnsType<any> = [
 ];
 
 export type PoolTransactionTableProps = {
+  className?: string;
   label: string;
   ownTransactions?: boolean;
+  deposits?: boolean;
+  withdrawals?: boolean;
   stableToken?: boolean;
   unilpToken?: boolean;
   bondToken?: boolean;
@@ -134,6 +141,14 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
   }, [tokenFilterOptions]);
 
   React.useEffect(() => {
+    if (props.deposits) {
+      setTypeFilter(DEPOSITS_KEY);
+    } else if (props.withdrawals) {
+      setTypeFilter(WITHDRAWALS_KEY);
+    }
+  }, [props.deposits, props.withdrawals]);
+
+  React.useEffect(() => {
     poolTxList.load({
       user: ownTransactions ? wallet.account?.toLowerCase() : undefined,
       token: tokenFilter !== 'all' ? String(tokenFilter) : undefined,
@@ -161,7 +176,7 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
   }, [web3c, tokenFilter, poolTxList.transactions]);
 
   return (
-    <div className={s.component}>
+    <div className={cx(s.component, props.className)}>
       <div className={s.header}>
         <div className={s.headerLabel}>{props.label}</div>
         <div className={s.filters}>
@@ -206,7 +221,7 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
               <Antd.Button
                 type="primary"
                 size="large"
-                loading={poolTxList.loading}
+                disabled={poolTxList.loading}
                 onClick={poolTxList.loadNext}>Load more transactions</Antd.Button>
             )}
           </>
