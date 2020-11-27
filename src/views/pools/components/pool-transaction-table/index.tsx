@@ -9,7 +9,6 @@ import cx from 'classnames';
 import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
 import PoolTxListProvider, { PoolTxListItem, usePoolTxList } from 'views/pools/components/pool-tx-list-provider';
-
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -107,8 +106,9 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
   const wallet = useWallet();
   const poolTxList = usePoolTxList();
 
-  const [tokenFilter, setTokenFilter] = React.useState<string | number>('all');
-  const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
+  const [, forceRender] = React.useState<{}>({});
+  const tokenFilterRef = React.useRef<string | number>('all');
+  const typeFilterRef = React.useRef<string | number>('all');
 
   const tokenFilterOptions = React.useMemo<DropdownOption[]>(() => {
     const options: DropdownOption[] = [];
@@ -135,26 +135,25 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
 
     return options;
   }, [props.stableToken, props.unilpToken, props.bondToken]);
+  tokenFilterRef.current = tokenFilterOptions[0].value;
 
-  React.useEffect(() => {
-    setTokenFilter(tokenFilterOptions[0].value);
-  }, [tokenFilterOptions]);
-
-  React.useEffect(() => {
-    if (props.deposits) {
-      setTypeFilter(DEPOSITS_KEY);
-    } else if (props.withdrawals) {
-      setTypeFilter(WITHDRAWALS_KEY);
-    }
-  }, [props.deposits, props.withdrawals]);
+  if (props.deposits) {
+    typeFilterRef.current = DEPOSITS_KEY;
+  } else if (props.withdrawals) {
+    typeFilterRef.current = WITHDRAWALS_KEY;
+  }
 
   React.useEffect(() => {
     poolTxList.load({
       user: ownTransactions ? wallet.account?.toLowerCase() : undefined,
-      token: tokenFilter !== 'all' ? String(tokenFilter) : undefined,
-      type: typeFilter !== 'all' ? String(typeFilter) : undefined,
+      token: tokenFilterRef.current !== 'all' ? String(tokenFilterRef.current) : undefined,
+      type: typeFilterRef.current !== 'all' ? String(typeFilterRef.current) : undefined,
     }).catch(x => x);
-  }, [ownTransactions, tokenFilter, typeFilter]);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [
+    ownTransactions,
+    tokenFilterRef.current,
+    typeFilterRef.current,
+  ]);  // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     poolTxList.startPooling();
@@ -173,7 +172,7 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
         usdAmount: price ? tx.amount.multipliedBy(price) : undefined,
       };
     });
-  }, [web3c, tokenFilter, poolTxList.transactions]);
+  }, [web3c, poolTxList.transactions]);
 
   return (
     <div className={cx(s.component, props.className)}>
@@ -184,17 +183,23 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
             button
             label="Tokens"
             items={tokenFilterOptions}
-            selected={tokenFilter}
+            selected={tokenFilterRef.current}
             disabled={poolTxList.loading}
-            onSelect={setTokenFilter}
+            onSelect={(value: string | number) => {
+              tokenFilterRef.current = String(value);
+              forceRender({});
+            }}
           />
           <Dropdown
             button
             label="Show"
             items={TypeFilters}
-            selected={typeFilter}
+            selected={typeFilterRef.current}
             disabled={poolTxList.loading}
-            onSelect={setTypeFilter}
+            onSelect={(value: string | number) => {
+              typeFilterRef.current = String(value);
+              forceRender({});
+            }}
           />
         </div>
       </div>
