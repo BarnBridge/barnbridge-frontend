@@ -124,8 +124,6 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     contracts.forEach(contract => {
       contract.setProvider(wallet.provider);
     });
-    //
-    // setProvider(wallet.provider);
   }, [wallet.provider]); // eslint-disable-line react-hooks/exhaustive-deps
 
   function getPoolUsdPrice(poolType: PoolTypes): BigNumber | undefined {
