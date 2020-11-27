@@ -2,9 +2,9 @@ import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
-import { getHumanValue, getTokenMeta, ZERO_BIG_NUMBER } from 'web3/utils';
+import { PoolTypes, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
-import Web3Contract, { DEFAULT_CONTRACT_PROVIDER } from 'web3/contract';
+import Web3Contract, { setProvider } from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
@@ -48,7 +48,8 @@ export type Web3ContractsData = {
 };
 
 export type Web3Contracts = Web3ContractsData & {
-  getTokenUsdValue(token: string, value?: BigNumber): BigNumber | undefined;
+  getPoolUsdPrice(poolType: PoolTypes): BigNumber | undefined;
+  getTokenUsdPrice(tokenAddress: string): BigNumber | undefined;
 };
 
 const Web3ContractsContext = React.createContext<Web3Contracts>({} as any);
@@ -108,54 +109,35 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
-    const contracts = [
-      bondContract.contract,
-      daiContract.contract,
-      usdcContract.contract,
-      susdContract.contract,
-      uniswapContract.contract,
-      yfContract.contract,
-      yfLPContract.contract,
-      yfBONDContract.contract,
-      stakingContract.contract,
-    ];
-
-    contracts.forEach(contract => {
-      contract.setProvider(wallet.provider ?? DEFAULT_CONTRACT_PROVIDER);
-    });
+    setProvider(wallet.provider);
   }, [wallet.provider]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  function getTokenUsdValue(tokenAddr: string, value: BigNumber | undefined): BigNumber | undefined {
-    const tokenMeta = getTokenMeta(tokenAddr);
-
-    if (value === undefined || tokenMeta === undefined) {
-      return undefined;
-    }
-
-    let multiplier: BigNumber | undefined;
-
-    switch (tokenMeta.address) {
-      case USDCTokenMeta.address:
-      case DAITokenMeta.address:
-      case SUSDTokenMeta.address:
-        multiplier = uniswapContract.stablePrice;
-        break;
-      case UNISWAPTokenMeta.address:
-        multiplier = uniswapContract.lpPrice;
-        break;
-      case BONDTokenMeta.address:
-        multiplier = uniswapContract.bondPrice;
-        break;
+  function getPoolUsdPrice(poolType: PoolTypes): BigNumber | undefined {
+    switch (poolType) {
+      case PoolTypes.STABLE:
+        return uniswapContract.stablePrice;
+      case PoolTypes.UNILP:
+        return uniswapContract.unilpPrice;
+      case PoolTypes.BOND:
+        return uniswapContract.bondPrice;
       default:
         return undefined;
     }
+  }
 
-    if (multiplier === undefined) {
-      return undefined;
+  function getTokenUsdPrice(tokenAddress: string): BigNumber | undefined {
+    switch (tokenAddress) {
+      case USDCTokenMeta.address:
+      case DAITokenMeta.address:
+      case SUSDTokenMeta.address:
+        return getPoolUsdPrice(PoolTypes.STABLE);
+      case UNISWAPTokenMeta.address:
+        return getPoolUsdPrice(PoolTypes.UNILP);
+      case BONDTokenMeta.address:
+        return getPoolUsdPrice(PoolTypes.BOND);
+      default:
+        return undefined;
     }
-
-    return getHumanValue(value, tokenMeta.decimals)
-      ?.multipliedBy(multiplier);
   }
 
   function yfStakedValue() {
@@ -182,7 +164,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   function yfLPStakedValue() {
     const poolSize = yfLPContract.nextPoolSize;
-    const price = uniswapContract.lpPrice;
+    const price = uniswapContract.unilpPrice;
 
     if (poolSize === undefined || price === undefined) {
       return undefined;
@@ -193,7 +175,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   function myLPStakedValue() {
     const epochStake = yfLPContract.nextEpochStake;
-    const price = uniswapContract.lpPrice;
+    const price = uniswapContract.unilpPrice;
 
     if (epochStake === undefined || price === undefined) {
       return undefined;
@@ -204,7 +186,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   function yfLPEffectiveStakedValue() {
     const poolSize = yfLPContract.poolSize;
-    const price = uniswapContract.lpPrice;
+    const price = uniswapContract.unilpPrice;
 
     if (poolSize === undefined || price === undefined) {
       return undefined;
@@ -215,7 +197,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   function myLPEffectiveStakedValue() {
     const epochStake = yfLPContract.epochStake;
-    const price = uniswapContract.lpPrice;
+    const price = uniswapContract.unilpPrice;
 
     if (epochStake === undefined || price === undefined) {
       return undefined;
@@ -428,7 +410,8 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
         return bondReward();
       },
     },
-    getTokenUsdValue,
+    getPoolUsdPrice,
+    getTokenUsdPrice,
   };
 
   return (

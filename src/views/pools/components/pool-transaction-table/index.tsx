@@ -4,30 +4,32 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
-import pipe from 'lodash/fp/pipe';
-import filter from 'lodash/fp/filter';
+import cx from 'classnames';
 
 import Dropdown, { DropdownOption } from 'components/dropdown';
 import ExternalLink from 'components/externalLink';
-import { PoolTransaction, usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
+import PoolTxListProvider, { PoolTxListItem, usePoolTxList } from 'views/pools/components/pool-tx-list-provider';
 
-import { formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
 
 import s from './styles.module.css';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+
+const DEPOSITS_KEY = 'deposits';
+const WITHDRAWALS_KEY = 'withdrawals';
 
 const TypeFilters: DropdownOption[] = [
   { value: 'all', label: 'All transactions' },
-  { value: 'DEPOSIT', label: 'Deposits' },
-  { value: 'WITHDRAW', label: 'Withdrawals' },
+  { value: DEPOSITS_KEY, label: 'Deposits' },
+  { value: WITHDRAWALS_KEY, label: 'Withdrawals' },
 ];
 
 const Columns: ColumnsType<any> = [
@@ -57,10 +59,6 @@ const Columns: ColumnsType<any> = [
   {
     title: 'Time',
     dataIndex: 'blockTimestamp',
-    sortDirections: ['descend', 'ascend'],
-    sorter: (a: PoolTransaction, b: PoolTransaction) => {
-      return a.blockTimestamp - b.blockTimestamp;
-    },
     render: (value: number) => formatDistance(new Date(value), new Date(), {
       addSuffix: true,
     }),
@@ -68,18 +66,14 @@ const Columns: ColumnsType<any> = [
   {
     title: 'Amount',
     dataIndex: 'usdAmount',
-    sortDirections: ['descend', 'ascend'],
-    sorter: (a: PoolTransaction, b: PoolTransaction) => {
-      return (a.usdAmount?.toNumber() ?? 0) - (b.usdAmount?.toNumber() ?? 0);
-    },
     align: 'right',
-    render: (value: BigNumber, record: PoolTransaction) => {
+    render: (value: BigNumber, record: PoolTxListItem) => {
       const tokenMeta = getTokenMeta(record.token);
 
       return (
         <Antd.Tooltip title={(
           <span>
-            <strong>{record.tokenAmount?.toFormat()}</strong>&nbsp;
+            <strong>{formatBigValue(record.amount)}</strong>&nbsp;
             {tokenMeta?.name}
           </span>
         )}>
@@ -96,64 +90,93 @@ const Columns: ColumnsType<any> = [
 ];
 
 export type PoolTransactionTableProps = {
+  className?: string;
   label: string;
   ownTransactions?: boolean;
+  deposits?: boolean;
+  withdrawals?: boolean;
   stableToken?: boolean;
-  lpToken?: boolean;
+  unilpToken?: boolean;
   bondToken?: boolean;
 };
 
-const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> = props => {
+const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTableProps> = props => {
   const { ownTransactions } = props;
-  const wallet = useWallet();
+
   const web3c = useWeb3Contracts();
+  const wallet = useWallet();
+  const poolTxList = usePoolTxList();
 
   const [tokenFilter, setTokenFilter] = React.useState<string | number>('all');
   const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
-  const [currentPage, setCurrentPage] = React.useState<number>(1);
-
-  const { loading, transactions } = usePoolTransactions();
 
   const tokenFilterOptions = React.useMemo<DropdownOption[]>(() => {
-    return [
-      { value: 'all', label: 'All tokens' },
-      ...props.stableToken ? [
+    const options: DropdownOption[] = [];
+
+    if (props.stableToken) {
+      options.push(
         { value: USDCTokenMeta.address, label: USDCTokenMeta.name },
         { value: DAITokenMeta.address, label: DAITokenMeta.name },
         { value: SUSDTokenMeta.address, label: SUSDTokenMeta.name },
-      ] : [],
-      ...props.lpToken ? [
-        { value: UNISWAPTokenMeta.address, label: UNISWAPTokenMeta.name },
-      ] : [],
-      ...props.bondToken ? [
-        { value: BONDTokenMeta.address, label: BONDTokenMeta.name },
-      ] : [],
-    ];
-  }, [props.stableToken, props.lpToken, props.bondToken]);
+      );
+    }
 
-  const data = React.useMemo(() => {
-    return pipe(
-      // filter by own transactions
-      ownTransactions
-        ? filter({ user: wallet.account?.toLowerCase() })
-        : (t: PoolTransaction) => t,
-      // filter by transaction token
-      tokenFilter !== 'all'
-        ? filter({ token: tokenFilter })
-        : (t: PoolTransaction) => t,
-      // filter by transaction type
-      typeFilter !== 'all'
-        ? filter({ type: typeFilter })
-        : (t: PoolTransaction) => t,
-    )(transactions);
-  }, [transactions, ownTransactions, tokenFilter, typeFilter, web3c.staking]);  // eslint-disable-line react-hooks/exhaustive-deps
+    if (props.unilpToken) {
+      options.push({ value: UNISWAPTokenMeta.address, label: UNISWAPTokenMeta.name });
+    }
+
+    if (props.bondToken) {
+      options.push({ value: BONDTokenMeta.address, label: BONDTokenMeta.name });
+    }
+
+    if (options.length !== 1) {
+      options.unshift({ value: 'all', label: 'All tokens' });
+    }
+
+    return options;
+  }, [props.stableToken, props.unilpToken, props.bondToken]);
 
   React.useEffect(() => {
-    setCurrentPage(1);
-  }, [tokenFilter, typeFilter]);
+    setTokenFilter(tokenFilterOptions[0].value);
+  }, [tokenFilterOptions]);
+
+  React.useEffect(() => {
+    if (props.deposits) {
+      setTypeFilter(DEPOSITS_KEY);
+    } else if (props.withdrawals) {
+      setTypeFilter(WITHDRAWALS_KEY);
+    }
+  }, [props.deposits, props.withdrawals]);
+
+  React.useEffect(() => {
+    poolTxList.load({
+      user: ownTransactions ? wallet.account?.toLowerCase() : undefined,
+      token: tokenFilter !== 'all' ? String(tokenFilter) : undefined,
+      type: typeFilter !== 'all' ? String(typeFilter) : undefined,
+    }).catch(x => x);
+  }, [ownTransactions, tokenFilter, typeFilter]);  // eslint-disable-line react-hooks/exhaustive-deps
+
+  React.useEffect(() => {
+    poolTxList.startPooling();
+
+    return () => {
+      poolTxList.stopPooling();
+    };
+  }, []);
+
+  const data = React.useMemo<(PoolTxListItem & { usdAmount: BigNumber | undefined })[]>(() => {
+    return poolTxList.transactions.map(tx => {
+      const price = web3c.getTokenUsdPrice(tx.token);
+
+      return {
+        ...tx,
+        usdAmount: price ? tx.amount.multipliedBy(price) : undefined,
+      };
+    });
+  }, [web3c, tokenFilter, poolTxList.transactions]);
 
   return (
-    <div className={s.component}>
+    <div className={cx(s.component, props.className)}>
       <div className={s.header}>
         <div className={s.headerLabel}>{props.label}</div>
         <div className={s.filters}>
@@ -162,7 +185,7 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
             label="Tokens"
             items={tokenFilterOptions}
             selected={tokenFilter}
-            disabled={loading}
+            disabled={poolTxList.loading}
             onSelect={setTokenFilter}
           />
           <Dropdown
@@ -170,14 +193,14 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
             label="Show"
             items={TypeFilters}
             selected={typeFilter}
-            disabled={loading}
+            disabled={poolTxList.loading}
             onSelect={setTypeFilter}
           />
         </div>
       </div>
       <Antd.Table
         className={s.table}
-        loading={loading}
+        loading={!poolTxList.loaded && poolTxList.loading}
         columns={Columns}
         rowKey="txHash"
         dataSource={data}
@@ -186,29 +209,32 @@ const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> =
           emptyText: (
             <div className={s.emptyBlock}>
               <EmptyBoxSvg />
-              <div className={s.emptyLabel}>There are no transaction to show</div>
+              <div className={s.emptyLabel}>There are no transactions to show</div>
             </div>
           ),
         }}
         showSorterTooltip={false}
-        pagination={{
-          pageSize: 10,
-          defaultCurrent: 1,
-          current: currentPage,
-          total: data.length,
-          hideOnSinglePage: true,
-          showSizeChanger: false,
-          showLessItems: true,
-          showTotal: (total: number, range: number[]) => {
-            return <span>Showing {range[0]} to {range[1]} out of {total} entries</span>;
-          },
-          onChange: (nextPage: number) => {
-            setCurrentPage(nextPage);
-          },
-        }}
+        pagination={false}
+        footer={() => (
+          <>
+            {!poolTxList.isEnd && (
+              <Antd.Button
+                type="primary"
+                size="large"
+                disabled={poolTxList.loading}
+                onClick={poolTxList.loadNext}>Load more transactions</Antd.Button>
+            )}
+          </>
+        )}
       />
     </div>
   );
 };
+
+const PoolTransactionTable: React.FunctionComponent<PoolTransactionTableProps> = props => (
+  <PoolTxListProvider>
+    <PoolTransactionTableInner {...props} />
+  </PoolTxListProvider>
+);
 
 export default PoolTransactionTable;

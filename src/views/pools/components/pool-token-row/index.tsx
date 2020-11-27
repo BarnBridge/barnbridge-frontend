@@ -11,23 +11,22 @@ import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import { useEthGasPrice } from 'context/useEthGas';
 
 import InfoBox from 'components/info-box';
 import InfoTooltip from 'components/info-tooltip';
 import NumericInput from 'components/numeric-input';
-import { usePoolTransactions } from 'views/pools/components/pool-transactions-provider';
 
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
 import s from './styles.module.css';
-import { BONDTokenMeta } from 'web3/contracts/bond';
 
 export type PoolTokenRowProps = {
   token: TokenMeta;
   stableToken?: boolean;
-  lpToken?: boolean;
+  unilpToken?: boolean;
   bondToken?: boolean;
   type: 'deposit' | 'withdraw';
 }
@@ -55,10 +54,9 @@ const InitialState: StateType = {
 const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   const web3c = useWeb3Contracts();
   const ethGasPrice = useEthGasPrice();
-  const { fetchLast: fetchLastTransactions } = usePoolTransactions();
 
   const [state, setState] = React.useState<StateType>(InitialState);
-  const [expanded, setExpanded] = React.useState<boolean>(props.lpToken ?? false);
+  const [expanded, setExpanded] = React.useState<boolean>(false);
   const [enabling, setEnabling] = React.useState<boolean>(false);
   const [depositing, setDepositing] = React.useState<boolean>(false);
   const [withdrawing, setWithdrawing] = React.useState<boolean>(false);
@@ -114,6 +112,12 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         break;
     }
   }, [web3c, props.token]);
+
+  React.useEffect(() => {
+    if (props.unilpToken || props.bondToken) {
+      setExpanded(true);
+    }
+  }, [props.unilpToken, props.bondToken]);
 
   const activeBalance = React.useMemo<BigNumber | undefined>(() => {
     if (props.type === 'deposit') {
@@ -211,7 +215,6 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
     try {
       await web3c.staking.depositSend(props.token, state.amount!, gasOptions.get(state.gasAmount)!);
-      fetchLastTransactions();
 
       setState(prevState => ({
         ...prevState,
@@ -252,7 +255,6 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
     try {
       await web3c.staking.withdrawSend(props.token, state.amount!, gasOptions.get(state.gasAmount)!);
-      fetchLastTransactions();
 
       setState(prevState => ({
         ...prevState,
@@ -354,7 +356,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               </div>
               <div className={s.balanceValue}>{formatBigValue(state.effectiveStakedBalance, props.token.decimals)}</div>
             </Antd.Col>
-            {props.lpToken && (
+            {props.unilpToken && (
               <Antd.Col flex="auto">
                 <div className={s.balanceLabel}>WALLET BALANCE</div>
                 <div className={s.balanceValue}>{formatBigValue(state.walletBalance, props.token.decimals)}</div>

@@ -9,7 +9,7 @@
     "isolatedModules": true,
     "target": "es5",
     "baseUrl": "src/",
-    "jsx": "react",
+    "jsx": "react-jsx",
     "allowJs": true,
     "skipLibCheck": true,
     "lib": [

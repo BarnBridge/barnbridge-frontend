@@ -27,7 +27,7 @@ type UNISWAPContractData = {
   usdcReserve?: BigNumber;
   bondReserve?: BigNumber;
   stablePrice: BigNumber;
-  lpPrice?: BigNumber;
+  unilpPrice?: BigNumber;
   bondPrice?: BigNumber;
   balance?: BigNumber;
   allowance?: BigNumber;
@@ -44,7 +44,7 @@ const InitialData: UNISWAPContractData = {
   usdcReserve: undefined,
   bondReserve: undefined,
   stablePrice: new BigNumber(1),
-  lpPrice: undefined,
+  unilpPrice: undefined,
   bondPrice: undefined,
   balance: undefined,
   allowance: undefined,
@@ -109,7 +109,7 @@ export function useUNISWAPContract(): UNISWAPContract {
       ...prevState,
       totalSupply,
       usdcReserve,
-      lpPrice,
+      unilpPrice: lpPrice,
       bondReserve,
       bondPrice,
     }));

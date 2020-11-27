@@ -4,10 +4,6 @@ import EventEmitter from 'wolfy87-eventemitter';
 
 import { getWSRpcUrl } from 'web3/utils';
 
-const Web3EthContract = require('web3-eth-contract');
-
-export type EthContract = Contract & Web3;
-
 export type BatchContractMethod = {
   method: string;
   methodArgs?: any[];
@@ -16,28 +12,32 @@ export type BatchContractMethod = {
 };
 
 export const DEFAULT_CONTRACT_PROVIDER = getWSRpcUrl();
-
 const WEB3_ERROR_VALUE = 3.9638773911973445e+75;
 
-Web3EthContract.setProvider(DEFAULT_CONTRACT_PROVIDER);
+const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
+
+export function setProvider(provider: string = DEFAULT_CONTRACT_PROVIDER) {
+  web3.setProvider(provider);
+}
 
 class Web3Contract extends EventEmitter {
-  readonly ethContract: EthContract;
+  readonly abi: any;
+  readonly address: string;
   readonly name: string;
+  readonly ethContract: Contract;
 
   constructor(abi: any, address: string, name: string) {
     super();
 
-    this.ethContract = new Web3EthContract(abi, address);
+    this.abi = abi;
+    this.address = address;
     this.name = name;
-  }
 
-  setProvider(provider: string) {
-    this.ethContract.setProvider(provider);
+    this.ethContract = new web3.eth.Contract(abi, address) as any;
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
-    const batch = new this.ethContract.BatchRequest();
+    const batch = new web3.BatchRequest();
 
     const promises = methods.map((method: BatchContractMethod) => {
       return new Promise(resolve => {
