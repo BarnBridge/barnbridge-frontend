@@ -11,12 +11,12 @@ import s from './styles.module.css';
 
 const WEB3_LEDGER_DERIVATION_PATHS = [
   {
-    value: 'm/44\'/60\'/0\'',
-    label: 'Ethereum - m/44\'/60\'/0\'',
+    value: `m/44'/60'/0'`,
+    label: `Ethereum - m/44'/60'/0'`,
   },
   {
-    value: 'm/44\'/60\'',
-    label: 'Ethereum - Ledger Live - m/44\'/60\'',
+    value: `m/44'/60'/0'/0`,
+    label: `Ethereum - Ledger Live - m/44'/60'/0'/0`,
   },
 ];
 
