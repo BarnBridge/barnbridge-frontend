@@ -7,7 +7,7 @@
 
 .list {
   display: inline-grid;
-  grid-template-columns: repeat(auto-fit, minmax(392px, auto));
+  grid-template-columns: repeat(auto-fit, minmax(392px, 1fr));
   gap: 32px 32px;
   justify-content: flex-start;
   width: 100%;

@@ -2,20 +2,13 @@
 
 .component {
   min-height: 157px;
-  padding: 32px 0 0;
+  padding: 24px 62px;
   background: #fff;
 }
 
 .header {
-  display: inline-grid;
-  grid-template-columns: repeat(2, max-content);
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
-  padding: 0 64px 16px;
-}
-
-.headerTitle {
+  padding: 0 0 16px;
   @include font-lb2-semi-bold;
   color: #ff4339;
 }
@@ -24,10 +17,11 @@
   display: inline-grid;
   grid-template-columns: repeat(auto-fit, minmax(0, max-content));
   width: 100%;
-  padding: 2px 64px 32px;
 }
 
 .field {
+  grid-template-rows: 24px 48px;
+
   &:not(:last-of-type) {
     border-right: 1px solid #e3e4e6;
     margin-right: 32px;
@@ -78,4 +72,44 @@
   margin-right: 8px;
   border: 1px solid #e3e4e6;
   border-radius: 4px;
+}
+
+.detailedViewModal {
+  :global(.ant-modal-body) {
+    padding: 0;
+  }
+
+  .row {
+    display: inline-grid;
+    grid-template-columns: min-content 1fr min-content;
+    column-gap: 16px;
+    align-items: center;
+    width: 100%;
+    padding: 24px 32px;
+    border-bottom: 1px solid #e3e4e6;
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(113, 121, 128, 0.08);
+    border-radius: 4px;
+
+    svg {
+      color: #aaafb3;
+    }
+  }
+
+  .label,
+  .value {
+    @include font-p1-semi-bold;
+    color: #060a0d;
+  }
+
+  .activeValue {
+    color: #ff4339;
+  }
 }

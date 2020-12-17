@@ -96,8 +96,6 @@ async function loadUserData(userAddress?: string): Promise<DAODiamondContractDat
     ]);
   }
 
-  console.log('userLockedUntil', userLockedUntil);
-
   return {
     balance,
     votingPower,

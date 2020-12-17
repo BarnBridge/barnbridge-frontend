@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import moment from 'moment';
 import { Moment } from 'moment';
 
@@ -8,32 +9,33 @@ import DatePicker from 'components/datepicker';
 import GasFeeList from 'components/gas-fee-list';
 import Button from 'components/button';
 
+import { getFormattedDuration, isValidAddress } from 'utils';
 import { formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
 
 import s from './styles.module.scss';
-import { getFormattedDuration, isValidAddress } from 'utils';
 
 type LockFormData = {
-  duration?: number;
   lockEndDate?: Moment;
   gasFee?: number;
 };
 
 const InitialFormValues: LockFormData = {
-  duration: undefined,
   lockEndDate: undefined,
   gasFee: undefined,
 };
 
+const DURATION_OPTIONS: string[] = [
+  '1w', '1m', '3m', '6m', '1y',
+];
+
 const WalletLockView: React.FunctionComponent<{}> = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<LockFormData>();
-  const currentValue = form.getFieldsValue();
   const [, setValues] = React.useState<{}>({});
-  const [saving, setSaving] = React.useState<boolean>(false);
+  const [submitting, setSubmitting] = React.useState<boolean>(false);
 
   const disabledSubmit = React.useMemo<boolean>(() => {
     if (isValidAddress(web3c.daoDiamond.userDelegatedTo)) {
@@ -43,39 +45,46 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
     return false;
   }, [web3c.daoDiamond.userDelegatedTo]);
 
-  React.useEffect(() => {
-    let duration = Number(currentValue.duration);
+  function handleDurationChange(ev: RadioChangeEvent) {
+    const duration = ev.target.value;
+    const now = moment();
     let lockEndDate = undefined;
 
     switch (duration) {
-      case 7:
-        lockEndDate = moment(new Date()).add(7, 'days');
+      case '1w':
+        lockEndDate = now.add(7, 'days');
         break;
-      case 1:
-        lockEndDate = moment(new Date()).add(1, 'months');
+      case '1m':
+        lockEndDate = now.add(1, 'months');
         break;
-      case 3:
-        lockEndDate = moment(new Date()).add(3, 'months');
+      case '3m':
+        lockEndDate = now.add(3, 'months');
         break;
-      case 6:
-        lockEndDate = moment(new Date()).add(6, 'months');
+      case '6m':
+        lockEndDate = now.add(6, 'months');
         break;
-      case 365:
-        lockEndDate = moment(new Date()).add(365, 'days');
+      case '1y':
+        lockEndDate = now.add(365, 'days');
         break;
-      default:
-        lockEndDate = moment(new Date()).add(7, 'days');
-        duration = 7;
     }
 
     form.setFieldsValue({
-      duration,
       lockEndDate,
     });
-  }, [currentValue.duration]);
+  }
+
+  function disabledDate(date: Moment) {
+    const now = moment();
+
+    if (date.isBefore(now, 'seconds') || date.isAfter(now.add(365, 'days'), 'seconds')) {
+      return true;
+    }
+
+    return false;
+  }
 
   async function handleSubmit(values: LockFormData) {
-    setSaving(true);
+    setSubmitting(true);
 
     try {
       await web3c.daoDiamond.actions.lock(values.lockEndDate!.unix(), values.gasFee!);
@@ -85,7 +94,7 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
       //
     }
 
-    setSaving(false);
+    setSubmitting(false);
   }
 
   return (
@@ -112,25 +121,29 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
         onFinish={handleSubmit}>
         <div className={s.body}>
           <div className={s.leftCol}>
-            <Form.Item
-              name="duration"
-              label="Lock duration"
-              rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group className={s.lockOptions} disabled={saving}>
-                <Antd.Radio.Button className={s.lockOption} value="7">1w</Antd.Radio.Button>
-                <Antd.Radio.Button className={s.lockOption} value="1">1m</Antd.Radio.Button>
-                <Antd.Radio.Button className={s.lockOption} value="3">3m</Antd.Radio.Button>
-                <Antd.Radio.Button className={s.lockOption} value="6">6m</Antd.Radio.Button>
-                <Antd.Radio.Button className={s.lockOption} value="365">1y</Antd.Radio.Button>
+            <Form.Item label="Lock duration">
+              <Antd.Radio.Group
+                className={s.lockOptions}
+                disabled={submitting}
+                onChange={handleDurationChange}>
+                {DURATION_OPTIONS.map(opt => (
+                  <Antd.Radio.Button
+                    key={opt}
+                    className={s.lockOption}
+                    value={opt}>{opt}</Antd.Radio.Button>
+                ))}
               </Antd.Radio.Group>
             </Form.Item>
             <Form.Item
               name="lockEndDate"
               label="Manual choose your lock end date"
               rules={[{ required: true, message: 'Required' }]}>
-              <DatePicker showTime={{
-                showSecond: false,
-              }} disabled={saving} />
+              <DatePicker
+                showTime
+                showNow={false}
+                disabledDate={disabledDate}
+                format="DD/MM/YYYY HH:mm"
+                disabled={submitting} />
             </Form.Item>
           </div>
           <div className={s.rightCol}>
@@ -141,7 +154,7 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
               rules={[
                 { required: true, message: 'Required' },
               ]}>
-              <GasFeeList disabled={saving} />
+              <GasFeeList disabled={submitting} />
             </Form.Item>
           </div>
         </div>
@@ -149,7 +162,7 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
           type="primary"
           htmlType="submit"
           size="large"
-          loading={saving}
+          loading={submitting}
           disabled={disabledSubmit}
           className={s.lockBtn}>
           Lock

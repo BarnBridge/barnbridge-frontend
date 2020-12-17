@@ -71,7 +71,7 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
 
   const disabledDelegate = React.useMemo<boolean>(() => {
     if (currentValue.votingType === MANUAL_VOTING_KEY) {
-      if (!web3c.daoDiamond.userDelegatedTo || web3c.daoDiamond.userDelegatedTo === DEFAULT_ADDRESS) {
+      if (!isValidAddress(web3c.daoDiamond.userDelegatedTo)) {
         return true;
       }
     } else if (currentValue.votingType === DELEGATE_VOTING_KEY) {
@@ -86,7 +86,7 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
   React.useEffect(() => {
     const { userDelegatedTo } = web3c.daoDiamond;
 
-    if (userDelegatedTo && isValidAddress(userDelegatedTo)) {
+    if (isValidAddress(userDelegatedTo)) {
       form.setFieldsValue({
         votingType: DELEGATE_VOTING_KEY,
         delegateAddress: userDelegatedTo,
@@ -168,7 +168,10 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
           disabled={disabledDelegate}
           loading={saving}
           className={s.delegateBtn}>
-          Delegate
+          {currentValue.votingType === MANUAL_VOTING_KEY && isValidAddress(web3c.daoDiamond.userDelegatedTo)
+            ? 'Stop Delegate'
+            : 'Delegate'
+          }
         </Button>
       </Form>
     </div>

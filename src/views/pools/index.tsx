@@ -6,6 +6,7 @@ import { isMobile } from 'react-device-detect';
 import EthGasPriceProvider from 'context/useEthGas';
 import { useWallet } from 'wallets/wallet';
 import { useWarnings } from 'components/warnings';
+import LayoutHeader from 'views/layout/components/layout-header';
 import ConnectedWallet from 'components/connected-wallet';
 import PoolRewards from 'views/pools/components/pool-rewards';
 import PoolStats from 'views/pools/components/pool-stats';
@@ -42,42 +43,37 @@ const PoolsView: React.FunctionComponent = () => {
   }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={s.view}>
-      {!isMobile && (
-        <Antd.Row className={s.walletRow}>
-          <Antd.Col flex="auto">
-            {wallet.isActive && <PoolRewards />}
-          </Antd.Col>
-          <Antd.Col className={s.wallet}>
-            <ConnectedWallet />
-          </Antd.Col>
-        </Antd.Row>
-      )}
+    <div className={s.component}>
+      <LayoutHeader title="Smart yield" />
 
-      <PoolStats className={s.stats} />
+      <div className={s.content}>
+        {!isMobile && wallet.isActive && <PoolRewards />}
 
-      <EthGasPriceProvider>
-        <PoolTxListProvider>
-          <Switch>
-            <Route path="/pools" exact render={() => (
-              <PoolOverview />
-            )} />
-            {wallet.isActive && (
-              <>
-                <Route path="/pools/stable" exact render={() => (
-                  <PoolStak stableToken />
-                )} />
-                <Route path="/pools/unilp" exact render={() => (
-                  <PoolStak unilpToken />
-                )} />
-                <Route path="/pools/bond" exact render={() => (
-                  <PoolStak bondToken />
-                )} />
-              </>
-            )}
-          </Switch>
-        </PoolTxListProvider>
-      </EthGasPriceProvider>
+        <PoolStats className={s.stats} />
+
+        <EthGasPriceProvider>
+          <PoolTxListProvider>
+            <Switch>
+              <Route path="/pools" exact render={() => (
+                <PoolOverview />
+              )} />
+              {wallet.isActive && (
+                <>
+                  <Route path="/pools/stable" exact render={() => (
+                    <PoolStak stableToken />
+                  )} />
+                  <Route path="/pools/unilp" exact render={() => (
+                    <PoolStak unilpToken />
+                  )} />
+                  <Route path="/pools/bond" exact render={() => (
+                    <PoolStak bondToken />
+                  )} />
+                </>
+              )}
+            </Switch>
+          </PoolTxListProvider>
+        </EthGasPriceProvider>
+      </div>
     </div>
   );
 };

@@ -20,7 +20,7 @@ import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
 import { ReactComponent as PoolsSvg } from 'resources/svg/icons/pools.svg';
 import { ReactComponent as VotingSvg } from 'resources/svg/icons/voting.svg';
 
-import s from './styles.module.css';
+import s from './styles.module.scss';
 
 const SiderNavLinks: SiderNavLinkProps[] = [
   {
@@ -44,8 +44,6 @@ const LayoutView: React.FunctionComponent = () => {
   return (
     <Antd.Layout className={s.container}>
       <SiderNav className={s.siderNav} links={SiderNavLinks} />
-
-
 
       <Antd.Layout className={s.main}>
         {isMobile && <MobileMenu />}
