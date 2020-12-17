@@ -2,13 +2,14 @@ import React from 'react';
 import * as Antd from 'antd';
 import { InputProps } from 'antd/lib/input/Input';
 import BigNumber from 'bignumber.js';
+import cx from 'classnames';
 
-import s from './styles.module.css';
+import s from './styles.module.scss';
 
 export type NumericInputProps = Omit<InputProps, 'value' | 'onChange'> & {
-  value: BigNumber | undefined;
+  value?: BigNumber | number;
   maximumFractionDigits?: number;
-  onChange: (value: BigNumber | undefined) => void;
+  onChange?: (value: BigNumber) => void;
 };
 
 function removeComma(value: string): string {
@@ -16,7 +17,7 @@ function removeComma(value: string): string {
 }
 
 const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
-  const { maximumFractionDigits, ...inputProps } = props;
+  const { className, maximumFractionDigits, ...inputProps } = props;
 
   const [, forceRender] = React.useState<{}>({});
   const valueRef = React.useRef<string>('');
@@ -28,7 +29,7 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
   React.useEffect(() => {
     const val = props.value;
 
-    valueRef.current = val !== undefined ? val.toFormat() : '';
+    valueRef.current = val !== undefined ? new BigNumber(val).toFormat() : '';
     forceRender({});
   }, [props.value]);
 
@@ -84,7 +85,7 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
   return (
     <Antd.Input
       {...inputProps}
-      className={s.component}
+      className={cx(s.component, className)}
       onChange={handleChange}
       onBlur={handleBlur}
       value={valueRef.current}

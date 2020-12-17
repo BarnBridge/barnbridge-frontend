@@ -1,0 +1,42 @@
+@import "src/mixin";
+
+.tabs:global > {
+  .ant-tabs-nav {
+    margin-bottom: 32px;
+
+    &::before {
+      border-bottom: none;
+    }
+
+    .ant-tabs-tab {
+      padding-bottom: 8px;
+
+      .ant-tabs-tab-btn {
+        @include font-p1-semi-bold;
+        color: #717980;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        svg {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          color: #aaafb3;
+        }
+      }
+
+      &.ant-tabs-tab-active .ant-tabs-tab-btn {
+        color: #060a0d;
+
+        svg {
+          color: #ff4339;
+        }
+      }
+    }
+  }
+}
+
+.tab {
+}

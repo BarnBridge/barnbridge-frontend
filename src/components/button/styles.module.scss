@@ -1,0 +1,122 @@
+@import "src/mixin";
+
+.component {
+  width: fit-content;
+  border-radius: 4px;
+  text-align: center;
+
+  &:global {
+    &.ant-btn-sm {
+      min-width: 18px;
+      min-height: 34px;
+      padding: 9px;
+      @include font-sm-bold;
+    }
+
+    &.ant-btn {
+      min-width: 24px;
+      min-height: 48px;
+      padding: 12px;
+      @include font-p2-bold;
+    }
+
+    &.ant-btn-lg {
+      min-width: 40px;
+      min-height: 64px;
+      padding: 20px;
+      @include font-p1-bold;
+    }
+
+    &.ant-btn-primary {
+      box-shadow: 0 8px 16px var(--btn-primary-shadow-color);
+      border: none;
+      background: var(--btn-primary-bg-color);
+      color: var(--btn-primary-color);
+
+      &:hover {
+        box-shadow: 0 8px 16px var(--btn-primary-hover-shadow-color);
+        border: none;
+        background: var(--btn-primary-hover-bg-color);
+        color: var(--btn-primary-color);
+      }
+
+      &:active {
+        box-shadow: 0 4px 8px var(--btn-primary-active-shadow-color);
+        border: none;
+        background: var(--btn-primary-active-bg-color);
+        color: var(--btn-primary-color);
+      }
+
+      &:disabled,
+      &:disabled:hover {
+        box-shadow: none;
+        border: none;
+        background: var(--btn-primary-disabled-bg-color);
+        color: var(--btn-primary-disabled-color);
+      }
+    }
+
+    &.ant-btn-default {
+      border: none;
+      background: var(--btn-default-bg-color);
+      color: var(--btn-default-color);
+
+      &:hover {
+        border: none;
+        background: var(--btn-default-hover-bg-color);
+        color: var(--btn-default-hover-color);
+      }
+
+      &:active {
+        border: none;
+        background: var(--btn-default-active-bg-color);
+        color: var(--btn-default-active-color);
+      }
+
+      &:disabled,
+      &:disabled:hover {
+        border: none;
+        background: var(--btn-default-disabled-bg-color);
+        color: var(--btn-default-disabled-color);
+      }
+    }
+
+    &.ant-btn-ghost {
+      border-color: var(--btn-ghost-border-color);
+      background: var(--btn-ghost-bg-color);
+      color: var(--btn-ghost-color);
+
+      &:hover {
+        border-color: var(--btn-ghost-hover-border-color);
+        background: var(--btn-ghost-hover-bg-color);
+        color: var(--btn-ghost-hover-color);
+      }
+
+      &:active {
+        border-color: var(--btn-ghost-active-border-color);
+        background: var(--btn-ghost-active-bg-color);
+        color: var(--btn-ghost-active-color);
+      }
+
+      &:disabled,
+      &:disabled:hover {
+        border-color: var(--btn-ghost-disabled-border-color);
+        background: var(--btn-ghost-disabled-bg-color);
+        color: var(--btn-ghost-disabled-color);
+      }
+    }
+
+    &.ant-btn-link {
+      color: var(--btn-link-color);
+      border: none;
+
+      &:hover {
+        color: var(--btn-link-hover-color);
+      }
+
+      &:active {
+        color: var(--btn-link-active-color);
+      }
+    }
+  }
+}

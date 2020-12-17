@@ -11,6 +11,7 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
+export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
 
 export function getWSRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
   const WEB3_RPC_ID = String(process.env.REACT_APP_WEB3_RPC_ID);
@@ -87,6 +88,10 @@ export function getHumanValue(value?: BigNumber, decimals: number = 0): BigNumbe
 
 export function getNonHumanValue(value: BigNumber | number, decimals: number = 0): BigNumber {
   return (new BigNumber(value)).multipliedBy(getExponentValue(decimals));
+}
+
+export function getGasValue(price: number): number {
+  return getNonHumanValue(price, 9).toNumber();
 }
 
 export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultValue: string = '-', minDecimals: number | undefined = undefined): string {

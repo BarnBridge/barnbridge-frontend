@@ -1,0 +1,43 @@
+@import "src/mixin";
+
+.component {
+  width: 100%;
+  margin-bottom: 64px;
+}
+
+.list {
+  display: inline-grid;
+  grid-template-columns: repeat(auto-fit, minmax(392px, auto));
+  gap: 32px 32px;
+  justify-content: flex-start;
+  width: 100%;
+}
+
+.card {
+  padding: 24px;
+  background: #fff;
+  box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+  border-radius: 4px;
+}
+
+.cardHeader {
+  @include font-lb2-semi-bold;
+  color: #ff4339;
+  margin-bottom: 44px;
+}
+
+.cardValue {
+  @include font-p1-regular;
+  color: #717980;
+  margin-bottom: 4px;
+}
+
+.cardValue strong {
+  @include font-h2-bold;
+  color: #060a0d;
+}
+
+.cardHint {
+  @include font-p1-regular;
+  color: #717980;
+}

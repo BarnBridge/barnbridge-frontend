@@ -1,0 +1,23 @@
+@import "src/mixin";
+
+.component {
+  display: inline-grid;
+  grid-template-columns: min-content 1fr;
+  column-gap: 16px;
+  align-items: center;
+  min-height: 80px;
+  padding: 16px 24px;
+  background-color: var(--bg-color-5);
+  border-radius: 4px;
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  color: var(--text-color-7);
+}
+
+.text {
+  @include font-p2-regular;
+  color: #4f6ae5;
+}

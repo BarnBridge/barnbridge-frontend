@@ -36,12 +36,13 @@
     "@web3-react/trezor-connector": "6.1.6",
     "@web3-react/walletconnect-connector": "6.1.6",
     "@web3-react/walletlink-connector": "6.1.6",
-    "antd": "4.8.6",
+    "antd": "4.9.4",
     "bignumber.js": "9.0.1",
     "classnames": "2.2.6",
     "date-fns": "2.16.1",
     "identicon.js": "2.3.3",
     "lodash": "4.17.20",
+    "moment": "^2.29.1",
     "react": "17.0.1",
     "react-device-detect": "1.14.0",
     "react-dom": "17.0.1",
@@ -60,12 +61,19 @@
     "@types/react": "17.0.0",
     "@types/react-dom": "17.0.0",
     "@types/react-router-dom": "5.1.6",
-    "@types/recharts": "1.8.16",
+    "@types/recharts": "1.8.18",
     "@types/wolfy87-eventemitter": "5.2.0",
     "dotenv": "8.2.0",
-    "husky": "4.3.0",
+    "husky": "4.3.6",
     "lessc": "1.0.2",
+    "node-sass": "4.14.1",
     "react-scripts": "4.0.1",
     "typescript": "4.1.2"
+  },
+  "david": {
+    "ignore": [
+      "web3",
+      "node-sass"
+    ]
   }
 }

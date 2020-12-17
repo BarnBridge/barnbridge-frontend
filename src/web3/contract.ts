@@ -10,6 +10,7 @@ export type BatchContractMethod = {
   methodArgs?: any[];
   callArgs?: Record<string, any>;
   transform?: (value: any) => any;
+  onError?: (err: Error) => any;
 };
 
 export const DEFAULT_CONTRACT_PROVIDER = new Web3.providers.WebsocketProvider(getWSRpcUrl());
@@ -49,6 +50,7 @@ class Web3Contract extends EventEmitter {
           methodArgs = [],
           callArgs = {},
           transform = (value: any) => value,
+          onError,
         } = method;
 
         const contractMethod = this.ethContract.methods[methodName];
@@ -61,8 +63,12 @@ class Web3Contract extends EventEmitter {
           const request = contractMethod(...methodArgs).call
             .request(callArgs, (err: Error, value: string) => {
               if (err) {
-                console.error(`${this.name}:${methodName}.call`, err);
-                return resolve(undefined);
+                if (onError instanceof Function) {
+                  return resolve(onError(err));
+                } else {
+                  console.error(`${this.name}:${methodName}.call`, err);
+                  return resolve(undefined);
+                }
               }
 
               if (+value === WEB3_ERROR_VALUE) {

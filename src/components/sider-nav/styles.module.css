@@ -1,6 +1,7 @@
 .component {
     background-color: var(--bg-color-2);
     box-shadow: 0 0 0.5px var(--shadow-color-1);
+    border-right: 1px solid #e3e4e6;;
 }
 
 .component :global .ant-layout-sider-children {

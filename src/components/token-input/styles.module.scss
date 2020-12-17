@@ -1,0 +1,34 @@
+@import "src/mixin";
+
+.component {
+  height: 64px;
+  background: #fff;
+  //border-radius: 4px;
+  //border: 1px solid #e3e4e6;
+
+  @include font-p1-semi-bold;
+  color: #060a0d;
+
+  :global {
+    .ant-input-wrapper {
+      height: 100%;
+    }
+
+    .ant-input-group-addon {
+      width: 72px;
+      height: 100%;
+    }
+
+    .ant-input {
+      height: 100%;
+    }
+  }
+}
+
+.addonBefore {
+  width: 24px;
+  height: 24px;
+  margin: 0 auto;
+  border: 1px solid #e3e4e6;
+  border-radius: 4px;
+}

@@ -1,0 +1,27 @@
+.component {
+  :global {
+    .ant-slider-rail,
+    .ant-slider-rail:hover {
+      height: 8px;
+      background: #43484d;
+    }
+
+    .ant-slider-track {
+      height: 8px;
+      background: #ff4339;
+    }
+
+    .ant-slider-step {
+      height: 8px;
+    }
+
+    .ant-slider-handle {
+      width: 24px;
+      height: 24px;
+      margin-top: -8px;
+      border: 6px solid #ff4339;
+      background: #fff;
+      box-shadow: 0 0 0 5px #fff;
+    }
+  }
+}

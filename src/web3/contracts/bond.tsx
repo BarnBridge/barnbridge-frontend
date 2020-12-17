@@ -10,8 +10,15 @@ import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 
 import { ReactComponent as BONDIcon } from 'resources/svg/tokens/bond.svg';
+import { CONTRACT_DAO_DIAMOND_ADDR } from 'web3/contracts/daoDiamond';
 
 const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
+
+const Contract = new Web3Contract(
+  require('web3/abi/bond.json'),
+  CONTRACT_BOND_ADDR,
+  'BOND',
+);
 
 export const BONDTokenMeta: TokenMeta = {
   icon: <BONDIcon key="bond" />,
@@ -20,42 +27,61 @@ export const BONDTokenMeta: TokenMeta = {
   decimals: 18,
 };
 
+export const VBONDTokenMeta: TokenMeta = {
+  icon: <BONDIcon key="vbond" />,
+  name: 'vBOND',
+  address: CONTRACT_BOND_ADDR,
+  decimals: 18,
+};
+
 type BONDContractData = {
   balance?: BigNumber;
+  totalSupply?: BigNumber;
   allowance?: BigNumber;
+  barnAllowance?: BigNumber;
 };
 
 export type BONDContract = BONDContractData & {
   contract: Web3Contract;
   reload(): void;
-  approveSend(value: BigNumber): Promise<any>;
+  approveSend(address: string, value: BigNumber): Promise<any>;
 };
 
 const InitialData: BONDContractData = {
   balance: undefined,
   allowance: undefined,
+  barnAllowance: undefined,
 };
 
 export function useBONDContract(): BONDContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
-  const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(
-      require('web3/abi/bond.json'),
-      CONTRACT_BOND_ADDR,
-      'BOND',
-    );
-  }, []);
-
   const [data, setData] = React.useState<BONDContractData>(InitialData);
+
+  useAsyncEffect(async () => {
+    let totalSupply: BigNumber | undefined = undefined;
+
+    [totalSupply] = await Contract.batch([
+      {
+        method: 'totalSupply',
+        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      },
+    ]);
+
+    setData(prevState => ({
+      ...prevState,
+      totalSupply,
+    }));
+  }, [reload, wallet.account]);
 
   useAsyncEffect(async () => {
     let balance: BigNumber | undefined = undefined;
     let allowance: BigNumber | undefined;
+    let barnAllowance: BigNumber | undefined;
 
     if (wallet.account) {
-      [balance, allowance] = await contract.batch([
+      [balance, allowance, barnAllowance] = await Contract.batch([
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
@@ -66,6 +92,11 @@ export function useBONDContract(): BONDContract {
           methodArgs: [wallet.account, CONTRACT_STAKING_ADDR],
           transform: (value: string) => new BigNumber(value),
         },
+        {
+          method: 'allowance',
+          methodArgs: [wallet.account, CONTRACT_DAO_DIAMOND_ADDR],
+          transform: (value: string) => new BigNumber(value),
+        },
       ]);
     }
 
@@ -73,30 +104,30 @@ export function useBONDContract(): BONDContract {
       ...prevState,
       balance,
       allowance,
+      barnAllowance,
     }));
-  }, [reload, contract, wallet.account]);
+  }, [reload, wallet.account]);
 
-  const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
+  const approveSend = React.useCallback((address: string, value: BigNumber): Promise<any> => {
     if (!wallet.account) {
       return Promise.reject();
     }
 
-    return contract.send('approve', [
-      CONTRACT_STAKING_ADDR,
+    return Contract.send('approve', [
+      address,
       value,
     ], {
       from: wallet.account,
     }).then(reload);
-  }, [reload, contract, wallet.account]);
+  }, [reload, wallet.account]);
 
   return React.useMemo(() => ({
     ...data,
-    contract,
+    contract: Contract,
     reload,
     approveSend,
   }), [
     data,
-    contract,
     reload,
     approveSend,
   ]);

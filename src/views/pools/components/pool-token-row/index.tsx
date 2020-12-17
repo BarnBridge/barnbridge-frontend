@@ -22,6 +22,7 @@ import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
 import s from './styles.module.css';
+import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 
 export type PoolTokenRowProps = {
   token: TokenMeta;
@@ -171,7 +172,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           await web3c.uniswap.approveSend(value);
           break;
         case BONDTokenMeta:
-          await web3c.bond.approveSend(value);
+          await web3c.bond.approveSend(CONTRACT_STAKING_ADDR, value);
           break;
         default:
           break;

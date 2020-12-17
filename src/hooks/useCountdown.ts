@@ -9,6 +9,11 @@ export function useWeekCountdown(endDate?: number): string[] {
       return;
     }
 
+    if (endDate < Date.now()) {
+      setCountdown(`0d 0h 0m`);
+      return;
+    }
+
     const intervalID = setInterval(() => {
       const start = new Date();
 
@@ -39,7 +44,7 @@ export function useWeekCountdown(endDate?: number): string[] {
                 return `${String(value).padStart(2, '0')}m`;
             }
           },
-        }
+        },
       }));
     }, 1000);
 

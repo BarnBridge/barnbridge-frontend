@@ -110,3 +110,54 @@ button {
 
     --shadow-color-1: rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
 }
+
+:root {
+    // components/button
+    --btn-primary-color: #fff;
+    --btn-primary-bg-color: #ff4339;
+    --btn-primary-shadow-color: rgba(255, 67, 57, 0.16);
+    --btn-primary-hover-bg-color: #ff6961;
+    --btn-primary-hover-shadow-color: rgba(255, 105, 97, 0.24);
+    --btn-primary-active-bg-color: #cc362e;
+    --btn-primary-active-shadow-color: rgba(204, 54, 46, 0.16);
+    --btn-primary-disabled-bg-color: #43484d;
+    --btn-primary-disabled-color: #939496;
+    --btn-default-color: #ff4339;
+    --btn-default-bg-color: rgba(255, 67, 57, 0.08);
+    --btn-default-hover-color: #ff6961;
+    --btn-default-hover-bg-color: rgba(255, 105, 97, 0.1);
+    --btn-default-active-color: #cc362e;
+    --btn-default-active-bg-color: rgba(204, 54, 46, 0.08);
+    --btn-default-disabled-color: #939496;
+    --btn-default-disabled-bg-color: rgba(96, 98, 104, 0.09);
+    --btn-ghost-color: #ff4339;
+    --btn-ghost-bg-color: rgba(204, 54, 46, 0.04);
+    --btn-ghost-border-color: #ff4339;
+    --btn-ghost-hover-color: #ff6961;
+    --btn-ghost-hover-bg-color: rgba(255, 105, 97, 0.1);
+    --btn-ghost-hover-border-color: #ff8e88;
+    --btn-ghost-active-color: #cc362e;
+    --btn-ghost-active-bg-color: rgba(204, 54, 46, 0.04);
+    --btn-ghost-active-border-color: #cc362e;
+    --btn-ghost-disabled-color: #939496;
+    --btn-ghost-disabled-bg-color: rgba(147, 148, 150, 0.09);
+    --btn-ghost-disabled-border-color: #43484d;
+    --btn-link-color: #ff4339;
+    --btn-link-hover-color: #aaafb3;
+    --btn-link-active-color: #ff4339;
+}
+
+.theme-dark {
+    // components/button
+    --btn-primary-disabled-bg-color: #c6c9cc;
+    --btn-primary-disabled-color: #fff;
+    --btn-default-bg-color: rgba(255, 67, 57, 0.1);
+    --btn-default-disabled-color: #aaafb3;
+    --btn-default-disabled-bg-color: rgba(170, 175, 179, 0.08);
+    --btn-ghost-disabled-color: #aaafb3;
+    --btn-ghost-disabled-bg-color: rgba(170, 175, 179, 0.08);
+    --btn-ghost-disabled-border-color: #e3e4e6;
+    --btn-link-color: #606268;
+    --btn-link-hover-color: #fff;
+    --btn-link-active-color: #fff;
+}

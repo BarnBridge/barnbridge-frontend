@@ -5,7 +5,7 @@ import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useRefState } from 'hooks/useRefState';
 import { TokenMeta } from 'web3/types';
-import { getHumanValue, getNonHumanValue } from 'web3/utils';
+import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -299,7 +299,7 @@ export function useStakingContract(): StakingContract {
       getNonHumanValue(amount, tokenMeta.decimals),
     ], {
       from: wallet.account,
-      gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
+      gasPrice: getGasValue(gasPrice),
     }).then(reload);
   }, [reload, contract, wallet.account]);
 
@@ -313,7 +313,7 @@ export function useStakingContract(): StakingContract {
       getNonHumanValue(amount, tokenMeta.decimals),
     ], {
       from: wallet.account,
-      gasPrice: getNonHumanValue(gasPrice, 9).toNumber(),
+      gasPrice: getGasValue(gasPrice),
     }).then(reload);
   }, [reload, contract, wallet.account]);
 

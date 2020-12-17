@@ -1,0 +1,10 @@
+@import "src/mixin";
+
+.component {
+}
+
+.header {
+  @include font-h1-bold;
+  color: #060a0d;
+  margin-bottom: 32px;
+}
