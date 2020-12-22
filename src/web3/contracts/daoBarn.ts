@@ -21,7 +21,7 @@ type DAOBarnContractData = {
   bondStaked?: BigNumber;
   balance?: BigNumber;
   votingPower?: BigNumber;
-  delegatedPower?: number;
+  delegatedPower?: BigNumber;
   userLockedUntil?: number;
   userDelegatedTo?: string;
   multiplier?: number;
@@ -57,7 +57,7 @@ async function loadCommonData(): Promise<DAOBarnContractData> {
 async function loadUserData(userAddress?: string): Promise<DAOBarnContractData> {
   let balance: BigNumber | undefined;
   let votingPower: BigNumber | undefined;
-  let delegatedPower: number | undefined;
+  let delegatedPower: BigNumber | undefined;
   let userLockedUntil: number | undefined;
   let userDelegatedTo: string | undefined;
   let multiplier: number | undefined;

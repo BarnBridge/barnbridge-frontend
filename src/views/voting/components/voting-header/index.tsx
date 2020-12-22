@@ -94,7 +94,7 @@ const VotingHeader: React.FunctionComponent = () => {
               <div className={s.row}>
                 <div className={s.icon}><UserPlusSvg /></div>
                 <div className={s.label}>Delegated to me</div>
-                <div className={s.value}>{delegatedPower}</div>
+                <div className={s.value}>{formatBONDValue(delegatedPower)}</div>
               </div>
               <div className={s.row}>
                 <div className={s.icon}><VotingSvg /></div>
