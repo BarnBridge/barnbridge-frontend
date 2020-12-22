@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Antd from 'antd';
 import cx from 'classnames';
 
 import Button from 'components/button';
@@ -6,9 +7,9 @@ import Field from 'components/field';
 import Modal from 'components/modal';
 import Identicon from 'components/identicon';
 
-import { isValidAddress } from 'utils';
+import { inRange, isValidAddress } from 'utils';
+import { formatBigValue, formatBONDValue, shortenAddr, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { formatBONDValue, shortenAddr } from 'web3/utils';
 import { useWeekCountdown } from 'hooks/useCountdown';
 
 import { ReactComponent as BondSquareSvg } from 'resources/svg/tokens/bond-square.svg';
@@ -19,13 +20,18 @@ import { ReactComponent as VotingSvg } from 'resources/svg/icons/voting.svg';
 
 import s from './styles.module.scss';
 
-export type VotingHeaderProps = {};
-
-const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
+const VotingHeader: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
-  const [countdown] = useWeekCountdown(web3c.daoDiamond.userLockedUntil);
   const [detailedView, showDetailedView] = React.useState<boolean>(false);
-  const isDelegated = isValidAddress(web3c.daoDiamond.userDelegatedTo);
+
+  const { claim: reward } = web3c.daoReward;
+  const { balance: bondBalance } = web3c.bond;
+  const { votingPower, userLockedUntil, userDelegatedTo, delegatedPower, multiplier = 1, balance: myBondBalance } = web3c.daoBarn;
+
+  const [countdown] = useWeekCountdown(userLockedUntil);
+  const isDelegated = isValidAddress(userDelegatedTo);
+
+  const myBonus = isDelegated ? ZERO_BIG_NUMBER : votingPower?.minus(myBondBalance ?? ZERO_BIG_NUMBER).minus(delegatedPower ?? ZERO_BIG_NUMBER);
 
   return (
     <div className={s.component}>
@@ -37,11 +43,11 @@ const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
           label="Current reward"
           className={s.field}>
           <div className={s.fieldContent}>
-            <span>{formatBONDValue(web3c.daoReward.claim)}</span>
+            <span>{formatBONDValue(reward)}</span>
             <BondSquareSvg className={s.bondIcon} />
             <Button
               type="link"
-              disabled={web3c.daoReward.claim?.isZero()}
+              disabled={reward?.isZero()}
               onClick={() => web3c.daoReward.claimSend()}
             >
               Claim
@@ -53,7 +59,7 @@ const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
           label="Bond Balance"
           className={s.field}>
           <div className={s.fieldContent}>
-            <span>{formatBONDValue(web3c.bond.balance)}</span>
+            <span>{formatBONDValue(bondBalance)}</span>
             <BondSquareSvg className={s.bondIcon} />
           </div>
         </Field>
@@ -64,8 +70,8 @@ const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
           className={s.field}>
           <div className={s.fieldContent}>
             <span>{isDelegated
-              ? formatBONDValue(web3c.daoDiamond.bondStaked)
-              : formatBONDValue(web3c.daoDiamond.votingPower)
+              ? formatBONDValue(myBondBalance)
+              : formatBONDValue(votingPower)
             }</span>
             <Button type="link" onClick={() => showDetailedView(true)}>
               Detailed view
@@ -78,22 +84,22 @@ const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
               <div className={s.row}>
                 <div className={s.icon}><WalletSvg /></div>
                 <div className={s.label}>My balance</div>
-                <div className={s.value}>{formatBONDValue(web3c.daoDiamond.bondStaked)}</div>
+                <div className={s.value}>{formatBONDValue(myBondBalance)}</div>
               </div>
               <div className={s.row}>
                 <div className={s.icon}><PercentageSvg /></div>
                 <div className={s.label}>My bonus</div>
-                <div className={s.value}>0</div>
+                <div className={s.value}>{formatBONDValue(myBonus)}</div>
               </div>
               <div className={s.row}>
                 <div className={s.icon}><UserPlusSvg /></div>
                 <div className={s.label}>Delegated to me</div>
-                <div className={s.value}>{web3c.daoDiamond.delegatedPower}</div>
+                <div className={s.value}>{delegatedPower}</div>
               </div>
               <div className={s.row}>
                 <div className={s.icon}><VotingSvg /></div>
                 <div className={s.label}>My total voting power</div>
-                <div className={cx(s.value, s.activeValue)}>{formatBONDValue(web3c.daoDiamond.votingPower)}</div>
+                <div className={cx(s.value, s.activeValue)}>{formatBONDValue(votingPower)}</div>
               </div>
             </Modal>
           </div>
@@ -105,8 +111,8 @@ const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
             hint=" "
             className={s.field}>
             <div className={s.fieldContent}>
-              <Identicon className={s.identicon} address={web3c.daoDiamond.userDelegatedTo!} />
-              <span>{shortenAddr(web3c.daoDiamond.userDelegatedTo!)}</span>
+              <Identicon className={s.identicon} address={userDelegatedTo!} />
+              <span>{shortenAddr(userDelegatedTo!)}</span>
             </div>
           </Field>
         )}
@@ -116,7 +122,11 @@ const VotingHeader: React.FunctionComponent<VotingHeaderProps> = props => {
           hint=" "
           className={s.field}>
           <div className={s.fieldContent}>
-            <span className={s.ratio}>{web3c.daoDiamond.multiplier}x</span>
+            <Antd.Tooltip title={`${multiplier}x`}>
+            <span className={s.ratio}>
+              {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(multiplier, 2, '-', 2)}x
+            </span>
+            </Antd.Tooltip>
             <span className={s.regular}>for</span>
             <span className={s.timer}>{countdown}</span>
           </div>

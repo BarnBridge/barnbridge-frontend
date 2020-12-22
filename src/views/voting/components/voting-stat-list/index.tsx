@@ -1,10 +1,10 @@
 import React from 'react';
-
-import { useWeb3Contracts } from 'web3/contracts';
-import { formatBONDValue, formatUSDValue, getHumanValue } from 'web3/utils';
 import BigNumber from 'bignumber.js';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+
 import { getFormattedDuration } from 'utils';
+import { formatBONDValue, formatUSDValue, getHumanValue } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 import s from './styles.module.scss';
 
@@ -28,9 +28,7 @@ function fetchOverview() {
     }));
 }
 
-export type VotingStatListProps = {};
-
-const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
+const VotingStatList: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [overview, setOverview] = React.useState<OverviewData>({
     avgLockTimeSeconds: undefined,
@@ -51,7 +49,7 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
         <div className={s.card}>
           <div className={s.cardHeader}>BOND LOCKED</div>
           <div className={s.cardValue}>
-            <strong>{formatBONDValue(web3c.daoDiamond.bondStaked)}</strong> BOND
+            <strong>{formatBONDValue(web3c.daoBarn.bondStaked)}</strong> BOND
           </div>
           <div className={s.cardHint}>{formatUSDValue(web3c.aggregated.bondLockedPrice)}</div>
         </div>

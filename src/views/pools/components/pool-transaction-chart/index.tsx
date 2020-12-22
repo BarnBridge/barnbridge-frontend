@@ -70,7 +70,7 @@ const PoolTransactionChartInner: React.FunctionComponent<PoolTransactionChartPro
       period: periodFilter !== 'all' ? String(periodFilter) : undefined,
       type: typeFilter !== 'all' ? String(typeFilter) : undefined,
     }).catch(x => x);
-  }, [poolFilter, periodFilter, typeFilter]);  // eslint-disable-line react-hooks/exhaustive-deps
+  }, [poolFilter, periodFilter, typeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
     poolTxChart.startPooling();
@@ -78,7 +78,7 @@ const PoolTransactionChartInner: React.FunctionComponent<PoolTransactionChartPro
     return () => {
       poolTxChart.stopPooling();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const data = React.useMemo(() => {
     const price = web3c.getPoolUsdPrice(poolFilter);

@@ -4,8 +4,8 @@ import BigNumber from 'bignumber.js';
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
-import Web3Contract from 'web3/contract';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
+import Web3Contract from 'web3/contract';
 
 const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
 
@@ -73,5 +73,6 @@ export function useDAORewardContract(): DAORewardContract {
     data,
     contract,
     reload,
+    claimSend,
   ]);
 }

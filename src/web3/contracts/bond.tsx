@@ -3,14 +3,14 @@ import BigNumber from 'bignumber.js';
 
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useWallet } from 'wallets/wallet';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
-import { useWallet } from 'wallets/wallet';
 import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
 
 import { ReactComponent as BONDIcon } from 'resources/svg/tokens/bond.svg';
-import { CONTRACT_DAO_DIAMOND_ADDR } from 'web3/contracts/daoDiamond';
 
 const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
 
@@ -94,7 +94,7 @@ export function useBONDContract(): BONDContract {
         },
         {
           method: 'allowance',
-          methodArgs: [wallet.account, CONTRACT_DAO_DIAMOND_ADDR],
+          methodArgs: [wallet.account, CONTRACT_DAO_BARN_ADDR],
           transform: (value: string) => new BigNumber(value),
         },
       ]);

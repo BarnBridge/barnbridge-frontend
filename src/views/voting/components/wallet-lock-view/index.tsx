@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
+import * as ReCharts from 'recharts';
 import moment from 'moment';
 import { Moment } from 'moment';
 
@@ -31,19 +32,23 @@ const DURATION_OPTIONS: string[] = [
   '1w', '1m', '3m', '6m', '1y',
 ];
 
-const WalletLockView: React.FunctionComponent<{}> = () => {
+const WalletLockView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<LockFormData>();
   const [, setValues] = React.useState<{}>({});
   const [submitting, setSubmitting] = React.useState<boolean>(false);
 
+  const minAllowedDate = moment(Math.max(web3c.daoBarn.userLockedUntil ?? 0, Date.now())).add(1, 'second');
+  const maxAllowedDate = moment().add(365, 'days');
+  const currentMultiplier = web3c.daoBarn.multiplier ?? 1;
+
   const disabledSubmit = React.useMemo<boolean>(() => {
-    if (isValidAddress(web3c.daoDiamond.userDelegatedTo)) {
+    if (isValidAddress(web3c.daoBarn.userDelegatedTo)) {
       return true;
     }
 
     return false;
-  }, [web3c.daoDiamond.userDelegatedTo]);
+  }, [web3c.daoBarn.userDelegatedTo]);
 
   function handleDurationChange(ev: RadioChangeEvent) {
     const duration = ev.target.value;
@@ -74,9 +79,11 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
   }
 
   function disabledDate(date: Moment) {
-    const now = moment();
+    if (date.isBefore(minAllowedDate, 'seconds')) {
+      return true;
+    }
 
-    if (date.isBefore(now, 'seconds') || date.isAfter(now.add(365, 'days'), 'seconds')) {
+    if (date.isAfter(maxAllowedDate, 'seconds')) {
       return true;
     }
 
@@ -87,15 +94,26 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
     setSubmitting(true);
 
     try {
-      await web3c.daoDiamond.actions.lock(values.lockEndDate!.unix(), values.gasFee!);
+      await web3c.daoBarn.actions.lock(values.lockEndDate!.unix(), values.gasFee!);
       form.setFieldsValue(InitialFormValues);
-      web3c.daoDiamond.reload();
+      web3c.daoBarn.reload();
     } catch {
       //
     }
 
     setSubmitting(false);
   }
+
+  const chartData = React.useMemo(() => {
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const multiplier = web3c.daoBarn.multiplier ?? 0;
+
+    console.log(multiplier);
+    return months.map((month, i) => ({
+      month,
+      bonus: 1 + ((multiplier - 1) * (months.length - i) / months.length),
+    }));
+  }, [web3c.daoBarn.multiplier]);
 
   return (
     <div className={s.component}>
@@ -105,11 +123,11 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
         </div>
         <div>
           <label>STAKED BALANCE</label>
-          <div>{formatBONDValue(web3c.daoDiamond.balance)}</div>
+          <div>{formatBONDValue(web3c.daoBarn.balance)}</div>
         </div>
         <div>
           <label>LOCK DURATION</label>
-          <div>{getFormattedDuration(0, web3c.daoDiamond.userLockedUntil)}</div>
+          <div>{getFormattedDuration(0, web3c.daoBarn.userLockedUntil)}</div>
         </div>
       </div>
       <Form
@@ -134,10 +152,13 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
                 ))}
               </Antd.Radio.Group>
             </Form.Item>
+            <span className={s.orLabel}>OR</span>
             <Form.Item
               name="lockEndDate"
               label="Manual choose your lock end date"
-              rules={[{ required: true, message: 'Required' }]}>
+              rules={[
+                { required: true, message: 'Required' },
+              ]}>
               <DatePicker
                 showTime
                 showNow={false}
@@ -156,6 +177,45 @@ const WalletLockView: React.FunctionComponent<{}> = () => {
               ]}>
               <GasFeeList disabled={submitting} />
             </Form.Item>
+          </div>
+        </div>
+        <div className={s.chart}>
+          <div className={s.chartHeader}>
+            800 vBOND bonus - {currentMultiplier} for {moment(web3c.daoBarn.userLockedUntil).toNow(true)}
+          </div>
+          <div className={s.chartContent}>
+            <ReCharts.ResponsiveContainer width="100%" height={154}>
+              <ReCharts.AreaChart
+                data={chartData}
+                margin={{ top: 0, right: 10, left: 0, bottom: 5 }}>
+                <defs>
+                  <linearGradient id="chart-gradient" gradientTransform="rotate(180)">
+                    <stop offset="0%" stopColor="rgba(255, 67, 57, 0.08)" />
+                    <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
+                  </linearGradient>
+                </defs>
+                <ReCharts.XAxis
+                  dataKey="month"
+                  axisLine={false}
+                  tickLine={false}
+                  tickMargin={16}
+                  stroke="#aaafb3" />
+                <ReCharts.YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  ticks={[1, currentMultiplier]}
+                  tickFormatter={tick => `${tick}x`}
+                  domain={[1, currentMultiplier]}
+                  stroke="#aaafb3" />
+                <ReCharts.Tooltip formatter={value => `${Number(value).toFixed(2)}x`} />
+                <ReCharts.Area
+                  dataKey="bonus"
+                  name="Bonus"
+                  fill="url(#chart-gradient)"
+                  strokeWidth={2}
+                  stroke="#ff4339" />
+              </ReCharts.AreaChart>
+            </ReCharts.ResponsiveContainer>
           </div>
         </div>
         <Button

@@ -3,8 +3,8 @@ import BigNumber from 'bignumber.js';
 
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
+import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 

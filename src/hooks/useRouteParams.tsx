@@ -40,7 +40,7 @@ const RouteParamsProvider: React.FunctionComponent = props => {
         search: searchQuery,
       });
     }
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const clearParam = React.useCallback((key: UseRouteParamKey) => {
     setParam(key, undefined);

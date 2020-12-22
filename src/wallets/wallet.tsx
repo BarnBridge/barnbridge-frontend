@@ -8,7 +8,6 @@ import { Web3Provider } from '@ethersproject/providers';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useRefState } from 'hooks/useRefState';
 
-import { getNetworkName } from 'web3/utils';
 import { WalletConnector } from 'wallets/types';
 import { CoinbaseWalletConfig } from 'wallets/connectors/coinbase';
 import { LedgerWalletConfig } from 'wallets/connectors/ledger';
@@ -16,6 +15,7 @@ import { MetaMaskWalletConfig } from 'wallets/connectors/metamask';
 import { PortisWalletConfig } from 'wallets/connectors/portis';
 import { TrezorWalletConfig } from 'wallets/connectors/trezor';
 import { WalletConnectConfig } from 'wallets/connectors/wallet-connect';
+import { getNetworkName } from 'web3/utils';
 
 import ConnectWalletModal from 'components/connect-wallet-modal';
 import InstallMetaMaskModal from 'components/install-metamask-modal';

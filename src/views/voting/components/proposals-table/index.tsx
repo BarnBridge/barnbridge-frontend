@@ -2,8 +2,9 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
 
-import s from './styles.module.scss';
 import Table from 'components/table';
+
+import s from './styles.module.scss';
 
 const Columns: ColumnsType<any> = [
   {
@@ -41,9 +42,7 @@ const Columns: ColumnsType<any> = [
 
 const Data: any[] = [{ id: 1 }, { id: 2 }, { id: 3 }];
 
-export type ProposalsTableProps = {};
-
-const ProposalsTable: React.FunctionComponent<ProposalsTableProps> = props => {
+const ProposalsTable: React.FunctionComponent = () => {
   return (
     <Table
       className={s.table}

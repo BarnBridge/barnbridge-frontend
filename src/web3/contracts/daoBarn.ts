@@ -5,18 +5,19 @@ import { getNowTs } from 'utils';
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
-import { formatBigValue, getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta, VBONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_DAO_DIAMOND_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_DIAMOND_ADDR).toLowerCase();
+export const CONTRACT_DAO_BARN_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR).toLowerCase();
+
 const Contract = new Web3Contract(
-  require('web3/abi/dao_diamond.json'),
-  CONTRACT_DAO_DIAMOND_ADDR,
-  'DAO Diamond',
+  require('web3/abi/dao_barn.json'),
+  CONTRACT_DAO_BARN_ADDR,
+  'DAO Barn',
 );
 
-type DAODiamondContractData = {
+type DAOBarnContractData = {
   bondStaked?: BigNumber;
   balance?: BigNumber;
   votingPower?: BigNumber;
@@ -26,7 +27,7 @@ type DAODiamondContractData = {
   multiplier?: number;
 };
 
-export type DAODiamondActions = {
+export type DAOBarnActions = {
   deposit(amount: BigNumber, gasPrice: number): Promise<any>;
   withdraw(amount: BigNumber, gasPrice: number): Promise<any>;
   delegate(to: string, gasPrice: number): Promise<any>;
@@ -34,13 +35,13 @@ export type DAODiamondActions = {
   lock(timestamp: number, gasPrice: number): Promise<any>;
 };
 
-export type DAODiamondContract = DAODiamondContractData & {
+export type DAOBarnContract = DAOBarnContractData & {
   contract: Web3Contract;
   reload(): void;
-  actions: DAODiamondActions;
+  actions: DAOBarnActions;
 };
 
-async function loadCommonData(): Promise<DAODiamondContractData> {
+async function loadCommonData(): Promise<DAOBarnContractData> {
   const [bondStaked] = await Contract.batch([
     {
       method: 'bondStaked',
@@ -53,7 +54,7 @@ async function loadCommonData(): Promise<DAODiamondContractData> {
   };
 }
 
-async function loadUserData(userAddress?: string): Promise<DAODiamondContractData> {
+async function loadUserData(userAddress?: string): Promise<DAOBarnContractData> {
   let balance: BigNumber | undefined;
   let votingPower: BigNumber | undefined;
   let delegatedPower: number | undefined;
@@ -91,7 +92,7 @@ async function loadUserData(userAddress?: string): Promise<DAODiamondContractDat
       {
         method: 'multiplierAtTs',
         methodArgs: [userAddress, getNowTs()],
-        transform: (value: string) => formatBigValue(getHumanValue(new BigNumber(value), 18), 2, '-', 2),
+        transform: (value: string) => getHumanValue(new BigNumber(value), 18)?.toNumber(),
       },
     ]);
   }
@@ -149,11 +150,11 @@ function lockSend(timestamp: number, from: string, gasPrice: number): Promise<an
   });
 }
 
-export function useDAODiamondContract(): DAODiamondContract {
+export function useDAOBarnContract(): DAOBarnContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
-  const [data, setData] = React.useState<DAODiamondContractData>({});
+  const [data, setData] = React.useState<DAOBarnContractData>({});
 
   useAsyncEffect(async () => {
     const data = await loadCommonData();

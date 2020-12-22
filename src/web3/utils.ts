@@ -94,8 +94,8 @@ export function getGasValue(price: number): number {
   return getNonHumanValue(price, 9).toNumber();
 }
 
-export function formatBigValue(value?: BigNumber, decimals: number = 4, defaultValue: string = '-', minDecimals: number | undefined = undefined): string {
-  return value ? new BigNumber(value.toFixed(decimals)).toFormat(minDecimals) : defaultValue;
+export function formatBigValue(value?: BigNumber | number, decimals: number = 4, defaultValue: string = '-', minDecimals: number | undefined = undefined): string {
+  return value ? new BigNumber(new BigNumber(value).toFixed(decimals)).toFormat(minDecimals) : defaultValue;
 }
 
 export function formatUSDValue(value?: BigNumber, decimals: number = 2, minDecimals: number = decimals): string {

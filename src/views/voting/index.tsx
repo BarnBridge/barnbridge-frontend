@@ -1,11 +1,11 @@
 import React from 'react';
 
+import LayoutHeader from 'views/layout/components/layout-header';
 import VotingHeader from 'views/voting/components/voting-header';
 import OverviewView from 'views/voting/components/overview-view';
 import WalletView from 'views/voting/components/wallets-view';
 import ProposalsView from 'views/voting/components/proposals-view';
 
-import LayoutHeader from 'views/layout/components/layout-header';
 import Tabs from 'components/tabs';
 
 import { ReactComponent as OverviewSvg } from 'resources/svg/overview.svg';

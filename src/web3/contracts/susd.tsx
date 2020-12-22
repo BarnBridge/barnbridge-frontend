@@ -3,9 +3,9 @@ import BigNumber from 'bignumber.js';
 
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useWallet } from 'wallets/wallet';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
-import { useWallet } from 'wallets/wallet';
 import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 

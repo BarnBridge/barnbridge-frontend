@@ -1,16 +1,15 @@
 import React from 'react';
 
-import Tabs from 'components/tabs';
 import WalletDepositView from 'views/voting/components/wallet-deposit-view';
 import WalletLockView from 'views/voting/components/wallet-lock-view';
 import WalletDelegateView from 'views/voting/components/wallet-delegate-view';
 import WalletWithdrawView from 'views/voting/components/wallet-withdraw-view';
 
+import Tabs from 'components/tabs';
+
 import s from './styles.module.scss';
 
-export type WalletViewProps = {};
-
-const WalletView: React.FunctionComponent<WalletViewProps> = props => {
+const WalletView: React.FunctionComponent = () => {
   const [activeTab, setActiveTab] = React.useState<string>('deposit');
 
   return (

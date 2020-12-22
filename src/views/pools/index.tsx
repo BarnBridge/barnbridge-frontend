@@ -1,13 +1,11 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
-import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
 
 import EthGasPriceProvider from 'context/useEthGas';
 import { useWallet } from 'wallets/wallet';
 import { useWarnings } from 'components/warnings';
 import LayoutHeader from 'views/layout/components/layout-header';
-import ConnectedWallet from 'components/connected-wallet';
 import PoolRewards from 'views/pools/components/pool-rewards';
 import PoolStats from 'views/pools/components/pool-stats';
 import PoolStak from 'views/pools/components/pool-stak';

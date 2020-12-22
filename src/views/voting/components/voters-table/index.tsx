@@ -5,11 +5,12 @@ import BigNumber from 'bignumber.js';
 import Table from 'components/table';
 import Identicon from 'components/identicon';
 
-import { formatBigValue, getHumanValue, getNonHumanValue, shortenAddr, ZERO_BIG_NUMBER } from 'web3/utils';
+import { formatBigValue, getHumanValue, getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
-import s from './styles.module.scss';
 import { getNowTs } from 'utils';
+
+import s from './styles.module.scss';
 
 type VoterData = {
   address: string;
@@ -79,9 +80,7 @@ function getOwnVotingMultiplier(voter: VoterData) {
   return BASE_MULTIPLIER.plus((new BigNumber(diff)).multipliedBy(BASE_MULTIPLIER).div(MAX_LOCK));
 }
 
-export type VotersTableProps = {};
-
-const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
+const VotersTable: React.FunctionComponent = () => {
   const [voters, setVoters] = React.useState<VoterData[]>([]);
 
   React.useEffect(() => {

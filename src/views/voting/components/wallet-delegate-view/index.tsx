@@ -7,11 +7,10 @@ import TokenInput from 'components/token-input';
 import GasFeeList from 'components/gas-fee-list';
 import Button from 'components/button';
 
-import { DEFAULT_ADDRESS } from 'web3/utils';
+import { isValidAddress } from 'utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import s from './styles.module.scss';
-import { isValidAddress } from 'utils';
 
 const MANUAL_VOTING_KEY = 'manual';
 const DELEGATE_VOTING_KEY = 'delegate';
@@ -39,7 +38,7 @@ const InitialFormValues: DelegateFormData = {
   gasFee: undefined,
 };
 
-const WalletDelegateView: React.FunctionComponent<{}> = () => {
+const WalletDelegateView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<DelegateFormData>();
   const [, setValues] = React.useState<DelegateFormData>(InitialFormValues);
@@ -51,13 +50,13 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
 
     try {
       if (values.votingType === DELEGATE_VOTING_KEY) {
-        await web3c.daoDiamond.actions.delegate(values.delegateAddress!, values.gasFee!);
+        await web3c.daoBarn.actions.delegate(values.delegateAddress!, values.gasFee!);
       } else {
-        await web3c.daoDiamond.actions.stopDelegate(values.gasFee!);
+        await web3c.daoBarn.actions.stopDelegate(values.gasFee!);
       }
 
       form.setFieldsValue(InitialFormValues);
-      web3c.daoDiamond.reload();
+      web3c.daoBarn.reload();
     } catch {
       //
     }
@@ -71,20 +70,20 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
 
   const disabledDelegate = React.useMemo<boolean>(() => {
     if (currentValue.votingType === MANUAL_VOTING_KEY) {
-      if (!isValidAddress(web3c.daoDiamond.userDelegatedTo)) {
+      if (!isValidAddress(web3c.daoBarn.userDelegatedTo)) {
         return true;
       }
     } else if (currentValue.votingType === DELEGATE_VOTING_KEY) {
-      if (web3c.daoDiamond.userDelegatedTo === currentValue.delegateAddress) {
+      if (web3c.daoBarn.userDelegatedTo === currentValue.delegateAddress) {
         return true;
       }
     }
 
     return false;
-  }, [currentValue.votingType, currentValue.delegateAddress, web3c.daoDiamond.userDelegatedTo]);
+  }, [currentValue.votingType, currentValue.delegateAddress, web3c.daoBarn.userDelegatedTo]);
 
   React.useEffect(() => {
-    const { userDelegatedTo } = web3c.daoDiamond;
+    const { userDelegatedTo } = web3c.daoBarn;
 
     if (isValidAddress(userDelegatedTo)) {
       form.setFieldsValue({
@@ -105,7 +104,7 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
         delegateAddress: undefined,
       });
     }
-  }, [web3c.daoDiamond.userDelegatedTo]);
+  }, [web3c.daoBarn.userDelegatedTo]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <div className={s.component}>
@@ -114,10 +113,10 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
           <label>CURRENT VOTING TYPE</label>
           <span>{votingTypeLabel}</span>
         </div>
-        {currentValue.votingType === DELEGATE_VOTING_KEY && isValidAddress(web3c.daoDiamond.userDelegatedTo!) && (
+        {currentValue.votingType === DELEGATE_VOTING_KEY && isValidAddress(web3c.daoBarn.userDelegatedTo!) && (
           <div className={s.headerCol}>
             <label>DELEGATED ADDRESS</label>
-            <span>{web3c.daoDiamond.userDelegatedTo!}</span>
+            <span>{web3c.daoBarn.userDelegatedTo!}</span>
           </div>
         )}
       </div>
@@ -168,7 +167,7 @@ const WalletDelegateView: React.FunctionComponent<{}> = () => {
           disabled={disabledDelegate}
           loading={saving}
           className={s.delegateBtn}>
-          {currentValue.votingType === MANUAL_VOTING_KEY && isValidAddress(web3c.daoDiamond.userDelegatedTo)
+          {currentValue.votingType === MANUAL_VOTING_KEY && isValidAddress(web3c.daoBarn.userDelegatedTo)
             ? 'Stop Delegate'
             : 'Delegate'
           }

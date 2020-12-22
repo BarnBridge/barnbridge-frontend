@@ -2,15 +2,13 @@ import React from 'react';
 import * as Antd from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 
+import ProposalsTable from 'views/voting/components/proposals-table';
 import Button from 'components/button';
 import Tabs from 'components/tabs';
-import ProposalsTable from 'views/voting/components/proposals-table';
 
 import s from './styles.module.scss';
 
-export type ProposalsViewProps = {};
-
-const ProposalsView: React.FunctionComponent<ProposalsViewProps> = props => {
+const ProposalsView: React.FunctionComponent = () => {
   const [activeTab, setActiveTab] = React.useState<string>('all-proposals');
 
   return (

@@ -2,8 +2,8 @@ import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
-import { PoolTypes, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
+import { PoolTypes, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
@@ -14,8 +14,8 @@ import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFar
 import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
 import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
 import { StakingContract, useStakingContract } from 'web3/contracts/staking';
+import { DAOBarnContract, useDAOBarnContract } from 'web3/contracts/daoBarn';
 import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
-import { DAODiamondContract, useDAODiamondContract } from 'web3/contracts/daoDiamond';
 import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/daoGovernance';
 
 import UserRejectedModal from 'components/user-rejected-modal';
@@ -30,7 +30,7 @@ export type Web3ContractsData = {
   yfLP: YieldFarmLPContract;
   yfBOND: YieldFarmBONDContract;
   staking: StakingContract;
-  daoDiamond: DAODiamondContract;
+  daoBarn: DAOBarnContract;
   daoReward: DAORewardContract;
   daoGovernance: DAOGovernanceContract;
   aggregated: {
@@ -76,7 +76,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   const yfLPContract = useYieldFarmLPContract();
   const yfBONDContract = useYieldFarmBONDContract();
   const stakingContract = useStakingContract();
-  const daoDiamondContract = useDAODiamondContract();
+  const daoBarnContract = useDAOBarnContract();
   const daoRewardContract = useDAORewardContract();
   const daoGovernanceContract = useDAOGovernanceContract();
 
@@ -93,7 +93,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       yfLPContract.contract,
       yfBONDContract.contract,
       stakingContract.contract,
-      daoDiamondContract.contract,
+      daoBarnContract.contract,
       daoRewardContract.contract,
       daoGovernanceContract.contract,
     ];
@@ -132,7 +132,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       yfLPContract.contract,
       yfBONDContract.contract,
       stakingContract.contract,
-      daoDiamondContract.contract,
+      daoBarnContract.contract,
       daoRewardContract.contract,
       daoGovernanceContract.contract,
     ];
@@ -281,7 +281,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   }
 
   function bondLockedPrice() {
-    const bondStaked = daoDiamondContract.bondStaked;
+    const bondStaked = daoBarnContract.bondStaked;
     const price = uniswapContract.bondPrice;
 
     if (bondStaked === undefined || price === undefined) {
@@ -401,7 +401,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     yfLP: yfLPContract,
     yfBOND: yfBONDContract,
     staking: stakingContract,
-    daoDiamond: daoDiamondContract,
+    daoBarn: daoBarnContract,
     daoReward: daoRewardContract,
     daoGovernance: daoGovernanceContract,
     aggregated: {

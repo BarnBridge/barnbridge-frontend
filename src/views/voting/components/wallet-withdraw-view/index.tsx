@@ -26,7 +26,7 @@ const InitialFormValues: WithdrawFormData = {
   gasFee: undefined,
 };
 
-const WalletWithdrawView: React.FunctionComponent<{}> = () => {
+const WalletWithdrawView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
   const [, setValues] = React.useState<WithdrawFormData>(InitialFormValues);
@@ -36,9 +36,9 @@ const WalletWithdrawView: React.FunctionComponent<{}> = () => {
     setSaving(true);
 
     try {
-      await web3c.daoDiamond.actions.withdraw(values.amount!, values.gasFee!);
+      await web3c.daoBarn.actions.withdraw(values.amount!, values.gasFee!);
       form.setFieldsValue(InitialFormValues);
-      web3c.daoDiamond.reload();
+      web3c.daoBarn.reload();
       web3c.bond.reload();
     } catch {
       //
@@ -55,7 +55,7 @@ const WalletWithdrawView: React.FunctionComponent<{}> = () => {
         </div>
         <div>
           <label>STAKED BALANCE</label>
-          <div>{formatBONDValue(web3c.daoDiamond.balance)}</div>
+          <div>{formatBONDValue(web3c.daoBarn.balance)}</div>
         </div>
         <div>
           <label>WALLET BALANCE</label>
@@ -78,14 +78,14 @@ const WalletWithdrawView: React.FunctionComponent<{}> = () => {
               <TokenAmount
                 tokenIcon={<BondSvg />}
                 tokenLabel="BOND"
-                placeholder={`0 (Max ${formatBONDValue(web3c.daoDiamond.balance ?? ZERO_BIG_NUMBER)})`}
+                placeholder={`0 (Max ${formatBONDValue(web3c.daoBarn.balance ?? ZERO_BIG_NUMBER)})`}
                 disabled={saving}
                 maximumFractionDigits={2}
                 maxProps={{
                   disabled: saving,
                   onClick: () => {
                     form.setFieldsValue({
-                      amount: web3c.daoDiamond.balance ?? ZERO_BIG_NUMBER,
+                      amount: web3c.daoBarn.balance ?? ZERO_BIG_NUMBER,
                     });
                   },
                 }}
@@ -94,7 +94,7 @@ const WalletWithdrawView: React.FunctionComponent<{}> = () => {
             <Form.Item name="amount">
               <Slider
                 min={0}
-                max={web3c.daoDiamond.balance?.toNumber() ?? 0}
+                max={web3c.daoBarn.balance?.toNumber() ?? 0}
                 step={1}
                 disabled={saving}
                 tipFormatter={value =>

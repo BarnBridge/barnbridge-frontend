@@ -1,9 +1,14 @@
 import { add, formatDuration, intervalToDuration } from 'date-fns';
 import Web3 from 'web3';
+
 import { DEFAULT_ADDRESS } from 'web3/utils';
 
 export function getNowTs(): number {
   return Math.floor(Date.now() / 1000);
+}
+
+export function inRange(value: number, min: number, max: number): boolean {
+  return min < value && value < max;
 }
 
 export function getFormattedDuration(value?: number, endValue?: number): string | undefined {

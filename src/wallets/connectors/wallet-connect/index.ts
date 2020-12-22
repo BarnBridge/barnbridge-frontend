@@ -1,5 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
+
 import { WalletConnector } from 'wallets/types';
 import { getHttpsRpcUrl } from 'web3/utils';
 

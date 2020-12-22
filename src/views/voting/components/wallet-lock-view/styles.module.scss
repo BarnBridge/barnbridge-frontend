@@ -54,11 +54,16 @@
 
 .leftCol {
   display: grid;
-  row-gap: 24px;
+  row-gap: 16px;
 }
 
 .rightCol {
 
+}
+
+.orLabel {
+  @include font-p1-regular;
+  color: #717980;
 }
 
 .lockOptions {
@@ -88,4 +93,22 @@
 
 .lockBtn {
   width: 162px !important;
+  margin-top: 32px;
+}
+
+.chart {
+  border: 1px solid #e3e4e6;
+
+  .chartHeader {
+    height: 64px;
+    padding: 24px;
+    @include font-sm-semi-bold;
+    color: #717980;
+    border-bottom: 1px solid #e3e4e6;
+  }
+
+  .chartContent {
+    min-height: 202px;
+    padding: 24px;
+  }
 }

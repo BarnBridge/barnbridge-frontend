@@ -11,7 +11,7 @@ import Button from 'components/button';
 
 import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { CONTRACT_DAO_DIAMOND_ADDR } from 'web3/contracts/daoDiamond';
+import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
 
 import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
 
@@ -27,7 +27,7 @@ const InitialFormValues: DepositFormData = {
   gasFee: undefined,
 };
 
-const WalletDepositView: React.FunctionComponent<{}> = () => {
+const WalletDepositView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<DepositFormData>();
   const [, setValues] = React.useState<DepositFormData>(InitialFormValues);
@@ -41,7 +41,7 @@ const WalletDepositView: React.FunctionComponent<{}> = () => {
     setEnabling(true);
 
     try {
-      await web3c.bond.approveSend(CONTRACT_DAO_DIAMOND_ADDR, value);
+      await web3c.bond.approveSend(CONTRACT_DAO_BARN_ADDR, value);
     } catch (e) {
     }
 
@@ -52,9 +52,9 @@ const WalletDepositView: React.FunctionComponent<{}> = () => {
     setSaving(true);
 
     try {
-      await web3c.daoDiamond.actions.deposit(values.amount!, values.gasFee!);
+      await web3c.daoBarn.actions.deposit(values.amount!, values.gasFee!);
       form.setFieldsValue(InitialFormValues);
-      web3c.daoDiamond.reload();
+      web3c.daoBarn.reload();
       web3c.bond.reload();
     } catch {
       //
@@ -75,7 +75,7 @@ const WalletDepositView: React.FunctionComponent<{}> = () => {
         </div>
         <div>
           <label>STAKED BALANCE</label>
-          <div>{formatBONDValue(web3c.daoDiamond.balance)}</div>
+          <div>{formatBONDValue(web3c.daoBarn.balance)}</div>
         </div>
         <div>
           <label>WALLET BALANCE</label>

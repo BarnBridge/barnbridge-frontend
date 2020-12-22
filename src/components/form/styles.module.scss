@@ -5,6 +5,8 @@
 }
 
 .item {
+  margin-bottom: 0;
+
   :global(.ant-form-item-label) label {
     display: inline-grid;
     grid-template-columns: repeat(2, max-content);
