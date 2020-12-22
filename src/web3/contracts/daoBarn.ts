@@ -77,7 +77,7 @@ async function loadUserData(userAddress?: string): Promise<DAOBarnContractData> 
       {
         method: 'delegatedPower',
         methodArgs: [userAddress],
-        transform: (value: string) => Number(value),
+        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
       {
         method: 'userLockedUntil',
