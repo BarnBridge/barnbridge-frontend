@@ -107,8 +107,6 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
   const poolTxList = usePoolTxList();
 
   const [, forceRender] = React.useState<{}>({});
-  const tokenFilterRef = React.useRef<string | number>('all');
-  const typeFilterRef = React.useRef<string | number>('all');
 
   const tokenFilterOptions = React.useMemo<DropdownOption[]>(() => {
     const options: DropdownOption[] = [];
@@ -135,13 +133,18 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
 
     return options;
   }, [props.stableToken, props.unilpToken, props.bondToken]);
-  tokenFilterRef.current = tokenFilterOptions[0].value;
+
+  let tokenDefaultOptions: string = String(tokenFilterOptions[0].value);
+  let typeDefaultOption: string = 'all';
 
   if (props.deposits) {
-    typeFilterRef.current = DEPOSITS_KEY;
+    typeDefaultOption = DEPOSITS_KEY;
   } else if (props.withdrawals) {
-    typeFilterRef.current = WITHDRAWALS_KEY;
+    typeDefaultOption = WITHDRAWALS_KEY;
   }
+
+  const tokenFilterRef = React.useRef<string | number>(tokenDefaultOptions);
+  const typeFilterRef = React.useRef<string | number>(typeDefaultOption);
 
   React.useEffect(() => {
     poolTxList.load({
