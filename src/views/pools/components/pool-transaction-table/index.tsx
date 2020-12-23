@@ -152,11 +152,11 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
       token: tokenFilterRef.current !== 'all' ? String(tokenFilterRef.current) : undefined,
       type: typeFilterRef.current !== 'all' ? String(typeFilterRef.current) : undefined,
     }).catch(x => x);
-  }, [
+  }, [ // eslint-disable-line react-hooks/exhaustive-deps
     ownTransactions,
     tokenFilterRef.current,
     typeFilterRef.current,
-  ]);  // eslint-disable-line react-hooks/exhaustive-deps
+  ]);
 
   React.useEffect(() => {
     poolTxList.startPooling();
@@ -164,7 +164,7 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
     return () => {
       poolTxList.stopPooling();
     };
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const data = React.useMemo<(PoolTxListItem & { usdAmount: BigNumber | undefined })[]>(() => {
     return poolTxList.transactions.map(tx => {

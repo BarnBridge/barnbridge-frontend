@@ -123,7 +123,7 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
           .catch(x => x);
       }, TX_POOL_INTERVAL);
     }
-  }, [load]);
+  }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const stopPooling = React.useCallback(() => {
     if (poolingIntervalID.current) {
