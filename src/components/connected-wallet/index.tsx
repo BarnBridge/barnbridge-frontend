@@ -13,7 +13,7 @@ import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-n
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as BellSvg } from 'resources/svg/icons/bell.svg';
 import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
-import { ReactComponent as WalletSvg } from 'resources/svg/icons/wallet.svg';
+import { ReactComponent as WalletSvg } from 'resources/svg/icons/nav-wallet.svg';
 import { ReactComponent as NetworkSvg } from 'resources/svg/icons/network.svg';
 
 import s from './styles.module.css';

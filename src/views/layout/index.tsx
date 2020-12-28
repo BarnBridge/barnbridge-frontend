@@ -16,9 +16,9 @@ import ExternalLink from 'components/externalLink';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 
-import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
-import { ReactComponent as PoolsSvg } from 'resources/svg/icons/pools.svg';
-import { ReactComponent as VotingSvg } from 'resources/svg/icons/voting.svg';
+import { ReactComponent as BondsSvg } from 'resources/svg/icons/nav-bonds.svg';
+import { ReactComponent as PoolsSvg } from 'resources/svg/icons/nav-pools.svg';
+import { ReactComponent as VotingSvg } from 'resources/svg/icons/nav-voting.svg';
 
 import s from './styles.module.scss';
 
@@ -51,6 +51,8 @@ const LayoutView: React.FunctionComponent = () => {
           <Antd.Layout.Content className={s.content}>
             <Switch>
               <Route path="/pools" component={PoolsView} />
+              <Route path="/voting/:vt(wallet)/:wt" component={VotingView} />
+              <Route path="/voting/:vt" component={VotingView} />
               <Route path="/voting" component={VotingView} />
               <Route path="/bonds" component={BondsView} />
               <Redirect from="/" to="/pools" />

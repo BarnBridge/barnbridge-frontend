@@ -7,11 +7,11 @@ import { useTheme } from 'components/theme-provider';
 import SiderNavLink, { SiderNavLinkProps } from 'components/sider-nav-link';
 import FadeBlock from 'components/fade-block';
 
-import { ReactComponent as LogoSvg } from 'resources/svg/logo.svg';
-import { ReactComponent as BarnBridgeSvg } from 'resources/svg/barnbridge.svg';
+import { ReactComponent as LogoSvg } from 'resources/svg/logo/logo.svg';
+import { ReactComponent as BarnBridgeSvg } from 'resources/svg/logo/barnbridge.svg';
 import { ReactComponent as ArrowCircleRightSvg } from 'resources/svg/icons/arrow-circle-right.svg';
-import { ReactComponent as MoonSvg } from 'resources/svg/icons/moon.svg';
-import { ReactComponent as SunSvg } from 'resources/svg/icons/sun.svg';
+import { ReactComponent as MoonSvg } from 'resources/svg/icons/theme-moon.svg';
+import { ReactComponent as SunSvg } from 'resources/svg/icons/theme-sun.svg';
 
 import s from './styles.module.css';
 

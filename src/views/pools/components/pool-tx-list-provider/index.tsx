@@ -59,8 +59,8 @@ export function usePoolTxList(): PoolTxListType {
   return React.useContext(PoolTxListContext);
 }
 
-const TX_API_URL = String(process.env.REACT_APP_TOKEN_API_URL);
-const TX_POOL_INTERVAL = Number(process.env.REACT_APP_TOKEN_API_POOL_INTERVAL);
+const API_URL = String(process.env.REACT_APP_TOKEN_API_URL);
+const API_POOL_INTERVAL = Number(process.env.REACT_APP_TOKEN_API_POOL_INTERVAL);
 const TX_LIMIT = 10;
 
 const PoolTxListProvider: React.FunctionComponent = props => {
@@ -82,7 +82,7 @@ const PoolTxListProvider: React.FunctionComponent = props => {
     loadingRef.current = true;
     forceRender({});
 
-    const url = new URL('/staking-actions/list', TX_API_URL);
+    const url = new URL('/staking-actions/list', API_URL);
     url.searchParams.append('count', String(TX_LIMIT));
 
     if (timestamp) {
@@ -183,7 +183,7 @@ const PoolTxListProvider: React.FunctionComponent = props => {
       poolingIntervalID.current = setInterval(() => {
         loadNewer()
           .catch(x => x);
-      }, TX_POOL_INTERVAL);
+      }, API_POOL_INTERVAL);
     }
   }, [loadNewer]);
 

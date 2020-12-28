@@ -18,6 +18,7 @@ const Contract = new Web3Contract(
 );
 
 type DAOBarnContractData = {
+  activationThreshold?: BigNumber;
   bondStaked?: BigNumber;
   balance?: BigNumber;
   votingPower?: BigNumber;
@@ -50,6 +51,7 @@ async function loadCommonData(): Promise<DAOBarnContractData> {
   ]);
 
   return {
+    activationThreshold: getNonHumanValue(400_000, 18),
     bondStaked,
   };
 }

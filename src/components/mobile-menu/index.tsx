@@ -3,20 +3,20 @@ import * as Antd from 'antd';
 import Burger from '@animated-burgers/burger-squeeze';
 import cx from 'classnames';
 
-import SiderNavLink, { SiderNavLinkProps } from 'components/sider-nav-link';
-import FadeBlock from 'components/fade-block';
-
 import '@animated-burgers/burger-squeeze/dist/styles.css';
 
-import { ReactComponent as LogoWithName } from 'resources/svg/logo-with-name.svg';
-import { ReactComponent as PoolsSvg } from 'resources/svg/icons/pools.svg';
-import { ReactComponent as VotingSvg } from 'resources/svg/icons/voting.svg';
-import { ReactComponent as BondsSvg } from 'resources/svg/icons/bonds.svg';
+import SiderNavLink, { SiderNavLinkProps } from 'components/sider-nav-link';
+import FadeBlock from 'components/fade-block';
+import { useTheme } from 'components/theme-provider';
+
+import { ReactComponent as LogoWithName } from 'resources/svg/logo/logo-with-name.svg';
+import { ReactComponent as PoolsSvg } from 'resources/svg/icons/nav-pools.svg';
+import { ReactComponent as VotingSvg } from 'resources/svg/icons/nav-voting.svg';
+import { ReactComponent as BondsSvg } from 'resources/svg/icons/nav-bonds.svg';
+import { ReactComponent as MoonSvg } from 'resources/svg/icons/theme-moon.svg';
+import { ReactComponent as SunSvg } from 'resources/svg/icons/theme-sun.svg';
 
 import s from './styles.module.css';
-import { useTheme } from 'components/theme-provider';
-import { ReactComponent as MoonSvg } from 'resources/svg/icons/moon.svg';
-import { ReactComponent as SunSvg } from 'resources/svg/icons/sun.svg';
 
 const SiderNavLinks: SiderNavLinkProps[] = [
   {

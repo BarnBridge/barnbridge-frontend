@@ -42,7 +42,7 @@ const PoolsView: React.FunctionComponent = () => {
 
   return (
     <div className={s.component}>
-      <LayoutHeader title="Smart yield" />
+      <LayoutHeader title="Yield Farming" />
 
       <div className={s.content}>
         {!isMobile && wallet.isActive && <PoolRewards />}

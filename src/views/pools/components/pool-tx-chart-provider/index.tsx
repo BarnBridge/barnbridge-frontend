@@ -41,8 +41,8 @@ export function usePoolTxChart(): PoolTxChartType {
   return React.useContext(PoolTxChartContext);
 }
 
-const TX_API_URL = String(process.env.REACT_APP_TOKEN_API_URL);
-const TX_POOL_INTERVAL = Number(process.env.REACT_APP_TOKEN_API_POOL_INTERVAL);
+const API_URL = String(process.env.REACT_APP_TOKEN_API_URL);
+const API_POOL_INTERVAL = Number(process.env.REACT_APP_TOKEN_API_POOL_INTERVAL);
 
 const PoolTxChartProvider: React.FunctionComponent = props => {
   const [, forceRender] = React.useState<{}>({});
@@ -60,7 +60,7 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
     loadingRef.current = true;
     forceRender({});
 
-    const url = new URL('/staking-actions/chart', TX_API_URL);
+    const url = new URL('/staking-actions/chart', API_URL);
 
     if (poolFilterRef.current) {
       url.searchParams.append('pool', poolFilterRef.current);
@@ -121,7 +121,7 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
       poolingIntervalID.current = setInterval(() => {
         fetchData()
           .catch(x => x);
-      }, TX_POOL_INTERVAL);
+      }, API_POOL_INTERVAL);
     }
   }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
 
