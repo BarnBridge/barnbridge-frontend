@@ -6,8 +6,8 @@ import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
 import cx from 'classnames';
 
-import Dropdown, { DropdownOption } from 'components/dropdown';
-import ExternalLink from 'components/externalLink';
+import Dropdown, { DropdownOption } from 'components/antd/dropdown';
+import ExternalLink from 'components/custom/externalLink';
 import PoolTxListProvider, { PoolTxListItem, usePoolTxList } from 'views/pools/components/pool-tx-list-provider';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';

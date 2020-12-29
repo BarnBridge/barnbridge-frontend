@@ -2,12 +2,12 @@ import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
-import Form from 'components/form';
-import TokenAmount from 'components/token-amount';
-import Slider from 'components/slider';
-import InfoBox from 'components/info-box';
-import GasFeeList from 'components/gas-fee-list';
-import Button from 'components/button';
+import Form from 'components/antd/form';
+import TokenAmount from 'components/custom/token-amount';
+import Slider from 'components/antd/slider';
+import InfoBox from 'components/custom/info-box';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Button from 'components/antd/button';
 
 import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';

@@ -3,14 +3,14 @@ import { useHistory } from 'react-router';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import LayoutHeader from 'views/layout/components/layout-header';
-import VotingHeader from './components/voting-header';
-import OverviewView from './views/overview-view';
-import WalletView from './views/wallets-view';
-import ProposalsView from './views/proposals-view';
-import ProposalCreateView from './views/proposal-create-view';
-import ProposalDetailView from './views/proposal-detail-view';
+import VotingHeader from 'views/voting/components/voting-header';
+import OverviewView from 'views/voting/views/overview-view';
+import WalletView from 'views/voting/views/wallets-view';
+import ProposalsView from 'views/voting/views/proposals-view';
+import ProposalCreateView from 'views/voting/views/proposal-create-view';
+import ProposalDetailView from 'views/voting/views/proposal-detail-view';
 
-import Tabs from 'components/tabs';
+import Tabs from 'components/antd/tabs';
 
 import { ReactComponent as OverviewSvg } from 'resources/svg/icons/nav-overview.svg';
 import { ReactComponent as WalletSvg } from 'resources/svg/icons/nav-wallet.svg';

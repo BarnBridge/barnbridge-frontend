@@ -1,11 +1,11 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import Form from 'components/form';
-import Select from 'components/select';
-import TokenInput from 'components/token-input';
-import GasFeeList from 'components/gas-fee-list';
-import Button from 'components/button';
+import Form from 'components/antd/form';
+import Select from 'components/antd/select';
+import TokenInput from 'components/custom/token-input';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Button from 'components/antd/button';
 
 import { isValidAddress } from 'utils';
 import { useWeb3Contracts } from 'web3/contracts';

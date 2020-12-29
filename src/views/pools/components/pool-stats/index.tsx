@@ -7,8 +7,8 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { useWeekCountdown } from 'hooks/useCountdown';
 
-import StatWidget from 'components/stat-widget';
-import ExternalLink from 'components/externalLink';
+import StatWidget from 'components/custom/stat-widget';
+import ExternalLink from 'components/custom/externalLink';
 
 import s from './styles.module.css';
 

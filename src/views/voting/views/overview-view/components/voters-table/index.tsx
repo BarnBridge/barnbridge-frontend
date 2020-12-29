@@ -2,8 +2,8 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 
-import Table from 'components/table';
-import Identicon from 'components/identicon';
+import Table from 'components/antd/table';
+import Identicon from 'components/custom/identicon';
 
 import { formatBigValue, getHumanValue, getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { BONDTokenMeta } from 'web3/contracts/bond';

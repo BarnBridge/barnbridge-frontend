@@ -7,7 +7,7 @@ import WalletLockView from 'views/voting/views/wallet-lock-view';
 import WalletDelegateView from 'views/voting/views/wallet-delegate-view';
 import WalletWithdrawView from 'views/voting/views/wallet-withdraw-view';
 
-import Tabs from 'components/tabs';
+import Tabs from 'components/antd/tabs';
 
 import s from './styles.module.scss';
 

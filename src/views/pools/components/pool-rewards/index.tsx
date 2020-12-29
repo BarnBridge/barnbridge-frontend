@@ -5,7 +5,7 @@ import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue } from 'web3/utils';
 
-import InfoTooltip from 'components/info-tooltip';
+import InfoTooltip from 'components/antd/info-tooltip';
 import PoolHarvestModal from 'views/pools/components/pool-harvest-modal';
 
 import { ReactComponent as BondSquareSvg } from 'resources/svg/tokens/bond-square.svg';

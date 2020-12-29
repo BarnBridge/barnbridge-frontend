@@ -3,8 +3,9 @@ import * as Antd from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useHistory } from 'react-router';
 
-import Button from 'components/button';
-import Tabs from 'components/tabs';
+import Button from 'components/antd/button';
+import Tabs from 'components/antd/tabs';
+
 import ProposalsTable from './components/proposals-table';
 
 import s from './styles.module.scss';

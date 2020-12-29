@@ -2,8 +2,8 @@ import React from 'react';
 import * as ReCharts from 'recharts';
 import BigNumber from 'bignumber.js';
 
-import IconsSet from 'components/icons-set';
-import Dropdown, { DropdownOption } from 'components/dropdown';
+import IconsSet from 'components/custom/icons-set';
+import Dropdown, { DropdownOption } from 'components/antd/dropdown';
 import PoolTxChartProvider, { usePoolTxChart } from 'views/pools/components/pool-tx-chart-provider';
 
 import { formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';

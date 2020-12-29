@@ -1,6 +1,6 @@
 import React from 'react';
 
-import StayTuned from 'components/stay-tuned';
+import StayTuned from 'components/custom/stay-tuned';
 
 import s from './styles.module.css';
 

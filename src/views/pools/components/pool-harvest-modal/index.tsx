@@ -5,7 +5,7 @@ import { ModalProps } from 'antd/lib/modal';
 import { formatBONDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
-import IconsSet from 'components/icons-set';
+import IconsSet from 'components/custom/icons-set';
 
 import s from './styles.module.css';
 

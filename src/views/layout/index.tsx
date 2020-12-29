@@ -7,11 +7,11 @@ import BondsView from 'views/bonds';
 import PoolsView from 'views/pools';
 import VotingView from 'views/voting';
 
-import Warnings from 'components/warnings';
-import SiderNav from 'components/sider-nav';
-import { SiderNavLinkProps } from 'components/sider-nav-link';
-import MobileMenu from 'components/mobile-menu';
-import ExternalLink from 'components/externalLink';
+import Warnings from 'components/custom/warnings';
+import SiderNav from 'components/custom/sider-nav';
+import { SiderNavLinkProps } from 'components/custom/sider-nav-link';
+import MobileMenu from 'components/custom/mobile-menu';
+import ExternalLink from 'components/custom/externalLink';
 
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';

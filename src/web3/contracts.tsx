@@ -18,7 +18,7 @@ import { DAOBarnContract, useDAOBarnContract } from 'web3/contracts/daoBarn';
 import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
 import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/daoGovernance';
 
-import UserRejectedModal from 'components/user-rejected-modal';
+import UserRejectedModal from 'web3/components/user-rejected-modal';
 
 export type Web3ContractsData = {
   bond: BONDContract;

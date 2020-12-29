@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect';
 
 import EthGasPriceProvider from 'context/useEthGas';
 import { useWallet } from 'wallets/wallet';
-import { useWarnings } from 'components/warnings';
+import { useWarnings } from 'components/custom/warnings';
 import LayoutHeader from 'views/layout/components/layout-header';
 import PoolRewards from 'views/pools/components/pool-rewards';
 import PoolStats from 'views/pools/components/pool-stats';

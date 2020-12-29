@@ -1,6 +1,6 @@
 import React from 'react';
 
-import ConnectedWallet from 'components/connected-wallet';
+import ConnectedWallet from 'wallets/components/connected-wallet';
 
 import s from './styles.module.scss';
 

@@ -12,17 +12,17 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { useEthGasPrice } from 'context/useEthGas';
 
-import InfoBox from 'components/info-box';
-import InfoTooltip from 'components/info-tooltip';
-import NumericInput from 'components/numeric-input';
+import InfoBox from 'components/custom/info-box';
+import InfoTooltip from 'components/antd/info-tooltip';
+import NumericInput from 'components/custom/numeric-input';
 
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
 
 import s from './styles.module.css';
-import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 
 export type PoolTokenRowProps = {
   token: TokenMeta;

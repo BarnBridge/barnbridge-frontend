@@ -2,8 +2,8 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 
-import InfoTooltip from 'components/info-tooltip';
-import IconsSet from 'components/icons-set';
+import InfoTooltip from 'components/antd/info-tooltip';
+import IconsSet from 'components/custom/icons-set';
 
 import { formatBigValue, formatBONDValue, formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';

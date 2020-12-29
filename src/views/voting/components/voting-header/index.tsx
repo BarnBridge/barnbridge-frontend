@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import Button from 'components/button';
-import Field from 'components/field';
-import Identicon from 'components/identicon';
+import Button from 'components/antd/button';
+import Field from 'components/custom/field';
+import Identicon from 'components/custom/identicon';
 import VotingDetailedModal from '../voting-detailed-modal';
 
 import { inRange, isValidAddress } from 'utils';

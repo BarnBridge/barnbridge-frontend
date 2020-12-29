@@ -2,12 +2,12 @@ import React from 'react';
 import * as Antd from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import * as ReCharts from 'recharts';
-import { addSeconds, addDays, addMonths, formatDistanceToNow, format, isBefore, isAfter } from 'date-fns';
+import { addSeconds, addDays, addMonths, formatDistanceToNow, format, isBefore, isAfter, getUnixTime } from 'date-fns';
 
-import Form from 'components/form';
-import DatePicker from 'components/datepicker';
-import GasFeeList from 'components/gas-fee-list';
-import Button from 'components/button';
+import Form from 'components/antd/form';
+import DatePicker from 'components/antd/datepicker';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Button from 'components/antd/button';
 
 import { getFormattedDuration, isValidAddress } from 'utils';
 import { formatBONDValue } from 'web3/utils';
@@ -34,7 +34,7 @@ const DURATION_OPTIONS: string[] = [
 const WalletLockView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<LockFormData>();
-  const [values, setValues] = React.useState<LockFormData>({});
+  const [, setValues] = React.useState<LockFormData>({});
   const [submitting, setSubmitting] = React.useState<boolean>(false);
 
   const minAllowedDate = addSeconds(Math.max(web3c.daoBarn.userLockedUntil ?? 0, Date.now()), 1);
@@ -85,7 +85,7 @@ const WalletLockView: React.FunctionComponent = () => {
     setSubmitting(true);
 
     try {
-      await web3c.daoBarn.actions.lock(values.lockEndDate!.unix(), values.gasFee!);
+      await web3c.daoBarn.actions.lock(getUnixTime(values.lockEndDate!), values.gasFee!);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
     } catch {
@@ -100,7 +100,7 @@ const WalletLockView: React.FunctionComponent = () => {
     // const start = new Date();
     // const end = values.lockEndDate;
     // const duration = moment.duration(end.diff(start));
-    const arr = [];
+    const arr: any[] = [];
     // const bonus = 2;
     //
     // const months = Math.floor(duration.asMonths());
@@ -155,7 +155,7 @@ const WalletLockView: React.FunctionComponent = () => {
     // });
 
     return arr;
-  }, [web3c.daoBarn.multiplier, values.lockEndDate]);
+  }, []); /// web3c.daoBarn.multiplier, values.lockEndDate
 
   return (
     <div className={s.component}>

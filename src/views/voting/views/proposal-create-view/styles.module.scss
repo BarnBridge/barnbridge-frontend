@@ -16,3 +16,24 @@
   @include font-h1-bold;
   color: #060a0d;
 }
+
+.cards {
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  column-gap: 24px;
+  width: 100%;
+}
+
+.addActionBtn {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: center;
+  column-gap: 16px;
+  width: 100%;
+
+  svg {
+    width: 22px;
+    height: 22px;
+  }
+}

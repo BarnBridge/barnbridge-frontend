@@ -5,7 +5,7 @@ import { isValidAddress } from 'utils';
 import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
-import Modal, { ModalProps } from 'components/modal';
+import Modal, { ModalProps } from 'components/antd/modal';
 
 import { ReactComponent as WalletSvg } from 'resources/svg/icons/nav-wallet.svg';
 import { ReactComponent as PercentageSvg } from 'resources/svg/icons/percentage.svg';

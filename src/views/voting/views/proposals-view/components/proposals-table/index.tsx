@@ -1,11 +1,11 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
+import { useHistory } from 'react-router';
 
-import Table from 'components/table';
+import Table from 'components/antd/table';
 
 import s from './styles.module.scss';
-import { useHistory } from 'react-router';
 
 type Proposal = {
   id: number;
