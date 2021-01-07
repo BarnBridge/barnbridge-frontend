@@ -1,11 +1,12 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps } from 'antd/lib/modal';
 
 import { WalletConnector } from 'wallets/types';
 import { useWallet, WalletConnectors } from 'wallets/wallet';
-
 import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
+
+import Modal, { ModalProps } from 'components/antd/modal';
+import { Heading, Paragraph } from 'components/custom/typography';
+import Button from 'components/antd/button';
 
 import s from './styles.module.css';
 
@@ -31,34 +32,29 @@ const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = pro
   }
 
   return (
-    <>
-      <Antd.Modal
-        className={s.component}
-        centered
-        closable
-        footer={[]}
-        {...modalProps}
-      >
-        <p className={s.headerLabel}>Connect Wallet</p>
-        <p className={s.headerNote}>Please select the wallet of your liking</p>
-        <div className={s.connectorList}>
-          {WalletConnectors.map(connector => (
-            <Antd.Button
-              key={connector.id}
-              type="ghost"
-              className={s.connectorBtn}
-              onClick={() => handleConnectorSelect(connector)}
-            >
-              <img src={connector.logo} alt={connector.name} className={s.connectorLogo} />
-              <span className={s.connectorName}>{connector.name}</span>
-            </Antd.Button>
-          ))}
-        </div>
-      </Antd.Modal>
+    <Modal className={s.component} width={568} {...modalProps}>
+      <Heading type="h2" bold className={s.headerLabel}>
+        Connect Wallet
+      </Heading>
+      <Paragraph type="p1" className={s.headerNote}>
+        Please select the wallet of your liking
+      </Paragraph>
+      <div className={s.list}>
+        {WalletConnectors.map(connector => (
+          <Button
+            key={connector.id}
+            type="link"
+            className={s.btn}
+            onClick={() => handleConnectorSelect(connector)}
+          >
+            <img src={connector.logo} alt={connector.name} className={s.logo} />
+          </Button>
+        ))}
+      </div>
       <LedgerDerivationPathModal
         visible={ledgerModal}
         onCancel={() => setLedgerModal(false)} />
-    </>
+    </Modal>
   );
 };
 

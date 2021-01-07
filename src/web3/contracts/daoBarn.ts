@@ -34,6 +34,10 @@ export type DAOBarnActions = {
   delegate(to: string, gasPrice: number): Promise<any>;
   stopDelegate(gasPrice: number): Promise<any>;
   lock(timestamp: number, gasPrice: number): Promise<any>;
+  votingPower(address: string): Promise<[BigNumber]>;
+  votingPowerAtTs(timestamp: number): Promise<[BigNumber]>;
+  bondStakedAtTs(timestamp: number): Promise<[BigNumber]>;
+  getReceipt(proposalId: number): Promise<any>;
 };
 
 export type DAOBarnContract = DAOBarnContractData & {
@@ -152,6 +156,38 @@ function lockSend(timestamp: number, from: string, gasPrice: number): Promise<an
   });
 }
 
+function votingPowerCall(address: string): Promise<any> {
+  return Contract.batch([{
+    method: 'votingPower',
+    methodArgs: [address],
+    transform: (value: string) => getHumanValue(new BigNumber(value), 18),
+  }]);
+}
+
+function votingPowerAtTsCall(address: string, timestamp: number): Promise<any> {
+  return Contract.batch([{
+    method: 'votingPowerAtTs',
+    methodArgs: [address, timestamp],
+    transform: (value: string) => getHumanValue(new BigNumber(value), 18),
+  }]);
+}
+
+function bondStakedAtTsCall(timestamp: number): Promise<any> {
+  return Contract.batch([{
+    method: 'bondStakedAtTs',
+    methodArgs: [timestamp],
+    transform: (value: string) => getHumanValue(new BigNumber(value), 18),
+  }]);
+}
+
+function getReceiptCall(address: string, proposalId: number): Promise<any> {
+  return Contract.batch([{
+    method: 'getReceipt',
+    methodArgs: [proposalId, address],
+    transform: (value: any[]) => value,
+  }]);
+}
+
 export function useDAOBarnContract(): DAOBarnContract {
   const [reload] = useReload();
   const wallet = useWallet();
@@ -196,6 +232,22 @@ export function useDAOBarnContract(): DAOBarnContract {
     return wallet.account ? lockSend(timestamp, wallet.account, gasPrice) : Promise.reject();
   }
 
+  function votingPower(address: string): Promise<any> {
+    return votingPowerCall(address);
+  }
+
+  function votingPowerAtTs(timestamp: number): Promise<any> {
+    return wallet.account ? votingPowerAtTsCall(wallet.account, timestamp) : Promise.reject();
+  }
+
+  function bondStakedAtTs(timestamp: number): Promise<any> {
+    return bondStakedAtTsCall(timestamp);
+  }
+
+  function getReceipt(proposalId: number): Promise<any> {
+    return wallet.account ? getReceiptCall(wallet.account, proposalId) : Promise.reject();
+  }
+
   return {
     ...data,
     contract: Contract,
@@ -206,6 +258,10 @@ export function useDAOBarnContract(): DAOBarnContract {
       delegate,
       stopDelegate,
       lock,
+      votingPower,
+      votingPowerAtTs,
+      bondStakedAtTs,
+      getReceipt,
     },
   };
 }

@@ -6,8 +6,14 @@
   }
 
   :global(.ant-modal-close) {
-    top: 20px;
-    right: 10px;
+    top: 36px;
+    right: 32px;
+  }
+
+  :global(.ant-modal-close-x) {
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
   }
 
   :global(.ant-modal-close-x) svg {

@@ -1,0 +1,67 @@
+@import "src/mixin";
+
+.component {
+  background-color: var(--bg-color-2);
+  box-shadow: 0 0 0.5px var(--shadow-color-1);
+  border-color: var(--border-color-1);
+  border-radius: 4px;
+}
+
+.header {
+  display: grid;
+  grid-template-columns: auto 16px;
+}
+
+.label {
+  @include font-lb2-semi-bold;
+  @include text-ellipsis;
+  color: var(--text-color-3);
+}
+
+.valueWrap {
+  min-height: 32px;
+  margin-top: 44px;
+}
+
+.value {
+  @include font-h2-bold;
+  @include text-ellipsis;
+  color: var(--text-color-1);
+}
+
+.hintWrap {
+  min-height: 24px;
+  margin-top: 4px;
+}
+
+.hint {
+  @include font-p1-regular;
+  @include text-ellipsis;
+  color: var(--text-color-2);
+}
+
+.skeleton {
+  width: 220px;
+  height: 24px;
+  margin: 4px 0;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .component :global .ant-card-body {
+    padding: 16px;
+  }
+
+  .value {
+    margin-top: 16px;
+    font-size: 14px;
+    line-height: 24px;
+  }
+
+  .hint {
+    margin-top: 8px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-color-2);
+  }
+}

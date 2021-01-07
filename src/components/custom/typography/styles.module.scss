@@ -1,0 +1,110 @@
+@import "src/mixin";
+
+@for $i from 1 through 10 {
+  &.clr-#{$i} {
+    color: var(--text-color-#{$i});
+  }
+}
+
+h1.heading {
+  display: block;
+  @include font-h1-regular;
+
+  &.bold {
+    @include font-h1-bold;
+  }
+
+  &.semiBold {
+    @include font-h1-semi-bold;
+  }
+}
+
+h2.heading {
+  display: block;
+  @include font-h2-regular;
+
+  &.bold {
+    @include font-h2-bold;
+  }
+
+  &.semiBold {
+    @include font-h2-semi-bold;
+  }
+}
+
+h3.heading {
+  display: block;
+  @include font-h3-regular;
+
+  &.bold {
+    @include font-h3-bold;
+  }
+
+  &.semiBold {
+    @include font-h3-semi-bold;
+  }
+}
+
+.paragraph {
+  &.p1 {
+    @include font-p1-regular;
+
+    &.bold {
+      @include font-p1-bold;
+    }
+
+    &.semiBold {
+      @include font-p1-semi-bold;
+    }
+  }
+
+  &.p2 {
+    @include font-p2-regular;
+
+    &.bold {
+      @include font-p2-bold;
+    }
+
+    &.semiBold {
+      @include font-p2-semi-bold;
+    }
+  }
+}
+
+.label {
+  &.lb1 {
+    @include font-lb1-regular;
+
+    &.bold {
+      @include font-lb1-bold;
+    }
+
+    &.semiBold {
+      @include font-lb1-semi-bold;
+    }
+  }
+
+  &.lb2 {
+    @include font-lb2-regular;
+
+    &.bold {
+      @include font-lb2-bold;
+    }
+
+    &.semiBold {
+      @include font-lb2-semi-bold;
+    }
+  }
+}
+
+.small {
+  @include font-sm-regular;
+
+  &.bold {
+    @include font-sm-bold;
+  }
+
+  &.semiBold {
+    @include font-sm-semi-bold;
+  }
+}

@@ -1,0 +1,28 @@
+.component {
+}
+
+.body {
+  padding: var(--content-padding);
+}
+
+.content {
+  padding-top: 64px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1400px) {
+  .stats {
+    margin-bottom: 32px;
+  }
+
+  .walletRow {
+    margin-bottom: 32px;
+  }
+
+  .wallet {
+    position: absolute;
+    right: 0;
+    top: -5px;
+    z-index: 999;
+  }
+}

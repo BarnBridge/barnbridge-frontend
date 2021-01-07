@@ -1,0 +1,29 @@
+@import "src/mixin";
+
+.component {
+}
+
+.header {
+  display: grid;
+  grid-template-columns: 40px auto;
+  grid-column-gap: 16px;
+  align-items: center;
+  color: #060a0d;
+  margin-bottom: 16px;
+
+  svg {
+    color: #ff4339;
+  }
+}
+
+.hint {
+  color: #717980;
+  margin-bottom: 44px;
+}
+
+.actions {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: space-between;
+  align-items: center;
+}

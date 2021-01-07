@@ -1,0 +1,25 @@
+$gaps: 4, 8, 12, 16, 24, 32, 48, 64;
+
+.grid {
+  display: grid;
+
+  &.row {
+    grid-auto-flow: row;
+
+    @each $gap in $gaps {
+      &.gap-#{$gap} {
+        grid-row-gap: #{$gap}px;
+      }
+    }
+  }
+
+  &.col {
+    grid-auto-flow: column;
+
+    @each $gap in $gaps {
+      &.gap-#{$gap} {
+        grid-column-gap: #{$gap}px;
+      }
+    }
+  }
+}

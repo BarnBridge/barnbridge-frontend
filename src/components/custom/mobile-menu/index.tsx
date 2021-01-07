@@ -22,12 +22,12 @@ const SiderNavLinks: SiderNavLinkProps[] = [
   {
     icon: <PoolsSvg />,
     label: 'Pools',
-    path: '/pools',
+    path: '/yield-farming',
   },
   {
     icon: <VotingSvg />,
     label: 'Voting',
-    path: '/voting',
+    path: '/governance',
   },
   {
     icon: <BondsSvg />,

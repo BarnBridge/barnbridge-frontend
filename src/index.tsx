@@ -10,7 +10,7 @@ import ThemeProvider from 'components/providers/theme-provider';
 import './antd.css';
 import './index.scss';
 
-import LayoutView from 'views/layout';
+import LayoutView from 'layout';
 
 import * as sw from './serviceWorker';
 

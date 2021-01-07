@@ -1,9 +1,12 @@
 @import "src/mixin";
 
 .component {
+  display: flex;
+  flex-direction: column;
   box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
 
   :global(.ant-card-head) {
+    min-height: 72px;
     border-bottom: 1px solid #e3e4e6;
   }
 
@@ -14,6 +17,11 @@
   }
 
   :global(.ant-card-body) {
+    flex-grow: 1;
     padding: 24px;
+  }
+
+  :global(.ant-card-actions) > li {
+    margin: 0;
   }
 }

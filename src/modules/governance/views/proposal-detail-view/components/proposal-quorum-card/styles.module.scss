@@ -1,0 +1,23 @@
+.component {
+  .row {
+    display: grid;
+    grid-auto-flow: row;
+    grid-row-gap: 24px;
+  }
+
+  .headerHint {
+    display: grid;
+    grid-auto-flow: column;
+    grid-column-gap: 8px;
+    justify-content: flex-start;
+  }
+
+  .progress {
+    line-height: 8px;
+
+    :global(.ant-progress-bg) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}

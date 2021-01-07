@@ -1,45 +1,35 @@
 .component {
+    padding: 0 !important;
     background-color: var(--bg-color-2);
 }
 
 .headerLabel {
     margin-bottom: 4px;
-    font-weight: bold;
-    font-size: 24px;
-    line-height: 32px;
     color: var(--text-color-1);
 }
 
 .headerNote {
     margin-bottom: 32px;
-    font-weight: 600;
-    font-size: 16px;
-    line-height: 24px;
     color: var(--text-color-2);
 }
 
-.connectorList {
+.list {
     display: grid;
-    grid-gap: 6px;
-    grid-template-columns: repeat(auto-fill, calc(50% - 3px));
-    width: 100%;
-    height: 300px;
+    grid-gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     background-color: var(--bg-color-2);
     overflow: scroll;
 }
 
-.connectorBtn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 96px;
-    background-color: var(--bg-color-1);
-    border: 1px solid var(--border-color-1);
-    border-radius: 4px;
+.btn {
+    width: 100%;
+    height: 96px !important;
+    padding: 32px 0;
+    border: 1px solid #e3e4e6 !important;
 }
 
-.connectorBtn:hover {
-    border: 1px solid var(--border-color-2);
+.btn:hover {
+    border: 1px solid #ff4339 !important;
     box-shadow: 0 16px 32px rgba(255, 67, 57, 0.04);
 }
 
@@ -47,15 +37,6 @@
     background-color: var(--bg-color-6) !important;
 }
 
-.connectorLogo {
-    width: 32px;
+.logo {
     height: 32px;
-}
-
-.connectorName {
-    margin-left: 6px;
-    font-weight: bold;
-    font-size: 16px;
-    line-height: 32px;
-    color: var(--text-color-1);
 }

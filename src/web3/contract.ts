@@ -2,8 +2,8 @@ import Web3 from 'web3';
 import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import EventEmitter from 'wolfy87-eventemitter';
-
 import { getWSRpcUrl } from 'web3/utils';
+import { AbiItem } from 'web3-utils';
 
 export type BatchContractMethod = {
   method: string;
@@ -18,13 +18,15 @@ export const DEFAULT_CONTRACT_PROVIDER = new Web3.providers.WebsocketProvider(ge
 const WEB3_ERROR_VALUE = 3.9638773911973445e+75;
 const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
 
+export type Web3ContractAbiItem = AbiItem;
+
 class Web3Contract extends EventEmitter {
-  readonly abi: any;
+  readonly abi: Web3ContractAbiItem[];
   readonly address: string;
   readonly name: string;
   readonly ethContract: Contract & Eth;
 
-  constructor(abi: any, address: string, name: string) {
+  constructor(abi: Web3ContractAbiItem[], address: string, name: string) {
     super();
 
     this.abi = abi;
@@ -32,6 +34,17 @@ class Web3Contract extends EventEmitter {
     this.name = name;
 
     this.ethContract = new web3.eth.Contract(abi, address) as any;
+  }
+
+  get writeFunctions(): Web3ContractAbiItem[] {
+    return this.abi.filter(r => r.type === 'function' && !r.constant);
+  }
+
+  static getFromHex(typesArray: string[], hexString: string): any | undefined {
+    try {
+      return web3.eth.abi.decodeParameters(typesArray, hexString);
+    } catch {
+    }
   }
 
   setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {
@@ -117,6 +130,13 @@ class Web3Contract extends EventEmitter {
         .then(resolve)
         .catch(onError);
     });
+  }
+
+  getHexFor(methodName: string, ...args: any[]): string | undefined {
+    try {
+      return this.ethContract.methods[methodName](...args).encodeABI();
+    } catch {
+    }
   }
 }
 

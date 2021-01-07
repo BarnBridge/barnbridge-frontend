@@ -1,0 +1,65 @@
+.component {
+  :global(.ant-card-body) {
+    padding: 0;
+  }
+
+  .row {
+    display: grid;
+    grid-auto-flow: row;
+    grid-row-gap: 24px;
+    padding: 24px;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #e3e4e6;
+    }
+  }
+
+  .rowLine {
+    display: grid;
+    grid-auto-flow: row;
+    grid-row-gap: 4px;
+  }
+
+  .headerWrap {
+    display: grid;
+    grid-auto-flow: column;
+    grid-row-gap: 4px;
+    justify-content: space-between;
+
+    &:nth-child(1) {
+      text-align: left;
+    }
+
+    &:nth-child(2) {
+      text-align: right;
+    }
+  }
+
+  .headerLabel {
+    color: #060a0d;
+  }
+
+  .headerHint {
+    display: grid;
+    grid-auto-flow: column;
+    grid-column-gap: 8px;
+  }
+
+  .progress {
+    :global(.ant-progress-bg) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  .actions {
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-column-gap: 24px;
+    justify-content: space-between;
+
+    button {
+      width: 178px;
+    }
+  }
+}
