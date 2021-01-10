@@ -20,10 +20,10 @@ const Columns: ColumnsType<any> = [
     width: '60%',
     render: (_, data: ProposalData) => (
       <Grid flow="row" gap={8}>
-        <Paragraph type="p1" semiBold color={1}>{data.title}</Paragraph>
+        <Paragraph type="p1" semiBold color="red900">{data.title}</Paragraph>
         <Grid colsTemplate="repeat(2, min-content)" gap={16}>
           <ProposalStatusTag state={data.state} />
-          <Paragraph type="p2" semiBold color={2}>
+          <Paragraph type="p2" semiBold color="red50">
             {data.time_left ? getFormattedDuration(data.time_left / 1000) : ''}
           </Paragraph>
         </Grid>
@@ -45,13 +45,13 @@ const Columns: ColumnsType<any> = [
             className={s.progress}
             percent={forVotes.toNumber()}
             format={() => (
-              <Paragraph type="p2" semiBold color={2}>{forVotesBN.toFormat()}</Paragraph>
+              <Paragraph type="p2" semiBold color="red900">{forVotesBN.toFormat()}</Paragraph>
             )} />
           <Antd.Progress
             className={s.progress}
             percent={againstVotes.toNumber()}
             format={() => (
-              <Paragraph type="p2" semiBold color={2}>{againstVotesBN.toFormat()}</Paragraph>
+              <Paragraph type="p2" semiBold color="red900">{againstVotesBN.toFormat()}</Paragraph>
             )} />
         </Grid>
       );

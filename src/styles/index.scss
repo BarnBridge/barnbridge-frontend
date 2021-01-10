@@ -1,18 +1,21 @@
+@import "default";
+@import "dark";
+
 @font-face {
   font-family: Montserrat;
-  src: url('resources/fonts/Montserrat-Regular.ttf');
+  src: url('../resources/fonts/Montserrat-Regular.ttf');
 }
 
 @font-face {
   font-family: Montserrat;
   font-weight: 600;
-  src: url('resources/fonts/Montserrat-SemiBold.ttf');
+  src: url('../resources/fonts/Montserrat-SemiBold.ttf');
 }
 
 @font-face {
   font-family: Montserrat;
   font-weight: 700;
-  src: url('resources/fonts/Montserrat-Bold.ttf');
+  src: url('../resources/fonts/Montserrat-Bold.ttf');
 }
 
 body {

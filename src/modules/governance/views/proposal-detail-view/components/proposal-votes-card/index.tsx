@@ -147,6 +147,7 @@ const ProposalVotesCard: React.FunctionComponent<ProposalVotesCardProps> = props
         )}
       </div>
       <ProposalVotersModal
+        proposal={proposal}
         visible={votersModal}
         onCancel={() => showVotersModal(false)} />
     </Card>

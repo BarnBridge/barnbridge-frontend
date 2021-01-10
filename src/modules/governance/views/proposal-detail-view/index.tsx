@@ -48,7 +48,7 @@ const ProposalDetailView: React.FunctionComponent = () => {
           {data && <ProposalDetailsCard proposal={data} />}
         </div>
         <div className={s.column}>
-          <ProposalStatusCard />
+          <ProposalStatusCard proposal={data} />
           {data?.state === ProposalState.Queued && (
             <ProposalCancellationCard proposal={data} />
           )}

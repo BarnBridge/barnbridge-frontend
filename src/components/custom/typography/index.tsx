@@ -1,32 +1,38 @@
 import React from 'react';
 import cx from 'classnames';
 
+import { Colors } from 'styles/colors';
+
 import s from './styles.module.scss';
 
 type CommonProps = {
   bold?: boolean;
   semiBold?: boolean;
-  color?: number;
+  color?: Colors;
   className?: string;
 };
+
+function classNamesFromProps(props: CommonProps) {
+  const { bold, semiBold, color, className } = props;
+
+  return cx(
+    bold && s.bold,
+    semiBold && s.semiBold,
+    color && `clr-${color}`,
+    className,
+  );
+}
 
 export type HeadingProps = CommonProps & {
   type: 'h1' | 'h2' | 'h3';
 };
 
 export const Heading: React.FunctionComponent<HeadingProps> = props => {
-  const { type, bold, semiBold, color, className, children, ...headingProps } = props;
+  const { type, children } = props;
 
   return React.useMemo(() => {
     return React.createElement(type, {
-      className: cx(
-        s.heading,
-        bold && s.bold,
-        semiBold && s.semiBold,
-        color && s[`clr-${color}`],
-        className,
-      ),
-      ...headingProps,
+      className: cx(s.heading, classNamesFromProps(props)),
     }, children);
   }, [type]);
 };
@@ -36,17 +42,10 @@ export type ParagraphProps = CommonProps & {
 };
 
 export const Paragraph: React.FunctionComponent<ParagraphProps> = props => {
-  const { type, bold, semiBold, color, className, children, ...paragraphProps } = props;
+  const { type, children } = props;
 
   return (
-    <p className={cx(
-      s.paragraph,
-      s[type],
-      bold && s.bold,
-      semiBold && s.semiBold,
-      color && s[`clr-${color}`],
-      className,
-    )} {...paragraphProps}>
+    <p className={cx(s.paragraph, s[type], classNamesFromProps(props))}>
       {children}
     </p>
   );
@@ -57,17 +56,10 @@ export type LabelProps = CommonProps & {
 };
 
 export const Label: React.FunctionComponent<LabelProps> = props => {
-  const { type, bold, semiBold, color, className, children, ...labelProps } = props;
+  const { type, children } = props;
 
   return (
-    <label className={cx(
-      s.label,
-      s[type],
-      bold && s.bold,
-      semiBold && s.semiBold,
-      color && s[`clr-${color}`],
-      className,
-    )} {...labelProps}>
+    <label className={cx(s.label, s[type], classNamesFromProps(props))}>
       {children}
     </label>
   );
@@ -76,16 +68,10 @@ export const Label: React.FunctionComponent<LabelProps> = props => {
 export type SmallProps = CommonProps;
 
 export const Small: React.FunctionComponent<SmallProps> = props => {
-  const { bold, semiBold, color, className, children, ...smallProps } = props;
+  const { children } = props;
 
   return (
-    <small className={cx(
-      s.small,
-      bold && s.bold,
-      semiBold && s.semiBold,
-      color && s[`clr-${color}`],
-      className,
-    )} {...smallProps}>
+    <small className={cx(s.small, classNamesFromProps(props))}>
       {children}
     </small>
   );

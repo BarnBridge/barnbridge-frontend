@@ -1,10 +1,4 @@
-@import "src/mixin";
-
-@for $i from 1 through 10 {
-  &.clr-#{$i} {
-    color: var(--text-color-#{$i});
-  }
-}
+@import "src/styles/mixin";
 
 h1.heading {
   display: block;

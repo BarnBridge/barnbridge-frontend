@@ -29,7 +29,7 @@ type ProposalForm = {
 };
 
 const InitialFormValues: ProposalForm = {
-  targetAddress: '0xBB9bc244D798123fDe783fCc1C72d3Bb8C189413',
+  targetAddress: '0x8EAcaEdD6D3BaCBC8A09C0787c5567f86eE96d02',
   addValueAttribute: undefined,
   actionValue: undefined,
   addFunctionCall: undefined,
@@ -42,7 +42,7 @@ export type ProposalCreateModalProps = ModalProps & {
 };
 
 function fetchContractABI(address: string) {
-  return fetch(`https://api.etherscan.io/api?module=contract&action=getabi&address=${address}`)
+  return fetch(`https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}`)
     .then(result => result.json())
     .then(({ status, result }: { status: string, result: string }) => {
       if (status === '1') {

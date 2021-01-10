@@ -3,59 +3,58 @@ import React from 'react';
 import Card from 'components/antd/card';
 import { Paragraph } from 'components/custom/typography';
 
+import { ProposalData } from 'web3/contracts/daoGovernance';
+
 import { ReactComponent as CircleTimeSvg } from 'resources/svg/icons/circle-time.svg';
 import { ReactComponent as CircleCheckSvg } from 'resources/svg/icons/circle-check.svg';
 
 import s from './styles.module.scss';
 
-export type ProposalStatusCardProps = {};
+export type ProposalStatusCardProps = {
+  proposal?: ProposalData;
+};
+
+export type ProposalEventData = {
+  proposal_id: number;
+  caller: string;
+  event_type: string;
+  event_data: any;
+  create_time: number;
+};
+
+function fetchProposalEvents(proposalId: number): Promise<ProposalEventData[]> {
+  return fetch(`https://bbtest.kwix.xyz/api/governance/proposals/${proposalId}/events`)
+    .then(result => result.json())
+    .then(result => result.data);
+}
 
 const ProposalStatusCard: React.FunctionComponent<ProposalStatusCardProps> = props => {
+  const { proposal } = props;
+  const [events, setEvents] = React.useState<ProposalEventData[]>([]);
+
+  React.useEffect(() => {
+    if (!proposal?.proposal_id) {
+      return;
+    }
+
+    fetchProposalEvents(proposal.proposal_id)
+      .then((events: ProposalEventData[]) => {
+        setEvents(events.reverse());
+      });
+  }, [proposal?.proposal_id]);
+
   return (
     <Card className={s.component}>
       <div className={s.list}>
-        <div className={s.wrap}>
-          <CircleTimeSvg />
-          <div className={s.content}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>Pending execution</Paragraph>
-            <Paragraph type="p2" semiBold className={s.timeLabel}>2 days 4 hours left</Paragraph>
+        {events.map(event => (
+          <div key={event.event_type} className={s.wrap}>
+            <CircleTimeSvg />
+            <div className={s.content}>
+              <Paragraph type="p1" semiBold className={s.nameLabel}>{event.event_type}</Paragraph>
+              <Paragraph type="p2" semiBold className={s.timeLabel}>{event.create_time}</Paragraph>
+            </div>
           </div>
-        </div>
-        <div className={s.wrap}>
-          <CircleCheckSvg />
-          <div className={s.content}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>Queued for execution</Paragraph>
-            <Paragraph type="p2" semiBold className={s.timeLabel}>Ended on 12.22.2020 - 17:52</Paragraph>
-          </div>
-        </div>
-        <div className={s.wrap}>
-          <CircleCheckSvg />
-          <div className={s.content}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>Accepted</Paragraph>
-            <Paragraph type="p2" semiBold className={s.timeLabel}>Ended on 12.22.2020 - 17:52</Paragraph>
-          </div>
-        </div>
-        <div className={s.wrap}>
-          <CircleCheckSvg />
-          <div className={s.content}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>Voting</Paragraph>
-            <Paragraph type="p2" semiBold className={s.timeLabel}>Ended on 12.18.2020 - 16:34</Paragraph>
-          </div>
-        </div>
-        <div className={s.wrap}>
-          <CircleCheckSvg />
-          <div className={s.content}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>Warm-up</Paragraph>
-            <Paragraph type="p2" semiBold className={s.timeLabel}>Ended on 12.16.2020 - 16:33</Paragraph>
-          </div>
-        </div>
-        <div className={s.wrap}>
-          <CircleCheckSvg />
-          <div className={s.content}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>Created</Paragraph>
-            <Paragraph type="p2" semiBold className={s.timeLabel}>12.14.2020 - 16:32</Paragraph>
-          </div>
-        </div>
+        ))}
       </div>
     </Card>
   );

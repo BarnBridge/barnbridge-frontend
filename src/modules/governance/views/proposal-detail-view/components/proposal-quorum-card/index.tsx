@@ -1,14 +1,15 @@
 import React from 'react';
 import * as Antd from 'antd';
+import BigNumber from 'bignumber.js';
 
 import Card from 'components/antd/card';
 import { Paragraph } from 'components/custom/typography';
 
-import s from './styles.module.scss';
 import { useWeb3Contracts } from 'web3/contracts';
 import { ProposalData } from 'web3/contracts/daoGovernance';
-import { formatBigValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import BigNumber from 'bignumber.js';
+import { formatBigValue } from 'web3/utils';
+
+import s from './styles.module.scss';
 
 export type ProposalQuorumCardProps = {
   proposal?: ProposalData;

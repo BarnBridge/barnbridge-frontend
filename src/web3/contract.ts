@@ -135,6 +135,7 @@ class Web3Contract extends EventEmitter {
   getHexFor(methodName: string, ...args: any[]): string | undefined {
     try {
       return this.ethContract.methods[methodName](...args).encodeABI();
+      // web3.eth.abi.encodeParameters(typesArray, parameters);
     } catch {
     }
   }

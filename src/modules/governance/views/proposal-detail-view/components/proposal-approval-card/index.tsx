@@ -1,13 +1,14 @@
 import React from 'react';
+import * as Antd from 'antd';
 
 import Card from 'components/antd/card';
+import { Paragraph } from 'components/custom/typography';
+
+import { ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ProposalData } from 'web3/contracts/daoGovernance';
 
 import s from './styles.module.scss';
-import { Paragraph } from 'components/custom/typography';
-import * as Antd from 'antd';
-import { useWeb3Contracts } from 'web3/contracts';
-import { formatBigValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import { ProposalData } from 'web3/contracts/daoGovernance';
 
 export type ProposalApprovalCardProps = {
   proposal?: ProposalData;
