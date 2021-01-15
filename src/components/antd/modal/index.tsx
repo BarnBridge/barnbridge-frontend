@@ -7,7 +7,9 @@ import { ReactComponent as CloseSvg } from 'resources/svg/icons/close.svg';
 
 import s from './styles.module.scss';
 
-export type ModalProps = AntdModalProps & {};
+export type ModalProps = AntdModalProps & {
+  onCancel: (e?: React.MouseEvent<HTMLElement>) => void;
+};
 
 const Modal: React.FunctionComponent<ModalProps> = props => {
   const { className, children, ...modalProps } = props;

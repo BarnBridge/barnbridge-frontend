@@ -1,50 +1,49 @@
 import React from 'react';
 
 import Card from 'components/antd/card';
-import { Paragraph } from 'components/custom/typography';
 import Button from 'components/antd/button';
-
-import { useWeb3Contracts } from 'web3/contracts';
-import { ProposalData } from 'web3/contracts/daoGovernance';
+import { Paragraph } from 'components/custom/typography';
+import { useProposal } from '../../providers/ProposalProvider';
 
 import s from './styles.module.scss';
 
-export type ProposalCancellationCardProps = {
-  proposal?: ProposalData;
-};
-
 type ProposalCancellationCardState = {
-  canceled: boolean;
+  cancelling: boolean;
 };
 
-const ProposalCancellationCard: React.FunctionComponent<ProposalCancellationCardProps> = props => {
-  const { proposal } = props;
+const InitialState: ProposalCancellationCardState = {
+  cancelling: false,
+};
 
-  const web3c = useWeb3Contracts();
-  const [state, setState] = React.useState<ProposalCancellationCardState>({
-    canceled: false,
-  });
+const ProposalCancellationCard: React.FunctionComponent = () => {
+  const proposalCtx = useProposal();
 
-  React.useEffect(() => {
-    if (!proposal?.proposal_id) {
-      return;
-    }
+  const [state, setState] = React.useState<ProposalCancellationCardState>(InitialState);
 
-    web3c.daoGovernance.cancellationProposalsCall(proposal?.proposal_id!)
-      .then(([result]) => {
-        console.log('R', result);
-        if (result.createTime > 0) {
-          setState(prevState => ({
-            ...prevState,
-            canceled: true,
-          }));
-        }
+  function handleProposalCancellation() {
+    setState(prevState => ({
+      ...prevState,
+      cancelling: true,
+    }));
+
+    proposalCtx.startCancellationProposal()
+      .then(() => {
+        setState(prevState => ({
+          ...prevState,
+          cancelling: false,
+        }));
+      })
+      .catch(() => {
+        setState(prevState => ({
+          ...prevState,
+          cancelling: false,
+        }));
       });
-  }, [proposal?.proposal_id]);
+  }
 
   return (
     <Card className={s.component} title="Cancellation proposal">
-      {!state.canceled ? (
+      {!proposalCtx.canceled ? (
         <>
           <Paragraph type="p1">
             Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis
@@ -52,8 +51,11 @@ const ProposalCancellationCard: React.FunctionComponent<ProposalCancellationCard
             est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam
             consequat sunt nostrud amet.
           </Paragraph>
-
-          <Button type="default" className={s.cancelBtn}>
+          <Button
+            type="default"
+            className={s.cancelBtn}
+            loading={state.cancelling}
+            onClick={handleProposalCancellation}>
             Initiate cancellation proposal
           </Button>
         </>
@@ -63,7 +65,6 @@ const ProposalCancellationCard: React.FunctionComponent<ProposalCancellationCard
           <Button type="primary">View cancellation proposal</Button>
         </>
       )}
-
     </Card>
   );
 };

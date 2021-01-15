@@ -1,0 +1,31 @@
+.component {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 72px;
+  margin: 0;
+  padding: 24px;
+  background: #fff;
+  box-shadow: 0 16px 32px rgba(255, 67, 57, 0.04);
+  border: 1px solid #e3e4e6;
+  border-radius: 4px;
+
+  :global(.ant-radio-inner) {
+    width: 24px;
+    height: 24px;
+    border: 2px solid #e3e4e6;
+
+    &:after {
+      display: none;
+    }
+  }
+
+  &:global(.ant-radio-wrapper-checked) {
+    border: 1px solid #ff4339;
+
+    :global(.ant-radio-inner) {
+      border: 8px solid #ff4339;
+    }
+  }
+}

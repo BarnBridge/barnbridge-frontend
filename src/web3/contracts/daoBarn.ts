@@ -37,7 +37,6 @@ export type DAOBarnActions = {
   votingPower(address: string): Promise<[BigNumber]>;
   votingPowerAtTs(timestamp: number): Promise<[BigNumber]>;
   bondStakedAtTs(timestamp: number): Promise<[BigNumber]>;
-  getReceipt(proposalId: number): Promise<any>;
 };
 
 export type DAOBarnContract = DAOBarnContractData & {
@@ -55,7 +54,7 @@ async function loadCommonData(): Promise<DAOBarnContractData> {
   ]);
 
   return {
-    activationThreshold: getNonHumanValue(400_000, 18),
+    activationThreshold: new BigNumber(400_000),
     bondStaked,
   };
 }
@@ -180,14 +179,6 @@ function bondStakedAtTsCall(timestamp: number): Promise<any> {
   }]);
 }
 
-function getReceiptCall(address: string, proposalId: number): Promise<any> {
-  return Contract.batch([{
-    method: 'getReceipt',
-    methodArgs: [proposalId, address],
-    transform: (value: any[]) => value,
-  }]);
-}
-
 export function useDAOBarnContract(): DAOBarnContract {
   const [reload] = useReload();
   const wallet = useWallet();
@@ -244,10 +235,6 @@ export function useDAOBarnContract(): DAOBarnContract {
     return bondStakedAtTsCall(timestamp);
   }
 
-  function getReceipt(proposalId: number): Promise<any> {
-    return wallet.account ? getReceiptCall(wallet.account, proposalId) : Promise.reject();
-  }
-
   return {
     ...data,
     contract: Contract,
@@ -261,7 +248,6 @@ export function useDAOBarnContract(): DAOBarnContract {
       votingPower,
       votingPowerAtTs,
       bondStakedAtTs,
-      getReceipt,
     },
   };
 }

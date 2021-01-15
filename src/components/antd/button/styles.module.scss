@@ -107,6 +107,9 @@
     }
 
     &.ant-btn-link {
+      min-height: inherit;
+      height: fit-content;
+      padding: 0;
       color: var(--btn-link-color);
       border: none;
 

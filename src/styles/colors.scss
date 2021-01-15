@@ -76,3 +76,27 @@ $sizes: 900, 800, 700, 600, 500, 400, 300, 200, 100, 50;
     }
   }
 }
+
+$gaps: 4, 8, 12, 16, 24, 32, 48, 64;
+
+@each $gap in $gaps {
+  .mr-#{$gap} {
+    margin-right: #{$gap}px;
+  }
+  .mb-#{$gap} {
+    margin-bottom: #{$gap}px;
+  }
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
+.mlr-auto {
+  margin-left: auto;
+  margin-right: auto;
+}

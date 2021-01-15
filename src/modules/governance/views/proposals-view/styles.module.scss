@@ -1,21 +1,4 @@
-@import "../../../../styles/mixin";
-
-.component {
-}
-
-.viewHeader {
-  display: inline-grid;
-  grid-template-columns: repeat(2, max-content);
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  margin-bottom: 36px;
-}
-
-.viewHeaderLabel {
-  @include font-h1-bold;
-  color: #060a0d;
-}
+@import "src/styles/mixin";
 
 .tabs:global > {
   .ant-tabs-nav {

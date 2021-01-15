@@ -1,4 +1,4 @@
-@import "../../../../styles/mixin";
+@import "src/styles/mixin";
 
 .component {
   min-height: 157px;
@@ -6,40 +6,10 @@
   background: #fff;
 }
 
-.header {
-  width: 100%;
-  padding: 0 0 16px;
-  @include font-lb2-semi-bold;
-  color: #ff4339;
-}
-
-.list {
-  display: inline-grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
-  width: 100%;
-}
-
-.field {
-  grid-template-rows: 24px 48px;
-
-  &:not(:last-of-type) {
-    border-right: 1px solid #e3e4e6;
-    margin-right: 32px;
-    padding-right: 32px;
-  }
-
-  label {
-    @include font-p2-regular;
-  }
-}
-
-.fieldContent {
-  display: inline-grid;
-  grid-template-columns: repeat(3, max-content);
-  column-gap: 8px;
-  align-items: center;
-  @include font-h2-bold;
-  color: #060a0d;
+.delimiter {
+  width: 1px;
+  height: 100%;
+  border-right: 1px solid #e3e4e6;
 }
 
 .bondIcon {
@@ -51,25 +21,4 @@
   padding: 0 12px;
   background: rgba(255, 67, 57, 0.08);
   border-radius: 18px;
-  @include font-p1-bold;
-  color: #ff4339;
-  text-align: center;
-}
-
-.regular {
-  @include font-p2-regular;
-  color: #717980;
-}
-
-.timer {
-  @include font-h3-bold;
-  color: #060a0d;
-}
-
-.identicon {
-  width: 24px;
-  height: 24px;
-  margin-right: 8px;
-  border: 1px solid #e3e4e6;
-  border-radius: 4px;
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 
 import Card from 'components/antd/card';
@@ -7,56 +8,120 @@ import { Heading, Paragraph } from 'components/custom/typography';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Textarea from 'components/antd/textarea';
-import PopoverMenu from 'components/antd/popover-menu';
+import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
+import Icon from 'components/custom/icon';
 
-import ProposalCreateModal from '../../components/proposal-create-modal';
+import ProposalActionCreateModal, { ProposalActionCreateForm } from '../../components/proposal-create-modal';
 import ProposalDeleteModal from 'modules/governance/components/proposal-delete-modal';
-
-import { ReactComponent as PlusCircleSvg } from 'resources/svg/icons/plus-circle.svg';
-import { ReactComponent as GearSvg } from 'resources/svg/icons/gear.svg';
+import { useWeb3Contracts } from 'web3/contracts';
+import { encodeABIParams } from 'web3/contract';
 
 import s from './styles.module.scss';
 
 type NewProposalForm = {
   title: string;
   description: string;
+  actions: ProposalActionCreateForm[];
 };
 
 const InitialFormValues: NewProposalForm = {
   title: '',
   description: '',
+  actions: [],
 };
 
+const ActionMenuItems: PopoverMenuItem[] = [
+  {
+    key: 'edit',
+    icon: null,
+    title: 'Edit action',
+  },
+  {
+    key: 'delete',
+    icon: null,
+    title: 'Delete action',
+  },
+];
+
 const ProposalCreateView: React.FunctionComponent = () => {
+  const history = useHistory();
+  const web3c = useWeb3Contracts();
+
   const [form] = Antd.Form.useForm<NewProposalForm>();
   const [, setValues] = React.useState<NewProposalForm>(InitialFormValues);
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [proposalCreateModal, setProposalCreateModal] = React.useState<boolean>(false);
-  const [proposalEditModal, setProposalEditModal] = React.useState<boolean>(false);
   const [proposalDeleteModal, setProposalDeleteModal] = React.useState<boolean>(false);
-
-  async function handleSubmit(values: NewProposalForm) {
-    setSubmitting(true);
-
-    try {
-      form.setFieldsValue(InitialFormValues);
-    } catch {
-      //
-    }
-
-    setSubmitting(false);
-  }
 
   function handleAddAction() {
     setProposalCreateModal(true);
   }
 
+  function handleCreateAction(payload: ProposalActionCreateForm) {
+    form.setFieldsValue({
+      actions: [
+        ...form.getFieldValue('actions'),
+        payload,
+      ],
+    });
+  }
+
   function handleActionMenu(key: string | number) {
     if (key === 'edit') {
-      setProposalEditModal(true);
     } else if (key === 'delete') {
       setProposalDeleteModal(true);
     }
+  }
+
+  async function handleSubmit(values: NewProposalForm) {
+    setSubmitting(true);
+
+    try {
+      await form.validateFields();
+
+      ///0x8EAcaEdD6D3BaCBC8A09C0787c5567f86eE96d02
+      const payload = {
+        title: values.title,
+        description: values.description,
+        ...values.actions.reduce((a, c) => {
+          if (!c.targetAddress) {
+            return a;
+          }
+
+          a.targets.push(c.targetAddress);
+
+          if (c.addFunctionCall) {
+            a.signatures.push('cancelProposal(uint256)');
+            a.calldatas.push(encodeABIParams(['uint256'], ['1'])!);
+          } else {
+            a.signatures.push('');
+            a.calldatas.push('0x');
+          }
+
+          if (c.addValueAttribute) {
+            a.values.push(c.actionValue!);
+          } else {
+            a.values.push('0');
+          }
+
+          return a;
+        }, {
+          targets: [] as string[],
+          signatures: [] as string[],
+          calldatas: [] as string[],
+          values: [] as string[],
+        }),
+      };
+
+      console.log({ payload, values });
+      const proposal = await web3c.daoGovernance.actions.createProposal(payload);
+      form.setFieldsValue(InitialFormValues);
+      history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
+    } catch (e) {
+      console.log('E', e);
+    }
+
+    setSubmitting(false);
   }
 
   return (
@@ -104,32 +169,31 @@ const ProposalCreateView: React.FunctionComponent = () => {
             actions={[
               <Button
                 type="ghost"
-                icon={<PlusCircleSvg />}
+                icon={<Icon type="plus-circle" />}
                 className={s.addActionBtn}
                 onClick={handleAddAction}>Add new action</Button>,
             ]}>
-            <div className={s.actionRow}>
-              <Paragraph type="p1" semiBold>
-                Contract.burnFrom(“0xd98CE81cbCa3981A18481...0cAa793B5A49”,420)
-              </Paragraph>
-              <PopoverMenu
-                placement="bottomLeft"
-                items={[
-                  {
-                    key: 'edit',
-                    icon: null,
-                    title: 'Edit action',
-                  },
-                  {
-                    key: 'delete',
-                    icon: null,
-                    title: 'Delete action',
-                  },
-                ]}
-                onClick={key => handleActionMenu(key)}>
-                <GearSvg />
-              </PopoverMenu>
-            </div>
+            <Form.List name="actions">
+              {fields => (
+                <>
+                  {fields.map(field => (
+                    <Form.Item {...field}>
+                      <div className={s.actionRow}>
+                        <Paragraph type="p1" semiBold>
+                          Contract.burnFrom(“0xd98CE81cbCa3981A18481...0cAa793B5A49”,420)
+                        </Paragraph>
+                        <PopoverMenu
+                          placement="bottomLeft"
+                          items={ActionMenuItems}
+                          onClick={key => handleActionMenu(key)}>
+                          <Icon type="gear" />
+                        </PopoverMenu>
+                      </div>
+                    </Form.Item>
+                  ))}
+                </>
+              )}
+            </Form.List>
           </Card>
         </div>
         <Button
@@ -141,9 +205,13 @@ const ProposalCreateView: React.FunctionComponent = () => {
           Create proposal
         </Button>
       </Form>
-      <ProposalCreateModal visible={proposalCreateModal} onCancel={() => setProposalCreateModal(false)} />
-      <ProposalCreateModal edit visible={proposalEditModal} onCancel={() => setProposalEditModal(false)} />
-      <ProposalDeleteModal visible={proposalDeleteModal} onCancel={() => setProposalDeleteModal(false)} />
+      <ProposalActionCreateModal
+        visible={proposalCreateModal}
+        onCancel={() => setProposalCreateModal(false)}
+        onSubmit={handleCreateAction} />
+      <ProposalDeleteModal
+        visible={proposalDeleteModal}
+        onCancel={() => setProposalDeleteModal(false)} />
     </div>
   );
 };

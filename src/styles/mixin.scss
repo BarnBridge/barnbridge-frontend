@@ -81,7 +81,7 @@
 }
 
 @mixin font-lb1-regular {
-  @include font-label(var(--font-size-lb1), calc(var(--font-size-lb1) + 10px), 24);
+  @include font-label(var(--font-size-lb1), calc(var(--font-size-lb1) + 10px));
 }
 
 @mixin font-lb2-bold {

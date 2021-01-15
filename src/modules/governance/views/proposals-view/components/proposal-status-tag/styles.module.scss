@@ -9,23 +9,23 @@
     display: block;
   }
 
-  &.Accepted,
-  &.Executed {
+  &.ACCEPTED,
+  &.EXECUTED {
     background: rgba(0, 211, 149, 0.08);
     color: #00d395;
   }
 
-  &.WarmUp,
-  &.Active,
-  &.Queued,
-  &.Grace {
+  &.WARMUP,
+  &.ACTIVE,
+  &.QUEUED,
+  &.GRACE {
     background: rgba(79, 106, 230, 0.08);
     color: #4f6ae6;
   }
 
-  &.Expired,
-  &.Failed,
-  &.Canceled {
+  &.EXPIRED,
+  &.FAILED,
+  &.CANCELED {
     background: rgba(255, 67, 57, 0.08);
     color: #ff4339;
   }

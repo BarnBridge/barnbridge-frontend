@@ -113,8 +113,8 @@ export function formatBONDValue(value?: BigNumber): string {
   return formatBigValue(value, 4);
 }
 
-export function shortenAddr(addr: string, first: number = 6, last: number = 4) {
-  return [String(addr).slice(0, first), String(addr).slice(-last)].join('...');
+export function shortenAddr(addr: string | undefined, first: number = 6, last: number = 4): string | undefined {
+  return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
 }
 
 export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
@@ -181,3 +181,15 @@ export const getPoolNames = memoize((poolType: PoolTypes): string[] => {
       return [];
   }
 });
+
+export function fetchContractABI(address: string): any {
+  return fetch(`https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}`)
+    .then(result => result.json())
+    .then(({ status, result }: { status: string, result: string }) => {
+      if (status === '1') {
+        return JSON.parse(result);
+      }
+
+      return Promise.reject(result);
+    });
+}

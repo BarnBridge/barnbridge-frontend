@@ -9,27 +9,29 @@ import Input from 'components/antd/input';
 import Textarea from 'components/antd/textarea';
 import Select from 'components/antd/select';
 import YesNoSelector from 'components/antd/yes-no-selector';
+import Alert from 'components/antd/alert';
 import { Heading } from 'components/custom/typography';
 import NumericInput from 'components/custom/numeric-input';
-import Alert from 'components/antd/alert';
 
+import { useWeb3Contracts } from 'web3/contracts';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
+import { fetchContractABI } from 'web3/utils';
 import { useReload } from 'hooks/useReload';
 
 import s from './styles.module.scss';
 
-type ProposalForm = {
+export type ProposalActionCreateForm = {
   targetAddress?: string;
   addValueAttribute?: boolean;
-  actionValue?: number;
+  actionValue?: string;
   addFunctionCall?: boolean;
   functionName?: string;
   functionArgs?: Record<string, any>;
   contract?: Web3Contract;
 };
 
-const InitialFormValues: ProposalForm = {
-  targetAddress: '0x8EAcaEdD6D3BaCBC8A09C0787c5567f86eE96d02',
+const InitialFormValues: ProposalActionCreateForm = {
+  targetAddress: '',
   addValueAttribute: undefined,
   actionValue: undefined,
   addFunctionCall: undefined,
@@ -37,42 +39,39 @@ const InitialFormValues: ProposalForm = {
   functionArgs: undefined,
 };
 
-export type ProposalCreateModalProps = ModalProps & {
+export type ProposalActionCreateModalProps = ModalProps & {
   edit?: boolean;
+  onSubmit: (values: ProposalActionCreateForm) => void;
 };
 
-function fetchContractABI(address: string) {
-  return fetch(`https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}`)
-    .then(result => result.json())
-    .then(({ status, result }: { status: string, result: string }) => {
-      if (status === '1') {
-        return JSON.parse(result);
-      }
-
-      return Promise.reject(result);
-    });
-}
-
-const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = props => {
+const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateModalProps> = props => {
   const { edit = false } = props;
 
   const [reload] = useReload();
-  const [form] = Antd.Form.useForm<ProposalForm>();
+  const [form] = Antd.Form.useForm<ProposalActionCreateForm>();
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [contract, setContract] = React.useState<Web3Contract | undefined>();
 
   const formValues = form.getFieldsValue();
 
-  async function handleSubmit(values: ProposalForm) {
+  async function handleSubmit(values: ProposalActionCreateForm) {
     setSubmitting(true);
 
+    let cancel = false;
+
     try {
+      await props.onSubmit(values);
       form.resetFields();
+      cancel = true;
     } catch {
       //
     }
 
     setSubmitting(false);
+
+    if (cancel) {
+      props.onCancel?.();
+    }
   }
 
   React.useEffect(() => {
@@ -92,7 +91,7 @@ const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = p
     return (contract?.writeFunctions as Array<any>)?.find(fn => fn.name === formValues.functionName);
   }, [contract, formValues.functionName]);
 
-  function handleValuesChange(values: Partial<ProposalForm>) {
+  function handleValuesChange(values: Partial<ProposalActionCreateForm>) {
     const changedField = Object.keys(values)[0];
 
     switch (changedField) {
@@ -115,7 +114,9 @@ const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = p
   return (
     <Modal className={s.component} {...props}>
       <div className={s.wrap}>
-        <Heading type="h2" semiBold className={s.headerLabel}>{edit ? 'Edit action' : 'Add new action'}</Heading>
+        <Heading type="h2" semiBold className={s.headerLabel}>
+          {edit ? 'Edit action' : 'Add new action'}
+        </Heading>
 
         <Form
           className={s.form}
@@ -144,7 +145,7 @@ const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = p
               rules={[
                 { required: true, message: 'Required' },
               ]}>
-              <NumericInput disabled={submitting} />
+              <Input disabled={submitting} />
             </Form.Item>
           )}
           <Form.Item
@@ -170,39 +171,17 @@ const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = p
               </Form.Item>
               {selectedFunction && (
                 <>
-                  {selectedFunction.inputs?.map(methodInput => {
-                    switch (methodInput.type) {
-                      case 'address':
-                        return (
-                          <Form.Item
-                            key={methodInput.name}
-                            name={['functionArgs', methodInput.name]}
-                            label={`${methodInput.name} (${methodInput.type})`}
-                            rules={[
-                              { required: true, message: 'Required' },
-                            ]}>
-                            <Input disabled={submitting} placeholder={`${methodInput.name} (${methodInput.type})`} />
-                          </Form.Item>
-                        );
-                      case 'uint256':
-                        return (
-                          <Form.Item
-                            key={methodInput.name}
-                            name={['functionArgs', methodInput.name]}
-                            label={`${methodInput.name} (${methodInput.type})`}
-                            rules={[
-                              { required: true, message: 'Required' },
-                            ]}>
-                            <NumericInput disabled={submitting}
-                                          placeholder={`${methodInput.name} (${methodInput.type})`} />
-                          </Form.Item>
-                        );
-                      case 'bool':
-                      case 'string':
-                      case 'bytes':
-                        return;
-                    }
-                  })}
+                  {selectedFunction.inputs?.map(methodInput => (
+                    <Form.Item
+                      key={methodInput.name}
+                      name={['functionArgs', methodInput.name]}
+                      label={`${methodInput.name} (${methodInput.type})`}
+                      rules={[
+                        { required: true, message: 'Required' },
+                      ]}>
+                      <Input disabled={submitting} placeholder={`${methodInput.name} (${methodInput.type})`} />
+                    </Form.Item>
+                  ))}
                   {selectedFunction.inputs?.length! > 0 && (
                     <Form.Item label={`Function type: ${formValues.functionName}`}>
                       <Textarea
@@ -227,7 +206,7 @@ const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = p
             </>
           )}
 
-          {formValues.targetAddress && !Web3.utils.isAddress(formValues.targetAddress) && (
+          {formValues.targetAddress && !contract && (
             <Alert
               type="error"
               message="The target address you entered is not a validated contract address. Please check the information you entered and try again" />
@@ -261,4 +240,4 @@ const ProposalCreateModal: React.FunctionComponent<ProposalCreateModalProps> = p
   );
 };
 
-export default ProposalCreateModal;
+export default ProposalActionCreateModal;

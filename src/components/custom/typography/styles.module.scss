@@ -2,6 +2,8 @@
 
 h1.heading {
   display: block;
+  width: fit-content;
+  height: fit-content;
   @include font-h1-regular;
 
   &.bold {
@@ -11,10 +13,17 @@ h1.heading {
   &.semiBold {
     @include font-h1-semi-bold;
   }
+
+  :global(.ant-skeleton-content .ant-skeleton-title) {
+    margin: 4px 0;
+    height: var(--font-size-h1);
+  }
 }
 
 h2.heading {
   display: block;
+  width: fit-content;
+  height: fit-content;
   @include font-h2-regular;
 
   &.bold {
@@ -24,10 +33,17 @@ h2.heading {
   &.semiBold {
     @include font-h2-semi-bold;
   }
+
+  :global(.ant-skeleton-content .ant-skeleton-title) {
+    margin: 4px 0;
+    height: var(--font-size-h2);
+  }
 }
 
 h3.heading {
   display: block;
+  width: fit-content;
+  height: fit-content;
   @include font-h3-regular;
 
   &.bold {
@@ -37,9 +53,17 @@ h3.heading {
   &.semiBold {
     @include font-h3-semi-bold;
   }
+
+  :global(.ant-skeleton-content .ant-skeleton-title) {
+    margin: 3px 0;
+    height: var(--font-size-h3);
+  }
 }
 
 .paragraph {
+  width: fit-content;
+  height: fit-content;
+
   &.p1 {
     @include font-p1-regular;
 
@@ -49,6 +73,11 @@ h3.heading {
 
     &.semiBold {
       @include font-p1-semi-bold;
+    }
+
+    :global(.ant-skeleton-content .ant-skeleton-title) {
+      margin: 4px 0;
+      height: var(--font-size-p1);
     }
   }
 
@@ -62,10 +91,19 @@ h3.heading {
     &.semiBold {
       @include font-p2-semi-bold;
     }
+
+    :global(.ant-skeleton-content .ant-skeleton-title) {
+      margin: 5px 0;
+      height: var(--font-size-p2);
+    }
   }
 }
 
 .label {
+  display: block;
+  width: fit-content;
+  height: fit-content;
+
   &.lb1 {
     @include font-lb1-regular;
 
@@ -75,6 +113,11 @@ h3.heading {
 
     &.semiBold {
       @include font-lb1-semi-bold;
+    }
+
+    :global(.ant-skeleton-content .ant-skeleton-title) {
+      margin: 5px 0;
+      height: var(--font-size-lb1);
     }
   }
 
@@ -88,10 +131,17 @@ h3.heading {
     &.semiBold {
       @include font-lb2-semi-bold;
     }
+
+    :global(.ant-skeleton-content .ant-skeleton-title) {
+      margin: 2px 0;
+      height: var(--font-size-lb2);
+    }
   }
 }
 
 .small {
+  width: fit-content;
+  height: fit-content;
   @include font-sm-regular;
 
   &.bold {
@@ -100,5 +150,10 @@ h3.heading {
 
   &.semiBold {
     @include font-sm-semi-bold;
+  }
+
+  :global(.ant-skeleton-content .ant-skeleton-title) {
+    margin: 2px 0;
+    height: var(--font-size-sm);
   }
 }

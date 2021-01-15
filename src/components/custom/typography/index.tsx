@@ -1,6 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
 
+import Skeleton from 'components/antd/skeleton';
+
 import { Colors } from 'styles/colors';
 
 import s from './styles.module.scss';
@@ -10,6 +12,7 @@ type CommonProps = {
   semiBold?: boolean;
   color?: Colors;
   className?: string;
+  loading?: boolean;
 };
 
 function classNamesFromProps(props: CommonProps) {
@@ -28,13 +31,12 @@ export type HeadingProps = CommonProps & {
 };
 
 export const Heading: React.FunctionComponent<HeadingProps> = props => {
-  const { type, children } = props;
+  const { type, loading, children } = props;
+  const classNames = cx(s.heading, classNamesFromProps(props));
 
-  return React.useMemo(() => {
-    return React.createElement(type, {
-      className: cx(s.heading, classNamesFromProps(props)),
-    }, children);
-  }, [type]);
+  return React.createElement(type, {
+    className: classNames,
+  }, !loading ? children : <Skeleton className={classNames} />);
 };
 
 export type ParagraphProps = CommonProps & {
@@ -42,13 +44,14 @@ export type ParagraphProps = CommonProps & {
 };
 
 export const Paragraph: React.FunctionComponent<ParagraphProps> = props => {
-  const { type, children } = props;
+  const { type, loading, children } = props;
+  const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
 
-  return (
-    <p className={cx(s.paragraph, s[type], classNamesFromProps(props))}>
+  return !loading ? (
+    <p className={classNames}>
       {children}
     </p>
-  );
+  ) : <Skeleton className={classNames} />;
 };
 
 export type LabelProps = CommonProps & {
@@ -56,23 +59,25 @@ export type LabelProps = CommonProps & {
 };
 
 export const Label: React.FunctionComponent<LabelProps> = props => {
-  const { type, children } = props;
+  const { type, loading, children } = props;
+  const classNames = cx(s.label, s[type], classNamesFromProps(props));
 
-  return (
-    <label className={cx(s.label, s[type], classNamesFromProps(props))}>
+  return !loading ? (
+    <label className={classNames}>
       {children}
     </label>
-  );
+  ) : <Skeleton className={classNames} />;
 };
 
 export type SmallProps = CommonProps;
 
 export const Small: React.FunctionComponent<SmallProps> = props => {
-  const { children } = props;
+  const { loading, children } = props;
+  const classNames = cx(s.small, classNamesFromProps(props));
 
-  return (
+  return !loading ? (
     <small className={cx(s.small, classNamesFromProps(props))}>
       {children}
     </small>
-  );
+  ) : <Skeleton className={classNames} />;
 };

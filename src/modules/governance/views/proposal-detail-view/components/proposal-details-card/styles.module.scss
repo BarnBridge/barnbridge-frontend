@@ -10,15 +10,4 @@
       border-bottom: 1px solid #e3e4e6;
     }
   }
-
-  .inline {
-    display: grid;
-    grid-template-columns: 160px auto;
-    grid-column-gap: 16px;
-  }
-
-  .rowLabel {
-    margin-bottom: 16px;
-    color: #717980;
-  }
 }

@@ -3,114 +3,120 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 
 import Table from 'components/antd/table';
+import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
+import { Paragraph, Small } from 'components/custom/typography';
 
-import { formatBigValue, getHumanValue, getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-
-import { getNowTs } from 'utils';
+import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
+import { formatBigValue } from 'web3/utils';
 
 import s from './styles.module.scss';
 
-const API_URL = String(process.env.REACT_APP_TOKEN_API_URL);
-
-type VoterData = {
-  address: string;
-  bondStaked: BigNumber;
-  lockedUntil: number;
-  delegatedPower: BigNumber;
-  delegatedTo: string | null;
-  votes: number;
-  proposals: number
-  votingPower: BigNumber;
-};
-
-function fetchVoters() {
-  const url = new URL('/governance/voters', API_URL);
-
-  return fetch(url.toString())
-    .then(result => result.json())
-    .then(results => results.map((result: any) => ({
-      ...result,
-      bondStaked: getHumanValue(new BigNumber(result.bondStaked), BONDTokenMeta.decimals),
-      delegatedPower: getHumanValue(new BigNumber(result.delegatedPower), BONDTokenMeta.decimals),
-    })));
-}
-
-const Columns: ColumnsType<VoterData> = [
+const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'address',
-    title: 'ADDRESS',
-    render: (value: any) => (
-      <>
+    title: () => (
+      <Small semiBold color="grey300">Address</Small>
+    ),
+    render: (value: string) => (
+      <Grid flow="col" gap={16} align="center">
         <Identicon className={s.identicon} address={value} />
-        {value}
-      </>
+        <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+          {value}
+        </Paragraph>
+      </Grid>
     ),
   },
   {
     dataIndex: 'votingPower',
-    title: 'VOTING POWER',
+    title: () => (
+      <Small semiBold color="grey300">Voting Power</Small>
+    ),
     width: 160,
     align: 'right',
-    render: (value: BigNumber) => formatBigValue(value, 4),
+    render: (value: BigNumber) => (
+      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+        {formatBigValue(value, 4)}
+      </Paragraph>
+    ),
   },
   {
     dataIndex: 'votes',
-    title: 'VOTES',
+    title: () => (
+      <Small semiBold color="grey300">Votes</Small>
+    ),
     width: 160,
     align: 'right',
+    render: (value: number) => (
+      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+        {value}
+      </Paragraph>
+    ),
   },
   {
     dataIndex: 'proposals',
-    title: 'PROPOSALS',
+    title: () => (
+      <Small semiBold color="grey300">Proposals</Small>
+    ),
     width: 160,
     align: 'right',
+    render: (value: number) => (
+      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+        {value}
+      </Paragraph>
+    ),
   },
 ];
 
-const MAX_LOCK = 365 * 24 * 60 * 60;
-const BASE_MULTIPLIER = getNonHumanValue(1, 18);
+export type VotersTableProps = {
+  className?: string;
+};
 
-function getOwnVotingMultiplier(voter: VoterData) {
-  const diff = voter.lockedUntil - getNowTs();
+const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
+  const { className } = props;
 
-  if (diff <= 0) {
-    return BASE_MULTIPLIER;
-  } else if (diff >= MAX_LOCK) {
-    return BASE_MULTIPLIER.multipliedBy(2);
-  }
-
-  return BASE_MULTIPLIER.plus((new BigNumber(diff)).multipliedBy(BASE_MULTIPLIER).div(MAX_LOCK));
-}
-
-const VotersTable: React.FunctionComponent = () => {
-  const [voters, setVoters] = React.useState<VoterData[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const [voters, setVoters] = React.useState<APIVoterEntity[]>([]);
+  const [total, setTotal] = React.useState<number>(0);
+  const [page, setPage] = React.useState<number>(1);
+  const pageSize = 10;
 
   React.useEffect(() => {
-    fetchVoters().then(setVoters);
-  }, []);
+    setLoading(true);
 
-  const votersData = voters.map(voter => ({
-    ...voter,
-    get votingPower(): BigNumber {
-      let ownVotingPower: BigNumber = ZERO_BIG_NUMBER;
-
-      if (voter.delegatedTo === null) {
-        const multiplier = getOwnVotingMultiplier(voter);
-        ownVotingPower = voter.bondStaked.multipliedBy(multiplier).div(BASE_MULTIPLIER);
-      }
-
-      return ownVotingPower.plus(voter.delegatedPower);
-    },
-  }));
+    fetchVoters(page, pageSize)
+      .then(data => {
+        setVoters(data.data);
+        setTotal(data.meta.count);
+        setLoading(false);
+      })
+      .catch(() => {
+        setLoading(false);
+      });
+  }, [page, pageSize]);
 
   return (
-    <Table<VoterData>
+    <Table<APIVoterEntity>
+      className={className}
+      title={() => (
+        <Paragraph type="p1" semiBold color="grey900">Voter weights</Paragraph>
+      )}
       columns={Columns}
-      dataSource={votersData}
+      dataSource={voters}
       rowKey="address"
-      title={() => 'Voter weights'}
+      loading={loading}
+      pagination={{
+        total,
+        pageSize,
+        current: page,
+        position: ['bottomRight'],
+        showTotal: (total: number, [from, to]: [number, number]) => (
+          <Paragraph type="p2" semiBold color="grey500">
+            Showing {from} to {to} out of {total} proposals
+          </Paragraph>
+        ),
+        onChange: setPage,
+      }}
     />
   );
 };

@@ -1,58 +1,73 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import * as Antd from 'antd';
 import { ColumnsType } from 'antd/lib/table/interface';
 
-import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import Table from 'components/antd/table';
+import Progress from 'components/antd/progress';
+import { Paragraph, Small } from 'components/custom/typography';
 import ProposalStatusTag from '../proposal-status-tag';
+import { useProposals } from '../../providers/ProposalsProvider';
 
+import { APILiteProposalEntity } from 'modules/governance/api';
 import { getFormattedDuration } from 'utils';
-import { useWeb3Contracts } from 'web3/contracts';
-import { ProposalData } from 'web3/contracts/daoGovernance';
 
 import s from './styles.module.scss';
 
-const Columns: ColumnsType<any> = [
+const Columns: ColumnsType<APILiteProposalEntity> = [
   {
-    title: 'PROPOSAL',
-    width: '60%',
-    render: (_, data: ProposalData) => (
+    title: () => (
+      <Small semiBold color="grey300">Proposal</Small>
+    ),
+    width: '70%',
+    render: (_, data: APILiteProposalEntity) => (
       <Grid flow="row" gap={8}>
-        <Paragraph type="p1" semiBold color="red900">{data.title}</Paragraph>
-        <Grid colsTemplate="repeat(2, min-content)" gap={16}>
+        <Paragraph type="p1" semiBold color="grey900">{data.title}</Paragraph>
+        <Grid flow="col" gap={16} align="center">
           <ProposalStatusTag state={data.state} />
-          <Paragraph type="p2" semiBold color="red50">
-            {data.time_left ? getFormattedDuration(data.time_left / 1000) : ''}
+          <Paragraph type="p2" semiBold color="grey500">
+            {data.stateTimeLeft ? getFormattedDuration(data.stateTimeLeft) : ''}
           </Paragraph>
         </Grid>
       </Grid>
     ),
   },
   {
-    title: 'VOTES',
-    width: '40%',
-    render: (_, data: ProposalData) => {
-      const { forVotesBN, againstVotesBN } = data.meta;
-      const total = forVotesBN.plus(againstVotesBN);
-      const forVotes = forVotesBN.multipliedBy(100).div(total);
-      const againstVotes = againstVotesBN.multipliedBy(100).div(total);
+    title: () => (
+      <Small semiBold color="grey300">Votes</Small>
+    ),
+    width: '30%',
+    render: (_, data: APILiteProposalEntity) => {
+      const total = data.forVotes + data.againstVotes;
+
+      let forRate = 0;
+      let againstRate = 0;
+
+      if (total > 0) {
+        forRate = data.forVotes * 100 / total;
+        againstRate = data.againstVotes * 100 / total;
+      }
 
       return (
         <Grid flow="row" gap={8}>
-          <Antd.Progress
-            className={s.progress}
-            percent={forVotes.toNumber()}
+          <Progress
+            percent={forRate}
+            showInfo
             format={() => (
-              <Paragraph type="p2" semiBold color="red900">{forVotesBN.toFormat()}</Paragraph>
-            )} />
-          <Antd.Progress
-            className={s.progress}
-            percent={againstVotes.toNumber()}
+              <Paragraph type="p2" semiBold color="red900">
+                {forRate}
+              </Paragraph>
+            )}
+          />
+          <Progress
+            percent={againstRate}
+            showInfo
             format={() => (
-              <Paragraph type="p2" semiBold color="red900">{againstVotesBN.toFormat()}</Paragraph>
-            )} />
+              <Paragraph type="p2" semiBold color="red900">
+                {againstRate}
+              </Paragraph>
+            )}
+          />
         </Grid>
       );
     },
@@ -61,52 +76,44 @@ const Columns: ColumnsType<any> = [
 
 const ProposalsTable: React.FunctionComponent = () => {
   const history = useHistory();
-  const web3c = useWeb3Contracts();
-  const [data, setData] = React.useState<ProposalData[]>([]);
+  const proposalsCtx = useProposals();
 
-  function handleOnRow(data: ProposalData) {
+  function handlePaginationChange(page: number) {
+    proposalsCtx.changePage(page);
+  }
+
+  function handleOnRow(data: APILiteProposalEntity) {
     return {
       onClick: () => {
-        history.push(`proposals/${data.proposal_id}`);
+        history.push(`proposals/${data.proposalId}`);
       },
     };
   }
 
-  React.useEffect(() => {
-    fetch(`https://bbtest.kwix.xyz/api/governance/proposals`)
-      .then(result => result.json())
-      .then(async result => {
-        const data = await Promise.all(result.data.map(async (item: ProposalData) => {
-          const [proposalState, proposalMeta] = await web3c.daoGovernance.proposalStateSend(item.proposal_id);
-
-          return {
-            ...item,
-            state: proposalState,
-            meta: proposalMeta,
-            time_left: web3c.daoGovernance.proposalTimeLeft(proposalState, item.create_time * 1000),
-          };
-        }));
-
-        setData(data as ProposalData[]);
-      });
-  }, []);
-
   return (
-    <Table
+    <Table<APILiteProposalEntity>
       className={s.table}
-      columns={Columns}
-      rowKey="proposal_id"
-      dataSource={data}
       title={() => ''}
-      onRow={handleOnRow}
-      pagination={{
-        position: ['bottomRight'],
-        pageSize: 10,
-        total: 20,
-        showTotal: (total: number, range: [number, number]) => (
-          `Showing ${range[0]} to ${range[1]} out of ${total} proposals`
-        ),
+      columns={Columns}
+      dataSource={proposalsCtx.proposals}
+      rowKey="proposalId"
+      loading={proposalsCtx.loading}
+      locale={{
+        emptyText: 'No proposals',
       }}
+      pagination={{
+        total: proposalsCtx.total,
+        current: proposalsCtx.page,
+        pageSize: proposalsCtx.pageSize,
+        position: ['bottomRight'],
+        showTotal: (total: number, [from, to]: [number, number]) => (
+          <Paragraph type="p2" semiBold color="grey500">
+            Showing {from} to {to} out of {total} proposals
+          </Paragraph>
+        ),
+        onChange: handlePaginationChange,
+      }}
+      onRow={handleOnRow}
     />
   );
 };

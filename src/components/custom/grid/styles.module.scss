@@ -1,25 +1,39 @@
 $gaps: 4, 8, 12, 16, 24, 32, 48, 64;
+$alignItems: start, center, end;
+$justifyContents: start, center, end, space-between;
 
 .grid {
   display: grid;
 
   &.row {
     grid-auto-flow: row;
-
-    @each $gap in $gaps {
-      &.gap-#{$gap} {
-        grid-row-gap: #{$gap}px;
-      }
-    }
+    grid-template-rows: repeat(auto-fit, minmax(0, max-content));
   }
 
   &.col {
     grid-auto-flow: column;
+    grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  }
 
-    @each $gap in $gaps {
-      &.gap-#{$gap} {
-        grid-column-gap: #{$gap}px;
-      }
+  @each $gap in $gaps {
+    &.row-gap-#{$gap} {
+      grid-row-gap: #{$gap}px;
+    }
+
+    &.col-gap-#{$gap} {
+      grid-column-gap: #{$gap}px;
+    }
+  }
+
+  @each $align in $alignItems {
+    &.align-#{$align} {
+      align-items: #{$align};
+    }
+  }
+
+  @each $justify in $justifyContents {
+    &.justify-#{$justify} {
+      justify-content: #{$justify};
     }
   }
 }

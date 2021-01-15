@@ -6,19 +6,17 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Tabs from 'components/antd/tabs';
 import Table from 'components/antd/table';
 
-import { formatBigValue, getHumanValue, shortenAddr } from 'web3/utils';
-import { ProposalData } from 'web3/contracts/daoGovernance';
-
-import s from './styles.module.scss';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Paragraph } from 'components/custom/typography';
+import { useProposal } from '../../providers/ProposalProvider';
 
-export type ProposalVotersModalProps = ModalProps & {
-  proposal?: ProposalData;
-};
+import { APIVoterEntity, fetchProposalVoters } from 'modules/governance/api';
+import { formatBigValue, shortenAddr } from 'web3/utils';
 
-const Columns: ColumnsType<any> = [
+import s from './styles.module.scss';
+
+const Columns: ColumnsType<APIVoterEntity> = [
   {
     title: 'Address',
     dataIndex: 'address',
@@ -46,69 +44,65 @@ const Columns: ColumnsType<any> = [
   },
 ];
 
-export type ProposalVoterData = {
-  address: string;
-  support: boolean;
-  blockTimestamp: number;
-  power: BigNumber;
-};
-
-function fetchProposalVoters(proposalId: number): Promise<ProposalVoterData[]> {
-  return fetch(`https://bbtest.kwix.xyz/api/governance/proposals/${proposalId}/votes`)
-    .then(result => result.json())
-    .then(result => result.data.map((item: ProposalVoterData) => ({
-      ...item,
-      blockTimestamp: item.blockTimestamp * 1000,
-      power: getHumanValue(new BigNumber(item.power), 18),
-    })));
-}
+export type ProposalVotersModalProps = ModalProps;
 
 const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = props => {
-  const { proposal } = props;
+  const { ...modalProps } = props;
 
-  const [activeTab, setActiveTab] = React.useState<string>('all-proposals');
-  const [voters, setVoters] = React.useState<ProposalVoterData[]>([]);
+  const proposalCtx = useProposal();
+  const [stateFilter, setStateFilter] = React.useState<string>('all');
+  const [voters, setVoters] = React.useState<APIVoterEntity[]>([]);
 
   React.useEffect(() => {
-    if (!proposal?.proposal_id) {
+    if (!modalProps.visible || !proposalCtx.proposal) {
       return;
     }
 
-    fetchProposalVoters(proposal.proposal_id)
-      .then((voters: ProposalVoterData[]) => {
+    fetchProposalVoters(proposalCtx.proposal.proposalId)
+      .then((voters: APIVoterEntity[]) => {
         setVoters(voters);
       });
-  }, [proposal?.proposal_id]);
+  }, [modalProps.visible, proposalCtx.proposal]);
+
+  function handlePaginationChange(page: number) {
+  }
 
   return (
-    <Modal className={s.component} centered width={560} {...props}>
+    <Modal
+      className={s.component}
+      centered
+      width={560}
+      {...modalProps}>
       <Tabs
         className={s.tabs}
-        defaultActiveKey={activeTab}
-        onChange={setActiveTab}
-      >
-        <Tabs.Tab key="all-votes" tab="All Votes">
-          <Table
-            className={s.table}
-            columns={Columns}
-            rowKey="address"
-            dataSource={voters}
-            title={() => ''}
-            pagination={{
-              position: ['bottomRight'],
-              pageSize: 10,
-              total: voters.length,
-              showTotal: (total: number, range: [number, number]) => (
-                `Showing ${range[0]} to ${range[1]} out of ${total} proposals`
-              ),
-            }}
-          />
-        </Tabs.Tab>
-        <Tabs.Tab key="for" tab="For">
-        </Tabs.Tab>
-        <Tabs.Tab key="against" tab="Against">
-        </Tabs.Tab>
+        defaultActiveKey={stateFilter}
+        onChange={setStateFilter}>
+        <Tabs.Tab key="all" tab="All Votes" />
+        <Tabs.Tab key="for" tab="For" />
+        <Tabs.Tab key="against" tab="Against" />
       </Tabs>
+      <Table<APIVoterEntity>
+        className={s.table}
+        title={() => ''}
+        columns={Columns}
+        dataSource={voters}
+        rowKey="address"
+        locale={{
+          emptyText: 'No votes',
+        }}
+        pagination={{
+          total: voters.length,
+          current: 1,
+          pageSize: 10,
+          position: ['bottomRight'],
+          showTotal: (total: number, [from, to]: [number, number]) => (
+            <Paragraph type="p2" semiBold color="grey500">
+              Showing {from} to {to} out of {total} votes
+            </Paragraph>
+          ),
+          onChange: handlePaginationChange,
+        }}
+      />
     </Modal>
   );
 };

@@ -20,6 +20,20 @@ const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
 
 export type Web3ContractAbiItem = AbiItem;
 
+export function decodeABIParams(types: any[], hex: string): Record<string, any> | undefined {
+  try {
+    return web3.eth.abi.decodeParameters(types, hex);
+  } catch {
+  }
+}
+
+export function encodeABIParams(types: string[], parameters: any[]): string | undefined {
+  try {
+    return web3.eth.abi.encodeParameters(types, parameters);
+  } catch {
+  }
+}
+
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
   readonly address: string;
@@ -104,7 +118,23 @@ class Web3Contract extends EventEmitter {
     return Promise.all(promises);
   }
 
+  call(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+    return this.execute('call', method, methodArgs, sendArgs);
+  }
+
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+    return this.execute('send', method, methodArgs, sendArgs);
+  }
+
+  getHexFor(methodName: string, ...args: any[]): string | undefined {
+    try {
+      return this.ethContract.methods[methodName](...args).encodeABI();
+      // web3.eth.abi.encodeParameters(typesArray, parameters);
+    } catch {
+    }
+  }
+
+  private execute(type: 'call' | 'send', method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     return new Promise((resolve, reject) => {
       const contractMethod = this.ethContract.methods[method];
 
@@ -122,22 +152,14 @@ class Web3Contract extends EventEmitter {
       };
 
       contractMethod(...methodArgs)
-        ?.send(sendArgs, async (err: Error) => {
-          if (err) {
-            reject(err);
-          }
-        })
+        ?.[type](sendArgs, async (err: Error) => {
+        if (err) {
+          reject(err);
+        }
+      })
         .then(resolve)
         .catch(onError);
     });
-  }
-
-  getHexFor(methodName: string, ...args: any[]): string | undefined {
-    try {
-      return this.ethContract.methods[methodName](...args).encodeABI();
-      // web3.eth.abi.encodeParameters(typesArray, parameters);
-    } catch {
-    }
   }
 }
 

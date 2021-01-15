@@ -1,57 +1,82 @@
 import React from 'react';
+import { format, formatDistance } from 'date-fns';
 
 import Card from 'components/antd/card';
 import { Paragraph } from 'components/custom/typography';
+import Icon, { IconType } from 'components/custom/icon';
+import { useProposal } from '../../providers/ProposalProvider';
 
-import { ProposalData } from 'web3/contracts/daoGovernance';
-
-import { ReactComponent as CircleTimeSvg } from 'resources/svg/icons/circle-time.svg';
-import { ReactComponent as CircleCheckSvg } from 'resources/svg/icons/circle-check.svg';
+import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 
 import s from './styles.module.scss';
 
-export type ProposalStatusCardProps = {
-  proposal?: ProposalData;
-};
+function getEventIcon(index: number, name: string): IconType {
+  if ([
+    APIProposalState.EXPIRED,
+    APIProposalState.FAILED,
+    APIProposalState.CANCELED,
+  ].includes(name as any)) {
+    return 'circle-cancel';
+  }
 
-export type ProposalEventData = {
-  proposal_id: number;
-  caller: string;
-  event_type: string;
-  event_data: any;
-  create_time: number;
-};
+  if ([
+    APIProposalState.CREATED,
+    APIProposalState.ACCEPTED,
+    APIProposalState.EXECUTED,
+  ].includes(name as any)) {
+    return 'circle-check';
+  }
 
-function fetchProposalEvents(proposalId: number): Promise<ProposalEventData[]> {
-  return fetch(`https://bbtest.kwix.xyz/api/governance/proposals/${proposalId}/events`)
-    .then(result => result.json())
-    .then(result => result.data);
+  if (index === 0) {
+    return 'circle-time';
+  }
+
+  return 'circle-check';
 }
 
-const ProposalStatusCard: React.FunctionComponent<ProposalStatusCardProps> = props => {
-  const { proposal } = props;
-  const [events, setEvents] = React.useState<ProposalEventData[]>([]);
+function formatEventTime(name: string, start: number, end: number): string {
+  const mStart = new Date(start * 1000);
+  const mEnd = end ? new Date(end * 1000) : new Date();
+  const now = new Date();
 
-  React.useEffect(() => {
-    if (!proposal?.proposal_id) {
-      return;
-    }
+  if ([
+    APIProposalState.CREATED,
+    APIProposalState.EXPIRED,
+    APIProposalState.FAILED,
+    APIProposalState.CANCELED,
+    APIProposalState.EXECUTED,
+  ].includes(name as any)) {
+    return format(mStart, 'MM.dd.yyyy - HH:mm');
+  }
 
-    fetchProposalEvents(proposal.proposal_id)
-      .then((events: ProposalEventData[]) => {
-        setEvents(events.reverse());
-      });
-  }, [proposal?.proposal_id]);
+  const dist = formatDistance(
+    mEnd,
+    now,
+    {
+      addSuffix: true,
+      includeSeconds: true,
+    },
+  );
+
+  return now > mEnd ? `Ended ${dist}` : `Ends ${dist}`;
+}
+
+const ProposalStatusCard: React.FunctionComponent = () => {
+  const proposalCtx = useProposal();
 
   return (
     <Card className={s.component}>
       <div className={s.list}>
-        {events.map(event => (
-          <div key={event.event_type} className={s.wrap}>
-            <CircleTimeSvg />
+        {proposalCtx.proposal?.history.map((event, index: number) => (
+          <div key={event.name} className={s.wrap}>
+            <Icon type={getEventIcon(index, event.name)} size={[40, 40]} />
             <div className={s.content}>
-              <Paragraph type="p1" semiBold className={s.nameLabel}>{event.event_type}</Paragraph>
-              <Paragraph type="p2" semiBold className={s.timeLabel}>{event.create_time}</Paragraph>
+              <Paragraph type="p1" semiBold className={s.nameLabel}>
+                {APIProposalStateMap.get(event.name as APIProposalState)}
+              </Paragraph>
+              <Paragraph type="p2" semiBold className={s.timeLabel}>
+                {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
+              </Paragraph>
             </div>
           </div>
         ))}

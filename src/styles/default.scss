@@ -1,14 +1,14 @@
 @import "colors";
 
 :root {
-  --text-color-red900: var(--color-blue600);
-
-  --text-color-grey900: --color-grey900;
-  --text-color-grey500: --color-grey500;
-  --text-color-grey300: --color-grey300;
-  --text-color-red500: --color-red500;
-  --text-color-blue300: --color-blue300;
-  --text-color-blue400: --color-blue400;
   --text-color-black: #000;
   --text-color-white: #fff;
+
+  --text-color-red500: var(--color-red500);
+  --text-color-grey900: var(--color-grey900);
+  --text-color-grey500: var(--color-grey500);
+  --text-color-grey300: var(--color-grey300);
+
+  --bg-color-grey100: var(--color-grey100);
+  --bg-color-green500: var(--color-green500);
 }

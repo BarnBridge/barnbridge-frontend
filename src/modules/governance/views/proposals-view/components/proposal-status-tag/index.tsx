@@ -2,14 +2,13 @@ import React from 'react';
 import cx from 'classnames';
 
 import { Label } from 'components/custom/typography';
-
-import { ProposalState } from 'web3/contracts/daoGovernance';
+import { APIProposalState } from 'modules/governance/api';
 
 import s from './styles.module.scss';
 
 export type ProposalStatusTagProps = {
-  state: ProposalState;
   className?: string;
+  state: APIProposalState;
 };
 
 const ProposalStatusTag: React.FunctionComponent<ProposalStatusTagProps> = props => {
@@ -17,29 +16,29 @@ const ProposalStatusTag: React.FunctionComponent<ProposalStatusTagProps> = props
 
   const status = React.useMemo(() => {
     switch (state) {
-      case ProposalState.WarmUp:
+      case APIProposalState.WARMUP:
         return 'Warm-up';
-      case ProposalState.Active:
+      case APIProposalState.ACTIVE:
         return 'Voting';
-      case ProposalState.Queued:
+      case APIProposalState.QUEUED:
         return 'Queued for execution';
-      case ProposalState.Accepted:
+      case APIProposalState.ACCEPTED:
         return 'Accepted';
-      case ProposalState.Executed:
+      case APIProposalState.EXECUTED:
         return 'Executed';
-      case ProposalState.Expired:
+      case APIProposalState.EXPIRED:
         return 'Expired';
-      case ProposalState.Failed:
+      case APIProposalState.FAILED:
         return 'Failed';
-      case ProposalState.Canceled:
+      case APIProposalState.CANCELED:
         return 'Canceled';
-      case ProposalState.Grace:
+      case APIProposalState.GRACE:
         return '-';
     }
   }, [state]);
 
   return (
-    <div className={cx(s.component, className, s[ProposalState[state]])}>
+    <div className={cx(s.component, className, s[state])}>
       <Label type="lb2" bold>{status}</Label>
     </div>
   );
