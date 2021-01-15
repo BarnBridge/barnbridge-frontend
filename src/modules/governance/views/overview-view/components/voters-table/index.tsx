@@ -112,7 +112,7 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
         position: ['bottomRight'],
         showTotal: (total: number, [from, to]: [number, number]) => (
           <Paragraph type="p2" semiBold color="grey500">
-            Showing {from} to {to} out of {total} proposals
+            Showing {from} to {to} out of {total} voters
           </Paragraph>
         ),
         onChange: setPage,
