@@ -1,0 +1,37 @@
+@import "src/styles/mixin";
+
+.tabs:global > {
+  .ant-tabs-nav {
+    height: 80px;
+    margin-bottom: 0;
+    padding: 0 24px;
+    background: #fff;
+    box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+    border: 1px solid #e3e4e6;
+    border-radius: 4px 4px 0 0;
+  }
+}
+
+.search {
+  width: 300px;
+  height: 48px;
+  background: #fff;
+  border: 1px solid #e3e4e6;
+  border-radius: 4px;
+
+  & :global {
+    .anticon-search {
+      width: 14px;
+      height: 14px;
+      color: #aaafb3;
+    }
+
+    .ant-input {
+      @include font-p2-semi-bold;
+
+      &::placeholder {
+        color: #aaafb3;
+      }
+    }
+  }
+}

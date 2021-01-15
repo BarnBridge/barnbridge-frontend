@@ -1,0 +1,68 @@
+@import "../../../../styles/mixin";
+
+.component {
+  height: 157px;
+  padding: 24px 62px;
+  background: #fff;
+}
+
+.header {
+  @include font-lb2-semi-bold;
+  width: 100%;
+  padding: 0 0 16px;
+  color: #ff4339;
+}
+
+.list {
+  display: inline-grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  width: 100%;
+}
+
+.field {
+  grid-template-rows: 24px 48px;
+
+  &:not(:last-of-type) {
+    border-right: 1px solid #e3e4e6;
+    margin-right: 32px;
+    padding-right: 32px;
+  }
+
+  label {
+    @include font-p2-regular;
+  }
+}
+
+.fieldContent {
+  @include font-h2-bold;
+  display: grid;
+  grid-template-columns: repeat(3, max-content);
+  column-gap: 8px;
+  align-items: center;
+  color: #060a0d;
+}
+
+.bondIcon {
+  width: 24px;
+  height: 24px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .row {
+    grid-template-columns: repeat(1, auto);
+    width: 100%;
+    margin-top: 12px;
+  }
+
+  .col {
+    margin: 0 0 12px;
+    padding: 0 0 12px;
+    border: none;
+    border-bottom: 1px solid var(--border-color-1);
+  }
+
+  .harvestBtn {
+    margin: 28px 0 0 24px;
+  }
+}

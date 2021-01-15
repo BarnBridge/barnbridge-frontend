@@ -8,7 +8,6 @@ import { Web3Provider } from '@ethersproject/providers';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useRefState } from 'hooks/useRefState';
 
-import { getNetworkName } from 'web3/utils';
 import { WalletConnector } from 'wallets/types';
 import { CoinbaseWalletConfig } from 'wallets/connectors/coinbase';
 import { LedgerWalletConfig } from 'wallets/connectors/ledger';
@@ -16,10 +15,11 @@ import { MetaMaskWalletConfig } from 'wallets/connectors/metamask';
 import { PortisWalletConfig } from 'wallets/connectors/portis';
 import { TrezorWalletConfig } from 'wallets/connectors/trezor';
 import { WalletConnectConfig } from 'wallets/connectors/wallet-connect';
+import { getNetworkName } from 'web3/utils';
 
-import ConnectWalletModal from 'components/connect-wallet-modal';
-import InstallMetaMaskModal from 'components/install-metamask-modal';
-import UnsupportedChainModal from 'components/unsupported-chain-modal';
+import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
+import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
+import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
 
 const WEB3_CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
 const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);

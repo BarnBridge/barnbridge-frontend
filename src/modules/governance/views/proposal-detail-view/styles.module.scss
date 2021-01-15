@@ -1,0 +1,26 @@
+@import "src/styles/mixin";
+
+.component {
+  .header {
+    display: inline-grid;
+    grid-template-columns: repeat(2, max-content);
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    margin-bottom: 36px;
+    @include text-ellipsis;
+    color: #060a0d;
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: 2fr minmax(428px, 1fr);
+    grid-column-gap: 32px;
+  }
+
+  .column {
+    display: grid;
+    grid-template-rows: repeat(auto-fit, minmax(120px, min-content));
+    grid-row-gap: 32px;
+  }
+}

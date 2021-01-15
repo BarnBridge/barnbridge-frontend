@@ -1,0 +1,194 @@
+import BigNumber from 'bignumber.js';
+import QueryString from 'query-string';
+
+import { getHumanValue } from 'web3/utils';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+
+const GOVERNANCE_API_URL = String(process.env.REACT_APP_GOV_API_URL);
+
+export type PaginatedResult<T extends Record<string, any>> = {
+  data: T[];
+  meta: {
+    count: number;
+  };
+};
+
+export type APIOverviewData = {
+  avgLockTimeSeconds: number;
+  totalDelegatedPower: BigNumber;
+  totalVbond: BigNumber;
+  holders: number;
+  voters: number;
+  barnUsers: number;
+};
+
+export function fetchOverviewData(): Promise<APIOverviewData> {
+  const url = new URL(`/api/governance/overview`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result.data,
+      totalDelegatedPower: getHumanValue(new BigNumber(result.data.totalDelegatedPower), 18),
+      totalVbond: getHumanValue(new BigNumber(result.data.totalVbond), 18),
+    }));
+}
+
+export type APIVoterEntity = {
+  address: string;
+  bondStaked: BigNumber;
+  lockedUntil: number;
+  delegatedPower: BigNumber;
+  votes: number;
+  proposals: number
+  votingPower: BigNumber;
+  hasActiveDelegation: boolean;
+};
+
+export function fetchVoters(page: number = 1, limit: number = 10): Promise<PaginatedResult<APIVoterEntity>> {
+  const url = new URL(`/api/governance/voters?page=${page}&limit=${limit}`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result,
+      data: result.data.map((item: APIVoterEntity) => ({
+        ...item,
+        bondStaked: getHumanValue(new BigNumber(item.bondStaked), BONDTokenMeta.decimals),
+        delegatedPower: getHumanValue(new BigNumber(item.delegatedPower), 18),
+        votingPower: getHumanValue(new BigNumber(item.votingPower), 18),
+      })),
+    }));
+}
+
+export enum APIProposalState {
+  CREATED = 'CREATED',
+  WARMUP = 'WARMUP',
+  ACTIVE = 'ACTIVE',
+  CANCELED = 'CANCELED',
+  FAILED = 'FAILED',
+  ACCEPTED = 'ACCEPTED',
+  QUEUED = 'QUEUED',
+  GRACE = 'GRACE',
+  EXPIRED = 'EXPIRED',
+  EXECUTED = 'EXECUTED',
+}
+
+export const APIProposalStateMap = new Map<APIProposalState, string>([
+  [APIProposalState.CREATED, 'Created'],
+  [APIProposalState.WARMUP, 'Warm-Up'],
+  [APIProposalState.ACTIVE, 'Voting'],
+  [APIProposalState.CANCELED, 'Canceled'],
+  [APIProposalState.FAILED, 'Failed'],
+  [APIProposalState.ACCEPTED, 'Accepted'],
+  [APIProposalState.QUEUED, 'Queued for execution'],
+  [APIProposalState.GRACE, 'Pending execution'],
+  [APIProposalState.EXPIRED, 'Expired'],
+  [APIProposalState.EXECUTED, 'Executed'],
+]);
+
+export type APILiteProposalEntity = {
+  proposalId: number;
+  proposer: string;
+  title: string;
+  description: string;
+  createTime: number;
+  state: APIProposalState;
+  stateTimeLeft: number | null;
+  forVotes: number;
+  againstVotes: number;
+};
+
+export function fetchProposals(page: number = 1, limit: number = 10, state?: string, search?: string): Promise<PaginatedResult<APILiteProposalEntity>> {
+  const query = QueryString.stringify({
+    page: String(page),
+    limit: String(limit),
+    state,
+    title: search,
+  }, {
+    skipNull: true,
+    skipEmptyString: true,
+    encode: true,
+  });
+
+  const url = new URL(`/api/governance/proposals?${query}`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(({ status, ...data }) => {
+      if (status !== 200) {
+        return Promise.reject(status);
+      }
+
+      return data;
+    })
+    .then((data: PaginatedResult<APILiteProposalEntity>) => ({
+      ...data,
+      data: data.data.map(proposal => ({
+        ...proposal,
+        forVotes: Number(proposal.forVotes),
+        againstVotes: Number(proposal.againstVotes),
+      })),
+    }));
+}
+
+export type APIProposalEntity = APILiteProposalEntity & {
+  blockTimestamp: number;
+  warmUpDuration: number;
+  activeDuration: number;
+  queueDuration: number;
+  gracePeriodDuration: number;
+  minQuorum: number;
+  acceptanceThreshold: number;
+  targets: string[];
+  values: string[];
+  signatures: string[];
+  calldatas: string[];
+  history: {
+    name: string;
+    startTimestamp: number;
+    endTimestamp: number;
+  }[];
+};
+
+export function fetchProposal(proposalId: number): Promise<APIProposalEntity> {
+  const url = new URL(`/api/governance/proposals/${proposalId}`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(({ data, status }) => {
+      if (status !== 200) {
+        return Promise.reject(status);
+      }
+
+      return data;
+    })
+    .then((data: APIProposalEntity) => ({
+      ...data,
+      forVotes: Number(data.forVotes),
+      againstVotes: Number(data.againstVotes),
+    }));
+}
+
+export function fetchProposalVoters(proposalId: number): Promise<APIVoterEntity[]> {
+  const url = new URL(`/api/governance/proposals/${proposalId}/votes`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(({ data, status }) => {
+      if (status !== 200) {
+        return Promise.reject(status);
+      }
+
+      return data;
+    })
+    .then(result => {
+      console.log('result', result);
+      return result;
+    });
+  // .then(result => result.data.map((item: ProposalVoterData) => ({
+  //   ...item,
+  //   blockTimestamp: item.blockTimestamp * 1000,
+  //   power: getHumanValue(new BigNumber(item.power), 18),
+  // })));
+}

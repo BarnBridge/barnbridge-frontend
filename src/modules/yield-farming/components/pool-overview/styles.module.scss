@@ -1,0 +1,21 @@
+@import "../../../../styles/mixin";
+
+.labelPools {
+  @include font-h1-bold;
+  margin-bottom: 16px;
+  color: var(--text-color-5);
+}
+
+.labelOverview {
+  @include font-p1-semi-bold;
+  margin-bottom: 32px;
+  color: var(--text-color-2);
+}
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-gap: 32px;
+  width: 100%;
+  margin-bottom: 32px;
+}

@@ -1,0 +1,32 @@
+.component {
+  min-width: 80px;
+  height: 32px;
+  padding: 8px 24px;
+  border-radius: 32px;
+  text-align: center;
+
+  label {
+    display: block;
+  }
+
+  &.ACCEPTED,
+  &.EXECUTED {
+    background: rgba(0, 211, 149, 0.08);
+    color: #00d395;
+  }
+
+  &.WARMUP,
+  &.ACTIVE,
+  &.QUEUED,
+  &.GRACE {
+    background: rgba(79, 106, 230, 0.08);
+    color: #4f6ae6;
+  }
+
+  &.EXPIRED,
+  &.FAILED,
+  &.CANCELED {
+    background: rgba(255, 67, 57, 0.08);
+    color: #ff4339;
+  }
+}

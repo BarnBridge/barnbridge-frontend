@@ -1,0 +1,15 @@
+@import "../../../styles/mixin";
+
+.component {
+  width: 100%;
+  height: 64px;
+  padding: 20px 16px;
+  background: #fff;
+  border: 1px solid #e3e4e6;
+  border-radius: 4px;
+
+  :global(.ant-picker-input) input {
+    @include font-p1-semi-bold;
+    color: #aaafb3;
+  }
+}

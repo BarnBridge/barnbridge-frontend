@@ -1,0 +1,14 @@
+@import "colors";
+
+:root {
+  --text-color-black: #000;
+  --text-color-white: #fff;
+
+  --text-color-red500: var(--color-red500);
+  --text-color-grey900: var(--color-grey900);
+  --text-color-grey500: var(--color-grey500);
+  --text-color-grey300: var(--color-grey300);
+
+  --bg-color-grey100: var(--color-grey100);
+  --bg-color-green500: var(--color-green500);
+}

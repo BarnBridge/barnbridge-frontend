@@ -3,7 +3,7 @@ name: Development Environment
 on:
   push:
     branches:
-    - master
+    - development
 
 jobs:
   build:
@@ -64,8 +64,12 @@ jobs:
         REACT_APP_CONTRACT_YIELD_FARM_ADDR: '0x6d2a7f985c3F4d38d6E651b9DE932F1776443D30'
         REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR: '0x7fA04E9F59590561D7efDf55e64BcB62e96D6717'
         REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR: '0x8a42d8ec7410395D98F96ae11cCbeCF7f89bf0c3'
+        REACT_APP_CONTRACT_DAO_BARN_ADDR: '0x19cFBFd65021af353aB8A7126Caf51920163f0D2'
+        REACT_APP_CONTRACT_DAO_REWARD_ADDR: '0x3f82E797c306AD858301AA554315f2a1DaBb88c1'
+        REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR: '0x1B5B6dF2C72D7c406df1C30E640df8dBaE57d21d'
         REACT_APP_TOKEN_API_URL: 'https://tokenapi.barnbridge.com'
         REACT_APP_TOKEN_API_POOL_INTERVAL: 20000
+        REACT_APP_GOV_API_URL: 'https://bbtest.kwix.xyz'
 
     - name: Save artifacts
       uses: actions/upload-artifact@v2

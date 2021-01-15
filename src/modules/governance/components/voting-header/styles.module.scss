@@ -1,0 +1,24 @@
+@import "src/styles/mixin";
+
+.component {
+  min-height: 157px;
+  padding: 24px 62px;
+  background: #fff;
+}
+
+.delimiter {
+  width: 1px;
+  height: 100%;
+  border-right: 1px solid #e3e4e6;
+}
+
+.bondIcon {
+  width: 24px;
+  height: 24px;
+}
+
+.ratio {
+  padding: 0 12px;
+  background: rgba(255, 67, 57, 0.08);
+  border-radius: 18px;
+}
