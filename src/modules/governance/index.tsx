@@ -1,7 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import { Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import Grid from 'components/custom/grid';
 import LayoutHeader from 'layout/components/layout-header';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
@@ -33,46 +34,46 @@ const GovernanceView: React.FunctionComponent = () => {
     history.push(`/governance/${tabKey}`);
   }
 
+  React.useEffect(() => {
+    if (vt !== activeTab) {
+      setActiveTab(vt);
+    }
+  }, [vt])
+
   return (
-    <div className={s.container}>
+    <Grid flow="row">
       <LayoutHeader title="Governance" />
       <VotingHeader />
       <Tabs
         className={s.tabs}
-        defaultActiveKey={activeTab}
-        destroyInactiveTabPane
-        onChange={handleTabChange}
-      >
+        activeKey={activeTab}
+        onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
-          className={s.tab}
-          tab={<><OverviewSvg /> Overview</>}>
-          <OverviewView />
-        </Tabs.Tab>
+          tab={<><OverviewSvg /> Overview</>} />
         <Tabs.Tab
           key="wallet"
-          className={s.tab}
-          tab={<><WalletSvg /> Wallet</>}>
-          <WalletView />
-        </Tabs.Tab>
+          tab={<><WalletSvg /> Wallet</>} />
         <Tabs.Tab
           key="proposals"
-          className={s.tab}
-          tab={<><ProposalsSvg /> Proposals</>}>
-          <Switch>
-            <Route path="/governance/proposals" exact component={ProposalsView} />
-            <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
-            <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
-          </Switch>
-        </Tabs.Tab>
+          tab={<><ProposalsSvg /> Proposals</>} />
         <Tabs.Tab
           key="discussions"
-          className={s.tab}
+          disabled
           tab={<><DiscussionsSvg /> Discussions</>}>
-          <ProposalsView />
         </Tabs.Tab>
       </Tabs>
-    </div>
+      <div className={s.content}>
+        <Switch>
+          <Route path="/governance/overview" exact component={OverviewView} />
+          <Route path="/governance/wallet" exact component={WalletView} />
+          <Route path="/governance/proposals" exact component={ProposalsView} />
+          <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
+          <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
+          <Redirect from="/governance" to="/governance/overview" />
+        </Switch>
+      </div>
+    </Grid>
   );
 };
 

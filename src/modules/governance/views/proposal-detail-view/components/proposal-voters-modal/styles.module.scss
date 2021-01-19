@@ -26,4 +26,30 @@
       border-bottom: none;
     }
   }
+
+  .powerCell {
+    line-height: 32px !important;
+  }
+
+  .forTag {
+    min-width: 80px;
+    height: 32px;
+    padding: 8px 24px;
+    border-radius: 32px;
+    text-align: center;
+
+    background-color: rgba(var(--text-color-green500-rgb), .08);
+    color: var(--text-color-green500);
+  }
+
+  .againstTag {
+    min-width: 80px;
+    height: 32px;
+    padding: 8px 24px;
+    border-radius: 32px;
+    text-align: center;
+
+    background-color: rgba(var(--text-color-red500-rgb), .08);
+    color: var(--text-color-red500);
+  }
 }

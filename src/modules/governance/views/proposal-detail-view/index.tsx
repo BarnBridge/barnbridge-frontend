@@ -3,7 +3,7 @@ import { useRouteMatch } from 'react-router-dom';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Heading } from 'components/custom/typography';
+import { Heading, Paragraph } from 'components/custom/typography';
 import ProposalVoteResultsCard from './components/proposal-vote-results-card';
 import ProposalDetailsCard from './components/proposal-details-card';
 import ProposalStatusCard from './components/proposal-status-card';
@@ -16,6 +16,7 @@ import ProposalProvider, { useProposal } from './providers/ProposalProvider';
 import { APIProposalState } from 'modules/governance/api';
 
 import s from './styles.module.scss';
+import Icon from '../../../../components/custom/icon';
 
 type ProposalDetailViewInnerState = {
   executing: boolean;
@@ -75,7 +76,12 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
   }
 
   return (
-    <div className={s.component}>
+    <Grid flow="row" gap={32} className={s.component}>
+      <Paragraph type="p1" semiBold color="grey500">
+        <Icon type="arrow-circle-right" />
+        Proposals
+      </Paragraph>
+
       <Grid flow="col" align="center" justify="space-between">
         <Heading type="h2" semiBold className={s.header} loading={!proposalCtx.proposal}>
           {proposalCtx.proposal?.title}
@@ -115,7 +121,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
           )}
         </div>
       </div>
-    </div>
+    </Grid>
   );
 };
 

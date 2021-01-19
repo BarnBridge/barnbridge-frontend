@@ -11,6 +11,7 @@ import { useProposals } from '../../providers/ProposalsProvider';
 
 import { APILiteProposalEntity } from 'modules/governance/api';
 import { getFormattedDuration } from 'utils';
+import { ZERO_BIG_NUMBER } from "web3/utils";
 
 import s from './styles.module.scss';
 
@@ -24,7 +25,7 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
       <Grid flow="row" gap={8}>
         <Paragraph type="p1" semiBold color="grey900">{data.title}</Paragraph>
         <Grid flow="col" gap={16} align="center">
-          <ProposalStatusTag state={data.state} />
+          <ProposalStatusTag state={data.state}/>
           <Paragraph type="p2" semiBold color="grey500">
             {data.stateTimeLeft ? getFormattedDuration(data.stateTimeLeft) : ''}
           </Paragraph>
@@ -38,36 +39,30 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
     ),
     width: '30%',
     render: (_, data: APILiteProposalEntity) => {
-      const total = data.forVotes + data.againstVotes;
+      const total = data.forVotes.plus(data.againstVotes);
 
-      let forRate = 0;
-      let againstRate = 0;
+      let forRate = ZERO_BIG_NUMBER;
+      let againstRate = ZERO_BIG_NUMBER;
 
-      if (total > 0) {
-        forRate = data.forVotes * 100 / total;
-        againstRate = data.againstVotes * 100 / total;
+      if (total.gt(ZERO_BIG_NUMBER)) {
+        forRate = data.forVotes.multipliedBy(100).div(total);
+        againstRate = data.againstVotes.multipliedBy(100).div(total);
       }
 
       return (
         <Grid flow="row" gap={8}>
-          <Progress
-            percent={forRate}
-            showInfo
-            format={() => (
-              <Paragraph type="p2" semiBold color="red900">
-                {forRate}
-              </Paragraph>
-            )}
-          />
-          <Progress
-            percent={againstRate}
-            showInfo
-            format={() => (
-              <Paragraph type="p2" semiBold color="red900">
-                {againstRate}
-              </Paragraph>
-            )}
-          />
+          <Grid gap={24} colsTemplate="minmax(0, 196px) 1fr">
+            <Progress percent={forRate.toNumber()}/>
+            <Paragraph type="p2" semiBold color="grey500">
+              {forRate.toFormat(2)}%
+            </Paragraph>
+          </Grid>
+          <Grid gap={24} colsTemplate="minmax(0, 196px) 1fr">
+            <Progress percent={againstRate.toNumber()}/>
+            <Paragraph type="p2" semiBold color="grey500">
+              {againstRate.toFormat(2)}%
+            </Paragraph>
+          </Grid>
         </Grid>
       );
     },

@@ -16,6 +16,7 @@ export type GridProps = {
   align?: SupportedAlign;
   justify?: SupportedJustify;
   gap?: SupportedGapSizes | [SupportedGapSizes, SupportedGapSizes];
+  wrap?: boolean;
 };
 
 const Grid: React.FunctionComponent<GridProps> = props => {
@@ -27,6 +28,7 @@ const Grid: React.FunctionComponent<GridProps> = props => {
     colsTemplate,
     align,
     justify,
+    wrap,
     children,
   } = props;
 
@@ -41,6 +43,7 @@ const Grid: React.FunctionComponent<GridProps> = props => {
         rowGap > 0 && s[`col-gap-${rowGap}`],
         align && s[`align-${align}`],
         justify && s[`justify-${justify}`],
+        wrap && s.wrap,
         className,
       )}
       style={{

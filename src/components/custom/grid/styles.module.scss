@@ -1,3 +1,5 @@
+@import "src/styles/mixin";
+
 $gaps: 4, 8, 12, 16, 24, 32, 48, 64;
 $alignItems: start, center, end;
 $justifyContents: start, center, end, space-between;
@@ -13,6 +15,10 @@ $justifyContents: start, center, end, space-between;
   &.col {
     grid-auto-flow: column;
     grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  }
+
+  &.wrap {
+    @include text-wrap;
   }
 
   @each $gap in $gaps {

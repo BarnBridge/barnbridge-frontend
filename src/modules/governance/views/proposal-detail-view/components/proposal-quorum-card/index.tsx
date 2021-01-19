@@ -23,7 +23,7 @@ const ProposalQuorumCard: React.FunctionComponent = () => {
         <Progress
           percent={proposalCtx.quorum}
           acceptance={proposalCtx.proposal?.minQuorum}
-          strokeColor="var(--bg-color-green500)"
+          strokeColor="#00D395"
           trailColor="rgba(0, 211, 149, 0.16)" />
       </Grid>
     </Card>

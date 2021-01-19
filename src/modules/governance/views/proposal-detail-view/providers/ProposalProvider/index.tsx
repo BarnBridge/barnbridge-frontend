@@ -3,9 +3,14 @@ import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
+import Grid from 'components/custom/grid';
+import ExternalLink from 'components/custom/externalLink';
+import { Label, Paragraph, Small } from 'components/custom/typography';
+
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import { getEtherscanAddressUrl, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import { decodeABIParams } from 'web3/contract';
 import { GetReceiptCallResult } from 'web3/contracts/daoGovernance';
 import { useWallet } from 'wallets/wallet';
 import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
@@ -46,6 +51,57 @@ export function useProposal(): ProposalContextType {
 export type ProposalProviderProps = {
   proposalId?: number;
 };
+
+export function getActionString(proposal: APIProposalEntity, index: number) {
+  const target = proposal.targets[index];
+  const signature = proposal.signatures[index];
+  const calldata = proposal.calldatas[index];
+  const value = proposal.values[index];
+
+  const match = signature.match(/(?:\w+\s*)/gm);
+
+  if (!match) {
+    return 'Invalid action';
+  }
+
+  const [methodName, ...methodTypes] = match;
+  const params = Object.values(decodeABIParams(methodTypes, calldata) ?? {});
+
+  return (
+    <>
+      <Antd.Tooltip title={(
+        <Grid flow="row" gap={12}>
+          <Grid flow="row" gap={4} align="center">
+            <Label type="lb2" bold color="grey900">Contract address:</Label>
+            <Small semiBold color="grey500" wrap>{target}</Small>
+          </Grid>
+
+          <Grid flow="row" gap={4} align="center">
+            <Label type="lb2" bold color="grey900">Function signature:</Label>
+            <Small semiBold color="grey500" wrap>{signature}</Small>
+          </Grid>
+
+          <Grid flow="row" gap={4} align="center">
+            <Label type="lb2" bold color="grey900">Function arguments:</Label>
+            {params.map((param, index) => (
+              <Grid flow="col" gap={8} align="center">
+                {index + 1}.
+                <Small semiBold color="grey500" ellipsis>"{param}"</Small>
+              </Grid>
+            ))}
+          </Grid>
+        </Grid>
+      )}>
+        <ExternalLink href={`${getEtherscanAddressUrl(target)}#writeContract`}>
+          <Grid flow="col" wrap>
+            <Paragraph type="p1" semiBold color="blue500">Contract</Paragraph>
+            <Paragraph type="p1" color="red500">.{methodName}(...)</Paragraph>
+          </Grid>
+        </ExternalLink>
+      </Antd.Tooltip>
+    </>
+  );
+}
 
 const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props => {
   const { proposalId, children } = props;
@@ -88,8 +144,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       return;
     }
 
-    const forVotes = new BigNumber(state.proposal.forVotes);
-    const againstVotes = new BigNumber(state.proposal.againstVotes);
+    const { forVotes, againstVotes } = state.proposal;
     const total = forVotes.plus(againstVotes);
 
     let forRate = 0;
@@ -190,8 +245,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       startCancellationProposal,
       queueForExecution,
       executeProposal,
-    }}>{children}
-    </ProposalContext.Provider>
+    }}>{children}</ProposalContext.Provider>
   );
 };
 
