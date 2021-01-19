@@ -35,6 +35,8 @@ import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
 import { ReactComponent as UniswapIcon } from 'resources/svg/tokens/uniswap.svg';
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
 
+import s from './styles.module.scss';
+
 export type IconType =
   'arrow-circle-right'
   | 'bell'
@@ -122,7 +124,7 @@ const Icon: React.FunctionComponent<IconProps> = props => {
 
   return IconComponent ? (
     <IconComponent
-      className={cx(color && `clr-${color}`)}
+      className={cx(s.component, color && `clr-${color}`)}
       style={{ width, height }} />
   ) : null;
 };

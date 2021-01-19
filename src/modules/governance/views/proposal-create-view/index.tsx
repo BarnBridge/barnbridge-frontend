@@ -17,6 +17,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { encodeABIParams } from 'web3/contract';
 
 import s from './styles.module.scss';
+import Grid from '../../../../components/custom/grid';
 
 type NewProposalForm = {
   title: string;
@@ -79,7 +80,6 @@ const ProposalCreateView: React.FunctionComponent = () => {
     try {
       await form.validateFields();
 
-      ///0x8EAcaEdD6D3BaCBC8A09C0787c5567f86eE96d02
       const payload = {
         title: values.title,
         description: values.description,
@@ -129,17 +129,15 @@ const ProposalCreateView: React.FunctionComponent = () => {
       <Button type="link">
         <Paragraph type="p1" semiBold>Proposals</Paragraph>
       </Button>
-      <Heading type="h1" bold>Create Proposal</Heading>
+      <Heading type="h1" bold className="mb-32" color="grey900">Create Proposal</Heading>
       <Form
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit', 'onChange']}
         onValuesChange={setValues}
         onFinish={handleSubmit}>
-        <div className={s.cards}>
-          <Card
-            title="Proposal description"
-          >
+        <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 1fr))" align="start">
+          <Card title="Proposal description">
             <div className={s.cardBody}>
               <Form.Item
                 name="title"
@@ -195,7 +193,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
               )}
             </Form.List>
           </Card>
-        </div>
+        </Grid>
         <Button
           type="primary"
           htmlType="submit"

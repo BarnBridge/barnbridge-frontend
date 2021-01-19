@@ -1,4 +1,4 @@
-@import "../../../../../../styles/mixin";
+@import "src/styles/mixin";
 
 .table :global {
   .ant-table-thead .ant-table-cell {
@@ -9,21 +9,5 @@
 
   .ant-table-tbody:last-child .ant-table-row:last-child .ant-table-cell {
     border-bottom: none;
-  }
-}
-
-.progress {
-  & :global {
-    .ant-progress-outer {
-      max-width: 196px;
-    }
-
-    .ant-progress-text {
-      margin-left: 24px;
-    }
-
-    .ant-progress-bg {
-      background: #ff4339;
-    }
   }
 }

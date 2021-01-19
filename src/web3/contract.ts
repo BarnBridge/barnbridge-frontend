@@ -22,7 +22,8 @@ export type Web3ContractAbiItem = AbiItem;
 
 export function decodeABIParams(types: any[], hex: string): Record<string, any> | undefined {
   try {
-    return web3.eth.abi.decodeParameters(types, hex);
+    const { __length__, ...params } = web3.eth.abi.decodeParameters(types, hex);
+    return params;
   } catch {
   }
 }

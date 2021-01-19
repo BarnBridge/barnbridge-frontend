@@ -1,8 +1,9 @@
-@import "../../../styles/mixin";
+@import "src/styles/mixin";
 
 .tabs:global > {
   .ant-tabs-nav {
     margin-bottom: 32px;
+    background-color: var(--color-card-bg);
 
     &::before {
       border-bottom: none;
@@ -13,7 +14,7 @@
 
       .ant-tabs-tab-btn {
         @include font-p1-semi-bold;
-        color: #717980;
+        color: var(--text-color-grey500);
 
         display: flex;
         flex-direction: row;
@@ -23,20 +24,17 @@
           width: 20px;
           height: 20px;
           margin-right: 10px;
-          color: #aaafb3;
+          color: var(--color-icons);
         }
       }
 
       &.ant-tabs-tab-active .ant-tabs-tab-btn {
-        color: #060a0d;
+        color: var(--text-color-grey900);
 
         svg {
-          color: #ff4339;
+          color: var(--text-color-red500);
         }
       }
     }
   }
-}
-
-.tab {
 }

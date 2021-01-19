@@ -1,23 +1,18 @@
 @import "src/styles/mixin";
 
 .component {
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
 
   :global(.ant-card-head) {
-    min-height: 72px;
-    border-bottom: 1px solid #e3e4e6;
+    border-bottom: 1px solid var(--color-border);
   }
 
   :global(.ant-card-head-title) {
     padding: 24px 0;
-    @include font-p1-semi-bold;
-    color: #060a0d;
   }
 
   :global(.ant-card-body) {
-    flex-grow: 1;
     padding: 24px;
   }
 

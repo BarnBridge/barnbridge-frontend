@@ -45,8 +45,9 @@ function formatEventTime(name: string, start: number, end: number): string {
     APIProposalState.FAILED,
     APIProposalState.CANCELED,
     APIProposalState.EXECUTED,
+    APIProposalState.ACCEPTED,
   ].includes(name as any)) {
-    return format(mStart, 'MM.dd.yyyy - HH:mm');
+    return format(mStart, 'dd MMM yyyy - HH:mm');
   }
 
   const dist = formatDistance(

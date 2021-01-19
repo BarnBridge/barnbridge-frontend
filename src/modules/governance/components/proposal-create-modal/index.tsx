@@ -11,9 +11,7 @@ import Select from 'components/antd/select';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Alert from 'components/antd/alert';
 import { Heading } from 'components/custom/typography';
-import NumericInput from 'components/custom/numeric-input';
 
-import { useWeb3Contracts } from 'web3/contracts';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { fetchContractABI } from 'web3/utils';
 import { useReload } from 'hooks/useReload';
@@ -52,7 +50,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [contract, setContract] = React.useState<Web3Contract | undefined>();
 
-  const formValues = form.getFieldsValue();
+  const [formValues, setFormValues] = React.useState<ProposalActionCreateForm>(InitialFormValues);
 
   async function handleSubmit(values: ProposalActionCreateForm) {
     setSubmitting(true);
@@ -92,6 +90,12 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
   }, [contract, formValues.functionName]);
 
   function handleValuesChange(values: Partial<ProposalActionCreateForm>) {
+    console.log(values);
+    setFormValues(prevState => ({
+      ...prevState,
+      ...values,
+    }));
+
     const changedField = Object.keys(values)[0];
 
     switch (changedField) {
@@ -121,7 +125,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
         <Form
           className={s.form}
           form={form}
-          initialValues={InitialFormValues}
+          initialValues={formValues}
           validateTrigger={['onSubmit', 'onChange']}
           onValuesChange={handleValuesChange}
           onFinish={handleSubmit}>

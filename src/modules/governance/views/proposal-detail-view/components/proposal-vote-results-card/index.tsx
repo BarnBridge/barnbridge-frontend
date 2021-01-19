@@ -27,15 +27,15 @@ const ProposalVoteResultsCard: React.FunctionComponent = () => {
           <div className={s.headerWrap}>
             <Small semiBold className={s.headerLabel}>For</Small>
             <div className={s.headerHint}>
-              <Paragraph type="p1" semiBold>{proposalCtx.proposal?.forVotes}</Paragraph>
-              <Paragraph type="p1">({proposalCtx.forRate}%)</Paragraph>
+              <Paragraph type="p1" semiBold>{proposalCtx.proposal?.forVotes.toFormat(2)}</Paragraph>
+              <Paragraph type="p1">({proposalCtx.forRate?.toFixed(2)}%)</Paragraph>
             </div>
           </div>
           <div className={s.headerWrap}>
             <Small semiBold className={s.headerLabel}>Against</Small>
             <div className={s.headerHint}>
-              <Paragraph type="p1" semiBold>{proposalCtx.proposal?.againstVotes}</Paragraph>
-              <Paragraph type="p1">({proposalCtx.againstRate}%)</Paragraph>
+              <Paragraph type="p1" semiBold>{proposalCtx.proposal?.againstVotes.toFormat(2)}</Paragraph>
+              <Paragraph type="p1">({proposalCtx.againstRate?.toFixed()}%)</Paragraph>
             </div>
           </div>
         </div>
@@ -51,14 +51,14 @@ const ProposalVoteResultsCard: React.FunctionComponent = () => {
           <div className={s.headerWrap}>
             <Small semiBold className={s.headerLabel}>Quorum</Small>
             <div className={s.headerHint}>
-              <Paragraph type="p1" semiBold>{proposalCtx.quorum}%</Paragraph>
+              <Paragraph type="p1" semiBold>{proposalCtx.quorum?.toFixed(2)}%</Paragraph>
               <Paragraph type="p1">(&gt; {proposalCtx.proposal?.minQuorum}% required)</Paragraph>
             </div>
           </div>
           <div className={s.headerWrap}>
             <Small semiBold className={s.headerLabel}>Approval</Small>
             <div className={s.headerHint}>
-              <Paragraph type="p1" semiBold>{proposalCtx.forRate}%</Paragraph>
+              <Paragraph type="p1" semiBold>{proposalCtx.forRate?.toFixed(2)}%</Paragraph>
               <Paragraph type="p1">(&gt; {proposalCtx.proposal?.acceptanceThreshold}% required)</Paragraph>
             </div>
           </div>

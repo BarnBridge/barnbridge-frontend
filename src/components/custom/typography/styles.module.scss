@@ -157,3 +157,11 @@ h3.heading {
     height: var(--font-size-sm);
   }
 }
+
+.ellipsis {
+  @include text-ellipsis;
+}
+
+.wrap {
+  @include text-wrap;
+}

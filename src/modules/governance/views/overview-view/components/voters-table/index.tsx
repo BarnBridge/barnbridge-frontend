@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import * as Antd from 'antd';
 
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
@@ -11,6 +12,7 @@ import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
 import { formatBigValue } from 'web3/utils';
 
 import s from './styles.module.scss';
+import Card from '../../../../../../components/antd/card';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
@@ -96,28 +98,30 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
   }, [page, pageSize]);
 
   return (
-    <Table<APIVoterEntity>
-      className={className}
-      title={() => (
-        <Paragraph type="p1" semiBold color="grey900">Voter weights</Paragraph>
-      )}
-      columns={Columns}
-      dataSource={voters}
-      rowKey="address"
-      loading={loading}
-      pagination={{
-        total,
-        pageSize,
-        current: page,
-        position: ['bottomRight'],
-        showTotal: (total: number, [from, to]: [number, number]) => (
-          <Paragraph type="p2" semiBold color="grey500">
-            Showing {from} to {to} out of {total} voters
-          </Paragraph>
-        ),
-        onChange: setPage,
-      }}
-    />
+    <Card>
+      <Antd.Table<APIVoterEntity>
+        className={className}
+        title={() => (
+          <Paragraph type="p1" semiBold color="grey900">Voter weights</Paragraph>
+        )}
+        columns={Columns}
+        dataSource={voters}
+        rowKey="address"
+        loading={loading}
+        pagination={{
+          total,
+          pageSize,
+          current: page,
+          position: ['bottomRight'],
+          showTotal: (total: number, [from, to]: [number, number]) => (
+            <Paragraph type="p2" semiBold color="grey500">
+              Showing {from} to {to} out of {total} voters
+            </Paragraph>
+          ),
+          onChange: setPage,
+        }}
+      />
+    </Card>
   );
 };
 

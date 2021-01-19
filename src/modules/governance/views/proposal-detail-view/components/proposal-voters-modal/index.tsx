@@ -5,66 +5,77 @@ import BigNumber from 'bignumber.js';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Tabs from 'components/antd/tabs';
 import Table from 'components/antd/table';
-
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
-import { Paragraph } from 'components/custom/typography';
-import { useProposal } from '../../providers/ProposalProvider';
+import { Label, Paragraph, Small } from 'components/custom/typography';
+import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
 
-import { APIVoterEntity, fetchProposalVoters } from 'modules/governance/api';
+import { APIVoteEntity } from 'modules/governance/api';
 import { formatBigValue, shortenAddr } from 'web3/utils';
 
 import s from './styles.module.scss';
 
-const Columns: ColumnsType<APIVoterEntity> = [
+const Columns: ColumnsType<APIVoteEntity> = [
   {
-    title: 'Address',
+    title: () => (
+      <Small semiBold color="grey300">Address</Small>
+    ),
     dataIndex: 'address',
     width: '60%',
     render: (address: string) => (
-      <Grid gap={8}>
-        <Identicon address={address} />
-        <Paragraph type="p1" semiBold>{shortenAddr(address)}</Paragraph>
+      <Grid flow="col" gap={8} align="center">
+        <Identicon address={address} width={32} height={32} />
+        <Paragraph type="p1" semiBold color="grey900">
+          {shortenAddr(address)}
+        </Paragraph>
       </Grid>
     ),
   },
   {
-    title: 'Votes',
+    title: () => (
+      <Small semiBold color="grey300">Votes</Small>
+    ),
     dataIndex: 'power',
     width: '20%',
     render: (power: BigNumber) => (
-      <Paragraph type="p1" semiBold>{formatBigValue(power, 0)}</Paragraph>
+      <Paragraph type="p1" semiBold color="grey900" className={s.powerCell}>
+        {formatBigValue(power, 0)}
+      </Paragraph>
     ),
   },
   {
-    title: 'Vote type',
+    title: () => (
+      <Small semiBold color="grey300">Vote type</Small>
+    ),
     dataIndex: 'support',
     width: '20%',
-    render: (support: boolean) => support ? 'FOR' : 'AGAINST',
+    render: (support: boolean) => support ? (
+      <Label type="lb2" semiBold className={s.forTag}>For</Label>
+    ) : (
+      <Label type="lb2" semiBold className={s.againstTag}>Against</Label>
+    ),
   },
 ];
 
 export type ProposalVotersModalProps = ModalProps;
 
-const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = props => {
+const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps> = props => {
   const { ...modalProps } = props;
 
-  const proposalCtx = useProposal();
-  const [stateFilter, setStateFilter] = React.useState<string>('all');
-  const [voters, setVoters] = React.useState<APIVoterEntity[]>([]);
+  const proposalVotesCtx = useProposalVoters();
 
-  React.useEffect(() => {
-    if (!modalProps.visible || !proposalCtx.proposal) {
-      return;
+  function handleStateChange(stateFilter: string) {
+    if (stateFilter === 'for') {
+      proposalVotesCtx.changeSupportFilter(true);
+    } else if (stateFilter === 'against') {
+      proposalVotesCtx.changeSupportFilter(false);
+    } else {
+      proposalVotesCtx.changeSupportFilter(undefined);
     }
-
-    fetchProposalVoters(proposalCtx.proposal.proposalId)
-      .then((voters: APIVoterEntity[]) => {
-        setVoters(voters);
-      });
-  }, [modalProps.visible, proposalCtx.proposal]);
+  }
 
   function handlePaginationChange(page: number) {
+    proposalVotesCtx.changePage(page);
   }
 
   return (
@@ -75,25 +86,26 @@ const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = p
       {...modalProps}>
       <Tabs
         className={s.tabs}
-        defaultActiveKey={stateFilter}
-        onChange={setStateFilter}>
+        defaultActiveKey="all"
+        onChange={handleStateChange}>
         <Tabs.Tab key="all" tab="All Votes" />
         <Tabs.Tab key="for" tab="For" />
         <Tabs.Tab key="against" tab="Against" />
       </Tabs>
-      <Table<APIVoterEntity>
+      <Table<APIVoteEntity>
         className={s.table}
         title={() => ''}
         columns={Columns}
-        dataSource={voters}
+        dataSource={proposalVotesCtx.votes}
         rowKey="address"
+        loading={proposalVotesCtx.loading}
         locale={{
           emptyText: 'No votes',
         }}
         pagination={{
-          total: voters.length,
-          current: 1,
-          pageSize: 10,
+          total: proposalVotesCtx.total,
+          current: proposalVotesCtx.page,
+          pageSize: proposalVotesCtx.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
             <Paragraph type="p2" semiBold color="grey500">
@@ -107,4 +119,9 @@ const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = p
   );
 };
 
+const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = props => (
+  <ProposalVotersProvider>
+    <ProposalVotersModalInner {...props} />
+  </ProposalVotersProvider>
+)
 export default ProposalVotersModal;

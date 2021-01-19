@@ -1,4 +1,4 @@
-@import "../styles/mixin";
+@import "src/styles/mixin";
 
 .container {
   min-height: 100vh;
@@ -6,7 +6,7 @@
 
 .main {
   position: relative;
-  background-color: var(--bg-color-1);
+  background-color: var(--color-body-bg);
 }
 
 :global .mobile-menu-open :local .main {

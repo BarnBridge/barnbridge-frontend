@@ -1,4 +1,4 @@
-@import "../../styles/mixin";
+@import "src/styles/mixin";
 
 .container {
 }
@@ -19,6 +19,6 @@
   }
 }
 
-.tab {
-  padding: 50px 64px;
+.content {
+  padding: 32px 150px;
 }

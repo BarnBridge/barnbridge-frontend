@@ -1,14 +1,29 @@
 @import "colors";
 
 :root {
-  --text-color-black: #000;
-  --text-color-white: #fff;
+  --color-body-bg: #f8f8f9;
+  --color-card-bg: #fff;
+  --color-overlay-bg: #fff;
+  --color-mask-bg: rgba(19, 32, 43, 0.8);
+  --color-border: #e3e4e6;
+  --color-icons: #aaafb3;
+  --color-text: #717980;
+  --color-progress-success: #00d395;
 
-  --text-color-red500: var(--color-red500);
-  --text-color-grey900: var(--color-grey900);
-  --text-color-grey500: var(--color-grey500);
-  --text-color-grey300: var(--color-grey300);
+  --shadow-modal: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 16px 32px rgba(19, 32, 43, 0.4);
+  --shadow-card: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+  --shadow-overlay: 0 0 0.5px rgba(0, 0, 0, 0.4), 0 32px 64px rgba(113, 121, 128, 0.32);
 
-  --bg-color-grey100: var(--color-grey100);
-  --bg-color-green500: var(--color-green500);
+  --text-color-red500: #{$color-red500};
+  --text-color-red500-rgb: #{hexToRGB($color-red500)};
+
+  --text-color-grey900: #{$color-grey900};
+  --text-color-grey500: #{$color-grey500};
+  --text-color-grey300: #{$color-grey300};
+
+  --text-color-green500: #{$color-green500};
+  --text-color-green500-rgb: #{hexToRGB($color-green500)};
+
+  --text-color-blue500: #{$color-blue500};
+  --text-color-blue500-rgb: #{hexToRGB($color-blue500)};
 }

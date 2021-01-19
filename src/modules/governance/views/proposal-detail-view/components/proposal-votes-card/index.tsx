@@ -6,7 +6,7 @@ import Alert from 'components/antd/alert';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
-import ProposalVotersModal from '../proposal-voters-modal';
+import ProposalVotesModal from '../proposal-voters-modal';
 import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
 import { useProposal } from '../../providers/ProposalProvider';
 
@@ -149,7 +149,7 @@ const ProposalVotesCard: React.FunctionComponent = () => {
         </Grid>
       </Grid>
 
-      <ProposalVotersModal
+      <ProposalVotesModal
         visible={state.showVotersModal}
         onCancel={handleHideVotersModal} />
       <ProposalVoteModal
