@@ -11,6 +11,7 @@ type CommonProps = {
   bold?: boolean;
   semiBold?: boolean;
   color?: Colors;
+  align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
   wrap?: boolean;
   className?: string;
@@ -18,14 +19,15 @@ type CommonProps = {
 };
 
 function classNamesFromProps(props: CommonProps) {
-  const { bold, semiBold, color, ellipsis, wrap, className } = props;
+  const { bold, semiBold, color, align, ellipsis, wrap, className } = props;
 
   return cx(
     bold && s.bold,
     semiBold && s.semiBold,
     color && `clr-${color}`,
-    ellipsis && s.ellipsis,
-    wrap && s.wrap,
+    align && `text-${align}`,
+    ellipsis && 'text-ellipsis',
+    wrap && 'text-wrap',
     className,
   );
 }

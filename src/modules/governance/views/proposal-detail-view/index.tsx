@@ -1,9 +1,11 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import { useHistory } from 'react-router';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import { Heading, Paragraph } from 'components/custom/typography';
+import Icon from 'components/custom/icon';
 import ProposalVoteResultsCard from './components/proposal-vote-results-card';
 import ProposalDetailsCard from './components/proposal-details-card';
 import ProposalStatusCard from './components/proposal-status-card';
@@ -14,9 +16,7 @@ import ProposalApprovalCard from './components/proposal-approval-card';
 import ProposalProvider, { useProposal } from './providers/ProposalProvider';
 
 import { APIProposalState } from 'modules/governance/api';
-
-import s from './styles.module.scss';
-import Icon from '../../../../components/custom/icon';
+import { useWallet } from 'wallets/wallet';
 
 type ProposalDetailViewInnerState = {
   executing: boolean;
@@ -27,11 +27,15 @@ const InitialState: ProposalDetailViewInnerState = {
 };
 
 const ProposalDetailViewInner: React.FunctionComponent = () => {
+  const history = useHistory();
   const proposalCtx = useProposal();
 
   const proposalState = proposalCtx.proposal?.state;
-
   const [state, setState] = React.useState<ProposalDetailViewInnerState>(InitialState);
+
+  function handleBackClick() {
+    history.push('/governance/proposals');
+  }
 
   function handleQueueForExecution() {
     setState(prevState => ({
@@ -76,14 +80,16 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
   }
 
   return (
-    <Grid flow="row" gap={32} className={s.component}>
-      <Paragraph type="p1" semiBold color="grey500">
-        <Icon type="arrow-circle-right" />
-        Proposals
-      </Paragraph>
+    <Grid flow="row" gap={32}>
+      <Grid flow="col">
+        <Button
+          type="link"
+          icon={<Icon type="arrow-left" />}
+          onClick={handleBackClick}>Proposals</Button>
+      </Grid>
 
-      <Grid flow="col" align="center" justify="space-between">
-        <Heading type="h2" semiBold className={s.header} loading={!proposalCtx.proposal}>
+      <Grid flow="col" gap={32} align="start" justify="space-between">
+        <Heading type="h2" semiBold color="grey900" loading={!proposalCtx.proposal}>
           {proposalCtx.proposal?.title}
         </Heading>
         {APIProposalState.ACCEPTED === proposalState && (
@@ -100,14 +106,14 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
         )}
       </Grid>
 
-      <div className={s.content}>
-        <div className={s.column}>
+      <Grid flow="col" gap={32} colsTemplate="1fr minmax(0px, 428px)">
+        <Grid flow="row" gap={32}>
           {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState as any) && (
             <ProposalVoteResultsCard />
           )}
           <ProposalDetailsCard />
-        </div>
-        <div className={s.column}>
+        </Grid>
+        <Grid flow="row" gap={32}>
           <ProposalStatusCard />
           {APIProposalState.QUEUED === proposalState && (
             <ProposalCancellationCard />
@@ -119,8 +125,8 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
               <ProposalApprovalCard />
             </>
           )}
-        </div>
-      </div>
+        </Grid>
+      </Grid>
     </Grid>
   );
 };

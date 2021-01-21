@@ -88,9 +88,13 @@ const ProposalVotesCard: React.FunctionComponent = () => {
   return (
     <Card
       className={s.component}
-      title="Votes"
+      title={(
+        <Paragraph type="p1" semiBold color="grey900">Votes</Paragraph>
+      )}
       extra={(
-        <Button type="link" onClick={handleShowVotersModal}>View voters</Button>
+        <Button
+          type="link"
+          onClick={handleShowVotersModal}>View voters</Button>
       )}>
       <Grid flow="row" gap={32} className={s.row}>
         <Grid flow="row" gap={16}>
@@ -98,30 +102,34 @@ const ProposalVotesCard: React.FunctionComponent = () => {
             <Paragraph type="p1" semiBold color="grey900">For</Paragraph>
             <Grid flow="col" gap={8}>
               <Paragraph type="p1" semiBold color="grey900">
-                {proposalCtx.proposal?.forVotes}
+                {proposalCtx.proposal?.forVotes.toFormat(2)}
               </Paragraph>
-              <Paragraph type="p1" color="grey500">({proposalCtx.forRate}%)</Paragraph>
+              <Paragraph type="p1" color="grey500">
+                ({proposalCtx.forRate?.toFixed(2)}%)
+              </Paragraph>
             </Grid>
           </Grid>
           <Progress
             percent={proposalCtx.forRate}
-            strokeColor="#00D395"
-            trailColor="rgba(0, 211, 149, 0.16)" />
+            strokeColor="var(--text-color-green500)"
+            trailColor="rgba(var(--text-color-green500-rgb), .16)" />
         </Grid>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
             <Paragraph type="p1" semiBold color="grey900">Against</Paragraph>
             <Grid flow="col" gap={8}>
               <Paragraph type="p1" semiBold color="grey900">
-                {proposalCtx.proposal?.againstVotes}
+                {proposalCtx.proposal?.againstVotes.toFormat(2)}
               </Paragraph>
-              <Paragraph type="p1" color="grey500">({proposalCtx.againstRate}%)</Paragraph>
+              <Paragraph type="p1" color="grey500">
+                ({proposalCtx.againstRate?.toFixed()}%)
+              </Paragraph>
             </Grid>
           </Grid>
           <Progress
             percent={proposalCtx.againstRate}
-            strokeColor="#FF4339"
-            trailColor="rgba(255, 67, 57, 0.16)" />
+            strokeColor="var(--text-color-red500)"
+            trailColor="rgba(var(--text-color-red500-rgb), .16)" />
         </Grid>
       </Grid>
       <Grid flow="row" gap={24} className={s.row}>

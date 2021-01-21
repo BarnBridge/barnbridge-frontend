@@ -4,10 +4,6 @@
 }
 
 .headerRow {
-  display: inline-grid;
-  grid-template-columns: repeat(4, 25%);
-  align-items: center;
-  justify-content: space-between;
   width: 100%;
   padding: 24px;
   background: #fff;
@@ -63,4 +59,17 @@
 
 .depositBtn {
   width: 162px !important;
+}
+
+.arrow {
+  width: 40px;
+  height: 40px !important;
+  background-color: var(--bg-color-1);
+  border-color: var(--color-border);
+  border-radius: 4px;
+}
+
+.arrow:hover {
+  background-color: var(--bg-color-6);
+  border: 1px solid var(--bg-color-6);
 }

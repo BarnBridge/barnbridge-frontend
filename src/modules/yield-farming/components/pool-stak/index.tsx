@@ -32,7 +32,7 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function goBack() {
-    history.replace('/pools');
+    history.replace('/yield-farming');
   }
 
   return (

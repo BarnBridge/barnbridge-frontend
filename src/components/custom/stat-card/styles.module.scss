@@ -1,4 +1,5 @@
-@import "../../../styles/mixin";
+@import "src/styles/mixin";
+@import "src/styles/text";
 
 .component {
   background-color: var(--bg-color-2);

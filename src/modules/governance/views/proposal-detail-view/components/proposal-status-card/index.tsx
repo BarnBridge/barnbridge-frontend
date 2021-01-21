@@ -2,13 +2,12 @@ import React from 'react';
 import { format, formatDistance } from 'date-fns';
 
 import Card from 'components/antd/card';
+import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
 import Icon, { IconType } from 'components/custom/icon';
 import { useProposal } from '../../providers/ProposalProvider';
 
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
-
-import s from './styles.module.scss';
 
 function getEventIcon(index: number, name: string): IconType {
   if ([
@@ -66,22 +65,22 @@ const ProposalStatusCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
   return (
-    <Card className={s.component}>
-      <div className={s.list}>
+    <Card>
+      <Grid flow="row" gap={24}>
         {proposalCtx.proposal?.history.map((event, index: number) => (
-          <div key={event.name} className={s.wrap}>
-            <Icon type={getEventIcon(index, event.name)} size={[40, 40]} />
-            <div className={s.content}>
-              <Paragraph type="p1" semiBold className={s.nameLabel}>
+          <Grid key={event.name} flow="col" gap={12}>
+            <Icon type={getEventIcon(index, event.name)} width={40} height={40} />
+            <Grid flow="row" gap={4}>
+              <Paragraph type="p1" semiBold color="grey900">
                 {APIProposalStateMap.get(event.name as APIProposalState)}
               </Paragraph>
-              <Paragraph type="p2" semiBold className={s.timeLabel}>
+              <Paragraph type="p2" semiBold color="grey500">
                 {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
               </Paragraph>
-            </div>
-          </div>
+            </Grid>
+          </Grid>
         ))}
-      </div>
+      </Grid>
     </Card>
   );
 };

@@ -10,11 +10,14 @@ const ProposalQuorumCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
   return (
-    <Card title="Quorum">
+    <Card
+      title={(
+        <Paragraph type="p1" semiBold color="grey900">Quorum</Paragraph>
+      )}>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
           <Paragraph type="p1" semiBold color="grey900">
-            {proposalCtx.quorum}%
+            {proposalCtx.quorum?.toFixed(2)}%
           </Paragraph>
           <Paragraph type="p1" color="grey500">
             (&gt; {proposalCtx.proposal?.minQuorum}% required)
@@ -23,8 +26,8 @@ const ProposalQuorumCard: React.FunctionComponent = () => {
         <Progress
           percent={proposalCtx.quorum}
           acceptance={proposalCtx.proposal?.minQuorum}
-          strokeColor="#00D395"
-          trailColor="rgba(0, 211, 149, 0.16)" />
+          strokeColor="var(--text-color-green500)"
+          trailColor="rgba(var(--text-color-green500-rgb), .16)" />
       </Grid>
     </Card>
   );

@@ -14,6 +14,7 @@ import { decodeABIParams } from 'web3/contract';
 import { GetReceiptCallResult } from 'web3/contracts/daoGovernance';
 import { useWallet } from 'wallets/wallet';
 import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
+import { useReload } from '../../../../../../hooks/useReload';
 
 export type ProposalProviderState = {
   proposal?: APIProposalEntity;
@@ -27,6 +28,7 @@ export type ProposalProviderState = {
 };
 
 export type ProposalContextType = ProposalProviderState & {
+  reload(): void;
   cancelProposal(): Promise<any>;
   startCancellationProposal(): Promise<any>;
   queueForExecution(): Promise<any>;
@@ -38,6 +40,7 @@ const InitialState: ProposalProviderState = {};
 
 const ProposalContext = React.createContext<ProposalContextType>({
   ...InitialState,
+  reload: () => undefined,
   cancelProposal: () => Promise.reject(),
   startCancellationProposal: () => Promise.reject(),
   queueForExecution: () => Promise.reject(),
@@ -58,6 +61,10 @@ export function getActionString(proposal: APIProposalEntity, index: number) {
   const calldata = proposal.calldatas[index];
   const value = proposal.values[index];
 
+  return getActionStringFor(target, signature, calldata, value);
+}
+
+export function getActionStringFor(target: string, signature: string, calldata: string, value: string) {
   const match = signature.match(/(?:\w+\s*)/gm);
 
   if (!match) {
@@ -84,7 +91,7 @@ export function getActionString(proposal: APIProposalEntity, index: number) {
           <Grid flow="row" gap={4} align="center">
             <Label type="lb2" bold color="grey900">Function arguments:</Label>
             {params.map((param, index) => (
-              <Grid flow="col" gap={8} align="center">
+              <Grid key={index} flow="col" gap={8} align="center">
                 {index + 1}.
                 <Small semiBold color="grey500" ellipsis>"{param}"</Small>
               </Grid>
@@ -106,6 +113,7 @@ export function getActionString(proposal: APIProposalEntity, index: number) {
 const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props => {
   const { proposalId, children } = props;
 
+  const [reload, version] = useReload();
   const history = useHistory();
   const wallet = useWallet();
   const web3c = useWeb3Contracts();
@@ -137,7 +145,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
 
         history.push('/governance/proposals');
       });
-  }, [proposalId]);
+  }, [proposalId, version]);
 
   useAsyncEffect(async () => {
     if (!state.proposal) {
@@ -241,6 +249,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
   return (
     <ProposalContext.Provider value={{
       ...state,
+      reload,
       cancelProposal,
       startCancellationProposal,
       queueForExecution,

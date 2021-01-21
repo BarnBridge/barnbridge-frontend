@@ -107,15 +107,3 @@
 @mixin font-sm-regular {
   @include font(var(--font-size-sm), calc(var(--font-size-sm) + 4px));
 }
-
-@mixin text-ellipsis {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-@mixin text-wrap {
-  width: auto;
-  white-space: pre-wrap;
-  overflow: hidden;
-}

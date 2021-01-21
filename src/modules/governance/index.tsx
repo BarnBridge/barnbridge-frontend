@@ -2,7 +2,9 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
@@ -11,12 +13,7 @@ import ProposalsView from './views/proposals-view';
 import ProposalCreateView from './views/proposal-create-view';
 import ProposalDetailView from './views/proposal-detail-view';
 
-import Tabs from 'components/antd/tabs';
-
-import { ReactComponent as OverviewSvg } from 'resources/svg/icons/nav-overview.svg';
-import { ReactComponent as WalletSvg } from 'resources/svg/icons/nav-wallet.svg';
-import { ReactComponent as ProposalsSvg } from 'resources/svg/icons/nav-proposals.svg';
-import { ReactComponent as DiscussionsSvg } from 'resources/svg/icons/nav-discussions.svg';
+import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.scss';
 
@@ -25,6 +22,7 @@ type GovernanceViewParams = {
 };
 
 const GovernanceView: React.FunctionComponent = () => {
+  const wallet = useWallet();
   const history = useHistory();
   const { params: { vt = 'overview' } } = useRouteMatch<GovernanceViewParams>();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
@@ -43,30 +41,31 @@ const GovernanceView: React.FunctionComponent = () => {
   return (
     <Grid flow="row">
       <LayoutHeader title="Governance" />
-      <VotingHeader />
+      {wallet?.account && <VotingHeader />}
+
       <Tabs
         className={s.tabs}
         activeKey={activeTab}
         onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
-          tab={<><OverviewSvg /> Overview</>} />
+          tab={<><Icon type="nav-overview" /> Overview</>} />
         <Tabs.Tab
           key="wallet"
-          tab={<><WalletSvg /> Wallet</>} />
+          disabled={!wallet?.account}
+          tab={<><Icon type="nav-wallet" /> Wallet</>} />
         <Tabs.Tab
           key="proposals"
-          tab={<><ProposalsSvg /> Proposals</>} />
+          tab={<><Icon type="nav-proposals" /> Proposals</>} />
         <Tabs.Tab
           key="discussions"
           disabled
-          tab={<><DiscussionsSvg /> Discussions</>}>
-        </Tabs.Tab>
+          tab={<><Icon type="nav-discussions" /> Discussions</>} />
       </Tabs>
-      <div className={s.content}>
+      <div className={s.view}>
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
-          <Route path="/governance/wallet" exact component={WalletView} />
+          <Route path="/governance/wallet" component={WalletView} />
           <Route path="/governance/proposals" exact component={ProposalsView} />
           <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
           <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />

@@ -1,7 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { TabsProps as AntdTabsProps } from 'antd/lib/tabs';
-import { TabPaneProps as AntdTabPaneProps } from 'rc-tabs/lib/TabPanelList/TabPane';
+import { TabsProps as AntdTabsProps, TabPaneProps as AntdTabPaneProps } from 'antd/lib/tabs';
 import cx from 'classnames';
 
 import s from './styles.module.scss';

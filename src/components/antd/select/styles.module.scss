@@ -1,29 +1,46 @@
-@import "../../../styles/mixin";
+@import "src/styles/mixin";
 
 .component {
-  &:global(.ant-select-single) {
-    :global(.ant-select-selector) {
-      height: 64px !important;
-      padding: 20px 24px !important;
-      border: 1px solid #e3e4e6 !important;
+  position: relative;
 
-      :global(.ant-select-selection-item),
-      :global(.ant-select-selection-placeholder) {
-        @include font-p2-semi-bold;
-        color: #060a0d;
+  .select {
+    &:global(.ant-select-single) {
+      :global(.ant-select-selector) {
+        height: 64px !important;
+        padding: 20px 24px !important;
+        border: 1px solid #e3e4e6 !important;
+
+        :global(.ant-select-selection-item),
+        :global(.ant-select-selection-placeholder) {
+          @include font-p2-semi-bold;
+          color: #060a0d;
+        }
       }
-    }
 
-    :global(.ant-select-arrow) {
-      top: 50%;
-      right: 24px;
-      width: 20px;
-      height: 20px;
-
-      svg {
+      :global(.ant-select-arrow) {
+        top: 50%;
+        right: 24px;
         width: 20px;
         height: 20px;
+
+        svg {
+          width: 20px;
+          height: 20px;
+        }
       }
+    }
+  }
+
+  .spin {
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    z-index: 1;
+  }
+
+  .loading {
+    :global(.ant-select-arrow) {
+      display: none;
     }
   }
 }

@@ -7,47 +7,23 @@ import YieldFarmingView from 'modules/yield-farming';
 import GovernanceView from 'modules/governance';
 
 import Warnings from 'components/custom/warnings';
-import SiderNav from 'components/custom/sider-nav';
-import { SiderNavLinkProps } from 'components/custom/sider-nav-link';
+import LayoutSideNav from './components/layout-side-nav';
 import MobileMenu from 'components/custom/mobile-menu';
 import ExternalLink from 'components/custom/externalLink';
 
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 
-import { ReactComponent as BondsSvg } from 'resources/svg/icons/nav-bonds.svg';
-import { ReactComponent as PoolsSvg } from 'resources/svg/icons/nav-pools.svg';
-import { ReactComponent as VotingSvg } from 'resources/svg/icons/nav-voting.svg';
-
 import StayTuned from 'components/custom/stay-tuned';
 
 import s from './styles.module.scss';
 
-const SiderNavLinks: SiderNavLinkProps[] = [
-  {
-    icon: <PoolsSvg />,
-    label: 'Pools',
-    path: '/yield-farming',
-  },
-  {
-    icon: <VotingSvg />,
-    label: 'Voting',
-    path: '/governance',
-  },
-  {
-    icon: <BondsSvg />,
-    label: 'Bonds',
-    path: '/bonds',
-  },
-];
-
 const LayoutView: React.FunctionComponent = () => {
   return (
     <Antd.Layout className={s.container}>
-      <SiderNav className={s.siderNav} links={SiderNavLinks} />
+      {!isMobile ? <LayoutSideNav /> : <MobileMenu />}
 
       <Antd.Layout className={s.main}>
-        {isMobile && <MobileMenu />}
         <Warnings>
           <Antd.Layout.Content className={s.content}>
             <Switch>

@@ -10,13 +10,22 @@ import Textarea from 'components/antd/textarea';
 import Select from 'components/antd/select';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Alert from 'components/antd/alert';
-import { Heading } from 'components/custom/typography';
+import Grid from 'components/custom/grid';
+import { Heading, Small } from 'components/custom/typography';
+import AddZerosPopup from '../add-zeros-popup';
 
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
+import Web3Contract, { encodeABIParams, Web3ContractAbiItem } from 'web3/contract';
 import { fetchContractABI } from 'web3/utils';
 import { useReload } from 'hooks/useReload';
 
 import s from './styles.module.scss';
+import { Spin } from 'antd';
+
+type FunctionParam = {
+  name: string;
+  type: string;
+  value: string;
+}
 
 export type ProposalActionCreateForm = {
   targetAddress?: string;
@@ -24,7 +33,8 @@ export type ProposalActionCreateForm = {
   actionValue?: string;
   addFunctionCall?: boolean;
   functionName?: string;
-  functionArgs?: Record<string, any>;
+  functionMeta?: Web3ContractAbiItem;
+  functionParams: FunctionParam[];
   contract?: Web3Contract;
 };
 
@@ -34,7 +44,8 @@ const InitialFormValues: ProposalActionCreateForm = {
   actionValue: undefined,
   addFunctionCall: undefined,
   functionName: undefined,
-  functionArgs: undefined,
+  functionMeta: undefined,
+  functionParams: [],
 };
 
 export type ProposalActionCreateModalProps = ModalProps & {
@@ -49,6 +60,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
   const [form] = Antd.Form.useForm<ProposalActionCreateForm>();
   const [submitting, setSubmitting] = React.useState<boolean>(false);
   const [contract, setContract] = React.useState<Web3Contract | undefined>();
+  const [loadingContract, setLoadingContract] = React.useState<boolean>(false);
 
   const [formValues, setFormValues] = React.useState<ProposalActionCreateForm>(InitialFormValues);
 
@@ -78,9 +90,15 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
     setContract(undefined);
 
     if (addFunctionCall && targetAddress && Web3.utils.isAddress(targetAddress)) {
+      setLoadingContract(true);
+
       fetchContractABI(targetAddress)
         .then((results: any[]) => {
           setContract(new Web3Contract(results, targetAddress, targetAddress));
+          setLoadingContract(false);
+        })
+        .catch(() => {
+          setLoadingContract(true);
         });
     }
   }, [formValues.addFunctionCall, formValues.targetAddress]);
@@ -89,8 +107,26 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
     return (contract?.writeFunctions as Array<any>)?.find(fn => fn.name === formValues.functionName);
   }, [contract, formValues.functionName]);
 
+  function handleZerosAdd(fieldPath: string[], count: number) {
+    let currentValue = form.getFieldValue(fieldPath);
+
+    if (!currentValue) {
+      return;
+    }
+
+    currentValue = currentValue + '0'.repeat(count);
+
+    const field: Record<string, any> = {};
+    fieldPath.reduce((a: Record<string, any>, v: string, i: number, arr: string[]) => {
+      a[v] = arr.length - 1 === i ? currentValue : {};
+      return a[v];
+    }, field);
+
+    form.setFieldsValue(field);
+  }
+
   function handleValuesChange(values: Partial<ProposalActionCreateForm>) {
-    console.log(values);
+    console.log('***', values);
     setFormValues(prevState => ({
       ...prevState,
       ...values,
@@ -102,13 +138,41 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
       case 'addFunctionCall':
         form.setFieldsValue({
           functionName: undefined,
-          functionArgs: undefined,
+          functionMeta: undefined,
+          functionParams: [],
         });
+
+        setFormValues(prevState => ({
+          ...prevState,
+          functionName: undefined,
+          functionMeta: undefined,
+          functionParams: [],
+        }));
         break;
       case 'functionName':
+        const functionMeta: Web3ContractAbiItem = (contract?.writeFunctions as Array<any>)?.find(fn => fn.name === values.functionName);
+        const functionParams: any[] = [];
+
+        if (functionMeta) {
+          functionMeta.inputs?.forEach(input => {
+            functionParams.push({
+              name: input.name,
+              type: input.type,
+              value: '',
+            } as FunctionParam)
+          });
+        }
+
         form.setFieldsValue({
-          functionArgs: {},
+          functionMeta,
+          functionParams,
         });
+
+        setFormValues(prevState => ({
+          ...prevState,
+          functionMeta,
+          functionParams,
+        }));
         break;
     }
 
@@ -145,7 +209,14 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
           {formValues.addValueAttribute && (
             <Form.Item
               name="actionValue"
-              label="Action value"
+              label={(
+                <Grid flow="col" gap={8}>
+                  <Small semiBold color="grey500">Action Value</Small>
+                  <AddZerosPopup
+                    max={78 - (formValues.actionValue?.length ?? 0)}
+                    onAdd={value => handleZerosAdd(['actionValue'], value)} />
+                </Grid>
+              )}
               rules={[
                 { required: true, message: 'Required' },
               ]}>
@@ -166,51 +237,86 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
                   { required: true, message: 'Required' },
                 ]}>
                 <Select
-                  loading
+                  loading={loadingContract}
+                  disabled={loadingContract || submitting}
                   options={contract?.writeFunctions.map(fn => ({
                     label: fn.name!,
                     value: fn.name!,
-                  })) ?? []}
-                  disabled={submitting} />
+                  })) ?? []} />
               </Form.Item>
-              {selectedFunction && (
+              {formValues.functionMeta && (
                 <>
-                  {selectedFunction.inputs?.map(methodInput => (
-                    <Form.Item
-                      key={methodInput.name}
-                      name={['functionArgs', methodInput.name]}
-                      label={`${methodInput.name} (${methodInput.type})`}
-                      rules={[
-                        { required: true, message: 'Required' },
-                      ]}>
-                      <Input disabled={submitting} placeholder={`${methodInput.name} (${methodInput.type})`} />
-                    </Form.Item>
-                  ))}
-                  {selectedFunction.inputs?.length! > 0 && (
+                  <Form.List name="functionParams">
+                    {fields => fields.map(field => {
+                      const param = formValues.functionParams[field.fieldKey];
+
+                      return (
+                        <Form.Item
+                          {...field}
+                          name={[field.name, 'value']}
+                          fieldKey={[field.fieldKey, 'value']}
+                          label={(
+                            <Grid flow="col" gap={8}>
+                              <Small semiBold color="grey500">{param.name} ({param.name})</Small>
+                              {/(u?int\d+)/g.test(param.type) && (
+                                <AddZerosPopup onAdd={value => handleZerosAdd(['functionParams', String(field.fieldKey), 'value'], value)} />
+                              )}
+                            </Grid>
+                          )}
+                          rules={[
+                            { required: true, message: 'Required' },
+                          ]}>
+                          <Input disabled={submitting} placeholder={`${param.name} (${param.type})`} />
+                        </Form.Item>
+                      );
+                    })}
+                  </Form.List>
+                  {/*{formValues.functionParams.map((param, index) => {*/}
+                  {/*  return (*/}
+                  {/*    <Form.Item*/}
+                  {/*      name={['functionParams', index, 'value']}*/}
+                  {/*      fieldKey={index}*/}
+                  {/*      label={(*/}
+                  {/*        <Grid flow="col" gap={8}>*/}
+                  {/*          <Small semiBold color="grey500">{param.name} ({param.name})</Small>*/}
+                  {/*          {/(u?int\d+)/g.test(param.type) && (*/}
+                  {/*            <AddZerosPopup onAdd={value => handleZerosAdd(['functionParams', String(index), 'value'], value)} />*/}
+                  {/*          )}*/}
+                  {/*        </Grid>*/}
+                  {/*      )}*/}
+                  {/*      rules={[*/}
+                  {/*        { required: true, message: 'Required' },*/}
+                  {/*      ]}>*/}
+                  {/*      <Input disabled={submitting} placeholder={`${param.name} (${param.type})`} />*/}
+                  {/*    </Form.Item>*/}
+                  {/*  );*/}
+                  {/*})}*/}
+
+                  {formValues.functionParams.length! > 0 && (
                     <Form.Item label={`Function type: ${formValues.functionName}`}>
                       <Textarea
                         className={s.textarea}
                         rows={5}
-                        value={`Parameters:\n${JSON.stringify(selectedFunction.inputs, null, 2)}`}
+                        value={`Parameters:\n${JSON.stringify(formValues.functionParams, null, 2)}`}
                         disabled />
                     </Form.Item>
                   )}
                   <Form.Item label="Hex data">
-                    <Textarea
-                      className={s.textarea}
-                      rows={5}
-                      placeholder="Fill in the arguments above"
-                      value={contract?.getHexFor(selectedFunction.name!, ...selectedFunction.inputs?.map(input => {
-                        return formValues.functionArgs?.[input.name] ?? '';
-                      }) ?? []) ?? ''}
-                      disabled />
+                    {/*<Textarea*/}
+                    {/*  className={s.textarea}*/}
+                    {/*  rows={5}*/}
+                    {/*  placeholder="Fill in the arguments above"*/}
+                    {/*  value={encodeABIParams(*/}
+                    {/*    formValues.functionParams?.map(input => input.type) ?? [],*/}
+                    {/*    formValues.functionParams?.map(input => input.value)) ?? ''}*/}
+                    {/*  disabled />*/}
                   </Form.Item>
                 </>
               )}
             </>
           )}
 
-          {formValues.targetAddress && !contract && (
+          {formValues.targetAddress && formValues.addFunctionCall && !loadingContract && !contract && (
             <Alert
               type="error"
               message="The target address you entered is not a validated contract address. Please check the information you entered and try again" />
@@ -240,6 +346,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
           </div>
         </Form>
       </div>
+
     </Modal>
   );
 };

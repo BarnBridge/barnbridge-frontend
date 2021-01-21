@@ -18,19 +18,22 @@ export type SelectProps<T> = AntdSelectProps<T> & {
 };
 
 const Select = <T extends AntdSelectValue, >(props: SelectProps<T>) => {
-  const { className, options, ...selectProps } = props;
+  const { className, loading, options, ...selectProps } = props;
 
   return (
-    <Antd.Select<T>
-      className={cx(s.component, className)}
-      suffixIcon={<CaretDownOutlined className={s.caret} />}
-      {...selectProps}>
-      {options.map(({ label, value, ...optProps }) => (
-        <Antd.Select.Option key={value} value={value} {...optProps}>
-          {label}
-        </Antd.Select.Option>
-      ))}
-    </Antd.Select>
+    <div className={s.component}>
+      {loading && <Antd.Spin className={s.spin} />}
+      <Antd.Select<T>
+        className={cx(s.select, className, loading && s.loading)}
+        suffixIcon={<CaretDownOutlined className={s.caret} />}
+        {...selectProps}>
+        {options.map(({ label, value, ...optProps }) => (
+          <Antd.Select.Option key={value} value={value} {...optProps}>
+            {label}
+          </Antd.Select.Option>
+        ))}
+      </Antd.Select>
+    </div>
   );
 };
 

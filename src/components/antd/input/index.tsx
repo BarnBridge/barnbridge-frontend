@@ -5,9 +5,7 @@ import cx from 'classnames';
 
 import s from './styles.module.scss';
 
-export type InputProps = AntdInputProps & {};
-
-const Input: React.FunctionComponent<InputProps> = props => {
+const Input: React.FunctionComponent<AntdInputProps> = props => {
   const { className, ...inputProps } = props;
 
   return (
