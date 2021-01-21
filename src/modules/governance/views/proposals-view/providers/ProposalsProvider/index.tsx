@@ -94,7 +94,13 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
     }
 
     web3c.daoGovernance.actions.latestProposalIds(wallet.account)
-      .then(proposalId => web3c.daoGovernance.actions.getProposalState(proposalId))
+      .then(proposalId => {
+        if (proposalId === 0) {
+          return Promise.reject();
+        }
+
+        return web3c.daoGovernance.actions.getProposalState(proposalId);
+      })
       .then(proposalState => {
         const hasAlreadyActiveProposal = ![
           APIProposalStateId.CANCELED,
