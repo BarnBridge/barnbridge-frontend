@@ -252,9 +252,8 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
 
                       return (
                         <Form.Item
-                          {...field}
-                          name={[field.name, 'value']}
-                          fieldKey={[field.fieldKey, 'value']}
+                          // name={[field.name, 'value']}
+                          // fieldKey={[field.fieldKey, 'value']}
                           label={(
                             <Grid flow="col" gap={8}>
                               <Small semiBold color="grey500">{param.name} ({param.name})</Small>
