@@ -78,18 +78,11 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
           <Grid flow="row" gap={4}>
             <Small semiBold color="grey500">Creator threshold</Small>
             <Grid flow="col" gap={8}>
-              {proposalCtx.threshold ? (
+              {proposalCtx.threshold !== undefined && (
                 <>
-                  <Icon type="circle-check" />
+                  <Icon type={proposalCtx.threshold ? 'circle-check' : 'circle-cancel'} />
                   <Paragraph type="p1" semiBold color="grey900" loading={proposalCtx.proposal === undefined}>
-                    Above 1%
-                  </Paragraph>
-                </>
-              ) : (
-                <>
-                  <Icon type="circle-cancel" />
-                  <Paragraph type="p1" semiBold color="grey900" loading={proposalCtx.proposal === undefined}>
-                    Below 1%
+                    {proposalCtx.threshold ? 'Above 1%' : 'Below 1%'}
                   </Paragraph>
                 </>
               )}

@@ -28,4 +28,7 @@
 
   --text-color-blue500: #{$color-blue400};
   --text-color-blue500-rgb: #{hexToRGB($color-blue500)};
+
+  --text-color-yellow500: #{$color-yellow500};
+  --text-color-yellow500-rgb: #{hexToRGB($color-yellow500)};
 }

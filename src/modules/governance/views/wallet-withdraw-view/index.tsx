@@ -3,11 +3,11 @@ import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
 import Form from 'components/antd/form';
-import TokenAmount from 'components/custom/token-amount';
 import Slider from 'components/antd/slider';
-import InfoBox from 'components/custom/info-box';
-import GasFeeList from 'components/custom/gas-fee-list';
+import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
+import TokenAmount from 'components/custom/token-amount';
+import GasFeeList from 'components/custom/gas-fee-list';
 
 import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -103,8 +103,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 tooltipPlacement="bottom"
               />
             </Form.Item>
-            <InfoBox
-              text="Withdrawal before the end of the epoch means you can't harvest the rewards." />
+            <Alert message="Withdrawal before the end of the epoch means you can't harvest the rewards." />
           </div>
           <div className={s.rightCol}>
             <Form.Item

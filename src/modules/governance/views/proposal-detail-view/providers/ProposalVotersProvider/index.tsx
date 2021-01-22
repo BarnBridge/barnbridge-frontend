@@ -43,7 +43,6 @@ const ProposalVotersProvider: React.FunctionComponent = props => {
   const [state, setState] = React.useState<ProposalVotersProviderState>(InitialState);
 
   React.useEffect(() => {
-    console.log("AAAAA");
     if (!proposalCtx.proposal?.proposalId) {
       return;
     }

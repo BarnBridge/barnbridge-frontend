@@ -109,7 +109,6 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
           APIProposalStateId.EXPIRED,
         ].includes(proposalState as any);
 
-        console.log(proposalState);
         setState(prevState => ({
           ...prevState,
           hasAlreadyActiveProposal,

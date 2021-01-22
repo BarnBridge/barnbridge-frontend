@@ -3,8 +3,7 @@ import * as Antd from 'antd';
 import { AlertProps as AntdAlertProps } from 'antd/lib/alert';
 import cx from 'classnames';
 
-import { ReactComponent as InfoCircleSvg } from 'resources/svg/icons/info-circle.svg';
-import { ReactComponent as ErrorTriangleSvg } from 'resources/svg/icons/error-triangle.svg';
+import Icon from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -14,15 +13,13 @@ const Alert: React.FunctionComponent<AlertProps> = props => {
   const { className, type = 'info', ...alertProps } = props;
 
   const icon = React.useMemo<React.ReactNode>(() => {
-    switch (props.type) {
-      case 'success':
-        return undefined;
+    switch (type) {
       case 'info':
-        return <InfoCircleSvg />;
+        return <Icon type="info-circle" />;
+      case 'success':
       case 'warning':
-        return undefined;
       case 'error':
-        return <ErrorTriangleSvg />;
+        return undefined;
     }
   }, [type]);
 

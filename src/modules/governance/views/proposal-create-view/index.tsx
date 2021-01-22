@@ -92,8 +92,8 @@ const ProposalCreateView: React.FunctionComponent = () => {
           a.targets.push(c.targetAddress);
 
           if (c.addFunctionCall) {
-            a.signatures.push('cancelProposal(uint256)');
-            a.calldatas.push(encodeABIParams(['uint256'], ['1'])!);
+            a.signatures.push(c.functionSignature!);
+            a.calldatas.push(c.abiFunctionData!);
           } else {
             a.signatures.push('');
             a.calldatas.push('0x');
@@ -153,6 +153,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                 <Form.Item
                   name="description"
                   label="Description"
+                  hint=""
                   rules={[
                     { required: true, message: 'Required' },
                   ]}>
@@ -175,10 +176,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                       return (
                         <Form.Item {...field}>
                           <Grid flow="col" gap={24}>
-                            {getActionStringFor(fieldData.targetAddress!, fieldData.functionName!, '', fieldData.actionValue!)}
-                            {/*<Paragraph type="p1" semiBold>*/}
-                            {/*  Contract.burnFrom(“0xd98CE81cbCa3981A18481...0cAa793B5A49”,420)*/}
-                            {/*</Paragraph>*/}
+                            {/*{getActionStringFor(fieldData.targetAddress!, fieldData.functionName!, '', fieldData.actionValue!)}*/}
                             <PopoverMenu
                               placement="bottomLeft"
                               items={ActionMenuItems}

@@ -10,42 +10,36 @@ import Textarea from 'components/antd/textarea';
 import Select from 'components/antd/select';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Alert from 'components/antd/alert';
+import IF from 'components/custom/if';
 import Grid from 'components/custom/grid';
 import { Heading, Small } from 'components/custom/typography';
 import AddZerosPopup from '../add-zeros-popup';
 
-import Web3Contract, { encodeABIParams, Web3ContractAbiItem } from 'web3/contract';
 import { fetchContractABI } from 'web3/utils';
+import { AbiFragmentType, AbiInterface } from 'web3/abiInterface';
 import { useReload } from 'hooks/useReload';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
-import { Spin } from 'antd';
-
-type FunctionParam = {
-  name: string;
-  type: string;
-  value: string;
-}
 
 export type ProposalActionCreateForm = {
   targetAddress?: string;
   addValueAttribute?: boolean;
   actionValue?: string;
   addFunctionCall?: boolean;
-  functionName?: string;
-  functionMeta?: Web3ContractAbiItem;
-  functionParams: FunctionParam[];
-  contract?: Web3Contract;
+  functionSignature?: string;
+  abiFunctionParams: any;
+  abiParamValues?: string[];
+  abiFunctionData?: string;
 };
 
 const InitialFormValues: ProposalActionCreateForm = {
-  targetAddress: '',
+  targetAddress: '0xED5B6c65140FA8681c3DFf6BA5EFDb7334dff870',
   addValueAttribute: undefined,
   actionValue: undefined,
   addFunctionCall: undefined,
-  functionName: undefined,
-  functionMeta: undefined,
-  functionParams: [],
+  functionSignature: undefined,
+  abiFunctionParams: {},
 };
 
 export type ProposalActionCreateModalProps = ModalProps & {
@@ -53,31 +47,62 @@ export type ProposalActionCreateModalProps = ModalProps & {
   onSubmit: (values: ProposalActionCreateForm) => void;
 };
 
+type ProposalActionCreateModalState = {
+  abiLoading: boolean;
+  abiInterface?: AbiInterface;
+  abiFunction?: AbiFragmentType;
+  submitting: boolean;
+};
+
+const InitialState: ProposalActionCreateModalState = {
+  abiLoading: false,
+  abiInterface: undefined,
+  abiFunction: undefined,
+  submitting: false,
+};
+
 const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateModalProps> = props => {
   const { edit = false } = props;
 
   const [reload] = useReload();
   const [form] = Antd.Form.useForm<ProposalActionCreateForm>();
-  const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [contract, setContract] = React.useState<Web3Contract | undefined>();
-  const [loadingContract, setLoadingContract] = React.useState<boolean>(false);
+  const [state, setState] = useMergeState<ProposalActionCreateModalState>(InitialState);
 
   const [formValues, setFormValues] = React.useState<ProposalActionCreateForm>(InitialFormValues);
 
   async function handleSubmit(values: ProposalActionCreateForm) {
-    setSubmitting(true);
+    const abiParamValues = state.abiFunction?.inputs.map(input => {
+      try {
+        return JSON.parse(values.abiFunctionParams[input.name]);
+      } catch {
+        return values.abiFunctionParams[input.name];
+      }
+    });
+
+    console.log('SUBMIT', { values, abiParamValues });
+    const abiFunctionData = state.abiInterface?.encodeFunctionData(state.abiFunction!, abiParamValues)
+    console.log('SUBMIT', { abiFunctionData });
+
+    setState({
+      submitting: true,
+    });
 
     let cancel = false;
 
     try {
-      await props.onSubmit(values);
+      await props.onSubmit({
+        ...values,
+        abiParamValues,
+        abiFunctionData,
+      });
       form.resetFields();
       cancel = true;
     } catch {
-      //
     }
 
-    setSubmitting(false);
+    setState({
+      submitting: false,
+    });
 
     if (cancel) {
       props.onCancel?.();
@@ -87,25 +112,29 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
   React.useEffect(() => {
     const { addFunctionCall, targetAddress } = formValues;
 
-    setContract(undefined);
+    setState({
+      abiInterface: undefined,
+    });
 
     if (addFunctionCall && targetAddress && Web3.utils.isAddress(targetAddress)) {
-      setLoadingContract(true);
+      setState({
+        abiLoading: true,
+      });
 
       fetchContractABI(targetAddress)
-        .then((results: any[]) => {
-          setContract(new Web3Contract(results, targetAddress, targetAddress));
-          setLoadingContract(false);
+        .then((abi: any[]) => {
+          setState({
+            abiLoading: false,
+            abiInterface: new AbiInterface(abi),
+          });
         })
         .catch(() => {
-          setLoadingContract(true);
+          setState({
+            abiLoading: false,
+          });
         });
     }
   }, [formValues.addFunctionCall, formValues.targetAddress]);
-
-  const selectedFunction = React.useMemo<Web3ContractAbiItem | undefined>(() => {
-    return (contract?.writeFunctions as Array<any>)?.find(fn => fn.name === formValues.functionName);
-  }, [contract, formValues.functionName]);
 
   function handleZerosAdd(fieldPath: string[], count: number) {
     let currentValue = form.getFieldValue(fieldPath);
@@ -126,53 +155,38 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
   }
 
   function handleValuesChange(values: Partial<ProposalActionCreateForm>) {
-    console.log('***', values);
+    const changedField = Object.keys(values)[0];
+
+    if (changedField === 'functionParams' || changedField === 'actionValue') {
+      return;
+    } /// to remove!!!
+
     setFormValues(prevState => ({
       ...prevState,
       ...values,
     }));
 
-    const changedField = Object.keys(values)[0];
-
     switch (changedField) {
       case 'addFunctionCall':
         form.setFieldsValue({
-          functionName: undefined,
-          functionMeta: undefined,
-          functionParams: [],
+          functionSignature: undefined,
+          abiFunctionParams: {},
         });
 
         setFormValues(prevState => ({
           ...prevState,
-          functionName: undefined,
-          functionMeta: undefined,
-          functionParams: [],
+          functionSignature: undefined,
+          abiFunctionParams: {},
         }));
         break;
-      case 'functionName':
-        const functionMeta: Web3ContractAbiItem = (contract?.writeFunctions as Array<any>)?.find(fn => fn.name === values.functionName);
-        const functionParams: any[] = [];
+      case 'functionSignature':
+        const abiFunction = (state.abiInterface?.writableFunctions ?? []).find(fn => fn.format() === values.functionSignature);
 
-        if (functionMeta) {
-          functionMeta.inputs?.forEach(input => {
-            functionParams.push({
-              name: input.name,
-              type: input.type,
-              value: '',
-            } as FunctionParam)
+        if (abiFunction) {
+          setState({
+            abiFunction,
           });
         }
-
-        form.setFieldsValue({
-          functionMeta,
-          functionParams,
-        });
-
-        setFormValues(prevState => ({
-          ...prevState,
-          functionMeta,
-          functionParams,
-        }));
         break;
     }
 
@@ -199,14 +213,14 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             rules={[
               { required: true, message: 'Required' },
             ]}>
-            <Input disabled={submitting} />
+            <Input disabled={state.submitting} />
           </Form.Item>
           <Form.Item
             name="addValueAttribute"
             label="Add a value attribute to your action?">
             <YesNoSelector />
           </Form.Item>
-          {formValues.addValueAttribute && (
+          <IF condition={formValues.addValueAttribute === true}>
             <Form.Item
               name="actionValue"
               label={(
@@ -217,105 +231,102 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
                     onAdd={value => handleZerosAdd(['actionValue'], value)} />
                 </Grid>
               )}
-              rules={[
-                { required: true, message: 'Required' },
-              ]}>
-              <Input disabled={submitting} />
+              rules={[{ required: true, message: 'Required' }]}>
+              <Input disabled={state.submitting} />
             </Form.Item>
-          )}
+          </IF>
           <Form.Item
             name="addFunctionCall"
             label="Add a function call to your action?">
             <YesNoSelector />
           </Form.Item>
-          {formValues.addFunctionCall && (
-            <>
-              <Form.Item
-                name="functionName"
-                label="Select function"
-                rules={[
-                  { required: true, message: 'Required' },
-                ]}>
-                <Select
-                  loading={loadingContract}
-                  disabled={loadingContract || submitting}
-                  options={contract?.writeFunctions.map(fn => ({
-                    label: fn.name!,
-                    value: fn.name!,
-                  })) ?? []} />
-              </Form.Item>
-              {formValues.functionMeta && (
-                <>
-                  <Form.List name="functionParams">
-                    {fields => fields.map(field => {
-                      const param = formValues.functionParams[field.fieldKey];
+          <IF condition={formValues.addFunctionCall === true}>
+            <Form.Item
+              name="functionSignature"
+              label="Select function"
+              rules={[{ required: true, message: 'Required' }]}>
+              <Select
+                loading={state.abiLoading}
+                disabled={state.abiLoading || state.submitting}
+                options={state.abiInterface?.writableFunctions.map(fn => ({
+                  label: fn.format(),
+                  value: fn.format(),
+                })) ?? []} />
+            </Form.Item>
+            <Form.Item name="functionMeta" />
+            {state.abiFunction && (
+              <>
+                {/*<Form.List name="functionParams">*/}
+                {/*  {fields => fields.map(field => {*/}
+                {/*    const param = formValues.functionParams[field.fieldKey];*/}
 
-                      return (
-                        <Form.Item
-                          // name={[field.name, 'value']}
-                          // fieldKey={[field.fieldKey, 'value']}
-                          label={(
-                            <Grid flow="col" gap={8}>
-                              <Small semiBold color="grey500">{param.name} ({param.name})</Small>
-                              {/(u?int\d+)/g.test(param.type) && (
-                                <AddZerosPopup onAdd={value => handleZerosAdd(['functionParams', String(field.fieldKey), 'value'], value)} />
-                              )}
-                            </Grid>
+                {/*    return (*/}
+                {/*      <Form.Item*/}
+                {/*        {...field}*/}
+                {/*        name={[field.name, 'value']}*/}
+                {/*        fieldKey={[field.fieldKey, 'value']}*/}
+                {/*        label={(*/}
+                {/*          <Grid flow="col" gap={8}>*/}
+                {/*            <Small semiBold color="grey500">{param.name} ({param.name})</Small>*/}
+                {/*            {/(u?int\d+)/g.test(param.type) && (*/}
+                {/*              <AddZerosPopup*/}
+                {/*                onAdd={value => handleZerosAdd(['functionParams', String(field.fieldKey), 'value'], value)} />*/}
+                {/*            )}*/}
+                {/*          </Grid>*/}
+                {/*        )}*/}
+                {/*        rules={[*/}
+                {/*          { required: true, message: 'Required' },*/}
+                {/*        ]}>*/}
+                {/*        <Input disabled={state.submitting} placeholder={`${param.name} (${param.type})`} />*/}
+                {/*      </Form.Item>*/}
+                {/*    );*/}
+                {/*  })}*/}
+                {/*</Form.List>*/}
+
+                {state.abiFunction.inputs.map(input => {
+                  return (
+                    <Form.Item
+                      key={input.format()}
+                      name={['abiFunctionParams', input.name]}
+                      label={(
+                        <Grid flow="col" gap={8}>
+                          <Small semiBold color="grey500">{input.name} ({input.type})</Small>
+                          {/(u?int\d+)/g.test(input.type) && (
+                            <AddZerosPopup
+                              onAdd={value => handleZerosAdd(['abiFunctionParams', input.name], value)} />
                           )}
-                          rules={[
-                            { required: true, message: 'Required' },
-                          ]}>
-                          <Input disabled={submitting} placeholder={`${param.name} (${param.type})`} />
-                        </Form.Item>
-                      );
-                    })}
-                  </Form.List>
-                  {/*{formValues.functionParams.map((param, index) => {*/}
-                  {/*  return (*/}
-                  {/*    <Form.Item*/}
-                  {/*      name={['functionParams', index, 'value']}*/}
-                  {/*      fieldKey={index}*/}
-                  {/*      label={(*/}
-                  {/*        <Grid flow="col" gap={8}>*/}
-                  {/*          <Small semiBold color="grey500">{param.name} ({param.name})</Small>*/}
-                  {/*          {/(u?int\d+)/g.test(param.type) && (*/}
-                  {/*            <AddZerosPopup onAdd={value => handleZerosAdd(['functionParams', String(index), 'value'], value)} />*/}
-                  {/*          )}*/}
-                  {/*        </Grid>*/}
-                  {/*      )}*/}
-                  {/*      rules={[*/}
-                  {/*        { required: true, message: 'Required' },*/}
-                  {/*      ]}>*/}
-                  {/*      <Input disabled={submitting} placeholder={`${param.name} (${param.type})`} />*/}
-                  {/*    </Form.Item>*/}
-                  {/*  );*/}
-                  {/*})}*/}
-
-                  {formValues.functionParams.length! > 0 && (
-                    <Form.Item label={`Function type: ${formValues.functionName}`}>
-                      <Textarea
-                        className={s.textarea}
-                        rows={5}
-                        value={`Parameters:\n${JSON.stringify(formValues.functionParams, null, 2)}`}
-                        disabled />
+                        </Grid>
+                      )}
+                      rules={[{ required: true, message: 'Required' }]}>
+                      <Input disabled={state.submitting} placeholder={`${input.name} (${input.type})`} />
                     </Form.Item>
-                  )}
-                  <Form.Item label="Hex data">
-                    {/*<Textarea*/}
-                    {/*  className={s.textarea}*/}
-                    {/*  rows={5}*/}
-                    {/*  placeholder="Fill in the arguments above"*/}
-                    {/*  value={encodeABIParams(*/}
-                    {/*    formValues.functionParams?.map(input => input.type) ?? [],*/}
-                    {/*    formValues.functionParams?.map(input => input.value)) ?? ''}*/}
-                    {/*  disabled />*/}
-                  </Form.Item>
-                </>
-              )}
-            </>
-          )}
+                  );
+                })}
 
-          {formValues.targetAddress && formValues.addFunctionCall && !loadingContract && !contract && (
+                {/*{formValues.functionParams.length! > 0 && (*/}
+                {/*  <Form.Item label={`Function type: ${formValues.functionSignature}`}>*/}
+                {/*    <Textarea*/}
+                {/*      className={s.textarea}*/}
+                {/*      rows={5}*/}
+                {/*      value={`Parameters:\n${JSON.stringify(formValues.functionParams, null, 2)}`}*/}
+                {/*      disabled />*/}
+                {/*  </Form.Item>*/}
+                {/*)}*/}
+                <Form.Item label="Hex data">
+                  {/*<Textarea*/}
+                  {/*  className={s.textarea}*/}
+                  {/*  rows={5}*/}
+                  {/*  placeholder="Fill in the arguments above"*/}
+                  {/*  value={encodeABIParams(*/}
+                  {/*    formValues.functionParams?.map(input => input.type) ?? [],*/}
+                  {/*    formValues.functionParams?.map(input => input.value)) ?? ''}*/}
+                  {/*  disabled />*/}
+                </Form.Item>
+              </>
+            )}
+          </IF>
+
+          {formValues.targetAddress && formValues.addFunctionCall && !state.abiLoading && !state.abiInterface && (
             <Alert
               type="error"
               message="The target address you entered is not a validated contract address. Please check the information you entered and try again" />
@@ -330,7 +341,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
           <div className={s.actions}>
             <Button
               type="default"
-              disabled={submitting}
+              disabled={state.submitting}
               className={s.cancelBtn}
               onClick={props.onCancel}>
               {edit ? 'Cancel Changes' : 'Cancel'}
@@ -338,14 +349,13 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             <Button
               type="primary"
               htmlType="submit"
-              loading={submitting}
+              loading={state.submitting}
               className={s.saveBtn}>
               {edit ? 'Save Changes' : 'Add Action'}
             </Button>
           </div>
         </Form>
       </div>
-
     </Modal>
   );
 };

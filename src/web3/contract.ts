@@ -3,6 +3,7 @@ import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import EventEmitter from 'wolfy87-eventemitter';
 import { AbiItem } from 'web3-utils';
+import * as ethers from 'ethers';
 
 export type BatchContractMethod = {
   method: string;
@@ -25,18 +26,23 @@ export type Web3ContractAbiItem = AbiItem;
 
 export function decodeABIParams(types: any[], hex: string): Record<string, any> | undefined {
   try {
-    const { __length__, ...params } = web3.eth.abi.decodeParameters(types, hex);
-    return params;
-  } catch {
+    let nexHex = hex;
+
+    if (nexHex.indexOf('0x') !== 0) {
+      nexHex = `0x${hex}`;
+    }
+
+    return ethers.utils.defaultAbiCoder.decode(types, nexHex);
+  } catch (e) {
+    console.error("Contract:decodeABIParams", e);
   }
 }
 
 export function encodeABIParams(types: string[], parameters: any[]): string | undefined {
   try {
-    console.log('ENCODE', types, parameters);
-    return web3.eth.abi.encodeParameters(types, parameters);
-  } catch(e) {
-    console.log("ERR", e);
+    return ethers.utils.defaultAbiCoder.encode(types, parameters);
+  } catch (e) {
+    console.error("Contract:encodeABIParams", e);
   }
 }
 
