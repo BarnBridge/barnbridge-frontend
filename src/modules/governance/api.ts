@@ -74,6 +74,18 @@ export enum APIProposalState {
   EXECUTED = 'EXECUTED',
 }
 
+export enum APIProposalStateId {
+  WARMUP = 0,
+  ACTIVE,
+  CANCELED,
+  FAILED,
+  ACCEPTED,
+  QUEUED,
+  GRACE,
+  EXPIRED,
+  EXECUTED,
+}
+
 export const APIProposalStateMap = new Map<APIProposalState, string>([
   [APIProposalState.CREATED, 'Created'],
   [APIProposalState.WARMUP, 'Warm-Up'],
@@ -115,7 +127,7 @@ export function fetchProposals(page: number = 1, limit: number = 10, state?: str
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(({status, ...data}) => {
+    .then(({ status, ...data }) => {
       if (status !== 200) {
         return Promise.reject(status);
       }
@@ -156,7 +168,7 @@ export function fetchProposal(proposalId: number): Promise<APIProposalEntity> {
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(({data, status}) => {
+    .then(({ data, status }) => {
       if (status !== 200) {
         return Promise.reject(status);
       }
@@ -192,7 +204,7 @@ export function fetchProposalVoters(proposalId: number, page: number = 1, limit:
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(({status, ...data}) => {
+    .then(({ status, ...data }) => {
       if (status !== 200) {
         return Promise.reject(status);
       }

@@ -2,6 +2,7 @@ import React from 'react';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 
@@ -42,10 +43,13 @@ const ProposalCancellationCard: React.FunctionComponent = () => {
   }
 
   return (
-    <Card className={s.component} title="Cancellation proposal">
+    <Card
+      title={(
+        <Paragraph type="p1" semiBold color="grey900">Cancellation proposal</Paragraph>
+      )}>
       {!proposalCtx.canceled ? (
-        <>
-          <Paragraph type="p1">
+        <Grid flow="row" gap={24}>
+          <Paragraph type="p1" color="grey900">
             Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis
             enim velit mollit. Exercitation veniam consequat sunt nostrud amet.Amet minim mollit non deserunt ullamco
             est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam
@@ -53,17 +57,16 @@ const ProposalCancellationCard: React.FunctionComponent = () => {
           </Paragraph>
           <Button
             type="default"
-            className={s.cancelBtn}
             loading={state.cancelling}
             onClick={handleProposalCancellation}>
             Initiate cancellation proposal
           </Button>
-        </>
+        </Grid>
       ) : (
-        <>
-          <Paragraph type="p1">Cancellation proposal currently in progress.</Paragraph>
+        <Grid flow="row" gap={24}>
+          <Paragraph type="p1" color="grey900">Cancellation proposal currently in progress.</Paragraph>
           <Button type="primary">View cancellation proposal</Button>
-        </>
+        </Grid>
       )}
     </Card>
   );

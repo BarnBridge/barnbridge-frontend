@@ -5,18 +5,30 @@ import cx from 'classnames';
 
 import s from './styles.module.scss';
 
-export type CardProps = AntdCardProps & {};
+export type CardProps = AntdCardProps & {
+  noPaddingBody?: boolean;
+};
 
 const Card: React.FunctionComponent<CardProps> = props => {
-  const { className, ...cardProps } = props;
+  const { className, noPaddingBody, ...cardProps } = props;
 
   return (
     <Antd.Card
-      className={cx(s.component, className)}
+      className={cx(s.component, className, noPaddingBody && s.noPaddingBody )}
       bordered={false}
       {...cardProps}>
     </Antd.Card>
   );
 };
 
-export default Card;
+const CardDelimiter: React.FunctionComponent = () => (
+  <div className={s.delimiter} />
+);
+
+export type StaticCardProps = {
+  Delimiter: React.FunctionComponent;
+};
+
+(Card as any as StaticCardProps).Delimiter = CardDelimiter;
+
+export default Card as React.FunctionComponent<CardProps> & StaticCardProps;

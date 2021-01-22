@@ -1,6 +1,8 @@
 import React from 'react';
 
-import { APILiteProposalEntity, fetchProposals } from 'modules/governance/api';
+import { APILiteProposalEntity, APIProposalState, APIProposalStateId, fetchProposals } from 'modules/governance/api';
+import { useWallet } from '../../../../../../wallets/wallet';
+import { useWeb3Contracts } from '../../../../../../web3/contracts';
 
 type ProposalsProviderState = {
   proposals: APILiteProposalEntity[];
@@ -10,6 +12,7 @@ type ProposalsProviderState = {
   loading: boolean;
   stateFilter?: string;
   searchFilter?: string;
+  hasAlreadyActiveProposal?: boolean;
 };
 
 export type ProposalsContextType = ProposalsProviderState & {
@@ -26,6 +29,7 @@ const InitialState: ProposalsProviderState = {
   loading: false,
   stateFilter: undefined,
   searchFilter: undefined,
+  hasAlreadyActiveProposal: undefined,
 };
 
 const ProposalsContext = React.createContext<ProposalsContextType>({
@@ -47,6 +51,8 @@ export type ProposalsProviderProps = {
 const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props => {
   const { stateFilter, searchFilter, children } = props;
 
+  const wallet = useWallet();
+  const web3c = useWeb3Contracts();
   const [state, setState] = React.useState<ProposalsProviderState>(InitialState);
 
   React.useEffect(() => {
@@ -81,6 +87,34 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
         }));
       });
   }, [state.page, state.stateFilter, state.searchFilter]);
+
+  React.useEffect(() => {
+    if (!wallet.account) {
+      return;
+    }
+
+    web3c.daoGovernance.actions.latestProposalIds(wallet.account)
+      .then(proposalId => {
+        if (proposalId === 0) {
+          return Promise.reject();
+        }
+
+        return web3c.daoGovernance.actions.getProposalState(proposalId);
+      })
+      .then(proposalState => {
+        const hasAlreadyActiveProposal = ![
+          APIProposalStateId.CANCELED,
+          APIProposalStateId.EXECUTED,
+          APIProposalStateId.FAILED,
+          APIProposalStateId.EXPIRED,
+        ].includes(proposalState as any);
+
+        setState(prevState => ({
+          ...prevState,
+          hasAlreadyActiveProposal,
+        }));
+      });
+  }, [wallet.account]);
 
   function changeStateFilter(stateFilter: string) {
     setState(prevState => ({

@@ -33,6 +33,10 @@
     color: var(--color-text);
   }
 
+  :global(.ant-table-tbody .ant-table-row:hover .ant-table-cell) {
+    background-color: var(--color-overlay-bg);
+  }
+
   :global(.ant-table-footer) {
     background-color: var(--color-card-bg);
 
@@ -47,11 +51,30 @@
     margin: 0;
     border: 1px solid var(--color-border);
     border-radius: 0 0 4px 4px;
-  }
 
-  :global(.ant-pagination .ant-pagination-total-text) {
-    @include font-p2-semi-bold;
-    color: var(--color-text);
-    width: 100%;
+    :global(.ant-pagination-total-text) {
+      @include font-p2-semi-bold;
+      color: var(--color-text);
+      width: 100%;
+    }
+
+    :global(.ant-pagination-item-link) {
+      background: none;
+      border: none;
+      color: var(--text-color-grey300);
+    }
+
+    :global(.ant-pagination-item) {
+      background: none;
+      border: none;
+
+      &:global(.ant-pagination-item-active) > a {
+        color: var(--text-color-red500);
+      }
+
+      > a {
+        color: var(--text-color-grey900);
+      }
+    }
   }
 }

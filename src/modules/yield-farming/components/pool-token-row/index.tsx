@@ -15,9 +15,9 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { useEthGasPrice } from 'context/useEthGas';
 
-import InfoBox from 'components/custom/info-box';
 import InfoTooltip from 'components/antd/info-tooltip';
 import NumericInput from 'components/custom/numeric-input';
+import Alert from 'components/antd/alert';
 
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
 import { ReactComponent as ChevronRightSvg } from 'resources/svg/icons/chevron-right.svg';
@@ -387,12 +387,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 onChange={handleSliderChange}
               />
               {props.type === 'deposit' && (
-                <InfoBox
-                  text="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+                <Alert message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
               )}
               {props.type === 'withdraw' && (
-                <InfoBox
-                  text="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+                <Alert message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
               )}
             </div>
           </Antd.Col>

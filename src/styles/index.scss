@@ -1,22 +1,9 @@
+//@import "~antd/dist/antd.css";
+@import "antd.css";
+@import "mixin";
+@import "text";
 @import "default";
 @import "dark";
-
-@font-face {
-  font-family: Montserrat;
-  src: url('../resources/fonts/Montserrat-Regular.ttf');
-}
-
-@font-face {
-  font-family: Montserrat;
-  font-weight: 600;
-  src: url('../resources/fonts/Montserrat-SemiBold.ttf');
-}
-
-@font-face {
-  font-family: Montserrat;
-  font-weight: 700;
-  src: url('../resources/fonts/Montserrat-Bold.ttf');
-}
 
 body {
   margin: 0;
@@ -24,8 +11,8 @@ body {
   'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color: var(--color-text);
   background-color: var(--color-body-bg);
+  color: var(--color-text);
 }
 
 * {
@@ -199,8 +186,4 @@ p {
   :root {
     --content-padding: 32px 8px;
   }
-}
-
-.text-center {
-  text-align: center;
 }

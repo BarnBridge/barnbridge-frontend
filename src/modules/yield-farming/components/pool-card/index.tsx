@@ -209,11 +209,11 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
   function handleStaking() {
     if (stableToken) {
-      history.push('/pools/stable');
+      history.push('/yield-farming/stable');
     } else if (unilpToken) {
-      history.push('/pools/unilp');
+      history.push('/yield-farming/unilp');
     } else if (bondToken) {
-      history.push('/pools/bond');
+      history.push('/yield-farming/bond');
     }
   }
 

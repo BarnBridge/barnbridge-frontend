@@ -2,8 +2,8 @@ import Web3 from 'web3';
 import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import EventEmitter from 'wolfy87-eventemitter';
-import { getWSRpcUrl } from 'web3/utils';
 import { AbiItem } from 'web3-utils';
+import * as ethers from 'ethers';
 
 export type BatchContractMethod = {
   method: string;
@@ -13,7 +13,11 @@ export type BatchContractMethod = {
   onError?: (err: Error) => any;
 };
 
-export const DEFAULT_CONTRACT_PROVIDER = new Web3.providers.WebsocketProvider(getWSRpcUrl());
+export const WEB3_RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL);
+
+export const DEFAULT_CONTRACT_PROVIDER = WEB3_RPC_URL.indexOf('wss://') === 0
+  ? new Web3.providers.WebsocketProvider(WEB3_RPC_URL)
+  : new Web3.providers.HttpProvider(WEB3_RPC_URL);
 
 const WEB3_ERROR_VALUE = 3.9638773911973445e+75;
 const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
@@ -22,16 +26,23 @@ export type Web3ContractAbiItem = AbiItem;
 
 export function decodeABIParams(types: any[], hex: string): Record<string, any> | undefined {
   try {
-    const { __length__, ...params } = web3.eth.abi.decodeParameters(types, hex);
-    return params;
-  } catch {
+    let nexHex = hex;
+
+    if (nexHex.indexOf('0x') !== 0) {
+      nexHex = `0x${hex}`;
+    }
+
+    return ethers.utils.defaultAbiCoder.decode(types, nexHex);
+  } catch (e) {
+    console.error("Contract:decodeABIParams", e);
   }
 }
 
 export function encodeABIParams(types: string[], parameters: any[]): string | undefined {
   try {
-    return web3.eth.abi.encodeParameters(types, parameters);
-  } catch {
+    return ethers.utils.defaultAbiCoder.encode(types, parameters);
+  } catch (e) {
+    console.error("Contract:encodeABIParams", e);
   }
 }
 
@@ -152,13 +163,23 @@ class Web3Contract extends EventEmitter {
         reject(err);
       };
 
-      contractMethod(...methodArgs)
+      let pr = contractMethod(...methodArgs)
         ?.[type](sendArgs, async (err: Error) => {
         if (err) {
           reject(err);
         }
-      })
-        .then(resolve)
+      });
+
+      if (type === 'send') {
+        pr = pr.on('sending', (...args: any[]) => console.log('sending', args))
+          .on('sent', (...args: any[]) => console.log('sent', args))
+          .on('transactionHash', (...args: any[]) => console.log('transactionHash', args))
+          .on('receipt', (...args: any[]) => console.log('receipt', args))
+          .on('confirmation', (...args: any[]) => console.log('confirmation', args))
+          .on('error', (...args: any[]) => console.log('error', args))
+      }
+
+      pr.then(resolve)
         .catch(onError);
     });
   }

@@ -229,6 +229,11 @@ function getReceiptCall(proposalId: number, voterAddress: string): Promise<GetRe
     }));
 }
 
+function latestProposalIdsCall(address: string): Promise<number> {
+  return Contract.call('latestProposalIds', [address])
+    .then(Number);
+}
+
 function proposalTimeLeft(data: CommonDataType, state: ProposalState, createdAt: number): number | undefined {
   const nowUnix = Date.now().valueOf();
 
@@ -278,6 +283,7 @@ export type DAOGovernanceContract = DAOGovernanceContractData & {
     getProposalData(proposalId: number): Promise<ProposalDataType>;
     cancellationProposals(proposalId: number): Promise<CancellationProposalsCallResult>;
     getReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult>;
+    latestProposalIds(address?: string): Promise<number>;
     proposalTimeLeft(state: ProposalState, createdAt: number): number | undefined;
     castVote(gasPrice: number, proposalId: number, support: boolean): Promise<any>;
     cancelVote(gasPrice: number, proposalId: number): Promise<any>;
@@ -334,6 +340,9 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       getReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult> {
         const address = voterAddress ?? wallet?.account;
         return address ? getReceiptCall(proposalId, address) : Promise.reject();
+      },
+      latestProposalIds(address: string): Promise<number> {
+        return address ? latestProposalIdsCall(address) : Promise.reject();
       },
       proposalTimeLeft(state: ProposalState, createdAt: number): number | undefined {
         return proposalTimeLeft(data, state, createdAt);

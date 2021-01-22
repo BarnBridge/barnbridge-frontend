@@ -1,42 +1,61 @@
-@import "../../../styles/mixin";
+@import "src/styles/mixin";
 
 .component {
-  display: inline-grid;
-  grid-template-columns: 24px auto;
-  grid-gap: 24px;
-  align-items: center;
-  padding: 16px 24px 16px 16px;
+  padding: 16px 24px;
   border-radius: 4px;
-  @include font-p2-semi-bold;
 
-  &:global(.ant-alert-info) {
-    background: rgba(79, 106, 230, 0.04);
-    border: 1px solid rgba(79, 106, 230, 0.32);
-
-    :global(.ant-alert-icon) svg,
-    :global(.ant-alert-message) {
-      color: #4f6ae5;
-    }
-  }
-
-  &:global(.ant-alert-error) {
-    background: rgba(255, 67, 57, 0.04);
-    border: 1px solid rgba(255, 67, 57, 0.32);
-
-    :global(.ant-alert-icon) svg,
-    :global(.ant-alert-message) {
-      color: #ff4339;
-    }
-  }
-
-  :global(.ant-alert-icon) {
-    position: relative;
-    top: 0;
-    left: 0;
+  > :global(.ant-alert-icon) {
+    margin-right: 12px;
+    width: 24px;
+    height: 24px;
 
     svg {
       width: 24px;
       height: 24px;
+    }
+  }
+
+  > :global(.ant-alert-content) {
+    @include font-p2-semi-bold;
+  }
+
+  &:global(.ant-alert-info) {
+    background: rgba(var(--text-color-blue500-rgb), 0.04);
+    border: 1px solid rgba(var(--text-color-blue500-rgb), 0.32);
+
+    > :global(.ant-alert-icon),
+    > :global(.ant-alert-content .ant-alert-message) {
+      color: var(--text-color-blue500);
+    }
+  }
+
+  &:global(.ant-alert-success) {
+    background: rgba(var(--text-color-green500-rgb), 0.04);
+    border: 1px solid rgba(var(--text-color-green500-rgb), 0.32);
+
+    > :global(.ant-alert-icon) svg,
+    > :global(.ant-alert-content .ant-alert-message) {
+      color: var(--text-color-green500);
+    }
+  }
+
+  &:global(.ant-alert-warning) {
+    background: rgba(var(--text-color-yellow500-rgb), 0.04);
+    border: 1px solid rgba(var(--text-color-yellow500-rgb), 0.32);
+
+    > :global(.ant-alert-icon) svg,
+    > :global(.ant-alert-content .ant-alert-message) {
+      color: var(--text-color-yellow500);
+    }
+  }
+
+  &:global(.ant-alert-error) {
+    background: rgba(var(--text-color-red500-rgb), 0.04);
+    border: 1px solid rgba(var(--text-color-red500-rgb), 0.32);
+
+    > :global(.ant-alert-icon) svg,
+    > :global(.ant-alert-content .ant-alert-message) {
+      color: var(--text-color-red500);
     }
   }
 }

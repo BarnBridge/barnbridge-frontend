@@ -2,6 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 
 import { ReactComponent as ArrowCircleRightIcon } from 'resources/svg/icons/arrow-circle-right.svg';
+import { ReactComponent as ArrowLeftIcon } from 'resources/svg/icons/arrow-left.svg';
 import { ReactComponent as BellIcon } from 'resources/svg/icons/bell.svg';
 import { ReactComponent as ChevronRightIcon } from 'resources/svg/icons/chevron-right.svg';
 import { ReactComponent as ChevronTopIcon } from 'resources/svg/icons/chevron-top.svg';
@@ -23,6 +24,7 @@ import { ReactComponent as NavWalletIcon } from 'resources/svg/icons/nav-wallet.
 import { ReactComponent as NetworkIcon } from 'resources/svg/icons/network.svg';
 import { ReactComponent as PercentageIcon } from 'resources/svg/icons/percentage.svg';
 import { ReactComponent as PlusCircleIcon } from 'resources/svg/icons/plus-circle.svg';
+import { ReactComponent as PlusSquareIcon } from 'resources/svg/icons/plus-square.svg';
 import { ReactComponent as RibbonIcon } from 'resources/svg/icons/ribbon.svg';
 import { ReactComponent as ThemeMoonIcon } from 'resources/svg/icons/theme-moon.svg';
 import { ReactComponent as ThemeSunIcon } from 'resources/svg/icons/theme-sun.svg';
@@ -35,10 +37,14 @@ import { ReactComponent as SUSDIcon } from 'resources/svg/tokens/susd.svg';
 import { ReactComponent as UniswapIcon } from 'resources/svg/tokens/uniswap.svg';
 import { ReactComponent as USDCIcon } from 'resources/svg/tokens/usdc.svg';
 
+import { ReactComponent as LogoIcon } from 'resources/svg/logo/logo.svg';
+import { ReactComponent as BarnBridgeIcon } from 'resources/svg/logo/barnbridge.svg';
+
 import s from './styles.module.scss';
 
 export type IconType =
   'arrow-circle-right'
+  | 'arrow-left'
   | 'bell'
   | 'chevron-right'
   | 'chevron-top'
@@ -60,6 +66,7 @@ export type IconType =
   | 'network'
   | 'percentage'
   | 'plus-circle'
+  | 'plus-square'
   | 'ribbon'
   | 'theme-moon'
   | 'theme-sun'
@@ -69,13 +76,16 @@ export type IconType =
   | 'dai'
   | 'susd'
   | 'uniswap'
-  | 'usdc';
+  | 'usdc'
+  | 'logo'
+  | 'barn-bridge';
 
 type SvgComponent = React.FunctionComponent<React.SVGProps<SVGSVGElement>> | undefined;
 
 const IconsMap: Map<IconType, SvgComponent> = new Map([
   // icons
   ['arrow-circle-right', ArrowCircleRightIcon],
+  ['arrow-left', ArrowLeftIcon],
   ['bell', BellIcon],
   ['chevron-right', ChevronRightIcon],
   ['chevron-top', ChevronTopIcon],
@@ -97,6 +107,7 @@ const IconsMap: Map<IconType, SvgComponent> = new Map([
   ['network', NetworkIcon],
   ['percentage', PercentageIcon],
   ['plus-circle', PlusCircleIcon],
+  ['plus-square', PlusSquareIcon],
   ['ribbon', RibbonIcon],
   ['theme-moon', ThemeMoonIcon],
   ['theme-sun', ThemeSunIcon],
@@ -108,23 +119,27 @@ const IconsMap: Map<IconType, SvgComponent> = new Map([
   ['susd', SUSDIcon],
   ['uniswap', UniswapIcon],
   ['usdc', USDCIcon],
+  // logos
+  ['logo', LogoIcon],
+  ['barn-bridge', BarnBridgeIcon],
 ]);
 
 export type IconProps = {
+  className?: string;
   type: IconType;
-  size?: [number, number];
   color?: string;
+  width?: number | 'auto';
+  height?: number | 'auto';
 };
 
 const Icon: React.FunctionComponent<IconProps> = props => {
-  const { type, size, color } = props;
-  const [width = 24, height = 24] = size ?? [];
+  const { className, type, color, width = 24, height = 24 } = props;
 
   const IconComponent = IconsMap.get(type);
 
   return IconComponent ? (
     <IconComponent
-      className={cx(s.component, color && `clr-${color}`)}
+      className={cx(s.component, color && `clr-${color}`, className)}
       style={{ width, height }} />
   ) : null;
 };

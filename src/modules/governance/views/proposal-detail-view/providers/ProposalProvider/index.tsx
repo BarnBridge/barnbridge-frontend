@@ -8,12 +8,14 @@ import ExternalLink from 'components/custom/externalLink';
 import { Label, Paragraph, Small } from 'components/custom/typography';
 
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { getEtherscanAddressUrl, ZERO_BIG_NUMBER } from 'web3/utils';
+import { getEtherscanAddressUrl, shortenAddr, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { decodeABIParams } from 'web3/contract';
 import { GetReceiptCallResult } from 'web3/contracts/daoGovernance';
 import { useWallet } from 'wallets/wallet';
 import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
+import { useReload } from '../../../../../../hooks/useReload';
+import { AbiInterface } from '../../../../../../web3/abiInterface';
 
 export type ProposalProviderState = {
   proposal?: APIProposalEntity;
@@ -27,6 +29,7 @@ export type ProposalProviderState = {
 };
 
 export type ProposalContextType = ProposalProviderState & {
+  reload(): void;
   cancelProposal(): Promise<any>;
   startCancellationProposal(): Promise<any>;
   queueForExecution(): Promise<any>;
@@ -38,6 +41,7 @@ const InitialState: ProposalProviderState = {};
 
 const ProposalContext = React.createContext<ProposalContextType>({
   ...InitialState,
+  reload: () => undefined,
   cancelProposal: () => Promise.reject(),
   startCancellationProposal: () => Promise.reject(),
   queueForExecution: () => Promise.reject(),
@@ -58,54 +62,74 @@ export function getActionString(proposal: APIProposalEntity, index: number) {
   const calldata = proposal.calldatas[index];
   const value = proposal.values[index];
 
-  const match = signature.match(/(?:\w+\s*)/gm);
+  return getActionStringFor(target, signature, calldata, value);
+}
 
-  if (!match) {
-    return 'Invalid action';
-  }
-
-  const [methodName, ...methodTypes] = match;
-  const params = Object.values(decodeABIParams(methodTypes, calldata) ?? {});
+export function getActionStringFor(target: string, signature: string, calldata: string, value: string) {
+  const functionFragment = AbiInterface.getFunctionFragmentFrom(signature);
+  const functionParamValues = AbiInterface.decodeFunctionData(functionFragment, calldata);
 
   return (
-    <>
-      <Antd.Tooltip title={(
-        <Grid flow="row" gap={12}>
-          <Grid flow="row" gap={4} align="center">
-            <Label type="lb2" bold color="grey900">Contract address:</Label>
-            <Small semiBold color="grey500" wrap>{target}</Small>
-          </Grid>
-
-          <Grid flow="row" gap={4} align="center">
-            <Label type="lb2" bold color="grey900">Function signature:</Label>
-            <Small semiBold color="grey500" wrap>{signature}</Small>
-          </Grid>
-
-          <Grid flow="row" gap={4} align="center">
-            <Label type="lb2" bold color="grey900">Function arguments:</Label>
-            {params.map((param, index) => (
-              <Grid flow="col" gap={8} align="center">
-                {index + 1}.
-                <Small semiBold color="grey500" ellipsis>"{param}"</Small>
-              </Grid>
-            ))}
-          </Grid>
+    <Antd.Tooltip title={(
+      <Grid flow="row" gap={12}>
+        <Grid flow="row" gap={4} align="center">
+          <Label type="lb2" bold color="grey900">Contract address:</Label>
+          <Small semiBold color="grey500" wrap>{target}</Small>
         </Grid>
-      )}>
-        <ExternalLink href={`${getEtherscanAddressUrl(target)}#writeContract`}>
-          <Grid flow="col" wrap>
-            <Paragraph type="p1" semiBold color="blue500">Contract</Paragraph>
-            <Paragraph type="p1" color="red500">.{methodName}(...)</Paragraph>
+
+        {value !== '0' && (
+          <Grid flow="row" gap={4} align="center">
+            <Label type="lb2" bold color="grey900">Action value:</Label>
+            <Small semiBold color="grey500" wrap>{value}</Small>
           </Grid>
-        </ExternalLink>
-      </Antd.Tooltip>
-    </>
+        )}
+
+        <Grid flow="row" gap={4} align="center">
+          <Label type="lb2" bold color="grey900">Function signature:</Label>
+          <Small semiBold color="grey500" wrap>{signature}</Small>
+        </Grid>
+
+        <Grid flow="row" gap={4} align="center">
+          <Label type="lb2" bold color="grey900">Function arguments:</Label>
+          {functionParamValues.map((param, index) => {
+            let paramValue = param;
+
+            if (Array.isArray(paramValue)) {
+              paramValue = JSON.stringify(paramValue, null, 2);
+            } else if (typeof paramValue?.toString === 'function') {
+              paramValue = paramValue.toString();
+            } else {
+              paramValue = JSON.stringify(paramValue, null, 2);
+            }
+
+            const { type } = functionFragment.inputs[index];
+
+            return (
+              <Grid key={index} flow="col" gap={8} align="center">
+                {index + 1}. | {type} |
+                <Small semiBold color="grey500" wrap>
+                  {paramValue}
+                </Small>
+              </Grid>
+            );
+          })}
+        </Grid>
+      </Grid>
+    )}>
+      <ExternalLink href={`${getEtherscanAddressUrl(target)}#writeContract`}>
+        <Grid flow="col" wrap>
+          <Paragraph type="p1" semiBold color="blue500">{shortenAddr(target)}</Paragraph>
+          <Paragraph type="p1" color="red500">.{signature}</Paragraph>
+        </Grid>
+      </ExternalLink>
+    </Antd.Tooltip>
   );
 }
 
 const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props => {
   const { proposalId, children } = props;
 
+  const [reload, version] = useReload();
   const history = useHistory();
   const wallet = useWallet();
   const web3c = useWeb3Contracts();
@@ -137,7 +161,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
 
         history.push('/governance/proposals');
       });
-  }, [proposalId]);
+  }, [proposalId, version]);
 
   useAsyncEffect(async () => {
     if (!state.proposal) {
@@ -241,6 +265,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
   return (
     <ProposalContext.Provider value={{
       ...state,
+      reload,
       cancelProposal,
       startCancellationProposal,
       queueForExecution,

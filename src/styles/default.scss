@@ -18,6 +18,8 @@
   --text-color-red500-rgb: #{hexToRGB($color-red500)};
 
   --text-color-grey900: #{$color-grey900};
+  --text-color-grey900-rgb: #{hexToRGB($color-grey900)};
+
   --text-color-grey500: #{$color-grey500};
   --text-color-grey300: #{$color-grey300};
 
@@ -26,4 +28,7 @@
 
   --text-color-blue500: #{$color-blue500};
   --text-color-blue500-rgb: #{hexToRGB($color-blue500)};
+
+  --text-color-yellow500: #{$color-yellow500};
+  --text-color-yellow500-rgb: #{hexToRGB($color-yellow500)};
 }

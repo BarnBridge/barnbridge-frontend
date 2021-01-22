@@ -1,82 +1,121 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { RadioGroupProps, RadioChangeEvent } from 'antd/lib/radio';
-import cx from 'classnames';
 
-import s from './styles.module.scss';
+import RadioButton from 'components/antd/radio-button';
+import Grid from 'components/custom/grid';
+import { Paragraph } from 'components/custom/typography';
 
-export type GasFeeListProps = RadioGroupProps & {
-  className?: string;
+import useMergeState from 'hooks/useMergeState';
+
+type GasFeeOption = {
+  key: string;
+  name: string;
+  value: number;
 };
 
-function fetchGasPrice() {
-  return fetch('https://ethgasstation.info/api/ethgasAPI.json')
-    .then(result => result.json())
-    .then(result => ({
-      fastest: Math.round(result.fastest / 10),
-      fast: Math.round(result.fast / 10),
-      average: Math.round(result.average / 10),
-      safeLow: Math.round(result.safeLow / 10),
-    }));
-}
+type GasFeeListState = {
+  options: GasFeeOption[];
+  loading: boolean;
+  selected?: GasFeeOption;
+};
+
+export type GasFeeListProps = RadioGroupProps & {
+  value?: GasFeeOption;
+  onChange?: (value: GasFeeOption) => void;
+};
 
 const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
   const { className, value, onChange, ...groupProps } = props;
-  const [gasOptions, setGasOptions] = React.useState<[string, number][]>([]);
+
+  const [state, setState] = useMergeState<GasFeeListState>({
+    options: [],
+    loading: false,
+    selected: undefined,
+  });
 
   React.useEffect(() => {
-    fetchGasPrice()
-      .then(prices => {
-        setGasOptions([
-          ['Very fast', prices.fastest],
-          ['Fast', prices.fast],
-          ['Standard', prices.average],
-          ['Slow', prices.safeLow],
-        ]);
+    setState({
+      loading: true,
+    });
+
+    fetch('https://ethgasstation.info/api/ethgasAPI.json')
+      .then(result => result.json())
+      .then(result => {
+        const options = [
+          {
+            key: 'fastest',
+            name: 'Very fast',
+            value: Math.round(result.fastest / 10),
+          },
+          {
+            key: 'fast',
+            name: 'Fast',
+            value: Math.round(result.fast / 10),
+          },
+          {
+            key: 'average',
+            name: 'Standard',
+            value: Math.round(result.average / 10),
+          },
+          {
+            key: 'safeLow',
+            name: 'Slow',
+            value: Math.round(result.safeLow / 10),
+          },
+        ];
+
+        setState({
+          loading: false,
+          options,
+        });
+
+        props.onChange?.(options[2]);
+      })
+      .catch(() => {
+        setState({
+          loading: false,
+        });
       });
   }, []);
 
   function handleChange(ev: RadioChangeEvent) {
-    const opt = gasOptions.find(opt => opt[0] === ev.target.value);
-
-    if (opt) {
-      props.onChange?.({
-        ...ev,
-        target: {
-          ...ev.target,
-          value: opt[1],
-        },
-      });
-    }
+    props.onChange?.(ev.target.value);
   }
 
-  const selectedValue = React.useMemo(() => {
-    const opt = gasOptions.find(opt => opt[1] === value);
-
-    if (opt) {
-      return opt[0];
-    }
-
-    return undefined;
-  }, [value, gasOptions]);
+  React.useEffect(() => {
+    setState({
+      selected: value,
+    });
+  }, [value]);
 
   return (
     <Antd.Radio.Group
-      className={cx(s.group, className)}
+      className={className}
+      style={{ width: '100%' }}
       {...groupProps}
-      value={selectedValue}
+      value={state.selected}
       onChange={handleChange}>
-      {gasOptions.map(([label, value]) => (
-        <Antd.Radio.Button key={label} value={label} className={s.option}>
-          <div className={s.wrap}>
-            <div className={s.info}>
-              <label>{label}</label>
-              <div><strong>{value}</strong> Gwei</div>
-            </div>
-            <div className={s.selector} />
-          </div>
-        </Antd.Radio.Button>
-      ))}
+      {state.loading
+        ? <Antd.Spin />
+        : (
+          <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)" >
+            {state.options.map(option => (
+              <RadioButton
+                key={option.key}
+                label={
+                  <Paragraph type="p1" semiBold color="grey900">{option.name}</Paragraph>
+                }
+                hint={
+                  <Grid flow="col" gap={4}>
+                    <Paragraph type="p1" semiBold color="grey900">{option.value}</Paragraph>
+                    <Paragraph type="p2" color="grey500">Gwei</Paragraph>
+                  </Grid>
+                }
+                value={option} />
+            ))}
+          </Grid>
+        )}
     </Antd.Radio.Group>
   );
 };

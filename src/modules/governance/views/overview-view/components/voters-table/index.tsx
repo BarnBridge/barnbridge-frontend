@@ -1,8 +1,8 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import * as Antd from 'antd';
 
+import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
@@ -10,9 +10,6 @@ import { Paragraph, Small } from 'components/custom/typography';
 
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
 import { formatBigValue } from 'web3/utils';
-
-import s from './styles.module.scss';
-import Card from '../../../../../../components/antd/card';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
@@ -22,7 +19,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
     ),
     render: (value: string) => (
       <Grid flow="col" gap={16} align="center">
-        <Identicon className={s.identicon} address={value} />
+        <Identicon address={value} width={32} height={32} />
         <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
           {value}
         </Paragraph>
@@ -98,12 +95,14 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
   }, [page, pageSize]);
 
   return (
-    <Card>
-      <Antd.Table<APIVoterEntity>
+    <Card
+      title={(
+        <Paragraph type="p1" semiBold color="grey900">Voter weights</Paragraph>
+      )}
+      noPaddingBody>
+      <Table<APIVoterEntity>
         className={className}
-        title={() => (
-          <Paragraph type="p1" semiBold color="grey900">Voter weights</Paragraph>
-        )}
+        bordered={false}
         columns={Columns}
         dataSource={voters}
         rowKey="address"

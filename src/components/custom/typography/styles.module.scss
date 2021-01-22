@@ -2,8 +2,7 @@
 
 h1.heading {
   display: block;
-  width: fit-content;
-  height: fit-content;
+  width: auto;
   @include font-h1-regular;
 
   &.bold {
@@ -22,8 +21,7 @@ h1.heading {
 
 h2.heading {
   display: block;
-  width: fit-content;
-  height: fit-content;
+  width: auto;
   @include font-h2-regular;
 
   &.bold {
@@ -42,8 +40,7 @@ h2.heading {
 
 h3.heading {
   display: block;
-  width: fit-content;
-  height: fit-content;
+  width: auto;
   @include font-h3-regular;
 
   &.bold {
@@ -61,8 +58,7 @@ h3.heading {
 }
 
 .paragraph {
-  width: fit-content;
-  height: fit-content;
+  width: auto;
 
   &.p1 {
     @include font-p1-regular;
@@ -101,8 +97,7 @@ h3.heading {
 
 .label {
   display: block;
-  width: fit-content;
-  height: fit-content;
+  width: auto;
 
   &.lb1 {
     @include font-lb1-regular;
@@ -140,8 +135,7 @@ h3.heading {
 }
 
 .small {
-  width: fit-content;
-  height: fit-content;
+  width: auto;
   @include font-sm-regular;
 
   &.bold {
@@ -156,12 +150,4 @@ h3.heading {
     margin: 2px 0;
     height: var(--font-size-sm);
   }
-}
-
-.ellipsis {
-  @include text-ellipsis;
-}
-
-.wrap {
-  @include text-wrap;
 }

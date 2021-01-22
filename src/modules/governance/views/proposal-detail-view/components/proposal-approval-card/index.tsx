@@ -10,7 +10,10 @@ const ProposalApprovalCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
   return (
-    <Card title="Approval">
+    <Card
+      title={(
+        <Paragraph type="p1" semiBold color="grey900">Approval</Paragraph>
+      )}>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
           <Paragraph type="p1" semiBold color="grey900">
@@ -23,8 +26,8 @@ const ProposalApprovalCard: React.FunctionComponent = () => {
         <Progress
           percent={proposalCtx.forRate}
           acceptance={proposalCtx.proposal?.acceptanceThreshold}
-          strokeColor="var(--bg-color-red500)"
-          trailColor="rgba(0, 211, 149, 0.16)" />
+          strokeColor="var(--text-color-red500)"
+          trailColor="rgba(var(--text-color-red500-rgb), .16)" />
       </Grid>
     </Card>
   );

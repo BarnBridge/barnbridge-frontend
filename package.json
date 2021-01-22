@@ -8,7 +8,7 @@
     "build": "GENERATE_SOURCEMAP=false node ./scripts/build-non-split.js",
     "start": "react-scripts start",
     "start:prod": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.production.local",
-    "lessc": "lessc src/styles/antd.less src/antd.css -js",
+    "lessc": "lessc src/styles/antd.less src/styles/antd.css -js",
     "import:abi": "node tools/import_abi.js"
   },
   "eslintConfig": {

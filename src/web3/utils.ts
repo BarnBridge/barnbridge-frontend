@@ -12,32 +12,7 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
-
-export function getWSRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
-  const WEB3_RPC_ID = String(process.env.REACT_APP_WEB3_RPC_ID);
-
-  switch (chainId) {
-    case 1:
-      return `wss://mainnet.infura.io/ws/v3/${WEB3_RPC_ID}`;
-    case 4:
-      return `wss://rinkeby.infura.io/ws/v3/${WEB3_RPC_ID}`;
-    default:
-      throw new Error(`Not supported chainId=${chainId}.`);
-  }
-}
-
-export function getHttpsRpcUrl(chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
-  const WEB3_RPC_ID = String(process.env.REACT_APP_WEB3_RPC_ID);
-
-  switch (chainId) {
-    case 1:
-      return `https://mainnet.infura.io/v3/${WEB3_RPC_ID}`;
-    case 4:
-      return `https://rinkeby.infura.io/v3/${WEB3_RPC_ID}`;
-    default:
-      throw new Error(`Not supported chainId=${chainId}.`);
-  }
-}
+const ETHERSCAN_API_KEY = String(process.env.REACT_APP_ETHERSCAN_API_KEY);
 
 export function getEtherscanTxUrl(
   txHash: string,
@@ -183,7 +158,7 @@ export const getPoolNames = memoize((poolType: PoolTypes): string[] => {
 });
 
 export function fetchContractABI(address: string): any {
-  return fetch(`https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}`)
+  return fetch(`https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`)
     .then(result => result.json())
     .then(({ status, result }: { status: string, result: string }) => {
       if (status === '1') {
