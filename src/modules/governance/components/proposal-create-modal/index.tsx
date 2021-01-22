@@ -24,6 +24,8 @@ import s from './styles.module.scss';
 
 export type ProposalActionCreateForm = {
   targetAddress?: string;
+  isProxyAddress: boolean;
+  implAddress?: string;
   addValueAttribute?: boolean;
   actionValue?: string;
   addFunctionCall?: boolean;
@@ -34,7 +36,9 @@ export type ProposalActionCreateForm = {
 };
 
 const InitialFormValues: ProposalActionCreateForm = {
-  targetAddress: '0xED5B6c65140FA8681c3DFf6BA5EFDb7334dff870',
+  targetAddress: '',
+  isProxyAddress: false,
+  implAddress: '',
   addValueAttribute: undefined,
   actionValue: undefined,
   addFunctionCall: undefined,
@@ -110,18 +114,19 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
   }
 
   React.useEffect(() => {
-    const { addFunctionCall, targetAddress } = formValues;
+    const { addFunctionCall, targetAddress, implAddress } = formValues;
+    const address = implAddress || targetAddress;
 
     setState({
       abiInterface: undefined,
     });
 
-    if (addFunctionCall && targetAddress && Web3.utils.isAddress(targetAddress)) {
+    if (addFunctionCall && address && Web3.utils.isAddress(address)) {
       setState({
         abiLoading: true,
       });
 
-      fetchContractABI(targetAddress)
+      fetchContractABI(address)
         .then((abi: any[]) => {
           setState({
             abiLoading: false,
@@ -134,7 +139,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
           });
         });
     }
-  }, [formValues.addFunctionCall, formValues.targetAddress]);
+  }, [formValues.addFunctionCall, formValues.targetAddress, formValues.implAddress]);
 
   function handleZerosAdd(fieldPath: string[], count: number) {
     let currentValue = form.getFieldValue(fieldPath);
@@ -215,6 +220,29 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             ]}>
             <Input disabled={state.submitting} />
           </Form.Item>
+          <Form.Item
+            name="isProxyAddress">
+            <Grid flow="col" align="center" justify="space-between">
+              <Small semiBold color="grey500">Is this a proxy address?</Small>
+              <Antd.Switch checked={formValues.isProxyAddress} onChange={ev => {
+                form.setFieldsValue({
+                  isProxyAddress: ev,
+                  implAddress: undefined,
+                });
+                setFormValues(prevState => ({
+                  ...prevState,
+                  isProxyAddress: ev,
+                  implAddress: undefined,
+                }));
+              }} />
+            </Grid>
+          </Form.Item>
+          {formValues.isProxyAddress && (
+            <Form.Item
+              name="implAddress">
+              <Input placeholder="Implementation address" disabled={state.submitting} />
+            </Form.Item>
+          )}
           <Form.Item
             name="addValueAttribute"
             label="Add a value attribute to your action?">
