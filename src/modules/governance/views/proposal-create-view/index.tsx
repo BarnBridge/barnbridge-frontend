@@ -114,7 +114,6 @@ const ProposalCreateView: React.FunctionComponent = () => {
         }),
       };
 
-      console.log({ payload, values });
       const proposal = await web3c.daoGovernance.actions.createProposal(payload);
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
@@ -176,7 +175,12 @@ const ProposalCreateView: React.FunctionComponent = () => {
                       return (
                         <Form.Item {...field}>
                           <Grid flow="col" gap={24}>
-                            {/*{getActionStringFor(fieldData.targetAddress!, fieldData.functionName!, '', fieldData.actionValue!)}*/}
+                            {getActionStringFor(
+                              fieldData.targetAddress!,
+                              fieldData.functionSignature!,
+                              fieldData.abiFunctionData!,
+                              fieldData.actionValue!
+                            )}
                             <PopoverMenu
                               placement="bottomLeft"
                               items={ActionMenuItems}

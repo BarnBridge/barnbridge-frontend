@@ -83,9 +83,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
       }
     });
 
-    console.log('SUBMIT', { values, abiParamValues });
     const abiFunctionData = state.abiInterface?.encodeFunctionData(state.abiFunction!, abiParamValues)
-    console.log('SUBMIT', { abiFunctionData });
 
     setState({
       submitting: true,
