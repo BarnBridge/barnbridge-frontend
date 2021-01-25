@@ -63,8 +63,6 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
       } else if (voteState === VoteState.VoteCancel) {
         r = await web3c.daoGovernance.actions.cancelVote(values.gasPrice, proposalId);
       }
-
-      console.log('RRR', r);
     } catch {
       //
     }

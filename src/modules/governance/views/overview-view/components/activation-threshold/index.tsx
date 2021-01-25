@@ -18,7 +18,6 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
   const { className } = props;
   const web3c = useWeb3Contracts();
 
-  /// move to own PROVIDER
   const activationRate = React.useMemo<number>(() => {
     const { bondStaked, activationThreshold } = web3c.daoBarn;
 
@@ -34,13 +33,15 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
   function handleActivate() {
     setActivating(true);
     web3c.daoGovernance.actions.activate()
+      .catch(Error)
       .then(() => {
-        setActivating(false);
-        /// hide activation threshold panel
-      })
-      .catch(() => {
+        web3c.daoBarn.reload();
         setActivating(false);
       });
+  }
+
+  if (activationRate >= 100) {
+    return null;
   }
 
   return (
@@ -54,8 +55,8 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
             showInfo={false}
             strokeWidth={24}
             strokeColor={{
-              '0%': '#4f6ae6',
-              '100%': '#00D395',
+              '0%': 'var(--text-color-blue500)',
+              '100%': 'var(--text-color-green500)',
             }} />
           <Icon type="ribbon" />
         </Grid>

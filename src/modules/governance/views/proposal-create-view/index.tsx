@@ -12,11 +12,10 @@ import Grid from 'components/custom/grid';
 import { Heading, Paragraph } from 'components/custom/typography';
 import Icon from 'components/custom/icon';
 import ProposalActionCreateModal, { ProposalActionCreateForm } from '../../components/proposal-create-modal';
-import { getActionStringFor } from '../proposal-detail-view/providers/ProposalProvider';
-
+import ProposalActionTooltip from '../../components/proposal-action-tooltip';
 import ProposalDeleteModal from 'modules/governance/components/proposal-delete-modal';
+
 import { useWeb3Contracts } from 'web3/contracts';
-import { encodeABIParams } from 'web3/contract';
 
 import s from './styles.module.scss';
 
@@ -93,7 +92,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
           if (c.addFunctionCall) {
             a.signatures.push(c.functionSignature!);
-            a.calldatas.push(c.abiFunctionData!);
+            a.calldatas.push(c.functionEncodedParams!);
           } else {
             a.signatures.push('');
             a.calldatas.push('0x');
@@ -114,7 +113,6 @@ const ProposalCreateView: React.FunctionComponent = () => {
         }),
       };
 
-      console.log({ payload, values });
       const proposal = await web3c.daoGovernance.actions.createProposal(payload);
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
@@ -176,12 +174,19 @@ const ProposalCreateView: React.FunctionComponent = () => {
                       return (
                         <Form.Item {...field}>
                           <Grid flow="col" gap={24}>
-                            {/*{getActionStringFor(fieldData.targetAddress!, fieldData.functionName!, '', fieldData.actionValue!)}*/}
+                            <ProposalActionTooltip
+                              target={fieldData.targetAddress!}
+                              signature={fieldData.functionSignature!}
+                              callData={fieldData.functionEncodedParams!}
+                              value={fieldData.actionValue!}
+                            />
                             <PopoverMenu
                               placement="bottomLeft"
                               items={ActionMenuItems}
                               onClick={key => handleActionMenu(key)}>
-                              <Icon type="gear" />
+                              <Button type="link">
+                                <Icon type="gear" />
+                              </Button>
                             </PopoverMenu>
                           </Grid>
                         </Form.Item>
