@@ -3,19 +3,13 @@ import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
-import Grid from 'components/custom/grid';
-import ExternalLink from 'components/custom/externalLink';
-import { Label, Paragraph, Small } from 'components/custom/typography';
-
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { getEtherscanAddressUrl, shortenAddr, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useReload } from 'hooks/useReload';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { decodeABIParams } from 'web3/contract';
 import { GetReceiptCallResult } from 'web3/contracts/daoGovernance';
 import { useWallet } from 'wallets/wallet';
 import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
-import { useReload } from '../../../../../../hooks/useReload';
-import { AbiInterface } from '../../../../../../web3/abiInterface';
 
 export type ProposalProviderState = {
   proposal?: APIProposalEntity;
@@ -55,76 +49,6 @@ export function useProposal(): ProposalContextType {
 export type ProposalProviderProps = {
   proposalId?: number;
 };
-
-export function getActionString(proposal: APIProposalEntity, index: number) {
-  const target = proposal.targets[index];
-  const signature = proposal.signatures[index];
-  const calldata = proposal.calldatas[index];
-  const value = proposal.values[index];
-
-  return getActionStringFor(target, signature, calldata, value);
-}
-
-export function getActionStringFor(target: string, signature: string, calldata: string, value: string) {
-  const functionFragment = AbiInterface.getFunctionFragmentFrom(signature);
-  const functionParamValues = AbiInterface.decodeFunctionData(functionFragment, calldata);
-
-  return (
-    <Antd.Tooltip title={(
-      <Grid flow="row" gap={12}>
-        <Grid flow="row" gap={4} align="center">
-          <Label type="lb2" bold color="grey900">Contract address:</Label>
-          <Small semiBold color="grey500" wrap>{target}</Small>
-        </Grid>
-
-        {value !== '0' && (
-          <Grid flow="row" gap={4} align="center">
-            <Label type="lb2" bold color="grey900">Action value:</Label>
-            <Small semiBold color="grey500" wrap>{value}</Small>
-          </Grid>
-        )}
-
-        <Grid flow="row" gap={4} align="center">
-          <Label type="lb2" bold color="grey900">Function signature:</Label>
-          <Small semiBold color="grey500" wrap>{signature}</Small>
-        </Grid>
-
-        <Grid flow="row" gap={4} align="center">
-          <Label type="lb2" bold color="grey900">Function arguments:</Label>
-          {functionParamValues.map((param, index) => {
-            let paramValue = param;
-
-            if (Array.isArray(paramValue)) {
-              paramValue = JSON.stringify(paramValue, null, 2);
-            } else if (typeof paramValue?.toString === 'function') {
-              paramValue = paramValue.toString();
-            } else {
-              paramValue = JSON.stringify(paramValue, null, 2);
-            }
-
-            const { type } = functionFragment.inputs[index];
-
-            return (
-              <Grid key={index} flow="col" gap={8} align="center">
-                {index + 1}. | {type} |
-                <Small semiBold color="grey500" wrap>
-                  {paramValue}
-                </Small>
-              </Grid>
-            );
-          })}
-        </Grid>
-      </Grid>
-    )}>
-      <ExternalLink href={`${getEtherscanAddressUrl(target)}#writeContract`}>
-        <Grid flow="col" wrap>
-          <Paragraph type="p1" semiBold color="blue500">{shortenAddr(target)}</Paragraph>
-          <Paragraph type="p1" color="red500">.{signature}</Paragraph>
-        </Grid>
-      </ExternalLink>
-    </Antd.Tooltip>
-  );
-}
 
 const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props => {
   const { proposalId, children } = props;

@@ -3,7 +3,6 @@ import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import EventEmitter from 'wolfy87-eventemitter';
 import { AbiItem } from 'web3-utils';
-import * as ethers from 'ethers';
 
 export type BatchContractMethod = {
   method: string;
@@ -24,28 +23,6 @@ const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
 
 export type Web3ContractAbiItem = AbiItem;
 
-export function decodeABIParams(types: any[], hex: string): Record<string, any> | undefined {
-  try {
-    let nexHex = hex;
-
-    if (nexHex.indexOf('0x') !== 0) {
-      nexHex = `0x${hex}`;
-    }
-
-    return ethers.utils.defaultAbiCoder.decode(types, nexHex);
-  } catch (e) {
-    console.error("Contract:decodeABIParams", e);
-  }
-}
-
-export function encodeABIParams(types: string[], parameters: any[]): string | undefined {
-  try {
-    return ethers.utils.defaultAbiCoder.encode(types, parameters);
-  } catch (e) {
-    console.error("Contract:encodeABIParams", e);
-  }
-}
-
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
   readonly address: string;
@@ -62,15 +39,17 @@ class Web3Contract extends EventEmitter {
     this.ethContract = new web3.eth.Contract(abi, address) as any;
   }
 
-  get writeFunctions(): Web3ContractAbiItem[] {
-    return this.abi.filter(r => r.type === 'function' && !r.constant);
+  static tryCall(to: string, from: string, data: string, value: string): any {
+    return web3.eth.call({
+      to,
+      from,
+      data,
+      value,
+    });
   }
 
-  static getFromHex(typesArray: string[], hexString: string): any | undefined {
-    try {
-      return web3.eth.abi.decodeParameters(typesArray, hexString);
-    } catch {
-    }
+  get writeFunctions(): Web3ContractAbiItem[] {
+    return this.abi.filter(r => r.type === 'function' && !r.constant);
   }
 
   setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {
@@ -136,14 +115,6 @@ class Web3Contract extends EventEmitter {
 
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     return this.execute('send', method, methodArgs, sendArgs);
-  }
-
-  getHexFor(methodName: string, ...args: any[]): string | undefined {
-    try {
-      return this.ethContract.methods[methodName](...args).encodeABI();
-      // web3.eth.abi.encodeParameters(typesArray, parameters);
-    } catch {
-    }
   }
 
   private execute(type: 'call' | 'send', method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {

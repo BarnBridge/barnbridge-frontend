@@ -6,7 +6,8 @@ import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import Icon from 'components/custom/icon';
 import { Label, Paragraph, Small } from 'components/custom/typography';
-import { getActionString, useProposal } from '../../providers/ProposalProvider';
+import ProposalActionTooltip from '../../../../components/proposal-action-tooltip';
+import { useProposal } from '../../providers/ProposalProvider';
 
 import { APIProposalState } from 'modules/governance/api';
 import { shortenAddr } from 'web3/utils';
@@ -109,7 +110,11 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
         {proposalCtx.proposal?.targets.map((target: string, index: number) => (
           <Grid key={index} flow="col" gap={12}>
             <Label type="lb2" semiBold color="grey500" className={s.actionNumber}>{index + 1}</Label>
-            {getActionString(proposalCtx.proposal!, index)}
+            <ProposalActionTooltip
+              target={proposalCtx.proposal!.targets[index]}
+              signature={proposalCtx.proposal!.signatures[index]}
+              callData={proposalCtx.proposal!.calldatas[index]}
+              value={proposalCtx.proposal!.values[index]} />
           </Grid>
         ))}
       </Grid>
