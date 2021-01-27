@@ -6,12 +6,13 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Tabs from 'components/antd/tabs';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
+import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Label, Paragraph, Small } from 'components/custom/typography';
 import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
 
 import { APIVoteEntity } from 'modules/governance/api';
-import { formatBigValue, shortenAddr } from 'web3/utils';
+import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import s from './styles.module.scss';
 
@@ -25,9 +26,11 @@ const Columns: ColumnsType<APIVoteEntity> = [
     render: (address: string) => (
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
-        <Paragraph type="p1" semiBold color="grey900">
-          {shortenAddr(address)}
-        </Paragraph>
+        <ExternalLink href={getEtherscanAddressUrl(address)}>
+          <Paragraph type="p1" semiBold color="blue500">
+            {shortenAddr(address)}
+          </Paragraph>
+        </ExternalLink>
       </Grid>
     ),
   },

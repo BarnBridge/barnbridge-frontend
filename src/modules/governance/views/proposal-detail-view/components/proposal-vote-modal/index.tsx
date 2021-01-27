@@ -21,6 +21,9 @@ export enum VoteState {
   VoteAgainst,
   VoteChange,
   VoteCancel,
+  VoteForAbrogation,
+  VoteAgainstAbrogation,
+  VoteCancelAbrogation,
 }
 
 type FormState = {
@@ -62,7 +65,15 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         r = await web3c.daoGovernance.actions.castVote(values.gasPrice, proposalId, values.changeOption!);
       } else if (voteState === VoteState.VoteCancel) {
         r = await web3c.daoGovernance.actions.cancelVote(values.gasPrice, proposalId);
+      } else if (voteState === VoteState.VoteForAbrogation) {
+        r = await web3c.daoGovernance.actions.abrogationCastVote(values.gasPrice, proposalId, true);
+      } else if (voteState === VoteState.VoteAgainstAbrogation) {
+        r = await web3c.daoGovernance.actions.abrogationCastVote(values.gasPrice, proposalId, false);
+      } else if (voteState === VoteState.VoteCancelAbrogation) {
+        r = await web3c.daoGovernance.actions.abrogationCancelVote(values.gasPrice, proposalId);
       }
+
+      proposalCtx.reload();
     } catch {
       //
     }
@@ -136,10 +147,25 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
             ]}>
             <GasFeeList />
           </Form.Item>
-          <Button htmlType="submit" type="primary" className={s.actionBtn}>
-            {voteState === VoteState.VoteFor && 'Vote for proposal'}
-            {voteState === VoteState.VoteAgainst && 'Vote against proposal'}
-          </Button>
+
+          <Form.Item>
+            {({ getFieldsValue }) => {
+              const { changeOption } = getFieldsValue();
+
+              return (
+                <Button htmlType="submit" type="primary" className={s.actionBtn}>
+                  {voteState === VoteState.VoteFor && 'Vote for proposal'}
+                  {voteState === VoteState.VoteAgainst && 'Vote against proposal'}
+                  {voteState === VoteState.VoteCancel && 'Cancel vote'}
+                  {voteState === VoteState.VoteChange && changeOption === true && 'Vote for proposal'}
+                  {voteState === VoteState.VoteChange && changeOption === false && 'Vote against proposal'}
+                  {voteState === VoteState.VoteForAbrogation && 'Vote for cancellation proposal'}
+                  {voteState === VoteState.VoteAgainstAbrogation && 'Vote against cancellation proposal'}
+                  {voteState === VoteState.VoteCancelAbrogation && 'Cancel abrogation vote'}
+                </Button>
+              );
+            }}
+          </Form.Item>
         </Grid>
       </Form>
     </Modal>

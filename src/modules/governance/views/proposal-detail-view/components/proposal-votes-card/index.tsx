@@ -147,7 +147,7 @@ const ProposalVotesCard: React.FunctionComponent = () => {
             </Grid>
           ) : (
             <>
-              <Alert message="You already voted FOR the proposal" />
+              <Alert message={`You already voted ${!proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'} the proposal`} />
               <Grid gap={24} colsTemplate="repeat(auto-fit, 1fr)">
                 <Button type="primary" className={s.actionBtn} onClick={handleVoteChangeModal}>Change vote</Button>
                 <Button type="default" className={s.actionBtn} onClick={handleVoteCancelModal}>Cancel vote</Button>

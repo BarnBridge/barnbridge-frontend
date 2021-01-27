@@ -1,49 +1,25 @@
-@import "../../../styles/mixin";
+@import "src/styles/mixin";
 
-.input {
-  :global {
-    .ant-input-group {
-      border: 1px solid #e3e4e6;
-      border-radius: 4px;
+.component {
+  :global(.ant-input-group) {
+    height: 64px;
+
+    :global(.ant-input) {
+      height: 64px;
     }
 
-    .ant-input-group-addon {
-      background: #fff;
-      border: none;
+    :global(.ant-input-group-addon) {
+      &:first-of-type {
+        min-width: 80px;
+      }
 
-      &:first-child {
-        padding: 12px 24px;
+      &:last-of-type {
+        min-width: 106px;
       }
     }
-
-    .ant-input {
-      background: #fff;
-      border: none;
-      border-left: 1px solid #e3e4e6;
-      border-radius: 0;
-      @include font-p1-semi-bold;
-      color: #060a0d;
-    }
-  }
-}
-
-.addonBefore {
-  display: inline-grid;
-  grid-template-columns: min-content 1fr;
-  column-gap: 8px;
-  align-items: center;
-
-  svg {
-    width: 24px;
-    height: 24px;
   }
 
-  .label {
-    @include font-sm-semi-bold;
-    color: #060a0d;
+  .maxBtn {
+    width: 98px;
   }
-}
-
-.addonAfter {
-  width: 98px;
 }

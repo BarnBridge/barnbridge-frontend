@@ -46,15 +46,15 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
     const filters = [{ value: 'all', label: 'All epochs' }];
 
     if (poolFilter === PoolTypes.STABLE) {
-      for (let i = 0; i <= web3c.staking.currentEpoch!; i++) {
+      for (let i = 0; i <= web3c.yf.currentEpoch!; i++) {
         filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     } else if (poolFilter === PoolTypes.UNILP) {
-      for (let i = 1; i <= web3c.staking.currentEpoch! - web3c.yfLP.delayedEpochs!; i++) {
+      for (let i = 1; i <= web3c.yfLP.currentEpoch!; i++) {
         filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     } else if (poolFilter === PoolTypes.BOND) {
-      for (let i = 0; i <= web3c.staking.currentEpoch! - web3c.yfBOND.delayedEpochs!; i++) {
+      for (let i = 0; i <= web3c.yfBOND.currentEpoch!; i++) {
         filters.push({ value: String(i), label: `Epoch ${i}` });
       }
     }

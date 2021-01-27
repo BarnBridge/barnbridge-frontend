@@ -5,11 +5,17 @@ import cx from 'classnames';
 
 import s from './styles.module.scss';
 
-const Input: React.FunctionComponent<AntdInputProps> = props => {
-  const { className, ...inputProps } = props;
+export type InputProps = AntdInputProps;
+
+const Input: React.FunctionComponent<InputProps> = props => {
+  const { className, disabled, ...inputProps } = props;
 
   return (
-    <Antd.Input className={cx(s.component, className)} {...inputProps} />
+    <Antd.Input
+      className={cx(s.component, className, disabled && s.disabled)}
+      disabled={disabled}
+      autoComplete="off"
+      {...inputProps} />
   );
 };
 

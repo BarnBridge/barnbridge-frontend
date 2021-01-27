@@ -90,12 +90,20 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
 
   React.useEffect(() => {
     if (!wallet.account) {
+      setState(prevState => ({
+        ...prevState,
+        hasAlreadyActiveProposal: undefined,
+      }));
       return;
     }
 
     web3c.daoGovernance.actions.latestProposalIds(wallet.account)
       .then(proposalId => {
         if (proposalId === 0) {
+          setState(prevState => ({
+            ...prevState,
+            hasAlreadyActiveProposal: false,
+          }));
           return Promise.reject();
         }
 

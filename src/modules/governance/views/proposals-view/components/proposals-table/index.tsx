@@ -23,9 +23,11 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
     width: '70%',
     render: (_, data: APILiteProposalEntity) => (
       <Grid flow="row" gap={8}>
-        <Paragraph type="p1" semiBold color="grey900">{data.title}</Paragraph>
+        <Paragraph type="p1" semiBold color="grey900">
+          PID-{data.proposalId}: {data.title}
+        </Paragraph>
         <Grid flow="col" gap={16} align="center">
-          <ProposalStatusTag state={data.state}/>
+          <ProposalStatusTag state={data.state} />
           <Paragraph type="p2" semiBold color="grey500">
             {data.stateTimeLeft ? getFormattedDuration(data.stateTimeLeft) : ''}
           </Paragraph>
@@ -51,15 +53,21 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
 
       return (
         <Grid flow="row" gap={8}>
-          <Grid gap={24} colsTemplate="minmax(0, 196px) 1fr">
-            <Progress percent={forRate.toNumber()}/>
-            <Paragraph type="p2" semiBold color="grey500">
+          <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
+            <Progress
+              percent={forRate.toNumber()}
+              strokeColor="var(--text-color-green500)"
+              trailColor="rgba(var(--text-color-green500-rgb), .16)" />
+            <Paragraph type="p2" semiBold color="grey500" align="right">
               {forRate.toFormat(2)}%
             </Paragraph>
           </Grid>
-          <Grid gap={24} colsTemplate="minmax(0, 196px) 1fr">
-            <Progress percent={againstRate.toNumber()}/>
-            <Paragraph type="p2" semiBold color="grey500">
+          <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
+            <Progress
+              percent={againstRate.toNumber()}
+              strokeColor="var(--text-color-red500)"
+              trailColor="rgba(var(--text-color-red500-rgb), .16)" />
+            <Paragraph type="p2" semiBold color="grey500" align="right">
               {againstRate.toFormat(2)}%
             </Paragraph>
           </Grid>

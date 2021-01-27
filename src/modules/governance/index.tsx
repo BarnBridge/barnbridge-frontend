@@ -36,7 +36,7 @@ const GovernanceView: React.FunctionComponent = () => {
     if (vt !== activeTab) {
       setActiveTab(vt);
     }
-  }, [vt])
+  }, [vt]);
 
   return (
     <Grid flow="row">
@@ -65,6 +65,7 @@ const GovernanceView: React.FunctionComponent = () => {
       <div className={s.view}>
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
+          <Route path="/governance/wallet/:wt(\w+)" component={WalletView} />
           <Route path="/governance/wallet" component={WalletView} />
           <Route path="/governance/proposals" exact component={ProposalsView} />
           <Route path="/governance/proposals/create" exact component={ProposalCreateView} />

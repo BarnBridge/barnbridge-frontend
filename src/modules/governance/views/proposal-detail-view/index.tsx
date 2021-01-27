@@ -16,7 +16,6 @@ import ProposalApprovalCard from './components/proposal-approval-card';
 import ProposalProvider, { useProposal } from './providers/ProposalProvider';
 
 import { APIProposalState } from 'modules/governance/api';
-import { useWallet } from 'wallets/wallet';
 
 type ProposalDetailViewInnerState = {
   executing: boolean;
@@ -90,7 +89,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
 
       <Grid flow="col" gap={32} align="start" justify="space-between">
         <Heading type="h2" semiBold color="grey900" loading={!proposalCtx.proposal}>
-          {proposalCtx.proposal?.title}
+          PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
         </Heading>
         {APIProposalState.ACCEPTED === proposalState && (
           <Button

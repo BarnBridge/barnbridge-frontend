@@ -168,7 +168,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
           receipt: result,
         }));
       });
-  }, [state.proposal?.proposalId, wallet.account]);
+  }, [state.proposal?.proposalId, wallet.account, version]);
 
   function cancelProposal() {
     return proposalId ? web3c.daoGovernance.actions.cancelProposal(proposalId) : Promise.reject();

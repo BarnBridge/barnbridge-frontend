@@ -1,4 +1,4 @@
-@import "../../../styles/mixin";
+@import "src/styles/mixin";
 
 .form {
   opacity: 1;
@@ -19,6 +19,14 @@
       width: 16px;
       height: 16px;
       color: var(--text-color-4);
+    }
+  }
+
+  &:global(.ant-form-item-has-error) {
+    :global(.ant-input),
+    :global(.ant-input-group-addon) {
+      background-color: inherit;
+      border-color: var(--text-color-red500);
     }
   }
 }

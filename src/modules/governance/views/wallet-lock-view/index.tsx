@@ -6,11 +6,12 @@ import { addSeconds, addDays, addMonths, formatDistanceToNow, format, isBefore, 
 
 import Form from 'components/antd/form';
 import DatePicker from 'components/antd/datepicker';
-import GasFeeList from 'components/custom/gas-fee-list';
 import Button from 'components/antd/button';
+import GasFeeList from 'components/custom/gas-fee-list';
+import { Small } from 'components/custom/typography';
 
-import { getFormattedDuration, isValidAddress } from 'utils';
-import { formatBONDValue } from 'web3/utils';
+import { getFormattedDuration, inRange, isValidAddress } from 'utils';
+import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
@@ -34,7 +35,7 @@ const DURATION_OPTIONS: string[] = [
 const WalletLockView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<LockFormData>();
-  const [, setValues] = React.useState<LockFormData>({});
+  const [values, setValues] = React.useState<LockFormData>({});
   const [submitting, setSubmitting] = React.useState<boolean>(false);
 
   const minAllowedDate = addSeconds(Math.max(web3c.daoBarn.userLockedUntil ?? 0, Date.now()), 1);
@@ -96,11 +97,12 @@ const WalletLockView: React.FunctionComponent = () => {
   }
 
   const chartData = React.useMemo(() => {
+    const arr: any[] = [];
+
     // const now = new Date();
     // const start = new Date();
     // const end = values.lockEndDate;
     // const duration = moment.duration(end.diff(start));
-    const arr: any[] = [];
     // const bonus = 2;
     //
     // const months = Math.floor(duration.asMonths());
@@ -223,8 +225,18 @@ const WalletLockView: React.FunctionComponent = () => {
         </div>
         <div className={s.chart}>
           <div className={s.chartHeader}>
-            800 vBOND bonus
-            - {currentMultiplier} for {web3c.daoBarn.userLockedUntil ? formatDistanceToNow(web3c.daoBarn.userLockedUntil) : '-'}
+            <Small semiBold color="grey500">
+              {formatBONDValue(web3c.daoBarn.balance?.multipliedBy(currentMultiplier - 1))} vBOND bonus
+
+              {currentMultiplier > 1 && web3c.daoBarn.userLockedUntil && (
+                <>
+                  <span> | </span>
+                  <span>{inRange(currentMultiplier, 1, 1.01) ? '>' : ''}</span>
+                  <span> {formatBigValue(currentMultiplier, 2, '-', 2)}x</span>
+                  <span> for {formatDistanceToNow(web3c.daoBarn.userLockedUntil)}</span>
+                </>
+              )}
+            </Small>
           </div>
           <div className={s.chartContent}>
             <ReCharts.ResponsiveContainer width="100%" height={154}>

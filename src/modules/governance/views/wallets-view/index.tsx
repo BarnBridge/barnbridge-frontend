@@ -11,8 +11,6 @@ import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import { Heading } from 'components/custom/typography';
 
-import s from './styles.module.scss';
-
 type WalletViewParams = {
   wt: string;
 };
@@ -27,10 +25,16 @@ const WalletView: React.FunctionComponent = () => {
     history.push(`/governance/wallet/${tabKey}`);
   }
 
+  React.useEffect(() => {
+    if (wt !== activeTab) {
+      setActiveTab(wt);
+    }
+  }, [wt]);
+
   return (
     <Grid flow="row" gap={32}>
       <Heading type="h1" bold color="grey900">Wallet</Heading>
-      <Tabs activeKey={activeTab} className={s.tabs} onChange={handleTabChange}>
+      <Tabs activeKey={activeTab} simple onChange={handleTabChange}>
         <Tabs.Tab key="deposit" tab="Deposit" />
         <Tabs.Tab key="lock" tab="Lock" />
         <Tabs.Tab key="delegate" tab="Delegate" />

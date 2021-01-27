@@ -2,15 +2,18 @@ import React from 'react';
 import * as Antd from 'antd';
 
 import Form from 'components/antd/form';
+import Card from 'components/antd/card';
+import Button from 'components/antd/button';
 import Select from 'components/antd/select';
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
 import GasFeeList from 'components/custom/gas-fee-list';
-import Button from 'components/antd/button';
+import { Paragraph, Small } from 'components/custom/typography';
 
 import { isValidAddress } from 'utils';
 import { useWeb3Contracts } from 'web3/contracts';
-
-import s from './styles.module.scss';
+import useMergeState from 'hooks/useMergeState';
 
 const MANUAL_VOTING_KEY = 'manual';
 const DELEGATE_VOTING_KEY = 'delegate';
@@ -38,15 +41,89 @@ const InitialFormValues: DelegateFormData = {
   gasFee: undefined,
 };
 
+type WalletDelegateViewState = {
+  saving: boolean;
+  votingType?: string;
+  delegateAddress?: string;
+};
+
+const InitialState: WalletDelegateViewState = {
+  saving: false,
+  votingType: undefined,
+  delegateAddress: undefined,
+};
+
 const WalletDelegateView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<DelegateFormData>();
-  const [, setValues] = React.useState<DelegateFormData>(InitialFormValues);
-  const [saving, setSaving] = React.useState<boolean>(false);
-  const currentValue = form.getFieldsValue();
+
+  const [state, setState] = useMergeState<WalletDelegateViewState>(InitialState);
+
+  const { userDelegatedTo } = web3c.daoBarn;
+  const isDelegated = state.votingType === DELEGATE_VOTING_KEY && isValidAddress(userDelegatedTo);
+
+  const disabledDelegate = React.useMemo<boolean>(() => {
+    if (state.votingType === MANUAL_VOTING_KEY) {
+      if (!isValidAddress(userDelegatedTo)) {
+        return true;
+      }
+    } else if (state.votingType === DELEGATE_VOTING_KEY) {
+      if (userDelegatedTo === state.delegateAddress) {
+        return true;
+      }
+    }
+
+    return false;
+  }, [state.votingType, state.delegateAddress, userDelegatedTo]);
+
+  React.useEffect(() => {
+    if (isValidAddress(userDelegatedTo)) {
+      form.setFieldsValue({
+        votingType: DELEGATE_VOTING_KEY,
+        delegateAddress: userDelegatedTo,
+      });
+
+      setState({
+        votingType: DELEGATE_VOTING_KEY,
+        delegateAddress: userDelegatedTo,
+      });
+    } else {
+      form.setFieldsValue({
+        votingType: MANUAL_VOTING_KEY,
+        delegateAddress: undefined,
+      });
+
+      setState({
+        votingType: MANUAL_VOTING_KEY,
+        delegateAddress: undefined,
+      });
+    }
+  }, [userDelegatedTo]);
+
+  function handleValuesChange(values: Partial<DelegateFormData>) {
+    Object.keys(values)
+      .forEach(fieldName => {
+        const value = values[fieldName as keyof DelegateFormData];
+
+        if (fieldName === 'votingType') {
+          setState({
+            votingType: value as string,
+            delegateAddress: undefined,
+          });
+
+          form.setFieldsValue({
+            delegateAddress: undefined,
+          });
+        } else if (fieldName === 'delegateAddress') {
+          setState({
+            delegateAddress: value as string,
+          });
+        }
+      });
+  }
 
   async function handleSubmit(values: DelegateFormData) {
-    setSaving(true);
+    setState({ saving: true });
 
     try {
       if (values.votingType === DELEGATE_VOTING_KEY) {
@@ -58,122 +135,87 @@ const WalletDelegateView: React.FunctionComponent = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
     } catch {
-      //
     }
 
-    setSaving(false);
+    setState({ saving: false });
   }
 
-  const votingTypeLabel = React.useMemo(() => {
-    return VOTING_TYPE_OPTIONS.find(vt => vt.value === currentValue.votingType)?.label;
-  }, [currentValue.votingType]);
+  const CardTitle = (
+    <Grid flow="col" gap={24} colsTemplate="auto" align="center">
+      <Grid flow="col" gap={12} align="center">
+        <Icon type="bond" width={40} height={40} />
+        <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
+      </Grid>
 
-  const disabledDelegate = React.useMemo<boolean>(() => {
-    if (currentValue.votingType === MANUAL_VOTING_KEY) {
-      if (!isValidAddress(web3c.daoBarn.userDelegatedTo)) {
-        return true;
-      }
-    } else if (currentValue.votingType === DELEGATE_VOTING_KEY) {
-      if (web3c.daoBarn.userDelegatedTo === currentValue.delegateAddress) {
-        return true;
-      }
-    }
+      <Grid flow="row" gap={4}>
+        <Small semiBold color="grey500">Current Voting Type</Small>
+        <Paragraph type="p1" semiBold color="grey900">
+          {state.votingType === MANUAL_VOTING_KEY && 'Manual voting'}
+          {state.votingType === DELEGATE_VOTING_KEY && 'Delegate voting'}
+        </Paragraph>
+      </Grid>
 
-    return false;
-  }, [currentValue.votingType, currentValue.delegateAddress, web3c.daoBarn.userDelegatedTo]);
+      {isDelegated && (
+        <Grid flow="row" gap={4}>
+          <Small semiBold color="grey500">Delegated Address</Small>
+          <Paragraph type="p1" semiBold color="grey900">
+            {web3c.daoBarn.userDelegatedTo}
+          </Paragraph>
+        </Grid>
+      )}
 
-  React.useEffect(() => {
-    const { userDelegatedTo } = web3c.daoBarn;
-
-    if (isValidAddress(userDelegatedTo)) {
-      form.setFieldsValue({
-        votingType: DELEGATE_VOTING_KEY,
-        delegateAddress: userDelegatedTo,
-      });
-      setValues({
-        votingType: DELEGATE_VOTING_KEY,
-        delegateAddress: userDelegatedTo,
-      });
-    } else {
-      form.setFieldsValue({
-        votingType: MANUAL_VOTING_KEY,
-        delegateAddress: undefined,
-      });
-      setValues({
-        votingType: MANUAL_VOTING_KEY,
-        delegateAddress: undefined,
-      });
-    }
-  }, [web3c.daoBarn.userDelegatedTo]); // eslint-disable-line react-hooks/exhaustive-deps
+      <div />
+    </Grid>
+  );
 
   return (
-    <div className={s.component}>
-      <div className={s.headerRow}>
-        <div className={s.headerCol}>
-          <label>CURRENT VOTING TYPE</label>
-          <span>{votingTypeLabel}</span>
-        </div>
-        {currentValue.votingType === DELEGATE_VOTING_KEY && isValidAddress(web3c.daoBarn.userDelegatedTo!) && (
-          <div className={s.headerCol}>
-            <label>DELEGATED ADDRESS</label>
-            <span>{web3c.daoBarn.userDelegatedTo!}</span>
-          </div>
-        )}
-      </div>
+    <Card title={CardTitle}>
       <Form
-        className={s.contentRow}
         form={form}
         initialValues={InitialFormValues}
-        validateTrigger={['onSubmit', 'onChange']}
-        onValuesChange={setValues}
+        validateTrigger={['onSubmit']}
+        onValuesChange={handleValuesChange}
         onFinish={handleSubmit}>
-        <div className={s.body}>
-          <div className={s.leftCol}>
-            <Form.Item
-              name="votingType"
-              label="Voting type"
-              rules={[
-                { required: true, message: 'Required' },
-              ]}>
-              <Select options={VOTING_TYPE_OPTIONS} disabled={saving} />
-            </Form.Item>
-            {currentValue.votingType === DELEGATE_VOTING_KEY && (
+        <Grid flow="row" gap={32}>
+          <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
+            <Grid flow="row" gap={32}>
               <Form.Item
-                name="delegateAddress"
-                label="Delegate address"
-                rules={[
-                  { required: true, message: 'Required' },
-                ]}>
-                <TokenInput disabled={saving} />
+                name="votingType"
+                label="Voting type"
+                rules={[{ required: true, message: 'Required' }]}>
+                <Select options={VOTING_TYPE_OPTIONS} disabled={state.saving} />
               </Form.Item>
-            )}
-          </div>
-          <div className={s.rightCol}>
-            <Form.Item
-              name="gasFee"
-              label="Gas Fee (Gwei)"
-              hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-              rules={[
-                { required: true, message: 'Required' },
-              ]}>
-              <GasFeeList disabled={saving} />
-            </Form.Item>
-          </div>
-        </div>
-        <Button
-          type="primary"
-          htmlType="submit"
-          size="large"
-          disabled={disabledDelegate}
-          loading={saving}
-          className={s.delegateBtn}>
-          {currentValue.votingType === MANUAL_VOTING_KEY && isValidAddress(web3c.daoBarn.userDelegatedTo)
-            ? 'Stop Delegate'
-            : 'Delegate'
-          }
-        </Button>
+              {state.votingType === DELEGATE_VOTING_KEY && (
+                <Form.Item
+                  name="delegateAddress"
+                  label="Delegate address"
+                  rules={[{ required: true, message: 'Required' }]}>
+                  <TokenInput disabled={state.saving} />
+                </Form.Item>
+              )}
+            </Grid>
+            <Grid flow="row">
+              <Form.Item
+                name="gasFee"
+                label="Gas Fee (Gwei)"
+                hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
+                rules={[{ required: true, message: 'Required' }]}>
+                <GasFeeList disabled={state.saving} />
+              </Form.Item>
+            </Grid>
+          </Grid>
+          <Button
+            type="primary"
+            htmlType="submit"
+            size="large"
+            loading={state.saving}
+            disabled={disabledDelegate}
+            style={{ width: 121 }}>
+            {isDelegated ? 'Stop Delegate' : 'Delegate'}
+          </Button>
+        </Grid>
       </Form>
-    </div>
+    </Card>
   );
 };
 

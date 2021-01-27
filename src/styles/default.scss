@@ -31,4 +31,8 @@
 
   --text-color-yellow500: #{$color-yellow500};
   --text-color-yellow500-rgb: #{hexToRGB($color-yellow500)};
+
+  --text-color-red300: #{$color-red300};
+  --text-color-red400: #{$color-red400};
+  --text-color-red600: #{$color-red600};
 }

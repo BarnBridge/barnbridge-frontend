@@ -160,6 +160,25 @@ function cancelVoteSend(from: string, gasPrice: number, proposalId: number): Pro
   });
 }
 
+function abrogationCastVoteSend(from: string, gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
+  return Contract.send('voteCancellationProposal', [
+    proposalId,
+    support,
+  ], {
+    gasPrice: getGasValue(gasPrice),
+    from,
+  });
+}
+
+function abrogationCancelVoteSend(from: string, gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
+  return Contract.send('cancelVoteCancellationProposal', [
+    proposalId,
+  ], {
+    gasPrice: getGasValue(gasPrice),
+    from,
+  });
+}
+
 export enum ProposalState {
   WarmUp = 0,
   Active,
@@ -287,6 +306,8 @@ export type DAOGovernanceContract = DAOGovernanceContractData & {
     proposalTimeLeft(state: ProposalState, createdAt: number): number | undefined;
     castVote(gasPrice: number, proposalId: number, support: boolean): Promise<any>;
     cancelVote(gasPrice: number, proposalId: number): Promise<any>;
+    abrogationCastVote(gasPrice: number, proposalId: number, support: boolean): Promise<any>;
+    abrogationCancelVote(gasPrice: number, proposalId: number): Promise<any>;
   };
 };
 
@@ -333,6 +354,12 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       },
       cancelVote(gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
         return wallet.account ? cancelVoteSend(wallet.account, gasPrice, proposalId) : Promise.reject();
+      },
+      abrogationCastVote(gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
+        return wallet.account ? abrogationCastVoteSend(wallet.account, gasPrice, proposalId, support) : Promise.reject();
+      },
+      abrogationCancelVote(gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
+        return wallet.account ? abrogationCancelVoteSend(wallet.account, gasPrice, proposalId) : Promise.reject();
       },
       getProposalState: stateCall,
       getProposalData: proposalsCall,

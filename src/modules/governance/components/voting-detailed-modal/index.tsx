@@ -48,7 +48,7 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
         <div className={s.icon}><WalletSvg /></div>
         <div className={s.label}>Delegated by me</div>
         <div className={s.value}>
-          {formatBONDValue(myBondBalance)}
+          {isDelegated ? formatBONDValue(myBondBalance) : 0}
         </div>
       </div>
       <div className={s.row}>

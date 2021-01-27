@@ -42,4 +42,12 @@
       }
     }
   }
+
+  &.simple {
+    > :global(.ant-tabs-nav) {
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+  }
 }
