@@ -18,18 +18,20 @@ const Tab: React.FunctionComponent<TabProps> = props => {
   );
 };
 
-export type TabsProps = AntdTabsProps;
+export type TabsProps = AntdTabsProps & {
+  simple?: boolean;
+};
 
 export type StaticTabsProps = {
   Tab: React.FunctionComponent<TabProps>;
 };
 
 const Tabs: React.FunctionComponent<TabsProps> & StaticTabsProps = ((props: TabsProps) => {
-  const { className, ...tabsProps } = props;
+  const { className, simple = false, ...tabsProps } = props;
 
   return (
     <Antd.Tabs
-      className={cx(s.tabs, className)}
+      className={cx(s.tabs, className, simple && s.simple)}
       tabBarGutter={32}
       {...tabsProps}
     />

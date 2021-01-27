@@ -5,124 +5,111 @@
   align-items: center;
   justify-content: center;
   column-gap: 12px;
+  height: 48px;
+  padding: 12px 32px;
   border-radius: 4px;
+
+  @include font-p2-bold;
   text-align: center;
 
-  &:global {
-    &.ant-btn-sm {
-      min-width: 18px;
-      min-height: 34px;
-      padding: 9px;
-      @include font-sm-bold;
+  &:global(.ant-btn-sm) {
+    height: 34px;
+    padding: 9px;
+    @include font-sm-bold;
+  }
+
+  &:global(.ant-btn-lg) {
+    height: 64px;
+    padding: 20px;
+    @include font-p1-bold;
+  }
+
+  &:global(.ant-btn-primary) {
+    background: var(--text-color-red500);
+    border: none;
+    box-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
+    color: #fff;
+
+    &:hover {
+      background: var(--text-color-red400);
+      box-shadow: 0 8px 16px rgba(255, 105, 97, 0.24);
     }
 
-    &.ant-btn {
-      min-width: 24px;
-      min-height: 48px;
-      padding: 12px;
-      @include font-p2-bold;
+    &:active {
+      background: var(--text-color-red600);
+      box-shadow: 0 4px 8px rgba(204, 54, 46, 0.16);
     }
 
-    &.ant-btn-lg {
-      min-width: 40px;
-      min-height: 64px;
-      padding: 20px;
-      @include font-p1-bold;
+    &:disabled,
+    &:disabled:hover {
+      background: var(--color-border); // $color-grey200
+      box-shadow: none;
+      color: var(--color-text); // fff
+    }
+  }
+
+  &:global(.ant-btn-default) {
+    background: rgba(255, 67, 57, 0.1);
+    border: none;
+    box-shadow: none;
+    color: var(--text-color-red500);
+
+    &:hover {
+      background: rgba(255, 105, 97, 0.1);
+      color: var(--text-color-red400);
     }
 
-    &.ant-btn-primary {
-      box-shadow: 0 8px 16px var(--btn-primary-shadow-color);
-      border: none;
-      background: var(--btn-primary-bg-color);
-      color: var(--btn-primary-color);
-
-      &:hover {
-        box-shadow: 0 8px 16px var(--btn-primary-hover-shadow-color);
-        border: none;
-        background: var(--btn-primary-hover-bg-color);
-        color: var(--btn-primary-color);
-      }
-
-      &:active {
-        box-shadow: 0 4px 8px var(--btn-primary-active-shadow-color);
-        border: none;
-        background: var(--btn-primary-active-bg-color);
-        color: var(--btn-primary-color);
-      }
-
-      &:disabled,
-      &:disabled:hover {
-        box-shadow: none;
-        border: none;
-        background: var(--btn-primary-disabled-bg-color);
-        color: var(--btn-primary-disabled-color);
-      }
+    &:active {
+      background: rgba(204, 54, 46, 0.08);
+      color: var(--text-color-red600);
     }
 
-    &.ant-btn-default {
-      border: none;
-      background: var(--btn-default-bg-color);
-      color: var(--btn-default-color);
+    &:disabled,
+    &:disabled:hover {
+      background: rgba(147, 148, 150, 0.08); // rgba(170, 175, 179, 0.08)
+      color: var(--text-color-grey500); // $color-grey300
+    }
+  }
 
-      &:hover {
-        border: none;
-        background: var(--btn-default-hover-bg-color);
-        color: var(--btn-default-hover-color);
-      }
+  &:global(.ant-btn-ghost) {
+    background: none;
+    border: 1px solid var(--text-color-red500);
+    box-shadow: none;
+    color: var(--text-color-red500);
 
-      &:active {
-        border: none;
-        background: var(--btn-default-active-bg-color);
-        color: var(--btn-default-active-color);
-      }
-
-      &:disabled,
-      &:disabled:hover {
-        border: none;
-        background: var(--btn-default-disabled-bg-color);
-        color: var(--btn-default-disabled-color);
-      }
+    &:hover {
+      background: rgba(255, 105, 97, 0.1);
+      border: 1px solid var(--text-color-red300);
+      color: var(--text-color-red400);
     }
 
-    &.ant-btn-ghost {
-      border-color: var(--btn-ghost-border-color);
-      background: var(--btn-ghost-bg-color);
-      color: var(--btn-ghost-color);
-
-      &:hover {
-        border-color: var(--btn-ghost-hover-border-color);
-        background: var(--btn-ghost-hover-bg-color);
-        color: var(--btn-ghost-hover-color);
-      }
-
-      &:active {
-        border-color: var(--btn-ghost-active-border-color);
-        background: var(--btn-ghost-active-bg-color);
-        color: var(--btn-ghost-active-color);
-      }
-
-      &:disabled,
-      &:disabled:hover {
-        border-color: var(--btn-ghost-disabled-border-color);
-        background: var(--btn-ghost-disabled-bg-color);
-        color: var(--btn-ghost-disabled-color);
-      }
+    &:active {
+      background: rgba(204, 54, 46, 0.04);
+      border: 1px solid var(--text-color-red600);
+      color: var(--text-color-red600);
     }
 
-    &.ant-btn-link {
-      min-height: inherit;
-      height: fit-content;
-      padding: 0;
-      color: var(--text-color-blue500);
-      border: none;
+    &:disabled,
+    &:disabled:hover {
+      background: rgba(147, 148, 150, 0.08); // rgba(170, 175, 179, 0.08)
+      border: 1px solid var(--color-border);
+      color: var(--color-text); // $color-grey300
+    }
+  }
 
-      &:hover {
-        color: var(--text-color-blue500);
-      }
+  &:global(.ant-btn-link) {
+    height: auto;
+    padding: 0;
+    border: none;
 
-      &:active {
-        color: var(--text-color-blue500);
-      }
+    color: var(--text-color-blue500); // $color-blue400
+
+    &:hover {
+      color: var(--text-color-blue400); // $color-blue300
+    }
+
+    &:active {
+      color: var(--text-color-blue600); // $color-blue700
     }
   }
 }

@@ -6,10 +6,11 @@ import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
+import ExternalLink from 'components/custom/externalLink';
 import { Paragraph, Small } from 'components/custom/typography';
 
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
@@ -20,9 +21,11 @@ const Columns: ColumnsType<APIVoterEntity> = [
     render: (value: string) => (
       <Grid flow="col" gap={16} align="center">
         <Identicon address={value} width={32} height={32} />
-        <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
-          {value}
-        </Paragraph>
+        <ExternalLink href={getEtherscanAddressUrl(value)}>
+          <Paragraph type="p1" semiBold color="blue500" className="ml-auto">
+            {value}
+          </Paragraph>
+        </ExternalLink>
       </Grid>
     ),
   },

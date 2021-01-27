@@ -16,9 +16,9 @@ import AddZerosPopup from '../add-zeros-popup';
 
 import { fetchContractABI } from 'web3/utils';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
+import Web3Contract from 'web3/contract';
 
 import s from './styles.module.scss';
-import Web3Contract from '../../../../web3/contract';
 
 export type ProposalActionCreateForm = {
   targetAddress: string;
@@ -37,12 +37,12 @@ export type ProposalActionCreateForm = {
 };
 
 const InitialFormValues: ProposalActionCreateForm = {
-  targetAddress: '0x19cFBFd65021af353aB8A7126Caf51920163f0D2',
-  isProxyAddress: true,
-  implementationAddress: '0xED5B6c65140FA8681c3DFf6BA5EFDb7334dff870',
-  addValueAttribute: false,
+  targetAddress: '',
+  isProxyAddress: false,
+  implementationAddress: '',
+  addValueAttribute: undefined,
   actionValue: '',
-  addFunctionCall: false,
+  addFunctionCall: undefined,
   abiLoading: false,
   abiInterface: undefined,
   functionSignature: '',

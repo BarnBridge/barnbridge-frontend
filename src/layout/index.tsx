@@ -28,8 +28,7 @@ const LayoutView: React.FunctionComponent = () => {
           <Antd.Layout.Content className={s.content}>
             <Switch>
               <Route path="/yield-farming" component={YieldFarmingView} />
-              <Route path="/governance/:vt(wallet)/:wt" component={GovernanceView} />
-              <Route path="/governance/:vt" component={GovernanceView} />
+              <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
               <Route path="/bonds" render={() => (
                 <StayTuned />

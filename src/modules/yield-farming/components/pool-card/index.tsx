@@ -3,9 +3,10 @@ import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
-import InfoTooltip from 'components/antd/info-tooltip';
+import Tooltip from 'components/antd/tooltip';
 import IconsSet from 'components/custom/icons-set';
 import { Label, Paragraph } from 'components/custom/typography';
+import Icon from 'components/custom/icon';
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
 import { formatBigValue, formatBONDValue, formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
@@ -251,7 +252,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         <div className={s.row}>
           <div className={s.labelWrap}>
             <Label type="lb2" semiBold className={s.label}>Pool Balance</Label>
-            <InfoTooltip title={
+            <Tooltip type="info" title={
               <span>
                 This number shows the total staked balance of the pool, and the effective balance of the pool.
                 <br /><br />
@@ -267,7 +268,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           <div className={s.row}>
             <div className={s.labelWrap}>
               <Label type="lb2" semiBold className={s.label}>My Pool Balance</Label>
-              <InfoTooltip title={
+              <Tooltip type="info" title={
                 <span>
                   This number shows your total staked balance in the pool, and your effective staked balance in the pool.
                   <br /><br />

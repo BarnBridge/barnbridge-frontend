@@ -1,8 +1,8 @@
 import React from 'react';
-import * as Antd from 'antd';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Paragraph } from 'components/custom/typography';
@@ -49,10 +49,9 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
       <Grid flow="row" gap={24}>
         <Paragraph type="p1" semiBold color="grey900">Activation threshold</Paragraph>
         <Grid gap={12} colsTemplate="auto 24px">
-          <Antd.Progress
+          <Progress
             percent={activationRate}
             trailColor="var(--color-border)"
-            showInfo={false}
             strokeWidth={24}
             strokeColor={{
               '0%': 'var(--text-color-blue500)',

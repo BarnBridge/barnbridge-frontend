@@ -10,6 +10,7 @@ import { ReactComponent as CircleCancelIcon } from 'resources/svg/icons/circle-c
 import { ReactComponent as CircleCheckIcon } from 'resources/svg/icons/circle-check.svg';
 import { ReactComponent as CircleTimeIcon } from 'resources/svg/icons/circle-time.svg';
 import { ReactComponent as CloseIcon } from 'resources/svg/icons/close.svg';
+import { ReactComponent as DropdownArrowIcon } from 'resources/svg/icons/dropdown-arrow.svg';
 import { ReactComponent as ErrorTriangleIcon } from 'resources/svg/icons/error-triangle.svg';
 import { ReactComponent as GearIcon } from 'resources/svg/icons/gear.svg';
 import { ReactComponent as GlobeIcon } from 'resources/svg/icons/globe.svg';
@@ -52,6 +53,7 @@ export type IconType =
   | 'circle-check'
   | 'circle-time'
   | 'close'
+  | 'dropdown-arrow'
   | 'error-triangle'
   | 'gear'
   | 'globe'
@@ -93,6 +95,7 @@ const IconsMap: Map<IconType, SvgComponent> = new Map([
   ['circle-check', CircleCheckIcon],
   ['circle-time', CircleTimeIcon],
   ['close', CloseIcon],
+  ['dropdown-arrow', DropdownArrowIcon],
   ['error-triangle', ErrorTriangleIcon],
   ['gear', GearIcon],
   ['globe', GlobeIcon],

@@ -5,7 +5,6 @@ import { ArrowLeftOutlined } from '@ant-design/icons';
 
 import PoolTokenRow from 'modules/yield-farming/components/pool-token-row';
 import PoolTransactionTable from 'modules/yield-farming/components/pool-transaction-table';
-import { useEthGasPrice } from 'context/useEthGas';
 
 import { getPoolNames, PoolTypes } from 'web3/utils';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -23,12 +22,10 @@ export type PoolStakProps = {
 };
 
 const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
-  const ethGasPrice = useEthGasPrice();
   const history = useHistory();
 
   React.useEffect(() => {
     document.documentElement.scrollTop = 0;
-    ethGasPrice.load();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   function goBack() {
@@ -53,16 +50,16 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
           <div className={s.dataRows}>
             {props.stableToken && (
               <>
-                <PoolTokenRow stableToken token={USDCTokenMeta} type="deposit" />
-                <PoolTokenRow stableToken token={DAITokenMeta} type="deposit" />
-                <PoolTokenRow stableToken token={SUSDTokenMeta} type="deposit" />
+                <PoolTokenRow token={USDCTokenMeta} type="deposit" />
+                <PoolTokenRow token={DAITokenMeta} type="deposit" />
+                <PoolTokenRow token={SUSDTokenMeta} type="deposit" />
               </>
             )}
             {props.unilpToken && (
-              <PoolTokenRow unilpToken token={UNISWAPTokenMeta} type="deposit" />
+              <PoolTokenRow token={UNISWAPTokenMeta} type="deposit" expanded />
             )}
             {props.bondToken && (
-              <PoolTokenRow bondToken token={BONDTokenMeta} type="deposit" />
+              <PoolTokenRow token={BONDTokenMeta} type="deposit" expanded />
             )}
           </div>
           <PoolTransactionTable
@@ -78,16 +75,16 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
           <div className={s.dataRows}>
             {props.stableToken && (
               <>
-                <PoolTokenRow stableToken token={USDCTokenMeta} type="withdraw" />
-                <PoolTokenRow stableToken token={DAITokenMeta} type="withdraw" />
-                <PoolTokenRow stableToken token={SUSDTokenMeta} type="withdraw" />
+                <PoolTokenRow token={USDCTokenMeta} type="withdraw" />
+                <PoolTokenRow token={DAITokenMeta} type="withdraw" />
+                <PoolTokenRow token={SUSDTokenMeta} type="withdraw" />
               </>
             )}
             {props.unilpToken && (
-              <PoolTokenRow unilpToken token={UNISWAPTokenMeta} type="withdraw" />
+              <PoolTokenRow token={UNISWAPTokenMeta} type="withdraw" expanded />
             )}
             {props.bondToken && (
-              <PoolTokenRow bondToken token={BONDTokenMeta} type="withdraw" />
+              <PoolTokenRow token={BONDTokenMeta} type="withdraw" expanded />
             )}
           </div>
           <PoolTransactionTable

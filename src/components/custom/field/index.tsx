@@ -1,7 +1,8 @@
 import React from 'react';
 import cx from 'classnames';
 
-import InfoTooltip from 'components/antd/info-tooltip';
+import Tooltip from 'components/antd/tooltip';
+import Icon from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -18,7 +19,7 @@ const Field: React.FunctionComponent<FieldProps> = props => {
     <div className={cx(s.component, className)}>
       <label className={s.label}>
         {label}
-        {hint && <InfoTooltip title={hint} />}
+        {hint && <Tooltip type="info" title={hint} />}
       </label>
       {children}
     </div>

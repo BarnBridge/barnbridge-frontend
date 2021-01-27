@@ -1,8 +1,9 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import InfoTooltip from 'components/antd/info-tooltip';
 import Skeleton from 'components/antd/skeleton';
+import Tooltip from 'components/antd/tooltip';
+import Icon from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -20,7 +21,7 @@ const StatCard: React.FunctionComponent<StatCardProps> = props => {
     <Antd.Card className={s.component}>
       <div className={s.header}>
         <div className={s.label}>{props.label}</div>
-        {props.help && <InfoTooltip title={props.help} />}
+        {props.help && <Tooltip type="info" title={props.help} />}
       </div>
       <div className={s.valueWrap}>
         <Skeleton

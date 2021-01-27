@@ -10,10 +10,11 @@ import ProposalActionTooltip from '../../../../components/proposal-action-toolti
 import { useProposal } from '../../providers/ProposalProvider';
 
 import { APIProposalState } from 'modules/governance/api';
-import { shortenAddr } from 'web3/utils';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.scss';
+import ExternalLink from '../../../../../../components/custom/externalLink';
 
 type ProposalDetailsCardState = {
   cancelling: boolean;
@@ -71,9 +72,11 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
             <Small semiBold color="grey500">Created by</Small>
             <Grid flow="col" gap={8}>
               <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
-              <Paragraph type="p1" semiBold color="blue500" loading={!proposalCtx.proposal}>
-                {shortenAddr(proposalCtx.proposal?.proposer)}
-              </Paragraph>
+              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer!)}`}>
+                <Paragraph type="p1" semiBold color="blue500" loading={!proposalCtx.proposal}>
+                  {shortenAddr(proposalCtx.proposal?.proposer)}
+                </Paragraph>
+              </ExternalLink>
             </Grid>
           </Grid>
           <Grid flow="row" gap={4}>
@@ -100,7 +103,7 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
         <Small semiBold color="grey500">Description</Small>
-        <Paragraph type="p1" color="grey900" loading={!proposalCtx.proposal}>
+        <Paragraph type="p1" color="grey900" loading={!proposalCtx.proposal} wrap>
           {proposalCtx.proposal?.description}
         </Paragraph>
       </Grid>

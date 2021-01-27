@@ -18,15 +18,18 @@ export function getFormattedDuration(value?: number, endValue?: number): string 
 
   const start = new Date();
   const end = endValue !== undefined ? new Date(endValue!) : add(start, { seconds: value });
-  const duration = intervalToDuration({ start, end });
+
+  const duration = intervalToDuration({ start, end: start > end ? start : end });
 
   return formatDuration(duration, {
-    format: ['days', 'hours', 'minutes'],
+    format: ['months', 'days', 'hours', 'minutes'],
     delimiter: ' ',
     zero: true,
     locale: {
       formatDistance: (token, value) => {
         switch (token) {
+          case 'xMonths':
+            return `${value}mo`;
           case 'xDays':
             return `${value}d`;
           case 'xHours':

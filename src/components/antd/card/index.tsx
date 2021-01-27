@@ -3,20 +3,47 @@ import * as Antd from 'antd';
 import { CardProps as AntdCardProps } from 'antd/lib/card';
 import cx from 'classnames';
 
+import Icon from 'components/custom/icon';
+import Button from 'components/antd/button';
+
 import s from './styles.module.scss';
 
 export type CardProps = AntdCardProps & {
+  showExpandButton?: boolean;
+  expanded?: boolean;
   noPaddingBody?: boolean;
 };
 
 const Card: React.FunctionComponent<CardProps> = props => {
-  const { className, noPaddingBody, ...cardProps } = props;
+  const {
+    className,
+    showExpandButton = false,
+    expanded = true,
+    noPaddingBody = false,
+    children,
+    ...cardProps
+  } = props;
+
+  const [expandedState, setExpanded] = React.useState<boolean>(expanded);
+
+  React.useEffect(() => {
+    setExpanded(expanded);
+  }, [expanded]);
 
   return (
     <Antd.Card
-      className={cx(s.component, className, noPaddingBody && s.noPaddingBody )}
+      className={cx(s.component, className, noPaddingBody && s.noPaddingBody)}
       bordered={false}
+      extra={showExpandButton ? (
+        <Button
+          type="link"
+          className={s.arrow}
+          icon={<Icon type={expandedState ? 'chevron-top' : 'chevron-right'} />}
+          onClick={() => setExpanded(prevState => !prevState)}
+        />
+      ) : undefined}
       {...cardProps}>
+      {expandedState && children}
     </Antd.Card>
   );
 };

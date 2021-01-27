@@ -31,10 +31,18 @@
     border-bottom: 1px solid var(--color-border);
     vertical-align: top;
     color: var(--color-text);
+
+    &:first-of-type {
+      border-left: 2px solid transparent;
+    }
   }
 
   :global(.ant-table-tbody .ant-table-row:hover .ant-table-cell) {
     background-color: var(--color-overlay-bg);
+
+    &:first-of-type {
+      border-left: 2px solid var(--text-color-red500);
+    }
   }
 
   :global(.ant-table-footer) {

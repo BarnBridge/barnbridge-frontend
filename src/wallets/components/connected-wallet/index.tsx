@@ -4,6 +4,7 @@ import * as Antd from 'antd';
 import { useTheme } from 'components/providers/theme-provider';
 import Identicon from 'components/custom/identicon';
 import ExternalLink from 'components/custom/externalLink';
+import Icon from 'components/custom/icon';
 
 import { useWallet } from 'wallets/wallet';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
@@ -11,7 +12,6 @@ import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
 import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
-import { ReactComponent as BellSvg } from 'resources/svg/icons/bell.svg';
 import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
 import { ReactComponent as WalletSvg } from 'resources/svg/icons/nav-wallet.svg';
 import { ReactComponent as NetworkSvg } from 'resources/svg/icons/network.svg';
@@ -112,7 +112,9 @@ const ConnectedWallet: React.FunctionComponent = props => {
           }
           trigger="click"
         >
-          <Antd.Badge className={s.notificationBtn} dot count={0} showZero={false}><BellSvg /></Antd.Badge>
+          <Antd.Badge className={s.notificationBtn} dot count={0} showZero={false}>
+            <Icon type="bell" />
+          </Antd.Badge>
         </Antd.Popover>
         <div className={s.divider} />
         <Antd.Popover

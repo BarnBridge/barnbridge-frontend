@@ -44,7 +44,7 @@ const VotingHeader: React.FunctionComponent = () => {
             <BondSquareSvg className={s.bondIcon} />
             <Button
               type="link"
-              disabled={reward?.isZero()}
+              // disabled={reward?.isZero()}
               onClick={() => web3c.daoReward.claimSend()}>Claim</Button>
           </Grid>
         </Grid>
