@@ -1,12 +1,13 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import { CardTabListType } from 'antd/lib/card';
-import { SearchOutlined } from '@ant-design/icons';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
 import Input from 'components/antd/input';
+import Popover from 'components/antd/popover';
 import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
 import { Heading, Paragraph, Small } from 'components/custom/typography';
 import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
 import ProposalsTable from './components/proposals-table';
@@ -14,7 +15,6 @@ import ProposalsTable from './components/proposals-table';
 import { useDebounce } from 'hooks/useDebounce';
 
 import s from './styles.module.scss';
-import Popover from '../../../../components/antd/popover';
 
 const TABS: CardTabListType[] = [{
   key: 'all',
@@ -96,7 +96,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
         tabBarExtraContent={(
           <Input
             className={s.search}
-            prefix={<SearchOutlined />}
+            prefix={<Icons name="search-outlined" />}
             placeholder="Search proposal"
             onChange={handleSearchChange} />
         )}

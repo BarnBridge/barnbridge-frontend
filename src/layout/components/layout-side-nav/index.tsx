@@ -5,14 +5,13 @@ import cx from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import IF from 'components/custom/if';
-import Icon, { IconType } from 'components/custom/icon';
+import Icons, { NavIconNames } from 'components/custom/icon';
 import { useTheme } from 'components/providers/theme-provider';
 
 import s from './styles.module.scss';
 
 export type NavLinkProps = {
-  icon: IconType;
+  icon: NavIconNames;
   label: string;
   path: string;
   expanded: boolean;
@@ -33,8 +32,8 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
       <Grid flow="col" className={s.navLink}>
         <div className={cx(s.activeTick, isActivePath && s.activeTickVisible)} />
         <Button type="link" onClick={handleClick}>
-          <Icon type={icon} />
-          <IF condition={expanded}>{label}</IF>
+          <Icons name={icon} />
+          {expanded && label}
         </Button>
       </Grid>
     </Antd.Tooltip>
@@ -65,29 +64,27 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
       width={200}>
       <Grid flow="row" gap={48} className={s.headerWrap}>
         <Grid flow="col" gap={12} className={s.headerLogo}>
-          <Icon type="logo" />
-          <IF condition={expanded}>
-            <Icon type="barn-bridge" width="auto" color="grey900" />
-          </IF>
+          <Icons name="bond-square-token" />
+          {expanded && <Icons name="barnbridge" width="113" color="grey900" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink label="Pools" icon="nav-pools" path="/yield-farming" expanded={expanded} />
-          <NavLink label="Voting" icon="nav-voting" path="/governance" expanded={expanded} />
-          <NavLink label="Bonds" icon="nav-bonds" path="/bonds" expanded={expanded} />
+          <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={expanded} />
+          <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={expanded} />
+          <NavLink label="Bonds" icon="paper-bill-outlined" path="/bonds" expanded={expanded} />
         </Grid>
       </Grid>
       <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
         <Button type="link" onClick={handleThemeToggle}>
-          <Icon type={isDarkTheme ? 'theme-sun' : 'theme-moon'} />
-          <IF condition={expanded}>
-            {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
-          </IF>
+          <Icons name={isDarkTheme ? 'sun' : 'moon'} />
+          {expanded && (
+            <>
+              {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
+            </>
+          )}
         </Button>
         <Button type="link" className={s.hideLink} onClick={handleExpand}>
-          <Icon type="arrow-circle-right" />
-          <IF condition={expanded}>
-            Hide menu
-          </IF>
+          <Icons name="right-arrow-circle-outlined" />
+          {expanded && 'Hide menu'}
         </Button>
       </Grid>
     </Antd.Layout.Sider>

@@ -5,7 +5,7 @@ import Button from 'components/antd/button';
 import Input from 'components/antd/input';
 import Grid from 'components/custom/grid';
 import { Paragraph, Small } from 'components/custom/typography';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 
 export type AddZerosPopupProps = {
   max?: number;
@@ -68,7 +68,7 @@ const AddZerosPopup: React.FunctionComponent<PopoverProps & AddZerosPopupProps> 
       visible={visible}
       onVisibleChange={setVisible}
       {...popoverProps}>
-      <Button type="link" icon={<Icon type="plus-square" width={16} height={16} />} />
+      <Button type="link" icon={<Icons name="plus-square-outlined" width={16} height={16} />} />
     </Popover>
   );
 };

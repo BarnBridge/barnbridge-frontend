@@ -6,7 +6,7 @@ import Alert from 'components/antd/alert';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
-import ProposalVotesModal from '../proposal-voters-modal';
+import ProposalVotersModal from '../proposal-voters-modal';
 import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
 import { useProposal } from '../../providers/ProposalProvider';
 
@@ -139,7 +139,7 @@ const ProposalVotesCard: React.FunctionComponent = () => {
             {formatBigValue(proposalCtx.votingPower, 2)}
           </Paragraph>
         </Grid>
-        <Grid flow="row">
+        <Grid flow="row" gap={24}>
           {!proposalCtx.receipt?.hasVoted ? (
             <Grid gap={24} colsTemplate="1fr 1fr">
               <Button type="primary" className={s.actionBtn} onClick={handleVoteForModal}>Vote for</Button>
@@ -147,8 +147,8 @@ const ProposalVotesCard: React.FunctionComponent = () => {
             </Grid>
           ) : (
             <>
-              <Alert message={`You already voted ${!proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'} the proposal`} />
-              <Grid gap={24} colsTemplate="repeat(auto-fit, 1fr)">
+              <Alert message={`You already voted ${proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'} the proposal`} />
+              <Grid flow="col" gap={24} colsTemplate="1fr 1fr">
                 <Button type="primary" className={s.actionBtn} onClick={handleVoteChangeModal}>Change vote</Button>
                 <Button type="default" className={s.actionBtn} onClick={handleVoteCancelModal}>Cancel vote</Button>
               </Grid>
@@ -157,9 +157,12 @@ const ProposalVotesCard: React.FunctionComponent = () => {
         </Grid>
       </Grid>
 
-      <ProposalVotesModal
-        visible={state.showVotersModal}
-        onCancel={handleHideVotersModal} />
+      {state.showVotersModal && (
+        <ProposalVotersModal
+          visible
+          onCancel={handleHideVotersModal} />
+      )}
+
       <ProposalVoteModal
         visible={state.showVoteModal}
         voteState={state.voteState}

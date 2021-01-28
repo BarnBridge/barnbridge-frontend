@@ -1,7 +1,8 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { CloseOutlined, WarningOutlined } from '@ant-design/icons';
 import { useLocalStorage } from 'react-use-storage';
+
+import Icons from 'components/custom/icon';
 
 import s from './styles.module.css';
 
@@ -43,12 +44,12 @@ const Warn: React.FunctionComponent<WarnProps> = props => {
   return (
     <div className={s.component}>
       <div className={s.wrap}>
-        <WarningOutlined className={s.warnIcon} />
+        <Icons name="warning-outlined" color="red500" />
         <span className={s.warnText}>{props.text}</span>
       </div>
       {props.closable && (
         <Antd.Button className={s.closeBtn} type="link" onClick={handleClose}>
-          <CloseOutlined />
+          <Icons name="close" />
         </Antd.Button>
       )}
     </div>

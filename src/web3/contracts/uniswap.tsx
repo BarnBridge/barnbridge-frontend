@@ -1,6 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import Icons from 'components/custom/icon';
+
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
@@ -11,12 +13,10 @@ import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
-import { ReactComponent as UNISWAPIcon } from 'resources/svg/tokens/uniswap.svg';
-
 export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
 
 export const UNISWAPTokenMeta: TokenMeta = {
-  icon: <UNISWAPIcon key="uniswap" />,
+  icon: <Icons key="uniswap" name="uniswap-token" />,
   name: 'USDC_BOND_UNI_LP',
   address: CONTRACT_UNISWAP_ADDR,
   decimals: 18,

@@ -14,12 +14,6 @@
     align-items: center;
 }
 
-.warnIcon svg {
-    width: 24px;
-    height: 24px;
-    color: #997d3a;
-}
-
 .warnText {
     margin-left: 16px;
     font-family: Montserrat;

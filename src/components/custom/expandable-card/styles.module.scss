@@ -1,0 +1,23 @@
+.component:global(.ant-card) {
+  background: rgba(113, 121, 128, 0.04);
+  border: 1px solid rgba(113, 121, 128, 0.16);
+  border-radius: 4px;
+
+  > :global(.ant-card-head .ant-card-head-title) {
+    padding: 16px 0;
+  }
+
+  > :global(.ant-card-body) {
+    padding: 0;
+  }
+
+  .content {
+    padding: 16px 24px;
+  }
+
+  .footer {
+    height: 44px;
+    padding: 12px 24px;
+    border-top: 1px solid rgba(113, 121, 128, 0.16);
+  }
+}

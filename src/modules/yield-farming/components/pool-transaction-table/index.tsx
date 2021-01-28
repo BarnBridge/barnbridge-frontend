@@ -6,9 +6,13 @@ import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
 import cx from 'classnames';
 
-import Dropdown, { DropdownOption } from 'components/antd/dropdown';
 import ExternalLink from 'components/custom/externalLink';
-import PoolTxListProvider, { PoolTxListItem, usePoolTxList } from 'modules/yield-farming/components/pool-tx-list-provider';
+import Grid from 'components/custom/grid';
+import Select, { SelectOption } from 'components/antd/select';
+import PoolTxListProvider, {
+  PoolTxListItem,
+  usePoolTxList
+} from 'modules/yield-farming/components/pool-tx-list-provider';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -25,7 +29,7 @@ import s from './styles.module.css';
 const DEPOSITS_KEY = 'deposits';
 const WITHDRAWALS_KEY = 'withdrawals';
 
-const TypeFilters: DropdownOption[] = [
+const TypeFilters: SelectOption[] = [
   { value: 'all', label: 'All transactions' },
   { value: DEPOSITS_KEY, label: 'Deposits' },
   { value: WITHDRAWALS_KEY, label: 'Withdrawals' },
@@ -108,8 +112,8 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
 
   const [, forceRender] = React.useState<{}>({});
 
-  const tokenFilterOptions = React.useMemo<DropdownOption[]>(() => {
-    const options: DropdownOption[] = [];
+  const tokenFilterOptions = React.useMemo<SelectOption[]>(() => {
+    const options: SelectOption[] = [];
 
     if (props.stableToken) {
       options.push(
@@ -182,28 +186,28 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
       <div className={s.header}>
         <div className={s.headerLabel}>{props.label}</div>
         <div className={s.filters}>
-          <Dropdown
-            button
-            label="Tokens"
-            items={tokenFilterOptions}
-            selected={tokenFilterRef.current}
-            disabled={poolTxList.loading}
-            onSelect={(value: string | number) => {
-              tokenFilterRef.current = String(value);
-              forceRender({});
-            }}
-          />
-          <Dropdown
-            button
-            label="Show"
-            items={TypeFilters}
-            selected={typeFilterRef.current}
-            disabled={poolTxList.loading}
-            onSelect={(value: string | number) => {
-              typeFilterRef.current = String(value);
-              forceRender({});
-            }}
-          />
+          <Grid flow="col" gap={24}>
+            <Select
+              label="Tokens"
+              options={tokenFilterOptions}
+              disabled={poolTxList.loading}
+              value={tokenFilterRef.current}
+              onSelect={(value: string | number) => {
+                tokenFilterRef.current = String(value);
+                forceRender({});
+              }}
+            />
+            <Select
+              label="Show"
+              options={TypeFilters}
+              disabled={poolTxList.loading}
+              value={typeFilterRef.current}
+              onSelect={(value: string | number) => {
+                typeFilterRef.current = String(value);
+                forceRender({});
+              }}
+            />
+          </Grid>
         </div>
       </div>
       <Antd.Table

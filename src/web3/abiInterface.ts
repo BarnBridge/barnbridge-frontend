@@ -5,6 +5,23 @@ export type AbiFragmentType = FunctionFragment;
 export type AbiDecodeResult = Result;
 export type AbiFunctionFragment = FunctionFragment;
 
+function parseValues(values: Array<any>): Array<any> {
+  return values.map(item => {
+    if (typeof item === 'string') {
+      try {
+        const value = JSON.parse(item);
+
+        if (typeof value === 'object') {
+          return value;
+        }
+      } catch {
+      }
+    }
+
+    return item;
+  });
+}
+
 export class AbiInterface {
   abi: AbiInterfaceType;
 
@@ -18,21 +35,15 @@ export class AbiInterface {
   }
 
   encodeFunctionData(functionFragment: AbiFunctionFragment | string, values?: Array<any>): string {
-    return this.abi.encodeFunctionData(functionFragment, values);
+    return this.abi.encodeFunctionData(functionFragment, parseValues(values ?? []));
   }
 
-  static encodeFunctionData(functionFragment: AbiFunctionFragment | string, data: Array<any>): string | undefined {
+  static encodeFunctionData(functionFragment: AbiFunctionFragment | string, values?: Array<any>): string | undefined {
     try {
       const fragment = typeof functionFragment === 'string'
         ? FunctionFragment.fromString(functionFragment)
         : functionFragment;
-      return defaultAbiCoder.encode(fragment.inputs, data.map(dt => {
-        try {
-          return JSON.parse(dt);
-        } catch {
-          return dt;
-        }
-      }));
+      return defaultAbiCoder.encode(fragment.inputs, parseValues(values ?? []));
     } catch (e) {
       console.error('AbiInterface::encodeFunctionData', e.message);
     }

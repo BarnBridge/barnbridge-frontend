@@ -37,7 +37,7 @@ export function useProposalVoters(): ProposalVotersContextType {
 }
 
 const ProposalVotersProvider: React.FunctionComponent = props => {
-  const {children} = props;
+  const { children } = props;
 
   const proposalCtx = useProposal();
   const [state, setState] = React.useState<ProposalVotersProviderState>(InitialState);
@@ -68,7 +68,7 @@ const ProposalVotersProvider: React.FunctionComponent = props => {
           votes: [],
         }));
       });
-  }, [proposalCtx.proposal?.proposalId, state.page, state.supportFilter]);
+  }, [proposalCtx.proposal, state.page, state.supportFilter]);
 
   function changeSupportFilter(supportFilter?: boolean) {
     setState(prevState => ({

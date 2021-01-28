@@ -4,7 +4,7 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
@@ -49,18 +49,18 @@ const GovernanceView: React.FunctionComponent = () => {
         onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
-          tab={<><Icon type="nav-overview" /> Overview</>} />
+          tab={<><Icons name="bar-charts-outlined" /> Overview</>} />
         <Tabs.Tab
           key="wallet"
           disabled={!wallet?.account}
-          tab={<><Icon type="nav-wallet" /> Wallet</>} />
+          tab={<><Icons name="wallet-outlined" /> Wallet</>} />
         <Tabs.Tab
           key="proposals"
-          tab={<><Icon type="nav-proposals" /> Proposals</>} />
+          tab={<><Icons name="proposal-outlined" /> Proposals</>} />
         <Tabs.Tab
           key="discussions"
           disabled
-          tab={<><Icon type="nav-discussions" /> Discussions</>} />
+          tab={<><Icons name="chats-outlined" /> Discussions</>} />
       </Tabs>
       <div className={s.view}>
         <Switch>

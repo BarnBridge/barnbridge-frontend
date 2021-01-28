@@ -24,7 +24,7 @@ function classNamesFromProps(props: CommonProps) {
   return cx(
     bold && s.bold,
     semiBold && s.semiBold,
-    color && `clr-${color}`,
+    color && `clr-${color}-prior`,
     align && `text-${align}`,
     ellipsis && 'text-ellipsis',
     wrap && 'text-wrap',

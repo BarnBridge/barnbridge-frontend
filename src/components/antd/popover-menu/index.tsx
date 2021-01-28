@@ -3,14 +3,12 @@ import * as Antd from 'antd';
 import { PopoverProps as AntdPopoverProps } from 'antd/lib/popover';
 import { MenuInfo } from 'rc-menu/lib/interface';
 
-import { Paragraph } from 'components/custom/typography';
-
 import s from './styles.module.scss';
 
 export type PopoverMenuItem = {
   key: string | number;
-  icon: React.ReactNode;
-  title: React.ReactNode;
+  icon?: React.ReactNode;
+  title?: React.ReactNode;
 };
 
 export type PopoverMenuProps = AntdPopoverProps & {
@@ -31,7 +29,7 @@ const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
   return (
     <Antd.Popover
       ref={popoverRef}
-      className={s.component}
+      overlayClassName={s.component}
       placement="bottom"
       trigger="click"
       content={(
@@ -39,7 +37,7 @@ const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
           {items?.map(item => (
             <Antd.Menu.Item key={item.key}>
               {item.icon}
-              <Paragraph type="p1" semiBold>{item.title}</Paragraph>
+              {item.title}
             </Antd.Menu.Item>
           ))}
         </Antd.Menu>

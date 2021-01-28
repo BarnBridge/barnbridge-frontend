@@ -69,8 +69,9 @@ $sizes: 900, 800, 700, 600, 500, 400, 300, 200, 100, 50;
 
 @each $color in $colors {
   @each $size in $sizes {
-    .clr-#{$color}#{$size} {
-      color: var(--text-color-#{$color}#{$size});
+    .clr-#{$color}#{$size},
+    .clr-#{$color}#{$size}-prior {
+      color: var(--text-color-#{$color}#{$size}) !important;
     }
   }
 }

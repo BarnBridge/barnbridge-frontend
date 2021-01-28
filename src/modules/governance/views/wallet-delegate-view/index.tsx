@@ -6,7 +6,7 @@ import Card from 'components/antd/card';
 import Button from 'components/antd/button';
 import Select from 'components/antd/select';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { Paragraph, Small } from 'components/custom/typography';
@@ -143,7 +143,7 @@ const WalletDelegateView: React.FunctionComponent = () => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="auto" align="center">
       <Grid flow="col" gap={12} align="center">
-        <Icon type="bond" width={40} height={40} />
+        <Icons name="bond-token" width={40} height={40} />
         <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
       </Grid>
 

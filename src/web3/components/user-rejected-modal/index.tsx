@@ -1,10 +1,10 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps } from 'antd/lib/modal';
 
-import { ReactComponent as ErrorTriangle } from 'resources/svg/icons/error-triangle.svg';
-
-import s from './styles.module.css';
+import Modal, { ModalProps } from 'components/antd/modal';
+import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import { Heading, Paragraph } from 'components/custom/typography';
 
 export type UserRejectedModalProps = ModalProps & {};
 
@@ -12,21 +12,25 @@ const UserRejectedModal: React.FunctionComponent<UserRejectedModalProps> = props
   const { ...modalProps } = props;
 
   return (
-    <Antd.Modal
-      className={s.component}
-      centered
-      footer={[]}
-      {...modalProps}
-    >
-      <ErrorTriangle className={s.errorIcon} />
-      <div className={s.headerLabel}>Error</div>
-      <div className={s.text}>Transaction rejected</div>
-      <Antd.Button
-        type="primary"
-        className={s.dismissBtn}
-        onClick={props.onCancel}
-      >Dismiss</Antd.Button>
-    </Antd.Modal>
+    <Modal centered width={315} {...modalProps}>
+      <Grid flow="row" gap={32}>
+        <Grid flow="row" gap={16} align="center">
+          <Icons name="warning-outlined" width={40} height={40} color="red500" />
+          <Grid flow="row" gap={8} align="center">
+            <Heading type="h3" semiBold color="grey900">
+              Error
+            </Heading>
+            <Paragraph type="p2" semiBold color="grey500">
+              Transaction rejected
+            </Paragraph>
+          </Grid>
+        </Grid>
+        <Button
+          type="primary"
+          onClick={modalProps.onCancel}>
+          Dismiss</Button>
+      </Grid>
+    </Modal>
   );
 };
 

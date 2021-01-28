@@ -35,10 +35,14 @@
   @include text-wrap;
 }
 
-$textAligns: left, centet, right;
+$textAligns: left, center, right;
 
 @each $textAlign in $textAligns {
   .text-#{$textAlign} {
     text-align: #{$textAlign};
   }
+}
+
+.inline-block {
+  display: inline-block;
 }

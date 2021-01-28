@@ -9,7 +9,7 @@ import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
-import Icon, { IconType } from 'components/custom/icon';
+import Icons, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { Label, Paragraph, Small } from 'components/custom/typography';
@@ -75,18 +75,18 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
   const [state, setState] = useMergeState<PoolTokenRowState>(InitialState);
 
-  const icon = React.useMemo<IconType | undefined>(() => {
+  const icon = React.useMemo<TokenIconNames | undefined>(() => {
     switch (token) {
       case USDCTokenMeta:
-        return 'usdc';
+        return 'usdc-token';
       case DAITokenMeta:
-        return 'dai';
+        return 'dai-token';
       case SUSDTokenMeta:
-        return 'susd';
+        return 'susd-token';
       case UNISWAPTokenMeta:
-        return 'uniswap';
+        return 'uniswap-token';
       case BONDTokenMeta:
-        return 'bond';
+        return 'bond-token';
       default:
         return;
     }
@@ -240,7 +240,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
       <Grid flow="col" gap={12} align="center">
-        {icon && <Icon type={icon} width={40} height={40} />}
+        {icon && <Icons name={icon} width={40} height={40} />}
         <Paragraph type="p1" semiBold color="grey900">
           {token.name}
         </Paragraph>
@@ -304,7 +304,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 label="Amount"
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
-                  tokenIcon="bond"
+                  tokenIcon="bond-token"
                   tokenLabel={token.name}
                   placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
                   disabled={state.saving}

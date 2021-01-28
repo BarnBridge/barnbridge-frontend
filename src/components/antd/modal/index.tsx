@@ -3,7 +3,7 @@ import * as Antd from 'antd';
 import { ModalProps as AntdModalProps } from 'antd/lib/modal';
 import cx from 'classnames';
 
-import { ReactComponent as CloseSvg } from 'resources/svg/icons/close.svg';
+import Icons from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -18,7 +18,7 @@ const Modal: React.FunctionComponent<ModalProps> = props => {
     <Antd.Modal
       className={cx(s.component, className)}
       footer={null}
-      closeIcon={<CloseSvg />}
+      closeIcon={<Icons name="close-circle-outlined" />}
       {...modalProps}>
       {children}
     </Antd.Modal>

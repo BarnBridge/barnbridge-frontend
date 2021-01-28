@@ -2,8 +2,9 @@ import React from 'react';
 import * as ReCharts from 'recharts';
 import BigNumber from 'bignumber.js';
 
+import Select, { SelectOption } from 'components/antd/select';
 import IconsSet from 'components/custom/icons-set';
-import Dropdown, { DropdownOption } from 'components/antd/dropdown';
+import Grid from 'components/custom/grid';
 import PoolTxChartProvider, { usePoolTxChart } from 'modules/yield-farming/components/pool-tx-chart-provider';
 
 import { formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
@@ -13,7 +14,7 @@ import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import s from './styles.module.css';
 
-const PoolFilters: DropdownOption[] = [
+const PoolFilters: SelectOption[] = [
   {
     value: 'stable',
     label: getPoolNames(PoolTypes.STABLE).join('/'),
@@ -28,7 +29,7 @@ const PoolFilters: DropdownOption[] = [
   },
 ];
 
-const TypeFilters: DropdownOption[] = [
+const TypeFilters: SelectOption[] = [
   { value: 'all', label: 'All transactions' },
   { value: 'deposits', label: 'Deposits' },
   { value: 'withdrawals', label: 'Withdrawals' },
@@ -42,7 +43,7 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
   const [periodFilter, setPeriodFilter] = React.useState<string | number>('all');
   const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
 
-  const PeriodFilters = React.useMemo<DropdownOption[]>(() => {
+  const PeriodFilters = React.useMemo<SelectOption[]>(() => {
     const filters = [{ value: 'all', label: 'All epochs' }];
 
     if (poolFilter === PoolTypes.STABLE) {
@@ -107,27 +108,27 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
       <div className={s.header}>
         <div className={s.headerLabel}>
           <IconsSet className={s.iconSet} icons={getPoolIcons(poolFilter)} />
-          <Dropdown
-            items={PoolFilters}
-            selected={poolFilter}
-            onSelect={(value: string | number) => setPoolFilter(value as PoolTypes)}
+          <Select
+            options={PoolFilters}
+            value={poolFilter}
+            onSelect={setPoolFilter}
           />
         </div>
         <div className={s.filters}>
-          <Dropdown
-            button
-            label="Period"
-            items={PeriodFilters}
-            selected={periodFilter}
-            onSelect={setPeriodFilter}
-          />
-          <Dropdown
-            button
-            label="Show"
-            items={TypeFilters}
-            selected={typeFilter}
-            onSelect={setTypeFilter}
-          />
+          <Grid flow="col" gap={24}>
+            <Select
+              label="Period"
+              options={PeriodFilters}
+              value={periodFilter}
+              onSelect={setPeriodFilter}
+            />
+            <Select
+              label="Show"
+              options={TypeFilters}
+              value={typeFilter}
+              onSelect={setTypeFilter}
+            />
+          </Grid>
         </div>
       </div>
       <div className={s.chart}>

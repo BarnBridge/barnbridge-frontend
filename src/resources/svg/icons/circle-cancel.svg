@@ -1,6 +1,0 @@
-<svg fill="none" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-    <path d="m20 40c11.046 0 20-8.9543 20-20 0-11.046-8.9543-20-20-20-11.046 0-20 8.9543-20 20 0 11.046 8.9543 20 20 20z" clip-rule="evenodd" fill="#FF4339" fill-opacity=".08" fill-rule="evenodd"/>
-    <path d="m26.222 13.778-3.8225 3.8225" stroke="#FF4339" stroke-linecap="round" stroke-width="2"/>
-    <path d="m24.675 15.323-10.899 10.899" stroke="#FF4339" stroke-linecap="round" stroke-width="2"/>
-    <path d="m26.223 26.222-12.445-12.445" stroke="#FF4339" stroke-linecap="round" stroke-width="2"/>
-</svg>
