@@ -4,17 +4,13 @@ import * as Antd from 'antd';
 import { useTheme } from 'components/providers/theme-provider';
 import Identicon from 'components/custom/identicon';
 import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 
 import { useWallet } from 'wallets/wallet';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
-import { ReactComponent as ChevronTopSvg } from 'resources/svg/icons/chevron-top.svg';
-import { ReactComponent as GlobeSvg } from 'resources/svg/icons/globe.svg';
-import { ReactComponent as WalletSvg } from 'resources/svg/icons/nav-wallet.svg';
-import { ReactComponent as NetworkSvg } from 'resources/svg/icons/network.svg';
 
 import s from './styles.module.css';
 
@@ -41,7 +37,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
               <div className={s.stats}>
                 <Antd.Row className={s.statRow}>
                   <Antd.Col>
-                    <GlobeSvg className={s.statIcon} />
+                    <Icons name="earth" className={s.statIcon} />
                   </Antd.Col>
                   <Antd.Col>
                     <span className={s.statName}>Status</span>
@@ -52,7 +48,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
                 </Antd.Row>
                 <Antd.Row className={s.statRow}>
                   <Antd.Col>
-                    <WalletSvg className={s.statIcon} />
+                    <Icons name="wallet-outlined" className={s.statIcon} />
                   </Antd.Col>
                   <Antd.Col>
                     <span className={s.statName}>Wallet</span>
@@ -113,7 +109,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
           trigger="click"
         >
           <Antd.Badge className={s.notificationBtn} dot count={0} showZero={false}>
-            <Icon type="bell" />
+            <Icons name="bell" />
           </Antd.Badge>
         </Antd.Popover>
         <div className={s.divider} />
@@ -136,7 +132,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
               <div className={s.stats}>
                 <Antd.Row className={s.statRow}>
                   <Antd.Col>
-                    <GlobeSvg className={s.statIcon} />
+                    <Icons name="earth" className={s.statIcon} />
                   </Antd.Col>
                   <Antd.Col>
                     <span className={s.statName}>Status</span>
@@ -147,7 +143,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
                 </Antd.Row>
                 <Antd.Row className={s.statRow}>
                   <Antd.Col>
-                    <WalletSvg className={s.statIcon} />
+                    <Icons name="wallet-outlined" className={s.statIcon} />
                   </Antd.Col>
                   <Antd.Col>
                     <span className={s.statName}>Wallet</span>
@@ -158,7 +154,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
                 </Antd.Row>
                 <Antd.Row className={s.statRow}>
                   <Antd.Col>
-                    <NetworkSvg className={s.statIcon} />
+                    <Icons name="network" className={s.statIcon} />
                   </Antd.Col>
                   <Antd.Col>
                     <span className={s.statName}>Network</span>
@@ -189,7 +185,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
               </span>
             </Antd.Col>
             <Antd.Col>
-              <ChevronTopSvg className={s.walletPreviewArrow} />
+              <Icons name="chevron-right" rotate={270} className={s.walletPreviewArrow} />
             </Antd.Col>
           </Antd.Row>
         </Antd.Popover>

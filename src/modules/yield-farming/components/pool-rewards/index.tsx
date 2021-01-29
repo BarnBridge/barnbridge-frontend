@@ -1,14 +1,13 @@
 import React from 'react';
 
+import Button from 'components/antd/button';
+import Field from 'components/custom/field';
+import Icons from 'components/custom/icon';
+import PoolHarvestModal from '../pool-harvest-modal';
+
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue } from 'web3/utils';
-
-import Field from 'components/custom/field';
-import Button from 'components/antd/button';
-import PoolHarvestModal from '../pool-harvest-modal';
-
-import { ReactComponent as BondSquareSvg } from 'resources/svg/tokens/bond-square.svg';
 
 import s from './styles.module.scss';
 
@@ -29,7 +28,7 @@ const PoolRewards: React.FunctionComponent = () => {
           className={s.field}>
           <div className={s.fieldContent}>
             <span>{formatBONDValue(web3c.aggregated.totalCurrentReward)}</span>
-            <BondSquareSvg className={s.bondIcon} />
+            <Icons name="bond-square-token" />
             {wallet.isActive && (
               <Button
                 type="link"
@@ -47,7 +46,7 @@ const PoolRewards: React.FunctionComponent = () => {
           className={s.field}>
           <div className={s.fieldContent}>
             <span>{formatBONDValue(web3c.bond.balance)}</span>
-            <BondSquareSvg className={s.bondIcon} />
+            <Icons name="bond-square-token" />
           </div>
         </Field>
 
@@ -57,7 +56,7 @@ const PoolRewards: React.FunctionComponent = () => {
           className={s.field}>
           <div className={s.fieldContent}>
             <span>{formatBONDValue(web3c.aggregated.totalPotentialReward)}</span>
-            <BondSquareSvg className={s.bondIcon} />
+            <Icons name="bond-square-token" />
           </div>
         </Field>
       </div>

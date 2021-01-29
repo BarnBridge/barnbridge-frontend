@@ -5,7 +5,7 @@ import { useHistory } from 'react-router';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import { Heading, Paragraph } from 'components/custom/typography';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import ProposalVoteResultsCard from './components/proposal-vote-results-card';
 import ProposalDetailsCard from './components/proposal-details-card';
 import ProposalStatusCard from './components/proposal-status-card';
@@ -79,33 +79,36 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
   }
 
   return (
-    <Grid flow="row" gap={32}>
-      <Grid flow="col">
+    <Grid flow="row" gap={32} align="center">
+      <Grid flow="col" width={1070}>
         <Button
           type="link"
-          icon={<Icon type="arrow-left" />}
+          icon={<Icons name="left-arrow" />}
           onClick={handleBackClick}>Proposals</Button>
       </Grid>
 
-      <Grid flow="col" gap={32} align="start" justify="space-between">
+      <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
         <Heading type="h2" semiBold color="grey900" loading={!proposalCtx.proposal}>
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
         </Heading>
-        {APIProposalState.ACCEPTED === proposalState && (
-          <Button
-            type="primary"
-            loading={state.executing}
-            onClick={handleQueueForExecution}>Queue for execution</Button>
-        )}
-        {APIProposalState.GRACE === proposalState && (
-          <Button
-            type="primary"
-            loading={state.executing}
-            onClick={handleExecuteProposal}>Execute proposal</Button>
-        )}
+
+        <Grid flow="col">
+          {APIProposalState.ACCEPTED === proposalState && (
+            <Button
+              type="primary"
+              loading={state.executing}
+              onClick={handleQueueForExecution}>Queue for execution</Button>
+          )}
+          {APIProposalState.GRACE === proposalState && (
+            <Button
+              type="primary"
+              loading={state.executing}
+              onClick={handleExecuteProposal}>Execute proposal</Button>
+          )}
+        </Grid>
       </Grid>
 
-      <Grid flow="col" gap={32} colsTemplate="1fr minmax(0px, 428px)">
+      <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0px, 428px)" width={1070}>
         <Grid flow="row" gap={32}>
           {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState as any) && (
             <ProposalVoteResultsCard />

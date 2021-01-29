@@ -9,12 +9,11 @@ import DatePicker from 'components/antd/datepicker';
 import Button from 'components/antd/button';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { Small } from 'components/custom/typography';
+import Icons from 'components/custom/icon';
 
 import { getFormattedDuration, inRange, isValidAddress } from 'utils';
 import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-
-import { ReactComponent as BondSvg } from 'resources/svg/tokens/bond.svg';
 
 import s from './styles.module.scss';
 
@@ -163,7 +162,7 @@ const WalletLockView: React.FunctionComponent = () => {
     <div className={s.component}>
       <div className={s.headerRow}>
         <div className={s.tokenCol}>
-          <BondSvg /> BOND
+          <Icons name="bond-token" /> BOND
         </div>
         <div>
           <label>STAKED BALANCE</label>

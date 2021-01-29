@@ -8,7 +8,7 @@ import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import { Paragraph, Small } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
@@ -58,7 +58,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="auto" align="center">
       <Grid flow="col" gap={12} align="center">
-        <Icon type="bond" width={40} height={40} />
+        <Icons name="bond-token" width={40} height={40} />
         <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
       </Grid>
 
@@ -95,7 +95,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 label="Amount"
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
-                  tokenIcon="bond"
+                  tokenIcon="bond-token"
                   tokenLabel="BOND"
                   placeholder={`0 (Max ${formatBONDValue(web3c.daoBarn.balance ?? ZERO_BIG_NUMBER)})`}
                   disabled={state.saving}

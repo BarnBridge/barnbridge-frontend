@@ -3,7 +3,7 @@ import * as Antd from 'antd';
 import { CardProps as AntdCardProps } from 'antd/lib/card';
 import cx from 'classnames';
 
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import Button from 'components/antd/button';
 
 import s from './styles.module.scss';
@@ -38,7 +38,7 @@ const Card: React.FunctionComponent<CardProps> = props => {
         <Button
           type="link"
           className={s.arrow}
-          icon={<Icon type={expandedState ? 'chevron-top' : 'chevron-right'} />}
+          icon={<Icons name="chevron-right" rotate={expandedState ? 270 : 0} />}
           onClick={() => setExpanded(prevState => !prevState)}
         />
       ) : undefined}

@@ -5,20 +5,26 @@ import {
   SelectValue as AntdSelectValue,
   OptionProps as AntdOptionProps,
 } from 'antd/lib/select';
-import Icon from 'components/custom/icon';
 import cx from 'classnames';
+
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import { Paragraph } from 'components/custom/typography';
 
 import s from './styles.module.scss';
 
-export type SelectProps<T> = AntdSelectProps<T> & {
-  options: (Partial<AntdOptionProps> & {
-    label: React.ReactNode;
-    value: string | number;
-  })[];
+export type SelectOption = Partial<AntdOptionProps> & {
+  label: React.ReactNode;
+  value: string | number;
 };
 
-const Select = <T extends AntdSelectValue, >(props: SelectProps<T>) => {
-  const { className, loading, options, ...selectProps } = props;
+export type SelectProps<T> = AntdSelectProps<T> & {
+  label?: React.ReactNode;
+  options: SelectOption[];
+};
+
+const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
+  const { className, label, loading, options, ...selectProps } = props;
 
   return (
     <div className={s.component}>
@@ -26,11 +32,21 @@ const Select = <T extends AntdSelectValue, >(props: SelectProps<T>) => {
       <Antd.Select<T>
         className={cx(s.select, className, loading && s.loading)}
         dropdownClassName={s.dropdown}
-        suffixIcon={<Icon type="dropdown-arrow" />}
+        suffixIcon={<Icons name="dropdown-arrow" />}
+        optionLabelProp="label"
         {...selectProps}>
-        {options.map(({ label, value, ...optProps }) => (
-          <Antd.Select.Option key={value} value={value} {...optProps}>
-            {label}
+        {options.map(option => (
+          <Antd.Select.Option
+            {...option}
+            key={option.value}
+            label={(
+              <Grid flow="col" gap={12}>
+                {label && <Paragraph type="p2">{label}</Paragraph>}
+                <Paragraph type="p2" semiBold>{option.label}</Paragraph>
+              </Grid>
+            )}
+            value={option.value}>
+            {option.label}
           </Antd.Select.Option>
         ))}
       </Antd.Select>

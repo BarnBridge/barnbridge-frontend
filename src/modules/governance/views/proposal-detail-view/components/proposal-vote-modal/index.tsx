@@ -12,6 +12,7 @@ import { useProposal } from '../../providers/ProposalProvider';
 
 import { formatBigValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
@@ -40,6 +41,14 @@ export type ProposalVoteModalProps = {
   voteState: VoteState;
 };
 
+type ProposalVoteModalState = {
+  submitting: boolean;
+};
+
+const InitialState: ProposalVoteModalState = {
+  submitting: false,
+};
+
 const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
@@ -47,47 +56,67 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
   const proposalCtx = useProposal();
   const web3c = useWeb3Contracts();
 
+  const [state, setState] = useMergeState<ProposalVoteModalState>(InitialState);
+
   async function handleSubmit(values: FormState) {
-    if (!proposalCtx.proposal || !values.gasPrice) {
+    if (!proposalCtx.proposal) {
       return;
     }
 
+    setState({ submitting: true });
+
     const { proposalId } = proposalCtx.proposal;
+    const { gasPrice = 0 } = values;
 
     try {
+      await form.validateFields();
       let r: any;
 
       if (voteState === VoteState.VoteFor) {
-        r = await web3c.daoGovernance.actions.castVote(values.gasPrice, proposalId, true);
+        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, true);
       } else if (voteState === VoteState.VoteAgainst) {
-        r = await web3c.daoGovernance.actions.castVote(values.gasPrice, proposalId, false);
+        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, false);
       } else if (voteState === VoteState.VoteChange) {
-        r = await web3c.daoGovernance.actions.castVote(values.gasPrice, proposalId, values.changeOption!);
+        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, values.changeOption!);
       } else if (voteState === VoteState.VoteCancel) {
-        r = await web3c.daoGovernance.actions.cancelVote(values.gasPrice, proposalId);
+        await web3c.daoGovernance.actions.cancelVote(gasPrice, proposalId);
       } else if (voteState === VoteState.VoteForAbrogation) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(values.gasPrice, proposalId, true);
+        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, true);
       } else if (voteState === VoteState.VoteAgainstAbrogation) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(values.gasPrice, proposalId, false);
+        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, false);
       } else if (voteState === VoteState.VoteCancelAbrogation) {
-        r = await web3c.daoGovernance.actions.abrogationCancelVote(values.gasPrice, proposalId);
+        r = await web3c.daoGovernance.actions.abrogationCancelVote(gasPrice, proposalId);
       }
 
+      console.log("R", r);
+      props.onCancel?.();
       proposalCtx.reload();
     } catch {
-      //
     }
+
+    setState({ submitting: false });
   }
 
   const title = React.useMemo<string | undefined>(() => {
     switch (voteState) {
       case VoteState.VoteFor:
       case VoteState.VoteAgainst:
+      case VoteState.VoteForAbrogation:
+      case VoteState.VoteAgainstAbrogation:
         return 'Confirm your vote';
+      case VoteState.VoteCancel:
+      case VoteState.VoteCancelAbrogation:
+        return 'Cancel your vote';
       case VoteState.VoteChange:
         return 'Change your vote';
-      case VoteState.VoteCancel:
-        return 'Cancel your vote';
+    }
+  }, [voteState]);
+
+  React.useEffect(() => {
+    if (voteState === VoteState.VoteChange) {
+      form.setFieldsValue({
+        changeOption: proposalCtx.receipt?.support,
+      });
     }
   }, [voteState]);
 
@@ -115,7 +144,7 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
             <Paragraph type="p1" semiBold color="grey500">Votes</Paragraph>
           </Grid>
           <Paragraph type="p2" semiBold color="grey500" className="text-center">
-            Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint.
+            {proposalCtx.proposal?.title}
           </Paragraph>
         </Grid>
         <div className={s.delimiter} />
@@ -124,10 +153,8 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
             <Form.Item
               name="changeOption"
               label="Vote"
-              rules={[
-                { required: true, message: 'Required' },
-              ]}>
-              <Antd.Radio.Group className={s.changeGroup}>
+              rules={[{ required: true, message: 'Required' }]}>
+              <Antd.Radio.Group className={s.changeGroup} disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={<Paragraph type="p1" semiBold color="grey900">For</Paragraph>}
@@ -142,18 +169,29 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
           <Form.Item
             name="gasPrice"
             label="Gas Fee (Gwei)"
-            rules={[
-              { required: true, message: 'Required' },
-            ]}>
-            <GasFeeList />
+            rules={[{ required: true, message: 'Required' }]}>
+            <GasFeeList disabled={state.submitting} />
           </Form.Item>
 
-          <Form.Item>
+          <Form.Item shouldUpdate>
             {({ getFieldsValue }) => {
               const { changeOption } = getFieldsValue();
 
+              let isDisabled = false;
+
+              if (voteState === VoteState.VoteChange) {
+                if (proposalCtx.receipt?.support === changeOption) {
+                  isDisabled = true;
+                }
+              }
+
               return (
-                <Button htmlType="submit" type="primary" className={s.actionBtn}>
+                <Button
+                  htmlType="submit"
+                  type="primary"
+                  loading={state.submitting}
+                  disabled={isDisabled}
+                  className={s.actionBtn}>
                   {voteState === VoteState.VoteFor && 'Vote for proposal'}
                   {voteState === VoteState.VoteAgainst && 'Vote against proposal'}
                   {voteState === VoteState.VoteCancel && 'Cancel vote'}

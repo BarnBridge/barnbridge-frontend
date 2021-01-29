@@ -3,6 +3,7 @@ import * as Antd from 'antd';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
 import { Heading, Label, Paragraph } from 'components/custom/typography';
 import VotingDetailedModal from '../voting-detailed-modal';
 
@@ -10,8 +11,6 @@ import { inRange, isValidAddress } from 'utils';
 import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { useWeekCountdown } from 'hooks/useCountdown';
-
-import { ReactComponent as BondSquareSvg } from 'resources/svg/tokens/bond-square.svg';
 
 import s from './styles.module.scss';
 
@@ -41,7 +40,7 @@ const VotingHeader: React.FunctionComponent = () => {
           <Paragraph type="p2" color="grey500">Current reward</Paragraph>
           <Grid flow="col" gap={16}>
             <Heading type="h3" bold color="grey900">{formatBONDValue(reward)}</Heading>
-            <BondSquareSvg className={s.bondIcon} />
+            <Icons name="bond-square-token" />
             <Button
               type="link"
               disabled={reward?.isZero()}
@@ -53,7 +52,7 @@ const VotingHeader: React.FunctionComponent = () => {
           <Paragraph type="p2" color="grey500">Bond Balance</Paragraph>
           <Grid flow="col" gap={16}>
             <Heading type="h3" bold color="grey900">{formatBONDValue(bondBalance)}</Heading>
-            <BondSquareSvg className={s.bondIcon} />
+            <Icons name="bond-square-token" />
           </Grid>
         </Grid>
         <div className={s.delimiter} />

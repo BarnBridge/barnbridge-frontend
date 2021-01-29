@@ -4,7 +4,7 @@ import { TooltipPropsWithTitle } from 'antd/lib/tooltip';
 import cx from 'classnames';
 
 import Button from 'components/antd/button';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -25,7 +25,7 @@ const Tooltip: React.FunctionComponent<TooltipProps> = props => {
       {children}
       {type === 'info' && (
         <Button type="link">
-          <Icon type="info-circle" width={16} height={16} />
+          <Icons name="info-outlined" width={16} height={16} />
         </Button>
       )}
     </Antd.Tooltip>

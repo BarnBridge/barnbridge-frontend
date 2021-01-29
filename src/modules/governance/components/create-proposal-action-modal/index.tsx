@@ -13,14 +13,16 @@ import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import { Heading, Small } from 'components/custom/typography';
 import AddZerosPopup from '../add-zeros-popup';
+import SimulatedProposalActionModal from '../simulated-proposal-action-modal';
 
 import { fetchContractABI } from 'web3/utils';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
 import Web3Contract from 'web3/contract';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
-export type ProposalActionCreateForm = {
+export type CreateProposalActionForm = {
   targetAddress: string;
   isProxyAddress: boolean;
   implementationAddress: string;
@@ -36,13 +38,13 @@ export type ProposalActionCreateForm = {
   functionEncodedParams: string;
 };
 
-const InitialFormValues: ProposalActionCreateForm = {
+const InitialFormValues: CreateProposalActionForm = {
   targetAddress: '',
   isProxyAddress: false,
   implementationAddress: '',
-  addValueAttribute: undefined,
+  addValueAttribute: false,
   actionValue: '',
-  addFunctionCall: undefined,
+  addFunctionCall: false,
   abiLoading: false,
   abiInterface: undefined,
   functionSignature: '',
@@ -52,57 +54,33 @@ const InitialFormValues: ProposalActionCreateForm = {
   functionEncodedParams: '',
 };
 
-export type ProposalActionCreateModalProps = ModalProps & {
+export type CreateProposalActionModalProps = ModalProps & {
   edit?: boolean;
-  onSubmit: (values: ProposalActionCreateForm) => void;
+  initialValues?: CreateProposalActionForm;
+  onSubmit: (values: CreateProposalActionForm) => void;
 };
 
-const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateModalProps> = props => {
-  const { edit = false } = props;
-  const [form] = Antd.Form.useForm<ProposalActionCreateForm>();
+type CreateProposalActionModalState = {
+  showSimulatedActionModal: boolean;
+  simulatedAction?: CreateProposalActionForm;
+  simulationResolve?: Function;
+  simulationReject?: Function;
+  submitting: boolean;
+};
 
-  const [isSubmitting, setSubmitting] = React.useState<boolean>(false);
+const InitialState: CreateProposalActionModalState = {
+  showSimulatedActionModal: false,
+  simulatedAction: undefined,
+  simulationResolve: undefined,
+  simulationReject: undefined,
+  submitting: false,
+};
 
-  async function handleSubmit(values: ProposalActionCreateForm) {
-    setSubmitting(true);
+const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionModalProps> = props => {
+  const { edit = false, initialValues = InitialFormValues } = props;
 
-    let cancel = false;
-
-    try {
-      await form.validateFields();
-
-      if (values.addFunctionCall) {
-        const encodedFunction = values.abiInterface?.encodeFunctionData(values.functionMeta!, Object.values(values.functionParams)
-          .map(dt => {
-            try {
-              return JSON.parse(dt);
-            } catch {
-              return dt;
-            }
-          }));
-
-        await Web3Contract.tryCall(
-          values.targetAddress,
-          String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR),
-          encodedFunction!,
-          values.actionValue);
-      }
-
-      await props.onSubmit(values);
-      form.resetFields();
-      cancel = true;
-    } catch (e) {
-      Antd.notification.error({
-        message: e.message,
-      });
-    }
-
-    setSubmitting(false);
-
-    if (cancel) {
-      props.onCancel?.();
-    }
-  }
+  const [form] = Antd.Form.useForm<CreateProposalActionForm>();
+  const [state, setState] = useMergeState<CreateProposalActionModalState>(InitialState);
 
   function loadAbiInterface(address: string) {
     form.setFieldsValue({
@@ -123,7 +101,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
       });
   }
 
-  function handleFormValuesChange(values: Partial<ProposalActionCreateForm>, allValues: ProposalActionCreateForm) {
+  function handleFormValuesChange(values: Partial<CreateProposalActionForm>, allValues: CreateProposalActionForm) {
     const {
       targetAddress,
       isProxyAddress,
@@ -219,6 +197,67 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
       });
   }
 
+  async function handleSubmit(values: CreateProposalActionForm) {
+    setState({ submitting: true });
+
+    let cancel = false;
+
+    try {
+      await form.validateFields();
+
+      if (values.addFunctionCall) {
+        const encodedFunction = values.abiInterface?.encodeFunctionData(values.functionMeta!, Object.values(values.functionParams));
+
+        try {
+          await Web3Contract.tryCall(
+            values.targetAddress,
+            String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR),
+            encodedFunction!,
+            values.actionValue);
+        } catch {
+          await new Promise<void>((resolve, reject) => {
+            setState({
+              showSimulatedActionModal: true,
+              simulatedAction: values,
+              simulationResolve: resolve,
+              simulationReject: reject,
+            });
+          });
+        }
+      }
+
+      await props.onSubmit(values);
+      form.resetFields();
+      cancel = true;
+    } catch (e) {
+      e && Antd.notification.error({
+        message: e.message,
+      });
+    }
+
+    setState({ submitting: false });
+
+    if (cancel) {
+      props.onCancel?.();
+    }
+  }
+
+  function handleSimulatedAction(answer: boolean) {
+    answer ? state.simulationResolve?.() : state.simulationReject?.();
+    setState({
+      showSimulatedActionModal: false,
+      simulationResolve: undefined,
+      simulationReject: undefined,
+    });
+  }
+
+  React.useEffect(() => {
+    if (initialValues !== InitialFormValues) {
+      form.resetFields();
+      form.setFieldsValue(initialValues);
+    }
+  }, [initialValues]);
+
   return (
     <Modal className={s.component} {...props}>
       <div className={s.wrap}>
@@ -229,7 +268,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
         <Form
           className={s.form}
           form={form}
-          initialValues={InitialFormValues}
+          initialValues={{}}
           validateTrigger={['onSubmit', 'onChange']}
           onValuesChange={handleFormValuesChange}
           onFinish={handleSubmit}>
@@ -237,13 +276,13 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             name="targetAddress"
             label="Target address"
             rules={[{ required: true, message: 'Required' }]}>
-            <Input disabled={isSubmitting} />
+            <Input disabled={state.submitting} />
           </Form.Item>
 
           <Grid flow="col" align="center" justify="space-between">
             <Small semiBold color="grey500">Is this a proxy address?</Small>
             <Form.Item name="isProxyAddress">
-              <Antd.Switch disabled={isSubmitting} />
+              <Antd.Switch disabled={state.submitting} />
             </Form.Item>
           </Grid>
 
@@ -257,7 +296,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
                   hidden={!isProxyAddress}
                   preserve={false}
                   rules={[{ required: true, message: 'Required' }]}>
-                  <Input placeholder="Implementation address" disabled={isSubmitting} />
+                  <Input placeholder="Implementation address" disabled={state.submitting} />
                 </Form.Item>
               );
             }}
@@ -267,7 +306,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             name="addValueAttribute"
             label="Add a value attribute to your action?"
             rules={[{ required: true, message: 'Required' }]}>
-            <YesNoSelector disabled={isSubmitting} />
+            <YesNoSelector disabled={state.submitting} />
           </Form.Item>
 
           <Form.Item shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
@@ -297,7 +336,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
                   )}
                   preserve={false}
                   rules={[{ required: true, message: 'Required' }]}>
-                  <Input disabled={isSubmitting} />
+                  <Input disabled={state.submitting} />
                 </Form.Item>
               );
             }}
@@ -307,7 +346,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             name="addFunctionCall"
             label="Add a function call to your action?"
             rules={[{ required: true, message: 'Required' }]}>
-            <YesNoSelector disabled={isSubmitting} />
+            <YesNoSelector disabled={state.submitting} />
           </Form.Item>
 
           <Form.Item name="abiLoading" preserve={false} hidden />
@@ -316,8 +355,8 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
           <Form.Item name="functionStrParams" preserve={false} hidden />
           <Form.Item name="functionEncodedParams" preserve={false} hidden />
 
-          <Form.Item shouldUpdate={(prevValues: ProposalActionCreateForm) => prevValues.addFunctionCall === true}>
-            {({ getFieldsValue, setFieldsValue }: FormInstance<ProposalActionCreateForm>) => {
+          <Form.Item shouldUpdate={(prevValues: CreateProposalActionForm) => prevValues.addFunctionCall === true}>
+            {({ getFieldsValue, setFieldsValue }: FormInstance<CreateProposalActionForm>) => {
               const {
                 targetAddress,
                 addFunctionCall,
@@ -347,7 +386,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
                     rules={[{ required: true, message: 'Required' }]}>
                     <Select
                       loading={abiLoading}
-                      disabled={isSubmitting}
+                      disabled={state.submitting}
                       options={functionOptions} />
                   </Form.Item>
 
@@ -379,7 +418,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
                           )}
                           preserve={false}
                           rules={[{ required: true, message: 'Required' }]}>
-                          <Input disabled={isSubmitting} placeholder={`${input.name} (${input.type})`} />
+                          <Input disabled={state.submitting} placeholder={`${input.name} (${input.type})`} />
                         </Form.Item>
                       ))}
 
@@ -427,7 +466,7 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
           <div className={s.actions}>
             <Button
               type="default"
-              disabled={isSubmitting}
+              disabled={state.submitting}
               className={s.cancelBtn}
               onClick={props.onCancel}>
               {edit ? 'Cancel Changes' : 'Cancel'}
@@ -435,15 +474,24 @@ const ProposalActionCreateModal: React.FunctionComponent<ProposalActionCreateMod
             <Button
               type="primary"
               htmlType="submit"
-              loading={isSubmitting}
+              loading={state.submitting}
               className={s.saveBtn}>
               {edit ? 'Save Changes' : 'Add Action'}
             </Button>
           </div>
         </Form>
+
+        {state.showSimulatedActionModal && state.simulatedAction && (
+          <SimulatedProposalActionModal
+            visible
+            proposalAction={state.simulatedAction}
+            onOk={() => handleSimulatedAction(true)}
+            onCancel={() => handleSimulatedAction(false)}
+          />
+        )}
       </div>
     </Modal>
   );
 };
 
-export default ProposalActionCreateModal;
+export default CreateProposalActionModal;

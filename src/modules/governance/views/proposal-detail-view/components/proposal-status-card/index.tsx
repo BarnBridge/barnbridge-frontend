@@ -4,18 +4,18 @@ import { format, formatDistance } from 'date-fns';
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
-import Icon, { IconType } from 'components/custom/icon';
+import Icons, { IconNames } from 'components/custom/icon';
 import { useProposal } from '../../providers/ProposalProvider';
 
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 
-function getEventIcon(index: number, name: string): IconType {
+function getEventIcon(index: number, name: string): IconNames {
   if ([
     APIProposalState.EXPIRED,
     APIProposalState.FAILED,
     APIProposalState.CANCELED,
   ].includes(name as any)) {
-    return 'circle-cancel';
+    return 'close-circle-outlined';
   }
 
   if ([
@@ -23,14 +23,14 @@ function getEventIcon(index: number, name: string): IconType {
     APIProposalState.ACCEPTED,
     APIProposalState.EXECUTED,
   ].includes(name as any)) {
-    return 'circle-check';
+    return 'check-circle-outlined';
   }
 
   if (index === 0) {
-    return 'circle-time';
+    return 'history-circle-outlined';
   }
 
-  return 'circle-check';
+  return 'check-circle-outlined';
 }
 
 function formatEventTime(name: string, start: number, end: number): string {
@@ -69,7 +69,7 @@ const ProposalStatusCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={24}>
         {proposalCtx.proposal?.history.map((event, index: number) => (
           <Grid key={event.name} flow="col" gap={12}>
-            <Icon type={getEventIcon(index, event.name)} width={40} height={40} />
+            <Icons name={getEventIcon(index, event.name)} width={40} height={40} />
             <Grid flow="row" gap={4}>
               <Paragraph type="p1" semiBold color="grey900">
                 {APIProposalStateMap.get(event.name as APIProposalState)}

@@ -36,7 +36,7 @@
     padding: 24px 0;
   }
 
-  :global(.ant-card-body) {
+  > :global(.ant-card-body) {
     padding: 24px;
 
     > :global(.ant-table-wrapper) {

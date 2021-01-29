@@ -8,22 +8,22 @@ import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Textarea from 'components/antd/textarea';
 import Button from 'components/antd/button';
-import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
 import Grid from 'components/custom/grid';
 import { Heading, Paragraph } from 'components/custom/typography';
-import Icon from 'components/custom/icon';
-import ProposalActionCreateModal, { ProposalActionCreateForm } from '../../components/proposal-create-modal';
-import ProposalActionTooltip from '../../components/proposal-action-tooltip';
-import ProposalDeleteModal from 'modules/governance/components/proposal-delete-modal';
+import Icons from 'components/custom/icon';
+import CreateProposalActionModal, { CreateProposalActionForm } from '../../components/create-proposal-action-modal';
+import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
+import ProposalActionCard from '../../components/proposal-action-card';
 
 import { useWeb3Contracts } from 'web3/contracts';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
 type NewProposalForm = {
   title: string;
   description: string;
-  actions: ProposalActionCreateForm[];
+  actions: CreateProposalActionForm[];
 };
 
 const InitialFormValues: NewProposalForm = {
@@ -32,55 +32,64 @@ const InitialFormValues: NewProposalForm = {
   actions: [],
 };
 
-const ActionMenuItems: PopoverMenuItem[] = [
-  {
-    key: 'edit',
-    icon: null,
-    title: 'Edit action',
-  },
-  {
-    key: 'delete',
-    icon: null,
-    title: 'Delete action',
-  },
-];
+type ProposalCreateViewState = {
+  showCreateActionModal: boolean;
+  showDeleteActionModal: boolean;
+  selectedAction?: CreateProposalActionForm;
+  submitting: boolean;
+};
+
+const InitialState: ProposalCreateViewState = {
+  showCreateActionModal: false,
+  showDeleteActionModal: false,
+  selectedAction: undefined,
+  submitting: false,
+};
 
 const ProposalCreateView: React.FunctionComponent = () => {
   const history = useHistory();
   const web3c = useWeb3Contracts();
 
   const [form] = Antd.Form.useForm<NewProposalForm>();
-  const [, setValues] = React.useState<NewProposalForm>(InitialFormValues);
-  const [submitting, setSubmitting] = React.useState<boolean>(false);
-  const [proposalCreateModal, setProposalCreateModal] = React.useState<boolean>(false);
-  const [proposalDeleteModal, setProposalDeleteModal] = React.useState<boolean>(false);
+  const [state, setState] = useMergeState<ProposalCreateViewState>(InitialState);
 
   function handleBackClick() {
     history.push('/governance/proposals');
   }
 
-  function handleAddAction() {
-    setProposalCreateModal(true);
-  }
+  function handleCreateAction(payload: CreateProposalActionForm) {
+    let actions = form.getFieldValue('actions');
 
-  function handleCreateAction(payload: ProposalActionCreateForm) {
+    if (state.selectedAction) {
+      actions = actions.map((action: CreateProposalActionForm) =>
+        action === state.selectedAction ? payload : action);
+    } else {
+      actions.push(payload);
+    }
+
     form.setFieldsValue({
-      actions: [
-        ...form.getFieldValue('actions'),
-        payload,
-      ],
+      actions,
     });
   }
 
-  function handleActionMenu(key: string | number) {
-    if (key === 'edit') {
-    } else if (key === 'delete') {
-      setProposalDeleteModal(true);
+  function handleActionDelete() {
+    const { selectedAction } = state;
+
+    if (selectedAction) {
+      form.setFieldsValue({
+        actions: form.getFieldValue('actions')
+          .filter((action: CreateProposalActionForm) => action !== selectedAction),
+      });
     }
+
+    setState({
+      showDeleteActionModal: false,
+      selectedAction: undefined,
+    });
   }
 
   async function handleSubmit(values: NewProposalForm) {
-    setSubmitting(true);
+    setState({ submitting: true });
 
     try {
       await form.validateFields();
@@ -122,10 +131,9 @@ const ProposalCreateView: React.FunctionComponent = () => {
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
     } catch (e) {
-      console.log('E', e);
     }
 
-    setSubmitting(false);
+    setState({ submitting: false });
   }
 
   return (
@@ -133,17 +141,16 @@ const ProposalCreateView: React.FunctionComponent = () => {
       <Grid flow="col">
         <Button
           type="link"
-          icon={<Icon type="arrow-left" />}
+          icon={<Icons name="left-arrow" />}
           onClick={handleBackClick}>Proposals</Button>
       </Grid>
-      
+
       <Grid flow="row" gap={16}>
         <Heading type="h1" bold color="grey900" className="mb-16">Create Proposal</Heading>
         <Form
           form={form}
           initialValues={InitialFormValues}
           validateTrigger={['onSubmit', 'onChange']}
-          onValuesChange={setValues}
           onFinish={handleSubmit}>
           <Grid flow="row" gap={32}>
             <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 1fr))" align="start">
@@ -158,7 +165,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                     rules={[{ required: true, message: 'Required' }]}>
                     <Input
                       placeholder="Placeholder"
-                      disabled={submitting} />
+                      disabled={state.submitting} />
                   </Form.Item>
                   <Form.Item
                     name="description"
@@ -168,7 +175,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                     <Textarea
                       placeholder="Placeholder"
                       rows={6}
-                      disabled={submitting} />
+                      disabled={state.submitting} />
                   </Form.Item>
                 </Grid>
               </Card>
@@ -193,34 +200,41 @@ const ProposalCreateView: React.FunctionComponent = () => {
                   {(fields, {}, { errors }) => (
                     <Grid flow="row" gap={24}>
                       {fields.map((field, index) => {
-                        const fieldData: ProposalActionCreateForm = form.getFieldValue(['actions', index]);
+                        const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
                         const { targetAddress, functionSignature, functionEncodedParams, actionValue } = fieldData;
 
                         return (
-                          <Form.Item {...field}>
-                            <Grid flow="col" gap={24} align="center" justify="space-between">
-                              <ProposalActionTooltip
-                                target={targetAddress!}
-                                signature={functionSignature!}
-                                callData={functionEncodedParams!}
-                                value={actionValue!}
-                              />
-                              <PopoverMenu
-                                items={ActionMenuItems}
-                                placement="bottomLeft"
-                                onClick={handleActionMenu}>
-                                <Button type="link" icon={<Icon type="gear" />} />
-                              </PopoverMenu>
-                            </Grid>
+                          <Form.Item key={field.key}>
+                            <ProposalActionCard
+                              title={`Action ${index + 1}`}
+                              target={targetAddress}
+                              signature={functionSignature!}
+                              callData={functionEncodedParams!}
+                              showSettings
+                              onDeleteAction={() => {
+                                setState({
+                                  showDeleteActionModal: true,
+                                  selectedAction: fieldData,
+                                });
+                              }}
+                              onEditAction={() => {
+                                setState({
+                                  showCreateActionModal: true,
+                                  selectedAction: fieldData,
+                                });
+                              }}
+                            />
                           </Form.Item>
                         );
                       })}
 
                       <Button
                         type="ghost"
-                        icon={<Icon type="plus-circle" />}
+                        icon={<Icons name="plus-circle-outlined" />}
+                        disabled={state.submitting}
                         className={s.addActionBtn}
-                        onClick={handleAddAction}>Add new action</Button>
+                        onClick={() => setState({ showCreateActionModal: true })}>
+                        Add new action</Button>
 
                       <Antd.Form.ErrorList errors={errors} />
                     </Grid>
@@ -233,20 +247,34 @@ const ProposalCreateView: React.FunctionComponent = () => {
                 type="primary"
                 htmlType="submit"
                 size="large"
-                loading={submitting}>
+                loading={state.submitting}>
                 Create proposal
               </Button>
             </div>
           </Grid>
         </Form>
 
-        <ProposalActionCreateModal
-          visible={proposalCreateModal}
-          onCancel={() => setProposalCreateModal(false)}
-          onSubmit={handleCreateAction} />
-        <ProposalDeleteModal
-          visible={proposalDeleteModal}
-          onCancel={() => setProposalDeleteModal(false)} />
+        {state.showCreateActionModal && (
+          <CreateProposalActionModal
+            visible
+            edit={state.selectedAction !== undefined}
+            initialValues={state.selectedAction}
+            onCancel={() => setState({
+              showCreateActionModal: false,
+              selectedAction: undefined,
+            })}
+            onSubmit={handleCreateAction} />
+        )}
+
+        {state.showDeleteActionModal && (
+          <DeleteProposalActionModal
+            visible
+            onCancel={() => setState({
+              showDeleteActionModal: false,
+              selectedAction: undefined,
+            })}
+            onOk={handleActionDelete} />
+        )}
       </Grid>
     </Grid>
   );

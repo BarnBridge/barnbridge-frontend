@@ -1,10 +1,11 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
-import { ArrowLeftOutlined } from '@ant-design/icons';
 
 import PoolTokenRow from 'modules/yield-farming/components/pool-token-row';
 import PoolTransactionTable from 'modules/yield-farming/components/pool-transaction-table';
+
+import Icons from 'components/custom/icon';
 
 import { getPoolNames, PoolTypes } from 'web3/utils';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -37,7 +38,7 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
       <Antd.Button
         type="link"
         className={s.headerLabel}
-        icon={<ArrowLeftOutlined className={s.backSvg} />}
+        icon={<Icons name="left-arrow" />}
         onClick={goBack}
       >
         {props.stableToken && getPoolNames(PoolTypes.STABLE).join('/')}

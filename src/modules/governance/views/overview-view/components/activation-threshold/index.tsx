@@ -4,7 +4,7 @@ import Card from 'components/antd/card';
 import Button from 'components/antd/button';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import { Paragraph } from 'components/custom/typography';
 
 import { formatBONDValue } from 'web3/utils';
@@ -57,10 +57,10 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
               '0%': 'var(--text-color-blue500)',
               '100%': 'var(--text-color-green500)',
             }} />
-          <Icon type="ribbon" />
+          <Icons name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icon type="bond-square" />
+          <Icons name="bond-square-token" />
           <Paragraph type="p1" bold color="grey900">
             {formatBONDValue(web3c.daoBarn.bondStaked)}
           </Paragraph>

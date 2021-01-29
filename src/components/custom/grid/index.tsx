@@ -17,6 +17,7 @@ export type GridProps = {
   gap?: number | [number, number];
   wrap?: boolean;
   padding?: number | number[];
+  width?: number;
 };
 
 const Grid: React.FunctionComponent<GridProps> = props => {
@@ -30,6 +31,7 @@ const Grid: React.FunctionComponent<GridProps> = props => {
     justify,
     wrap,
     padding,
+    width = 0,
     children,
   } = props;
 
@@ -61,6 +63,7 @@ const Grid: React.FunctionComponent<GridProps> = props => {
         paddingRight: paddingRight > 0 ? paddingRight : undefined,
         paddingBottom: paddingBottom > 0 ? paddingBottom : undefined,
         paddingLeft: paddingLeft > 0 ? paddingLeft : undefined,
+        width: width > 0 ? width : undefined,
       }}>
       {children}
     </div>

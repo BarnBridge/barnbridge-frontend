@@ -100,4 +100,14 @@
       }
     }
   }
+
+  &:global(.ant-input-affix-wrapper) {
+    background: var(--color-body-bg);
+    border: 1px solid var(--color-border);
+
+    :global(.ant-input),
+    :global(.ant-input):focus {
+      border: none;
+    }
+  }
 }

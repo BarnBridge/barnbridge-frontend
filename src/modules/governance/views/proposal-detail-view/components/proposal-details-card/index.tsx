@@ -4,17 +4,15 @@ import Card from 'components/antd/card';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
-import Icon from 'components/custom/icon';
-import { Label, Paragraph, Small } from 'components/custom/typography';
-import ProposalActionTooltip from '../../../../components/proposal-action-tooltip';
+import Icons from 'components/custom/icon';
+import ExternalLink from 'components/custom/externalLink';
+import { Paragraph, Small } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
+import ProposalActionCard from '../../../../components/proposal-action-card';
 
 import { APIProposalState } from 'modules/governance/api';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
-
-import s from './styles.module.scss';
-import ExternalLink from '../../../../../../components/custom/externalLink';
 
 type ProposalDetailsCardState = {
   cancelling: boolean;
@@ -61,7 +59,6 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
 
   return (
     <Card
-      className={s.component}
       title={(
         <Paragraph type="p1" semiBold color="grey900">Details</Paragraph>
       )}
@@ -84,7 +81,7 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
             <Grid flow="col" gap={8}>
               {proposalCtx.threshold !== undefined && (
                 <>
-                  <Icon type={proposalCtx.threshold ? 'circle-check' : 'circle-cancel'} />
+                  <Icons name={proposalCtx.threshold ? 'check-circle-outlined' : 'close-circle-outlined'} />
                   <Paragraph type="p1" semiBold color="grey900" loading={proposalCtx.proposal === undefined}>
                     {proposalCtx.threshold ? 'Above 1%' : 'Below 1%'}
                   </Paragraph>
@@ -111,14 +108,13 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={16} padding={24}>
         <Small semiBold color="grey500">Actions</Small>
         {proposalCtx.proposal?.targets.map((target: string, index: number) => (
-          <Grid key={index} flow="col" gap={12}>
-            <Label type="lb2" semiBold color="grey500" className={s.actionNumber}>{index + 1}</Label>
-            <ProposalActionTooltip
-              target={proposalCtx.proposal!.targets[index]}
-              signature={proposalCtx.proposal!.signatures[index]}
-              callData={proposalCtx.proposal!.calldatas[index]}
-              value={proposalCtx.proposal!.values[index]} />
-          </Grid>
+          <ProposalActionCard
+            key={index}
+            title={`Action ${index + 1}`}
+            target={proposalCtx.proposal!.targets[index]}
+            signature={proposalCtx.proposal!.signatures[index]}
+            callData={proposalCtx.proposal!.calldatas[index]}
+          />
         ))}
       </Grid>
     </Card>

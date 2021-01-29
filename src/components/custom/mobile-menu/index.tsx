@@ -5,12 +5,10 @@ import cx from 'classnames';
 
 import '@animated-burgers/burger-squeeze/dist/styles.css';
 
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
 import FadeBlock from 'components/custom/fade-block';
 import { useTheme } from 'components/providers/theme-provider';
-
-import { ReactComponent as LogoWithName } from 'resources/svg/logo/logo-with-name.svg';
-import { ReactComponent as MoonSvg } from 'resources/svg/icons/theme-moon.svg';
-import { ReactComponent as SunSvg } from 'resources/svg/icons/theme-sun.svg';
 
 import s from './styles.module.css';
 
@@ -48,14 +46,20 @@ const MobileMenu: React.FunctionComponent = () => {
         <Burger className={s.burger} isOpen={isOpen} />
       </Antd.Button>
       <FadeBlock className={s.logo} visible={!isOpen}>
-        <LogoWithName />
+        <Grid flow="col" gap={8}>
+          <Icons name="bond-token" />
+          <Icons name="barnbridge" width={113} />
+        </Grid>
       </FadeBlock>
       <div className={cx(s.mask, { [s.maskOpen]: isOpen })} />
       <div className={cx(s.menuList, { [s.menuListOpen]: isOpen })}>
-        <LogoWithName className={s.innerLogo} />
+        <Grid flow="col" gap={8} className={s.innerLogo}>
+          <Icons name="bond-token" />
+          <Icons name="barnbridge" width={113} />
+        </Grid>
 
         <Antd.Button type="link" className={s.themeToggle} onClick={handleThemeToggle}>
-          {!isDarkTheme ? <MoonSvg /> : <SunSvg />}
+          <Icons name={isDarkTheme ? 'sun' : 'moon'} />
           <FadeBlock visible={isOpen}>
             {!isDarkTheme ? 'Dark' : 'Light'} Theme
           </FadeBlock>

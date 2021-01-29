@@ -7,7 +7,7 @@ import {
 } from 'antd/lib/form';
 import cx from 'classnames';
 
-import { ReactComponent as InfoCircleSvg } from 'resources/svg/icons/info-circle.svg';
+import Icons from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -33,7 +33,7 @@ const FormItem: React.FunctionComponent<FormItemProps> = props => {
     <Antd.Form.Item
       className={cx(s.item, className)}
       tooltip={hint ? {
-        icon: <InfoCircleSvg />,
+        icon: <Icons name="info-outlined" />,
         title: hint,
       } : undefined}
       {...itemProps}>

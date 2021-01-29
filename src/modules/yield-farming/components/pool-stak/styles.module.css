@@ -15,14 +15,6 @@
     color: var(--text-color-1);
 }
 
-.backSvg svg {
-    width: 21px;
-    height: 21px;
-    margin-right: 10px;
-    line-height: 21px;
-    color: var(--text-color-4);
-}
-
 .dataRows {
     display: grid;
     grid-gap: 16px;

@@ -1,6 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import Icons from 'components/custom/icon';
+
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
@@ -9,8 +11,6 @@ import { getHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
-
-import { ReactComponent as BONDIcon } from 'resources/svg/tokens/bond.svg';
 
 const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
 
@@ -21,14 +21,14 @@ const Contract = new Web3Contract(
 );
 
 export const BONDTokenMeta: TokenMeta = {
-  icon: <BONDIcon key="bond" />,
+  icon: <Icons key="bond" name="bond-token" />,
   name: 'BOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
 };
 
 export const VBONDTokenMeta: TokenMeta = {
-  icon: <BONDIcon key="vbond" />,
+  icon: <Icons key="vbond" name="bond-token" />,
   name: 'vBOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,

@@ -82,9 +82,11 @@ const ProposalVoteResultsCard: React.FunctionComponent = () => {
         </Grid>
       </Grid>
 
-      <ProposalVotersModal
-        visible={votersModal}
-        onCancel={() => showVotersModal(false)} />
+      {votersModal && (
+        <ProposalVotersModal
+          visible
+          onCancel={() => showVotersModal(false)} />
+      )}
     </Card>
   );
 };

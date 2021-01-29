@@ -144,7 +144,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
           threshold: bondStaked?.div(100).isLessThan(votingPower) ?? true,
         }));
       });
-  }, [state.proposal?.proposalId]);
+  }, [state.proposal]);
 
   React.useEffect(() => {
     if (!state.proposal || !wallet.account) {
@@ -168,7 +168,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
           receipt: result,
         }));
       });
-  }, [state.proposal?.proposalId, wallet.account, version]);
+  }, [state.proposal, wallet.account]);
 
   function cancelProposal() {
     return proposalId ? web3c.daoGovernance.actions.cancelProposal(proposalId) : Promise.reject();

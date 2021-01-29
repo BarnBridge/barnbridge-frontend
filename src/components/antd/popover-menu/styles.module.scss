@@ -1,2 +1,34 @@
-.component {
+@import "src/styles/mixin";
+
+.component:global(.ant-popover) {
+  :global(.ant-popover-inner-content) {
+    padding: 0;
+
+    :global(.ant-menu) {
+      border-radius: 4px;
+    }
+
+    :global(.ant-menu-item) {
+      display: grid;
+      grid-auto-flow: column;
+      grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+      column-gap: 8px;
+      align-items: center;
+      justify-content: flex-start;
+      margin: 4px;
+
+      @include font-p1-semi-bold;
+      color: var(--color-text);
+
+      &:global(.ant-menu-item-active) {
+        background: var(--color-body-bg);
+        border-radius: 4px;
+        color: var(--text-color-grey900);
+
+        svg {
+          color: var(--text-color-grey500);
+        }
+      }
+    }
+  }
 }
