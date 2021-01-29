@@ -4,12 +4,12 @@ import { useHistory } from 'react-router';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Heading } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 import ProposalVoteResultsCard from './components/proposal-vote-results-card';
 import ProposalDetailsCard from './components/proposal-details-card';
 import ProposalStatusCard from './components/proposal-status-card';
-import ProposalCancellationCard from './components/proposal-cancellation-card';
+import ProposalAbrogationCard from './components/proposal-abrogation-card';
 import ProposalVotesCard from './components/proposal-votes-card';
 import ProposalQuorumCard from './components/proposal-quorum-card';
 import ProposalApprovalCard from './components/proposal-approval-card';
@@ -116,7 +116,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
         <Grid flow="row" gap={32}>
           <ProposalStatusCard />
           {APIProposalState.QUEUED === proposalState && (
-            <ProposalCancellationCard />
+            <ProposalAbrogationCard />
           )}
           {APIProposalState.ACTIVE === proposalState && (
             <>

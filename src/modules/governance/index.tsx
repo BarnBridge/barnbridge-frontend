@@ -75,13 +75,11 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
           {wallet.isActive && (
             <Route path="/governance/wallet" component={WalletView} />
           )}
-          <Route path="/governance/proposals" exact component={ProposalsView} />
           {dao.isActive && (
             <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
           )}
-          {dao.isActive && (
-            <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
-          )}
+          <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
+          <Route path="/governance/proposals" exact component={ProposalsView} />
           <Redirect from="/governance" to="/governance/overview" />
         </Switch>
       </div>

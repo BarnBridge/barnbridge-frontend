@@ -3,6 +3,7 @@ import React from 'react';
 import { APILiteProposalEntity, APIProposalState, APIProposalStateId, fetchProposals } from 'modules/governance/api';
 import { useWallet } from '../../../../../../wallets/wallet';
 import { useWeb3Contracts } from '../../../../../../web3/contracts';
+import { ZERO_BIG_NUMBER } from '../../../../../../web3/utils';
 
 type ProposalsProviderState = {
   proposals: APILiteProposalEntity[];
@@ -13,6 +14,7 @@ type ProposalsProviderState = {
   stateFilter?: string;
   searchFilter?: string;
   hasAlreadyActiveProposal?: boolean;
+  hasThreshold?: boolean;
 };
 
 export type ProposalsContextType = ProposalsProviderState & {
@@ -30,6 +32,7 @@ const InitialState: ProposalsProviderState = {
   stateFilter: undefined,
   searchFilter: undefined,
   hasAlreadyActiveProposal: undefined,
+  hasThreshold: undefined,
 };
 
 const ProposalsContext = React.createContext<ProposalsContextType>({
@@ -123,6 +126,22 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
         }));
       });
   }, [wallet.account]);
+
+  React.useEffect(() => {
+    let hasThreshold: boolean | undefined;
+
+    if (wallet.account) {
+      hasThreshold = web3c.daoBarn.bondStaked?.gt(ZERO_BIG_NUMBER) && web3c.daoBarn.votingPower
+        ?.multipliedBy(100)
+        .div(web3c.daoBarn.bondStaked)
+        .gt(1);
+    }
+
+    setState(prevState => ({
+      ...prevState,
+      hasThreshold,
+    }));
+  }, [wallet.account])
 
   function changeStateFilter(stateFilter: string) {
     setState(prevState => ({

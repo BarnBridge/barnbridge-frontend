@@ -72,6 +72,7 @@ export enum APIProposalState {
   GRACE = 'GRACE',
   EXPIRED = 'EXPIRED',
   EXECUTED = 'EXECUTED',
+  ABROGATED = 'ABROGATED',
 }
 
 export enum APIProposalStateId {
@@ -84,6 +85,7 @@ export enum APIProposalStateId {
   GRACE,
   EXPIRED,
   EXECUTED,
+  ABROGATED,
 }
 
 export const APIProposalStateMap = new Map<APIProposalState, string>([
@@ -217,5 +219,33 @@ export function fetchProposalVoters(proposalId: number, page: number = 1, limit:
         ...vote,
         power: getHumanValue(new BigNumber(vote.power), 18)!,
       })),
+    }));
+}
+
+export type APIAbrogationEntity = {
+  proposalId: number;
+  caller: string;
+  createTime: number;
+  description: string;
+  forVotes: BigNumber;
+  againstVotes: BigNumber;
+};
+
+export function fetchAbrogation(proposalId: number): Promise<APIAbrogationEntity> {
+  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(({ data, status }) => {
+      if (status !== 200) {
+        return Promise.reject(status);
+      }
+
+      return data;
+    })
+    .then((data: APIAbrogationEntity) => ({
+      ...data,
+      forVotes: getHumanValue(new BigNumber(data.forVotes), 18)!,
+      againstVotes: getHumanValue(new BigNumber(data.againstVotes), 18)!,
     }));
 }

@@ -25,7 +25,7 @@ export type ProposalProviderState = {
 export type ProposalContextType = ProposalProviderState & {
   reload(): void;
   cancelProposal(): Promise<any>;
-  startCancellationProposal(): Promise<any>;
+  startAbrogationProposal(): Promise<any>;
   queueForExecution(): Promise<any>;
   queueForExecution(): Promise<any>;
   executeProposal(): Promise<any>;
@@ -37,7 +37,7 @@ const ProposalContext = React.createContext<ProposalContextType>({
   ...InitialState,
   reload: () => undefined,
   cancelProposal: () => Promise.reject(),
-  startCancellationProposal: () => Promise.reject(),
+  startAbrogationProposal: () => Promise.reject(),
   queueForExecution: () => Promise.reject(),
   executeProposal: () => Promise.reject(),
 });
@@ -88,6 +88,15 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
   }, [proposalId, version]);
 
   useAsyncEffect(async () => {
+    setState(prevState => ({
+      ...prevState,
+      forRate: undefined,
+      againstRate: undefined,
+      quorum: undefined,
+      threshold: undefined,
+      canceled: undefined,
+    }));
+
     if (!state.proposal) {
       return;
     }
@@ -125,14 +134,14 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
         }));
       });
 
-    web3c.daoGovernance.actions.cancellationProposals(state.proposal.proposalId)
+    web3c.daoGovernance.actions.abrogationProposals(state.proposal.proposalId)
       .then((result) => {
-        if (result?.createTime! > 0) {
-          setState(prevState => ({
-            ...prevState,
-            canceled: true,
-          }));
-        }
+        const canceled = result?.createTime! > 0;
+
+        setState(prevState => ({
+          ...prevState,
+          canceled,
+        }));
       });
 
     web3c.daoBarn.actions.votingPower(state.proposal.proposer)
@@ -174,8 +183,9 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
     return proposalId ? web3c.daoGovernance.actions.cancelProposal(proposalId) : Promise.reject();
   }
 
-  function startCancellationProposal() {
-    return proposalId ? web3c.daoGovernance.actions.startCancellationProposal(proposalId) : Promise.reject();
+  function startAbrogationProposal() {
+    return Promise.reject();
+    // return proposalId ? web3c.daoGovernance.actions.startAbrogationProposal(proposalId) : Promise.reject();
   }
 
   function queueForExecution() {
@@ -191,7 +201,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       ...state,
       reload,
       cancelProposal,
-      startCancellationProposal,
+      startAbrogationProposal: startAbrogationProposal,
       queueForExecution,
       executeProposal,
     }}>{children}</ProposalContext.Provider>

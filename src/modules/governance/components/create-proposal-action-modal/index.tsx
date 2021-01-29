@@ -310,7 +310,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           </Form.Item>
 
           <Form.Item shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
-            {({ getFieldsValue, setFieldsValue }) => {
+            {({ getFieldsValue }) => {
               const { addValueAttribute, actionValue } = getFieldsValue();
               const max = 78 - (actionValue?.length ?? 0);
 
@@ -327,7 +327,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
 
                           if (prevActionValue) {
                             const zeros = '0'.repeat(value);
-                            setFieldsValue({
+                            form.setFieldsValue({
                               actionValue: `${prevActionValue}${zeros}`,
                             });
                           }
@@ -356,7 +356,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           <Form.Item name="functionEncodedParams" preserve={false} hidden />
 
           <Form.Item shouldUpdate={(prevValues: CreateProposalActionForm) => prevValues.addFunctionCall === true}>
-            {({ getFieldsValue, setFieldsValue }: FormInstance<CreateProposalActionForm>) => {
+            {({ getFieldsValue }: FormInstance<CreateProposalActionForm>) => {
               const {
                 targetAddress,
                 addFunctionCall,
@@ -406,10 +406,14 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
 
                                     if (prevActionValue) {
                                       const zeros = '0'.repeat(value);
-                                      setFieldsValue({
-                                        functionParams: {
-                                          [input.name]: `${prevActionValue}${zeros}`,
-                                        },
+                                      functionParams[input.name] = `${prevActionValue}${zeros}`;
+
+                                      const paramsValues = Object.values(functionParams);
+                                      const encodedParams = AbiInterface.encodeFunctionData(functionMeta, paramsValues);
+
+                                      form.setFieldsValue({
+                                        functionParams,
+                                        functionEncodedParams: encodedParams,
                                       });
                                     }
                                   }} />

@@ -15,6 +15,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
+import Textarea from '../../../../../../components/antd/textarea';
 
 export enum VoteState {
   None,
@@ -22,6 +23,7 @@ export enum VoteState {
   VoteAgainst,
   VoteChange,
   VoteCancel,
+  VoteInitiateAbrogation,
   VoteForAbrogation,
   VoteAgainstAbrogation,
   VoteCancelAbrogation,
@@ -29,11 +31,13 @@ export enum VoteState {
 
 type FormState = {
   changeOption?: boolean;
+  description?: string;
   gasPrice?: number;
 };
 
 const InitialFormValues: FormState = {
   changeOption: undefined,
+  description: undefined,
   gasPrice: undefined,
 };
 
@@ -80,6 +84,8 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, values.changeOption!);
       } else if (voteState === VoteState.VoteCancel) {
         await web3c.daoGovernance.actions.cancelVote(gasPrice, proposalId);
+      } else if (voteState === VoteState.VoteInitiateAbrogation) {
+        r = await web3c.daoGovernance.actions.startAbrogationProposal(gasPrice, proposalId, values.description!);
       } else if (voteState === VoteState.VoteForAbrogation) {
         r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, true);
       } else if (voteState === VoteState.VoteAgainstAbrogation) {
@@ -109,6 +115,8 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         return 'Cancel your vote';
       case VoteState.VoteChange:
         return 'Change your vote';
+      case VoteState.VoteInitiateAbrogation:
+        return 'Initiate abrogation proposal';
     }
   }, [voteState]);
 
@@ -136,17 +144,26 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
-        <Grid flow="row" gap={16} className={s.row}>
-          <Grid flow="col" gap={8} align="center" justify="center">
-            <Heading type="h2" bold color="grey900">
-              {formatBigValue(proposalCtx.votingPower, 2)}
-            </Heading>
-            <Paragraph type="p1" semiBold color="grey500">Votes</Paragraph>
+        {voteState !== VoteState.VoteInitiateAbrogation && (
+          <Grid flow="row" gap={16} className={s.row}>
+            <Grid flow="col" gap={8} align="center" justify="center">
+              <Heading type="h2" bold color="grey900">
+                {formatBigValue(proposalCtx.votingPower, 2)}
+              </Heading>
+              <Paragraph type="p1" semiBold color="grey500">Votes</Paragraph>
+            </Grid>
+            <Paragraph type="p2" semiBold color="grey500" className="text-center">
+              {proposalCtx.proposal?.title}
+            </Paragraph>
           </Grid>
-          <Paragraph type="p2" semiBold color="grey500" className="text-center">
-            {proposalCtx.proposal?.title}
-          </Paragraph>
-        </Grid>
+        )}
+        {voteState === VoteState.VoteInitiateAbrogation && (
+          <Grid flow="row" gap={16} padding={32}>
+            <Paragraph type="p2" semiBold color="grey500">
+              {proposalCtx.proposal?.title}
+            </Paragraph>
+          </Grid>
+        )}
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>
           {voteState === VoteState.VoteChange && (
@@ -164,6 +181,14 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                     value={false} />
                 </Grid>
               </Antd.Radio.Group>
+            </Form.Item>
+          )}
+          {voteState === VoteState.VoteInitiateAbrogation && (
+            <Form.Item
+              name="description"
+              label="Description"
+              rules={[{ required: true, message: 'Required' }]}>
+              <Textarea placeholder="Placeholder" rows={4} disabled={state.submitting} />
             </Form.Item>
           )}
           <Form.Item
@@ -197,8 +222,9 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                   {voteState === VoteState.VoteCancel && 'Cancel vote'}
                   {voteState === VoteState.VoteChange && changeOption === true && 'Vote for proposal'}
                   {voteState === VoteState.VoteChange && changeOption === false && 'Vote against proposal'}
-                  {voteState === VoteState.VoteForAbrogation && 'Vote for cancellation proposal'}
-                  {voteState === VoteState.VoteAgainstAbrogation && 'Vote against cancellation proposal'}
+                  {voteState === VoteState.VoteInitiateAbrogation && 'Initiate abrogation proposal'}
+                  {voteState === VoteState.VoteForAbrogation && 'Vote for abrogation proposal'}
+                  {voteState === VoteState.VoteAgainstAbrogation && 'Vote against abrogation proposal'}
                   {voteState === VoteState.VoteCancelAbrogation && 'Cancel abrogation vote'}
                 </Button>
               );

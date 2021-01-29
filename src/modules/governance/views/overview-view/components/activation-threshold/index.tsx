@@ -31,9 +31,9 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
 
   return (
     <Card className={className}>
-      <Grid flow="row" gap={24}>
+      <Grid flow="row" gap={24} align="start">
         <Paragraph type="p1" semiBold color="grey900">Activation threshold</Paragraph>
-        <Grid gap={12} colsTemplate="auto 24px">
+        <Grid gap={12} colsTemplate="auto 24px" width="100%">
           <Progress
             percent={dao.activationRate}
             trailColor="var(--color-border)"

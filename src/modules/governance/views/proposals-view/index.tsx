@@ -62,13 +62,13 @@ const ProposalsViewInner: React.FunctionComponent = () => {
           {proposalsCtx.hasAlreadyActiveProposal !== undefined && (
             <Button
               type="primary"
-              disabled={proposalsCtx.hasAlreadyActiveProposal}
+              disabled={proposalsCtx.hasAlreadyActiveProposal || !proposalsCtx.hasThreshold}
               onClick={() => history.push('proposals/create')}>
               Create proposal
             </Button>
           )}
 
-          {proposalsCtx.hasAlreadyActiveProposal && (
+          {(proposalsCtx.hasAlreadyActiveProposal || !proposalsCtx.hasThreshold) && (
             <Grid flow="col" gap={8} align="center">
               <Small semiBold color="grey500">
                 You are not able to create a proposal.
@@ -76,12 +76,23 @@ const ProposalsViewInner: React.FunctionComponent = () => {
               <Popover
                 title="Why you can’t create a proposal"
                 placement="bottomLeft"
-                overlayStyle={{ width: 376 }}
-                content={<Paragraph type="p1">
-                  Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis
-                  enim velit mollit. Exercitation veniam consequat sunt nostrud amet.Amet minim mollit non deserunt
-                  ullamco est sit aliqua dolor do amet sint.
-                </Paragraph>}
+                overlayStyle={{ width: 520 }}
+                content={
+                  <Paragraph type="p2" semiBold>
+                    <Grid flow="row" gap={8}>
+                      <span>There are 2 possible reasons for why you can’t create a proposal:</span>
+                      <ul>
+                        <li>
+                          You already are the creator of an ongoing proposal
+                        </li>
+                        <li>
+                          You don’t have enough balance to create a proposal. The creator of a proposal needs to have at
+                          least 10% of the amount of $BOND staked in the DAO in order to create a proposal.
+                        </li>
+                      </ul>
+                    </Grid>
+                  </Paragraph>
+                }
                 visible={visibleReason}
                 onVisibleChange={setVisibleReason}>
                 <Button type="link">See why</Button>

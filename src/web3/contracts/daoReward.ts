@@ -4,8 +4,9 @@ import BigNumber from 'bignumber.js';
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
+import { BONDTokenMeta } from './bond';
 
 const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
 
@@ -42,7 +43,10 @@ export function useDAORewardContract(): DAORewardContract {
       [claim] = await contract.batch([
         {
           method: 'claim',
-          transform: (value: string) => new BigNumber(value),
+          callArgs: {
+            from: wallet.account,
+          },
+          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
           onError: () => ZERO_BIG_NUMBER,
         },
       ]);

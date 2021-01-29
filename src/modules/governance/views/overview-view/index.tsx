@@ -11,7 +11,7 @@ const OverviewView: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={32}>
-      {dao.activationRate! < 100 && <ActivationThreshold />}
+      {dao.isActive === false && <ActivationThreshold />}
       <VotingStatList />
       <VotersTable />
     </Grid>

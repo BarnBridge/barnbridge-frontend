@@ -40,7 +40,9 @@ const VotingHeader: React.FunctionComponent = () => {
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Current reward</Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">{formatBONDValue(reward)}</Heading>
+            <Heading type="h3" bold color="grey900">
+              {formatBONDValue(reward)}
+            </Heading>
             <Icons name="bond-square-token" />
             <Button
               type="link"
@@ -76,22 +78,25 @@ const VotingHeader: React.FunctionComponent = () => {
           </Grid>
         </Grid>
         <div className={s.delimiter} />
-        <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">Multiplier & Lock timer</Paragraph>
-          <Grid flow="col" gap={16} align="center">
-            <Antd.Tooltip title={`${multiplier}x`}>
-              <Label type="lb1" bold color="red500" className={s.ratio}>
-                {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(multiplier, 2, '-', 2)}x
-              </Label>
-            </Antd.Tooltip>
-            {countdown && (
-              <>
-                <Paragraph type="p2" color="grey500">for</Paragraph>
-                <Heading type="h3" bold color="grey900">{countdown}</Heading>
-              </>
-            )}
+
+        {multiplier > 1 && (
+          <Grid flow="row" gap={4}>
+            <Paragraph type="p2" color="grey500">Multiplier & Lock timer</Paragraph>
+            <Grid flow="col" gap={16} align="center">
+              <Antd.Tooltip title={`${multiplier}x`}>
+                <Label type="lb1" bold color="red500" className={s.ratio}>
+                  {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(multiplier, 2, '-', 2)}x
+                </Label>
+              </Antd.Tooltip>
+              {countdown && (
+                <>
+                  <Paragraph type="p2" color="grey500">for</Paragraph>
+                  <Heading type="h3" bold color="grey900">{countdown}</Heading>
+                </>
+              )}
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Grid>
     </Grid>
   );
