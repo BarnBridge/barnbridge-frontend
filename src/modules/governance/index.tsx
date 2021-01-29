@@ -6,6 +6,7 @@ import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
+import DAOProvider, { useDAO } from './components/dao-provider';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
 import WalletView from './views/wallets-view';
@@ -21,10 +22,13 @@ type GovernanceViewParams = {
   vt: string;
 };
 
-const GovernanceView: React.FunctionComponent = () => {
-  const wallet = useWallet();
+const GovernanceViewInternal: React.FunctionComponent = () => {
   const history = useHistory();
   const { params: { vt = 'overview' } } = useRouteMatch<GovernanceViewParams>();
+
+  const wallet = useWallet();
+  const dao = useDAO();
+
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
   function handleTabChange(tabKey: string) {
@@ -41,7 +45,7 @@ const GovernanceView: React.FunctionComponent = () => {
   return (
     <Grid flow="row">
       <LayoutHeader title="Governance" />
-      {wallet?.account && <VotingHeader />}
+      {wallet.account && <VotingHeader />}
 
       <Tabs
         className={s.tabs}
@@ -52,7 +56,7 @@ const GovernanceView: React.FunctionComponent = () => {
           tab={<><Icons name="bar-charts-outlined" /> Overview</>} />
         <Tabs.Tab
           key="wallet"
-          disabled={!wallet?.account}
+          disabled={!wallet.account}
           tab={<><Icons name="wallet-outlined" /> Wallet</>} />
         <Tabs.Tab
           key="proposals"
@@ -65,16 +69,34 @@ const GovernanceView: React.FunctionComponent = () => {
       <div className={s.view}>
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
-          <Route path="/governance/wallet/:wt(\w+)" component={WalletView} />
-          <Route path="/governance/wallet" component={WalletView} />
+          {wallet.isActive && (
+            <Route path="/governance/wallet/:wt(\w+)" component={WalletView} />
+          )}
+          {wallet.isActive && (
+            <Route path="/governance/wallet" component={WalletView} />
+          )}
           <Route path="/governance/proposals" exact component={ProposalsView} />
-          <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
-          <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
+          {dao.isActive && (
+            <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
+          )}
+          {dao.isActive && (
+            <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
+          )}
           <Redirect from="/governance" to="/governance/overview" />
         </Switch>
       </div>
     </Grid>
   );
+};
+
+const GovernanceView: React.FunctionComponent = props => {
+  return (
+    <DAOProvider>
+      <GovernanceViewInternal>
+        {props.children}
+      </GovernanceViewInternal>
+    </DAOProvider>
+  )
 };
 
 export default GovernanceView;

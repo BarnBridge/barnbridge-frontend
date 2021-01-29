@@ -7,14 +7,13 @@ import YieldFarmingView from 'modules/yield-farming';
 import GovernanceView from 'modules/governance';
 
 import Warnings from 'components/custom/warnings';
-import LayoutSideNav from './components/layout-side-nav';
 import MobileMenu from 'components/custom/mobile-menu';
 import ExternalLink from 'components/custom/externalLink';
+import StayTuned from 'components/custom/stay-tuned';
+import LayoutSideNav from 'layout/components/layout-side-nav';
 
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-
-import StayTuned from 'components/custom/stay-tuned';
 
 import s from './styles.module.scss';
 
@@ -22,7 +21,6 @@ const LayoutView: React.FunctionComponent = () => {
   return (
     <Antd.Layout className={s.container}>
       {!isMobile ? <LayoutSideNav /> : <MobileMenu />}
-
       <Antd.Layout className={s.main}>
         <Warnings>
           <Antd.Layout.Content className={s.content}>

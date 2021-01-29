@@ -28,11 +28,9 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
 
   const [state, setState] = React.useState<ProposalDetailsCardState>(InitialState);
 
-  const canCancel = (proposalCtx.threshold === false || proposalCtx.proposal?.proposer === wallet.account) && ![
-    APIProposalState.CANCELED,
-    APIProposalState.EXECUTED,
-    APIProposalState.FAILED,
-    APIProposalState.EXPIRED,
+  const canCancel = (proposalCtx.threshold === false || proposalCtx.proposal?.proposer === wallet.account) && [
+    APIProposalState.WARMUP,
+    APIProposalState.ACTIVE,
   ].includes(proposalCtx.proposal?.state as any);
 
   function handleProposalCancel() {

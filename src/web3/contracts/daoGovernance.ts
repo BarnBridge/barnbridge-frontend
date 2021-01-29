@@ -312,7 +312,7 @@ export type DAOGovernanceContract = DAOGovernanceContractData & {
 };
 
 export function useDAOGovernanceContract(): DAOGovernanceContract {
-  const [reload] = useReload();
+  const [reload, version] = useReload();
   const wallet = useWallet();
 
   const [data, setData] = React.useState<DAOGovernanceContractData>({});
@@ -324,7 +324,7 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       ...prevState,
       ...data,
     }));
-  }, []);
+  }, [version]);
 
   return {
     ...data,
@@ -365,7 +365,7 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       getProposalData: proposalsCall,
       cancellationProposals: cancellationProposalsCall,
       getReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult> {
-        const address = voterAddress ?? wallet?.account;
+        const address = voterAddress ?? wallet.account;
         return address ? getReceiptCall(proposalId, address) : Promise.reject();
       },
       latestProposalIds(address: string): Promise<number> {

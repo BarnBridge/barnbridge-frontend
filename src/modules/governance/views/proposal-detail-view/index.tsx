@@ -16,6 +16,7 @@ import ProposalApprovalCard from './components/proposal-approval-card';
 import ProposalProvider, { useProposal } from './providers/ProposalProvider';
 
 import { APIProposalState } from 'modules/governance/api';
+import { useWallet } from 'wallets/wallet';
 
 type ProposalDetailViewInnerState = {
   executing: boolean;
@@ -27,6 +28,7 @@ const InitialState: ProposalDetailViewInnerState = {
 
 const ProposalDetailViewInner: React.FunctionComponent = () => {
   const history = useHistory();
+  const wallet = useWallet();
   const proposalCtx = useProposal();
 
   const proposalState = proposalCtx.proposal?.state;
@@ -43,13 +45,9 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
     }));
 
     proposalCtx.queueForExecution()
+      .catch(Error)
       .then(() => {
-        setState(prevState => ({
-          ...prevState,
-          executing: false,
-        }));
-      })
-      .catch(() => {
+        proposalCtx.reload();
         setState(prevState => ({
           ...prevState,
           executing: false,
@@ -64,13 +62,9 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
     }));
 
     proposalCtx.executeProposal()
+      .catch(Error)
       .then(() => {
-        setState(prevState => ({
-          ...prevState,
-          executing: false,
-        }));
-      })
-      .catch(() => {
+        proposalCtx.reload();
         setState(prevState => ({
           ...prevState,
           executing: false,
@@ -92,18 +86,22 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
         </Heading>
 
-        <Grid flow="col">
-          {APIProposalState.ACCEPTED === proposalState && (
-            <Button
-              type="primary"
-              loading={state.executing}
-              onClick={handleQueueForExecution}>Queue for execution</Button>
-          )}
-          {APIProposalState.GRACE === proposalState && (
-            <Button
-              type="primary"
-              loading={state.executing}
-              onClick={handleExecuteProposal}>Execute proposal</Button>
+        <Grid flow="col" justify="end">
+          {wallet.account && (
+            <>
+              {APIProposalState.ACCEPTED === proposalState && (
+                <Button
+                  type="primary"
+                  loading={state.executing}
+                  onClick={handleQueueForExecution}>Queue for execution</Button>
+              )}
+              {APIProposalState.GRACE === proposalState && (
+                <Button
+                  type="primary"
+                  loading={state.executing}
+                  onClick={handleExecuteProposal}>Execute proposal</Button>
+              )}
+            </>
           )}
         </Grid>
       </Grid>

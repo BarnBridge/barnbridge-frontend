@@ -11,6 +11,8 @@ import Icons from 'components/custom/icon';
 import { Heading, Paragraph, Small } from 'components/custom/typography';
 import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
 import ProposalsTable from './components/proposals-table';
+import { useDAO } from '../../components/dao-provider';
+import ActivationThreshold from '../overview-view/components/activation-threshold';
 
 import { useDebounce } from 'hooks/useDebounce';
 
@@ -108,6 +110,29 @@ const ProposalsViewInner: React.FunctionComponent = () => {
 };
 
 const ProposalsView = () => {
+  const history = useHistory();
+  const dao = useDAO();
+
+  function handleBackClick() {
+    history.push('/governance/overview');
+  }
+
+  if (dao.isActive === undefined) {
+    return null;
+  }
+
+  if (!dao.isActive) {
+    return (
+      <Grid flow="row" gap={24} align="start">
+        <Button
+          type="link"
+          icon={<Icons name="left-arrow" />}
+          onClick={handleBackClick}>Overview</Button>
+        <ActivationThreshold className={s.activationThreshold} />
+      </Grid>
+    )
+  }
+
   return (
     <ProposalsProvider>
       <ProposalsViewInner />

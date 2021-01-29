@@ -32,13 +32,14 @@ const VotingHeader: React.FunctionComponent = () => {
   const isDelegated = isValidAddress(userDelegatedTo);
 
   return (
-    <div className={s.component}>
-      <Label type="lb2" semiBold color="red500" className="mb-16">My Voting Power</Label>
-
+    <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
+      <Label type="lb2" semiBold color="red500">
+        My Voting Power
+      </Label>
       <Grid flow="col" gap={24}>
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Current reward</Paragraph>
-          <Grid flow="col" gap={16}>
+          <Grid flow="col" gap={16} align="center">
             <Heading type="h3" bold color="grey900">{formatBONDValue(reward)}</Heading>
             <Icons name="bond-square-token" />
             <Button
@@ -50,7 +51,7 @@ const VotingHeader: React.FunctionComponent = () => {
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Bond Balance</Paragraph>
-          <Grid flow="col" gap={16}>
+          <Grid flow="col" gap={16} align="center">
             <Heading type="h3" bold color="grey900">{formatBONDValue(bondBalance)}</Heading>
             <Icons name="bond-square-token" />
           </Grid>
@@ -60,7 +61,7 @@ const VotingHeader: React.FunctionComponent = () => {
           <Paragraph type="p2" color="grey500">
             {isDelegated ? 'Total delegated voting power' : 'Total voting power'}
           </Paragraph>
-          <Grid flow="col" gap={16}>
+          <Grid flow="col" gap={16} align="center">
             <Heading type="h3" bold color="grey900">
               {isDelegated
                 ? formatBONDValue(myBondBalance)
@@ -77,7 +78,7 @@ const VotingHeader: React.FunctionComponent = () => {
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Multiplier & Lock timer</Paragraph>
-          <Grid flow="col" gap={16}>
+          <Grid flow="col" gap={16} align="center">
             <Antd.Tooltip title={`${multiplier}x`}>
               <Label type="lb1" bold color="red500" className={s.ratio}>
                 {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(multiplier, 2, '-', 2)}x
@@ -92,7 +93,7 @@ const VotingHeader: React.FunctionComponent = () => {
           </Grid>
         </Grid>
       </Grid>
-    </div>
+    </Grid>
   );
 };
 
