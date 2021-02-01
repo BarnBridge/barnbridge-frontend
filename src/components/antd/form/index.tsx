@@ -10,6 +10,8 @@ import cx from 'classnames';
 import Icons from 'components/custom/icon';
 
 import s from './styles.module.scss';
+import Tooltip from '../tooltip';
+import Grid from '../../custom/grid';
 
 export type FormListProps = AntdFormListProps & {};
 
@@ -27,16 +29,22 @@ export type FormItemProps = AntdFormItemProps<any> & {
 };
 
 const FormItem: React.FunctionComponent<FormItemProps> = props => {
-  const { className, hint, children, ...itemProps } = props;
+  const { className, label, hint, children, ...itemProps } = props;
 
   return (
     <Antd.Form.Item
       className={cx(s.item, className)}
-      tooltip={hint ? {
-        icon: <Icons name="info-outlined" />,
-        title: hint,
-      } : undefined}
-      {...itemProps}>
+      {...itemProps}
+      label={(
+        <Grid flow="col" gap={4} align="center">
+          {label}
+          {hint && (
+            <Tooltip title={hint}>
+              <Icons name="info-outlined" width={15} height={15} />
+            </Tooltip>
+          )}
+        </Grid>
+      )}>
       {children}
     </Antd.Form.Item>
   );

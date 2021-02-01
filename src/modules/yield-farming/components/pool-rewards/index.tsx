@@ -66,13 +66,13 @@ const PoolRewards: React.FunctionComponent = () => {
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">
-            <Grid flow="col" gap={8} align="center">
+          <Grid flow="col" gap={8} align="center">
+            <Paragraph type="p2" color="grey500">
               Potential reward this epoch
-              <Tooltip type="info"
-                       title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake." />
-            </Grid>
-          </Paragraph>
+            </Paragraph>
+            <Tooltip type="info"
+                     title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake." />
+          </Grid>
           <Grid flow="col" gap={16} align="center">
             <Heading type="h3" bold color="grey900">
               {formatBONDValue(web3c.aggregated.totalPotentialReward)}

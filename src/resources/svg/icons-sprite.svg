@@ -316,8 +316,16 @@
         <!-- SEARCH OUTLINED -->
         <symbol id="icon__search-outlined" viewBox="0 0 16 16" fill="none">
             <path d="M7.46641 13.8669C11.001 13.8669 13.8664 11.0015 13.8664 7.46689C13.8664 3.93227 11.001 1.06689 7.46641 1.06689C3.93178 1.06689 1.06641 3.93227 1.06641 7.46689C1.06641 11.0015 3.93178 13.8669 7.46641 13.8669Z"
-                  stroke="#AAAFB3" stroke-width="1.5" stroke-linecap="round"/>
-            <path d="M14.4 14.4L12 12" stroke="#AAAFB3" stroke-width="1.5" stroke-linecap="round"/>
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M14.4 14.4L12 12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </symbol>
+        <!-- LINK OUTLINED -->
+        <svg id="icon__link-outlined" viewBox="0 0 16 16" fill="none">
+            <path d="M14.6673 8.99992V11.6666C14.6673 13.3234 13.3242 14.6666 11.6673 14.6666H4.33398C2.67713 14.6666 1.33398 13.3234 1.33398 11.6666V4.33325C1.33398 2.6764 2.67713 1.33325 4.33398 1.33325H7.00065"
+                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M11.334 1.33325L14.534 1.33325V4.53325" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round"/>
+            <path d="M14.534 1.33325L11.334 4.53325" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
     </defs>
 </svg>

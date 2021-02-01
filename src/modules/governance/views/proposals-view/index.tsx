@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import { CardTabListType } from 'antd/lib/card';
+import * as Antd from 'antd';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
@@ -129,7 +130,7 @@ const ProposalsView = () => {
   }
 
   if (dao.isActive === undefined) {
-    return null;
+    return <Antd.Spin />;
   }
 
   if (!dao.isActive) {

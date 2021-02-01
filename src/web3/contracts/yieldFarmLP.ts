@@ -78,7 +78,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
 
     currentEpoch = Math.min(currentEpoch, totalEpochs);
 
-    const epochReward = totalEpochs !== 0 ? totalReward.div(totalEpochs) : ZERO_BIG_NUMBER;
+    const epochReward = totalEpochs !== 0 ? totalReward?.div(totalEpochs) : ZERO_BIG_NUMBER;
 
     let bondReward = ZERO_BIG_NUMBER;
 

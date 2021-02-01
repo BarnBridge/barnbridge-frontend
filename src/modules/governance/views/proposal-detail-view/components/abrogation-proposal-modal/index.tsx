@@ -8,9 +8,9 @@ import AbrogationDetailsCard from '../abrogation-details-card';
 import AbrogationVotesCard from '../abrogation-votes-card';
 import AbrogationApprovalCard from '../abrogation-approval-card';
 import AbrogationProvider from '../../providers/AbrogationProvider';
+import { useProposal } from '../../providers/ProposalProvider';
 
 import s from './styles.module.scss';
-import { useProposal } from '../../providers/ProposalProvider';
 
 export type AbrogationProposalModalProps = ModalProps;
 

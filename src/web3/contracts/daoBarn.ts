@@ -34,9 +34,9 @@ export type DAOBarnActions = {
   delegate(to: string, gasPrice: number): Promise<any>;
   stopDelegate(gasPrice: number): Promise<any>;
   lock(timestamp: number, gasPrice: number): Promise<any>;
-  votingPower(address: string): Promise<[BigNumber]>;
-  votingPowerAtTs(timestamp: number): Promise<[BigNumber]>;
-  bondStakedAtTs(timestamp: number): Promise<[BigNumber]>;
+  votingPower(address: string): Promise<BigNumber | undefined>;
+  votingPowerAtTs(timestamp: number): Promise<BigNumber | undefined>;
+  bondStakedAtTs(timestamp: number): Promise<BigNumber | undefined>;
 };
 
 export type DAOBarnContract = DAOBarnContractData & {
@@ -155,28 +155,19 @@ function lockSend(timestamp: number, from: string, gasPrice: number): Promise<an
   });
 }
 
-function votingPowerCall(address: string): Promise<any> {
-  return Contract.batch([{
-    method: 'votingPower',
-    methodArgs: [address],
-    transform: (value: string) => getHumanValue(new BigNumber(value), 18),
-  }]);
+function votingPowerCall(address: string): Promise<BigNumber | undefined> {
+  return Contract.call('votingPower', [address], {})
+    .then((value: string) => getHumanValue(new BigNumber(value), 18));
 }
 
-function votingPowerAtTsCall(address: string, timestamp: number): Promise<any> {
-  return Contract.batch([{
-    method: 'votingPowerAtTs',
-    methodArgs: [address, timestamp],
-    transform: (value: string) => getHumanValue(new BigNumber(value), 18),
-  }]);
+function votingPowerAtTsCall(address: string, timestamp: number): Promise<BigNumber | undefined> {
+  return Contract.call('votingPowerAtTs', [address, timestamp], {})
+    .then((value: string) => getHumanValue(new BigNumber(value), 18));
 }
 
-function bondStakedAtTsCall(timestamp: number): Promise<any> {
-  return Contract.batch([{
-    method: 'bondStakedAtTs',
-    methodArgs: [timestamp],
-    transform: (value: string) => getHumanValue(new BigNumber(value), 18),
-  }]);
+function bondStakedAtTsCall(timestamp: number): Promise<BigNumber | undefined> {
+  return Contract.call('bondStakedAtTs', [timestamp], {})
+    .then((value: string) => getHumanValue(new BigNumber(value), 18));
 }
 
 export function useDAOBarnContract(): DAOBarnContract {
@@ -223,15 +214,15 @@ export function useDAOBarnContract(): DAOBarnContract {
     return wallet.account ? lockSend(timestamp, wallet.account, gasPrice) : Promise.reject();
   }
 
-  function votingPower(address: string): Promise<any> {
+  function votingPower(address: string): Promise<BigNumber | undefined> {
     return votingPowerCall(address);
   }
 
-  function votingPowerAtTs(timestamp: number): Promise<any> {
+  function votingPowerAtTs(timestamp: number): Promise<BigNumber | undefined> {
     return wallet.account ? votingPowerAtTsCall(wallet.account, timestamp) : Promise.reject();
   }
 
-  function bondStakedAtTs(timestamp: number): Promise<any> {
+  function bondStakedAtTs(timestamp: number): Promise<BigNumber | undefined> {
     return bondStakedAtTsCall(timestamp);
   }
 

@@ -5,16 +5,20 @@ import BigNumber from 'bignumber.js';
 
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useReload } from 'hooks/useReload';
+import useMergeState from 'hooks/useMergeState';
+import { useWallet } from 'wallets/wallet';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
 import { GetReceiptCallResult } from 'web3/contracts/daoGovernance';
 import { APIAbrogationEntity, fetchAbrogation } from 'modules/governance/api';
-import { useWeb3Contracts } from '../../../../../../web3/contracts';
+import { useProposal } from '../ProposalProvider';
 
 export type AbrogationProviderState = {
   abrogation?: APIAbrogationEntity;
   forRate?: number;
   againstRate?: number;
   acceptanceThreshold?: number;
+  approvalRate?: number;
   votingPower?: BigNumber;
   receipt?: GetReceiptCallResult;
 };
@@ -23,7 +27,9 @@ export type AbrogationContextType = AbrogationProviderState & {
   reload(): void;
 };
 
-const InitialState: AbrogationProviderState = {};
+const InitialState: AbrogationProviderState = {
+  acceptanceThreshold: 50,
+};
 
 const AbrogationContext = React.createContext<AbrogationContextType>({
   ...InitialState,
@@ -34,30 +40,31 @@ export function useAbrogation(): AbrogationContextType {
   return React.useContext(AbrogationContext);
 }
 
-export type AbrogationProviderProps = {
-  proposalId?: number;
-};
+export type AbrogationProviderProps = {};
 
 const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = props => {
-  const { proposalId, children } = props;
+  const { children } = props;
 
-  const [reload, version] = useReload();
   const history = useHistory();
+  const [reload, version] = useReload();
+  const wallet = useWallet();
   const web3c = useWeb3Contracts();
+  const proposal = useProposal();
 
-  const [state, setState] = React.useState<AbrogationProviderState>(InitialState);
+  const [state, setState] = useMergeState<AbrogationProviderState>(InitialState);
 
   React.useEffect(() => {
-    if (!proposalId) {
+    if (!proposal.proposal) {
       return;
     }
 
+    const { proposalId } = proposal.proposal;
+
     fetchAbrogation(proposalId)
       .then(abrogation => {
-        setState(prevState => ({
-          ...prevState,
+        setState({
           abrogation,
-        }));
+        });
       })
       .catch((status: number) => {
         if (status === 404) {
@@ -72,15 +79,13 @@ const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = pro
 
         history.push(`/governance/proposals/${proposalId}`);
       });
-  }, [proposalId, version]);
+  }, [proposal.proposal, version]);
 
   useAsyncEffect(async () => {
-    setState(prevState => ({
-      ...prevState,
+    setState({
       forRate: undefined,
       againstRate: undefined,
-      acceptanceThreshold: undefined,
-    }));
+    });
 
     if (!state.abrogation) {
       return;
@@ -97,13 +102,51 @@ const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = pro
       againstRate = againstVotes.multipliedBy(100).div(total).toNumber();
     }
 
-    setState(prevState => ({
-      ...prevState,
+    setState({
       forRate,
       againstRate,
-      acceptanceThreshold: 51,
-    }));
+    });
   }, [state.abrogation]);
+
+  React.useEffect(() => {
+    setState({
+      approvalRate: undefined,
+    });
+
+    if (!state.abrogation || !wallet.account) {
+      return;
+    }
+
+    const { proposalId } = state.abrogation;
+
+    web3c.daoBarn.actions.votingPowerAtTs(state.abrogation?.createTime! - 1)
+      .then(votingPower => {
+        setState({
+          votingPower,
+        });
+      });
+
+    web3c.daoBarn.actions.bondStakedAtTs(state.abrogation?.createTime! - 1)
+      .then(bondStakedAt => {
+        let approvalRate: number | undefined = undefined;
+        const { forVotes } = state.abrogation!;
+
+        if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
+          approvalRate = forVotes.multipliedBy(100).div(bondStakedAt!).toNumber();
+        }
+
+        setState({
+          approvalRate,
+        });
+      });
+
+    web3c.daoGovernance.actions.getAbrogationReceipt(proposalId)
+      .then((result: GetReceiptCallResult) => {
+        setState({
+          receipt: result,
+        });
+      });
+  }, [state.abrogation, wallet.account]);
 
   return (
     <AbrogationContext.Provider value={{

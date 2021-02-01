@@ -6,8 +6,9 @@ import { Heading, Label, Paragraph } from 'components/custom/typography';
 
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
 import { getFormattedDuration } from 'utils';
-import { formatBONDValue, formatUSDValue } from 'web3/utils';
+import { formatBONDValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import BigNumber from 'bignumber.js';
 
 export type VotingStatListProps = {
   className?: string;

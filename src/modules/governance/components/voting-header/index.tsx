@@ -40,7 +40,7 @@ const VotingHeader: React.FunctionComponent = () => {
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Current reward</Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">
+            <Heading type="h3" bold color="grey900" loading={reward === undefined}>
               {formatBONDValue(reward)}
             </Heading>
             <Icons name="bond-square-token" />
@@ -54,7 +54,9 @@ const VotingHeader: React.FunctionComponent = () => {
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Bond Balance</Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">{formatBONDValue(bondBalance)}</Heading>
+            <Heading type="h3" bold color="grey900" loading={bondBalance === undefined}>
+              {formatBONDValue(bondBalance)}
+            </Heading>
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>
@@ -64,7 +66,7 @@ const VotingHeader: React.FunctionComponent = () => {
             {isDelegated ? 'Total delegated voting power' : 'Total voting power'}
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">
+            <Heading type="h3" bold color="grey900" loading={(isDelegated ? myBondBalance : votingPower) === undefined}>
               {isDelegated
                 ? formatBONDValue(myBondBalance)
                 : formatBONDValue(votingPower)}

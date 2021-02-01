@@ -122,7 +122,7 @@ const ProposalVotesCard: React.FunctionComponent = () => {
                 {proposalCtx.proposal?.againstVotes.toFormat(2)}
               </Paragraph>
               <Paragraph type="p1" color="grey500">
-                ({proposalCtx.againstRate?.toFixed()}%)
+                ({proposalCtx.againstRate?.toFixed(2)}%)
               </Paragraph>
             </Grid>
           </Grid>

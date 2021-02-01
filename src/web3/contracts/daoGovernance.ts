@@ -162,7 +162,7 @@ function startAbrogationProposalSend(from: string, gasPrice: number, proposalId:
 }
 
 function abrogationCastVoteSend(from: string, gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
-  return Contract.send('voteAbrogationProposal', [
+  return Contract.send('abrogationProposal_castVote', [
     proposalId,
     support,
   ], {
@@ -172,12 +172,22 @@ function abrogationCastVoteSend(from: string, gasPrice: number, proposalId: numb
 }
 
 function abrogationCancelVoteSend(from: string, gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
-  return Contract.send('cancelVoteAbrogationProposal', [
+  return Contract.send('abrogationProposal_cancelVote', [
     proposalId,
   ], {
     gasPrice: getGasValue(gasPrice),
     from,
   });
+}
+
+function getAbrogationReceiptCall(proposalId: number, voterAddress: string): Promise<GetReceiptCallResult> {
+  return Contract
+    .call('getAbrogationProposalReceipt', [proposalId, voterAddress])
+    .then(data => ({
+      hasVoted: data?.hasVoted ?? false,
+      votes: Number(data?.votes ?? 0),
+      support: data?.support ?? false,
+    }));
 }
 
 export enum ProposalState {
@@ -309,6 +319,7 @@ export type DAOGovernanceContract = DAOGovernanceContractData & {
     startAbrogationProposal(gasPrice: number, proposalId: number, description: string): Promise<Web3EventType<StartAbrogationProposalSendResult>>;
     abrogationCastVote(gasPrice: number, proposalId: number, support: boolean): Promise<any>;
     abrogationCancelVote(gasPrice: number, proposalId: number): Promise<any>;
+    getAbrogationReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult>;
   };
 };
 
@@ -361,6 +372,10 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       },
       abrogationCancelVote(gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
         return wallet.account ? abrogationCancelVoteSend(wallet.account, gasPrice, proposalId) : Promise.reject();
+      },
+      getAbrogationReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult> {
+        const address = voterAddress ?? wallet.account;
+        return address ? getAbrogationReceiptCall(proposalId, address) : Promise.reject();
       },
       getProposalState: stateCall,
       getProposalData: proposalsCall,

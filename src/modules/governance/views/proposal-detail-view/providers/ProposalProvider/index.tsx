@@ -121,10 +121,10 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
     const ts = state.proposal.createTime + state.proposal.warmUpDuration;
 
     web3c.daoBarn.actions.bondStakedAtTs(ts)
-      .then(([bondStakedAt]) => {
-        let quorum = 0;
+      .then(bondStakedAt => {
+        let quorum: number | undefined = undefined;
 
-        if (bondStakedAt.gt(ZERO_BIG_NUMBER)) {
+        if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
           quorum = total.multipliedBy(100).div(bondStakedAt).toNumber();
         }
 
@@ -136,22 +136,24 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
 
     web3c.daoGovernance.actions.abrogationProposals(state.proposal.proposalId)
       .then((result) => {
-        const canceled = result?.createTime! > 0;
-
-        setState(prevState => ({
-          ...prevState,
-          canceled,
-        }));
+        if (result) {
+          setState(prevState => ({
+            ...prevState,
+            canceled: result.createTime > 0,
+          }));
+        }
       });
 
     web3c.daoBarn.actions.votingPower(state.proposal.proposer)
-      .then(([votingPower]) => {
-        const bondStaked = web3c.daoBarn.bondStaked;
+      .then(votingPower => {
+        if (votingPower) {
+          const bondStaked = web3c.daoBarn.bondStaked;
 
-        setState(prevState => ({
-          ...prevState,
-          threshold: bondStaked?.div(100).isLessThan(votingPower) ?? true,
-        }));
+          setState(prevState => ({
+            ...prevState,
+            threshold: bondStaked?.div(100).isLessThan(votingPower) ?? true,
+          }));
+        }
       });
   }, [state.proposal]);
 
@@ -163,7 +165,7 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
     const ts = state.proposal.createTime + state.proposal.warmUpDuration;
 
     web3c.daoBarn.actions.votingPowerAtTs(ts)
-      .then(([votingPower]) => {
+      .then(votingPower => {
         setState(prevState => ({
           ...prevState,
           votingPower,

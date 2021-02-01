@@ -59,6 +59,19 @@ class Web3Contract extends EventEmitter {
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
+    if (methods.length === 0) {
+      return Promise.reject();
+    }
+
+    if (methods.length === 1) {
+      const method = methods[0];
+
+      return this.call(method.method, method.methodArgs, method.callArgs)
+        .then(method.transform)
+        .catch(method.onError)
+        .then(value => [value]);
+    }
+
     const batch = new web3.BatchRequest();
 
     const promises = methods.map((method: BatchContractMethod) => {
@@ -104,7 +117,10 @@ class Web3Contract extends EventEmitter {
       });
     });
 
-    batch.execute();
+    try {
+      batch.execute();
+    } catch {
+    }
 
     return Promise.all(promises);
   }
@@ -141,17 +157,11 @@ class Web3Contract extends EventEmitter {
         }
       });
 
-      if (type === 'send') {
-        pr = pr.on('sending', (...args: any[]) => console.log('sending', args))
-          .on('sent', (...args: any[]) => console.log('sent', args))
-          .on('transactionHash', (...args: any[]) => console.log('transactionHash', args))
-          .on('receipt', (...args: any[]) => console.log('receipt', args))
-          .on('confirmation', (...args: any[]) => console.log('confirmation', args))
-          .on('error', (...args: any[]) => console.log('error', args))
-      }
+      pr.then(resolve);
 
-      pr.then(resolve)
-        .catch(onError);
+      if (type === 'send') {
+        pr.catch(onError);
+      }
     });
   }
 }

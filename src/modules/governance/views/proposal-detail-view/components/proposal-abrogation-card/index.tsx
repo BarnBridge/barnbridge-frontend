@@ -1,4 +1,5 @@
 import React from 'react';
+import * as Antd from 'antd';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
@@ -7,8 +8,8 @@ import { Paragraph } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 
 import useMergeState from 'hooks/useMergeState';
-import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
 import AbrogationProposalModal from '../abrogation-proposal-modal';
+import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
 
 type ProposalAbrogationCardState = {
   abrogationVoteModal: boolean;
@@ -54,6 +55,11 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
         title={(
           <Paragraph type="p1" semiBold color="grey900">Abrogation proposal</Paragraph>
         )}>
+        {proposalCtx.canceled === undefined && (
+          <Grid flow="col" justify="center">
+            <Antd.Spin spinning />
+          </Grid>
+        )}
         {proposalCtx.canceled === false && (
           <Grid flow="row" gap={24}>
             <Paragraph type="p1" color="grey900">
@@ -115,9 +121,9 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
         )}
       </Card>
       {state.abrogationVoteModal && (
-        <ProposalVoteModal
+        <AbrogationVoteModal
           visible
-          voteState={VoteState.VoteInitiateAbrogation}
+          voteState={VoteAbrogationState.VoteInitiate}
           onCancel={() => setState({ abrogationVoteModal: false })} />
       )}
       {state.abrogationViewModal && (

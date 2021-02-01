@@ -17,7 +17,7 @@ const ProposalApprovalCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
           <Paragraph type="p1" semiBold color="grey900">
-            {proposalCtx.forRate}%
+            {proposalCtx.forRate?.toFixed(2)}%
           </Paragraph>
           <Paragraph type="p1" color="grey500">
             (&gt; {proposalCtx.proposal?.acceptanceThreshold}% required)

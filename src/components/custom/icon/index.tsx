@@ -16,7 +16,8 @@ export type IconNames = LogoIconNames | TokenIconNames | NavIconNames | ThemeIco
   'right-arrow-circle-outlined' | 'left-arrow' | 'bell' | 'chevron-right' | 'close-circle-outlined' |
   'check-circle-outlined' | 'history-circle-outlined' | 'close' | 'dropdown-arrow' | 'warning-outlined' |
   'gear' | 'earth' | 'info-outlined' | 'network' | 'pencil-outlined' | 'rate-outlined' |
-  'plus-circle-outlined' | 'plus-square-outlined' | 'ribbon-outlined' | 'bin-outlined' | 'add-user' | 'search-outlined';
+  'plus-circle-outlined' | 'plus-square-outlined' | 'ribbon-outlined' | 'bin-outlined' | 'add-user' |
+  'search-outlined' | 'link-outlined';
 
 export type IconsProps = {
   name: IconNames;

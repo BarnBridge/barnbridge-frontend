@@ -5,9 +5,12 @@ import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
 import Icons, { IconNames } from 'components/custom/icon';
+import ExternalLink from 'components/custom/externalLink';
 import { useProposal } from '../../providers/ProposalProvider';
 
-import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
+import { APIProposalHistoryEntity, APIProposalState, APIProposalStateMap } from 'modules/governance/api';
+import { getEtherscanTxUrl } from 'web3/utils';
+import { useReload } from 'hooks/useReload';
 
 function getEventIcon(index: number, name: string): IconNames {
   if ([
@@ -61,6 +64,35 @@ function formatEventTime(name: string, start: number, end: number): string {
   return now > mEnd ? `Ended ${dist}` : `Ends ${dist}`;
 }
 
+type HistoryEventProps = {
+  event: APIProposalHistoryEntity;
+}
+
+const HistoryEvent: React.FunctionComponent<HistoryEventProps> = props => {
+  const { event } = props;
+
+  const [reload] = useReload();
+
+  React.useEffect(() => {
+    const fn = () => {
+      if ((Date.now() / 1000) < event.endTimestamp) {
+        setTimeout(() => {
+          reload();
+          fn();
+        }, 10000);
+      }
+    };
+
+    fn();
+  }, []);
+
+  return (
+    <Paragraph type="p2" semiBold color="grey500">
+      {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
+    </Paragraph>
+  );
+};
+
 const ProposalStatusCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
@@ -71,12 +103,24 @@ const ProposalStatusCard: React.FunctionComponent = () => {
           <Grid key={event.name} flow="col" gap={12}>
             <Icons name={getEventIcon(index, event.name)} width={40} height={40} />
             <Grid flow="row" gap={4}>
-              <Paragraph type="p1" semiBold color="grey900">
-                {APIProposalStateMap.get(event.name as APIProposalState)}
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
-                {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
-              </Paragraph>
+              {event.txHash
+                ? (
+                  <Grid flow="col" gap={8} align="center">
+                    <Paragraph type="p1" semiBold color="grey900">
+                      {APIProposalStateMap.get(event.name as APIProposalState)}
+                    </Paragraph>
+                    <ExternalLink href={getEtherscanTxUrl(`0x${event.txHash}`)} style={{ height: '16px' }}>
+                      <Icons name="link-outlined" width={16} height={16} />
+                    </ExternalLink>
+                  </Grid>
+                )
+                : (
+                  <Paragraph type="p1" semiBold color="grey900">
+                    {APIProposalStateMap.get(event.name as APIProposalState)}
+                  </Paragraph>
+                )}
+
+              <HistoryEvent event={event} />
             </Grid>
           </Grid>
         ))}
