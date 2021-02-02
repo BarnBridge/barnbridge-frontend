@@ -62,7 +62,7 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
   const [form] = Antd.Form.useForm<FormState>();
 
   async function handleSubmit(values: FormState) {
-    if (!abrogationCtx.abrogation) {
+    if (!abrogationCtx.abrogation && voteState !== VoteAbrogationState.VoteInitiate) {
       return;
     }
 

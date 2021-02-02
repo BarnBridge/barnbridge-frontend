@@ -60,13 +60,11 @@ const TABS: CardTabListType[] = [
 type ProposalsViewState = {
   showWhyReason: boolean;
   hasActiveProposal?: boolean;
-  hasThreshold?: boolean;
 };
 
 const InitialState: ProposalsViewState = {
   showWhyReason: false,
   hasActiveProposal: undefined,
-  hasThreshold: undefined,
 };
 
 const ProposalsViewInner: React.FunctionComponent = () => {
@@ -93,15 +91,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
     });
   }, []);
 
-  React.useEffect(() => {
-    if (!daoCtx.thresholdRate) {
-      return;
-    }
-
-    setState({
-      hasThreshold: daoCtx.thresholdRate >= 1,
-    });
-  }, [daoCtx.thresholdRate]);
+  const hasThreshold = !!daoCtx.thresholdRate && daoCtx.thresholdRate >= daoCtx.minThreshold;
 
   return (
     <Grid flow="row" gap={32}>
@@ -111,16 +101,16 @@ const ProposalsViewInner: React.FunctionComponent = () => {
         </Heading>
         <Grid flow="row" gap={8} align="end" justify="end">
           {state.hasActiveProposal !== undefined &&
-            state.hasThreshold !== undefined && (
+            hasThreshold !== undefined && (
               <Button
                 type="primary"
-                disabled={!state.hasActiveProposal || state.hasThreshold}
+                disabled={!state.hasActiveProposal || hasThreshold}
                 onClick={() => history.push('proposals/create')}>
                 Create proposal
               </Button>
             )}
 
-          {(state.hasActiveProposal || !state.hasThreshold) && (
+          {(state.hasActiveProposal || !hasThreshold) && (
             <Grid flow="col" gap={8} align="center">
               <Small semiBold color="grey500">
                 You are not able to create a proposal.
@@ -142,7 +132,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
                         </li>
                         <li>
                           You don’t have enough balance to create a proposal.
-                          The creator of a proposal needs to have at least 10%
+                          The creator of a proposal needs to have at least {daoCtx.minThreshold}%
                           of the amount of $BOND staked in the DAO in order to
                           create a proposal.
                         </li>

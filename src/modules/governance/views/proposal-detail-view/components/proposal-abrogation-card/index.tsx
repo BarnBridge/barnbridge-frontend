@@ -3,9 +3,11 @@ import * as Antd from 'antd';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Popover from 'components/antd/popover';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Paragraph, Small } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
+import { useDAO } from '../../../../components/dao-provider';
 
 import useMergeState from 'hooks/useMergeState';
 import AbrogationProposalModal from '../abrogation-proposal-modal';
@@ -16,21 +18,26 @@ import AbrogationVoteModal, {
 type ProposalAbrogationCardState = {
   abrogationVoteModal: boolean;
   abrogationViewModal: boolean;
+  showWhyReason: boolean;
   cancelling: boolean;
 };
 
 const InitialState: ProposalAbrogationCardState = {
   abrogationVoteModal: false,
   abrogationViewModal: false,
+  showWhyReason: false,
   cancelling: false,
 };
 
 const ProposalAbrogationCard: React.FunctionComponent = () => {
+  const daoCtx = useDAO();
   const proposalCtx = useProposal();
 
   const [state, setState] = useMergeState<ProposalAbrogationCardState>(
     InitialState,
   );
+
+  const hasThreshold = !!daoCtx.thresholdRate && daoCtx.thresholdRate >= daoCtx.minThreshold;
 
   return (
     <>
@@ -88,12 +95,41 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
               </li>
             </ul>
 
-            <Button
-              type="default"
-              loading={state.cancelling}
-              onClick={() => setState({ abrogationVoteModal: true })}>
-              Initiate abrogation proposal
-            </Button>
+            <Grid flow="row" gap={8} align="center" justify="end">
+              <Button
+                type="default"
+                loading={state.cancelling}
+                disabled={!hasThreshold}
+                onClick={() => setState({ abrogationVoteModal: true })}>
+                Initiate abrogation proposal
+              </Button>
+
+              {!hasThreshold && (
+                <Grid flow="col" gap={8} align="center">
+                  <Small semiBold color="grey500">
+                    You are not able to abrogate proposal.
+                  </Small>
+                  <Popover
+                    title="Why you can’t abrogate proposal"
+                    placement="bottomLeft"
+                    overlayStyle={{ width: 520 }}
+                    content={
+                      <Paragraph type="p2" semiBold>
+                        You don’t have enough balance to create a proposal.
+                        The creator of a proposal needs to have at least {daoCtx.minThreshold}%
+                        of the amount of $BOND staked in the DAO in order to
+                        create a proposal.
+                      </Paragraph>
+                    }
+                    visible={state.showWhyReason}
+                    onVisibleChange={visible =>
+                      setState({ showWhyReason: visible })
+                    }>
+                    <Button type="link">See why</Button>
+                  </Popover>
+                </Grid>
+              )}
+            </Grid>
           </Grid>
         )}
         {proposalCtx.isCanceled === true && (

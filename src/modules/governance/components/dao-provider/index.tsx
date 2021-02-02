@@ -7,6 +7,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { APIProposalStateId } from '../../api';
 
 export type DAOProviderState = {
+  minThreshold: number;
   isActive?: boolean;
   bondStaked?: BigNumber;
   activationThreshold?: BigNumber;
@@ -15,6 +16,7 @@ export type DAOProviderState = {
 };
 
 const InitialState: DAOProviderState = {
+  minThreshold: 1,
   isActive: undefined,
   bondStaked: undefined,
   activationThreshold: undefined,
