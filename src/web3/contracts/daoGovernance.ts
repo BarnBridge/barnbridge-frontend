@@ -73,9 +73,11 @@ function cancelProposalSend(proposalId: number, from: string): Promise<void> {
 function queueProposalForExecutionSend(
   proposalId: number,
   from: string,
+  gasPrice: number,
 ): Promise<void> {
   return Contract.send('queue', [proposalId], {
     from,
+    gasPrice: getGasValue(gasPrice),
   });
 }
 
@@ -223,7 +225,7 @@ export type DAOGovernanceContract = DAOGovernanceContractData & {
       payload: CreateProposalPayload,
     ): Promise<Web3EventType<CreateProposalResult>>;
     cancelProposal(proposalId: number): Promise<void>;
-    queueProposalForExecution(proposalId: number): Promise<void>;
+    queueProposalForExecution(proposalId: number, gasPrice: number): Promise<void>;
     executeProposal(proposalId: number): Promise<void>;
     getProposalState(proposalId: number): Promise<ProposalState>;
     getLatestProposalId(): Promise<number>;
@@ -292,9 +294,9 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
           ? cancelProposalSend(proposalId, wallet.account!)
           : Promise.reject();
       },
-      queueProposalForExecution(proposalId: number): Promise<void> {
+      queueProposalForExecution(proposalId: number, gasPrice: number): Promise<void> {
         return wallet.isActive
-          ? queueProposalForExecutionSend(proposalId, wallet.account!)
+          ? queueProposalForExecutionSend(proposalId, wallet.account!, gasPrice)
           : Promise.reject();
       },
       executeProposal(proposalId: number): Promise<void> {
@@ -346,11 +348,11 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       ): Promise<void> {
         return wallet.isActive
           ? startAbrogationProposalSend(
-              proposalId,
-              description,
-              wallet.account!,
-              gasPrice,
-            )
+            proposalId,
+            description,
+            wallet.account!,
+            gasPrice,
+          )
           : Promise.reject();
       },
       abrogationProposalCastVote(
@@ -360,11 +362,11 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       ): Promise<void> {
         return wallet.isActive
           ? abrogationProposalCastVoteSend(
-              proposalId,
-              support,
-              wallet.account!,
-              gasPrice,
-            )
+            proposalId,
+            support,
+            wallet.account!,
+            gasPrice,
+          )
           : Promise.reject();
       },
       abrogationProposalCancelVote(
@@ -373,10 +375,10 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
       ): Promise<void> {
         return wallet.isActive
           ? abrogationProposalCancelVoteSend(
-              proposalId,
-              wallet.account!,
-              gasPrice,
-            )
+            proposalId,
+            wallet.account!,
+            gasPrice,
+          )
           : Promise.reject();
       },
     },

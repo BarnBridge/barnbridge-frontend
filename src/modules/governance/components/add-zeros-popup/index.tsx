@@ -66,7 +66,7 @@ const AddZerosPopup: React.FunctionComponent<
         </Grid>
       </Grid>
       <Paragraph type="p2" semiBold color="grey500">
-        In id erat vestibulum magna ullamcorper rutrum a vitae risus
+        Use the options above to add trailing zeros to the input amount.
       </Paragraph>
       <Grid flow="col" gap={16} justify="space-between">
         <Button type="ghost" onClick={handleCancel}>

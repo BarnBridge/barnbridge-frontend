@@ -25,7 +25,9 @@ export enum VoteState {
 
 type FormState = {
   changeOption?: boolean;
-  gasPrice?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: FormState = {
@@ -45,9 +47,7 @@ const InitialState: ProposalVoteModalState = {
   submitting: false,
 };
 
-const ProposalVoteModal: React.FunctionComponent<
-  ModalProps & ProposalVoteModalProps
-> = props => {
+const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
   const [form] = Antd.Form.useForm<FormState>();
@@ -62,27 +62,29 @@ const ProposalVoteModal: React.FunctionComponent<
 
     setState({ submitting: true });
 
-    const { gasPrice = 0 } = values;
+    const { gasPrice } = values;
+    const gasFee = gasPrice?.value!;
 
     try {
       await form.validateFields();
 
       if (voteState === VoteState.VoteFor) {
-        await proposalCtx.proposalCastVote(true, gasPrice);
+        await proposalCtx.proposalCastVote(true, gasFee);
       } else if (voteState === VoteState.VoteAgainst) {
-        await proposalCtx.proposalCastVote(false, gasPrice);
+        await proposalCtx.proposalCastVote(false, gasFee);
       } else if (voteState === VoteState.VoteChange) {
         await proposalCtx.proposalCastVote(
           values.changeOption === true,
-          gasPrice,
+          gasFee,
         );
       } else if (voteState === VoteState.VoteCancel) {
-        await proposalCtx.proposalCancelVote(gasPrice);
+        await proposalCtx.proposalCancelVote(gasFee);
       }
 
       proposalCtx.reload();
       props.onCancel?.();
-    } catch {}
+    } catch {
+    }
 
     setState({ submitting: false });
   }
@@ -115,7 +117,7 @@ const ProposalVoteModal: React.FunctionComponent<
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
-          <Grid flow="col" gap={8} align="center" justify="center">
+          <Grid flow="col" gap={8} align="center">
             <Heading type="h2" bold color="grey900">
               {formatBigValue(proposalCtx.votingPower, 2)}
             </Heading>
@@ -123,9 +125,45 @@ const ProposalVoteModal: React.FunctionComponent<
               Votes
             </Paragraph>
           </Grid>
-          <Paragraph type="p2" semiBold color="grey500" className="text-center">
-            {proposalCtx.proposal?.title}
-          </Paragraph>
+          {(voteState === VoteState.VoteFor || voteState === VoteState.VoteAgainst) && (
+            <Grid flow="row" gap={8}>
+              <Paragraph type="p2" color="grey500">
+                You are about to vote on proposal
+              </Paragraph>
+              <Paragraph type="p2" semiBold color="grey500">
+                "{proposalCtx.proposal?.title}"
+              </Paragraph>
+              <Paragraph type="p2" color="grey500">
+                Are you sure you want to continue? You can change your vote later.
+              </Paragraph>
+            </Grid>
+          )}
+          {voteState === VoteState.VoteChange && (
+            <Grid flow="row" gap={8}>
+              <Paragraph type="p2" color="grey500">
+                You are about to change your vote on proposal
+              </Paragraph>
+              <Paragraph type="p2" semiBold color="grey500">
+                "{proposalCtx.proposal?.title}"
+              </Paragraph>
+              <Paragraph type="p2" color="grey500">
+                Are you sure you want to continue? You can change your vote again later.
+              </Paragraph>
+            </Grid>
+          )}
+          {voteState === VoteState.VoteCancel && (
+            <Grid flow="row" gap={8}>
+              <Paragraph type="p2" color="grey500">
+                You are about to cancel your vote on proposal
+              </Paragraph>
+              <Paragraph type="p2" semiBold color="grey500">
+                "{proposalCtx.proposal?.title}"
+              </Paragraph>
+              <Paragraph type="p2" color="grey500">
+                Are you sure you want to continue? You can change your vote again later.
+              </Paragraph>
+            </Grid>
+          )}
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>
@@ -186,14 +224,14 @@ const ProposalVoteModal: React.FunctionComponent<
                   className={s.actionBtn}>
                   {voteState === VoteState.VoteFor && 'Vote for proposal'}
                   {voteState === VoteState.VoteAgainst &&
-                    'Vote against proposal'}
+                  'Vote against proposal'}
                   {voteState === VoteState.VoteCancel && 'Cancel vote'}
                   {voteState === VoteState.VoteChange &&
-                    changeOption === true &&
-                    'Vote for proposal'}
+                  changeOption === true &&
+                  'Vote for proposal'}
                   {voteState === VoteState.VoteChange &&
-                    changeOption === false &&
-                    'Vote against proposal'}
+                  changeOption === false &&
+                  'Vote against proposal'}
                 </Button>
               );
             }}

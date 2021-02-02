@@ -17,7 +17,7 @@ import Form from 'components/antd/form';
 import DatePicker from 'components/antd/datepicker';
 import Button from 'components/antd/button';
 import GasFeeList from 'components/custom/gas-fee-list';
-import { Small } from 'components/custom/typography';
+import { Paragraph, Small } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 
 import { getFormattedDuration, inRange, isValidAddress } from 'utils';
@@ -25,15 +25,19 @@ import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import s from './styles.module.scss';
+import Alert from 'components/antd/alert';
+import ExternalLink from 'components/custom/externalLink';
 
 type LockFormData = {
   lockEndDate?: Date;
-  gasFee?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: LockFormData = {
   lockEndDate: undefined,
-  gasFee: undefined,
+  gasPrice: undefined,
 };
 
 const DURATION_OPTIONS: string[] = ['1w', '1m', '3m', '6m', '1y'];
@@ -94,10 +98,13 @@ const WalletLockView: React.FunctionComponent = () => {
   async function handleSubmit(values: LockFormData) {
     setSubmitting(true);
 
+    const { gasPrice, lockEndDate } = values;
+    const gasFee = gasPrice?.value!;
+
     try {
       await web3c.daoBarn.actions.lock(
-        getUnixTime(values.lockEndDate!),
-        values.gasFee!,
+        getUnixTime(lockEndDate!),
+        gasFee,
       );
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
@@ -223,10 +230,11 @@ const WalletLockView: React.FunctionComponent = () => {
                 disabled={submitting}
               />
             </Form.Item>
+            <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
           </div>
           <div className={s.rightCol}>
             <Form.Item
-              name="gasFee"
+              name="gasPrice"
               label="Gas Fee (Gwei)"
               hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
               rules={[{ required: true, message: 'Required' }]}>
@@ -236,7 +244,23 @@ const WalletLockView: React.FunctionComponent = () => {
         </div>
         <div className={s.chart}>
           <div className={s.chartHeader}>
-            <Small semiBold color="grey500">
+            <Small semiBold color="grey500" hint={(
+              <>
+                <Paragraph type="p2">
+                  The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up
+                  to 2x vBOND. The bonus is linear, as per the following example:
+                </Paragraph>
+                <ul>
+                  <li>
+                    <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
+                  </li>
+                  <li>
+                    <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
+                  </li>
+                </ul>
+                <ExternalLink href="#">Learn more</ExternalLink>
+              </>
+            )}>
               {formatBONDValue(
                 web3c.daoBarn.balance?.multipliedBy(currentMultiplier - 1),
               )}{' '}

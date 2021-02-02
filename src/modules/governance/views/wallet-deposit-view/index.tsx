@@ -20,12 +20,14 @@ import useMergeState from 'hooks/useMergeState';
 
 type DepositFormData = {
   amount?: BigNumber;
-  gasFee?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: DepositFormData = {
   amount: undefined,
-  gasFee: undefined,
+  gasPrice: undefined,
 };
 
 type WalletDepositViewState = {
@@ -63,8 +65,11 @@ const WalletDepositView: React.FunctionComponent = () => {
   async function handleSubmit(values: DepositFormData) {
     setState({ saving: true });
 
+    const { gasPrice, amount } = values;
+    const gasFee = gasPrice?.value!;
+
     try {
-      await web3c.daoBarn.actions.deposit(values.amount!, values.gasFee!);
+      await web3c.daoBarn.actions.deposit(amount!, gasFee);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
@@ -171,11 +176,11 @@ const WalletDepositView: React.FunctionComponent = () => {
                   tooltipPlacement="bottom"
                 />
               </Form.Item>
-              <Alert message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+              <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
             <Grid flow="row">
               <Form.Item
-                name="gasFee"
+                name="gasPrice"
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>

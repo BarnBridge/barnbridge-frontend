@@ -27,7 +27,7 @@ const InitialState: ProposalProviderState = {};
 export type ProposalContextType = ProposalProviderState & {
   reload(): void;
   cancelProposal(): Promise<void>;
-  queueProposalForExecution(): Promise<void>;
+  queueProposalForExecution(gasPrice: number): Promise<void>;
   executeProposal(): Promise<void>;
   proposalCastVote(support: boolean, gasPrice: number): Promise<void>;
   proposalCancelVote(gasPrice: number): Promise<void>;
@@ -189,9 +189,9 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       : Promise.reject();
   }
 
-  function queueProposalForExecution(): Promise<void> {
+  function queueProposalForExecution(gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.queueProposalForExecution(proposalId)
+      ? web3c.daoGovernance.actions.queueProposalForExecution(proposalId, gasPrice)
       : Promise.reject();
   }
 

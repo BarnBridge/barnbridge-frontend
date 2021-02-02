@@ -12,7 +12,8 @@ const AbrogationApprovalCard: React.FunctionComponent = () => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="grey900"
+                   hint="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
           Abrogation proposal approval
         </Paragraph>
       }>

@@ -14,6 +14,7 @@ import { Paragraph, Small } from 'components/custom/typography';
 import { isValidAddress } from 'utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
+import Alert from 'components/antd/alert';
 
 const MANUAL_VOTING_KEY = 'manual';
 const DELEGATE_VOTING_KEY = 'delegate';
@@ -32,13 +33,15 @@ const VOTING_TYPE_OPTIONS = [
 type DelegateFormData = {
   votingType?: string;
   delegateAddress?: string;
-  gasFee?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: DelegateFormData = {
   votingType: MANUAL_VOTING_KEY,
   delegateAddress: undefined,
-  gasFee: undefined,
+  gasPrice: undefined,
 };
 
 type WalletDelegateViewState = {
@@ -127,14 +130,17 @@ const WalletDelegateView: React.FunctionComponent = () => {
   async function handleSubmit(values: DelegateFormData) {
     setState({ saving: true });
 
+    const { gasPrice, delegateAddress } = values;
+    const gasFee = gasPrice?.value!;
+
     try {
       if (values.votingType === DELEGATE_VOTING_KEY) {
         await web3c.daoBarn.actions.delegate(
-          values.delegateAddress!,
-          values.gasFee!,
+          delegateAddress!,
+          gasFee,
         );
       } else {
-        await web3c.daoBarn.actions.stopDelegate(values.gasFee!);
+        await web3c.daoBarn.actions.stopDelegate(gasFee);
       }
 
       form.setFieldsValue(InitialFormValues);
@@ -203,10 +209,16 @@ const WalletDelegateView: React.FunctionComponent = () => {
                   <TokenInput disabled={state.saving} />
                 </Form.Item>
               )}
+              {state.votingType === MANUAL_VOTING_KEY && (
+                <Alert message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
+              )}
+              {state.votingType === DELEGATE_VOTING_KEY && (
+                <Alert message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
+              )}
             </Grid>
             <Grid flow="row">
               <Form.Item
-                name="gasFee"
+                name="gasPrice"
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>

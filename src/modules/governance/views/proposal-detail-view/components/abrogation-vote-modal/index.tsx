@@ -16,6 +16,7 @@ import { formatBigValue } from 'web3/utils';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
+import { VoteState } from '../proposal-vote-modal';
 
 export enum VoteAbrogationState {
   None,
@@ -29,7 +30,9 @@ export enum VoteAbrogationState {
 type FormState = {
   changeOption?: boolean;
   description?: string;
-  gasPrice?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: FormState = {
@@ -68,7 +71,8 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
 
     setState({ submitting: true });
 
-    const { gasPrice = 0 } = values;
+    const { gasPrice } = values;
+    const gasFee = gasPrice?.value!;
 
     try {
       await form.validateFields();
@@ -76,19 +80,19 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
       if (voteState === VoteAbrogationState.VoteInitiate) {
         await proposalCtx.startAbrogationProposal(
           values.description!,
-          gasPrice,
+          gasFee,
         );
       } else if (voteState === VoteAbrogationState.VoteFor) {
-        await abrogationCtx.abrogationProposalCastVote(true, gasPrice);
+        await abrogationCtx.abrogationProposalCastVote(true, gasFee);
       } else if (voteState === VoteAbrogationState.VoteAgainst) {
-        await abrogationCtx.abrogationProposalCastVote(false, gasPrice);
+        await abrogationCtx.abrogationProposalCastVote(false, gasFee);
       } else if (voteState === VoteAbrogationState.VoteChange) {
         await abrogationCtx.abrogationProposalCastVote(
           values.changeOption === true,
-          gasPrice,
+          gasFee,
         );
       } else if (voteState === VoteAbrogationState.VoteCancel) {
-        await abrogationCtx.abrogationProposalCancelVote(gasPrice);
+        await abrogationCtx.abrogationProposalCancelVote(gasFee);
       }
 
       abrogationCtx.reload();
@@ -136,21 +140,53 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
         )}
         {voteState !== VoteAbrogationState.VoteInitiate && (
           <Grid flow="row" gap={16} className={s.row}>
-            <Grid flow="col" gap={8} align="center" justify="center">
+            <Grid flow="col" gap={8} align="center">
               <Heading type="h2" bold color="grey900">
-                {formatBigValue(abrogationCtx.votingPower, 2)}
+                {formatBigValue(proposalCtx.votingPower, 2)}
               </Heading>
               <Paragraph type="p1" semiBold color="grey500">
                 Votes
               </Paragraph>
             </Grid>
-            <Paragraph
-              type="p2"
-              semiBold
-              color="grey500"
-              className="text-center">
-              {proposalCtx.proposal?.title}
-            </Paragraph>
+            {(voteState === VoteAbrogationState.VoteFor || voteState === VoteAbrogationState.VoteAgainst) && (
+              <Grid flow="row" gap={8}>
+                <Paragraph type="p2" color="grey500">
+                  You are about to vote on the abrogation proposal for
+                </Paragraph>
+                <Paragraph type="p2" semiBold color="grey500">
+                  "{proposalCtx.proposal?.title}"
+                </Paragraph>
+                <Paragraph type="p2" color="grey500">
+                  Are you sure you want to continue? You can change your vote later.
+                </Paragraph>
+              </Grid>
+            )}
+            {voteState === VoteAbrogationState.VoteChange && (
+              <Grid flow="row" gap={8}>
+                <Paragraph type="p2" color="grey500">
+                  You are about to change your vote on the abrogation proposal for
+                </Paragraph>
+                <Paragraph type="p2" semiBold color="grey500">
+                  "{proposalCtx.proposal?.title}"
+                </Paragraph>
+                <Paragraph type="p2" color="grey500">
+                  Are you sure you want to continue? You can change your vote again later.
+                </Paragraph>
+              </Grid>
+            )}
+            {voteState === VoteAbrogationState.VoteCancel && (
+              <Grid flow="row" gap={8}>
+                <Paragraph type="p2" color="grey500">
+                  You are about to cancel your vote on the abrogation proposal for
+                </Paragraph>
+                <Paragraph type="p2" semiBold color="grey500">
+                  "{proposalCtx.proposal?.title}"
+                </Paragraph>
+                <Paragraph type="p2" color="grey500">
+                  Are you sure you want to continue? You can change your vote again later.
+                </Paragraph>
+              </Grid>
+            )}
           </Grid>
         )}
         <div className={s.delimiter} />

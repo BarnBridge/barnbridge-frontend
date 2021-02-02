@@ -143,7 +143,8 @@ const ProposalCreateView: React.FunctionComponent = () => {
       );
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
-    } catch (e) {}
+    } catch (e) {
+    }
 
     setState({ submitting: false });
   }
@@ -193,7 +194,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                   <Form.Item
                     name="description"
                     label="Description"
-                    hint=""
+                    hint="Be careful with the length of the description, this will eventually have to be stored on chain and the gas needed might make the proposal creation transaction more expensive."
                     rules={[{ required: true, message: 'Required' }]}>
                     <Textarea
                       placeholder="Placeholder"

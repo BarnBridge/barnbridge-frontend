@@ -14,15 +14,19 @@ import ProposalVotesCard from './components/proposal-votes-card';
 import ProposalQuorumCard from './components/proposal-quorum-card';
 import ProposalApprovalCard from './components/proposal-approval-card';
 import ProposalProvider, { useProposal } from './providers/ProposalProvider';
+import QueueForExecutionModal from './components/queue-for-execution-modal';
 
 import { APIProposalState } from 'modules/governance/api';
 import { useWallet } from 'wallets/wallet';
+import useMergeState from 'hooks/useMergeState';
 
 type ProposalDetailViewInnerState = {
+  showQueueForExecution: boolean;
   executing: boolean;
 };
 
 const InitialState: ProposalDetailViewInnerState = {
+  showQueueForExecution: false,
   executing: false,
 };
 
@@ -32,30 +36,12 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
   const proposalState = proposalCtx.proposal?.state;
-  const [state, setState] = React.useState<ProposalDetailViewInnerState>(
+  const [state, setState] = useMergeState<ProposalDetailViewInnerState>(
     InitialState,
   );
 
   function handleBackClick() {
     history.push('/governance/proposals');
-  }
-
-  function handleQueueForExecution() {
-    setState(prevState => ({
-      ...prevState,
-      executing: true,
-    }));
-
-    proposalCtx
-      .queueProposalForExecution()
-      .catch(Error)
-      .then(() => {
-        proposalCtx.reload();
-        setState(prevState => ({
-          ...prevState,
-          executing: false,
-        }));
-      });
   }
 
   function handleExecuteProposal() {
@@ -103,7 +89,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
                 <Button
                   type="primary"
                   loading={state.executing}
-                  onClick={handleQueueForExecution}>
+                  onClick={() => setState({ showQueueForExecution: true })}>
                   Queue for execution
                 </Button>
               )}
@@ -145,6 +131,12 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
           )}
         </Grid>
       </Grid>
+
+      {state.showQueueForExecution && (
+        <QueueForExecutionModal
+          visible
+          onCancel={() => setState({ showQueueForExecution: false })} />
+      )}
     </Grid>
   );
 };

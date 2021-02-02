@@ -12,7 +12,10 @@
   &.ACCEPTED,
   &.EXECUTED {
     background-color: rgba(var(--text-color-green500-rgb), 0.08);
-    color: var(--text-color-green500);
+
+    label {
+      color: var(--text-color-green500);
+    }
   }
 
   &.WARMUP,
@@ -20,13 +23,20 @@
   &.QUEUED,
   &.GRACE {
     background-color: rgba(var(--text-color-blue500-rgb), 0.08);
-    color: var(--text-color-blue500);
+
+    label {
+      color: var(--text-color-blue500);
+    }
   }
 
   &.EXPIRED,
   &.FAILED,
-  &.CANCELED {
+  &.CANCELED,
+  &.ABROGATED {
     background-color: rgba(var(--text-color-red500-rgb), 0.08);
-    color: var(--text-color-red500);
+
+    label {
+      color: var(--text-color-red500);
+    }
   }
 }

@@ -111,6 +111,7 @@ export const APIProposalStateMap = new Map<APIProposalState, string>([
   [APIProposalState.GRACE, 'Pending execution'],
   [APIProposalState.EXPIRED, 'Expired'],
   [APIProposalState.EXECUTED, 'Executed'],
+  [APIProposalState.ABROGATED, 'Abrogated'],
 ]);
 
 export type APILiteProposalEntity = {

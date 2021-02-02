@@ -13,6 +13,8 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { useWeekCountdown } from 'hooks/useCountdown';
 
 import s from './styles.module.scss';
+import Tooltip from '../../../../components/antd/tooltip';
+import ExternalLink from '../../../../components/custom/externalLink';
 
 const VotingHeader: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
@@ -106,9 +108,26 @@ const VotingHeader: React.FunctionComponent = () => {
 
         {multiplier > 1 && (
           <Grid flow="row" gap={4}>
-            <Paragraph type="p2" color="grey500">
+            <Paragraph type="p2" color="grey500" hint={(
+              <>
+                <Paragraph type="p2">
+                  The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up
+                  to 2x vBOND. The bonus is linear, as per the following example:
+                </Paragraph>
+                <ul>
+                  <li>
+                    <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
+                  </li>
+                  <li>
+                    <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
+                  </li>
+                </ul>
+                <ExternalLink href="#">Learn more</ExternalLink>
+              </>
+            )}>
               Multiplier & Lock timer
             </Paragraph>
+
             <Grid flow="col" gap={16} align="center">
               <Antd.Tooltip title={`${multiplier}x`}>
                 <Label type="lb1" bold color="red500" className={s.ratio}>

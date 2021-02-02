@@ -95,7 +95,8 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
             </Grid>
           </Grid>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500">
+            <Small semiBold color="grey500"
+                   hint="If the creator’s balance falls below the 1% threshold the proposal can be cancelled by calling a function.">
               Creator threshold
             </Small>
             <Grid flow="col" gap={8}>

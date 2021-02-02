@@ -249,9 +249,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       cancel = true;
     } catch (e) {
       e &&
-        Antd.notification.error({
-          message: e.message,
-        });
+      Antd.notification.error({
+        message: e.message,
+      });
     }
 
     setState({ submitting: false });
@@ -294,12 +294,14 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           <Form.Item
             name="targetAddress"
             label="Target address"
+            hint="This is the address to which the transaction will be sent."
             rules={[{ required: true, message: 'Required' }]}>
             <Input disabled={state.submitting} />
           </Form.Item>
 
           <Grid flow="col" align="center" justify="space-between">
-            <Small semiBold color="grey500">
+            <Small semiBold color="grey500"
+                   hint="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
               Is this a proxy address?
             </Small>
             <Form.Item name="isProxyAddress">
@@ -331,6 +333,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           <Form.Item
             name="addValueAttribute"
             label="Add a value attribute to your action?"
+            hint="This field allows you to send some ETH along with your transaction."
             rules={[{ required: true, message: 'Required' }]}>
             <YesNoSelector disabled={state.submitting} />
           </Form.Item>
@@ -379,6 +382,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           <Form.Item
             name="addFunctionCall"
             label="Add a function call to your action?"
+            hint="This field allows you to call a function on a smart contract."
             rules={[{ required: true, message: 'Required' }]}>
             <YesNoSelector disabled={state.submitting} />
           </Form.Item>
@@ -450,7 +454,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                                       const zeros = '0'.repeat(value);
                                       functionParams[
                                         input.name
-                                      ] = `${prevActionValue}${zeros}`;
+                                        ] = `${prevActionValue}${zeros}`;
 
                                       const paramsValues = Object.values(
                                         functionParams,
@@ -501,14 +505,14 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                   )}
 
                   {targetAddress &&
-                    addFunctionCall &&
-                    !abiLoading &&
-                    !abiInterface && (
-                      <Alert
-                        type="error"
-                        message="The target address you entered is not a validated contract address. Please check the information you entered and try again"
-                      />
-                    )}
+                  addFunctionCall &&
+                  !abiLoading &&
+                  !abiInterface && (
+                    <Alert
+                      type="error"
+                      message="The target address you entered is not a validated contract address. Please check the information you entered and try again"
+                    />
+                  )}
                 </Grid>
               );
             }}

@@ -19,12 +19,14 @@ import useMergeState from 'hooks/useMergeState';
 
 type WithdrawFormData = {
   amount?: BigNumber;
-  gasFee?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: WithdrawFormData = {
   amount: undefined,
-  gasFee: undefined,
+  gasPrice: undefined,
 };
 
 type WalletWithdrawViewState = {
@@ -46,8 +48,11 @@ const WalletWithdrawView: React.FunctionComponent = () => {
   async function handleSubmit(values: WithdrawFormData) {
     setState({ saving: true });
 
+    const { gasPrice, amount } = values;
+    const gasFee = gasPrice?.value!;
+
     try {
-      await web3c.daoBarn.actions.withdraw(values.amount!, values.gasFee!);
+      await web3c.daoBarn.actions.withdraw(amount!, gasFee);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
@@ -145,11 +150,11 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                   );
                 }}
               </Form.Item>
-              <Alert message="Withdrawal before the end of the epoch means you can't harvest the rewards." />
+              <Alert message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
             </Grid>
             <Grid flow="row">
               <Form.Item
-                name="gasFee"
+                name="gasPrice"
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>

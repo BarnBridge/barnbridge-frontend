@@ -33,7 +33,11 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
   return (
     <Card className={className}>
       <Grid flow="row" gap={24} align="start">
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="grey900" hint={(
+          <Paragraph type="p2">
+            For the DAO to be activated, a threshold of {formatBONDValue(dao.activationThreshold)} $BOND tokens staked has to be met.
+          </Paragraph>
+        )}>
           Activation threshold
         </Paragraph>
         <Grid gap={12} colsTemplate="auto 24px" width="100%">
