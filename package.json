@@ -65,6 +65,7 @@
     "@types/react-router-dom": "5.1.7",
     "@types/recharts": "1.8.19",
     "@types/wolfy87-eventemitter": "5.2.0",
+    "@typescript-eslint/parser": "4.14.2",
     "dotenv": "8.2.0",
     "eslint-plugin-prettier": "3.3.1",
     "husky": "4.3.8",
