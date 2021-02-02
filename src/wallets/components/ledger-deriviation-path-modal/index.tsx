@@ -27,7 +27,9 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
 
   const wallet = useWallet();
 
-  const [derivationPath, setDerivationPath] = React.useState<string>(String(WEB3_LEDGER_DERIVATION_PATHS[0].value));
+  const [derivationPath, setDerivationPath] = React.useState<string>(
+    String(WEB3_LEDGER_DERIVATION_PATHS[0].value),
+  );
 
   function handleSelect(value: string | number) {
     setDerivationPath(String(value));
@@ -42,22 +44,19 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
   }
 
   return (
-    <Antd.Modal
-      className={s.component}
-      centered
-      footer={[]}
-      {...modalProps}
-    >
+    <Antd.Modal className={s.component} centered footer={[]} {...modalProps}>
       <Select
         className={s.dropdown}
         options={WEB3_LEDGER_DERIVATION_PATHS}
         value={derivationPath}
-        onSelect={handleSelect} />
+        onSelect={handleSelect}
+      />
       <Antd.Button
         type="primary"
         className={s.connectBtn}
-        onClick={handleConnect}
-      >Connect</Antd.Button>
+        onClick={handleConnect}>
+        Connect
+      </Antd.Button>
     </Antd.Modal>
   );
 };

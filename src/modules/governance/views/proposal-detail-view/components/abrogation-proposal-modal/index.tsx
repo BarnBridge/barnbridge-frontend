@@ -29,12 +29,21 @@ const AbrogationProposalModalInner: React.FunctionComponent<AbrogationProposalMo
 
         <Grid flow="row" gap={64} align="center">
           <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-            <Heading type="h2" semiBold color="grey900" loading={!proposalCtx.proposal}>
-              PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
+            <Heading
+              type="h2"
+              semiBold
+              color="grey900"
+              loading={!proposalCtx.proposal}>
+              PID-{proposalCtx.proposal?.proposalId}:{' '}
+              {proposalCtx.proposal?.title}
             </Heading>
           </Grid>
 
-          <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0px, 428px)" width={1070}>
+          <Grid
+            flow="col"
+            gap={32}
+            colsTemplate="minmax(0, 610px) minmax(0px, 428px)"
+            width={1070}>
             <Grid flow="row" gap={32}>
               <AbrogationDetailsCard />
             </Grid>

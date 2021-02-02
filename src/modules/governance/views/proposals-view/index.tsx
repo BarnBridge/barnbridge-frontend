@@ -10,7 +10,9 @@ import Popover from 'components/antd/popover';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Heading, Paragraph, Small } from 'components/custom/typography';
-import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
+import ProposalsProvider, {
+  useProposals,
+} from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
 import ProposalsTable from './components/proposals-table';
 import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';
@@ -20,35 +22,40 @@ import { useDebounce } from 'hooks/useDebounce';
 
 import s from './styles.module.scss';
 
-const TABS: CardTabListType[] = [{
-  key: 'all',
-  tab: (
-    <Paragraph type="p1" semiBold color="grey900">
-      All proposals
-    </Paragraph>
-  ),
-}, {
-  key: 'active',
-  tab: (
-    <Paragraph type="p1" semiBold color="grey900">
-      Active
-    </Paragraph>
-  ),
-}, {
-  key: 'executed',
-  tab: (
-    <Paragraph type="p1" semiBold color="grey900">
-      Executed
-    </Paragraph>
-  ),
-}, {
-  key: 'failed',
-  tab: (
-    <Paragraph type="p1" semiBold color="grey900">
-      Failed
-    </Paragraph>
-  ),
-}];
+const TABS: CardTabListType[] = [
+  {
+    key: 'all',
+    tab: (
+      <Paragraph type="p1" semiBold color="grey900">
+        All proposals
+      </Paragraph>
+    ),
+  },
+  {
+    key: 'active',
+    tab: (
+      <Paragraph type="p1" semiBold color="grey900">
+        Active
+      </Paragraph>
+    ),
+  },
+  {
+    key: 'executed',
+    tab: (
+      <Paragraph type="p1" semiBold color="grey900">
+        Executed
+      </Paragraph>
+    ),
+  },
+  {
+    key: 'failed',
+    tab: (
+      <Paragraph type="p1" semiBold color="grey900">
+        Failed
+      </Paragraph>
+    ),
+  },
+];
 
 type ProposalsViewState = {
   showWhyReason: boolean;
@@ -73,15 +80,17 @@ const ProposalsViewInner: React.FunctionComponent = () => {
     proposalsCtx.changeStateFilter(stateFilter);
   }
 
-  const handleSearchChange = useDebounce((ev: React.ChangeEvent<HTMLInputElement>) => {
-    proposalsCtx.changeSearchFilter(ev.target.value);
-  }, 400);
+  const handleSearchChange = useDebounce(
+    (ev: React.ChangeEvent<HTMLInputElement>) => {
+      proposalsCtx.changeSearchFilter(ev.target.value);
+    },
+    400,
+  );
 
   React.useEffect(() => {
-    daoCtx.actions.hasActiveProposal()
-      .then(hasActiveProposal => {
-        setState({ hasActiveProposal });
-      });
+    daoCtx.actions.hasActiveProposal().then(hasActiveProposal => {
+      setState({ hasActiveProposal });
+    });
   }, []);
 
   React.useEffect(() => {
@@ -97,16 +106,19 @@ const ProposalsViewInner: React.FunctionComponent = () => {
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col" align="center" justify="space-between">
-        <Heading type="h1" bold color="grey900">Proposals</Heading>
+        <Heading type="h1" bold color="grey900">
+          Proposals
+        </Heading>
         <Grid flow="row" gap={8} align="end" justify="end">
-          {(state.hasActiveProposal !== undefined && state.hasThreshold !== undefined) && (
-            <Button
-              type="primary"
-              disabled={!state.hasActiveProposal || state.hasThreshold}
-              onClick={() => history.push('proposals/create')}>
-              Create proposal
-            </Button>
-          )}
+          {state.hasActiveProposal !== undefined &&
+            state.hasThreshold !== undefined && (
+              <Button
+                type="primary"
+                disabled={!state.hasActiveProposal || state.hasThreshold}
+                onClick={() => history.push('proposals/create')}>
+                Create proposal
+              </Button>
+            )}
 
           {(state.hasActiveProposal || !state.hasThreshold) && (
             <Grid flow="col" gap={8} align="center">
@@ -120,21 +132,28 @@ const ProposalsViewInner: React.FunctionComponent = () => {
                 content={
                   <Paragraph type="p2" semiBold>
                     <Grid flow="row" gap={8}>
-                      <span>There are 2 possible reasons for why you can’t create a proposal:</span>
+                      <span>
+                        There are 2 possible reasons for why you can’t create a
+                        proposal:
+                      </span>
                       <ul>
                         <li>
                           You already are the creator of an ongoing proposal
                         </li>
                         <li>
-                          You don’t have enough balance to create a proposal. The creator of a proposal needs to have at
-                          least 10% of the amount of $BOND staked in the DAO in order to create a proposal.
+                          You don’t have enough balance to create a proposal.
+                          The creator of a proposal needs to have at least 10%
+                          of the amount of $BOND staked in the DAO in order to
+                          create a proposal.
                         </li>
                       </ul>
                     </Grid>
                   </Paragraph>
                 }
                 visible={state.showWhyReason}
-                onVisibleChange={visible => setState({ showWhyReason: visible })}>
+                onVisibleChange={visible =>
+                  setState({ showWhyReason: visible })
+                }>
                 <Button type="link">See why</Button>
               </Popover>
             </Grid>
@@ -146,13 +165,14 @@ const ProposalsViewInner: React.FunctionComponent = () => {
         noPaddingBody
         tabList={TABS}
         activeTabKey={proposalsCtx.stateFilter}
-        tabBarExtraContent={(
+        tabBarExtraContent={
           <Input
             className={s.search}
             prefix={<Icons name="search-outlined" />}
             placeholder="Search proposal"
-            onChange={handleSearchChange} />
-        )}
+            onChange={handleSearchChange}
+          />
+        }
         onTabChange={handleStateChange}>
         <ProposalsTable />
       </Card>
@@ -178,10 +198,12 @@ const ProposalsView = () => {
         <Button
           type="link"
           icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>Overview</Button>
+          onClick={handleBackClick}>
+          Overview
+        </Button>
         <ActivationThreshold className={s.activationThreshold} />
       </Grid>
-    )
+    );
   }
 
   return (

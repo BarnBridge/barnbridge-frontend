@@ -38,23 +38,37 @@ const VotingHeader: React.FunctionComponent = () => {
       </Label>
       <Grid flow="col" gap={24}>
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">Current reward</Paragraph>
+          <Paragraph type="p2" color="grey500">
+            Current reward
+          </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900" loading={claimValue === undefined}>
+            <Heading
+              type="h3"
+              bold
+              color="grey900"
+              loading={claimValue === undefined}>
               {formatBONDValue(claimValue)}
             </Heading>
             <Icons name="bond-square-token" />
             <Button
               type="link"
               disabled={claimValue?.isZero()}
-              onClick={() => web3c.daoReward.actions.claim()}>Claim</Button>
+              onClick={() => web3c.daoReward.actions.claim()}>
+              Claim
+            </Button>
           </Grid>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">Bond Balance</Paragraph>
+          <Paragraph type="p2" color="grey500">
+            Bond Balance
+          </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900" loading={bondBalance === undefined}>
+            <Heading
+              type="h3"
+              bold
+              color="grey900"
+              loading={bondBalance === undefined}>
               {formatBONDValue(bondBalance)}
             </Heading>
             <Icons name="bond-square-token" />
@@ -63,37 +77,53 @@ const VotingHeader: React.FunctionComponent = () => {
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">
-            {isDelegated ? 'Total delegated voting power' : 'Total voting power'}
+            {isDelegated
+              ? 'Total delegated voting power'
+              : 'Total voting power'}
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900" loading={(isDelegated ? myBondBalance : votingPower) === undefined}>
+            <Heading
+              type="h3"
+              bold
+              color="grey900"
+              loading={
+                (isDelegated ? myBondBalance : votingPower) === undefined
+              }>
               {isDelegated
                 ? formatBONDValue(myBondBalance)
                 : formatBONDValue(votingPower)}
             </Heading>
-            <Button
-              type="link"
-              onClick={() => showDetailedView(true)}>Detailed view</Button>
+            <Button type="link" onClick={() => showDetailedView(true)}>
+              Detailed view
+            </Button>
             <VotingDetailedModal
               visible={detailedView}
-              onCancel={() => showDetailedView(false)} />
+              onCancel={() => showDetailedView(false)}
+            />
           </Grid>
         </Grid>
         <div className={s.delimiter} />
 
         {multiplier > 1 && (
           <Grid flow="row" gap={4}>
-            <Paragraph type="p2" color="grey500">Multiplier & Lock timer</Paragraph>
+            <Paragraph type="p2" color="grey500">
+              Multiplier & Lock timer
+            </Paragraph>
             <Grid flow="col" gap={16} align="center">
               <Antd.Tooltip title={`${multiplier}x`}>
                 <Label type="lb1" bold color="red500" className={s.ratio}>
-                  {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(multiplier, 2, '-', 2)}x
+                  {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
+                  {formatBigValue(multiplier, 2, '-', 2)}x
                 </Label>
               </Antd.Tooltip>
               {countdown && (
                 <>
-                  <Paragraph type="p2" color="grey500">for</Paragraph>
-                  <Heading type="h3" bold color="grey900">{countdown}</Heading>
+                  <Paragraph type="p2" color="grey500">
+                    for
+                  </Paragraph>
+                  <Heading type="h3" bold color="grey900">
+                    {countdown}
+                  </Heading>
                 </>
               )}
             </Grid>

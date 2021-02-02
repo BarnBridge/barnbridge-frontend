@@ -48,7 +48,9 @@ const PoolRewards: React.FunctionComponent = () => {
               <Button
                 type="link"
                 disabled={web3c.aggregated.totalCurrentReward?.isZero()}
-                onClick={() => setState({ showHarvestModal: true })}>Claim</Button>
+                onClick={() => setState({ showHarvestModal: true })}>
+                Claim
+              </Button>
             )}
           </Grid>
         </Grid>
@@ -70,8 +72,10 @@ const PoolRewards: React.FunctionComponent = () => {
             <Paragraph type="p2" color="grey500">
               Potential reward this epoch
             </Paragraph>
-            <Tooltip type="info"
-                     title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake." />
+            <Tooltip
+              type="info"
+              title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake."
+            />
           </Grid>
           <Grid flow="col" gap={16} align="center">
             <Heading type="h3" bold color="grey900">
@@ -85,7 +89,8 @@ const PoolRewards: React.FunctionComponent = () => {
       {state.showHarvestModal && (
         <PoolHarvestModal
           visible
-          onCancel={() => setState({ showHarvestModal: false })} />
+          onCancel={() => setState({ showHarvestModal: false })}
+        />
       )}
     </Grid>
   );

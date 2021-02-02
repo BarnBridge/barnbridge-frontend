@@ -36,11 +36,13 @@ const MobileMenuLink: React.FunctionComponent<MobileMenuLinkProps> = props => {
       {isActivePath && <div className={s.active} />}
       <Grid flow="col" gap={24}>
         <Icons name={icon} />
-        <Paragraph type="p2" semiBold>{label}</Paragraph>
+        <Paragraph type="p2" semiBold>
+          {label}
+        </Paragraph>
       </Grid>
     </Button>
   );
-}
+};
 
 const MobileMenu: React.FunctionComponent = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
@@ -63,7 +65,7 @@ const MobileMenu: React.FunctionComponent = () => {
 
   React.useEffect(() => {
     setIsOpen(false);
-  }, [location.pathname])
+  }, [location.pathname]);
 
   function handleMenuClick() {
     setIsOpen(prevState => !prevState);
@@ -88,13 +90,25 @@ const MobileMenu: React.FunctionComponent = () => {
       <Grid flow="row" align="start" justify="space-between" className={s.list}>
         <Grid flow="row" gap={24} align="start" width="100%">
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink path="/yield-farming" icon="savings-outlined" label="Pools" />
+            <MobileMenuLink
+              path="/yield-farming"
+              icon="savings-outlined"
+              label="Pools"
+            />
           </FadeBlock>
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink path="/governance" icon="bank-outlined" label="Voting" />
+            <MobileMenuLink
+              path="/governance"
+              icon="bank-outlined"
+              label="Voting"
+            />
           </FadeBlock>
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink path="/bonds" icon="paper-bill-outlined" label="Bonds" />
+            <MobileMenuLink
+              path="/bonds"
+              icon="paper-bill-outlined"
+              label="Bonds"
+            />
           </FadeBlock>
         </Grid>
 

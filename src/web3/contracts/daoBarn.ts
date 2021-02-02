@@ -9,7 +9,9 @@ import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta, VBONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_DAO_BARN_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR).toLowerCase();
+export const CONTRACT_DAO_BARN_ADDR = String(
+  process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR,
+).toLowerCase();
 
 const Contract = new Web3Contract(
   require('web3/abi/dao_barn.json'),
@@ -21,7 +23,8 @@ function loadCommonData(): Promise<any> {
   return Contract.batch([
     {
       method: 'bondStaked',
-      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
   ]).then(([bondStaked]) => {
     return {
@@ -39,17 +42,20 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'balanceOf',
       methodArgs: [userAddress],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
     {
       method: 'votingPower',
       methodArgs: [userAddress],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
     {
       method: 'multiplierAtTs',
       methodArgs: [userAddress, getNowTs()],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals)?.toNumber(),
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals)?.toNumber(),
     },
     {
       method: 'userLockedUntil',
@@ -59,59 +65,97 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'delegatedPower',
       methodArgs: [userAddress],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
     {
       method: 'userDelegatedTo',
       methodArgs: [userAddress],
     },
-  ]).then(([balance, votingPower, multiplier, userLockedUntil, delegatedPower, userDelegatedTo]) => ({
-    balance,
-    votingPower,
-    multiplier,
-    userLockedUntil,
-    delegatedPower,
-    userDelegatedTo,
-  }));
+  ]).then(
+    ([
+      balance,
+      votingPower,
+      multiplier,
+      userLockedUntil,
+      delegatedPower,
+      userDelegatedTo,
+    ]) => ({
+      balance,
+      votingPower,
+      multiplier,
+      userLockedUntil,
+      delegatedPower,
+      userDelegatedTo,
+    }),
+  );
 }
 
 function bondStakedAtTsCall(timestamp: number): Promise<BigNumber | undefined> {
-  return Contract.call('bondStakedAtTs', [timestamp], {})
-    .then((value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals));
+  return Contract.call(
+    'bondStakedAtTs',
+    [timestamp],
+    {},
+  ).then((value: string) =>
+    getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+  );
 }
 
 function votingPowerCall(address: string): Promise<BigNumber | undefined> {
-  return Contract.call('votingPower', [address], {})
-    .then((value: string) => getHumanValue(new BigNumber(value), VBONDTokenMeta.decimals));
+  return Contract.call('votingPower', [address], {}).then((value: string) =>
+    getHumanValue(new BigNumber(value), VBONDTokenMeta.decimals),
+  );
 }
 
-function votingPowerAtTsCall(address: string, timestamp: number): Promise<BigNumber | undefined> {
-  return Contract.call('votingPowerAtTs', [address, timestamp], {})
-    .then((value: string) => getHumanValue(new BigNumber(value), VBONDTokenMeta.decimals));
+function votingPowerAtTsCall(
+  address: string,
+  timestamp: number,
+): Promise<BigNumber | undefined> {
+  return Contract.call(
+    'votingPowerAtTs',
+    [address, timestamp],
+    {},
+  ).then((value: string) =>
+    getHumanValue(new BigNumber(value), VBONDTokenMeta.decimals),
+  );
 }
 
-function depositSend(amount: BigNumber, from: string, gasPrice: number): Promise<void> {
-  return Contract.send('deposit', [
-    getNonHumanValue(amount, VBONDTokenMeta.decimals),
-  ], {
-    from,
-    gasPrice: getGasValue(gasPrice),
-  });
+function depositSend(
+  amount: BigNumber,
+  from: string,
+  gasPrice: number,
+): Promise<void> {
+  return Contract.send(
+    'deposit',
+    [getNonHumanValue(amount, VBONDTokenMeta.decimals)],
+    {
+      from,
+      gasPrice: getGasValue(gasPrice),
+    },
+  );
 }
 
-function withdrawSend(amount: BigNumber, from: string, gasPrice: number): Promise<void> {
-  return Contract.send('withdraw', [
-    getNonHumanValue(amount, VBONDTokenMeta.decimals),
-  ], {
-    from,
-    gasPrice: getGasValue(gasPrice),
-  });
+function withdrawSend(
+  amount: BigNumber,
+  from: string,
+  gasPrice: number,
+): Promise<void> {
+  return Contract.send(
+    'withdraw',
+    [getNonHumanValue(amount, VBONDTokenMeta.decimals)],
+    {
+      from,
+      gasPrice: getGasValue(gasPrice),
+    },
+  );
 }
 
-function delegateSend(to: string, from: string, gasPrice: number): Promise<void> {
-  return Contract.send('delegate', [
-    to,
-  ], {
+function delegateSend(
+  to: string,
+  from: string,
+  gasPrice: number,
+): Promise<void> {
+  return Contract.send('delegate', [to], {
     from,
     gasPrice: getGasValue(gasPrice),
   });
@@ -124,10 +168,12 @@ function stopDelegateSend(from: string, gasPrice: number): Promise<void> {
   });
 }
 
-function lockSend(timestamp: number, from: string, gasPrice: number): Promise<void> {
-  return Contract.send('lock', [
-    timestamp,
-  ], {
+function lockSend(
+  timestamp: number,
+  from: string,
+  gasPrice: number,
+): Promise<void> {
+  return Contract.send('lock', [timestamp], {
     from,
     gasPrice: getGasValue(gasPrice),
   });
@@ -182,8 +228,7 @@ export function useDAOBarnContract(): DAOBarnContract {
       bondStaked: undefined,
     });
 
-    loadCommonData()
-      .then(setState);
+    loadCommonData().then(setState).catch(Error);
   }, [version]);
 
   React.useEffect(() => {
@@ -196,8 +241,7 @@ export function useDAOBarnContract(): DAOBarnContract {
       userDelegatedTo: undefined,
     });
 
-    loadUserData(wallet.account)
-      .then(setState);
+    loadUserData(wallet.account).then(setState).catch(Error);
   }, [wallet.account, version]);
 
   return {

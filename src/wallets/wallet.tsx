@@ -1,7 +1,11 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { useSessionStorage } from 'react-use-storage';
-import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core';
+import {
+  UnsupportedChainIdError,
+  useWeb3React,
+  Web3ReactProvider,
+} from '@web3-react/core';
 import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import { Web3Provider } from '@ethersproject/providers';
 
@@ -22,7 +26,9 @@ import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
 import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
 
 const WEB3_CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
-const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
+const WEB3_POLLING_INTERVAL = Number(
+  process.env.REACT_APP_WEB3_POLLING_INTERVAL,
+);
 
 export const WalletConnectors: WalletConnector[] = [
   MetaMaskWalletConfig,
@@ -45,7 +51,10 @@ type WalletData = {
 
 export type Wallet = WalletData & {
   showWalletsModal: () => void;
-  connect: (connector: WalletConnector, args?: Record<string, any>) => Promise<void>;
+  connect: (
+    connector: WalletConnector,
+    args?: Record<string, any>,
+  ) => Promise<void>;
   disconnect: () => void;
 };
 
@@ -75,13 +84,25 @@ const WalletProvider: React.FunctionComponent = props => {
     removeSessionProvider,
   ] = useSessionStorage<string | undefined>('wallet_provider');
 
-  const [connecting, setConnecting, connectingRef] = useRefState<WalletConnector | undefined>(undefined);
-  const [activeConnector, setActiveConnector] = React.useState<WalletConnector | undefined>(undefined);
-  const [activeProvider, setActiveProvider] = React.useState<any | undefined>(undefined);
+  const [connecting, setConnecting, connectingRef] = useRefState<
+    WalletConnector | undefined
+  >(undefined);
+  const [activeConnector, setActiveConnector] = React.useState<
+    WalletConnector | undefined
+  >(undefined);
+  const [activeProvider, setActiveProvider] = React.useState<any | undefined>(
+    undefined,
+  );
 
   const [walletsModal, setWalletsModal] = React.useState<boolean>(false);
-  const [unsupportedChainModal, setUnsupportedChainModal] = React.useState<boolean>(false);
-  const [installMetaMaskModal, setInstallMetaMaskModal] = React.useState<boolean>(false);
+  const [
+    unsupportedChainModal,
+    setUnsupportedChainModal,
+  ] = React.useState<boolean>(false);
+  const [
+    installMetaMaskModal,
+    setInstallMetaMaskModal,
+  ] = React.useState<boolean>(false);
 
   const disconnect = React.useCallback(() => {
     web3React.deactivate();
@@ -90,71 +111,69 @@ const WalletProvider: React.FunctionComponent = props => {
     setActiveConnector(undefined);
     setActiveProvider(undefined);
     removeSessionProvider();
-  }, [
-    web3React,
-    activeConnector,
-    removeSessionProvider,
-    setConnecting,
-  ]);
+  }, [web3React, activeConnector, removeSessionProvider, setConnecting]);
 
-  const connect = React.useCallback(async (walletConnector: WalletConnector, args?: Record<string, any>): Promise<void> => {
-    if (connectingRef.current) {
-      return;
-    }
-
-    connectingRef.current = walletConnector;
-    setConnecting(walletConnector);
-    setWalletsModal(false);
-
-    const connector = walletConnector.factory(WEB3_CHAIN_ID, args);
-
-    function onError(error: Error) {
-      console.error('Wallet::Connect().onError', { error });
-
-      if (error instanceof NoEthereumProviderError) {
-        setInstallMetaMaskModal(true);
-        disconnect();
-      } else if (error instanceof UnsupportedChainIdError) {
-        setUnsupportedChainModal(true);
-        disconnect();
-      } else {
-        const err = walletConnector.onError?.(error);
-
-        if (err) {
-          Antd.notification.error({
-            message: err.message,
-          });
-        }
-      }
-    }
-
-    function onSuccess() {
-      if (!connectingRef.current) {
+  const connect = React.useCallback(
+    async (
+      walletConnector: WalletConnector,
+      args?: Record<string, any>,
+    ): Promise<void> => {
+      if (connectingRef.current) {
         return;
       }
 
-      walletConnector.onConnect?.(connector, args);
-      connector.getProvider().then(setActiveProvider);
-      setActiveConnector(walletConnector);
-      setSessionProvider(walletConnector.id);
-    }
+      connectingRef.current = walletConnector;
+      setConnecting(walletConnector);
+      setWalletsModal(false);
 
-    await web3React.activate(connector, undefined, true)
-      .then(onSuccess)
-      .catch(onError);
+      const connector = walletConnector.factory(WEB3_CHAIN_ID, args);
 
-    setConnecting(undefined);
-  }, [
-    web3React,
-    connectingRef,
-    setConnecting,
-    setSessionProvider,
-    disconnect,
-  ]);
+      function onError(error: Error) {
+        console.error('Wallet::Connect().onError', { error });
+
+        if (error instanceof NoEthereumProviderError) {
+          setInstallMetaMaskModal(true);
+          disconnect();
+        } else if (error instanceof UnsupportedChainIdError) {
+          setUnsupportedChainModal(true);
+          disconnect();
+        } else {
+          const err = walletConnector.onError?.(error);
+
+          if (err) {
+            Antd.notification.error({
+              message: err.message,
+            });
+          }
+        }
+      }
+
+      function onSuccess() {
+        if (!connectingRef.current) {
+          return;
+        }
+
+        walletConnector.onConnect?.(connector, args);
+        connector.getProvider().then(setActiveProvider);
+        setActiveConnector(walletConnector);
+        setSessionProvider(walletConnector.id);
+      }
+
+      await web3React
+        .activate(connector, undefined, true)
+        .then(onSuccess)
+        .catch(onError);
+
+      setConnecting(undefined);
+    },
+    [web3React, connectingRef, setConnecting, setSessionProvider, disconnect],
+  );
 
   useAsyncEffect(async () => {
     if (sessionProvider) {
-      const walletConnector = WalletConnectors.find(c => c.id === sessionProvider);
+      const walletConnector = WalletConnectors.find(
+        c => c.id === sessionProvider,
+      );
 
       if (walletConnector) {
         await connect(walletConnector);
@@ -162,39 +181,45 @@ const WalletProvider: React.FunctionComponent = props => {
     }
   }, []);
 
-  const value = React.useMemo<Wallet>(() => ({
-    connecting,
-    isActive: web3React.active,
-    account: web3React.account ?? undefined,
-    networkId: web3React.chainId,
-    networkName: getNetworkName(web3React.chainId),
-    connector: activeConnector,
-    provider: activeProvider,
-    showWalletsModal: () => {
-      setWalletsModal(true);
-    },
-    connect,
-    disconnect,
-  }), [
-    web3React,
-    connecting,
-    activeConnector,
-    activeProvider,
-    disconnect,
-    connect,
-  ]);
+  const value = React.useMemo<Wallet>(
+    () => ({
+      connecting,
+      isActive: web3React.active,
+      account: web3React.account ?? undefined,
+      networkId: web3React.chainId,
+      networkName: getNetworkName(web3React.chainId),
+      connector: activeConnector,
+      provider: activeProvider,
+      showWalletsModal: () => {
+        setWalletsModal(true);
+      },
+      connect,
+      disconnect,
+    }),
+    [
+      web3React,
+      connecting,
+      activeConnector,
+      activeProvider,
+      disconnect,
+      connect,
+    ],
+  );
 
   return (
     <WalletContext.Provider value={value}>
       <ConnectWalletModal
         visible={walletsModal}
-        onCancel={() => setWalletsModal(false)} />
+        onCancel={() => setWalletsModal(false)}
+      />
       <InstallMetaMaskModal
         visible={installMetaMaskModal}
-        onCancel={() => setInstallMetaMaskModal(false)} />
+        onCancel={() => setInstallMetaMaskModal(false)}
+      />
       <UnsupportedChainModal
         visible={unsupportedChainModal}
-        onCancel={() => setUnsupportedChainModal(false)} />
+        onCancel={() => setUnsupportedChainModal(false)}
+      />
       {props.children}
     </WalletContext.Provider>
   );
@@ -209,9 +234,7 @@ function getLibrary(provider: any) {
 const Web3WalletProvider: React.FunctionComponent = props => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
-      <WalletProvider>
-        {props.children}
-      </WalletProvider>
+      <WalletProvider>{props.children}</WalletProvider>
     </Web3ReactProvider>
   );
 };

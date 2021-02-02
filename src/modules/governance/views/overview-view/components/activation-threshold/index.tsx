@@ -22,7 +22,8 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
 
   function handleActivate() {
     setActivating(true);
-    dao.actions.activate()
+    dao.actions
+      .activate()
       .catch(Error)
       .then(() => {
         setActivating(false);
@@ -32,7 +33,9 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
   return (
     <Card className={className}>
       <Grid flow="row" gap={24} align="start">
-        <Paragraph type="p1" semiBold color="grey900">Activation threshold</Paragraph>
+        <Paragraph type="p1" semiBold color="grey900">
+          Activation threshold
+        </Paragraph>
         <Grid gap={12} colsTemplate="auto 24px" width="100%">
           <Progress
             percent={dao.activationRate}
@@ -41,7 +44,8 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
             strokeColor={{
               '0%': 'var(--text-color-blue500)',
               '100%': 'var(--text-color-green500)',
-            }} />
+            }}
+          />
           <Icons name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
@@ -54,10 +58,9 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
           </Paragraph>
         </Grid>
         {dao.activationRate === 100 && !dao.isActive && (
-          <Button
-            type="primary"
-            loading={activating}
-            onClick={handleActivate}>Activate</Button>
+          <Button type="primary" loading={activating} onClick={handleActivate}>
+            Activate
+          </Button>
         )}
       </Grid>
     </Card>

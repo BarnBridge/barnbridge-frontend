@@ -9,7 +9,9 @@ import { useProposal } from '../../providers/ProposalProvider';
 
 import useMergeState from 'hooks/useMergeState';
 import AbrogationProposalModal from '../abrogation-proposal-modal';
-import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
+import AbrogationVoteModal, {
+  VoteAbrogationState,
+} from '../abrogation-vote-modal';
 
 type ProposalAbrogationCardState = {
   abrogationVoteModal: boolean;
@@ -26,14 +28,18 @@ const InitialState: ProposalAbrogationCardState = {
 const ProposalAbrogationCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
-  const [state, setState] = useMergeState<ProposalAbrogationCardState>(InitialState);
+  const [state, setState] = useMergeState<ProposalAbrogationCardState>(
+    InitialState,
+  );
 
   return (
     <>
       <Card
-        title={(
-          <Paragraph type="p1" semiBold color="grey900">Abrogation proposal</Paragraph>
-        )}>
+        title={
+          <Paragraph type="p1" semiBold color="grey900">
+            Abrogation proposal
+          </Paragraph>
+        }>
         {proposalCtx.isCanceled === undefined && (
           <Grid flow="col" justify="center">
             <Antd.Spin spinning />
@@ -52,7 +58,8 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
               </li>
               <li>
                 <Paragraph type="p1" color="grey900">
-                  A proposal can only have one associated abrogation proposal at any given time
+                  A proposal can only have one associated abrogation proposal at
+                  any given time
                 </Paragraph>
               </li>
               <li>
@@ -62,18 +69,21 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
               </li>
               <li>
                 <Paragraph type="p1" color="grey900">
-                  There is a new snapshot for voter balances - taken at Abrogation Proposal’s start time
+                  There is a new snapshot for voter balances - taken at
+                  Abrogation Proposal’s start time
                 </Paragraph>
               </li>
               <li>
                 <Paragraph type="p1" color="grey900">
-                  Abrogation Proposal’s duration is never greater than the Initial Proposal’s queue period
+                  Abrogation Proposal’s duration is never greater than the
+                  Initial Proposal’s queue period
                 </Paragraph>
               </li>
               <li>
                 <Paragraph type="p1" color="grey900">
-                  When someone goes to execute the Initial Proposal - there is a check if an Abrogation Proposal that
-                  met its acceptance criteria exists
+                  When someone goes to execute the Initial Proposal - there is a
+                  check if an Abrogation Proposal that met its acceptance
+                  criteria exists
                 </Paragraph>
               </li>
             </ul>
@@ -103,12 +113,14 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
         <AbrogationVoteModal
           visible
           voteState={VoteAbrogationState.VoteInitiate}
-          onCancel={() => setState({ abrogationVoteModal: false })} />
+          onCancel={() => setState({ abrogationVoteModal: false })}
+        />
       )}
       {state.abrogationViewModal && (
         <AbrogationProposalModal
           visible
-          onCancel={() => setState({ abrogationViewModal: false })} />
+          onCancel={() => setState({ abrogationViewModal: false })}
+        />
       )}
     </>
   );

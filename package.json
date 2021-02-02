@@ -11,10 +11,15 @@
     "lessc": "lessc src/styles/antd.less src/styles/antd.css -js",
     "import:abi": "node tools/import_abi.js",
     "lint": "eslint --ext .ts,.tsx src --color",
-    "format": "prettier --write 'src/**/*.{ts,tsx,scss,css,json}'"
+    "format": "prettier --write 'src/**/*.{ts,tsx,scss}'"
   },
   "eslintConfig": {
-    "extends": "react-app"
+    "extends": "react-app",
+    "rules": {
+      "react-hooks/exhaustive-deps": ["warn", {
+        "additionalHooks": "(useMergeState)"
+      }]
+    }
   },
   "browserslist": {
     "production": [

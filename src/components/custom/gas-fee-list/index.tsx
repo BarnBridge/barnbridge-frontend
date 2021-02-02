@@ -96,26 +96,33 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
       {...groupProps}
       value={state.selected}
       onChange={handleChange}>
-      {state.loading
-        ? <Antd.Spin />
-        : (
-          <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)" >
-            {state.options.map(option => (
-              <RadioButton
-                key={option.key}
-                label={
-                  <Paragraph type="p1" semiBold color="grey900">{option.name}</Paragraph>
-                }
-                hint={
-                  <Grid flow="col" gap={4}>
-                    <Paragraph type="p1" semiBold color="grey900">{option.value}</Paragraph>
-                    <Paragraph type="p2" color="grey500">Gwei</Paragraph>
-                  </Grid>
-                }
-                value={option} />
-            ))}
-          </Grid>
-        )}
+      {state.loading ? (
+        <Antd.Spin />
+      ) : (
+        <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)">
+          {state.options.map(option => (
+            <RadioButton
+              key={option.key}
+              label={
+                <Paragraph type="p1" semiBold color="grey900">
+                  {option.name}
+                </Paragraph>
+              }
+              hint={
+                <Grid flow="col" gap={4}>
+                  <Paragraph type="p1" semiBold color="grey900">
+                    {option.value}
+                  </Paragraph>
+                  <Paragraph type="p2" color="grey500">
+                    Gwei
+                  </Paragraph>
+                </Grid>
+              }
+              value={option}
+            />
+          ))}
+        </Grid>
+      )}
     </Antd.Radio.Group>
   );
 };

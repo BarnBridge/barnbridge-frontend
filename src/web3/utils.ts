@@ -57,23 +57,42 @@ export function getExponentValue(decimals: number = 0): BigNumber {
   return new BigNumber(10).pow(decimals);
 }
 
-export function getHumanValue(value?: BigNumber, decimals: number = 0): BigNumber | undefined {
+export function getHumanValue(
+  value?: BigNumber,
+  decimals: number = 0,
+): BigNumber | undefined {
   return value?.div(getExponentValue(decimals));
 }
 
-export function getNonHumanValue(value: BigNumber | number, decimals: number = 0): BigNumber {
-  return (new BigNumber(value)).multipliedBy(getExponentValue(decimals));
+export function getNonHumanValue(
+  value: BigNumber | number,
+  decimals: number = 0,
+): BigNumber {
+  return new BigNumber(value).multipliedBy(getExponentValue(decimals));
 }
 
 export function getGasValue(price: number): number {
   return getNonHumanValue(price, 9).toNumber();
 }
 
-export function formatBigValue(value?: BigNumber | number, decimals: number = 4, defaultValue: string = '-', minDecimals: number | undefined = undefined): string {
-  return value ? new BigNumber(new BigNumber(value).toFixed(decimals)).toFormat(minDecimals) : defaultValue;
+export function formatBigValue(
+  value?: BigNumber | number,
+  decimals: number = 4,
+  defaultValue: string = '-',
+  minDecimals: number | undefined = undefined,
+): string {
+  return value
+    ? new BigNumber(new BigNumber(value).toFixed(decimals)).toFormat(
+        minDecimals,
+      )
+    : defaultValue;
 }
 
-export function formatUSDValue(value?: BigNumber, decimals: number = 2, minDecimals: number = decimals): string {
+export function formatUSDValue(
+  value?: BigNumber,
+  decimals: number = 2,
+  minDecimals: number = decimals,
+): string {
   if (value === undefined) {
     return '-';
   }
@@ -88,8 +107,14 @@ export function formatBONDValue(value?: BigNumber): string {
   return formatBigValue(value, 4);
 }
 
-export function shortenAddr(addr: string | undefined, first: number = 6, last: number = 4): string | undefined {
-  return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
+export function shortenAddr(
+  addr: string | undefined,
+  first: number = 6,
+  last: number = 4,
+): string | undefined {
+  return addr
+    ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...')
+    : undefined;
 }
 
 export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
@@ -115,52 +140,40 @@ export enum PoolTypes {
   BOND = 'bond',
 }
 
-export const getPoolIcons = memoize((poolType: PoolTypes): React.ReactNode[] => {
-  switch (poolType) {
-    case PoolTypes.STABLE:
-      return [
-        USDCTokenMeta.icon,
-        DAITokenMeta.icon,
-        SUSDTokenMeta.icon,
-      ];
-    case PoolTypes.UNILP:
-      return [
-        UNISWAPTokenMeta.icon,
-      ];
-    case PoolTypes.BOND:
-      return [
-        BONDTokenMeta.icon,
-      ];
-    default:
-      return [];
-  }
-});
+export const getPoolIcons = memoize(
+  (poolType: PoolTypes): React.ReactNode[] => {
+    switch (poolType) {
+      case PoolTypes.STABLE:
+        return [USDCTokenMeta.icon, DAITokenMeta.icon, SUSDTokenMeta.icon];
+      case PoolTypes.UNILP:
+        return [UNISWAPTokenMeta.icon];
+      case PoolTypes.BOND:
+        return [BONDTokenMeta.icon];
+      default:
+        return [];
+    }
+  },
+);
 
 export const getPoolNames = memoize((poolType: PoolTypes): string[] => {
   switch (poolType) {
     case PoolTypes.STABLE:
-      return [
-        USDCTokenMeta.name,
-        DAITokenMeta.name,
-        SUSDTokenMeta.name,
-      ];
+      return [USDCTokenMeta.name, DAITokenMeta.name, SUSDTokenMeta.name];
     case PoolTypes.UNILP:
-      return [
-        UNISWAPTokenMeta.name,
-      ];
+      return [UNISWAPTokenMeta.name];
     case PoolTypes.BOND:
-      return [
-        BONDTokenMeta.name,
-      ];
+      return [BONDTokenMeta.name];
     default:
       return [];
   }
 });
 
 export function fetchContractABI(address: string): any {
-  return fetch(`https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`)
+  return fetch(
+    `https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`,
+  )
     .then(result => result.json())
-    .then(({ status, result }: { status: string, result: string }) => {
+    .then(({ status, result }: { status: string; result: string }) => {
       if (status === '1') {
         return JSON.parse(result);
       }

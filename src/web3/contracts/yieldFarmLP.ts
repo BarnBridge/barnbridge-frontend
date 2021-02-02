@@ -8,7 +8,9 @@ import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_YIELD_FARM_LP_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR);
+export const CONTRACT_YIELD_FARM_LP_ADDR = String(
+  process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR,
+);
 
 type YieldFarmLPContractData = {
   delayedEpochs?: number;
@@ -78,12 +80,14 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
 
     currentEpoch = Math.min(currentEpoch, totalEpochs);
 
-    const epochReward = totalEpochs !== 0 ? totalReward?.div(totalEpochs) : ZERO_BIG_NUMBER;
+    const epochReward =
+      totalEpochs !== 0 ? totalReward?.div(totalEpochs) : ZERO_BIG_NUMBER;
 
     let bondReward = ZERO_BIG_NUMBER;
 
     if (currentEpoch > 0) {
-      const bondEpoch = currentEpoch === totalEpochs ? currentEpoch : currentEpoch - 1;
+      const bondEpoch =
+        currentEpoch === totalEpochs ? currentEpoch : currentEpoch - 1;
       bondReward = epochReward.multipliedBy(bondEpoch);
     }
 
@@ -101,12 +105,14 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       {
         method: 'getPoolSize',
         methodArgs: [currentEpoch],
-        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        transform: (value: string) =>
+          getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
       {
         method: 'getPoolSize',
         methodArgs: [currentEpoch + 1],
-        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        transform: (value: string) =>
+          getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
     ]);
 
@@ -129,17 +135,20 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
         {
           method: 'getEpochStake',
           methodArgs: [wallet.account, currentEpoch],
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'getEpochStake',
           methodArgs: [wallet.account, currentEpoch + 1],
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'massHarvest',
           callArgs: { from: wallet.account },
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
       ]);
     }
@@ -157,7 +166,11 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
 
     let potentialReward: BigNumber | undefined;
 
-    if (epochStake !== undefined && poolSize !== undefined && epochReward !== undefined) {
+    if (
+      epochStake !== undefined &&
+      poolSize !== undefined &&
+      epochReward !== undefined
+    ) {
       if (poolSize.isEqualTo(ZERO_BIG_NUMBER)) {
         potentialReward = ZERO_BIG_NUMBER;
       } else {
@@ -175,20 +188,20 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       return Promise.reject();
     }
 
-    return contract.send('massHarvest', [], {
-      from: wallet.account,
-    }).then(reload);
+    return contract
+      .send('massHarvest', [], {
+        from: wallet.account,
+      })
+      .then(reload);
   }, [reload, contract, wallet.account]);
 
-  return React.useMemo<YieldFarmLPContract>(() => ({
-    ...data,
-    contract,
-    reload,
-    massHarvestSend,
-  }), [
-    data,
-    contract,
-    reload,
-    massHarvestSend,
-  ]);
+  return React.useMemo<YieldFarmLPContract>(
+    () => ({
+      ...data,
+      contract,
+      reload,
+      massHarvestSend,
+    }),
+    [data, contract, reload, massHarvestSend],
+  );
 }

@@ -63,7 +63,12 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
       loading: true,
     });
 
-    fetchProposals(state.page, state.pageSize, state.stateFilter, state.searchFilter)
+    fetchProposals(
+      state.page,
+      state.pageSize,
+      state.stateFilter,
+      state.searchFilter,
+    )
       .then(data => {
         setState({
           loading: false,
@@ -92,12 +97,13 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
   }
 
   return (
-    <ProposalsContext.Provider value={{
-      ...state,
-      changeStateFilter,
-      changeSearchFilter,
-      changePage,
-    }}>
+    <ProposalsContext.Provider
+      value={{
+        ...state,
+        changeStateFilter,
+        changeSearchFilter,
+        changePage,
+      }}>
       {children}
     </ProposalsContext.Provider>
   );

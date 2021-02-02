@@ -15,7 +15,8 @@ const Input: React.FunctionComponent<InputProps> = props => {
       className={cx(s.component, className, disabled && s.disabled)}
       disabled={disabled}
       autoComplete="off"
-      {...inputProps} />
+      {...inputProps}
+    />
   );
 };
 

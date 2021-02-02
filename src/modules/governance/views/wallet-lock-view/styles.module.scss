@@ -1,4 +1,4 @@
-@import "../../../../styles/mixin";
+@import '../../../../styles/mixin';
 
 .component {
 }
@@ -40,7 +40,8 @@
   padding: 24px;
 
   background: #fff;
-  box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+  box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08),
+    0 0 0.5px rgba(6, 10, 13, 0.4);
   border-radius: 0 0 4px 4px;
 }
 
@@ -58,7 +59,6 @@
 }
 
 .rightCol {
-
 }
 
 .orLabel {

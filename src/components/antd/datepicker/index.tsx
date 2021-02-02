@@ -1,5 +1,7 @@
 import React from 'react';
-import generatePicker, { PickerProps as AntdPickerProps } from 'antd/lib/date-picker/generatePicker';
+import generatePicker, {
+  PickerProps as AntdPickerProps,
+} from 'antd/lib/date-picker/generatePicker';
 import dateFnsGenerateConfig from 'rc-picker/lib/generate/dateFns';
 
 import cx from 'classnames';
@@ -16,7 +18,8 @@ const DatePicker: React.FunctionComponent<DatePickerProps> = props => {
   return (
     <DateFNSPicker
       className={cx(s.component, className)}
-      {...datePickerProps} />
+      {...datePickerProps}
+    />
   );
 };
 

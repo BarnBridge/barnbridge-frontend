@@ -39,12 +39,14 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
           <Antd.Select.Option
             {...option}
             key={option.value}
-            label={(
+            label={
               <Grid flow="col" gap={12}>
                 {label && <Paragraph type="p2">{label}</Paragraph>}
-                <Paragraph type="p2" semiBold>{option.label}</Paragraph>
+                <Paragraph type="p2" semiBold>
+                  {option.label}
+                </Paragraph>
               </Grid>
-            )}
+            }
             value={option.value}>
             {option.label}
           </Antd.Select.Option>

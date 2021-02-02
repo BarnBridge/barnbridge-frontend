@@ -8,7 +8,9 @@ import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from './bond';
 
-const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
+const CONTRACT_DAO_REWARD_ADDR = String(
+  process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR,
+).toLowerCase();
 
 const Contract = new Web3Contract(
   require('web3/abi/dao_reward.json'),
@@ -27,7 +29,8 @@ function loadUserData(userAddress?: string): Promise<any> {
       callArgs: {
         from: userAddress,
       },
-      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       onError: () => ZERO_BIG_NUMBER,
     },
   ]).then(([claimValue]) => {
@@ -69,8 +72,7 @@ export function useDAORewardContract(): DAORewardContract {
   React.useEffect(() => {
     setState({ claimValue: undefined });
 
-    loadUserData(wallet.account)
-      .then(setState);
+    loadUserData(wallet.account).then(setState).catch(Error);
   }, [wallet.account, version]);
 
   return {
@@ -78,9 +80,7 @@ export function useDAORewardContract(): DAORewardContract {
     reload,
     actions: {
       claim(): Promise<void> {
-        return wallet.isActive
-          ? claimSend(wallet.account!)
-          : Promise.reject();
+        return wallet.isActive ? claimSend(wallet.account!) : Promise.reject();
       },
     },
   };

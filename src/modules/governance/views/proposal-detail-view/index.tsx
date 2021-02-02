@@ -32,7 +32,9 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
   const proposalState = proposalCtx.proposal?.state;
-  const [state, setState] = React.useState<ProposalDetailViewInnerState>(InitialState);
+  const [state, setState] = React.useState<ProposalDetailViewInnerState>(
+    InitialState,
+  );
 
   function handleBackClick() {
     history.push('/governance/proposals');
@@ -44,7 +46,8 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
       executing: true,
     }));
 
-    proposalCtx.queueProposalForExecution()
+    proposalCtx
+      .queueProposalForExecution()
       .catch(Error)
       .then(() => {
         proposalCtx.reload();
@@ -61,7 +64,8 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
       executing: true,
     }));
 
-    proposalCtx.executeProposal()
+    proposalCtx
+      .executeProposal()
       .catch(Error)
       .then(() => {
         proposalCtx.reload();
@@ -78,11 +82,17 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
         <Button
           type="link"
           icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>Proposals</Button>
+          onClick={handleBackClick}>
+          Proposals
+        </Button>
       </Grid>
 
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-        <Heading type="h2" semiBold color="grey900" loading={!proposalCtx.proposal}>
+        <Heading
+          type="h2"
+          semiBold
+          color="grey900"
+          loading={!proposalCtx.proposal}>
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
         </Heading>
 
@@ -93,24 +103,32 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
                 <Button
                   type="primary"
                   loading={state.executing}
-                  onClick={handleQueueForExecution}>Queue for execution</Button>
+                  onClick={handleQueueForExecution}>
+                  Queue for execution
+                </Button>
               )}
               {APIProposalState.GRACE === proposalState && (
                 <Button
                   type="primary"
                   loading={state.executing}
-                  onClick={handleExecuteProposal}>Execute proposal</Button>
+                  onClick={handleExecuteProposal}>
+                  Execute proposal
+                </Button>
               )}
             </>
           )}
         </Grid>
       </Grid>
 
-      <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0px, 428px)" width={1070}>
+      <Grid
+        flow="col"
+        gap={32}
+        colsTemplate="minmax(0, 610px) minmax(0px, 428px)"
+        width={1070}>
         <Grid flow="row" gap={32}>
-          {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState as any) && (
-            <ProposalVoteResultsCard />
-          )}
+          {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(
+            proposalState as any,
+          ) && <ProposalVoteResultsCard />}
           <ProposalDetailsCard />
         </Grid>
         <Grid flow="row" gap={32}>

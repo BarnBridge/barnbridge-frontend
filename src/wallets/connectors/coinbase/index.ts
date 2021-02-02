@@ -6,7 +6,9 @@ import { WEB3_RPC_URL } from 'web3/contract';
 
 import CoinbaseWalletLogo from 'resources/svg/wallets/coinbase-logo.svg';
 
-const WEB3_COINBASE_WALLET_APP_NAME = String(process.env.REACT_APP_WEB3_COINBASE_WALLET_APP_NAME);
+const WEB3_COINBASE_WALLET_APP_NAME = String(
+  process.env.REACT_APP_WEB3_COINBASE_WALLET_APP_NAME,
+);
 
 export type CoinbaseWalletArgs = {
   darkMode?: boolean;
@@ -30,9 +32,10 @@ export const CoinbaseWalletConfig: WalletConnector = {
     connector?.close();
   },
   onError(error: Error): Error | undefined {
-    const { code } = error as any as { code: number };
+    const { code } = (error as any) as { code: number };
 
-    if (code === 4001) { // USER_DENIED_REQUEST_ACCOUNTS
+    if (code === 4001) {
+      // USER_DENIED_REQUEST_ACCOUNTS
       return;
     }
 

@@ -41,7 +41,9 @@ const ProposalVotersProvider: React.FunctionComponent = props => {
   const { children } = props;
 
   const { proposal } = useProposal();
-  const [state, setState] = useMergeState<ProposalVotersProviderState>(InitialState);
+  const [state, setState] = useMergeState<ProposalVotersProviderState>(
+    InitialState,
+  );
 
   React.useEffect(() => {
     if (!proposal?.proposalId) {
@@ -54,7 +56,12 @@ const ProposalVotersProvider: React.FunctionComponent = props => {
 
     setState({ loading: true });
 
-    fetchProposalVoters(proposal.proposalId, state.page, state.pageSize, state.supportFilter)
+    fetchProposalVoters(
+      proposal.proposalId,
+      state.page,
+      state.pageSize,
+      state.supportFilter,
+    )
       .then(data => {
         setState({
           loading: false,
@@ -82,11 +89,12 @@ const ProposalVotersProvider: React.FunctionComponent = props => {
   }
 
   return (
-    <ProposalVotersContext.Provider value={{
-      ...state,
-      changeSupportFilter,
-      changePage,
-    }}>
+    <ProposalVotersContext.Provider
+      value={{
+        ...state,
+        changeSupportFilter,
+        changePage,
+      }}>
       {children}
     </ProposalVotersContext.Provider>
   );

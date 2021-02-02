@@ -77,7 +77,7 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
     try {
       const result = await fetch(url.toString());
       const stakingActions: {
-        [period: string]: StakingAction,
+        [period: string]: StakingAction;
       } = await result.json();
 
       const summaries: PoolTxChartSummary[] = [];
@@ -106,21 +106,23 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
     forceRender({});
   }, []);
 
-  const load = React.useCallback((query?: PoolTxChartQuery) => {
-    loadedRef.current = false;
-    poolFilterRef.current = query?.pool;
-    periodFilterRef.current = query?.period;
-    typeFilterRef.current = query?.type;
-    forceRender({});
+  const load = React.useCallback(
+    (query?: PoolTxChartQuery) => {
+      loadedRef.current = false;
+      poolFilterRef.current = query?.pool;
+      periodFilterRef.current = query?.period;
+      typeFilterRef.current = query?.type;
+      forceRender({});
 
-    return fetchData();
-  }, [fetchData]);
+      return fetchData();
+    },
+    [fetchData],
+  );
 
   const startPooling = React.useCallback(() => {
     if (!poolingIntervalID.current) {
       poolingIntervalID.current = setInterval(() => {
-        fetchData()
-          .catch(x => x);
+        fetchData().catch(x => x);
       }, API_POOL_INTERVAL);
     }
   }, [load]); // eslint-disable-line react-hooks/exhaustive-deps
@@ -132,21 +134,25 @@ const PoolTxChartProvider: React.FunctionComponent = props => {
     }
   }, []);
 
-  const value = React.useMemo(() => ({
-    summaries: summariesRef.current,
-    loading: loadingRef.current,
-    loaded: loadedRef.current,
-    load,
-    startPooling,
-    stopPooling,
-  }), [ // eslint-disable-line react-hooks/exhaustive-deps
-    summariesRef.current,
-    loadingRef.current,
-    loadedRef.current,
-    load,
-    startPooling,
-    stopPooling,
-  ]);
+  const value = React.useMemo(
+    () => ({
+      summaries: summariesRef.current,
+      loading: loadingRef.current,
+      loaded: loadedRef.current,
+      load,
+      startPooling,
+      stopPooling,
+    }),
+    [
+      // eslint-disable-line react-hooks/exhaustive-deps
+      summariesRef.current,
+      loadingRef.current,
+      loadedRef.current,
+      load,
+      startPooling,
+      stopPooling,
+    ],
+  );
 
   return (
     <PoolTxChartContext.Provider value={value}>

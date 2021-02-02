@@ -23,7 +23,7 @@ const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
 
   function handleMenuClick(info: MenuInfo) {
     props.onClick?.(info.key);
-    (popoverRef.current as any)?.close()
+    (popoverRef.current as any)?.close();
   }
 
   return (
@@ -32,7 +32,7 @@ const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
       overlayClassName={s.component}
       placement="bottom"
       trigger="click"
-      content={(
+      content={
         <Antd.Menu onClick={handleMenuClick}>
           {items?.map(item => (
             <Antd.Menu.Item key={item.key}>
@@ -41,7 +41,8 @@ const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
             </Antd.Menu.Item>
           ))}
         </Antd.Menu>
-      )} {...popoverProps}>
+      }
+      {...popoverProps}>
       {children}
     </Antd.Popover>
   );

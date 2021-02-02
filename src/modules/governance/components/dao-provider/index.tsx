@@ -10,7 +10,7 @@ export type DAOProviderState = {
   isActive?: boolean;
   bondStaked?: BigNumber;
   activationThreshold?: BigNumber;
-  activationRate?: number,
+  activationRate?: number;
   thresholdRate?: number;
 };
 
@@ -26,7 +26,7 @@ type DAOContextType = DAOProviderState & {
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
-  },
+  };
 };
 
 const DAOContext = React.createContext<DAOContextType>({
@@ -55,16 +55,17 @@ const DAOProvider: React.FunctionComponent = props => {
     let activationRate: number | undefined;
 
     if (bondStaked && activationThreshold?.gt(ZERO_BIG_NUMBER)) {
-      activationRate = bondStaked.multipliedBy(100)
-        .div(activationThreshold).toNumber();
+      activationRate = bondStaked
+        .multipliedBy(100)
+        .div(activationThreshold)
+        .toNumber();
       activationRate = Math.min(activationRate, 100);
     }
 
     let thresholdRate: number | undefined;
 
     if (votingPower && bondStaked?.gt(ZERO_BIG_NUMBER)) {
-      thresholdRate = votingPower.multipliedBy(100)
-        .div(bondStaked).toNumber();
+      thresholdRate = votingPower.multipliedBy(100).div(bondStaked).toNumber();
       thresholdRate = Math.min(thresholdRate, 100);
     }
 
@@ -83,21 +84,22 @@ const DAOProvider: React.FunctionComponent = props => {
   ]);
 
   function activate() {
-    return web3c.daoGovernance.actions.activate()
-      .then(() => {
-        web3c.daoGovernance.reload();
-        web3c.daoBarn.reload();
-      });
+    return web3c.daoGovernance.actions.activate().then(() => {
+      web3c.daoGovernance.reload();
+      web3c.daoBarn.reload();
+    });
   }
 
   function hasActiveProposal(): Promise<boolean> {
-    return web3c.daoGovernance.actions.getLatestProposalId()
+    return web3c.daoGovernance.actions
+      .getLatestProposalId()
       .then(proposalId => {
         if (proposalId === 0) {
           return Promise.resolve(false);
         }
 
-        return web3c.daoGovernance.actions.getProposalState(proposalId)
+        return web3c.daoGovernance.actions
+          .getProposalState(proposalId)
           .then(proposalState => {
             return ![
               APIProposalStateId.CANCELED,
@@ -110,13 +112,14 @@ const DAOProvider: React.FunctionComponent = props => {
   }
 
   return (
-    <DAOContext.Provider value={{
-      ...state,
-      actions: {
-        activate,
-        hasActiveProposal,
-      },
-    }}>
+    <DAOContext.Provider
+      value={{
+        ...state,
+        actions: {
+          activate,
+          hasActiveProposal,
+        },
+      }}>
       {children}
     </DAOContext.Provider>
   );

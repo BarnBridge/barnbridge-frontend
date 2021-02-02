@@ -30,7 +30,9 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
   return (
     <Antd.Tooltip title={label} placement="right">
       <Grid flow="col" className={s.navLink}>
-        <div className={cx(s.activeTick, isActivePath && s.activeTickVisible)} />
+        <div
+          className={cx(s.activeTick, isActivePath && s.activeTickVisible)}
+        />
         <Button type="link" onClick={handleClick}>
           <Icons name={icon} />
           {expanded && label}
@@ -68,19 +70,30 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
           {expanded && <Icons name="barnbridge" width="113" color="grey900" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={expanded} />
-          <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={expanded} />
-          <NavLink label="Bonds" icon="paper-bill-outlined" path="/bonds" expanded={expanded} />
+          <NavLink
+            label="Pools"
+            icon="savings-outlined"
+            path="/yield-farming"
+            expanded={expanded}
+          />
+          <NavLink
+            label="Voting"
+            icon="bank-outlined"
+            path="/governance"
+            expanded={expanded}
+          />
+          <NavLink
+            label="Bonds"
+            icon="paper-bill-outlined"
+            path="/bonds"
+            expanded={expanded}
+          />
         </Grid>
       </Grid>
       <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
         <Button type="link" onClick={handleThemeToggle}>
           <Icons name={isDarkTheme ? 'sun' : 'moon'} />
-          {expanded && (
-            <>
-              {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
-            </>
-          )}
+          {expanded && <>{isDarkTheme ? 'Light Theme' : 'Dark Theme'}</>}
         </Button>
         <Button type="link" className={s.hideLink} onClick={handleExpand}>
           <Icons name="right-arrow-circle-outlined" />

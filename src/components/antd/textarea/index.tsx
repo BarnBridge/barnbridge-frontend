@@ -13,7 +13,8 @@ const Textarea: React.FunctionComponent<TextareaProps> = props => {
   return (
     <Antd.Input.TextArea
       className={cx(s.component, className)}
-      {...inputProps} />
+      {...inputProps}
+    />
   );
 };
 

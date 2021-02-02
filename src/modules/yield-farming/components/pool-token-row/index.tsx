@@ -15,7 +15,13 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { Label, Paragraph, Small } from 'components/custom/typography';
 
 import { TokenMeta } from 'web3/types';
-import { formatBigValue, formatBONDValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import {
+  formatBigValue,
+  formatBONDValue,
+  getNonHumanValue,
+  MAX_UINT_256,
+  ZERO_BIG_NUMBER,
+} from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -31,7 +37,7 @@ export type PoolTokenRowProps = {
   token: TokenMeta;
   type: 'deposit' | 'withdraw';
   expanded?: boolean;
-}
+};
 
 type PoolTokenRowState = {
   enabling: boolean;
@@ -58,7 +64,7 @@ const InitialState: PoolTokenRowState = {
 type PoolTokenRowFormData = {
   amount?: BigNumber;
   gasFee?: number;
-}
+};
 
 const InitialFormValues: PoolTokenRowFormData = {
   amount: undefined,
@@ -137,7 +143,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       walletBalance,
       stakedBalance,
       effectiveStakedBalance,
-      maxAllowance: BigNumber.min(allowance ?? ZERO_BIG_NUMBER, walletBalance ?? ZERO_BIG_NUMBER),
+      maxAllowance: BigNumber.min(
+        allowance ?? ZERO_BIG_NUMBER,
+        walletBalance ?? ZERO_BIG_NUMBER,
+      ),
       enabled: allowance?.gt(ZERO_BIG_NUMBER) ?? false,
       expanded,
     });
@@ -180,8 +189,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         default:
           break;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ enabling: false });
   }
@@ -229,8 +237,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           web3c.yfBOND.reload();
           break;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ saving: false });
   }
@@ -247,7 +254,9 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Wallet Balance</Small>
+        <Small semiBold color="grey500">
+          Wallet Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBigValue(state.walletBalance, token.decimals)}
         </Paragraph>
@@ -255,12 +264,15 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
 
       {isDeposit && (
         <Grid flow="row" gap={4}>
-          <Small semiBold color="grey500">Enable Token</Small>
+          <Small semiBold color="grey500">
+            Enable Token
+          </Small>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
             checked={state.enabled}
             loading={state.enabled === undefined || state.enabling}
-            onChange={handleSwitchChange} />
+            onChange={handleSwitchChange}
+          />
         </Grid>
       )}
     </Grid>
@@ -279,17 +291,22 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         onFinish={handleSubmit}>
         <Grid colsTemplate="1fr 1fr">
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
-            <Label type="lb2" semiBold color="grey500">Staked Balance</Label>
+            <Label type="lb2" semiBold color="grey500">
+              Staked Balance
+            </Label>
             <Paragraph type="p1" semiBold color="grey900">
               {formatBigValue(state.stakedBalance, token.decimals)}
             </Paragraph>
           </Grid>
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
             <Grid flow="col" gap={8}>
-              <Label type="lb2" semiBold color="grey500">Effective Staked Balance</Label>
+              <Label type="lb2" semiBold color="grey500">
+                Effective Staked Balance
+              </Label>
               <Tooltip
                 type="info"
-                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
+                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal."
+              />
             </Grid>
             <Paragraph type="p1" semiBold color="grey900">
               {formatBigValue(state.effectiveStakedBalance, token.decimals)}
@@ -306,7 +323,9 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 <TokenAmount
                   tokenIcon="bond-token"
                   tokenLabel={token.name}
-                  placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
+                  placeholder={
+                    activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'
+                  }
                   disabled={state.saving}
                   maximumFractionDigits={token.decimals}
                   maxProps={{
@@ -327,9 +346,11 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                   step={1}
                   disabled={state.saving}
                   // disabled={!activeBalance}
-                  tipFormatter={value =>
-                    <span>{value ? formatBONDValue(new BigNumber(value)) : 0}</span>
-                  }
+                  tipFormatter={value => (
+                    <span>
+                      {value ? formatBONDValue(new BigNumber(value)) : 0}
+                    </span>
+                  )}
                   tooltipPlacement="bottom"
                   // value={getNonHumanValue(state.amount ?? 0, token.decimals).toNumber() ?? 0}
                   // tipFormatter={value =>
@@ -337,12 +358,10 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 />
               </Form.Item>
               {isDeposit && (
-                <Alert
-                  message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+                <Alert message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
               )}
               {isWithdraw && (
-                <Alert
-                  message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+                <Alert message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
               )}
             </Grid>
             <Grid flow="row">

@@ -25,8 +25,8 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
   const myBonus = isDelegated
     ? ZERO_BIG_NUMBER
     : votingPower
-      ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
-      .minus(delegatedPower ?? ZERO_BIG_NUMBER);
+        ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
+        .minus(delegatedPower ?? ZERO_BIG_NUMBER);
 
   return (
     <Modal
@@ -34,35 +34,39 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
       title="Voting power detailed view"
       {...props}>
       <div className={s.row}>
-        <div className={s.icon}><Icons name="wallet-outlined" /></div>
-        <div className={s.label}>My staked balance</div>
-        <div className={s.value}>
-          {formatBONDValue(myBondBalance)}
+        <div className={s.icon}>
+          <Icons name="wallet-outlined" />
         </div>
+        <div className={s.label}>My staked balance</div>
+        <div className={s.value}>{formatBONDValue(myBondBalance)}</div>
       </div>
       <div className={s.row}>
-        <div className={s.icon}><Icons name="wallet-outlined" /></div>
+        <div className={s.icon}>
+          <Icons name="wallet-outlined" />
+        </div>
         <div className={s.label}>Delegated by me</div>
         <div className={s.value}>
           {isDelegated ? formatBONDValue(myBondBalance) : 0}
         </div>
       </div>
       <div className={s.row}>
-        <div className={s.icon}><Icons name="rate-outlined" /></div>
+        <div className={s.icon}>
+          <Icons name="rate-outlined" />
+        </div>
         <div className={s.label}>Locked balance bonus</div>
-        <div className={s.value}>
-          {formatBONDValue(myBonus)}
-        </div>
+        <div className={s.value}>{formatBONDValue(myBonus)}</div>
       </div>
       <div className={s.row}>
-        <div className={s.icon}><Icons name="add-user" /></div>
+        <div className={s.icon}>
+          <Icons name="add-user" />
+        </div>
         <div className={s.label}>Delegated to me</div>
-        <div className={s.value}>
-          {formatBONDValue(delegatedPower)}
-        </div>
+        <div className={s.value}>{formatBONDValue(delegatedPower)}</div>
       </div>
       <div className={s.row}>
-        <div className={s.icon}><Icons name="bank-outlined" /></div>
+        <div className={s.icon}>
+          <Icons name="bank-outlined" />
+        </div>
         <div className={s.label}>My total voting power</div>
         <div className={cx(s.value, s.activeValue)}>
           {formatBONDValue(votingPower)}

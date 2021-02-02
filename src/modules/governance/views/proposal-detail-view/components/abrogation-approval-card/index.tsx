@@ -11,9 +11,11 @@ const AbrogationApprovalCard: React.FunctionComponent = () => {
 
   return (
     <Card
-      title={(
-        <Paragraph type="p1" semiBold color="grey900">Abrogation proposal approval</Paragraph>
-      )}>
+      title={
+        <Paragraph type="p1" semiBold color="grey900">
+          Abrogation proposal approval
+        </Paragraph>
+      }>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
           <Paragraph type="p1" semiBold color="grey900">
@@ -27,7 +29,8 @@ const AbrogationApprovalCard: React.FunctionComponent = () => {
           percent={abrogationCtx.approvalRate}
           acceptance={abrogationCtx.acceptanceThreshold}
           strokeColor="var(--text-color-red500)"
-          trailColor="rgba(var(--text-color-red500-rgb), .16)" />
+          trailColor="rgba(var(--text-color-red500-rgb), .16)"
+        />
       </Grid>
     </Card>
   );

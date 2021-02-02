@@ -24,7 +24,9 @@ type GovernanceViewParams = {
 
 const GovernanceViewInternal: React.FunctionComponent = () => {
   const history = useHistory();
-  const { params: { vt = 'overview' } } = useRouteMatch<GovernanceViewParams>();
+  const {
+    params: { vt = 'overview' },
+  } = useRouteMatch<GovernanceViewParams>();
 
   const wallet = useWallet();
   const dao = useDAO();
@@ -47,24 +49,41 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
       <LayoutHeader title="Governance" />
       {wallet.account && <VotingHeader />}
 
-      <Tabs
-        className={s.tabs}
-        activeKey={activeTab}
-        onChange={handleTabChange}>
+      <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
-          tab={<><Icons name="bar-charts-outlined" /> Overview</>} />
+          tab={
+            <>
+              <Icons name="bar-charts-outlined" /> Overview
+            </>
+          }
+        />
         <Tabs.Tab
           key="wallet"
           disabled={!wallet.account}
-          tab={<><Icons name="wallet-outlined" /> Wallet</>} />
+          tab={
+            <>
+              <Icons name="wallet-outlined" /> Wallet
+            </>
+          }
+        />
         <Tabs.Tab
           key="proposals"
-          tab={<><Icons name="proposal-outlined" /> Proposals</>} />
+          tab={
+            <>
+              <Icons name="proposal-outlined" /> Proposals
+            </>
+          }
+        />
         <Tabs.Tab
           key="discussions"
           disabled
-          tab={<><Icons name="chats-outlined" /> Discussions</>} />
+          tab={
+            <>
+              <Icons name="chats-outlined" /> Discussions
+            </>
+          }
+        />
       </Tabs>
       <div className={s.view}>
         <Switch>
@@ -76,9 +95,17 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
             <Route path="/governance/wallet" component={WalletView} />
           )}
           {dao.isActive && (
-            <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
+            <Route
+              path="/governance/proposals/create"
+              exact
+              component={ProposalCreateView}
+            />
           )}
-          <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
+          <Route
+            path="/governance/proposals/:id(\d+)"
+            exact
+            component={ProposalDetailView}
+          />
           <Route path="/governance/proposals" exact component={ProposalsView} />
           <Redirect from="/governance" to="/governance/overview" />
         </Switch>
@@ -90,11 +117,9 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
 const GovernanceView: React.FunctionComponent = props => {
   return (
     <DAOProvider>
-      <GovernanceViewInternal>
-        {props.children}
-      </GovernanceViewInternal>
+      <GovernanceViewInternal>{props.children}</GovernanceViewInternal>
     </DAOProvider>
-  )
+  );
 };
 
 export default GovernanceView;

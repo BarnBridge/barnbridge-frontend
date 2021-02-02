@@ -1,4 +1,10 @@
-@mixin font($size, $height, $weight: normal, $style: normal, $family: Montserrat) {
+@mixin font(
+  $size,
+  $height,
+  $weight: normal,
+  $style: normal,
+  $family: Montserrat
+) {
   font-family: $family;
   font-weight: $weight;
   font-style: $style;
@@ -73,11 +79,19 @@
 }
 
 @mixin font-lb1-bold {
-  @include font-label(var(--font-size-lb1), calc(var(--font-size-lb1) + 10px), bold);
+  @include font-label(
+    var(--font-size-lb1),
+    calc(var(--font-size-lb1) + 10px),
+    bold
+  );
 }
 
 @mixin font-lb1-semi-bold {
-  @include font-label(var(--font-size-lb1), calc(var(--font-size-lb1) + 10px), 600);
+  @include font-label(
+    var(--font-size-lb1),
+    calc(var(--font-size-lb1) + 10px),
+    600
+  );
 }
 
 @mixin font-lb1-regular {
@@ -85,11 +99,19 @@
 }
 
 @mixin font-lb2-bold {
-  @include font-label(var(--font-size-lb2), calc(var(--font-size-lb2) + 4px), bold);
+  @include font-label(
+    var(--font-size-lb2),
+    calc(var(--font-size-lb2) + 4px),
+    bold
+  );
 }
 
 @mixin font-lb2-semi-bold {
-  @include font-label(var(--font-size-lb2), calc(var(--font-size-lb2) + 4px), 600);
+  @include font-label(
+    var(--font-size-lb2),
+    calc(var(--font-size-lb2) + 4px),
+    600
+  );
 }
 
 @mixin font-lb2-regular {

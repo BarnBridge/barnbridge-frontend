@@ -14,11 +14,12 @@ export type BatchContractMethod = {
 
 export const WEB3_RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL);
 
-export const DEFAULT_CONTRACT_PROVIDER = WEB3_RPC_URL.indexOf('wss://') === 0
-  ? new Web3.providers.WebsocketProvider(WEB3_RPC_URL)
-  : new Web3.providers.HttpProvider(WEB3_RPC_URL);
+export const DEFAULT_CONTRACT_PROVIDER =
+  WEB3_RPC_URL.indexOf('wss://') === 0
+    ? new Web3.providers.WebsocketProvider(WEB3_RPC_URL)
+    : new Web3.providers.HttpProvider(WEB3_RPC_URL);
 
-const WEB3_ERROR_VALUE = 3.9638773911973445e+75;
+const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
 
 export type Web3ContractAbiItem = AbiItem;
@@ -91,8 +92,9 @@ class Web3Contract extends EventEmitter {
         }
 
         try {
-          const request = contractMethod(...methodArgs).call
-            .request(callArgs, (err: Error, value: string) => {
+          const request = contractMethod(...methodArgs).call.request(
+            callArgs,
+            (err: Error, value: string) => {
               if (err) {
                 if (onError instanceof Function) {
                   return resolve(onError(err));
@@ -103,12 +105,16 @@ class Web3Contract extends EventEmitter {
               }
 
               if (+value === WEB3_ERROR_VALUE) {
-                console.error(`${this.name}:${methodName}.call`, 'Contract call failure!');
+                console.error(
+                  `${this.name}:${methodName}.call`,
+                  'Contract call failure!',
+                );
                 return resolve(undefined);
               }
 
               resolve(transform(value));
-            });
+            },
+          );
 
           batch.add(request);
         } catch (e) {
@@ -119,21 +125,33 @@ class Web3Contract extends EventEmitter {
 
     try {
       batch.execute();
-    } catch {
-    }
+    } catch {}
 
     return Promise.all(promises);
   }
 
-  call(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+  call(
+    method: string,
+    methodArgs: any[] = [],
+    sendArgs: Record<string, any> = {},
+  ): Promise<any> {
     return this.execute('call', method, methodArgs, sendArgs);
   }
 
-  send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+  send(
+    method: string,
+    methodArgs: any[] = [],
+    sendArgs: Record<string, any> = {},
+  ): Promise<any> {
     return this.execute('send', method, methodArgs, sendArgs);
   }
 
-  private execute(type: 'call' | 'send', method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+  private execute(
+    type: 'call' | 'send',
+    method: string,
+    methodArgs: any[] = [],
+    sendArgs: Record<string, any> = {},
+  ): Promise<any> {
     return new Promise((resolve, reject) => {
       const contractMethod = this.ethContract.methods[method];
 
@@ -150,12 +168,14 @@ class Web3Contract extends EventEmitter {
         reject(err);
       };
 
-      let pr = contractMethod(...methodArgs)
-        ?.[type](sendArgs, async (err: Error) => {
-        if (err) {
-          reject(err);
-        }
-      });
+      let pr = contractMethod(...methodArgs)?.[type](
+        sendArgs,
+        async (err: Error) => {
+          if (err) {
+            reject(err);
+          }
+        },
+      );
 
       pr.then(resolve);
 

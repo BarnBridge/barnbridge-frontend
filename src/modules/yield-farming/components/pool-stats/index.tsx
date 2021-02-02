@@ -32,16 +32,26 @@ const PoolStats: React.FunctionComponent = () => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Label type="lb2" semiBold color="red500">Total Value Locked</Label>
+            <Label type="lb2" semiBold color="red500">
+              Total Value Locked
+            </Label>
             <Tooltip
               type="info"
-              title={(
+              title={
                 <span>
-                    This number shows the Total Value Locked across the staking pool(s), and the effective Total Value Locked.
-                    <br /><br />
-                    When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore TVL and effective TVL will differ in most cases.
-                  </span>
-              )} />
+                  This number shows the Total Value Locked across the staking
+                  pool(s), and the effective Total Value Locked.
+                  <br />
+                  <br />
+                  When staking tokens during an epoch that is currently running,
+                  your effective deposit amount will be proportionally reduced
+                  by the time that has passed from that epoch. Once an epoch
+                  ends, your staked balance and effective staked balance will be
+                  the equal, therefore TVL and effective TVL will differ in most
+                  cases.
+                </span>
+              }
+            />
           </Grid>
           <Grid flow="row" gap={4}>
             <Heading type="h2" bold color="grey900">
@@ -57,10 +67,13 @@ const PoolStats: React.FunctionComponent = () => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Label type="lb2" semiBold color="red500">Bond Rewards</Label>
+            <Label type="lb2" semiBold color="red500">
+              Bond Rewards
+            </Label>
             <Tooltip
               type="info"
-              title={`This number shows the $BOND token rewards distributed so far out of the total of ${totalBondReward} that are going to be available for Yield Farming.`} />
+              title={`This number shows the $BOND token rewards distributed so far out of the total of ${totalBondReward} that are going to be available for Yield Farming.`}
+            />
           </Grid>
           <Grid flow="row" gap={4}>
             <Heading type="h2" bold color="grey900">
@@ -76,7 +89,9 @@ const PoolStats: React.FunctionComponent = () => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Label type="lb2" semiBold color="red500">Bond Price</Label>
+            <Label type="lb2" semiBold color="red500">
+              Bond Price
+            </Label>
           </Grid>
           <Grid flow="row" gap={4}>
             <Heading type="h2" bold color="grey900">
@@ -84,7 +99,9 @@ const PoolStats: React.FunctionComponent = () => {
             </Heading>
             <ExternalLink
               href={`https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`}
-              className={s.link}>Uniswap market</ExternalLink>
+              className={s.link}>
+              Uniswap market
+            </ExternalLink>
           </Grid>
         </Grid>
       </Card>
@@ -92,10 +109,13 @@ const PoolStats: React.FunctionComponent = () => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Label type="lb2" semiBold color="red500">Time Left</Label>
+            <Label type="lb2" semiBold color="red500">
+              Time Left
+            </Label>
             <Tooltip
               type="info"
-              title="This counter shows the time left in the current epoch. The pool(s) below are synchronized and have epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive rewards proportional to the time they are staked, but the funds must stay staked until the clock runs out and the epoch ends in order to be able to harvest the rewards." />
+              title="This counter shows the time left in the current epoch. The pool(s) below are synchronized and have epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive rewards proportional to the time they are staked, but the funds must stay staked until the clock runs out and the epoch ends in order to be able to harvest the rewards."
+            />
           </Grid>
           <Grid flow="row" gap={4}>
             <Heading type="h2" bold color="grey900">

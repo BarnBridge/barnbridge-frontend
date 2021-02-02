@@ -52,7 +52,9 @@ const AbrogationProvider: React.FunctionComponent = props => {
   const web3c = useWeb3Contracts();
   const { proposal } = useProposal();
 
-  const [state, setState] = useMergeState<AbrogationProviderState>(InitialState);
+  const [state, setState] = useMergeState<AbrogationProviderState>(
+    InitialState,
+  );
 
   React.useEffect(() => {
     if (!proposal) {
@@ -109,20 +111,18 @@ const AbrogationProvider: React.FunctionComponent = props => {
       againstRate,
     });
 
-    web3c.daoBarn.actions.bondStakedAtTs(createTime - 1)
-      .then(bondStakedAt => {
-        let approvalRate: number | undefined;
+    web3c.daoBarn.actions.bondStakedAtTs(createTime - 1).then(bondStakedAt => {
+      let approvalRate: number | undefined;
 
-        if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
-          approvalRate = forVotes.multipliedBy(100)
-            .div(bondStakedAt).toNumber();
-          approvalRate = Math.min(approvalRate, 100);
-        }
+      if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
+        approvalRate = forVotes.multipliedBy(100).div(bondStakedAt).toNumber();
+        approvalRate = Math.min(approvalRate, 100);
+      }
 
-        setState({
-          approvalRate,
-        });
+      setState({
+        approvalRate,
       });
+    });
   }, [state.abrogation]);
 
   React.useEffect(() => {
@@ -136,14 +136,14 @@ const AbrogationProvider: React.FunctionComponent = props => {
 
     const { proposalId, createTime } = state.abrogation;
 
-    web3c.daoBarn.actions.votingPowerAtTs(createTime - 1)
-      .then(votingPower => {
-        setState({
-          votingPower,
-        });
+    web3c.daoBarn.actions.votingPowerAtTs(createTime - 1).then(votingPower => {
+      setState({
+        votingPower,
       });
+    });
 
-    web3c.daoGovernance.actions.getAbrogationProposalReceipt(proposalId)
+    web3c.daoGovernance.actions
+      .getAbrogationProposalReceipt(proposalId)
       .then(receipt => {
         setState({
           receipt,
@@ -151,25 +151,36 @@ const AbrogationProvider: React.FunctionComponent = props => {
       });
   }, [state.abrogation, wallet.account]);
 
-  function abrogationProposalCastVote(support: boolean, gasPrice: number): Promise<void> {
+  function abrogationProposalCastVote(
+    support: boolean,
+    gasPrice: number,
+  ): Promise<void> {
     return proposal?.proposalId
-      ? web3c.daoGovernance.actions.abrogationProposalCastVote(proposal?.proposalId, support, gasPrice)
+      ? web3c.daoGovernance.actions.abrogationProposalCastVote(
+          proposal?.proposalId,
+          support,
+          gasPrice,
+        )
       : Promise.reject();
   }
 
   function abrogationProposalCancelVote(gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? web3c.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice)
+      ? web3c.daoGovernance.actions.abrogationProposalCancelVote(
+          proposal?.proposalId,
+          gasPrice,
+        )
       : Promise.reject();
   }
 
   return (
-    <AbrogationContext.Provider value={{
-      ...state,
-      reload,
-      abrogationProposalCastVote,
-      abrogationProposalCancelVote,
-    }}>
+    <AbrogationContext.Provider
+      value={{
+        ...state,
+        reload,
+        abrogationProposalCastVote,
+        abrogationProposalCancelVote,
+      }}>
       {children}
     </AbrogationContext.Provider>
   );

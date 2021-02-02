@@ -56,7 +56,9 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
   const proposalCtx = useProposal();
   const abrogationCtx = useAbrogation();
 
-  const [state, setState] = useMergeState<AbrogationVoteModalState>(InitialState);
+  const [state, setState] = useMergeState<AbrogationVoteModalState>(
+    InitialState,
+  );
   const [form] = Antd.Form.useForm<FormState>();
 
   async function handleSubmit(values: FormState) {
@@ -72,21 +74,26 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
       await form.validateFields();
 
       if (voteState === VoteAbrogationState.VoteInitiate) {
-        await proposalCtx.startAbrogationProposal(values.description!, gasPrice);
+        await proposalCtx.startAbrogationProposal(
+          values.description!,
+          gasPrice,
+        );
       } else if (voteState === VoteAbrogationState.VoteFor) {
         await abrogationCtx.abrogationProposalCastVote(true, gasPrice);
       } else if (voteState === VoteAbrogationState.VoteAgainst) {
         await abrogationCtx.abrogationProposalCastVote(false, gasPrice);
       } else if (voteState === VoteAbrogationState.VoteChange) {
-        await abrogationCtx.abrogationProposalCastVote(values.changeOption === true, gasPrice);
+        await abrogationCtx.abrogationProposalCastVote(
+          values.changeOption === true,
+          gasPrice,
+        );
       } else if (voteState === VoteAbrogationState.VoteCancel) {
         await abrogationCtx.abrogationProposalCancelVote(gasPrice);
       }
 
       abrogationCtx.reload();
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setState({ submitting: false });
   }
@@ -104,15 +111,16 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
       className={s.component}
       centered
       width={560}
-      title={(
+      title={
         <>
-          {voteState === VoteAbrogationState.VoteInitiate && 'Initiate abrogation proposal'}
+          {voteState === VoteAbrogationState.VoteInitiate &&
+            'Initiate abrogation proposal'}
           {voteState === VoteAbrogationState.VoteFor && 'Confirm your vote'}
           {voteState === VoteAbrogationState.VoteAgainst && 'Confirm your vote'}
           {voteState === VoteAbrogationState.VoteChange && 'Change your vote'}
           {voteState === VoteAbrogationState.VoteCancel && 'Cancel your vote'}
         </>
-      )}
+      }
       {...modalProps}>
       <Form
         form={form}
@@ -132,9 +140,15 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
               <Heading type="h2" bold color="grey900">
                 {formatBigValue(abrogationCtx.votingPower, 2)}
               </Heading>
-              <Paragraph type="p1" semiBold color="grey500">Votes</Paragraph>
+              <Paragraph type="p1" semiBold color="grey500">
+                Votes
+              </Paragraph>
             </Grid>
-            <Paragraph type="p2" semiBold color="grey500" className="text-center">
+            <Paragraph
+              type="p2"
+              semiBold
+              color="grey500"
+              className="text-center">
               {proposalCtx.proposal?.title}
             </Paragraph>
           </Grid>
@@ -146,7 +160,11 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
               name="description"
               label="Description"
               rules={[{ required: true, message: 'Required' }]}>
-              <Textarea placeholder="Placeholder" rows={4} disabled={state.submitting} />
+              <Textarea
+                placeholder="Placeholder"
+                rows={4}
+                disabled={state.submitting}
+              />
             </Form.Item>
           )}
           {voteState === VoteAbrogationState.VoteChange && (
@@ -154,14 +172,26 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
               name="changeOption"
               label="Vote"
               rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group className={s.changeGroup} disabled={state.submitting}>
+              <Antd.Radio.Group
+                className={s.changeGroup}
+                disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
-                    label={<Paragraph type="p1" semiBold color="grey900">For</Paragraph>}
-                    value={true} />
+                    label={
+                      <Paragraph type="p1" semiBold color="grey900">
+                        For
+                      </Paragraph>
+                    }
+                    value={true}
+                  />
                   <RadioButton
-                    label={<Paragraph type="p1" semiBold color="grey900">Against</Paragraph>}
-                    value={false} />
+                    label={
+                      <Paragraph type="p1" semiBold color="grey900">
+                        Against
+                      </Paragraph>
+                    }
+                    value={false}
+                  />
                 </Grid>
               </Antd.Radio.Group>
             </Form.Item>
@@ -192,12 +222,20 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
                   loading={state.submitting}
                   disabled={isDisabled}
                   className={s.actionBtn}>
-                  {voteState === VoteAbrogationState.VoteInitiate && 'Initiate abrogation proposal'}
-                  {voteState === VoteAbrogationState.VoteFor && 'Vote for abrogation proposal'}
-                  {voteState === VoteAbrogationState.VoteAgainst && 'Vote against abrogation proposal'}
-                  {voteState === VoteAbrogationState.VoteChange && changeOption === true && 'Vote for abrogation proposal'}
-                  {voteState === VoteAbrogationState.VoteChange && changeOption === false && 'Vote against abrogation proposal'}
-                  {voteState === VoteAbrogationState.VoteCancel && 'Cancel abrogation vote'}
+                  {voteState === VoteAbrogationState.VoteInitiate &&
+                    'Initiate abrogation proposal'}
+                  {voteState === VoteAbrogationState.VoteFor &&
+                    'Vote for abrogation proposal'}
+                  {voteState === VoteAbrogationState.VoteAgainst &&
+                    'Vote against abrogation proposal'}
+                  {voteState === VoteAbrogationState.VoteChange &&
+                    changeOption === true &&
+                    'Vote for abrogation proposal'}
+                  {voteState === VoteAbrogationState.VoteChange &&
+                    changeOption === false &&
+                    'Vote against abrogation proposal'}
+                  {voteState === VoteAbrogationState.VoteCancel &&
+                    'Cancel abrogation vote'}
                 </Button>
               );
             }}

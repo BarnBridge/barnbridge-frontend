@@ -1,8 +1,9 @@
-@import "../../../styles/mixin";
+@import '../../../styles/mixin';
 
 .component {
   :global(.ant-modal-content) {
-    box-shadow: 0 16px 32px rgba(19, 32, 43, 0.4), 0 0 0.5px rgba(6, 10, 13, 0.4);
+    box-shadow: 0 16px 32px rgba(19, 32, 43, 0.4),
+      0 0 0.5px rgba(6, 10, 13, 0.4);
   }
 
   :global(.ant-modal-close) {

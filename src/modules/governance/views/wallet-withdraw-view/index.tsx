@@ -39,7 +39,9 @@ const WalletWithdrawView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
 
-  const [state, setState] = useMergeState<WalletWithdrawViewState>(InitialState);
+  const [state, setState] = useMergeState<WalletWithdrawViewState>(
+    InitialState,
+  );
 
   async function handleSubmit(values: WithdrawFormData) {
     setState({ saving: true });
@@ -49,8 +51,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
@@ -59,18 +60,24 @@ const WalletWithdrawView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="center">
       <Grid flow="col" gap={12} align="center">
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
+        <Paragraph type="p1" semiBold color="grey900">
+          BOND
+        </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Staked Balance</Small>
+        <Small semiBold color="grey500">
+          Staked Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBONDValue(web3c.daoBarn.balance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Wallet Balance</Small>
+        <Small semiBold color="grey500">
+          Wallet Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBONDValue(web3c.bond.balance)}
         </Paragraph>
@@ -97,7 +104,9 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 <TokenAmount
                   tokenIcon="bond-token"
                   tokenLabel="BOND"
-                  placeholder={`0 (Max ${formatBONDValue(web3c.daoBarn.balance ?? ZERO_BIG_NUMBER)})`}
+                  placeholder={`0 (Max ${formatBONDValue(
+                    web3c.daoBarn.balance ?? ZERO_BIG_NUMBER,
+                  )})`}
                   disabled={state.saving}
                   maximumFractionDigits={2}
                   maxProps={{
@@ -116,9 +125,11 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                   max={web3c.daoBarn.balance?.toNumber() ?? 0}
                   step={1}
                   disabled={state.saving}
-                  tipFormatter={value =>
-                    <span>{value ? formatBONDValue(new BigNumber(value)) : 0}</span>
-                  }
+                  tipFormatter={value => (
+                    <span>
+                      {value ? formatBONDValue(new BigNumber(value)) : 0}
+                    </span>
+                  )}
                   tooltipPlacement="bottom"
                 />
               </Form.Item>
@@ -139,7 +150,9 @@ const WalletWithdrawView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            style={{ width: 121 }}>Withdraw</Button>
+            style={{ width: 121 }}>
+            Withdraw
+          </Button>
         </Grid>
       </Form>
     </Card>

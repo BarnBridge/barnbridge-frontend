@@ -17,7 +17,9 @@ type WalletViewParams = {
 
 const WalletView: React.FunctionComponent = () => {
   const history = useHistory();
-  const { params: { wt = 'deposit' } } = useRouteMatch<WalletViewParams>();
+  const {
+    params: { wt = 'deposit' },
+  } = useRouteMatch<WalletViewParams>();
   const [activeTab, setActiveTab] = React.useState<string>(wt);
 
   function handleTabChange(tabKey: string) {
@@ -33,7 +35,9 @@ const WalletView: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={32}>
-      <Heading type="h1" bold color="grey900">Wallet</Heading>
+      <Heading type="h1" bold color="grey900">
+        Wallet
+      </Heading>
       <Tabs activeKey={activeTab} simple onChange={handleTabChange}>
         <Tabs.Tab key="deposit" tab="Deposit" />
         <Tabs.Tab key="lock" tab="Lock" />
@@ -41,10 +45,26 @@ const WalletView: React.FunctionComponent = () => {
         <Tabs.Tab key="withdraw" tab="Withdraw" />
       </Tabs>
       <Switch>
-        <Route path="/governance/wallet/deposit" exact component={WalletDepositView} />
-        <Route path="/governance/wallet/lock" exact component={WalletLockView} />
-        <Route path="/governance/wallet/delegate" exact component={WalletDelegateView} />
-        <Route path="/governance/wallet/withdraw" exact component={WalletWithdrawView} />
+        <Route
+          path="/governance/wallet/deposit"
+          exact
+          component={WalletDepositView}
+        />
+        <Route
+          path="/governance/wallet/lock"
+          exact
+          component={WalletLockView}
+        />
+        <Route
+          path="/governance/wallet/delegate"
+          exact
+          component={WalletDelegateView}
+        />
+        <Route
+          path="/governance/wallet/withdraw"
+          exact
+          component={WalletWithdrawView}
+        />
         <Redirect from="/governance/wallet" to="/governance/wallet/deposit" />
       </Switch>
     </Grid>

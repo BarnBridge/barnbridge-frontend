@@ -27,11 +27,13 @@ const InitialState: AbrogationVotersProviderState = {
   supportFilter: undefined,
 };
 
-const AbrogationVotersContext = React.createContext<AbrogationVotersContextType>({
-  ...InitialState,
-  changeSupportFilter: () => undefined,
-  changePage: () => undefined,
-});
+const AbrogationVotersContext = React.createContext<AbrogationVotersContextType>(
+  {
+    ...InitialState,
+    changeSupportFilter: () => undefined,
+    changePage: () => undefined,
+  },
+);
 
 export function useAbrogationVoters(): AbrogationVotersContextType {
   return React.useContext(AbrogationVotersContext);
@@ -41,7 +43,9 @@ const AbrogationVotersProvider: React.FunctionComponent = props => {
   const { children } = props;
 
   const { abrogation } = useAbrogation();
-  const [state, setState] = useMergeState<AbrogationVotersProviderState>(InitialState);
+  const [state, setState] = useMergeState<AbrogationVotersProviderState>(
+    InitialState,
+  );
 
   React.useEffect(() => {
     if (!abrogation) {
@@ -54,7 +58,12 @@ const AbrogationVotersProvider: React.FunctionComponent = props => {
 
     setState({ loading: true });
 
-    fetchAbrogationVoters(abrogation.proposalId, state.page, state.pageSize, state.supportFilter)
+    fetchAbrogationVoters(
+      abrogation.proposalId,
+      state.page,
+      state.pageSize,
+      state.supportFilter,
+    )
       .then(data => {
         setState({
           loading: false,
@@ -82,11 +91,12 @@ const AbrogationVotersProvider: React.FunctionComponent = props => {
   }
 
   return (
-    <AbrogationVotersContext.Provider value={{
-      ...state,
-      changeSupportFilter,
-      changePage,
-    }}>
+    <AbrogationVotersContext.Provider
+      value={{
+        ...state,
+        changeSupportFilter,
+        changePage,
+      }}>
       {children}
     </AbrogationVotersContext.Provider>
   );

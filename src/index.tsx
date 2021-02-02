@@ -27,9 +27,6 @@ const App: React.FunctionComponent = () => {
   );
 };
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root'),
-);
+ReactDOM.render(<App />, document.getElementById('root'));
 
 sw.unregister();

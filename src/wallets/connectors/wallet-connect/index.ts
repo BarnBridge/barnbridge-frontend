@@ -6,8 +6,12 @@ import { WEB3_RPC_URL } from 'web3/contract';
 
 import WalletConnectLogo from 'resources/svg/wallets/walletconnect-logo.svg';
 
-const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
-const WEB3_WALLET_CONNECT_BRIDGE = String(process.env.REACT_APP_WEB3_WALLET_CONNECT_BRIDGE);
+const WEB3_POLLING_INTERVAL = Number(
+  process.env.REACT_APP_WEB3_POLLING_INTERVAL,
+);
+const WEB3_WALLET_CONNECT_BRIDGE = String(
+  process.env.REACT_APP_WEB3_WALLET_CONNECT_BRIDGE,
+);
 
 export const WalletConnectConfig: WalletConnector = {
   id: 'walletconnect',

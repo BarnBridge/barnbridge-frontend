@@ -10,48 +10,59 @@ export type UseRouteParamsReturn = [
   (key: UseRouteParamKey) => void,
 ];
 
-const RouteParamsContext = React.createContext<UseRouteParamsReturn>(
-  [{}, () => undefined, () => undefined],
-);
+const RouteParamsContext = React.createContext<UseRouteParamsReturn>([
+  {},
+  () => undefined,
+  () => undefined,
+]);
 
 const RouteParamsProvider: React.FunctionComponent = props => {
   const history = useHistory();
   const location = useLocation();
 
   const paramsRef = React.useRef<UseRouteParams>({});
-  paramsRef.current = React.useMemo<UseRouteParams>(() => ({
-    ...Object.fromEntries(new URLSearchParams(location.search)),
-  }), [location.search]);
+  paramsRef.current = React.useMemo<UseRouteParams>(
+    () => ({
+      ...Object.fromEntries(new URLSearchParams(location.search)),
+    }),
+    [location.search],
+  );
 
-  const setParam = React.useCallback((key: UseRouteParamKey, value: UseRouteParamValue) => {
-    const newParams = {
-      ...paramsRef.current,
-      [key]: value,
-    };
+  const setParam = React.useCallback(
+    (key: UseRouteParamKey, value: UseRouteParamValue) => {
+      const newParams = {
+        ...paramsRef.current,
+        [key]: value,
+      };
 
-    const searchQuery = Object.keys(newParams)
-      .filter(key => newParams[key] !== undefined)
-      .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(newParams[key]!)}`)
-      .join('&');
+      const searchQuery = Object.keys(newParams)
+        .filter(key => newParams[key] !== undefined)
+        .map(
+          key =>
+            `${encodeURIComponent(key)}=${encodeURIComponent(newParams[key]!)}`,
+        )
+        .join('&');
 
-    if (location.search !== `?${searchQuery}`) {
-      history.replace({
-        ...history.location,
-        search: searchQuery,
-      });
-    }
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+      if (location.search !== `?${searchQuery}`) {
+        history.replace({
+          ...history.location,
+          search: searchQuery,
+        });
+      }
+    },
+    [],
+  ); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const clearParam = React.useCallback((key: UseRouteParamKey) => {
-    setParam(key, undefined);
-  }, [setParam]);
+  const clearParam = React.useCallback(
+    (key: UseRouteParamKey) => {
+      setParam(key, undefined);
+    },
+    [setParam],
+  );
 
   return (
-    <RouteParamsContext.Provider value={[
-      paramsRef.current,
-      setParam,
-      clearParam,
-    ]}>
+    <RouteParamsContext.Provider
+      value={[paramsRef.current, setParam, clearParam]}>
       {props.children}
     </RouteParamsContext.Provider>
   );

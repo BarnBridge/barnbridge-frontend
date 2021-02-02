@@ -13,18 +13,10 @@ const ExpandableCard: React.FunctionComponent<ExpandableCardProps> = props => {
   const { className, children, footer, ...cardProps } = props;
 
   return (
-    <Antd.Card
-      className={cx(s.component, className)}
-      {...cardProps}>
+    <Antd.Card className={cx(s.component, className)} {...cardProps}>
       <div className={s.content}>{children}</div>
-      {footer && (
-        <div className={s.footer}>
-          {footer}
-        </div>
-      )}
+      {footer && <div className={s.footer}>{footer}</div>}
     </Antd.Card>
   );
-}
-;
-
+};
 export default ExpandableCard;

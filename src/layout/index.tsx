@@ -28,20 +28,30 @@ const LayoutView: React.FunctionComponent = () => {
               <Route path="/yield-farming" component={YieldFarmingView} />
               <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
-              <Route path="/bonds" render={() => (
-                <StayTuned />
-              )} />
+              <Route path="/bonds" render={() => <StayTuned />} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
           </Antd.Layout.Content>
           <Antd.Layout.Footer className={s.footer}>
             <div className={s.footerLinks}>
-              <ExternalLink href="http://www.barnbridge.com/">Website</ExternalLink>
-              <ExternalLink href="https://discord.com/invite/FfEhsVk">Discord</ExternalLink>
-              <ExternalLink href="https://twitter.com/barn_bridge">Twitter</ExternalLink>
-              <ExternalLink href="https://github.com/BarnBridge/BarnBridge-Whitepaper">Whitepaper</ExternalLink>
-              <ExternalLink href="https://github.com/BarnBridge/">Github</ExternalLink>
-              <ExternalLink href="https://client.aragon.org/#/barnbridgelaunch/">LaunchDAO</ExternalLink>
+              <ExternalLink href="http://www.barnbridge.com/">
+                Website
+              </ExternalLink>
+              <ExternalLink href="https://discord.com/invite/FfEhsVk">
+                Discord
+              </ExternalLink>
+              <ExternalLink href="https://twitter.com/barn_bridge">
+                Twitter
+              </ExternalLink>
+              <ExternalLink href="https://github.com/BarnBridge/BarnBridge-Whitepaper">
+                Whitepaper
+              </ExternalLink>
+              <ExternalLink href="https://github.com/BarnBridge/">
+                Github
+              </ExternalLink>
+              <ExternalLink href="https://client.aragon.org/#/barnbridgelaunch/">
+                LaunchDAO
+              </ExternalLink>
               <ExternalLink
                 href={`https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`}>
                 Uniswap v2 USDC/BOND add liquidity

@@ -5,13 +5,19 @@ import cx from 'classnames';
 import Button from 'components/antd/button';
 import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
 import { Paragraph, Small } from 'components/custom/typography';
-import ExpandableCard, { ExpandableCardProps } from 'components/custom/expandable-card';
+import ExpandableCard, {
+  ExpandableCardProps,
+} from 'components/custom/expandable-card';
 import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
 import Icons from 'components/custom/icon';
 
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
-import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
+import {
+  AbiDecodeResult,
+  AbiFunctionFragment,
+  AbiInterface,
+} from 'web3/abiInterface';
 
 import s from './styles.module.scss';
 
@@ -43,7 +49,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const [isSignature, showSignature] = React.useState<boolean>(false);
 
-  const functionFragment = React.useMemo<AbiFunctionFragment | undefined>(() => {
+  const functionFragment = React.useMemo<
+    AbiFunctionFragment | undefined
+  >(() => {
     return AbiInterface.getFunctionFragmentFrom(signature);
   }, [signature]);
 
@@ -56,7 +64,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   }, [functionFragment, callData]);
 
   const stringParams = React.useMemo<string>(() => {
-    const params = functionParamValues?.map(param => AbiInterface.stringifyParamValue(param));
+    const params = functionParamValues?.map(param =>
+      AbiInterface.stringifyParamValue(param),
+    );
     return params?.join(',\n') ?? '';
   }, [functionParamValues]);
 
@@ -68,9 +78,11 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
     {
       key: 'sig',
       icon: <Icons name="chevron-right" />,
-      title: <Paragraph type="p1" semiBold>
-        {isSignature ? 'Show transaction' : 'Show function signature'}
-      </Paragraph>,
+      title: (
+        <Paragraph type="p1" semiBold>
+          {isSignature ? 'Show transaction' : 'Show function signature'}
+        </Paragraph>
+      ),
     },
     {
       key: 'edit',
@@ -80,7 +92,11 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
     {
       key: 'delete',
       icon: <Icons name="bin-outlined" color="red500" />,
-      title: <Paragraph type="p1" semiBold color="red500">Delete action</Paragraph>,
+      title: (
+        <Paragraph type="p1" semiBold color="red500">
+          Delete action
+        </Paragraph>
+      ),
     },
   ];
 
@@ -113,35 +129,36 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   return (
     <ExpandableCard
       title={
-        <Paragraph type="p2" semiBold color="grey900">{title}</Paragraph>
+        <Paragraph type="p2" semiBold color="grey900">
+          {title}
+        </Paragraph>
       }
       extra={
-        showSettings
-          ? (
-            <PopoverMenu
-              items={ActionMenuItems}
-              placement="bottomLeft"
-              onClick={key => handleActionMenu(String(key))}>
-              <Button type="link" icon={<Icons name="gear" />} />
-            </PopoverMenu>
-          )
-          : (
-            <Button type="link" onClick={handleShowSignature}>
-              <Small semiBold color="grey500">
-                {isSignature ? 'Show transaction' : 'Show function signature'}
-              </Small>
-            </Button>
-          )
-      }
-      footer={ellipsis || expanded
-        ? <Grid flow="col" align="center" justify="center">
-          <Button type="link" onClick={handleExpand}>
+        showSettings ? (
+          <PopoverMenu
+            items={ActionMenuItems}
+            placement="bottomLeft"
+            onClick={key => handleActionMenu(String(key))}>
+            <Button type="link" icon={<Icons name="gear" />} />
+          </PopoverMenu>
+        ) : (
+          <Button type="link" onClick={handleShowSignature}>
             <Small semiBold color="grey500">
-              {expanded ? 'Hide details' : 'Show more'}
+              {isSignature ? 'Show transaction' : 'Show function signature'}
             </Small>
           </Button>
-        </Grid>
-        : null
+        )
+      }
+      footer={
+        ellipsis || expanded ? (
+          <Grid flow="col" align="center" justify="center">
+            <Button type="link" onClick={handleExpand}>
+              <Small semiBold color="grey500">
+                {expanded ? 'Hide details' : 'Show more'}
+              </Small>
+            </Button>
+          </Grid>
+        ) : null
       }
       {...cardProps}>
       <ExternalLink href={etherscanLink}>
@@ -156,8 +173,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
             rows: expanded ? 9999 : 2,
             expandable: false,
             onEllipsis: handleEllipsis,
-          }}
-        >
+          }}>
           {isSignature
             ? signature
             : `${functionFragment?.name}(${stringParams})`}

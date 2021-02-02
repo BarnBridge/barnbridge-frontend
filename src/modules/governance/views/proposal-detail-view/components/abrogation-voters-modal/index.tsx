@@ -9,17 +9,25 @@ import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Label, Paragraph, Small } from 'components/custom/typography';
-import AbrogationVotersProvider, { useAbrogationVoters } from '../../providers/AbrogationVotersProvider';
+import AbrogationVotersProvider, {
+  useAbrogationVoters,
+} from '../../providers/AbrogationVotersProvider';
 
 import { APIVoteEntity } from 'modules/governance/api';
-import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import {
+  formatBigValue,
+  getEtherscanAddressUrl,
+  shortenAddr,
+} from 'web3/utils';
 
 import s from './styles.module.scss';
 
 const Columns: ColumnsType<APIVoteEntity> = [
   {
     title: () => (
-      <Small semiBold color="grey300">Address</Small>
+      <Small semiBold color="grey300">
+        Address
+      </Small>
     ),
     dataIndex: 'address',
     width: '60%',
@@ -36,7 +44,9 @@ const Columns: ColumnsType<APIVoteEntity> = [
   },
   {
     title: () => (
-      <Small semiBold color="grey300">Votes</Small>
+      <Small semiBold color="grey300">
+        Votes
+      </Small>
     ),
     dataIndex: 'power',
     width: '20%',
@@ -48,15 +58,22 @@ const Columns: ColumnsType<APIVoteEntity> = [
   },
   {
     title: () => (
-      <Small semiBold color="grey300">Vote type</Small>
+      <Small semiBold color="grey300">
+        Vote type
+      </Small>
     ),
     dataIndex: 'support',
     width: '20%',
-    render: (support: boolean) => support ? (
-      <Label type="lb2" semiBold className={s.forTag}>For</Label>
-    ) : (
-      <Label type="lb2" semiBold className={s.againstTag}>Against</Label>
-    ),
+    render: (support: boolean) =>
+      support ? (
+        <Label type="lb2" semiBold className={s.forTag}>
+          For
+        </Label>
+      ) : (
+        <Label type="lb2" semiBold className={s.againstTag}>
+          Against
+        </Label>
+      ),
   },
 ];
 
@@ -82,11 +99,7 @@ const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalP
   }
 
   return (
-    <Modal
-      className={s.component}
-      centered
-      width={560}
-      {...modalProps}>
+    <Modal className={s.component} centered width={560} {...modalProps}>
       <Tabs
         className={s.tabs}
         defaultActiveKey="all"
@@ -126,5 +139,5 @@ const AbrogationVotersModal: React.FunctionComponent<AbrogationVotersModalProps>
   <AbrogationVotersProvider>
     <AbrogationVotersModalInner {...props} />
   </AbrogationVotersProvider>
-)
+);
 export default AbrogationVotersModal;

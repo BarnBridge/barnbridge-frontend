@@ -101,7 +101,14 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       return;
     }
 
-    const { proposalId, proposer, forVotes, againstVotes, createTime, warmUpDuration } = state.proposal;
+    const {
+      proposalId,
+      proposer,
+      forVotes,
+      againstVotes,
+      createTime,
+      warmUpDuration,
+    } = state.proposal;
     const total = forVotes.plus(againstVotes);
 
     let forRate: number = 0;
@@ -117,7 +124,8 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       againstRate,
     });
 
-    web3c.daoBarn.actions.bondStakedAtTs(createTime + warmUpDuration)
+    web3c.daoBarn.actions
+      .bondStakedAtTs(createTime + warmUpDuration)
       .then(bondStakedAt => {
         let quorum: number | undefined;
 
@@ -145,12 +153,11 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
     //     }
     //   });
 
-    web3c.daoGovernance.actions.abrogationProposal(proposalId)
-      .then(result => {
-        if (result) {
-          setState({ isCanceled: result.createTime > 0 });
-        }
-      });
+    web3c.daoGovernance.actions.abrogationProposal(proposalId).then(result => {
+      if (result) {
+        setState({ isCanceled: result.createTime > 0 });
+      }
+    });
   }, [state.proposal]);
 
   React.useEffect(() => {
@@ -165,12 +172,12 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
 
     const { proposalId, createTime, warmUpDuration } = state.proposal;
 
-    web3c.daoGovernance.actions.getProposalReceipt(proposalId)
-      .then(receipt => {
-        setState({ receipt });
-      });
+    web3c.daoGovernance.actions.getProposalReceipt(proposalId).then(receipt => {
+      setState({ receipt });
+    });
 
-    web3c.daoBarn.actions.votingPowerAtTs(createTime + warmUpDuration)
+    web3c.daoBarn.actions
+      .votingPowerAtTs(createTime + warmUpDuration)
       .then(votingPower => {
         setState({ votingPower });
       });
@@ -196,7 +203,11 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
 
   function proposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.proposalCastVote(proposalId, support, gasPrice)
+      ? web3c.daoGovernance.actions.proposalCastVote(
+          proposalId,
+          support,
+          gasPrice,
+        )
       : Promise.reject();
   }
 
@@ -206,23 +217,31 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       : Promise.reject();
   }
 
-  function startAbrogationProposal(description: string, gasPrice: number): Promise<void> {
+  function startAbrogationProposal(
+    description: string,
+    gasPrice: number,
+  ): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.startAbrogationProposal(proposalId, description, gasPrice)
+      ? web3c.daoGovernance.actions.startAbrogationProposal(
+          proposalId,
+          description,
+          gasPrice,
+        )
       : Promise.reject();
   }
 
   return (
-    <ProposalContext.Provider value={{
-      ...state,
-      reload,
-      cancelProposal,
-      queueProposalForExecution,
-      executeProposal,
-      proposalCastVote,
-      proposalCancelVote,
-      startAbrogationProposal,
-    }}>
+    <ProposalContext.Provider
+      value={{
+        ...state,
+        reload,
+        cancelProposal,
+        queueProposalForExecution,
+        executeProposal,
+        proposalCastVote,
+        proposalCancelVote,
+        startAbrogationProposal,
+      }}>
       {children}
     </ProposalContext.Provider>
   );

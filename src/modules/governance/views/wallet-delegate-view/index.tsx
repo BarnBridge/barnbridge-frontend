@@ -57,10 +57,13 @@ const WalletDelegateView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<DelegateFormData>();
 
-  const [state, setState] = useMergeState<WalletDelegateViewState>(InitialState);
+  const [state, setState] = useMergeState<WalletDelegateViewState>(
+    InitialState,
+  );
 
   const { userDelegatedTo } = web3c.daoBarn;
-  const isDelegated = state.votingType === DELEGATE_VOTING_KEY && isValidAddress(userDelegatedTo);
+  const isDelegated =
+    state.votingType === DELEGATE_VOTING_KEY && isValidAddress(userDelegatedTo);
 
   const disabledDelegate = React.useMemo<boolean>(() => {
     if (state.votingType === MANUAL_VOTING_KEY) {
@@ -101,25 +104,24 @@ const WalletDelegateView: React.FunctionComponent = () => {
   }, [userDelegatedTo]);
 
   function handleValuesChange(values: Partial<DelegateFormData>) {
-    Object.keys(values)
-      .forEach(fieldName => {
-        const value = values[fieldName as keyof DelegateFormData];
+    Object.keys(values).forEach(fieldName => {
+      const value = values[fieldName as keyof DelegateFormData];
 
-        if (fieldName === 'votingType') {
-          setState({
-            votingType: value as string,
-            delegateAddress: undefined,
-          });
+      if (fieldName === 'votingType') {
+        setState({
+          votingType: value as string,
+          delegateAddress: undefined,
+        });
 
-          form.setFieldsValue({
-            delegateAddress: undefined,
-          });
-        } else if (fieldName === 'delegateAddress') {
-          setState({
-            delegateAddress: value as string,
-          });
-        }
-      });
+        form.setFieldsValue({
+          delegateAddress: undefined,
+        });
+      } else if (fieldName === 'delegateAddress') {
+        setState({
+          delegateAddress: value as string,
+        });
+      }
+    });
   }
 
   async function handleSubmit(values: DelegateFormData) {
@@ -127,15 +129,17 @@ const WalletDelegateView: React.FunctionComponent = () => {
 
     try {
       if (values.votingType === DELEGATE_VOTING_KEY) {
-        await web3c.daoBarn.actions.delegate(values.delegateAddress!, values.gasFee!);
+        await web3c.daoBarn.actions.delegate(
+          values.delegateAddress!,
+          values.gasFee!,
+        );
       } else {
         await web3c.daoBarn.actions.stopDelegate(values.gasFee!);
       }
 
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
@@ -144,11 +148,15 @@ const WalletDelegateView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="center">
       <Grid flow="col" gap={12} align="center">
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
+        <Paragraph type="p1" semiBold color="grey900">
+          BOND
+        </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Current Voting Type</Small>
+        <Small semiBold color="grey500">
+          Current Voting Type
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {state.votingType === MANUAL_VOTING_KEY && 'Manual voting'}
           {state.votingType === DELEGATE_VOTING_KEY && 'Delegate voting'}
@@ -157,7 +165,9 @@ const WalletDelegateView: React.FunctionComponent = () => {
 
       {isDelegated && (
         <Grid flow="row" gap={4}>
-          <Small semiBold color="grey500">Delegated Address</Small>
+          <Small semiBold color="grey500">
+            Delegated Address
+          </Small>
           <Paragraph type="p1" semiBold color="grey900">
             {web3c.daoBarn.userDelegatedTo}
           </Paragraph>

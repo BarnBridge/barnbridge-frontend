@@ -11,15 +11,24 @@ export function inRange(value: number, min: number, max: number): boolean {
   return min < value && value < max;
 }
 
-export function getFormattedDuration(value?: number, endValue?: number): string | undefined {
+export function getFormattedDuration(
+  value?: number,
+  endValue?: number,
+): string | undefined {
   if (value === undefined) {
     return;
   }
 
   const start = new Date();
-  const end = endValue !== undefined ? new Date(endValue!) : add(start, { seconds: value });
+  const end =
+    endValue !== undefined
+      ? new Date(endValue!)
+      : add(start, { seconds: value });
 
-  const duration = intervalToDuration({ start, end: start > end ? start : end });
+  const duration = intervalToDuration({
+    start,
+    end: start > end ? start : end,
+  });
 
   return formatDuration(duration, {
     format: ['months', 'days', 'hours', 'minutes'],

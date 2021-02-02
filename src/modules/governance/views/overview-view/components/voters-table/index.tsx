@@ -16,7 +16,9 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'address',
     title: () => (
-      <Small semiBold color="grey300">Address</Small>
+      <Small semiBold color="grey300">
+        Address
+      </Small>
     ),
     render: (value: string) => (
       <Grid flow="col" gap={16} align="center">
@@ -32,7 +34,9 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'votingPower',
     title: () => (
-      <Small semiBold color="grey300">Voting Power</Small>
+      <Small semiBold color="grey300">
+        Voting Power
+      </Small>
     ),
     width: 160,
     align: 'right',
@@ -45,7 +49,9 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'votes',
     title: () => (
-      <Small semiBold color="grey300">Votes</Small>
+      <Small semiBold color="grey300">
+        Votes
+      </Small>
     ),
     width: 160,
     align: 'right',
@@ -58,7 +64,9 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'proposals',
     title: () => (
-      <Small semiBold color="grey300">Proposals</Small>
+      <Small semiBold color="grey300">
+        Proposals
+      </Small>
     ),
     width: 160,
     align: 'right',
@@ -99,9 +107,11 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
 
   return (
     <Card
-      title={(
-        <Paragraph type="p1" semiBold color="grey900">Voter weights</Paragraph>
-      )}
+      title={
+        <Paragraph type="p1" semiBold color="grey900">
+          Voter weights
+        </Paragraph>
+      }
       noPaddingBody>
       <Table<APIVoterEntity>
         className={className}

@@ -2,7 +2,16 @@ import React from 'react';
 import * as Antd from 'antd';
 import { RadioChangeEvent } from 'antd/lib/radio/interface';
 import * as ReCharts from 'recharts';
-import { addSeconds, addDays, addMonths, formatDistanceToNow, format, isBefore, isAfter, getUnixTime } from 'date-fns';
+import {
+  addSeconds,
+  addDays,
+  addMonths,
+  formatDistanceToNow,
+  format,
+  isBefore,
+  isAfter,
+  getUnixTime,
+} from 'date-fns';
 
 import Form from 'components/antd/form';
 import DatePicker from 'components/antd/datepicker';
@@ -27,9 +36,7 @@ const InitialFormValues: LockFormData = {
   gasFee: undefined,
 };
 
-const DURATION_OPTIONS: string[] = [
-  '1w', '1m', '3m', '6m', '1y',
-];
+const DURATION_OPTIONS: string[] = ['1w', '1m', '3m', '6m', '1y'];
 
 const WalletLockView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
@@ -37,7 +44,10 @@ const WalletLockView: React.FunctionComponent = () => {
   const [values, setValues] = React.useState<LockFormData>({});
   const [submitting, setSubmitting] = React.useState<boolean>(false);
 
-  const minAllowedDate = addSeconds(Math.max(web3c.daoBarn.userLockedUntil ?? 0, Date.now()), 1);
+  const minAllowedDate = addSeconds(
+    Math.max(web3c.daoBarn.userLockedUntil ?? 0, Date.now()),
+    1,
+  );
   const maxAllowedDate = addDays(minAllowedDate, 365);
   const currentMultiplier = web3c.daoBarn.multiplier ?? 1;
 
@@ -85,7 +95,10 @@ const WalletLockView: React.FunctionComponent = () => {
     setSubmitting(true);
 
     try {
-      await web3c.daoBarn.actions.lock(getUnixTime(values.lockEndDate!), values.gasFee!);
+      await web3c.daoBarn.actions.lock(
+        getUnixTime(values.lockEndDate!),
+        values.gasFee!,
+      );
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
     } catch {
@@ -191,7 +204,9 @@ const WalletLockView: React.FunctionComponent = () => {
                   <Antd.Radio.Button
                     key={opt}
                     className={s.lockOption}
-                    value={opt}>{opt}</Antd.Radio.Button>
+                    value={opt}>
+                    {opt}
+                  </Antd.Radio.Button>
                 ))}
               </Antd.Radio.Group>
             </Form.Item>
@@ -199,15 +214,14 @@ const WalletLockView: React.FunctionComponent = () => {
             <Form.Item
               name="lockEndDate"
               label="Manual choose your lock end date"
-              rules={[
-                { required: true, message: 'Required' },
-              ]}>
+              rules={[{ required: true, message: 'Required' }]}>
               <DatePicker
                 showTime
                 showNow={false}
                 disabledDate={disabledDate}
                 format="DD/MM/YYYY HH:mm"
-                disabled={submitting} />
+                disabled={submitting}
+              />
             </Form.Item>
           </div>
           <div className={s.rightCol}>
@@ -215,9 +229,7 @@ const WalletLockView: React.FunctionComponent = () => {
               name="gasFee"
               label="Gas Fee (Gwei)"
               hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-              rules={[
-                { required: true, message: 'Required' },
-              ]}>
+              rules={[{ required: true, message: 'Required' }]}>
               <GasFeeList disabled={submitting} />
             </Form.Item>
           </div>
@@ -225,14 +237,19 @@ const WalletLockView: React.FunctionComponent = () => {
         <div className={s.chart}>
           <div className={s.chartHeader}>
             <Small semiBold color="grey500">
-              {formatBONDValue(web3c.daoBarn.balance?.multipliedBy(currentMultiplier - 1))} vBOND bonus
-
+              {formatBONDValue(
+                web3c.daoBarn.balance?.multipliedBy(currentMultiplier - 1),
+              )}{' '}
+              vBOND bonus
               {currentMultiplier > 1 && web3c.daoBarn.userLockedUntil && (
                 <>
                   <span> | </span>
                   <span>{inRange(currentMultiplier, 1, 1.01) ? '>' : ''}</span>
                   <span> {formatBigValue(currentMultiplier, 2, '-', 2)}x</span>
-                  <span> for {formatDistanceToNow(web3c.daoBarn.userLockedUntil)}</span>
+                  <span>
+                    {' '}
+                    for {formatDistanceToNow(web3c.daoBarn.userLockedUntil)}
+                  </span>
                 </>
               )}
             </Small>
@@ -243,7 +260,9 @@ const WalletLockView: React.FunctionComponent = () => {
                 data={chartData}
                 margin={{ top: 0, right: 10, left: 0, bottom: 5 }}>
                 <defs>
-                  <linearGradient id="chart-gradient" gradientTransform="rotate(180)">
+                  <linearGradient
+                    id="chart-gradient"
+                    gradientTransform="rotate(180)">
                     <stop offset="0%" stopColor="rgba(255, 67, 57, 0.08)" />
                     <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
                   </linearGradient>
@@ -255,23 +274,27 @@ const WalletLockView: React.FunctionComponent = () => {
                   tickMargin={16}
                   tickFormatter={tick => format(tick, 'YYYY-MM-DD')}
                   domain={[0, 2 ** 32]}
-                  stroke="#aaafb3" />
+                  stroke="#aaafb3"
+                />
                 <ReCharts.YAxis
                   axisLine={false}
                   tickLine={false}
                   ticks={[1, currentMultiplier]}
                   tickFormatter={tick => `${tick}x`}
                   domain={[1, currentMultiplier]}
-                  stroke="#aaafb3" />
+                  stroke="#aaafb3"
+                />
                 <ReCharts.Tooltip
                   labelFormatter={value => format(Number(value), 'YYYY-MM-DD')}
-                  formatter={value => `${Number(value).toFixed(2)}x`} />
+                  formatter={value => `${Number(value).toFixed(2)}x`}
+                />
                 <ReCharts.Area
                   dataKey="bonus"
                   name="Bonus"
                   fill="url(#chart-gradient)"
                   strokeWidth={2}
-                  stroke="#ff4339" />
+                  stroke="#ff4339"
+                />
               </ReCharts.AreaChart>
             </ReCharts.ResponsiveContainer>
           </div>

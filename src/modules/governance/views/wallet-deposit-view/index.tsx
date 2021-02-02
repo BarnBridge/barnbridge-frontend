@@ -55,8 +55,7 @@ const WalletDepositView: React.FunctionComponent = () => {
 
     try {
       await web3c.bond.approveSend(CONTRACT_DAO_BARN_ADDR, value);
-    } catch {
-    }
+    } catch {}
 
     setState({ enabling: false });
   }
@@ -69,8 +68,7 @@ const WalletDepositView: React.FunctionComponent = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
@@ -88,30 +86,39 @@ const WalletDepositView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="center">
       <Grid flow="col" gap={12} align="center">
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
+        <Paragraph type="p1" semiBold color="grey900">
+          BOND
+        </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Staked Balance</Small>
+        <Small semiBold color="grey500">
+          Staked Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBONDValue(web3c.daoBarn.balance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Wallet Balance</Small>
+        <Small semiBold color="grey500">
+          Wallet Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBONDValue(web3c.bond.balance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Enable Token</Small>
+        <Small semiBold color="grey500">
+          Enable Token
+        </Small>
         <Antd.Switch
           style={{ justifySelf: 'flex-start' }}
           checked={state.enabled}
           loading={state.enabled === undefined || state.enabling}
-          onChange={handleSwitchChange} />
+          onChange={handleSwitchChange}
+        />
       </Grid>
     </Grid>
   );
@@ -136,7 +143,9 @@ const WalletDepositView: React.FunctionComponent = () => {
                 <TokenAmount
                   tokenIcon="bond-token"
                   tokenLabel="BOND"
-                  placeholder={`0 (Max ${formatBONDValue(web3c.bond.balance ?? ZERO_BIG_NUMBER)})`}
+                  placeholder={`0 (Max ${formatBONDValue(
+                    web3c.bond.balance ?? ZERO_BIG_NUMBER,
+                  )})`}
                   disabled={state.saving}
                   maximumFractionDigits={2}
                   maxProps={{
@@ -155,14 +164,15 @@ const WalletDepositView: React.FunctionComponent = () => {
                   max={web3c.bond.balance?.toNumber() ?? 0}
                   step={1}
                   disabled={state.saving}
-                  tipFormatter={value =>
-                    <span>{value ? formatBONDValue(new BigNumber(value)) : 0}</span>
-                  }
+                  tipFormatter={value => (
+                    <span>
+                      {value ? formatBONDValue(new BigNumber(value)) : 0}
+                    </span>
+                  )}
                   tooltipPlacement="bottom"
                 />
               </Form.Item>
-              <Alert
-                message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+              <Alert message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
             </Grid>
             <Grid flow="row">
               <Form.Item
@@ -179,7 +189,9 @@ const WalletDepositView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            style={{ width: 121 }}>Deposit</Button>
+            style={{ width: 121 }}>
+            Deposit
+          </Button>
         </Grid>
       </Form>
     </Card>

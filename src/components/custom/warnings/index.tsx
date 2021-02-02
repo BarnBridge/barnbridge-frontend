@@ -10,7 +10,9 @@ export type WarningsContextType = {
   addWarn: (opts: WarnType) => Function;
 };
 
-const WarningsContext = React.createContext<WarningsContextType>(undefined as any);
+const WarningsContext = React.createContext<WarningsContextType>(
+  undefined as any,
+);
 
 export function useWarnings(): WarningsContextType {
   return React.useContext<WarningsContextType>(WarningsContext);
@@ -27,7 +29,9 @@ type WarnProps = WarnType & {
 };
 
 const Warn: React.FunctionComponent<WarnProps> = props => {
-  const [storageState, setStorageState] = useLocalStorage(props.storageIdentity ?? '');
+  const [storageState, setStorageState] = useLocalStorage(
+    props.storageIdentity ?? '',
+  );
 
   function handleClose() {
     props.onClose?.();
@@ -60,10 +64,7 @@ const Warnings: React.FunctionComponent = props => {
   const [warns, setWarns] = React.useState<WarnType[]>([]);
 
   function addWarn(warn: WarnType) {
-    setWarns(prevState => [
-      ...prevState,
-      warn,
-    ]);
+    setWarns(prevState => [...prevState, warn]);
 
     return () => {
       removeWarm(warn);
@@ -74,9 +75,12 @@ const Warnings: React.FunctionComponent = props => {
     setWarns(prevState => prevState.filter(w => w !== warn));
   }
 
-  const value = React.useMemo(() => ({
-    addWarn,
-  }), []); // eslint-disable-line react-hooks/exhaustive-deps
+  const value = React.useMemo(
+    () => ({
+      addWarn,
+    }),
+    [],
+  ); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
     <WarningsContext.Provider value={value}>

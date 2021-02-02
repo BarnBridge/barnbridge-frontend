@@ -11,14 +11,16 @@ import { useProposals } from '../../providers/ProposalsProvider';
 
 import { APILiteProposalEntity } from 'modules/governance/api';
 import { getFormattedDuration } from 'utils';
-import { ZERO_BIG_NUMBER } from "web3/utils";
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import s from './styles.module.scss';
 
 const Columns: ColumnsType<APILiteProposalEntity> = [
   {
     title: () => (
-      <Small semiBold color="grey300">Proposal</Small>
+      <Small semiBold color="grey300">
+        Proposal
+      </Small>
     ),
     width: '70%',
     render: (_, data: APILiteProposalEntity) => (
@@ -37,7 +39,9 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
   },
   {
     title: () => (
-      <Small semiBold color="grey300">Votes</Small>
+      <Small semiBold color="grey300">
+        Votes
+      </Small>
     ),
     width: '30%',
     render: (_, data: APILiteProposalEntity) => {
@@ -57,7 +61,8 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
             <Progress
               percent={forRate.toNumber()}
               strokeColor="var(--text-color-green500)"
-              trailColor="rgba(var(--text-color-green500-rgb), .16)" />
+              trailColor="rgba(var(--text-color-green500-rgb), .16)"
+            />
             <Paragraph type="p2" semiBold color="grey500" align="right">
               {forRate.toFormat(2)}%
             </Paragraph>
@@ -66,7 +71,8 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
             <Progress
               percent={againstRate.toNumber()}
               strokeColor="var(--text-color-red500)"
-              trailColor="rgba(var(--text-color-red500-rgb), .16)" />
+              trailColor="rgba(var(--text-color-red500-rgb), .16)"
+            />
             <Paragraph type="p2" semiBold color="grey500" align="right">
               {againstRate.toFormat(2)}%
             </Paragraph>

@@ -1,4 +1,4 @@
-@import "src/styles/mixin";
+@import 'src/styles/mixin';
 
 .component {
   width: 100%;
@@ -46,7 +46,7 @@
     }
 
     /* Firefox */
-    &[type=number] {
+    &[type='number'] {
       -moz-appearance: textfield;
     }
   }

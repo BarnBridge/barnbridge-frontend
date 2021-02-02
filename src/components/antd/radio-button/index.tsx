@@ -12,7 +12,9 @@ export type RadioButtonProps = {
   hint?: React.ReactNode;
 };
 
-const RadioButton: React.FunctionComponent<AntdRadioProps & RadioButtonProps> = props => {
+const RadioButton: React.FunctionComponent<
+  AntdRadioProps & RadioButtonProps
+> = props => {
   const { label, hint, className, ...radioProps } = props;
 
   return (

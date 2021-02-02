@@ -11,7 +11,9 @@ import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import { Heading, Paragraph } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
-import CreateProposalActionModal, { CreateProposalActionForm } from '../../components/create-proposal-action-modal';
+import CreateProposalActionModal, {
+  CreateProposalActionForm,
+} from '../../components/create-proposal-action-modal';
 import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
 import ProposalActionCard from '../../components/proposal-action-card';
 
@@ -51,7 +53,9 @@ const ProposalCreateView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
 
   const [form] = Antd.Form.useForm<NewProposalForm>();
-  const [state, setState] = useMergeState<ProposalCreateViewState>(InitialState);
+  const [state, setState] = useMergeState<ProposalCreateViewState>(
+    InitialState,
+  );
 
   function handleBackClick() {
     history.push('/governance/proposals');
@@ -62,7 +66,8 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
     if (state.selectedAction) {
       actions = actions.map((action: CreateProposalActionForm) =>
-        action === state.selectedAction ? payload : action);
+        action === state.selectedAction ? payload : action,
+      );
     } else {
       actions.push(payload);
     }
@@ -77,8 +82,11 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
     if (selectedAction) {
       form.setFieldsValue({
-        actions: form.getFieldValue('actions')
-          .filter((action: CreateProposalActionForm) => action !== selectedAction),
+        actions: form
+          .getFieldValue('actions')
+          .filter(
+            (action: CreateProposalActionForm) => action !== selectedAction,
+          ),
       });
     }
 
@@ -97,41 +105,45 @@ const ProposalCreateView: React.FunctionComponent = () => {
       const payload = {
         title: values.title,
         description: values.description,
-        ...values.actions.reduce((a, c) => {
-          if (!c.targetAddress) {
+        ...values.actions.reduce(
+          (a, c) => {
+            if (!c.targetAddress) {
+              return a;
+            }
+
+            a.targets.push(c.targetAddress);
+
+            if (c.addFunctionCall) {
+              a.signatures.push(c.functionSignature!);
+              a.calldatas.push(c.functionEncodedParams!);
+            } else {
+              a.signatures.push('');
+              a.calldatas.push('0x');
+            }
+
+            if (c.addValueAttribute) {
+              a.values.push(c.actionValue!);
+            } else {
+              a.values.push('0');
+            }
+
             return a;
-          }
-
-          a.targets.push(c.targetAddress);
-
-          if (c.addFunctionCall) {
-            a.signatures.push(c.functionSignature!);
-            a.calldatas.push(c.functionEncodedParams!);
-          } else {
-            a.signatures.push('');
-            a.calldatas.push('0x');
-          }
-
-          if (c.addValueAttribute) {
-            a.values.push(c.actionValue!);
-          } else {
-            a.values.push('0');
-          }
-
-          return a;
-        }, {
-          targets: [] as string[],
-          signatures: [] as string[],
-          calldatas: [] as string[],
-          values: [] as string[],
-        }),
+          },
+          {
+            targets: [] as string[],
+            signatures: [] as string[],
+            calldatas: [] as string[],
+            values: [] as string[],
+          },
+        ),
       };
 
-      const proposal = await web3c.daoGovernance.actions.createProposal(payload);
+      const proposal = await web3c.daoGovernance.actions.createProposal(
+        payload,
+      );
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ submitting: false });
   }
@@ -142,22 +154,32 @@ const ProposalCreateView: React.FunctionComponent = () => {
         <Button
           type="link"
           icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>Proposals</Button>
+          onClick={handleBackClick}>
+          Proposals
+        </Button>
       </Grid>
 
       <Grid flow="row" gap={16}>
-        <Heading type="h1" bold color="grey900" className="mb-16">Create Proposal</Heading>
+        <Heading type="h1" bold color="grey900" className="mb-16">
+          Create Proposal
+        </Heading>
         <Form
           form={form}
           initialValues={InitialFormValues}
           validateTrigger={['onSubmit', 'onChange']}
           onFinish={handleSubmit}>
           <Grid flow="row" gap={32}>
-            <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 1fr))" align="start">
+            <Grid
+              flow="col"
+              gap={24}
+              colsTemplate="repeat(auto-fit, minmax(0, 1fr))"
+              align="start">
               <Card
-                title={(
-                  <Paragraph type="p1" semiBold color="grey900">Proposal description</Paragraph>
-                )}>
+                title={
+                  <Paragraph type="p1" semiBold color="grey900">
+                    Proposal description
+                  </Paragraph>
+                }>
                 <Grid flow="row" gap={24}>
                   <Form.Item
                     name="title"
@@ -165,7 +187,8 @@ const ProposalCreateView: React.FunctionComponent = () => {
                     rules={[{ required: true, message: 'Required' }]}>
                     <Input
                       placeholder="Placeholder"
-                      disabled={state.submitting} />
+                      disabled={state.submitting}
+                    />
                   </Form.Item>
                   <Form.Item
                     name="description"
@@ -175,33 +198,54 @@ const ProposalCreateView: React.FunctionComponent = () => {
                     <Textarea
                       placeholder="Placeholder"
                       rows={6}
-                      disabled={state.submitting} />
+                      disabled={state.submitting}
+                    />
                   </Form.Item>
                 </Grid>
               </Card>
 
               <Card
-                title={(
-                  <Paragraph type="p1" semiBold color="grey900">Actions</Paragraph>
-                )}>
+                title={
+                  <Paragraph type="p1" semiBold color="grey900">
+                    Actions
+                  </Paragraph>
+                }>
                 <Form.List
                   name="actions"
-                  rules={[{
-                    validator: (_, value: StoreValue) => {
-                      return value.length === 0 ? Promise.reject() : Promise.resolve();
+                  rules={[
+                    {
+                      validator: (_, value: StoreValue) => {
+                        return value.length === 0
+                          ? Promise.reject()
+                          : Promise.resolve();
+                      },
+                      message: 'At least one action is required!',
                     },
-                    message: 'At least one action is required!',
-                  }, {
-                    validator: (_, value: StoreValue, callback: (error?: string) => void) => {
-                      return value.length > 10 ? Promise.reject() : Promise.resolve();
+                    {
+                      validator: (
+                        _,
+                        value: StoreValue,
+                        callback: (error?: string) => void,
+                      ) => {
+                        return value.length > 10
+                          ? Promise.reject()
+                          : Promise.resolve();
+                      },
+                      message: 'Maximum 10 actions are allowed!',
                     },
-                    message: 'Maximum 10 actions are allowed!',
-                  }]}>
+                  ]}>
                   {(fields, {}, { errors }) => (
                     <Grid flow="row" gap={24}>
                       {fields.map((field, index) => {
-                        const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
-                        const { targetAddress, functionSignature, functionEncodedParams, actionValue } = fieldData;
+                        const fieldData: CreateProposalActionForm = form.getFieldValue(
+                          ['actions', index],
+                        );
+                        const {
+                          targetAddress,
+                          functionSignature,
+                          functionEncodedParams,
+                          actionValue,
+                        } = fieldData;
 
                         return (
                           <Form.Item key={field.key}>
@@ -233,8 +277,11 @@ const ProposalCreateView: React.FunctionComponent = () => {
                         icon={<Icons name="plus-circle-outlined" />}
                         disabled={state.submitting}
                         className={s.addActionBtn}
-                        onClick={() => setState({ showCreateActionModal: true })}>
-                        Add new action</Button>
+                        onClick={() =>
+                          setState({ showCreateActionModal: true })
+                        }>
+                        Add new action
+                      </Button>
 
                       <Antd.Form.ErrorList errors={errors} />
                     </Grid>
@@ -259,21 +306,27 @@ const ProposalCreateView: React.FunctionComponent = () => {
             visible
             edit={state.selectedAction !== undefined}
             initialValues={state.selectedAction}
-            onCancel={() => setState({
-              showCreateActionModal: false,
-              selectedAction: undefined,
-            })}
-            onSubmit={handleCreateAction} />
+            onCancel={() =>
+              setState({
+                showCreateActionModal: false,
+                selectedAction: undefined,
+              })
+            }
+            onSubmit={handleCreateAction}
+          />
         )}
 
         {state.showDeleteActionModal && (
           <DeleteProposalActionModal
             visible
-            onCancel={() => setState({
-              showDeleteActionModal: false,
-              selectedAction: undefined,
-            })}
-            onOk={handleActionDelete} />
+            onCancel={() =>
+              setState({
+                showDeleteActionModal: false,
+                selectedAction: undefined,
+              })
+            }
+            onOk={handleActionDelete}
+          />
         )}
       </Grid>
     </Grid>

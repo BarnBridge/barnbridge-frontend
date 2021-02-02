@@ -18,10 +18,7 @@ export type FormListProps = AntdFormListProps & {};
 const FormList: React.FunctionComponent<FormListProps> = props => {
   const { ...listProps } = props;
 
-  return (
-    <Antd.Form.List
-      {...listProps} />
-  );
+  return <Antd.Form.List {...listProps} />;
 };
 
 export type FormItemProps = AntdFormItemProps<any> & {
@@ -35,7 +32,7 @@ const FormItem: React.FunctionComponent<FormItemProps> = props => {
     <Antd.Form.Item
       className={cx(s.item, className)}
       {...itemProps}
-      label={(
+      label={
         <Grid flow="col" gap={4} align="center">
           {label}
           {hint && (
@@ -44,7 +41,7 @@ const FormItem: React.FunctionComponent<FormItemProps> = props => {
             </Tooltip>
           )}
         </Grid>
-      )}>
+      }>
       {children}
     </Antd.Form.Item>
   );
@@ -71,7 +68,7 @@ export type StaticFormProps = {
   List: React.FunctionComponent<FormListProps>;
 };
 
-(Form as any as StaticFormProps).Item = FormItem;
-(Form as any as StaticFormProps).List = FormList;
+((Form as any) as StaticFormProps).Item = FormItem;
+((Form as any) as StaticFormProps).List = FormList;
 
 export default Form as React.FunctionComponent<FormProps> & StaticFormProps;

@@ -3,7 +3,9 @@ import cx from 'classnames';
 
 import Button, { ButtonProps } from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import NumericInput, { NumericInputProps } from 'components/custom/numeric-input';
+import NumericInput, {
+  NumericInputProps,
+} from 'components/custom/numeric-input';
 import { Small } from 'components/custom/typography';
 import Icons, { TokenIconNames } from 'components/custom/icon';
 
@@ -19,16 +21,28 @@ export type TokenAmountProps = NumericInputProps & {
 const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
   const { className, tokenIcon, tokenLabel, maxProps, ...rest } = props;
 
-  const addonBefore = React.useMemo(() => (
-    <Grid flow="col" gap={4}>
-      {tokenIcon && <Icons name={tokenIcon} width={16} height={16} />}
-      {tokenLabel && <Small semiBold color="grey900">{tokenLabel}</Small>}
-    </Grid>
-  ), [tokenIcon, tokenLabel]);
+  const addonBefore = React.useMemo(
+    () => (
+      <Grid flow="col" gap={4}>
+        {tokenIcon && <Icons name={tokenIcon} width={16} height={16} />}
+        {tokenLabel && (
+          <Small semiBold color="grey900">
+            {tokenLabel}
+          </Small>
+        )}
+      </Grid>
+    ),
+    [tokenIcon, tokenLabel],
+  );
 
-  const addonAfter = React.useMemo(() => (
-    <Button type="default" className={s.maxBtn} {...maxProps}>MAX</Button>
-  ), [maxProps]);
+  const addonAfter = React.useMemo(
+    () => (
+      <Button type="default" className={s.maxBtn} {...maxProps}>
+        MAX
+      </Button>
+    ),
+    [maxProps],
+  );
 
   return (
     <NumericInput

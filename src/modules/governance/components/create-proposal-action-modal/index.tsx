@@ -30,7 +30,7 @@ export type CreateProposalActionForm = {
   actionValue: string;
   addFunctionCall?: boolean;
   abiLoading: boolean;
-  abiInterface?: AbiInterface,
+  abiInterface?: AbiInterface;
   functionSignature?: string;
   functionMeta?: AbiFunctionFragment;
   functionParams: Record<string, any>;
@@ -80,7 +80,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
   const { edit = false, initialValues = InitialFormValues } = props;
 
   const [form] = Antd.Form.useForm<CreateProposalActionForm>();
-  const [state, setState] = useMergeState<CreateProposalActionModalState>(InitialState);
+  const [state, setState] = useMergeState<CreateProposalActionModalState>(
+    InitialState,
+  );
 
   function loadAbiInterface(address: string) {
     form.setFieldsValue({
@@ -101,7 +103,10 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       });
   }
 
-  function handleFormValuesChange(values: Partial<CreateProposalActionForm>, allValues: CreateProposalActionForm) {
+  function handleFormValuesChange(
+    values: Partial<CreateProposalActionForm>,
+    allValues: CreateProposalActionForm,
+  ) {
     const {
       targetAddress,
       isProxyAddress,
@@ -113,9 +118,28 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       functionParams,
     } = allValues;
 
-    Object.keys(values)
-      .forEach((fieldName: string) => {
-        if (fieldName === 'targetAddress' || fieldName === 'implementationAddress') {
+    Object.keys(values).forEach((fieldName: string) => {
+      if (
+        fieldName === 'targetAddress' ||
+        fieldName === 'implementationAddress'
+      ) {
+        form.setFieldsValue({
+          abiLoading: false,
+          abiInterface: undefined,
+          functionSignature: '',
+          functionMeta: undefined,
+          functionParams: {},
+          functionStrParams: '',
+          functionEncodedParams: '',
+        });
+
+        const address = implementationAddress || targetAddress;
+
+        if (addFunctionCall === true && address) {
+          loadAbiInterface(address);
+        }
+      } else if (fieldName === 'isProxyAddress') {
+        if (!isProxyAddress && implementationAddress) {
           form.setFieldsValue({
             abiLoading: false,
             abiInterface: undefined,
@@ -126,75 +150,65 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
             functionEncodedParams: '',
           });
 
-          const address = implementationAddress || targetAddress;
-
-          if (addFunctionCall === true && address) {
-            loadAbiInterface(address);
-          }
-        } else if (fieldName === 'isProxyAddress') {
-          if (!isProxyAddress && implementationAddress) {
-            form.setFieldsValue({
-              abiLoading: false,
-              abiInterface: undefined,
-              functionSignature: '',
-              functionMeta: undefined,
-              functionParams: {},
-              functionStrParams: '',
-              functionEncodedParams: '',
-            });
-
-            if (addFunctionCall === true && targetAddress) {
-              loadAbiInterface(targetAddress);
-            }
-          }
-        } else if (fieldName === 'addValueAttribute') {
-          form.setFieldsValue({
-            actionValue: '',
-          });
-        } else if (fieldName === 'addFunctionCall') {
-          form.setFieldsValue({
-            abiLoading: false,
-            abiInterface: undefined,
-            functionSignature: '',
-            functionMeta: undefined,
-            functionParams: {},
-            functionStrParams: '',
-            functionEncodedParams: '',
-          });
-
-          const address = implementationAddress || targetAddress;
-
-          if (addFunctionCall === true && address) {
-            loadAbiInterface(address);
-          }
-        } else if (fieldName === 'functionSignature') {
-          const selectedFunctionMeta = (abiInterface?.writableFunctions ?? [])
-            .find(fn => fn.format() === functionSignature);
-          let functionStrParams = '';
-
-          if (selectedFunctionMeta) {
-            const params = selectedFunctionMeta.inputs.map(({ name, type }) => ({ name, type }));
-            const paramsStr = JSON.stringify(params, null, 2);
-            functionStrParams = `Parameters:\n${paramsStr}`;
-          }
-
-          form.setFieldsValue({
-            functionMeta: selectedFunctionMeta,
-            functionParams: {},
-            functionStrParams,
-            functionEncodedParams: '',
-          });
-        } else if (fieldName === 'functionParams') {
-          if (functionMeta) {
-            const paramsValues = Object.values(functionParams);
-            const encodedParams = AbiInterface.encodeFunctionData(functionMeta, paramsValues);
-
-            form.setFieldsValue({
-              functionEncodedParams: encodedParams,
-            });
+          if (addFunctionCall === true && targetAddress) {
+            loadAbiInterface(targetAddress);
           }
         }
-      });
+      } else if (fieldName === 'addValueAttribute') {
+        form.setFieldsValue({
+          actionValue: '',
+        });
+      } else if (fieldName === 'addFunctionCall') {
+        form.setFieldsValue({
+          abiLoading: false,
+          abiInterface: undefined,
+          functionSignature: '',
+          functionMeta: undefined,
+          functionParams: {},
+          functionStrParams: '',
+          functionEncodedParams: '',
+        });
+
+        const address = implementationAddress || targetAddress;
+
+        if (addFunctionCall === true && address) {
+          loadAbiInterface(address);
+        }
+      } else if (fieldName === 'functionSignature') {
+        const selectedFunctionMeta = (
+          abiInterface?.writableFunctions ?? []
+        ).find(fn => fn.format() === functionSignature);
+        let functionStrParams = '';
+
+        if (selectedFunctionMeta) {
+          const params = selectedFunctionMeta.inputs.map(({ name, type }) => ({
+            name,
+            type,
+          }));
+          const paramsStr = JSON.stringify(params, null, 2);
+          functionStrParams = `Parameters:\n${paramsStr}`;
+        }
+
+        form.setFieldsValue({
+          functionMeta: selectedFunctionMeta,
+          functionParams: {},
+          functionStrParams,
+          functionEncodedParams: '',
+        });
+      } else if (fieldName === 'functionParams') {
+        if (functionMeta) {
+          const paramsValues = Object.values(functionParams);
+          const encodedParams = AbiInterface.encodeFunctionData(
+            functionMeta,
+            paramsValues,
+          );
+
+          form.setFieldsValue({
+            functionEncodedParams: encodedParams,
+          });
+        }
+      }
+    });
   }
 
   async function handleSubmit(values: CreateProposalActionForm) {
@@ -206,14 +220,18 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       await form.validateFields();
 
       if (values.addFunctionCall) {
-        const encodedFunction = values.abiInterface?.encodeFunctionData(values.functionMeta!, Object.values(values.functionParams));
+        const encodedFunction = values.abiInterface?.encodeFunctionData(
+          values.functionMeta!,
+          Object.values(values.functionParams),
+        );
 
         try {
           await Web3Contract.tryCall(
             values.targetAddress,
             String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR),
             encodedFunction!,
-            values.actionValue);
+            values.actionValue,
+          );
         } catch {
           await new Promise<void>((resolve, reject) => {
             setState({
@@ -230,9 +248,10 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       form.resetFields();
       cancel = true;
     } catch (e) {
-      e && Antd.notification.error({
-        message: e.message,
-      });
+      e &&
+        Antd.notification.error({
+          message: e.message,
+        });
     }
 
     setState({ submitting: false });
@@ -280,7 +299,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           </Form.Item>
 
           <Grid flow="col" align="center" justify="space-between">
-            <Small semiBold color="grey500">Is this a proxy address?</Small>
+            <Small semiBold color="grey500">
+              Is this a proxy address?
+            </Small>
             <Form.Item name="isProxyAddress">
               <Antd.Switch disabled={state.submitting} />
             </Form.Item>
@@ -290,14 +311,19 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
             {({ getFieldsValue }) => {
               const { isProxyAddress } = getFieldsValue();
 
-              return isProxyAddress === true && (
-                <Form.Item
-                  name="implementationAddress"
-                  hidden={!isProxyAddress}
-                  preserve={false}
-                  rules={[{ required: true, message: 'Required' }]}>
-                  <Input placeholder="Implementation address" disabled={state.submitting} />
-                </Form.Item>
+              return (
+                isProxyAddress === true && (
+                  <Form.Item
+                    name="implementationAddress"
+                    hidden={!isProxyAddress}
+                    preserve={false}
+                    rules={[{ required: true, message: 'Required' }]}>
+                    <Input
+                      placeholder="Implementation address"
+                      disabled={state.submitting}
+                    />
+                  </Form.Item>
+                )
               );
             }}
           </Form.Item>
@@ -309,35 +335,43 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
             <YesNoSelector disabled={state.submitting} />
           </Form.Item>
 
-          <Form.Item shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
+          <Form.Item
+            shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
             {({ getFieldsValue }) => {
               const { addValueAttribute, actionValue } = getFieldsValue();
               const max = 78 - (actionValue?.length ?? 0);
 
-              return addValueAttribute === true && (
-                <Form.Item
-                  name="actionValue"
-                  label={(
-                    <Grid flow="col" gap={8}>
-                      <Small semiBold color="grey500">Action Value</Small>
-                      <AddZerosPopup
-                        max={max}
-                        onAdd={value => {
-                          const { actionValue: prevActionValue } = getFieldsValue();
+              return (
+                addValueAttribute === true && (
+                  <Form.Item
+                    name="actionValue"
+                    label={
+                      <Grid flow="col" gap={8}>
+                        <Small semiBold color="grey500">
+                          Action Value
+                        </Small>
+                        <AddZerosPopup
+                          max={max}
+                          onAdd={value => {
+                            const {
+                              actionValue: prevActionValue,
+                            } = getFieldsValue();
 
-                          if (prevActionValue) {
-                            const zeros = '0'.repeat(value);
-                            form.setFieldsValue({
-                              actionValue: `${prevActionValue}${zeros}`,
-                            });
-                          }
-                        }} />
-                    </Grid>
-                  )}
-                  preserve={false}
-                  rules={[{ required: true, message: 'Required' }]}>
-                  <Input disabled={state.submitting} />
-                </Form.Item>
+                            if (prevActionValue) {
+                              const zeros = '0'.repeat(value);
+                              form.setFieldsValue({
+                                actionValue: `${prevActionValue}${zeros}`,
+                              });
+                            }
+                          }}
+                        />
+                      </Grid>
+                    }
+                    preserve={false}
+                    rules={[{ required: true, message: 'Required' }]}>
+                    <Input disabled={state.submitting} />
+                  </Form.Item>
+                )
               );
             }}
           </Form.Item>
@@ -355,7 +389,10 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           <Form.Item name="functionStrParams" preserve={false} hidden />
           <Form.Item name="functionEncodedParams" preserve={false} hidden />
 
-          <Form.Item shouldUpdate={(prevValues: CreateProposalActionForm) => prevValues.addFunctionCall === true}>
+          <Form.Item
+            shouldUpdate={(prevValues: CreateProposalActionForm) =>
+              prevValues.addFunctionCall === true
+            }>
             {({ getFieldsValue }: FormInstance<CreateProposalActionForm>) => {
               const {
                 targetAddress,
@@ -372,10 +409,11 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                 return null;
               }
 
-              const functionOptions = abiInterface?.writableFunctions.map(fn => ({
-                label: fn.format(),
-                value: fn.format(),
-              })) ?? [];
+              const functionOptions =
+                abiInterface?.writableFunctions.map(fn => ({
+                  label: fn.format(),
+                  value: fn.format(),
+                })) ?? [];
 
               return (
                 <Grid flow="row" gap={32}>
@@ -387,7 +425,8 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                     <Select
                       loading={abiLoading}
                       disabled={state.submitting}
-                      options={functionOptions} />
+                      options={functionOptions}
+                    />
                   </Form.Item>
 
                   {functionMeta && (
@@ -396,33 +435,47 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                         <Form.Item
                           key={`${functionMeta?.format()}:${input.name}`}
                           name={['functionParams', input.name]}
-                          label={(
+                          label={
                             <Grid flow="col" gap={8}>
-                              <Small semiBold color="grey500">{input.name} ({input.type})</Small>
+                              <Small semiBold color="grey500">
+                                {input.name} ({input.type})
+                              </Small>
                               {/(u?int\d+)/g.test(input.type) && (
                                 <AddZerosPopup
                                   onAdd={value => {
-                                    const prevActionValue = functionParams[input.name];
+                                    const prevActionValue =
+                                      functionParams[input.name];
 
                                     if (prevActionValue) {
                                       const zeros = '0'.repeat(value);
-                                      functionParams[input.name] = `${prevActionValue}${zeros}`;
+                                      functionParams[
+                                        input.name
+                                      ] = `${prevActionValue}${zeros}`;
 
-                                      const paramsValues = Object.values(functionParams);
-                                      const encodedParams = AbiInterface.encodeFunctionData(functionMeta, paramsValues);
+                                      const paramsValues = Object.values(
+                                        functionParams,
+                                      );
+                                      const encodedParams = AbiInterface.encodeFunctionData(
+                                        functionMeta,
+                                        paramsValues,
+                                      );
 
                                       form.setFieldsValue({
                                         functionParams,
                                         functionEncodedParams: encodedParams,
                                       });
                                     }
-                                  }} />
+                                  }}
+                                />
                               )}
                             </Grid>
-                          )}
+                          }
                           preserve={false}
                           rules={[{ required: true, message: 'Required' }]}>
-                          <Input disabled={state.submitting} placeholder={`${input.name} (${input.type})`} />
+                          <Input
+                            disabled={state.submitting}
+                            placeholder={`${input.name} (${input.type})`}
+                          />
                         </Form.Item>
                       ))}
 
@@ -431,7 +484,8 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                           className={s.textarea}
                           rows={5}
                           value={functionStrParams}
-                          disabled />
+                          disabled
+                        />
                       </Form.Item>
 
                       <Form.Item label="Hex data">
@@ -440,16 +494,21 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                           rows={5}
                           placeholder="Fill in the arguments above"
                           value={functionEncodedParams}
-                          disabled />
+                          disabled
+                        />
                       </Form.Item>
                     </Grid>
                   )}
 
-                  {targetAddress && addFunctionCall && !abiLoading && !abiInterface && (
-                    <Alert
-                      type="error"
-                      message="The target address you entered is not a validated contract address. Please check the information you entered and try again" />
-                  )}
+                  {targetAddress &&
+                    addFunctionCall &&
+                    !abiLoading &&
+                    !abiInterface && (
+                      <Alert
+                        type="error"
+                        message="The target address you entered is not a validated contract address. Please check the information you entered and try again"
+                      />
+                    )}
                 </Grid>
               );
             }}
@@ -459,10 +518,14 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
             {({ getFieldsValue }) => {
               const { addValueAttribute, addFunctionCall } = getFieldsValue();
 
-              return addValueAttribute === false && addFunctionCall === false && (
-                <Alert
-                  type="error"
-                  message="You need to provide at least one: a value attribute or a function call to your action" />
+              return (
+                addValueAttribute === false &&
+                addFunctionCall === false && (
+                  <Alert
+                    type="error"
+                    message="You need to provide at least one: a value attribute or a function call to your action"
+                  />
+                )
               );
             }}
           </Form.Item>

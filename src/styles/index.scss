@@ -1,14 +1,15 @@
 //@import "~antd/dist/antd.css";
-@import "antd.css";
-@import "mixin";
-@import "text";
-@import "default";
-@import "dark";
+@import 'antd.css';
+@import 'mixin';
+@import 'text';
+@import 'default';
+@import 'dark';
 
 body {
   margin: 0;
-  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: var(--color-body-bg);
@@ -20,7 +21,8 @@ body {
   transition: background-color 0.5s ease, color 0.5s ease;
 }
 
-svg, svg * {
+svg,
+svg * {
   transition: none !important;
 }
 
@@ -28,7 +30,9 @@ button {
   font-family: Montserrat;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin-bottom: 0;
 }
 
@@ -98,7 +102,7 @@ p {
   --bg-color-3: #fff;
   --bg-color-4: #43484d;
   --bg-color-5: rgba(79, 106, 230, 0.08);
-  --bg-color-6: rgba(147, 148, 150, 0.08);;
+  --bg-color-6: rgba(147, 148, 150, 0.08);
 
   --text-color-1: #fff;
   --text-color-2: #939496;

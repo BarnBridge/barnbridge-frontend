@@ -24,14 +24,27 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
     <div className={s.component}>
       {shares?.map((tokenShare, index) => {
         return tokenShare.share! > 0 ? (
-          <Antd.Tooltip key={index} placement="top" title={(
-            <div className={s.tooltip}>
-              {tokenShare.icon}
-              <Paragraph type="p1" className={s.name}>{tokenShare.name}:</Paragraph>
-              <Paragraph type="p1" semiBold className={s.value}>{tokenShare.value}</Paragraph>
-            </div>
-          )}>
-            <div className={s.item} style={{ width: `${tokenShare.share}%`, backgroundColor: tokenShare.color }} />
+          <Antd.Tooltip
+            key={index}
+            placement="top"
+            title={
+              <div className={s.tooltip}>
+                {tokenShare.icon}
+                <Paragraph type="p1" className={s.name}>
+                  {tokenShare.name}:
+                </Paragraph>
+                <Paragraph type="p1" semiBold className={s.value}>
+                  {tokenShare.value}
+                </Paragraph>
+              </div>
+            }>
+            <div
+              className={s.item}
+              style={{
+                width: `${tokenShare.share}%`,
+                backgroundColor: tokenShare.color,
+              }}
+            />
           </Antd.Tooltip>
         ) : undefined;
       })}

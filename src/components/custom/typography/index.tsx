@@ -40,9 +40,13 @@ export const Heading: React.FunctionComponent<HeadingProps> = props => {
   const { type, loading, children } = props;
   const classNames = cx(s.heading, classNamesFromProps(props));
 
-  return React.createElement(type, {
-    className: classNames,
-  }, !loading ? children : <Skeleton className={classNames} />);
+  return React.createElement(
+    type,
+    {
+      className: classNames,
+    },
+    !loading ? children : <Skeleton className={classNames} />,
+  );
 };
 
 export type ParagraphProps = CommonProps & {
@@ -54,10 +58,10 @@ export const Paragraph: React.FunctionComponent<ParagraphProps> = props => {
   const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
 
   return !loading ? (
-    <p className={classNames}>
-      {children}
-    </p>
-  ) : <Skeleton className={classNames} />;
+    <p className={classNames}>{children}</p>
+  ) : (
+    <Skeleton className={classNames} />
+  );
 };
 
 export type LabelProps = CommonProps & {
@@ -69,10 +73,10 @@ export const Label: React.FunctionComponent<LabelProps> = props => {
   const classNames = cx(s.label, s[type], classNamesFromProps(props));
 
   return !loading ? (
-    <label className={classNames}>
-      {children}
-    </label>
-  ) : <Skeleton className={classNames} />;
+    <label className={classNames}>{children}</label>
+  ) : (
+    <Skeleton className={classNames} />
+  );
 };
 
 export type SmallProps = CommonProps;
@@ -85,5 +89,7 @@ export const Small: React.FunctionComponent<SmallProps> = props => {
     <small className={cx(s.small, classNamesFromProps(props))}>
       {children}
     </small>
-  ) : <Skeleton className={classNames} />;
+  ) : (
+    <Skeleton className={classNames} />
+  );
 };
