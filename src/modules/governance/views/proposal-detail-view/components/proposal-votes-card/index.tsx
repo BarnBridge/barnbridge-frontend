@@ -163,10 +163,12 @@ const ProposalVotesCard: React.FunctionComponent = () => {
           onCancel={handleHideVotersModal} />
       )}
 
-      <ProposalVoteModal
-        visible={state.showVoteModal}
-        voteState={state.voteState}
-        onCancel={handleHideVoteModal} />
+      {state.showVoteModal && (
+        <ProposalVoteModal
+          visible
+          voteState={state.voteState}
+          onCancel={handleHideVoteModal} />
+      )}
     </Card>
   );
 };

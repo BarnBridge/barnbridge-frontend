@@ -1,5 +1,6 @@
 import React from 'react';
 
+import useMergeState from 'hooks/useMergeState';
 import { APIVoteEntity, fetchAbrogationVoters } from 'modules/governance/api';
 import { useAbrogation } from '../AbrogationProvider';
 
@@ -39,52 +40,45 @@ export function useAbrogationVoters(): AbrogationVotersContextType {
 const AbrogationVotersProvider: React.FunctionComponent = props => {
   const { children } = props;
 
-  const abrogationCtx = useAbrogation();
-  const [state, setState] = React.useState<AbrogationVotersProviderState>(InitialState);
+  const { abrogation } = useAbrogation();
+  const [state, setState] = useMergeState<AbrogationVotersProviderState>(InitialState);
 
   React.useEffect(() => {
-    if (!abrogationCtx.abrogation) {
+    if (!abrogation) {
+      setState({
+        votes: [],
+        total: 0,
+      });
       return;
     }
 
-    setState(prevState => ({
-      ...prevState,
-      loading: true,
-    }));
+    setState({ loading: true });
 
-    const { proposalId } = abrogationCtx.abrogation;
-
-    fetchAbrogationVoters(proposalId, state.page, state.pageSize, state.supportFilter)
+    fetchAbrogationVoters(abrogation.proposalId, state.page, state.pageSize, state.supportFilter)
       .then(data => {
-        setState(prevState => ({
-          ...prevState,
+        setState({
           loading: false,
           votes: data.data,
           total: data.meta.count,
-        }));
+        });
       })
       .catch(() => {
-        setState(prevState => ({
-          ...prevState,
+        setState({
           loading: false,
           votes: [],
-        }));
+        });
       });
-  }, [abrogationCtx.abrogation, state.page, state.supportFilter]);
+  }, [abrogation, state.page, state.supportFilter]);
 
   function changeSupportFilter(supportFilter?: boolean) {
-    setState(prevState => ({
-      ...prevState,
+    setState({
       supportFilter,
       page: 1,
-    }));
+    });
   }
 
   function changePage(page: number) {
-    setState(prevState => ({
-      ...prevState,
-      page,
-    }));
+    setState({ page });
   }
 
   return (

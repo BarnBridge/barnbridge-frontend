@@ -44,7 +44,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
       executing: true,
     }));
 
-    proposalCtx.queueForExecution()
+    proposalCtx.queueProposalForExecution()
       .catch(Error)
       .then(() => {
         proposalCtx.reload();

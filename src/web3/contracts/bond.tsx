@@ -60,7 +60,7 @@ export function useBONDContract(): BONDContract {
   const [data, setData] = React.useState<BONDContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    let totalSupply: BigNumber | undefined = undefined;
+    let totalSupply: BigNumber | undefined;
 
     [totalSupply] = await Contract.batch([
       {
@@ -76,7 +76,7 @@ export function useBONDContract(): BONDContract {
   }, [reload, wallet.account]);
 
   useAsyncEffect(async () => {
-    let balance: BigNumber | undefined = undefined;
+    let balance: BigNumber | undefined;
     let allowance: BigNumber | undefined;
     let barnAllowance: BigNumber | undefined;
 

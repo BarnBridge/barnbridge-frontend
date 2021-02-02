@@ -28,39 +28,18 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
 
   const [state, setState] = useMergeState<ProposalAbrogationCardState>(InitialState);
 
-  function handleAbrogation() {
-    setState(prevState => ({
-      ...prevState,
-      cancelling: true,
-    }));
-
-    proposalCtx.startAbrogationProposal()
-      .then(() => {
-        setState(prevState => ({
-          ...prevState,
-          cancelling: false,
-        }));
-      })
-      .catch(() => {
-        setState(prevState => ({
-          ...prevState,
-          cancelling: false,
-        }));
-      });
-  }
-
   return (
     <>
       <Card
         title={(
           <Paragraph type="p1" semiBold color="grey900">Abrogation proposal</Paragraph>
         )}>
-        {proposalCtx.canceled === undefined && (
+        {proposalCtx.isCanceled === undefined && (
           <Grid flow="col" justify="center">
             <Antd.Spin spinning />
           </Grid>
         )}
-        {proposalCtx.canceled === false && (
+        {proposalCtx.isCanceled === false && (
           <Grid flow="row" gap={24}>
             <Paragraph type="p1" color="grey900">
               This is a special type of proposal, with the following thresholds:
@@ -107,7 +86,7 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
             </Button>
           </Grid>
         )}
-        {proposalCtx.canceled === true && (
+        {proposalCtx.isCanceled === true && (
           <Grid flow="row" gap={24}>
             <Paragraph type="p1" color="grey900">
               Abrogation proposal currently in progress.

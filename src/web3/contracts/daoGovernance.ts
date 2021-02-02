@@ -1,12 +1,11 @@
 import React from 'react';
-import BigNumber from 'bignumber.js';
 
+import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
 import { Web3EventType } from 'web3/types';
+import { getGasValue } from 'web3/utils';
 import Web3Contract from 'web3/contract';
-import { getGasValue, getHumanValue } from 'web3/utils';
 
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
@@ -16,54 +15,20 @@ const Contract = new Web3Contract(
   'DAO Governance',
 );
 
-export type CommonDataType = {
-  isActive?: boolean;
-  warmUpDuration?: number;
-  activeDuration?: number;
-  queueDuration?: number;
-  gracePeriodDuration?: number;
-  acceptanceThreshold?: number;
-  minQuorum?: number;
-};
-
-function loadCommonData(): Promise<CommonDataType> {
+function loadCommonData(): Promise<any> {
   return Contract.batch([
     {
       method: 'isActive',
     },
-    {
-      method: 'warmUpDuration',
-      transform: (value: string) => Number(value) * 1000,
-    },
-    {
-      method: 'activeDuration',
-      transform: (value: string) => Number(value) * 1000,
-    },
-    {
-      method: 'queueDuration',
-      transform: (value: string) => Number(value) * 1000,
-    },
-    {
-      method: 'gracePeriodDuration',
-      transform: (value: string) => Number(value) * 1000,
-    },
-    {
-      method: 'acceptanceThreshold',
-      transform: (value: string) => Number(value),
-    },
-    {
-      method: 'minQuorum',
-      transform: (value: string) => Number(value),
-    },
-  ]).then(([isActive, warmUpDuration, activeDuration, queueDuration, gracePeriodDuration, acceptanceThreshold, minQuorum]) => ({
+  ]).then(([isActive]) => ({
     isActive,
-    warmUpDuration,
-    activeDuration,
-    queueDuration,
-    gracePeriodDuration,
-    acceptanceThreshold,
-    minQuorum,
   }));
+}
+
+function activateSend(from: string): Promise<void> {
+  return Contract.send('activate', [], {
+    from,
+  });
 }
 
 export type CreateProposalPayload = {
@@ -75,18 +40,9 @@ export type CreateProposalPayload = {
   values: string[];
 };
 
-export type CreateProposalSendResult = {
-  proposalId: string;
-  caller: string;
-};
+export type CreateProposalResult = any;
 
-function activateSend(from: string): Promise<void> {
-  return Contract.send('activate', [], {
-    from,
-  });
-}
-
-function createProposalSend(from: string, payload: CreateProposalPayload): Promise<Web3EventType<CreateProposalSendResult>> {
+function createProposalSend(payload: CreateProposalPayload, from: string): Promise<Web3EventType<CreateProposalResult>> {
   return Contract.send('propose', [
     payload.targets,
     payload.values,
@@ -99,25 +55,15 @@ function createProposalSend(from: string, payload: CreateProposalPayload): Promi
   }).then((tx: any) => (tx.events as Record<string, any>).ProposalCreated);
 }
 
-export type CancelProposalSendResult = {
-  proposalId: string;
-  caller: string;
-};
-
-function cancelProposalSend(from: string, proposalId: number): Promise<Web3EventType<CancelProposalSendResult>> {
+function cancelProposalSend(proposalId: number, from: string): Promise<void> {
   return Contract.send('cancelProposal', [
     proposalId,
   ], {
     from,
-  }).then((tx: any) => (tx.events as Record<string, any>).ProposalCanceled);
+  });
 }
 
-export type StartAbrogationProposalSendResult = {
-  proposalId: string;
-  caller: string;
-};
-
-function queueForExecutionSend(from: string, proposalId: number): Promise<any> {
+function queueProposalForExecutionSend(proposalId: number, from: string): Promise<void> {
   return Contract.send('queue', [
     proposalId,
   ], {
@@ -125,69 +71,12 @@ function queueForExecutionSend(from: string, proposalId: number): Promise<any> {
   });
 }
 
-function executeProposalSend(from: string, proposalId: number): Promise<any> {
+function executeProposalSend(proposalId: number, from: string): Promise<void> {
   return Contract.send('execute', [
     proposalId,
   ], {
     from,
   });
-}
-
-function castVoteSend(from: string, gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
-  return Contract.send('castVote', [
-    proposalId,
-    support,
-  ], {
-    gasPrice: getGasValue(gasPrice),
-    from,
-  });
-}
-
-function cancelVoteSend(from: string, gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
-  return Contract.send('cancelVote', [
-    proposalId,
-  ], {
-    gasPrice: getGasValue(gasPrice),
-    from,
-  });
-}
-
-function startAbrogationProposalSend(from: string, gasPrice: number, proposalId: number, description: string): Promise<Web3EventType<StartAbrogationProposalSendResult>> {
-  return Contract.send('startAbrogationProposal', [
-    proposalId,
-    description,
-  ], {
-    from,
-  }).then((tx: any) => (tx.events as Record<string, any>).AbrogationProposalStarted);
-}
-
-function abrogationCastVoteSend(from: string, gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
-  return Contract.send('abrogationProposal_castVote', [
-    proposalId,
-    support,
-  ], {
-    gasPrice: getGasValue(gasPrice),
-    from,
-  });
-}
-
-function abrogationCancelVoteSend(from: string, gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
-  return Contract.send('abrogationProposal_cancelVote', [
-    proposalId,
-  ], {
-    gasPrice: getGasValue(gasPrice),
-    from,
-  });
-}
-
-function getAbrogationReceiptCall(proposalId: number, voterAddress: string): Promise<GetReceiptCallResult> {
-  return Contract
-    .call('getAbrogationProposalReceipt', [proposalId, voterAddress])
-    .then(data => ({
-      hasVoted: data?.hasVoted ?? false,
-      votes: Number(data?.votes ?? 0),
-      support: data?.support ?? false,
-    }));
 }
 
 export enum ProposalState {
@@ -202,193 +91,215 @@ export enum ProposalState {
   Executed
 }
 
-function stateCall(proposalId: number): Promise<ProposalState> {
+function getProposalStateCall(proposalId: number): Promise<ProposalState> {
   return Contract.call('state', [proposalId])
     .then(Number);
 }
 
-export type ProposalDataType = {
-  id: number;
-  proposer: string;
-  title: string;
-  description: string;
-  createTime: number;
-  eta: number;
-  forVotes: BigNumber;
-  againstVotes: BigNumber;
-  canceled: boolean;
-  executed: boolean;
-};
-
-function proposalsCall(proposalId: number): Promise<ProposalDataType> {
-  return Contract.call('proposals', [proposalId])
-    .then((data: ProposalDataType) => {
-      return {
-        ...data,
-        createTime: data.createTime * 1000,
-        forVotes: getHumanValue(new BigNumber(data.forVotes), 18)!,
-        againstVotes: getHumanValue(new BigNumber(data.againstVotes), 18)!,
-      };
-    });
+function getLatestProposalIdCall(address: string): Promise<number> {
+  return Contract.call('latestProposalIds', [address])
+    .then(Number);
 }
 
-export type AbrogationProposalsCallResult = {
+export type ProposalReceipt = {
+  hasVoted: boolean;
+  votes: number;
+  support: boolean;
+};
+
+function getProposalReceiptCall(proposalId: number, voterAddress: string): Promise<ProposalReceipt> {
+  return Contract.call('getReceipt', [proposalId, voterAddress]);
+}
+
+function proposalCastVoteSend(proposalId: number, support: boolean, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('castVote', [
+    proposalId,
+    support,
+  ], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
+}
+
+function proposalCancelVoteSend(proposalId: number, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('cancelVote', [
+    proposalId,
+  ], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
+}
+
+export type AbrogationProposal = {
   creator: string;
   createTime: number;
   forVotes: number;
   againstVotes: number;
 };
 
-function abrogationProposalsCall(proposalId: number): Promise<AbrogationProposalsCallResult> {
+function abrogationProposalCall(proposalId: number): Promise<AbrogationProposal> {
   return Contract.call('abrogationProposals', [proposalId]);
 }
 
-export type GetReceiptCallResult = {
+export type AbrogationProposalReceipt = {
   hasVoted: boolean;
   votes: number;
   support: boolean;
 };
 
-function getReceiptCall(proposalId: number, voterAddress: string): Promise<GetReceiptCallResult> {
-  return Contract
-    .call('getReceipt', [proposalId, voterAddress])
-    .then(data => ({
-      hasVoted: data?.hasVoted ?? false,
-      votes: Number(data?.votes ?? 0),
-      support: data?.support ?? false,
-    }));
+function getAbrogationProposalReceiptCall(proposalId: number, voterAddress: string): Promise<AbrogationProposalReceipt> {
+  return Contract.call('getAbrogationProposalReceipt', [proposalId, voterAddress]);
 }
 
-function latestProposalIdsCall(address: string): Promise<number> {
-  return Contract.call('latestProposalIds', [address])
-    .then(Number);
+function startAbrogationProposalSend(proposalId: number, description: string, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('startAbrogationProposal', [
+    proposalId,
+    description,
+  ], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
 }
 
-function proposalTimeLeft(data: CommonDataType, state: ProposalState, createdAt: number): number | undefined {
-  const nowUnix = Date.now().valueOf();
-
-  const { warmUpDuration, activeDuration, queueDuration, gracePeriodDuration } = data;
-
-  switch (+state) {
-    case ProposalState.WarmUp:
-      return Math.max(createdAt + warmUpDuration! - nowUnix, 0);
-    case ProposalState.Active:
-      return Math.max(createdAt + warmUpDuration! + activeDuration! - nowUnix, 0);
-    case ProposalState.Queued:
-      return Math.max(createdAt + warmUpDuration! + activeDuration! + queueDuration! - nowUnix, 0);
-    case ProposalState.Grace:
-      return Math.max(createdAt + warmUpDuration! + activeDuration! + queueDuration! + gracePeriodDuration! - nowUnix, 0);
-    case ProposalState.Canceled:
-    case ProposalState.Failed:
-    case ProposalState.Accepted:
-    case ProposalState.Expired:
-    case ProposalState.Executed:
-      return undefined;
-  }
+function abrogationProposalCastVoteSend(proposalId: number, support: boolean, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('abrogationProposal_castVote', [
+    proposalId,
+    support,
+  ], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
 }
 
-export async function validateFunctionCall(contract: Web3Contract, functionName: string, params: any[]): Promise<void> {
-  try {
-    await contract.call(functionName, params, {
-      from: CONTRACT_DAO_GOVERNANCE_ADDR,
-    });
-  } catch (e) {
-    return Promise.reject(e);
-  }
+function abrogationProposalCancelVoteSend(proposalId: number, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('abrogationProposal_cancelVote', [
+    proposalId,
+  ], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
 }
 
-type DAOGovernanceContractData = CommonDataType & {};
+export type DAOGovernanceContractData = {
+  contract: Web3Contract;
+  isActive?: boolean;
+};
+
+const InitialState: DAOGovernanceContractData = {
+  contract: Contract,
+  isActive: undefined,
+};
 
 export type DAOGovernanceContract = DAOGovernanceContractData & {
-  contract: Web3Contract;
   reload(): void;
   actions: {
-    activate(): Promise<any>;
-    createProposal(payload: CreateProposalPayload): Promise<Web3EventType<CreateProposalSendResult>>;
-    cancelProposal(proposalId: number): Promise<Web3EventType<CancelProposalSendResult>>;
-    queueForExecution(proposalId: number): Promise<any>;
-    executeProposal(proposalId: number): Promise<any>;
-    getProposalState(proposalId: number): Promise<number>;
-    getProposalData(proposalId: number): Promise<ProposalDataType>;
-    abrogationProposals(proposalId: number): Promise<AbrogationProposalsCallResult>;
-    getReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult>;
-    latestProposalIds(address?: string): Promise<number>;
-    proposalTimeLeft(state: ProposalState, createdAt: number): number | undefined;
-    castVote(gasPrice: number, proposalId: number, support: boolean): Promise<any>;
-    cancelVote(gasPrice: number, proposalId: number): Promise<any>;
-    startAbrogationProposal(gasPrice: number, proposalId: number, description: string): Promise<Web3EventType<StartAbrogationProposalSendResult>>;
-    abrogationCastVote(gasPrice: number, proposalId: number, support: boolean): Promise<any>;
-    abrogationCancelVote(gasPrice: number, proposalId: number): Promise<any>;
-    getAbrogationReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult>;
+    activate(): Promise<void>;
+    createProposal(payload: CreateProposalPayload): Promise<Web3EventType<CreateProposalResult>>;
+    cancelProposal(proposalId: number): Promise<void>;
+    queueProposalForExecution(proposalId: number): Promise<void>;
+    executeProposal(proposalId: number): Promise<void>;
+    getProposalState(proposalId: number): Promise<ProposalState>;
+    getLatestProposalId(): Promise<number>;
+    getProposalReceipt(proposalId: number): Promise<ProposalReceipt>;
+    proposalCastVote(proposalId: number, support: boolean, gasPrice: number): Promise<void>;
+    proposalCancelVote(proposalId: number, gasPrice: number): Promise<void>;
+    abrogationProposal(proposalId: number): Promise<AbrogationProposal>;
+    getAbrogationProposalReceipt(proposalId: number): Promise<AbrogationProposalReceipt>;
+    startAbrogationProposal(proposalId: number, description: string, gasPrice: number): Promise<void>;
+    abrogationProposalCastVote(proposalId: number, support: boolean, gasPrice: number): Promise<void>;
+    abrogationProposalCancelVote(proposalId: number, gasPrice: number): Promise<void>;
   };
 };
 
 export function useDAOGovernanceContract(): DAOGovernanceContract {
-  const [reload, version] = useReload();
   const wallet = useWallet();
 
-  const [data, setData] = React.useState<DAOGovernanceContractData>({});
+  const [state, setState] = useMergeState<DAOGovernanceContractData>(InitialState);
+  const [reload, version] = useReload();
 
-  useAsyncEffect(async () => {
-    const data = await loadCommonData();
+  React.useEffect(() => {
+    setState({
+      isActive: undefined,
+    });
 
-    setData(prevState => ({
-      ...prevState,
-      ...data,
-    }));
+    loadCommonData()
+      .then(setState);
   }, [version]);
 
   return {
-    ...data,
-    contract: Contract,
+    ...state,
     reload,
     actions: {
-      activate(): Promise<any> {
-        return wallet.account ? activateSend(wallet.account) : Promise.reject();
+      activate(): Promise<void> {
+        return wallet.isActive
+          ? activateSend(wallet.account!)
+          : Promise.reject();
       },
-      createProposal(payload: CreateProposalPayload): Promise<Web3EventType<CreateProposalSendResult>> {
-        return wallet.account ? createProposalSend(wallet.account, payload) : Promise.reject();
+      createProposal(payload: CreateProposalPayload): Promise<Web3EventType<CreateProposalResult>> {
+        return wallet.isActive
+          ? createProposalSend(payload, wallet.account!)
+          : Promise.reject();
       },
-      cancelProposal(proposalId: number): Promise<Web3EventType<CancelProposalSendResult>> {
-        return wallet.account ? cancelProposalSend(wallet.account, proposalId) : Promise.reject();
+      cancelProposal(proposalId: number): Promise<void> {
+        return wallet.isActive
+          ? cancelProposalSend(proposalId, wallet.account!)
+          : Promise.reject();
       },
-      queueForExecution(proposalId: number): Promise<any> {
-        return wallet.account ? queueForExecutionSend(wallet.account, proposalId) : Promise.reject();
+      queueProposalForExecution(proposalId: number): Promise<void> {
+        return wallet.isActive
+          ? queueProposalForExecutionSend(proposalId, wallet.account!)
+          : Promise.reject();
       },
-      executeProposal(proposalId: number): Promise<any> {
-        return wallet.account ? executeProposalSend(wallet.account, proposalId) : Promise.reject();
+      executeProposal(proposalId: number): Promise<void> {
+        return wallet.isActive
+          ? executeProposalSend(proposalId, wallet.account!)
+          : Promise.reject();
       },
-      castVote(gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
-        return wallet.account ? castVoteSend(wallet.account, gasPrice, proposalId, support) : Promise.reject();
+      getProposalState(proposalId: number): Promise<ProposalState> {
+        return getProposalStateCall(proposalId);
       },
-      cancelVote(gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
-        return wallet.account ? cancelVoteSend(wallet.account, gasPrice, proposalId) : Promise.reject();
+      getLatestProposalId(): Promise<number> {
+        return wallet.isActive
+          ? getLatestProposalIdCall(wallet.account!)
+          : Promise.reject();
       },
-      startAbrogationProposal(gasPrice: number, proposalId: number, description: string): Promise<Web3EventType<CancelProposalSendResult>> {
-        return wallet.account ? startAbrogationProposalSend(wallet.account, gasPrice, proposalId, description) : Promise.reject();
+      getProposalReceipt(proposalId: number): Promise<ProposalReceipt> {
+        return wallet.isActive
+          ? getProposalReceiptCall(proposalId, wallet.account!)
+          : Promise.reject();
       },
-      abrogationCastVote(gasPrice: number, proposalId: number, support: boolean): Promise<Web3EventType<any>> {
-        return wallet.account ? abrogationCastVoteSend(wallet.account, gasPrice, proposalId, support) : Promise.reject();
+      proposalCastVote(proposalId: number, support: boolean, gasPrice: number): Promise<void> {
+        return wallet.isActive
+          ? proposalCastVoteSend(proposalId, support, wallet.account!, gasPrice)
+          : Promise.reject();
       },
-      abrogationCancelVote(gasPrice: number, proposalId: number): Promise<Web3EventType<any>> {
-        return wallet.account ? abrogationCancelVoteSend(wallet.account, gasPrice, proposalId) : Promise.reject();
+      proposalCancelVote(proposalId: number, gasPrice: number): Promise<void> {
+        return wallet.isActive
+          ? proposalCancelVoteSend(proposalId, wallet.account!, gasPrice)
+          : Promise.reject();
       },
-      getAbrogationReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult> {
-        const address = voterAddress ?? wallet.account;
-        return address ? getAbrogationReceiptCall(proposalId, address) : Promise.reject();
+      abrogationProposal(proposalId: number): Promise<AbrogationProposal> {
+        return abrogationProposalCall(proposalId);
       },
-      getProposalState: stateCall,
-      getProposalData: proposalsCall,
-      abrogationProposals: abrogationProposalsCall,
-      getReceipt(proposalId: number, voterAddress?: string): Promise<GetReceiptCallResult> {
-        const address = voterAddress ?? wallet.account;
-        return address ? getReceiptCall(proposalId, address) : Promise.reject();
+      getAbrogationProposalReceipt(proposalId: number): Promise<AbrogationProposalReceipt> {
+        return wallet.isActive
+          ? getAbrogationProposalReceiptCall(proposalId, wallet.account!)
+          : Promise.reject();
       },
-      latestProposalIds(address: string): Promise<number> {
-        return address ? latestProposalIdsCall(address) : Promise.reject();
+      startAbrogationProposal(proposalId: number, description: string, gasPrice: number): Promise<void> {
+        return wallet.isActive
+          ? startAbrogationProposalSend(proposalId, description, wallet.account!, gasPrice)
+          : Promise.reject();
       },
-      proposalTimeLeft(state: ProposalState, createdAt: number): number | undefined {
-        return proposalTimeLeft(data, state, createdAt);
+      abrogationProposalCastVote(proposalId: number, support: boolean, gasPrice: number): Promise<void> {
+        return wallet.isActive
+          ? abrogationProposalCastVoteSend(proposalId, support, wallet.account!, gasPrice)
+          : Promise.reject();
+      },
+      abrogationProposalCancelVote(proposalId: number, gasPrice: number): Promise<void> {
+        return wallet.isActive
+          ? abrogationProposalCancelVoteSend(proposalId, wallet.account!, gasPrice)
+          : Promise.reject();
       },
     },
   };

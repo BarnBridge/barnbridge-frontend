@@ -15,6 +15,7 @@ import ProposalsTable from './components/proposals-table';
 import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';
 
+import useMergeState from 'hooks/useMergeState';
 import { useDebounce } from 'hooks/useDebounce';
 
 import s from './styles.module.scss';
@@ -22,30 +23,51 @@ import s from './styles.module.scss';
 const TABS: CardTabListType[] = [{
   key: 'all',
   tab: (
-    <Paragraph type="p1" semiBold color="grey900">All proposals</Paragraph>
+    <Paragraph type="p1" semiBold color="grey900">
+      All proposals
+    </Paragraph>
   ),
 }, {
   key: 'active',
   tab: (
-    <Paragraph type="p1" semiBold color="grey900">Active</Paragraph>
+    <Paragraph type="p1" semiBold color="grey900">
+      Active
+    </Paragraph>
   ),
 }, {
   key: 'executed',
   tab: (
-    <Paragraph type="p1" semiBold color="grey900">Executed</Paragraph>
+    <Paragraph type="p1" semiBold color="grey900">
+      Executed
+    </Paragraph>
   ),
 }, {
   key: 'failed',
   tab: (
-    <Paragraph type="p1" semiBold color="grey900">Failed</Paragraph>
+    <Paragraph type="p1" semiBold color="grey900">
+      Failed
+    </Paragraph>
   ),
 }];
 
+type ProposalsViewState = {
+  showWhyReason: boolean;
+  hasActiveProposal?: boolean;
+  hasThreshold?: boolean;
+};
+
+const InitialState: ProposalsViewState = {
+  showWhyReason: false,
+  hasActiveProposal: undefined,
+  hasThreshold: undefined,
+};
+
 const ProposalsViewInner: React.FunctionComponent = () => {
   const history = useHistory();
+  const daoCtx = useDAO();
   const proposalsCtx = useProposals();
 
-  const [visibleReason, setVisibleReason] = React.useState<boolean>(false);
+  const [state, setState] = useMergeState(InitialState);
 
   function handleStateChange(stateFilter: string) {
     proposalsCtx.changeStateFilter(stateFilter);
@@ -55,21 +77,38 @@ const ProposalsViewInner: React.FunctionComponent = () => {
     proposalsCtx.changeSearchFilter(ev.target.value);
   }, 400);
 
+  React.useEffect(() => {
+    daoCtx.actions.hasActiveProposal()
+      .then(hasActiveProposal => {
+        setState({ hasActiveProposal });
+      });
+  }, []);
+
+  React.useEffect(() => {
+    if (!daoCtx.thresholdRate) {
+      return;
+    }
+
+    setState({
+      hasThreshold: daoCtx.thresholdRate >= 1,
+    });
+  }, [daoCtx.thresholdRate]);
+
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col" align="center" justify="space-between">
         <Heading type="h1" bold color="grey900">Proposals</Heading>
         <Grid flow="row" gap={8} align="end" justify="end">
-          {proposalsCtx.hasAlreadyActiveProposal !== undefined && (
+          {(state.hasActiveProposal !== undefined && state.hasThreshold !== undefined) && (
             <Button
               type="primary"
-              disabled={proposalsCtx.hasAlreadyActiveProposal || !proposalsCtx.hasThreshold}
+              disabled={!state.hasActiveProposal || state.hasThreshold}
               onClick={() => history.push('proposals/create')}>
               Create proposal
             </Button>
           )}
 
-          {(proposalsCtx.hasAlreadyActiveProposal || !proposalsCtx.hasThreshold) && (
+          {(state.hasActiveProposal || !state.hasThreshold) && (
             <Grid flow="col" gap={8} align="center">
               <Small semiBold color="grey500">
                 You are not able to create a proposal.
@@ -94,8 +133,8 @@ const ProposalsViewInner: React.FunctionComponent = () => {
                     </Grid>
                   </Paragraph>
                 }
-                visible={visibleReason}
-                onVisibleChange={setVisibleReason}>
+                visible={state.showWhyReason}
+                onVisibleChange={visible => setState({ showWhyReason: visible })}>
                 <Button type="link">See why</Button>
               </Popover>
             </Grid>

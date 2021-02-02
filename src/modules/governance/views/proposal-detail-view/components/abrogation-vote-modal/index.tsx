@@ -13,7 +13,6 @@ import { useProposal } from '../../providers/ProposalProvider';
 import { useAbrogation } from '../../providers/AbrogationProvider';
 
 import { formatBigValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
@@ -54,12 +53,11 @@ const InitialState: AbrogationVoteModalState = {
 const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
-  const [form] = Antd.Form.useForm<FormState>();
   const proposalCtx = useProposal();
   const abrogationCtx = useAbrogation();
-  const web3c = useWeb3Contracts();
 
   const [state, setState] = useMergeState<AbrogationVoteModalState>(InitialState);
+  const [form] = Antd.Form.useForm<FormState>();
 
   async function handleSubmit(values: FormState) {
     if (!abrogationCtx.abrogation) {
@@ -68,47 +66,30 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
 
     setState({ submitting: true });
 
-    const { proposalId } = abrogationCtx.abrogation;
     const { gasPrice = 0 } = values;
 
     try {
       await form.validateFields();
-      let r: any;
 
       if (voteState === VoteAbrogationState.VoteInitiate) {
-        r = await web3c.daoGovernance.actions.startAbrogationProposal(gasPrice, proposalId, values.description!);
+        await proposalCtx.startAbrogationProposal(values.description!, gasPrice);
       } else if (voteState === VoteAbrogationState.VoteFor) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, true);
+        await abrogationCtx.abrogationProposalCastVote(true, gasPrice);
       } else if (voteState === VoteAbrogationState.VoteAgainst) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, false);
+        await abrogationCtx.abrogationProposalCastVote(false, gasPrice);
       } else if (voteState === VoteAbrogationState.VoteChange) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, values.changeOption!);
+        await abrogationCtx.abrogationProposalCastVote(values.changeOption === true, gasPrice);
       } else if (voteState === VoteAbrogationState.VoteCancel) {
-        r = await web3c.daoGovernance.actions.abrogationCancelVote(gasPrice, proposalId);
+        await abrogationCtx.abrogationProposalCancelVote(gasPrice);
       }
 
-      console.log("AR", r);
-      props.onCancel?.();
       abrogationCtx.reload();
+      props.onCancel?.();
     } catch {
     }
 
     setState({ submitting: false });
   }
-
-  const title = React.useMemo<string | undefined>(() => {
-    switch (voteState) {
-      case VoteAbrogationState.VoteInitiate:
-        return 'Initiate abrogation proposal';
-      case VoteAbrogationState.VoteFor:
-      case VoteAbrogationState.VoteAgainst:
-        return 'Confirm your vote';
-      case VoteAbrogationState.VoteCancel:
-        return 'Cancel your vote';
-      case VoteAbrogationState.VoteChange:
-        return 'Change your vote';
-    }
-  }, [voteState]);
 
   React.useEffect(() => {
     if (voteState === VoteAbrogationState.VoteChange) {
@@ -116,14 +97,22 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
         changeOption: abrogationCtx.receipt?.support,
       });
     }
-  }, [voteState]);
+  }, [voteState, abrogationCtx.receipt]);
 
   return (
     <Modal
       className={s.component}
       centered
       width={560}
-      title={title}
+      title={(
+        <>
+          {voteState === VoteAbrogationState.VoteInitiate && 'Initiate abrogation proposal'}
+          {voteState === VoteAbrogationState.VoteFor && 'Confirm your vote'}
+          {voteState === VoteAbrogationState.VoteAgainst && 'Confirm your vote'}
+          {voteState === VoteAbrogationState.VoteChange && 'Change your vote'}
+          {voteState === VoteAbrogationState.VoteCancel && 'Cancel your vote'}
+        </>
+      )}
       {...modalProps}>
       <Form
         form={form}

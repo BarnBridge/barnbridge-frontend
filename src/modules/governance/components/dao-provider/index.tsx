@@ -1,22 +1,40 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import useMergeState from 'hooks/useMergeState';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import { APIProposalStateId } from '../../api';
 
-type DAOContextType = {
-  activationRate?: number,
+export type DAOProviderState = {
   isActive?: boolean;
-  activationThreshold?: BigNumber;
   bondStaked?: BigNumber;
-  activate: () => Promise<void>;
+  activationThreshold?: BigNumber;
+  activationRate?: number,
+  thresholdRate?: number;
+};
+
+const InitialState: DAOProviderState = {
+  isActive: undefined,
+  bondStaked: undefined,
+  activationThreshold: undefined,
+  activationRate: undefined,
+  thresholdRate: undefined,
+};
+
+type DAOContextType = DAOProviderState & {
+  actions: {
+    activate: () => Promise<void>;
+    hasActiveProposal: () => Promise<boolean>;
+  },
 };
 
 const DAOContext = React.createContext<DAOContextType>({
-  activationRate: undefined,
-  isActive: undefined,
-  activationThreshold: undefined,
-  bondStaked: undefined,
-  activate: Promise.reject,
+  ...InitialState,
+  actions: {
+    activate: Promise.reject,
+    hasActiveProposal: Promise.reject,
+  },
 });
 
 export function useDAO(): DAOContextType {
@@ -27,35 +45,77 @@ const DAOProvider: React.FunctionComponent = props => {
   const { children } = props;
 
   const web3c = useWeb3Contracts();
-  const { bondStaked, activationThreshold } = web3c.daoBarn;
 
-  const activationRate = React.useMemo<number>(() => {
-    const { bondStaked, activationThreshold } = web3c.daoBarn;
+  const [state, setState] = useMergeState<DAOProviderState>(InitialState);
 
-    if (!bondStaked || !activationThreshold) {
-      return 0;
+  React.useEffect(() => {
+    const { isActive } = web3c.daoGovernance;
+    const { bondStaked, activationThreshold, votingPower } = web3c.daoBarn;
+
+    let activationRate: number | undefined;
+
+    if (bondStaked && activationThreshold?.gt(ZERO_BIG_NUMBER)) {
+      activationRate = bondStaked.multipliedBy(100)
+        .div(activationThreshold).toNumber();
+      activationRate = Math.min(activationRate, 100);
     }
 
-    const rate = bondStaked.multipliedBy(100).div(activationThreshold).toNumber();
+    let thresholdRate: number | undefined;
 
-    return Math.min(rate, 100);
-  }, [bondStaked, activationThreshold]);
+    if (votingPower && bondStaked?.gt(ZERO_BIG_NUMBER)) {
+      thresholdRate = votingPower.multipliedBy(100)
+        .div(bondStaked).toNumber();
+      thresholdRate = Math.min(thresholdRate, 100);
+    }
+
+    setState({
+      isActive,
+      bondStaked,
+      activationThreshold,
+      activationRate,
+      thresholdRate,
+    });
+  }, [
+    web3c.daoGovernance.isActive,
+    web3c.daoBarn.bondStaked,
+    web3c.daoBarn.activationThreshold,
+    web3c.daoBarn.votingPower,
+  ]);
 
   function activate() {
     return web3c.daoGovernance.actions.activate()
       .then(() => {
-        web3c.daoBarn.reload();
         web3c.daoGovernance.reload();
+        web3c.daoBarn.reload();
+      });
+  }
+
+  function hasActiveProposal(): Promise<boolean> {
+    return web3c.daoGovernance.actions.getLatestProposalId()
+      .then(proposalId => {
+        if (proposalId === 0) {
+          return Promise.resolve(false);
+        }
+
+        return web3c.daoGovernance.actions.getProposalState(proposalId)
+          .then(proposalState => {
+            return ![
+              APIProposalStateId.CANCELED,
+              APIProposalStateId.EXECUTED,
+              APIProposalStateId.FAILED,
+              APIProposalStateId.EXPIRED,
+            ].includes(proposalState as any);
+          });
       });
   }
 
   return (
     <DAOContext.Provider value={{
-      activationRate,
-      isActive: web3c.daoGovernance.isActive,
-      activationThreshold,
-      bondStaked,
-      activate,
+      ...state,
+      actions: {
+        activate,
+        hasActiveProposal,
+      },
     }}>
       {children}
     </DAOContext.Provider>

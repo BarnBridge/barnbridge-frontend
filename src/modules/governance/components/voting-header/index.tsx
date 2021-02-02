@@ -18,7 +18,7 @@ const VotingHeader: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [detailedView, showDetailedView] = React.useState<boolean>(false);
 
-  const { claim: reward } = web3c.daoReward;
+  const { claimValue } = web3c.daoReward;
   const { balance: bondBalance } = web3c.bond;
   const {
     votingPower,
@@ -40,14 +40,14 @@ const VotingHeader: React.FunctionComponent = () => {
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">Current reward</Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900" loading={reward === undefined}>
-              {formatBONDValue(reward)}
+            <Heading type="h3" bold color="grey900" loading={claimValue === undefined}>
+              {formatBONDValue(claimValue)}
             </Heading>
             <Icons name="bond-square-token" />
             <Button
               type="link"
-              disabled={reward?.isZero()}
-              onClick={() => web3c.daoReward.claimSend()}>Claim</Button>
+              disabled={claimValue?.isZero()}
+              onClick={() => web3c.daoReward.actions.claim()}>Claim</Button>
           </Grid>
         </Grid>
         <div className={s.delimiter} />

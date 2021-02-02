@@ -3,13 +3,12 @@ import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { useReload } from 'hooks/useReload';
 import useMergeState from 'hooks/useMergeState';
+import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { GetReceiptCallResult } from 'web3/contracts/daoGovernance';
+import { AbrogationProposalReceipt } from 'web3/contracts/daoGovernance';
 import { APIAbrogationEntity, fetchAbrogation } from 'modules/governance/api';
 import { useProposal } from '../ProposalProvider';
 
@@ -20,47 +19,50 @@ export type AbrogationProviderState = {
   acceptanceThreshold?: number;
   approvalRate?: number;
   votingPower?: BigNumber;
-  receipt?: GetReceiptCallResult;
-};
-
-export type AbrogationContextType = AbrogationProviderState & {
-  reload(): void;
+  receipt?: AbrogationProposalReceipt;
 };
 
 const InitialState: AbrogationProviderState = {
   acceptanceThreshold: 50,
 };
 
+export type AbrogationContextType = AbrogationProviderState & {
+  reload(): void;
+  abrogationProposalCastVote(support: boolean, gasPrice: number): Promise<void>;
+  abrogationProposalCancelVote(gasPrice: number): Promise<void>;
+};
+
 const AbrogationContext = React.createContext<AbrogationContextType>({
   ...InitialState,
   reload: () => undefined,
+  abrogationProposalCastVote: () => Promise.reject(),
+  abrogationProposalCancelVote: () => Promise.reject(),
 });
 
 export function useAbrogation(): AbrogationContextType {
   return React.useContext(AbrogationContext);
 }
 
-export type AbrogationProviderProps = {};
-
-const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = props => {
+const AbrogationProvider: React.FunctionComponent = props => {
   const { children } = props;
 
   const history = useHistory();
   const [reload, version] = useReload();
   const wallet = useWallet();
   const web3c = useWeb3Contracts();
-  const proposal = useProposal();
+  const { proposal } = useProposal();
 
   const [state, setState] = useMergeState<AbrogationProviderState>(InitialState);
 
   React.useEffect(() => {
-    if (!proposal.proposal) {
+    if (!proposal) {
+      setState({
+        abrogation: undefined,
+      });
       return;
     }
 
-    const { proposalId } = proposal.proposal;
-
-    fetchAbrogation(proposalId)
+    fetchAbrogation(proposal.proposalId)
       .then(abrogation => {
         setState({
           abrogation,
@@ -69,19 +71,19 @@ const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = pro
       .catch((status: number) => {
         if (status === 404) {
           Antd.notification.error({
-            message: `Proposal with id=${proposalId} doesn't exist.`,
+            message: `Proposal with id=${proposal.proposalId} doesn't exist.`,
           });
         } else {
           Antd.notification.error({
-            message: `Failed to fetch proposal abrogation with id=${proposalId}. (Status: ${status})`,
+            message: `Failed to fetch proposal with id=${proposal.proposalId}. (Status: ${status})`,
           });
         }
 
-        history.push(`/governance/proposals/${proposalId}`);
+        history.push(`/governance/proposals/${proposal.proposalId}`);
       });
-  }, [proposal.proposal, version]);
+  }, [proposal, version]);
 
-  useAsyncEffect(async () => {
+  React.useEffect(() => {
     setState({
       forRate: undefined,
       againstRate: undefined,
@@ -91,7 +93,7 @@ const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = pro
       return;
     }
 
-    const { forVotes, againstVotes } = state.abrogation;
+    const { forVotes, againstVotes, createTime } = state.abrogation;
     const total = forVotes.plus(againstVotes);
 
     let forRate = 0;
@@ -106,6 +108,21 @@ const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = pro
       forRate,
       againstRate,
     });
+
+    web3c.daoBarn.actions.bondStakedAtTs(createTime - 1)
+      .then(bondStakedAt => {
+        let approvalRate: number | undefined;
+
+        if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
+          approvalRate = forVotes.multipliedBy(100)
+            .div(bondStakedAt).toNumber();
+          approvalRate = Math.min(approvalRate, 100);
+        }
+
+        setState({
+          approvalRate,
+        });
+      });
   }, [state.abrogation]);
 
   React.useEffect(() => {
@@ -117,42 +134,44 @@ const AbrogationProvider: React.FunctionComponent<AbrogationProviderProps> = pro
       return;
     }
 
-    const { proposalId } = state.abrogation;
+    const { proposalId, createTime } = state.abrogation;
 
-    web3c.daoBarn.actions.votingPowerAtTs(state.abrogation?.createTime! - 1)
+    web3c.daoBarn.actions.votingPowerAtTs(createTime - 1)
       .then(votingPower => {
         setState({
           votingPower,
         });
       });
 
-    web3c.daoBarn.actions.bondStakedAtTs(state.abrogation?.createTime! - 1)
-      .then(bondStakedAt => {
-        let approvalRate: number | undefined = undefined;
-        const { forVotes } = state.abrogation!;
-
-        if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
-          approvalRate = forVotes.multipliedBy(100).div(bondStakedAt!).toNumber();
-        }
-
+    web3c.daoGovernance.actions.getAbrogationProposalReceipt(proposalId)
+      .then(receipt => {
         setState({
-          approvalRate,
-        });
-      });
-
-    web3c.daoGovernance.actions.getAbrogationReceipt(proposalId)
-      .then((result: GetReceiptCallResult) => {
-        setState({
-          receipt: result,
+          receipt,
         });
       });
   }, [state.abrogation, wallet.account]);
+
+  function abrogationProposalCastVote(support: boolean, gasPrice: number): Promise<void> {
+    return proposal?.proposalId
+      ? web3c.daoGovernance.actions.abrogationProposalCastVote(proposal?.proposalId, support, gasPrice)
+      : Promise.reject();
+  }
+
+  function abrogationProposalCancelVote(gasPrice: number): Promise<void> {
+    return proposal?.proposalId
+      ? web3c.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice)
+      : Promise.reject();
+  }
 
   return (
     <AbrogationContext.Provider value={{
       ...state,
       reload,
-    }}>{children}</AbrogationContext.Provider>
+      abrogationProposalCastVote,
+      abrogationProposalCancelVote,
+    }}>
+      {children}
+    </AbrogationContext.Provider>
   );
 };
 

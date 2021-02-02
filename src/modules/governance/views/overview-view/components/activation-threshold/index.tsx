@@ -22,7 +22,7 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
 
   function handleActivate() {
     setActivating(true);
-    dao.activate()
+    dao.actions.activate()
       .catch(Error)
       .then(() => {
         setActivating(false);

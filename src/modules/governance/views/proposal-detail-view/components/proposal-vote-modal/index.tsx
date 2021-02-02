@@ -11,7 +11,6 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { useProposal } from '../../providers/ProposalProvider';
 
 import { formatBigValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
@@ -51,7 +50,6 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
 
   const [form] = Antd.Form.useForm<FormState>();
   const proposalCtx = useProposal();
-  const web3c = useWeb3Contracts();
 
   const [state, setState] = useMergeState<ProposalVoteModalState>(InitialState);
 
@@ -62,43 +60,28 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
 
     setState({ submitting: true });
 
-    const { proposalId } = proposalCtx.proposal;
     const { gasPrice = 0 } = values;
 
     try {
       await form.validateFields();
-      let r: any;
 
       if (voteState === VoteState.VoteFor) {
-        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, true);
+        await proposalCtx.proposalCastVote(true, gasPrice);
       } else if (voteState === VoteState.VoteAgainst) {
-        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, false);
+        await proposalCtx.proposalCastVote(false, gasPrice);
       } else if (voteState === VoteState.VoteChange) {
-        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, values.changeOption!);
+        await proposalCtx.proposalCastVote(values.changeOption === true, gasPrice);
       } else if (voteState === VoteState.VoteCancel) {
-        await web3c.daoGovernance.actions.cancelVote(gasPrice, proposalId);
+        await proposalCtx.proposalCancelVote(gasPrice);
       }
 
-      console.log("R", r);
-      props.onCancel?.();
       proposalCtx.reload();
+      props.onCancel?.();
     } catch {
     }
 
     setState({ submitting: false });
   }
-
-  const title = React.useMemo<string | undefined>(() => {
-    switch (voteState) {
-      case VoteState.VoteFor:
-      case VoteState.VoteAgainst:
-        return 'Confirm your vote';
-      case VoteState.VoteCancel:
-        return 'Cancel your vote';
-      case VoteState.VoteChange:
-        return 'Change your vote';
-    }
-  }, [voteState]);
 
   React.useEffect(() => {
     if (voteState === VoteState.VoteChange) {
@@ -108,16 +91,19 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
     }
   }, [voteState]);
 
-  if (!props.visible) {
-    return null;
-  }
-
   return (
     <Modal
       className={s.component}
       centered
       width={560}
-      title={title}
+      title={(
+        <>
+          {voteState === VoteState.VoteFor && 'Confirm your vote'}
+          {voteState === VoteState.VoteAgainst && 'Confirm your vote'}
+          {voteState === VoteState.VoteChange && 'Change your vote'}
+          {voteState === VoteState.VoteCancel && 'Cancel your vote'}
+        </>
+      )}
       {...modalProps}>
       <Form
         form={form}
