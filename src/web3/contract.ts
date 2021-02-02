@@ -60,18 +60,18 @@ class Web3Contract extends EventEmitter {
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
-    if (methods.length === 0) {
-      return Promise.reject();
-    }
+    // if (methods.length === 0) {
+    //   return Promise.reject();
+    // }
 
-    if (methods.length === 1) {
-      const method = methods[0];
-
-      return this.call(method.method, method.methodArgs, method.callArgs)
-        .then(method.transform)
-        .catch(method.onError)
-        .then(value => [value]);
-    }
+    // if (methods.length === 1) {
+    //   const method = methods[0];
+    //
+    //   return this.call(method.method, method.methodArgs, method.callArgs)
+    //     // .then(method.transform ?? (v => v))
+    //     // .catch(method.onError ?? (e => e))
+    //     .then(value => [value]);
+    // }
 
     const batch = new web3.BatchRequest();
 
@@ -125,7 +125,8 @@ class Web3Contract extends EventEmitter {
 
     try {
       batch.execute();
-    } catch {}
+    } catch {
+    }
 
     return Promise.all(promises);
   }

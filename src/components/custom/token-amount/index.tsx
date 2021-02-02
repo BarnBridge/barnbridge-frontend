@@ -6,7 +6,6 @@ import Grid from 'components/custom/grid';
 import NumericInput, {
   NumericInputProps,
 } from 'components/custom/numeric-input';
-import { Small } from 'components/custom/typography';
 import Icons, { TokenIconNames } from 'components/custom/icon';
 
 import s from './styles.module.scss';
@@ -14,25 +13,19 @@ import s from './styles.module.scss';
 export type TokenAmountProps = NumericInputProps & {
   className?: string;
   tokenIcon?: TokenIconNames;
-  tokenLabel?: React.ReactNode;
   maxProps?: ButtonProps;
 };
 
 const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
-  const { className, tokenIcon, tokenLabel, maxProps, ...rest } = props;
+  const { className, tokenIcon, maxProps, ...rest } = props;
 
   const addonBefore = React.useMemo(
     () => (
       <Grid flow="col" gap={4}>
-        {tokenIcon && <Icons name={tokenIcon} width={16} height={16} />}
-        {tokenLabel && (
-          <Small semiBold color="grey900">
-            {tokenLabel}
-          </Small>
-        )}
+        {tokenIcon && <Icons name={tokenIcon} width={24} height={24} />}
       </Grid>
     ),
-    [tokenIcon, tokenLabel],
+    [tokenIcon],
   );
 
   const addonAfter = React.useMemo(

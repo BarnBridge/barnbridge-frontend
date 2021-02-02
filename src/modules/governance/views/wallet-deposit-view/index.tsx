@@ -142,7 +142,6 @@ const WalletDepositView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  tokenLabel="BOND"
                   placeholder={`0 (Max ${formatBONDValue(
                     web3c.bond.balance ?? ZERO_BIG_NUMBER,
                   )})`}

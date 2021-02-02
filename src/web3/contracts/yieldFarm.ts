@@ -13,6 +13,7 @@ export const CONTRACT_YIELD_FARM_ADDR = String(
 );
 
 type YieldFarmContractData = {
+  isEnded?: boolean;
   totalEpochs?: number;
   totalReward?: BigNumber;
   epochReward?: BigNumber;
@@ -33,6 +34,7 @@ export type YieldFarmContract = YieldFarmContractData & {
 };
 
 const InitialData: YieldFarmContractData = {
+  isEnded: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
   epochReward: undefined,
@@ -76,6 +78,8 @@ export function useYieldFarmContract(): YieldFarmContract {
       },
     ]);
 
+    const isEnded = currentEpoch > totalEpochs;
+
     currentEpoch = Math.min(currentEpoch, totalEpochs);
 
     const epochReward =
@@ -91,6 +95,7 @@ export function useYieldFarmContract(): YieldFarmContract {
 
     setData(prevState => ({
       ...prevState,
+      isEnded,
       totalEpochs,
       totalReward,
       epochReward,

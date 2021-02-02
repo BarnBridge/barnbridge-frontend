@@ -17,7 +17,7 @@ import { Label, Paragraph, Small } from 'components/custom/typography';
 import { TokenMeta } from 'web3/types';
 import {
   formatBigValue,
-  formatBONDValue,
+  getHumanValue,
   getNonHumanValue,
   MAX_UINT_256,
   ZERO_BIG_NUMBER,
@@ -42,6 +42,7 @@ export type PoolTokenRowProps = {
 type PoolTokenRowState = {
   enabling: boolean;
   enabled?: boolean;
+  formDisabled: boolean;
   saving: boolean;
   expanded: boolean;
   walletBalance?: BigNumber;
@@ -53,6 +54,7 @@ type PoolTokenRowState = {
 const InitialState: PoolTokenRowState = {
   enabling: false,
   enabled: undefined,
+  formDisabled: false,
   saving: false,
   expanded: false,
   walletBalance: undefined,
@@ -103,6 +105,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     let allowance: BigNumber | undefined;
     let stakedBalance: BigNumber | undefined;
     let effectiveStakedBalance: BigNumber | undefined;
+    let isEnded: boolean | undefined;
 
     switch (token) {
       case USDCTokenMeta:
@@ -110,30 +113,35 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         allowance = web3c.usdc.allowance;
         stakedBalance = web3c.staking.usdc.balance;
         effectiveStakedBalance = web3c.staking.usdc.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case DAITokenMeta:
         walletBalance = web3c.dai.balance;
-        allowance = web3c.dai.allowance;
+        allowance = ZERO_BIG_NUMBER; //web3c.dai.allowance;
         stakedBalance = web3c.staking.dai.balance;
         effectiveStakedBalance = web3c.staking.dai.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case SUSDTokenMeta:
         walletBalance = web3c.susd.balance;
         allowance = web3c.susd.allowance;
         stakedBalance = web3c.staking.susd.balance;
         effectiveStakedBalance = web3c.staking.susd.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case UNISWAPTokenMeta:
         walletBalance = web3c.uniswap.balance;
         allowance = web3c.uniswap.allowance;
         stakedBalance = web3c.staking.uniswap.balance;
         effectiveStakedBalance = web3c.staking.uniswap.epochUserBalance;
+        isEnded = web3c.yfLP.isEnded;
         break;
       case BONDTokenMeta:
         walletBalance = web3c.bond.balance;
         allowance = web3c.bond.allowance;
         stakedBalance = web3c.staking.bond.balance;
         effectiveStakedBalance = web3c.staking.bond.epochUserBalance;
+        isEnded = web3c.yfBOND.isEnded;
         break;
       default:
         return;
@@ -148,6 +156,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         walletBalance ?? ZERO_BIG_NUMBER,
       ),
       enabled: allowance?.gt(ZERO_BIG_NUMBER) ?? false,
+      formDisabled: isEnded === true && isDeposit,
       expanded,
     });
   }, [web3c, token]);
@@ -189,30 +198,25 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         default:
           break;
       }
-    } catch (e) {}
+    } catch (e) {
+    }
 
     setState({ enabling: false });
   }
 
-  // function handleSliderChange(value: number) {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     amount: value === maxAmount ? activeBalance : getHumanValue(new BigNumber(value), token.decimals),
-  //   }));
-  // }
-
   async function handleSubmit(values: any) {
-    console.log({ values });
-    return;
     setState({ saving: true });
 
     try {
-      const { amount, gasAmount } = values;
+      const { amount, gasFee } = values;
+
+      const amountValue = amount;
+      const feeValue = gasFee.value;
 
       if (isDeposit) {
-        await web3c.staking.depositSend(token, amount, gasAmount);
+        await web3c.staking.depositSend(token, amountValue, feeValue);
       } else if (isWithdraw) {
-        await web3c.staking.withdrawSend(token, amount, gasAmount);
+        await web3c.staking.withdrawSend(token, amountValue, feeValue);
       }
 
       switch (token) {
@@ -237,12 +241,11 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
           web3c.yfBOND.reload();
           break;
       }
-    } catch (e) {}
+    } catch (e) {
+    }
 
     setState({ saving: false });
   }
-
-  const noAmount = false; // React.useMemo(() => !state.amount || state.amount?.isEqualTo(ZERO_BIG_NUMBER), [state.amount]);
 
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
@@ -262,7 +265,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         </Paragraph>
       </Grid>
 
-      {isDeposit && (
+      {isDeposit && (!state.formDisabled || state.enabled === true) && (
         <Grid flow="row" gap={4}>
           <Small semiBold color="grey500">
             Enable Token
@@ -319,49 +322,71 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               <Form.Item
                 name="amount"
                 label="Amount"
-                rules={[{ required: true, message: 'Required' }]}>
+                rules={[
+                  { required: true, message: 'Required' },
+                  {
+                    validator: (rule: any, value: BigNumber | undefined, cb: Function) => {
+                      if (value?.isEqualTo(ZERO_BIG_NUMBER)) {
+                        cb('Should be greater than zero');
+                      } else if (value?.isGreaterThan(maxAmount)) {
+                        cb(`Should be less than ${maxAmount}`);
+                      } else {
+                        cb();
+                      }
+                    },
+                  }
+                ]}>
                 <TokenAmount
-                  tokenIcon="bond-token"
-                  tokenLabel={token.name}
+                  tokenIcon={icon}
                   placeholder={
                     activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'
                   }
-                  disabled={state.saving}
+                  disabled={state.formDisabled || state.saving}
                   maximumFractionDigits={token.decimals}
                   maxProps={{
-                    disabled: state.saving,
+                    disabled: state.formDisabled || state.saving,
                     onClick: () => {
                       form.setFieldsValue({
-                        amount: web3c.bond.balance ?? ZERO_BIG_NUMBER,
+                        amount: activeBalance,
                       });
                     },
                   }}
                 />
               </Form.Item>
-              <Form.Item name="amount">
-                <Slider
-                  min={0}
-                  // max={web3c.bond.balance?.toNumber() ?? 0}
-                  max={maxAmount}
-                  step={1}
-                  disabled={state.saving}
-                  // disabled={!activeBalance}
-                  tipFormatter={value => (
-                    <span>
-                      {value ? formatBONDValue(new BigNumber(value)) : 0}
-                    </span>
-                  )}
-                  tooltipPlacement="bottom"
-                  // value={getNonHumanValue(state.amount ?? 0, token.decimals).toNumber() ?? 0}
-                  // tipFormatter={value =>
-                  //   <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, token.decimals), token.decimals)}</span>}
-                />
+              <Form.Item shouldUpdate>
+                {({ getFieldsValue }) => {
+                  const { amount } = getFieldsValue(['amount']);
+
+                  return (
+                    <Slider
+                      min={0}
+                      max={maxAmount}
+                      step={1}
+                      disabled={state.formDisabled || state.saving || !activeBalance}
+                      tooltipPlacement="bottom"
+                      tipFormatter={value => value
+                        ? formatBigValue(getHumanValue(new BigNumber(value), token.decimals), token.decimals)
+                        : 0
+                      }
+                      value={getNonHumanValue(Math.floor(amount ?? 0), token.decimals).toNumber() ?? 0}
+                      onChange={value => {
+                        form.setFieldsValue({
+                          amount: value === maxAmount
+                            ? activeBalance
+                            : getHumanValue(new BigNumber(value), token.decimals),
+                        });
+                      }}
+                    />
+                  );
+                }}
               </Form.Item>
               {isDeposit && (
-                <Alert message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+                <Alert
+                  message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
               )}
               {isWithdraw && (
-                <Alert message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+                <Alert
+                  message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
               )}
             </Grid>
             <Grid flow="row">
@@ -370,16 +395,17 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>
-                <GasFeeList disabled={state.saving} />
+                <GasFeeList disabled={state.formDisabled || state.saving} />
               </Form.Item>
             </Grid>
           </Grid>
+
           <Button
             type="primary"
             htmlType="submit"
             size="large"
             loading={state.saving}
-            disabled={!state.enabled || noAmount}
+            disabled={(!state.enabled && isDeposit) || state.formDisabled}
             style={{ width: 121 }}>
             {isDeposit && 'Deposit'}
             {isWithdraw && 'Withdraw'}

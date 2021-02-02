@@ -13,6 +13,7 @@ export const CONTRACT_YIELD_FARM_BOND_ADDR = String(
 );
 
 type YieldFarmBONDContractData = {
+  isEnded?: boolean;
   delayedEpochs?: number;
   totalEpochs?: number;
   totalReward?: BigNumber;
@@ -34,6 +35,7 @@ export type YieldFarmBONDContract = YieldFarmBONDContractData & {
 };
 
 const InitialData: YieldFarmBONDContractData = {
+  isEnded: undefined,
   delayedEpochs: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
@@ -89,6 +91,8 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       },
     ]);
 
+    const isEnded = currentEpoch > totalEpochs;
+
     currentEpoch = Math.min(currentEpoch, totalEpochs);
 
     const epochReward =
@@ -104,6 +108,7 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
 
     setData(prevState => ({
       ...prevState,
+      isEnded,
       delayedEpochs,
       totalEpochs,
       totalReward,

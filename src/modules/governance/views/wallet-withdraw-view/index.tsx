@@ -51,7 +51,8 @@ const WalletWithdrawView: React.FunctionComponent = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
-    } catch {}
+    } catch {
+    }
 
     setState({ saving: false });
   }
@@ -103,7 +104,6 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  tokenLabel="BOND"
                   placeholder={`0 (Max ${formatBONDValue(
                     web3c.daoBarn.balance ?? ZERO_BIG_NUMBER,
                   )})`}
@@ -119,19 +119,31 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                   }}
                 />
               </Form.Item>
-              <Form.Item name="amount">
-                <Slider
-                  min={0}
-                  max={web3c.daoBarn.balance?.toNumber() ?? 0}
-                  step={1}
-                  disabled={state.saving}
-                  tipFormatter={value => (
-                    <span>
+              <Form.Item shouldUpdate>
+                {({ getFieldsValue }) => {
+                  const { amount } = getFieldsValue();
+
+                  return (
+                    <Slider
+                      min={0}
+                      max={Math.floor(web3c.daoBarn.balance?.toNumber() ?? 0)}
+                      step={1}
+                      disabled={state.saving}
+                      tipFormatter={value => (
+                        <span>
                       {value ? formatBONDValue(new BigNumber(value)) : 0}
                     </span>
-                  )}
-                  tooltipPlacement="bottom"
-                />
+                      )}
+                      value={amount?.toNumber() ?? 0}
+                      onChange={value => {
+                        form.setFieldsValue({
+                          amount: new BigNumber(value)
+                        })
+                      }}
+                      tooltipPlacement="bottom"
+                    />
+                  );
+                }}
               </Form.Item>
               <Alert message="Withdrawal before the end of the epoch means you can't harvest the rewards." />
             </Grid>

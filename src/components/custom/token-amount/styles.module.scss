@@ -10,7 +10,8 @@
 
     :global(.ant-input-group-addon) {
       &:first-of-type {
-        min-width: 80px;
+        padding: 0 20px;
+        width: 64px;
       }
 
       &:last-of-type {
