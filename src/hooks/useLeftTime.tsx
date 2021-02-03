@@ -37,6 +37,12 @@ export function useLeftTime(options: useLeftTimeOptions): [Function, Function] {
   }
 
   React.useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, []);
+
+  React.useEffect(() => {
     stopFn();
 
     if (Date.now() < options.end) {

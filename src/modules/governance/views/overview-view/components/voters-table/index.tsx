@@ -24,7 +24,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
       <Grid flow="col" gap={16} align="center">
         <Identicon address={value} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(value)}>
-          <Paragraph type="p1" semiBold color="blue500" className="ml-auto">
+          <Paragraph type="p1" semiBold color="blue500" ellipsis>
             {value}
           </Paragraph>
         </ExternalLink>
@@ -38,11 +38,11 @@ const Columns: ColumnsType<APIVoterEntity> = [
         Voting Power
       </Small>
     ),
-    width: 160,
+    width: 200,
     align: 'right',
     render: (value: BigNumber) => (
       <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
-        {formatBigValue(value, 4)}
+        {formatBigValue(value, 2, '-', 2)}
       </Paragraph>
     ),
   },
@@ -53,7 +53,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
         Votes
       </Small>
     ),
-    width: 160,
+    width: 150,
     align: 'right',
     render: (value: number) => (
       <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
@@ -68,7 +68,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
         Proposals
       </Small>
     ),
-    width: 160,
+    width: 150,
     align: 'right',
     render: (value: number) => (
       <Paragraph type="p1" semiBold color="grey900" className="ml-auto">

@@ -47,12 +47,14 @@ const InitialFormValues: DelegateFormData = {
 type WalletDelegateViewState = {
   saving: boolean;
   votingType?: string;
+  initialVotingType?: string;
   delegateAddress?: string;
 };
 
 const InitialState: WalletDelegateViewState = {
   saving: false,
   votingType: undefined,
+  initialVotingType: undefined,
   delegateAddress: undefined,
 };
 
@@ -91,6 +93,7 @@ const WalletDelegateView: React.FunctionComponent = () => {
 
       setState({
         votingType: DELEGATE_VOTING_KEY,
+        initialVotingType: DELEGATE_VOTING_KEY,
         delegateAddress: userDelegatedTo,
       });
     } else {
@@ -101,6 +104,7 @@ const WalletDelegateView: React.FunctionComponent = () => {
 
       setState({
         votingType: MANUAL_VOTING_KEY,
+        initialVotingType: MANUAL_VOTING_KEY,
         delegateAddress: undefined,
       });
     }
@@ -164,8 +168,8 @@ const WalletDelegateView: React.FunctionComponent = () => {
           Current Voting Type
         </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {state.votingType === MANUAL_VOTING_KEY && 'Manual voting'}
-          {state.votingType === DELEGATE_VOTING_KEY && 'Delegate voting'}
+          {state.initialVotingType === MANUAL_VOTING_KEY && 'Manual voting'}
+          {state.initialVotingType === DELEGATE_VOTING_KEY && 'Delegate voting'}
         </Paragraph>
       </Grid>
 
@@ -232,7 +236,7 @@ const WalletDelegateView: React.FunctionComponent = () => {
             size="large"
             loading={state.saving}
             disabled={disabledDelegate}
-            style={{ width: 121 }}>
+            style={{ justifySelf: 'start' }}>
             {isDelegated ? 'Stop Delegate' : 'Delegate'}
           </Button>
         </Grid>

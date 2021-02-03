@@ -81,11 +81,18 @@ export function formatBigValue(
   defaultValue: string = '-',
   minDecimals: number | undefined = undefined,
 ): string {
-  return value
-    ? new BigNumber(new BigNumber(value).toFixed(decimals)).toFormat(
-        minDecimals,
-      )
-    : defaultValue;
+  if (value === undefined) {
+    return defaultValue;
+  }
+
+  const bnValue = new BigNumber(value);
+
+  if (bnValue.isNaN()) {
+    return defaultValue;
+  }
+
+  return new BigNumber(bnValue.toFixed(decimals))
+    .toFormat(minDecimals);
 }
 
 export function formatUSDValue(

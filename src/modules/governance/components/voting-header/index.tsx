@@ -107,9 +107,7 @@ const VotingHeader: React.FunctionComponent = () => {
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">
-            {isDelegated
-              ? 'Total delegated voting power'
-              : 'Total voting power'}
+            Total voting power
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
             <Heading
@@ -119,9 +117,7 @@ const VotingHeader: React.FunctionComponent = () => {
               loading={
                 (isDelegated ? stakedBalance : votingPower) === undefined
               }>
-              {isDelegated
-                ? formatBONDValue(stakedBalance)
-                : formatBONDValue(votingPower)}
+              {formatBONDValue(votingPower)}
             </Heading>
             <Button type="link" onClick={() => setState({ showDetailedView: true })}>
               Detailed view

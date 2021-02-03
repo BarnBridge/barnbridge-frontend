@@ -16,6 +16,8 @@ import {
 import Form from 'components/antd/form';
 import DatePicker from 'components/antd/datepicker';
 import Button from 'components/antd/button';
+import Alert from 'components/antd/alert';
+import ExternalLink from 'components/custom/externalLink';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { Paragraph, Small } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
@@ -23,11 +25,9 @@ import Icons from 'components/custom/icon';
 import { getFormattedDuration, inRange, isValidAddress } from 'utils';
 import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import { UseLeftTime } from 'hooks/useLeftTime';
 
 import s from './styles.module.scss';
-import Alert from 'components/antd/alert';
-import ExternalLink from 'components/custom/externalLink';
-import { UseLeftTime } from '../../../../hooks/useLeftTime';
 
 type LockFormData = {
   lockEndDate?: Date;
@@ -41,7 +41,7 @@ const InitialFormValues: LockFormData = {
   gasPrice: undefined,
 };
 
-const DURATION_OPTIONS: string[] = ['1w', '1m', '3m', '6m', '1y'];
+const DURATION_OPTIONS: string[] = ['1w', '1mo', '3mo', '6mo', '1y'];
 
 const WalletLockView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
@@ -53,7 +53,7 @@ const WalletLockView: React.FunctionComponent = () => {
     Math.max(web3c.daoBarn.userLockedUntil ?? 0, Date.now()),
     1,
   );
-  const maxAllowedDate = addDays(minAllowedDate, 365);
+  const maxAllowedDate = addDays(Date.now(), 365);
   const currentMultiplier = web3c.daoBarn.multiplier ?? 1;
 
   const disabledSubmit = React.useMemo<boolean>(() => {
@@ -64,31 +64,26 @@ const WalletLockView: React.FunctionComponent = () => {
     return false;
   }, [web3c.daoBarn.userDelegatedTo]);
 
-  function handleDurationChange(ev: RadioChangeEvent) {
-    const duration = ev.target.value;
-    const now = new Date();
-    let lockEndDate = undefined;
-
+  function getLockEndDate(startDate: Date, duration: string): Date | undefined {
     switch (duration) {
       case '1w':
-        lockEndDate = addDays(now, 7);
-        break;
-      case '1m':
-        lockEndDate = addMonths(now, 1);
-        break;
-      case '3m':
-        lockEndDate = addMonths(now, 3);
-        break;
-      case '6m':
-        lockEndDate = addMonths(now, 6);
-        break;
+        return addDays(startDate, 7);
+      case '1mo':
+        return addMonths(startDate, 1);
+      case '3mo':
+        return addMonths(startDate, 3);
+      case '6mo':
+        return addMonths(startDate, 6);
       case '1y':
-        lockEndDate = addDays(now, 365);
-        break;
+        return addDays(startDate, 365);
+      default:
+        return undefined;
     }
+  }
 
+  function handleDurationChange(ev: RadioChangeEvent) {
     form.setFieldsValue({
-      lockEndDate,
+      lockEndDate: getLockEndDate(minAllowedDate, ev.target.value),
     });
   }
 
@@ -207,7 +202,7 @@ const WalletLockView: React.FunctionComponent = () => {
         onFinish={handleSubmit}>
         <div className={s.body}>
           <div className={s.leftCol}>
-            <Form.Item label="Lock duration">
+            <Form.Item label="Add lock duration">
               <Antd.Radio.Group
                 className={s.lockOptions}
                 disabled={submitting}
@@ -216,6 +211,7 @@ const WalletLockView: React.FunctionComponent = () => {
                   <Antd.Radio.Button
                     key={opt}
                     className={s.lockOption}
+                    disabled={(getLockEndDate(minAllowedDate, opt) ?? 0) > maxAllowedDate}
                     value={opt}>
                     {opt}
                   </Antd.Radio.Button>

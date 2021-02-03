@@ -69,8 +69,6 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
           loading: false,
           options,
         });
-
-        props.onChange?.(options[2]);
       })
       .catch(() => {
         setState({
@@ -78,6 +76,12 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
         });
       });
   }, []);
+
+  React.useEffect(() => {
+    if (value === undefined && state.options.length > 2) {
+      props.onChange?.(state.options[2]);
+    }
+  }, [value, state.options]);
 
   function handleChange(ev: RadioChangeEvent) {
     props.onChange?.(ev.target.value);

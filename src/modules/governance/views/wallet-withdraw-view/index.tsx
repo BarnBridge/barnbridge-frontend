@@ -44,6 +44,8 @@ const WalletWithdrawView: React.FunctionComponent = () => {
     InitialState,
   );
 
+  const isLocked = (web3c.daoBarn.userLockedUntil ?? 0) > Date.now();
+
   async function handleSubmit(values: WithdrawFormData) {
     setState({ saving: true });
 
@@ -132,7 +134,8 @@ const WalletWithdrawView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            style={{ width: 121 }}>
+            disabled={isLocked}
+            style={{ justifySelf: 'start' }}>
             Withdraw
           </Button>
         </Grid>

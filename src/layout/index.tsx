@@ -49,8 +49,8 @@ const LayoutView: React.FunctionComponent = () => {
               <ExternalLink href="https://github.com/BarnBridge/">
                 Github
               </ExternalLink>
-              <ExternalLink href="https://client.aragon.org/#/barnbridgelaunch/">
-                LaunchDAO
+              <ExternalLink href="https://docs.barnbridge.com/">
+                Docs
               </ExternalLink>
               <ExternalLink
                 href={`https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`}>

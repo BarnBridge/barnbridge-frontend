@@ -170,7 +170,7 @@ const WalletDepositView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            style={{ width: 121 }}>
+            style={{ justifySelf: 'start' }}>
             Deposit
           </Button>
         </Grid>
