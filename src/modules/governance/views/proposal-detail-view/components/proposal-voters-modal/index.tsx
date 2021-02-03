@@ -30,7 +30,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
       </Small>
     ),
     dataIndex: 'address',
-    width: '60%',
+    width: '45%',
     render: (address: string) => (
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
@@ -49,10 +49,11 @@ const Columns: ColumnsType<APIVoteEntity> = [
       </Small>
     ),
     dataIndex: 'power',
-    width: '20%',
+    width: '35%',
+    align: 'right',
     render: (power: BigNumber) => (
       <Paragraph type="p1" semiBold color="grey900" className={s.powerCell}>
-        {formatBigValue(power, 0)}
+        {formatBigValue(power, 2, '-', 2)}
       </Paragraph>
     ),
   },

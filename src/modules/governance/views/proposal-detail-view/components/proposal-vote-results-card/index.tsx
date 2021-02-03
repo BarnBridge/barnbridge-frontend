@@ -65,7 +65,8 @@ const ProposalVoteResultsCard: React.FunctionComponent = () => {
       <Grid flow="row" className={s.row}>
         <Grid flow="col" justify="space-between">
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500">
+            <Small semiBold color="grey500"
+                   hint="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
               Quorum
             </Small>
             <Grid flow="col" gap={8}>
@@ -78,7 +79,8 @@ const ProposalVoteResultsCard: React.FunctionComponent = () => {
             </Grid>
           </Grid>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500" align="right">
+            <Small semiBold color="grey500" align="right"
+                   hint="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
               Approval
             </Small>
             <Grid flow="col" gap={8}>

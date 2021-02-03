@@ -31,7 +31,7 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
   );
 
   const canCancel =
-    (proposalCtx.threshold === false ||
+    ((proposalCtx.thresholdRate && proposalCtx.thresholdRate < proposalCtx.minThreshold) ||
       proposalCtx.proposal?.proposer === wallet.account) &&
     [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(
       proposalCtx.proposal?.state as any,
@@ -96,15 +96,15 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
           </Grid>
           <Grid flow="row" gap={4}>
             <Small semiBold color="grey500"
-                   hint="If the creator’s balance falls below the 1% threshold the proposal can be cancelled by calling a function.">
+                   hint={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
               Creator threshold
             </Small>
             <Grid flow="col" gap={8}>
-              {proposalCtx.threshold !== undefined && (
+              {proposalCtx.thresholdRate !== undefined && (
                 <>
                   <Icons
                     name={
-                      proposalCtx.threshold
+                      proposalCtx.thresholdRate > proposalCtx.minThreshold
                         ? 'check-circle-outlined'
                         : 'close-circle-outlined'
                     }
@@ -114,7 +114,7 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
                     semiBold
                     color="grey900"
                     loading={proposalCtx.proposal === undefined}>
-                    {proposalCtx.threshold ? 'Above 1%' : 'Below 1%'}
+                    {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
                   </Paragraph>
                 </>
               )}

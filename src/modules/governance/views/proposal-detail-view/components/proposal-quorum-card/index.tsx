@@ -9,6 +9,8 @@ import { useProposal } from '../../providers/ProposalProvider';
 const ProposalQuorumCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
+  const passed = (proposalCtx.quorum ?? 0) >= (proposalCtx.proposal?.minQuorum ?? 0);
+
   return (
     <Card
       title={
@@ -29,8 +31,8 @@ const ProposalQuorumCard: React.FunctionComponent = () => {
         <Progress
           percent={proposalCtx.quorum}
           acceptance={proposalCtx.proposal?.minQuorum}
-          strokeColor="var(--text-color-green500)"
-          trailColor="rgba(var(--text-color-green500-rgb), .16)"
+          strokeColor={passed ? 'var(--text-color-green500)' : 'var(--text-color-red500)'}
+          trailColor={passed ? 'rgba(var(--text-color-green500-rgb), .16)' : 'rgba(var(--text-color-red500-rgb), .16)'}
         />
       </Grid>
     </Card>

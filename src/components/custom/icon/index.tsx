@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { CSSProperties } from 'react';
 import cx from 'classnames';
 
 import Sprite from 'resources/svg/icons-sprite.svg';
@@ -50,7 +50,8 @@ export type IconNames =
   | 'bin-outlined'
   | 'add-user'
   | 'search-outlined'
-  | 'link-outlined';
+  | 'link-outlined'
+  | 'arrow-top-right';
 
 export type IconsProps = {
   name: IconNames;
@@ -59,10 +60,11 @@ export type IconsProps = {
   color?: string;
   rotate?: 0 | 90 | 180 | 270;
   className?: string;
+  style?: CSSProperties;
 };
 
 const Icons: React.FunctionComponent<IconsProps> = props => {
-  const { name, width = 24, height = 24, rotate, color, className } = props;
+  const { name, width = 24, height = 24, rotate, color, className, style } = props;
 
   return (
     <svg
@@ -73,7 +75,8 @@ const Icons: React.FunctionComponent<IconsProps> = props => {
         color && `clr-${color}`,
       )}
       width={width}
-      height={height ?? width}>
+      height={height ?? width}
+      style={style}>
       <use xlinkHref={`${Sprite}#icon__${name}`} />
     </svg>
   );

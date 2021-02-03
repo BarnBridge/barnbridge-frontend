@@ -31,7 +31,7 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
         <Grid flow="col" gap={16} align="center">
           <ProposalStatusTag state={data.state} />
           <Paragraph type="p2" semiBold color="grey500">
-            {data.stateTimeLeft ? getFormattedDuration(data.stateTimeLeft) : ''}
+            {data.stateTimeLeft ? `${getFormattedDuration(data.stateTimeLeft)} left` : ''}
           </Paragraph>
         </Grid>
       </Grid>

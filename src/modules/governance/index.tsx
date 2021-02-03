@@ -17,6 +17,8 @@ import ProposalDetailView from './views/proposal-detail-view';
 import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.scss';
+import ExternalLink from '../../components/custom/externalLink';
+import { Paragraph } from '../../components/custom/typography';
 
 type GovernanceViewParams = {
   vt: string;
@@ -34,8 +36,10 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
   function handleTabChange(tabKey: string) {
-    setActiveTab(tabKey);
-    history.push(`/governance/${tabKey}`);
+    if (tabKey) {
+      setActiveTab(tabKey);
+      history.push(`/governance/${tabKey}`);
+    }
   }
 
   React.useEffect(() => {
@@ -76,12 +80,15 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
           }
         />
         <Tabs.Tab
-          key="discussions"
-          disabled
+          key="signal"
           tab={
-            <>
-              <Icons name="chats-outlined" /> Discussions
-            </>
+            <ExternalLink href="https://signal.barnbridge.com/">
+              <Grid flow="col" gap={8} align="center">
+                <Icons name="chats-outlined" />
+                <Paragraph type="p1" semiBold color="grey500">Signal</Paragraph>
+                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+              </Grid>
+            </ExternalLink>
           }
         />
       </Tabs>

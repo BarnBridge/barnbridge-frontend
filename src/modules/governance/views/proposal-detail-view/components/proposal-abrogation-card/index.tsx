@@ -115,10 +115,9 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
                     overlayStyle={{ width: 520 }}
                     content={
                       <Paragraph type="p2" semiBold>
-                        You don’t have enough balance to create a proposal.
-                        The creator of a proposal needs to have at least {daoCtx.minThreshold}%
-                        of the amount of $BOND staked in the DAO in order to
-                        create a proposal.
+                        You don’t have enough voting power to create an abrogation proposal. The creator of an
+                        abrogation proposal needs to have a voting power of at least {daoCtx.minThreshold}% of the
+                        amount of $BOND staked in the DAO.
                       </Paragraph>
                     }
                     visible={state.showWhyReason}

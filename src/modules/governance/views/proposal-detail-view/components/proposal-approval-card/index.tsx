@@ -9,6 +9,8 @@ import { useProposal } from '../../providers/ProposalProvider';
 const ProposalApprovalCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
+  const passed = (proposalCtx.forRate ?? 0) >= (proposalCtx.proposal?.acceptanceThreshold ?? 0);
+
   return (
     <Card
       title={
@@ -29,8 +31,8 @@ const ProposalApprovalCard: React.FunctionComponent = () => {
         <Progress
           percent={proposalCtx.forRate}
           acceptance={proposalCtx.proposal?.acceptanceThreshold}
-          strokeColor="var(--text-color-red500)"
-          trailColor="rgba(var(--text-color-red500-rgb), .16)"
+          strokeColor={passed ? 'var(--text-color-green500)' : 'var(--text-color-red500)'}
+          trailColor={passed ? 'rgba(var(--text-color-green500-rgb), .16)' : 'rgba(var(--text-color-red500-rgb), .16)'}
         />
       </Grid>
     </Card>

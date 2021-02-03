@@ -16,7 +16,6 @@ import { formatBigValue } from 'web3/utils';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
-import { VoteState } from '../proposal-vote-modal';
 
 export enum VoteAbrogationState {
   None,
@@ -97,7 +96,8 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
 
       abrogationCtx.reload();
       props.onCancel?.();
-    } catch {}
+    } catch {
+    }
 
     setState({ submitting: false });
   }
@@ -118,7 +118,7 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
       title={
         <>
           {voteState === VoteAbrogationState.VoteInitiate &&
-            'Initiate abrogation proposal'}
+          'Initiate abrogation proposal'}
           {voteState === VoteAbrogationState.VoteFor && 'Confirm your vote'}
           {voteState === VoteAbrogationState.VoteAgainst && 'Confirm your vote'}
           {voteState === VoteAbrogationState.VoteChange && 'Change your vote'}
@@ -151,13 +151,14 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
             {(voteState === VoteAbrogationState.VoteFor || voteState === VoteAbrogationState.VoteAgainst) && (
               <Grid flow="row" gap={8}>
                 <Paragraph type="p2" color="grey500">
-                  You are about to vote on the abrogation proposal for
+                  You are about to vote {voteState === VoteAbrogationState.VoteFor ? 'FOR' : 'AGAINST'} the abrogation
+                  proposal for
                 </Paragraph>
                 <Paragraph type="p2" semiBold color="grey500">
                   "{proposalCtx.proposal?.title}"
                 </Paragraph>
                 <Paragraph type="p2" color="grey500">
-                  Are you sure you want to continue? You can change your vote later.
+                  You can change your vote later.
                 </Paragraph>
               </Grid>
             )}
@@ -259,19 +260,19 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
                   disabled={isDisabled}
                   className={s.actionBtn}>
                   {voteState === VoteAbrogationState.VoteInitiate &&
-                    'Initiate abrogation proposal'}
+                  'Initiate abrogation proposal'}
                   {voteState === VoteAbrogationState.VoteFor &&
-                    'Vote for abrogation proposal'}
+                  'Vote for abrogation proposal'}
                   {voteState === VoteAbrogationState.VoteAgainst &&
-                    'Vote against abrogation proposal'}
+                  'Vote against abrogation proposal'}
                   {voteState === VoteAbrogationState.VoteChange &&
-                    changeOption === true &&
-                    'Vote for abrogation proposal'}
+                  changeOption === true &&
+                  'Vote for abrogation proposal'}
                   {voteState === VoteAbrogationState.VoteChange &&
-                    changeOption === false &&
-                    'Vote against abrogation proposal'}
+                  changeOption === false &&
+                  'Vote against abrogation proposal'}
                   {voteState === VoteAbrogationState.VoteCancel &&
-                    'Cancel abrogation vote'}
+                  'Cancel abrogation vote'}
                 </Button>
               );
             }}

@@ -9,6 +9,8 @@ import { useAbrogation } from '../../providers/AbrogationProvider';
 const AbrogationApprovalCard: React.FunctionComponent = () => {
   const abrogationCtx = useAbrogation();
 
+  const passed = (abrogationCtx.approvalRate ?? 0) >= (abrogationCtx.acceptanceThreshold ?? 0);
+
   return (
     <Card
       title={
@@ -29,8 +31,8 @@ const AbrogationApprovalCard: React.FunctionComponent = () => {
         <Progress
           percent={abrogationCtx.approvalRate}
           acceptance={abrogationCtx.acceptanceThreshold}
-          strokeColor="var(--text-color-red500)"
-          trailColor="rgba(var(--text-color-red500-rgb), .16)"
+          strokeColor={passed ? 'var(--text-color-green500)' : 'var(--text-color-red500)'}
+          trailColor={passed ? 'rgba(var(--text-color-green500-rgb), .16)' : 'rgba(var(--text-color-red500-rgb), .16)'}
         />
       </Grid>
     </Card>

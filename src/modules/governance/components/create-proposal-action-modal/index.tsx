@@ -228,7 +228,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       if (values.addFunctionCall) {
         const encodedFunction = values.abiInterface?.encodeFunctionData(
           values.functionMeta!,
-          Object.values(values.functionParams),
+          Object.values(values.functionParams ?? {}),
         );
 
         try {
@@ -548,15 +548,13 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
             <Button
               type="default"
               disabled={state.submitting}
-              className={s.cancelBtn}
               onClick={props.onCancel}>
               {edit ? 'Cancel Changes' : 'Cancel'}
             </Button>
             <Button
               type="primary"
               htmlType="submit"
-              loading={state.submitting}
-              className={s.saveBtn}>
+              loading={state.submitting}>
               {edit ? 'Save Changes' : 'Add Action'}
             </Button>
           </div>

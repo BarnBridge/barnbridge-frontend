@@ -49,9 +49,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const [isSignature, showSignature] = React.useState<boolean>(false);
 
-  const functionFragment = React.useMemo<
-    AbiFunctionFragment | undefined
-  >(() => {
+  const functionFragment = React.useMemo<AbiFunctionFragment | undefined>(() => {
     return AbiInterface.getFunctionFragmentFrom(signature);
   }, [signature]);
 
@@ -165,20 +163,19 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
         <Paragraph type="p1" semiBold className={s.address} color="blue500">
           {shortenAddr(target)}.
         </Paragraph>
-
-        <Antd.Typography.Paragraph
-          className={cx(s.paragraph, expanded && s.expanded)}
-          style={{ maxWidth: '514px' }}
-          ellipsis={{
-            rows: expanded ? 9999 : 2,
-            expandable: false,
-            onEllipsis: handleEllipsis,
-          }}>
-          {isSignature
-            ? signature
-            : `${functionFragment?.name}(${stringParams})`}
-        </Antd.Typography.Paragraph>
       </ExternalLink>
+      <Antd.Typography.Paragraph
+        className={cx(s.paragraph, expanded && s.expanded)}
+        style={{ maxWidth: '514px' }}
+        ellipsis={{
+          rows: expanded ? 9999 : 2,
+          expandable: false,
+          onEllipsis: handleEllipsis,
+        }}>
+        {isSignature
+          ? signature
+          : `${functionFragment?.name}(${stringParams})`}
+      </Antd.Typography.Paragraph>
     </ExpandableCard>
   );
 };

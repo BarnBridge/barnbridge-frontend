@@ -79,7 +79,7 @@ const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProp
         <Grid flow="row" gap={16} className={s.row}>
           <Paragraph type="p2" semiBold color="grey500">
             Once a proposal is accepted, it will have to wait in the queue before it can be executed.
-            During this time it can be cancelled by:
+            During this time it can only be cancelled by an abrogation proposal
           </Paragraph>
           <ul>
             <li>

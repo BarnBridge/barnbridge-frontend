@@ -327,5 +327,11 @@
                   stroke-linecap="round"/>
             <path d="M14.534 1.33325L11.334 4.53325" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
         </svg>
+        <!-- ARROW TOP RIGHT -->
+        <svg id="icon__arrow-top-right" viewBox="0 0 7 7" fill="none">
+            <path d="M2.73242 1.06671L5.93242 1.06671V4.26671" stroke="currentColor" stroke-width="1.5"
+                  stroke-linecap="round"/>
+            <path d="M5.93339 1.06671L1 6.00011" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
     </defs>
 </svg>

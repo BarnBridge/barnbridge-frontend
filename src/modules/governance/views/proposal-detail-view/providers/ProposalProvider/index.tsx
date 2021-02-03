@@ -16,13 +16,16 @@ export type ProposalProviderState = {
   forRate?: number;
   againstRate?: number;
   quorum?: number;
-  threshold?: boolean;
+  minThreshold: number;
+  thresholdRate?: number;
   votingPower?: BigNumber;
   receipt?: ProposalReceipt;
   isCanceled?: boolean;
 };
 
-const InitialState: ProposalProviderState = {};
+const InitialState: ProposalProviderState = {
+  minThreshold: 1,
+};
 
 export type ProposalContextType = ProposalProviderState & {
   reload(): void;
@@ -93,7 +96,6 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
       forRate: undefined,
       againstRate: undefined,
       quorum: undefined,
-      threshold: undefined,
       isCanceled: undefined,
     });
 
@@ -103,7 +105,6 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
 
     const {
       proposalId,
-      proposer,
       forVotes,
       againstVotes,
       createTime,
@@ -136,29 +137,35 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
         setState({ quorum });
       });
 
-    // web3c.daoBarn.actions.votingPower(proposer)
-    //   .then(votingPower => {
-    //     if (votingPower) {
-    //       const bondStaked = web3c.daoBarn.bondStaked;
-    //
-    //       let threshold: number | undefined;
-    //
-    //       if (votingPower?.gt(ZERO_BIG_NUMBER)) {
-    //         threshold = total.multipliedBy(100).div(bondStakedAt).toNumber();
-    //       }
-    //
-    //       setState({
-    //         threshold: bondStaked?.div(100).isLessThan(votingPower) ?? true,
-    //       });
-    //     }
-    //   });
-
     web3c.daoGovernance.actions.abrogationProposal(proposalId).then(result => {
       if (result) {
         setState({ isCanceled: result.createTime > 0 });
       }
     });
   }, [state.proposal]);
+
+  React.useEffect(() => {
+    setState({
+      thresholdRate: undefined,
+    });
+
+    const { bondStaked } = web3c.daoBarn;
+    if (!state.proposal || !bondStaked || bondStaked.isEqualTo(ZERO_BIG_NUMBER)) {
+      return;
+    }
+
+    const { proposer } = state.proposal;
+
+    web3c.daoBarn.actions
+      .votingPower(proposer)
+      .then(votingPower => {
+        if (votingPower) {
+          setState({
+            thresholdRate: votingPower.multipliedBy(100).div(bondStaked).toNumber(),
+          });
+        }
+      });
+  }, [state.proposal, web3c.daoBarn.bondStaked]);
 
   React.useEffect(() => {
     setState({
@@ -204,10 +211,10 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
   function proposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposalId
       ? web3c.daoGovernance.actions.proposalCastVote(
-          proposalId,
-          support,
-          gasPrice,
-        )
+        proposalId,
+        support,
+        gasPrice,
+      )
       : Promise.reject();
   }
 
@@ -223,10 +230,10 @@ const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props =
   ): Promise<void> {
     return proposalId
       ? web3c.daoGovernance.actions.startAbrogationProposal(
-          proposalId,
-          description,
-          gasPrice,
-        )
+        proposalId,
+        description,
+        gasPrice,
+      )
       : Promise.reject();
   }
 

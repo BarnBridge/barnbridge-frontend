@@ -23,6 +23,7 @@ import useMergeState from 'hooks/useMergeState';
 import s from './styles.module.scss';
 import { fetchProposal } from '../../api';
 import { useWhile } from '../../../../hooks/useWhile';
+import Alert from '../../../../components/antd/alert';
 
 type NewProposalForm = {
   title: string;
@@ -258,11 +259,10 @@ const ProposalCreateView: React.FunctionComponent = () => {
                           targetAddress,
                           functionSignature,
                           functionEncodedParams,
-                          actionValue,
                         } = fieldData;
 
                         return (
-                          <Form.Item key={field.key}>
+                          <Form.Item key={field.key} noStyle>
                             <ProposalActionCard
                               title={`Action ${index + 1}`}
                               target={targetAddress}
@@ -286,16 +286,22 @@ const ProposalCreateView: React.FunctionComponent = () => {
                         );
                       })}
 
-                      <Button
-                        type="ghost"
-                        icon={<Icons name="plus-circle-outlined" />}
-                        disabled={state.submitting}
-                        className={s.addActionBtn}
-                        onClick={() =>
-                          setState({ showCreateActionModal: true })
-                        }>
-                        Add new action
-                      </Button>
+                      {fields.length < 10 && (
+                        <Button
+                          type="ghost"
+                          icon={<Icons name="plus-circle-outlined" />}
+                          disabled={state.submitting}
+                          className={s.addActionBtn}
+                          onClick={() =>
+                            setState({ showCreateActionModal: true })
+                          }>
+                          Add new action
+                        </Button>
+                      )}
+
+                      {fields.length >= 10 && (
+                        <Alert type="info" message="Maximum 10 actions are allowed." />
+                      )}
 
                       <Antd.Form.ErrorList errors={errors} />
                     </Grid>
