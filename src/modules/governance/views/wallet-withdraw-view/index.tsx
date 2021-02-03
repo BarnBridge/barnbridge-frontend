@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js';
 
 import Form from 'components/antd/form';
 import Card from 'components/antd/card';
-import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
@@ -13,7 +12,7 @@ import { Paragraph, Small } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 
-import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
 
@@ -109,46 +108,12 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  placeholder={`0 (Max ${formatBONDValue(
-                    web3c.daoBarn.balance ?? ZERO_BIG_NUMBER,
-                  )})`}
+                  max={web3c.daoBarn.balance}
+                  maximumFractionDigits={4}
+                  displayDecimals={4}
                   disabled={state.saving}
-                  maximumFractionDigits={2}
-                  maxProps={{
-                    disabled: state.saving,
-                    onClick: () => {
-                      form.setFieldsValue({
-                        amount: web3c.daoBarn.balance ?? ZERO_BIG_NUMBER,
-                      });
-                    },
-                  }}
+                  slider
                 />
-              </Form.Item>
-              <Form.Item shouldUpdate>
-                {({ getFieldsValue }) => {
-                  const { amount } = getFieldsValue();
-
-                  return (
-                    <Slider
-                      min={0}
-                      max={Math.floor(web3c.daoBarn.balance?.toNumber() ?? 0)}
-                      step={1}
-                      disabled={state.saving}
-                      tipFormatter={value => (
-                        <span>
-                      {value ? formatBONDValue(new BigNumber(value)) : 0}
-                    </span>
-                      )}
-                      value={amount?.toNumber() ?? 0}
-                      onChange={value => {
-                        form.setFieldsValue({
-                          amount: new BigNumber(value)
-                        })
-                      }}
-                      tooltipPlacement="bottom"
-                    />
-                  );
-                }}
               </Form.Item>
               <Alert message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
             </Grid>

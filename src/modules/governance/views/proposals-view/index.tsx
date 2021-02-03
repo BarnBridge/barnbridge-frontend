@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import { CardTabListType } from 'antd/lib/card';
 import * as Antd from 'antd';
+import useDebounce from "@rooks/use-debounce";
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
@@ -18,7 +19,6 @@ import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';
 
 import useMergeState from 'hooks/useMergeState';
-import { useDebounce } from 'hooks/useDebounce';
 
 import s from './styles.module.scss';
 
@@ -160,7 +160,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
             className={s.search}
             prefix={<Icons name="search-outlined" />}
             placeholder="Search proposal"
-            onChange={handleSearchChange}
+            onChange={ev => handleSearchChange(ev)}
           />
         }
         onTabChange={handleStateChange}>

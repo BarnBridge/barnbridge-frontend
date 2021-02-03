@@ -39,6 +39,8 @@
   "dependencies": {
     "@animated-burgers/burger-squeeze": "1.1.2",
     "@ethersproject/providers": "5.0.20",
+    "@rooks/use-debounce": "^4.8.0",
+    "@rooks/use-interval": "^4.8.0",
     "@web3-react/core": "6.1.1",
     "@web3-react/injected-connector": "6.0.7",
     "@web3-react/ledger-connector": "6.1.1",

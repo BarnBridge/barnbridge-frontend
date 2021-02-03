@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
@@ -147,33 +146,11 @@ const WalletDepositView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  placeholder={`0 (Max ${formatBONDValue(
-                    web3c.bond.balance ?? ZERO_BIG_NUMBER,
-                  )})`}
+                  max={web3c.bond.balance}
+                  maximumFractionDigits={4}
+                  displayDecimals={4}
                   disabled={state.saving}
-                  maximumFractionDigits={2}
-                  maxProps={{
-                    disabled: state.saving,
-                    onClick: () => {
-                      form.setFieldsValue({
-                        amount: web3c.bond.balance ?? ZERO_BIG_NUMBER,
-                      });
-                    },
-                  }}
-                />
-              </Form.Item>
-              <Form.Item name="amount">
-                <Slider
-                  min={0}
-                  max={web3c.bond.balance?.toNumber() ?? 0}
-                  step={1}
-                  disabled={state.saving}
-                  tipFormatter={value => (
-                    <span>
-                      {value ? formatBONDValue(new BigNumber(value)) : 0}
-                    </span>
-                  )}
-                  tooltipPlacement="bottom"
+                  slider
                 />
               </Form.Item>
               <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />

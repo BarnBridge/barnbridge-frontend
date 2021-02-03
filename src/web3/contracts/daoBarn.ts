@@ -60,7 +60,7 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'userLockedUntil',
       methodArgs: [userAddress],
-      transform: (value: string) => Number(value) * 1000,
+      transform: (value: string) => Number(value) * 1_000,
     },
     {
       method: 'delegatedPower',

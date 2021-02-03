@@ -121,11 +121,11 @@ export function useStakingContract(): StakingContract {
       },
       {
         method: 'epoch1Start',
-        transform: (value: string) => Number(value) * 1000,
+        transform: (value: string) => Number(value) * 1_000,
       },
       {
         method: 'epochDuration',
-        transform: (value: string) => Number(value) * 1000,
+        transform: (value: string) => Number(value) * 1_000,
       },
     ]);
 

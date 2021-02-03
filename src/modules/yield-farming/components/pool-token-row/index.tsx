@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
@@ -17,7 +16,6 @@ import { Label, Paragraph, Small } from 'components/custom/typography';
 import { TokenMeta } from 'web3/types';
 import {
   formatBigValue,
-  getHumanValue,
   getNonHumanValue,
   MAX_UINT_256,
   ZERO_BIG_NUMBER,
@@ -338,47 +336,12 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 ]}>
                 <TokenAmount
                   tokenIcon={icon}
-                  placeholder={
-                    activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'
-                  }
-                  disabled={state.formDisabled || state.saving}
+                  max={activeBalance}
                   maximumFractionDigits={token.decimals}
-                  maxProps={{
-                    disabled: state.formDisabled || state.saving,
-                    onClick: () => {
-                      form.setFieldsValue({
-                        amount: activeBalance,
-                      });
-                    },
-                  }}
+                  displayDecimals={token === UNISWAPTokenMeta ? 8 : 4}
+                  disabled={state.formDisabled || state.saving}
+                  slider
                 />
-              </Form.Item>
-              <Form.Item shouldUpdate>
-                {({ getFieldsValue }) => {
-                  const { amount } = getFieldsValue(['amount']);
-
-                  return (
-                    <Slider
-                      min={0}
-                      max={maxAmount}
-                      step={1}
-                      disabled={state.formDisabled || state.saving || !activeBalance}
-                      tooltipPlacement="bottom"
-                      tipFormatter={value => value
-                        ? formatBigValue(getHumanValue(new BigNumber(value), token.decimals), token.decimals)
-                        : 0
-                      }
-                      value={getNonHumanValue(Math.floor(amount ?? 0), token.decimals).toNumber() ?? 0}
-                      onChange={value => {
-                        form.setFieldsValue({
-                          amount: value === maxAmount
-                            ? activeBalance
-                            : getHumanValue(new BigNumber(value), token.decimals),
-                        });
-                      }}
-                    />
-                  );
-                }}
               </Form.Item>
               {isDeposit && (
                 <Alert

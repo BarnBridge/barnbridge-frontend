@@ -48,7 +48,7 @@ export function useWeekCountdown(endDate?: number): string[] {
           },
         }),
       );
-    }, 1000);
+    }, 1_000);
 
     return () => {
       clearInterval(intervalID);

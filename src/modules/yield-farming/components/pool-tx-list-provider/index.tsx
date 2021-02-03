@@ -112,7 +112,7 @@ const PoolTxListProvider: React.FunctionComponent = props => {
           const transactions: PoolTxListItem[] = stakingActions.map(
             stakingAction => ({
               ...stakingAction,
-              blockTimestamp: stakingAction.blockTimestamp * 1000,
+              blockTimestamp: stakingAction.blockTimestamp * 1_000,
               type: stakingAction.type.toUpperCase(),
               get amount() {
                 return new BigNumber(stakingAction.amount);
@@ -129,13 +129,13 @@ const PoolTxListProvider: React.FunctionComponent = props => {
           const firstItem = first(txRef.current);
 
           if (firstItem) {
-            firstTimestampRef.current = firstItem.blockTimestamp / 1000;
+            firstTimestampRef.current = firstItem.blockTimestamp / 1_000;
           }
 
           const lastItem = last(txRef.current);
 
           if (lastItem) {
-            lastTimestampRef.current = lastItem.blockTimestamp / 1000;
+            lastTimestampRef.current = lastItem.blockTimestamp / 1_000;
           }
 
           if (direction === 'desc' && transactions.length === 0) {

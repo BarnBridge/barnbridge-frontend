@@ -8,13 +8,9 @@ import Icons, { IconNames } from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
 import { useProposal } from '../../providers/ProposalProvider';
 
-import {
-  APIProposalHistoryEntity,
-  APIProposalState,
-  APIProposalStateMap,
-} from 'modules/governance/api';
+import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 import { getEtherscanTxUrl } from 'web3/utils';
-import { useReload } from 'hooks/useReload';
+import { UseLeftTime } from 'hooks/useLeftTime';
 
 function getEventIcon(index: number, name: string): IconNames {
   if (
@@ -45,8 +41,8 @@ function getEventIcon(index: number, name: string): IconNames {
 }
 
 function formatEventTime(name: string, start: number, end: number): string {
-  const mStart = new Date(start * 1000);
-  const mEnd = end ? new Date(end * 1000) : new Date();
+  const mStart = new Date(start * 1_000);
+  const mEnd = end ? new Date(end * 1_000) : new Date();
   const now = new Date();
 
   if (
@@ -69,35 +65,6 @@ function formatEventTime(name: string, start: number, end: number): string {
 
   return now > mEnd ? `Ended ${dist}` : `Ends ${dist}`;
 }
-
-type HistoryEventProps = {
-  event: APIProposalHistoryEntity;
-};
-
-const HistoryEvent: React.FunctionComponent<HistoryEventProps> = props => {
-  const { event } = props;
-
-  const [reload] = useReload();
-
-  React.useEffect(() => {
-    const fn = () => {
-      if (Date.now() / 1000 < event.endTimestamp) {
-        setTimeout(() => {
-          reload();
-          fn();
-        }, 10000);
-      }
-    };
-
-    fn();
-  }, []);
-
-  return (
-    <Paragraph type="p2" semiBold color="grey500">
-      {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
-    </Paragraph>
-  );
-};
 
 const ProposalStatusCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
@@ -130,7 +97,16 @@ const ProposalStatusCard: React.FunctionComponent = () => {
                 </Paragraph>
               )}
 
-              <HistoryEvent event={event} />
+              <UseLeftTime
+                end={(event.endTimestamp ?? 0) * 1_000}
+                delay={10_000}
+                onEnd={() => proposalCtx.reload()}>
+                {(() => (
+                  <Paragraph type="p2" semiBold color="grey500">
+                    {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
+                  </Paragraph>
+                ))}
+              </UseLeftTime>
             </Grid>
           </Grid>
         ))}

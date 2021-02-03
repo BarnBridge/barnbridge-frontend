@@ -4,7 +4,7 @@ import Web3 from 'web3';
 import { DEFAULT_ADDRESS } from 'web3/utils';
 
 export function getNowTs(): number {
-  return Math.floor(Date.now() / 1000);
+  return Math.floor(Date.now() / 1_000);
 }
 
 export function inRange(value: number, min: number, max: number): boolean {
