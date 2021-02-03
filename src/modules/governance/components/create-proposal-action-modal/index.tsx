@@ -65,6 +65,7 @@ type CreateProposalActionModalState = {
   simulatedAction?: CreateProposalActionForm;
   simulationResolve?: Function;
   simulationReject?: Function;
+  formDirty: boolean;
   submitting: boolean;
 };
 
@@ -73,6 +74,7 @@ const InitialState: CreateProposalActionModalState = {
   simulatedAction: undefined,
   simulationResolve: undefined,
   simulationReject: undefined,
+  formDirty: false,
   submitting: false,
 };
 
@@ -209,6 +211,10 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
         }
       }
     });
+
+    setState({
+      formDirty: form.isFieldsTouched(),
+    });
   }
 
   async function handleSubmit(values: CreateProposalActionForm) {
@@ -278,7 +284,11 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
   }, [initialValues]);
 
   return (
-    <Modal className={s.component} {...props}>
+    <Modal
+      className={s.component}
+      confirmClose={state.formDirty}
+      confirmText="Are you sure you want to close this form?"
+      {...props}>
       <div className={s.wrap}>
         <Heading type="h2" semiBold className={s.headerLabel}>
           {edit ? 'Edit action' : 'Add new action'}

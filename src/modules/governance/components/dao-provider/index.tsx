@@ -96,7 +96,7 @@ const DAOProvider: React.FunctionComponent = props => {
     return web3c.daoGovernance.actions
       .getLatestProposalId()
       .then(proposalId => {
-        if (proposalId === 0) {
+        if (!proposalId) {
           return Promise.resolve(false);
         }
 

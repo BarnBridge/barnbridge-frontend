@@ -21,6 +21,8 @@ import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
+import { fetchProposal } from '../../api';
+import { useWhile } from '../../../../hooks/useWhile';
 
 type NewProposalForm = {
   title: string;
@@ -56,6 +58,13 @@ const ProposalCreateView: React.FunctionComponent = () => {
   const [state, setState] = useMergeState<ProposalCreateViewState>(
     InitialState,
   );
+
+  const checkProposalWhile = useWhile({
+    callback: async (proposalId: number) => {
+      await fetchProposal(proposalId);
+    },
+    delay: 3000,
+  });
 
   function handleBackClick() {
     history.push('/governance/proposals');
@@ -141,6 +150,10 @@ const ProposalCreateView: React.FunctionComponent = () => {
       const proposal = await web3c.daoGovernance.actions.createProposal(
         payload,
       );
+
+      checkProposalWhile.start();
+      await checkProposalWhile.promise;
+
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
     } catch (e) {
