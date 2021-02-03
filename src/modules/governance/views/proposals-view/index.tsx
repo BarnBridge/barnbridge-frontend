@@ -19,6 +19,7 @@ import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';
 
 import useMergeState from 'hooks/useMergeState';
+import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.scss';
 
@@ -69,6 +70,7 @@ const InitialState: ProposalsViewState = {
 
 const ProposalsViewInner: React.FunctionComponent = () => {
   const history = useHistory();
+  const wallet = useWallet();
   const daoCtx = useDAO();
   const proposalsCtx = useProposals();
 
@@ -86,12 +88,15 @@ const ProposalsViewInner: React.FunctionComponent = () => {
   );
 
   React.useEffect(() => {
-    daoCtx.actions.hasActiveProposal().then(hasActiveProposal => {
-      setState({ hasActiveProposal });
-    });
-  }, []);
+    daoCtx.actions.hasActiveProposal()
+      .then(hasActiveProposal => {
+        setState({ hasActiveProposal });
+      });
+  }, [wallet.account]);
 
-  const hasThreshold = !!daoCtx.thresholdRate && daoCtx.thresholdRate >= daoCtx.minThreshold;
+  const hasRestrictions = state.hasActiveProposal !== undefined && daoCtx.thresholdRate !== undefined;
+  const hasThreshold = daoCtx.thresholdRate && daoCtx.thresholdRate >= daoCtx.minThreshold;
+  const canCreateProposal = state.hasActiveProposal === false && hasThreshold;
 
   return (
     <Grid flow="row" gap={32}>
@@ -99,56 +104,58 @@ const ProposalsViewInner: React.FunctionComponent = () => {
         <Heading type="h1" bold color="grey900">
           Proposals
         </Heading>
-        <Grid flow="row" gap={8} align="end" justify="end">
-          {state.hasActiveProposal !== undefined &&
-            hasThreshold !== undefined && (
-              <Button
-                type="primary"
-                disabled={!state.hasActiveProposal || hasThreshold}
-                onClick={() => history.push('proposals/create')}>
-                Create proposal
-              </Button>
-            )}
+        {wallet.isActive && (
+          <Grid flow="row" gap={8} align="end" justify="end">
+            <Button
+              type="primary"
+              disabled={!canCreateProposal}
+              onClick={() => history.push('proposals/create')}>
+              Create proposal
+            </Button>
 
-          {(state.hasActiveProposal || !hasThreshold) && (
-            <Grid flow="col" gap={8} align="center">
-              <Small semiBold color="grey500">
-                You are not able to create a proposal.
-              </Small>
-              <Popover
-                title="Why you can’t create a proposal"
-                placement="bottomLeft"
-                overlayStyle={{ width: 520 }}
-                content={
-                  <Paragraph type="p2" semiBold>
+            {hasRestrictions && !canCreateProposal && (
+              <Grid flow="col" gap={8} align="center">
+                <Small semiBold color="grey500">
+                  You are not able to create a proposal.
+                </Small>
+                <Popover
+                  title="Why you can’t create a proposal"
+                  placement="bottomLeft"
+                  overlayStyle={{ width: 520 }}
+                  content={
                     <Grid flow="row" gap={8}>
-                      <span>
+                      <Paragraph type="p2" semiBold>
                         There are 2 possible reasons for why you can’t create a
                         proposal:
-                      </span>
+                      </Paragraph>
+
                       <ul>
                         <li>
-                          You already are the creator of an ongoing proposal
+                          <Paragraph type="p2" semiBold>
+                            You already are the creator of an ongoing proposal
+                          </Paragraph>
                         </li>
                         <li>
-                          You don’t have enough balance to create a proposal.
-                          The creator of a proposal needs to have at least {daoCtx.minThreshold}%
-                          of the amount of $BOND staked in the DAO in order to
-                          create a proposal.
+                          <Paragraph type="p2" semiBold>
+                            You don’t have enough balance to create a proposal.
+                            The creator of a proposal needs to have at least {daoCtx.minThreshold}%
+                            of the amount of $BOND staked in the DAO in order to
+                            create a proposal.
+                          </Paragraph>
                         </li>
                       </ul>
                     </Grid>
-                  </Paragraph>
-                }
-                visible={state.showWhyReason}
-                onVisibleChange={visible =>
-                  setState({ showWhyReason: visible })
-                }>
-                <Button type="link">See why</Button>
-              </Popover>
-            </Grid>
-          )}
-        </Grid>
+                  }
+                  visible={state.showWhyReason}
+                  onVisibleChange={visible =>
+                    setState({ showWhyReason: visible })
+                  }>
+                  <Button type="link">See why</Button>
+                </Popover>
+              </Grid>
+            )}
+          </Grid>
+        )}
       </Grid>
 
       <Card
