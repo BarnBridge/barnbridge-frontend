@@ -4,7 +4,7 @@ import { format, formatDistance } from 'date-fns';
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import { Paragraph } from 'components/custom/typography';
-import Icons, { IconNames } from 'components/custom/icon';
+import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
 import { useProposal } from '../../providers/ProposalProvider';
 
@@ -12,15 +12,21 @@ import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 import { getEtherscanTxUrl } from 'web3/utils';
 import { UseLeftTime } from 'hooks/useLeftTime';
 
-function getEventIcon(index: number, name: string): IconNames {
+function getEventIcon(index: number, name: string): React.ReactNode {
   if (
     [
       APIProposalState.EXPIRED,
       APIProposalState.FAILED,
       APIProposalState.CANCELED,
+      APIProposalState.ABROGATED,
     ].includes(name as any)
   ) {
-    return 'close-circle-outlined';
+    return (<Icons
+      name="close-circle-outlined"
+      width={40}
+      height={40}
+      color="red500"
+    />);
   }
 
   if (
@@ -30,14 +36,29 @@ function getEventIcon(index: number, name: string): IconNames {
       APIProposalState.EXECUTED,
     ].includes(name as any)
   ) {
-    return 'check-circle-outlined';
+    return (<Icons
+      name="check-circle-outlined"
+      width={40}
+      height={40}
+      color="green500"
+    />);
   }
 
   if (index === 0) {
-    return 'history-circle-outlined';
+    return (<Icons
+      name="history-circle-outlined"
+      width={40}
+      height={40}
+      color="blue500"
+    />);
   }
 
-  return 'check-circle-outlined';
+  return (<Icons
+    name="check-circle-outlined"
+    width={40}
+    height={40}
+    color="green500"
+  />);
 }
 
 function formatEventTime(name: string, start: number, end: number): string {
@@ -74,11 +95,7 @@ const ProposalStatusCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={24}>
         {proposalCtx.proposal?.history.map((event, index: number) => (
           <Grid key={event.name} flow="col" gap={12}>
-            <Icons
-              name={getEventIcon(index, event.name)}
-              width={40}
-              height={40}
-            />
+            {getEventIcon(index, event.name)}
             <Grid flow="row" gap={4}>
               {event.txHash ? (
                 <Grid flow="col" gap={8} align="center">

@@ -1,24 +1,37 @@
 import React from 'react';
 import * as Antd from 'antd';
+import BigNumber from 'bignumber.js';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Heading, Label, Paragraph } from 'components/custom/typography';
+import ExternalLink from 'components/custom/externalLink';
 import VotingDetailedModal from '../voting-detailed-modal';
 
-import { inRange, isValidAddress } from 'utils';
+import { getFormattedDuration, inRange, isValidAddress } from 'utils';
 import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { useWeekCountdown } from 'hooks/useCountdown';
+import { UseLeftTime } from 'hooks/useLeftTime';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
-import Tooltip from '../../../../components/antd/tooltip';
-import ExternalLink from '../../../../components/custom/externalLink';
+import { Spin } from 'antd';
+
+type VotingHeaderState = {
+  claiming: boolean;
+  showDetailedView: boolean;
+};
+
+const InitialState: VotingHeaderState = {
+  claiming: false,
+  showDetailedView: false,
+}
 
 const VotingHeader: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
-  const [detailedView, showDetailedView] = React.useState<boolean>(false);
+
+  const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
 
   const { claimValue } = web3c.daoReward;
   const { balance: bondBalance } = web3c.bond;
@@ -27,11 +40,23 @@ const VotingHeader: React.FunctionComponent = () => {
     userLockedUntil,
     userDelegatedTo,
     multiplier = 1,
-    balance: myBondBalance,
+    balance: stakedBalance,
   } = web3c.daoBarn;
 
-  const [countdown] = useWeekCountdown(userLockedUntil);
   const isDelegated = isValidAddress(userDelegatedTo);
+  const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
+
+  function handleClaim() {
+    setState({ claiming: true });
+
+    web3c.daoReward.actions.claim()
+      .catch(Error)
+      .then(() => {
+        web3c.daoReward.reload();
+        web3c.bond.reload();
+        setState({ claiming: false });
+      });
+  }
 
   return (
     <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
@@ -55,8 +80,11 @@ const VotingHeader: React.FunctionComponent = () => {
             <Button
               type="link"
               disabled={claimValue?.isZero()}
-              onClick={() => web3c.daoReward.actions.claim()}>
-              Claim
+              onClick={handleClaim}>
+              {!state.claiming
+                ? 'Claim'
+                : <Spin spinning />
+              }
             </Button>
           </Grid>
         </Grid>
@@ -89,65 +117,76 @@ const VotingHeader: React.FunctionComponent = () => {
               bold
               color="grey900"
               loading={
-                (isDelegated ? myBondBalance : votingPower) === undefined
+                (isDelegated ? stakedBalance : votingPower) === undefined
               }>
               {isDelegated
-                ? formatBONDValue(myBondBalance)
+                ? formatBONDValue(stakedBalance)
                 : formatBONDValue(votingPower)}
             </Heading>
-            <Button type="link" onClick={() => showDetailedView(true)}>
+            <Button type="link" onClick={() => setState({ showDetailedView: true })}>
               Detailed view
             </Button>
             <VotingDetailedModal
-              visible={detailedView}
-              onCancel={() => showDetailedView(false)}
+              visible={state.showDetailedView}
+              onCancel={() => setState({ showDetailedView: false })}
             />
           </Grid>
         </Grid>
-        <div className={s.delimiter} />
 
-        {multiplier > 1 && (
-          <Grid flow="row" gap={4}>
-            <Paragraph type="p2" color="grey500" hint={(
-              <>
-                <Paragraph type="p2">
-                  The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up
-                  to 2x vBOND. The bonus is linear, as per the following example:
-                </Paragraph>
-                <ul>
-                  <li>
-                    <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
-                  </li>
-                  <li>
-                    <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
-                  </li>
-                </ul>
-                <ExternalLink href="#">Learn more</ExternalLink>
-              </>
-            )}>
-              Multiplier & Lock timer
-            </Paragraph>
+        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
+          {(leftTime) => {
+            const leftMultiplier = (new BigNumber(multiplier - 1))
+              .multipliedBy(leftTime)
+              .div(loadedUserLockedUntil)
+              .plus(1);
 
-            <Grid flow="col" gap={16} align="center">
-              <Antd.Tooltip title={`${multiplier}x`}>
-                <Label type="lb1" bold color="red500" className={s.ratio}>
-                  {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
-                  {formatBigValue(multiplier, 2, '-', 2)}x
-                </Label>
-              </Antd.Tooltip>
-              {countdown && (
+            return leftMultiplier.gt(1)
+              ? (
                 <>
-                  <Paragraph type="p2" color="grey500">
-                    for
-                  </Paragraph>
-                  <Heading type="h3" bold color="grey900">
-                    {countdown}
-                  </Heading>
+                  <div className={s.delimiter} />
+                  <Grid flow="row" gap={4}>
+                    <Paragraph type="p2" color="grey500" hint={(
+                      <>
+                        <Paragraph type="p2">
+                          The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus
+                          of
+                          up
+                          to 2x vBOND. The bonus is linear, as per the following example:
+                        </Paragraph>
+                        <ul>
+                          <li>
+                            <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
+                          </li>
+                          <li>
+                            <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
+                          </li>
+                        </ul>
+                        <ExternalLink href="#">Learn more</ExternalLink>
+                      </>
+                    )}>
+                      Multiplier & Lock timer
+                    </Paragraph>
+
+                    <Grid flow="col" gap={8} align="center">
+                      <Antd.Tooltip title={`${leftMultiplier.toFormat(2)}x`}>
+                        <Label type="lb1" bold color="red500" className={s.ratio}>
+                          {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
+                          {formatBigValue(leftMultiplier, 2, '-', 2)}x
+                        </Label>
+                      </Antd.Tooltip>
+                      <Paragraph type="p2" color="grey500">
+                        for
+                      </Paragraph>
+                      <Heading type="h3" bold color="grey900">
+                        {getFormattedDuration(0, userLockedUntil)}
+                      </Heading>
+                    </Grid>
+                  </Grid>
                 </>
-              )}
-            </Grid>
-          </Grid>
-        )}
+              )
+              : undefined;
+          }}
+        </UseLeftTime>
       </Grid>
     </Grid>
   );

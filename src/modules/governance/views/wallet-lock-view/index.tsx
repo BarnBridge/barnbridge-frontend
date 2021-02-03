@@ -27,6 +27,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import s from './styles.module.scss';
 import Alert from 'components/antd/alert';
 import ExternalLink from 'components/custom/externalLink';
+import { UseLeftTime } from '../../../../hooks/useLeftTime';
 
 type LockFormData = {
   lockEndDate?: Date;
@@ -190,7 +191,11 @@ const WalletLockView: React.FunctionComponent = () => {
         </div>
         <div>
           <label>LOCK DURATION</label>
-          <div>{getFormattedDuration(0, web3c.daoBarn.userLockedUntil)}</div>
+          <UseLeftTime end={(web3c.daoBarn.userLockedUntil ?? 0) * 1000} delay={1000}>
+            {() => (
+              <div>{getFormattedDuration(0, web3c.daoBarn.userLockedUntil)}</div>
+            )}
+          </UseLeftTime>
         </div>
       </div>
       <Form

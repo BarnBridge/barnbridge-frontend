@@ -31,20 +31,28 @@ export function getFormattedDuration(
   });
 
   return formatDuration(duration, {
-    format: ['months', 'days', 'hours', 'minutes'],
+    format: ['months', 'days', 'hours', 'minutes', 'seconds'],
     delimiter: ' ',
     zero: true,
     locale: {
-      formatDistance: (token, value) => {
+      formatDistance: function (token, value) {
+        let v: number | undefined;
+
         switch (token) {
           case 'xMonths':
-            return `${value}mo`;
+            return value > 0 ? `${value}mo` : '';
           case 'xDays':
-            return `${value}d`;
+            v = duration.months ?? 0;
+            return value > 0 || v > 0 ? `${value}d` : '';
           case 'xHours':
-            return `${value}h`;
+            v = (duration.months ?? 0) + (duration.days ?? 0);
+            return value > 0 || v > 0 ? `${value}h` : '';
           case 'xMinutes':
-            return `${value}m`;
+            v = (duration.months ?? 0) + (duration.days ?? 0) + (duration.hours ?? 0);
+            return value > 0 || v > 0 ? `${value}m` : '';
+          case 'xSeconds':
+            v = (duration.months ?? 0) + (duration.days ?? 0) + (duration.hours ?? 0) + (duration.minutes ?? 0);
+            return value > 0 || v > 0 ? `${value}s` : '';
         }
       },
     },

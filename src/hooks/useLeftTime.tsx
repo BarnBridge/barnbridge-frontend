@@ -18,9 +18,9 @@ export function useLeftTime(options: useLeftTimeOptions): [Function, Function] {
   const [start, stop] = useInterval(() => {
     const leftTime = getLeftTime();
 
-    if (leftTime > 0) {
-      options.onTick?.(leftTime);
-    } else {
+    options.onTick?.(leftTime);
+
+    if (leftTime === 0) {
       stop();
       options.onEnd?.();
     }

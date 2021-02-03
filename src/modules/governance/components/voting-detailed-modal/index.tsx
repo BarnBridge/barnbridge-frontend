@@ -7,6 +7,7 @@ import Icons from 'components/custom/icon';
 import { isValidAddress } from 'utils';
 import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import { UseLeftTime } from 'hooks/useLeftTime';
 
 import s from './styles.module.scss';
 
@@ -18,15 +19,18 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
     votingPower,
     userDelegatedTo,
     delegatedPower,
+    userLockedUntil,
     balance: myBondBalance,
   } = web3c.daoBarn;
 
   const isDelegated = isValidAddress(userDelegatedTo);
+  const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
+
   const myBonus = isDelegated
     ? ZERO_BIG_NUMBER
     : votingPower
-        ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
-        .minus(delegatedPower ?? ZERO_BIG_NUMBER);
+      ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
+      .minus(delegatedPower ?? ZERO_BIG_NUMBER);
 
   return (
     <Modal
@@ -54,7 +58,15 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
           <Icons name="rate-outlined" />
         </div>
         <div className={s.label}>Locked balance bonus</div>
-        <div className={s.value}>{formatBONDValue(myBonus)}</div>
+        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
+          {(leftTime) => {
+            const leftBonus = myBonus?.multipliedBy(leftTime).div(loadedUserLockedUntil);
+
+            return (
+              <div className={s.value}>{formatBONDValue(leftBonus)}</div>
+            );
+          }}
+        </UseLeftTime>
       </div>
       <div className={s.row}>
         <div className={s.icon}>
