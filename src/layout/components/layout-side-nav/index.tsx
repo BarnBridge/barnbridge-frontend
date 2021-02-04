@@ -6,6 +6,7 @@ import cx from 'classnames';
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
+import { Paragraph } from 'components/custom/typography';
 import Icons, { NavIconNames } from 'components/custom/icon';
 import { useTheme } from 'components/providers/theme-provider';
 
@@ -30,13 +31,13 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
 
   return (
     <Tooltip title={label} placement="right">
-      <Grid flow="col" className={s.navLink}>
-        <div
-          className={cx(s.activeTick, isActivePath && s.activeTickVisible)}
-        />
-        <Button type="link" onClick={handleClick}>
+      <Grid flow="col" className={cx(s.navLink, isActivePath && s.isActive)}>
+        <div className={s.activeTick} />
+        <Button type="light" onClick={handleClick}>
           <Icons name={icon} />
-          {expanded && label}
+          {expanded && (
+            <Paragraph type="p2" semiBold className={s.linkLabel}>{label}</Paragraph>
+          )}
         </Button>
       </Grid>
     </Tooltip>
@@ -92,13 +93,19 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
         </Grid>
       </Grid>
       <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
-        <Button type="link" onClick={handleThemeToggle}>
+        <Button type="light" onClick={handleThemeToggle}>
           <Icons name={isDarkTheme ? 'sun' : 'moon'} />
-          {expanded && <>{isDarkTheme ? 'Light Theme' : 'Dark Theme'}</>}
+          {expanded && (
+            <Paragraph type="p2" semiBold className={s.linkLabel}>
+              {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
+            </Paragraph>
+          )}
         </Button>
-        <Button type="link" className={s.hideLink} onClick={handleExpand}>
+        <Button type="light" className={s.hideLink} onClick={handleExpand}>
           <Icons name="right-arrow-circle-outlined" />
-          {expanded && 'Hide menu'}
+          {expanded && (
+            <Paragraph type="p2" semiBold className={s.linkLabel}>Hide menu</Paragraph>
+          )}
         </Button>
       </Grid>
     </Antd.Layout.Sider>

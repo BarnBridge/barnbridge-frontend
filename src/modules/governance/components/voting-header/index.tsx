@@ -78,7 +78,7 @@ const VotingHeader: React.FunctionComponent = () => {
             </Heading>
             <Icons name="bond-square-token" />
             <Button
-              type="link"
+              type="light"
               disabled={claimValue?.isZero()}
               onClick={handleClaim}>
               {!state.claiming
@@ -119,7 +119,7 @@ const VotingHeader: React.FunctionComponent = () => {
               }>
               {formatBONDValue(votingPower)}
             </Heading>
-            <Button type="link" onClick={() => setState({ showDetailedView: true })}>
+            <Button type="light" onClick={() => setState({ showDetailedView: true })}>
               Detailed view
             </Button>
             <VotingDetailedModal
@@ -157,7 +157,9 @@ const VotingHeader: React.FunctionComponent = () => {
                             <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
                           </li>
                         </ul>
-                        <ExternalLink href="#">Learn more</ExternalLink>
+                        <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                          Learn more
+                        </ExternalLink>
                       </>
                     )}>
                       Multiplier & Lock timer
