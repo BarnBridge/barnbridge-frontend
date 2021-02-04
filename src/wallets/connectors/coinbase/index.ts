@@ -2,7 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 
 import { WalletConnector } from 'wallets/types';
-import { HTTPS_WEB3_RPC_URL } from 'web3/contract';
+import { WEB3_RPC_HTTPS_URL } from 'web3/contract';
 
 import CoinbaseWalletLogo from 'resources/svg/wallets/coinbase-logo.svg';
 
@@ -22,7 +22,7 @@ export const CoinbaseWalletConfig: WalletConnector = {
     const darkMode = args?.darkMode ?? false;
 
     return new WalletLinkConnector({
-      url: HTTPS_WEB3_RPC_URL,
+      url: WEB3_RPC_HTTPS_URL,
       appName: WEB3_COINBASE_WALLET_APP_NAME,
       appLogoUrl: '',
       darkMode,
