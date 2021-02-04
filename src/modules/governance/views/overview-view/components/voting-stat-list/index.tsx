@@ -10,6 +10,7 @@ import { formatBONDValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import BigNumber from 'bignumber.js';
 import Button from '../../../../../../components/antd/button';
+import { UseLeftTime } from '../../../../../../hooks/useLeftTime';
 
 export type VotingStatListProps = {
   className?: string;
@@ -112,11 +113,15 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
             Bond Rewards
           </Label>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="grey900">
-              0
-            </Heading>
+            <UseLeftTime end={(web3c.daoReward.poolFeature?.endTs ?? 0) * 1000} delay={5_000}>
+              {() => (
+                <Heading type="h2" bold color="grey900">
+                  {formatBONDValue(web3c.daoReward.actions.getBondRewards())}
+                </Heading>
+              )}
+            </UseLeftTime>
             <Paragraph type="p1" color="grey500">
-              out of 0
+              out of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)}
             </Paragraph>
           </Grid>
         </Grid>

@@ -2,7 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
 import { WalletConnector } from 'wallets/types';
-import { WEB3_RPC_URL } from 'web3/contract';
+import { HTTPS_WEB3_RPC_URL } from 'web3/contract';
 
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 
@@ -29,7 +29,7 @@ export const LedgerWalletConfig: WalletConnector = {
 
     return new LedgerConnector({
       chainId: chainId,
-      url: WEB3_RPC_URL,
+      url: HTTPS_WEB3_RPC_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       baseDerivationPath,
     });

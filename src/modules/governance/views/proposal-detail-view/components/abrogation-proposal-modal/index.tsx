@@ -7,8 +7,10 @@ import Icons from 'components/custom/icon';
 import AbrogationDetailsCard from '../abrogation-details-card';
 import AbrogationVotesCard from '../abrogation-votes-card';
 import AbrogationApprovalCard from '../abrogation-approval-card';
+import AbrogationVoteResultsCard from '../abrogation-vote-results-card';
 import AbrogationProvider from '../../providers/AbrogationProvider';
 import { useProposal } from '../../providers/ProposalProvider';
+import { APIProposalState } from '../../../../api';
 
 import s from './styles.module.scss';
 
@@ -45,11 +47,18 @@ const AbrogationProposalModalInner: React.FunctionComponent<AbrogationProposalMo
             colsTemplate="minmax(0, 610px) minmax(0px, 428px)"
             width={1070}>
             <Grid flow="row" gap={32}>
+              {proposalCtx.proposal?.state !== APIProposalState.QUEUED && (
+                <AbrogationVoteResultsCard />
+              )}
               <AbrogationDetailsCard />
             </Grid>
             <Grid flow="row" gap={32}>
-              <AbrogationVotesCard />
-              <AbrogationApprovalCard />
+              {proposalCtx.proposal?.state === APIProposalState.QUEUED && (
+                <>
+                  <AbrogationVotesCard />
+                  <AbrogationApprovalCard />
+                </>
+              )}
             </Grid>
           </Grid>
         </Grid>
