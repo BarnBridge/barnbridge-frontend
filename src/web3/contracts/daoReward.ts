@@ -18,6 +18,30 @@ const Contract = new Web3Contract(
   'DAO Reward',
 );
 
+export type DaoRewardPullFeature = {
+  source: string;
+  startTs: number;
+  endTs: number;
+  totalDuration: number;
+  totalAmount: BigNumber;
+};
+
+function loadCommonData(): Promise<any> {
+  return Contract.batch([
+    {
+      method: 'pullFeature',
+      transform: (value: DaoRewardPullFeature) => ({
+        ...value,
+        totalAmount: getHumanValue(new BigNumber(value.totalAmount), BONDTokenMeta.decimals)
+      }),
+    },
+  ]).then(([poolFeature]) => {
+    return {
+      poolFeature,
+    };
+  });
+}
+
 function loadUserData(userAddress?: string): Promise<any> {
   if (!userAddress) {
     return Promise.reject();
@@ -49,17 +73,20 @@ function claimSend(from: string): Promise<void> {
 export type DAORewardContractData = {
   contract: Web3Contract;
   claimValue?: BigNumber;
+  poolFeature?: DaoRewardPullFeature;
 };
 
 const InitialState: DAORewardContractData = {
   contract: Contract,
   claimValue: undefined,
+  poolFeature: undefined,
 };
 
 export type DAORewardContract = DAORewardContractData & {
   reload(): void;
   actions: {
     claim(): Promise<any>;
+    getBondRewards(): BigNumber | undefined,
   };
 };
 
@@ -70,10 +97,35 @@ export function useDAORewardContract(): DAORewardContract {
   const [reload, version] = useReload();
 
   React.useEffect(() => {
+    setState({ poolFeature: undefined });
+
+    loadCommonData().then(setState).catch(Error);
+  }, [version]);
+
+  React.useEffect(() => {
     setState({ claimValue: undefined });
 
     loadUserData(wallet.account).then(setState).catch(Error);
   }, [wallet.account, version]);
+
+  function getBondRewards(): BigNumber | undefined {
+    if (!state.poolFeature) {
+      return undefined;
+    }
+
+    const { startTs, endTs, totalDuration, totalAmount } = state.poolFeature;
+    const now = (Date.now() / 1_000);
+
+    if (startTs > now) {
+      return ZERO_BIG_NUMBER;
+    }
+
+    if (endTs <= now) {
+      return totalAmount;
+    }
+
+    return totalAmount.multipliedBy(now - startTs).div(totalDuration);
+  }
 
   return {
     ...state,
@@ -82,6 +134,7 @@ export function useDAORewardContract(): DAORewardContract {
       claim(): Promise<void> {
         return wallet.isActive ? claimSend(wallet.account!) : Promise.reject();
       },
+      getBondRewards,
     },
   };
 }

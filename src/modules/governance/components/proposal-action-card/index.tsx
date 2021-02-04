@@ -159,23 +159,27 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
         ) : null
       }
       {...cardProps}>
-      <ExternalLink href={etherscanLink}>
-        <Paragraph type="p1" semiBold className={s.address} color="blue500">
-          {shortenAddr(target)}.
-        </Paragraph>
-      </ExternalLink>
-      <Antd.Typography.Paragraph
-        className={cx(s.paragraph, expanded && s.expanded)}
-        style={{ maxWidth: '514px' }}
-        ellipsis={{
-          rows: expanded ? 9999 : 2,
-          expandable: false,
-          onEllipsis: handleEllipsis,
-        }}>
-        {isSignature
-          ? signature
-          : `${functionFragment?.name}(${stringParams})`}
-      </Antd.Typography.Paragraph>
+      <div className={s.content}>
+        <ExternalLink href={etherscanLink}>
+          <Paragraph type="p1" semiBold className={s.address} color="blue500">
+            {shortenAddr(target)}
+          </Paragraph>
+        </ExternalLink>
+        {signature && (
+          <Antd.Typography.Paragraph
+            className={cx(s.paragraph, expanded && s.expanded)}
+            style={{ maxWidth: '514px' }}
+            ellipsis={{
+              rows: expanded ? 9999 : 2,
+              expandable: false,
+              onEllipsis: handleEllipsis,
+            }}>.
+            {isSignature
+              ? signature
+              : `${functionFragment?.name}(${stringParams})`}
+          </Antd.Typography.Paragraph>
+        )}
+      </div>
     </ExpandableCard>
   );
 };

@@ -1,5 +1,9 @@
 @import 'src/styles/mixin';
 
+.content {
+  min-height: 24px;
+}
+
 .address {
   float: left;
   max-width: 200px;

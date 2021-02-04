@@ -4,6 +4,7 @@ import * as Antd from 'antd';
 import cx from 'classnames';
 
 import Button from 'components/antd/button';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import Icons, { NavIconNames } from 'components/custom/icon';
 import { useTheme } from 'components/providers/theme-provider';
@@ -28,7 +29,7 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
   }
 
   return (
-    <Antd.Tooltip title={label} placement="right">
+    <Tooltip title={label} placement="right">
       <Grid flow="col" className={s.navLink}>
         <div
           className={cx(s.activeTick, isActivePath && s.activeTickVisible)}
@@ -38,7 +39,7 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
           {expanded && label}
         </Button>
       </Grid>
-    </Antd.Tooltip>
+    </Tooltip>
   );
 };
 

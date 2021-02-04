@@ -1,6 +1,6 @@
 import React from 'react';
-import * as Antd from 'antd';
 
+import Tooltip from 'components/antd/tooltip';
 import { Paragraph } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 
@@ -21,11 +21,14 @@ export type PoolStakeShareBarProps = {
 const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props => {
   const { shares } = props;
 
+  const rates = (shares ?? []).map(tokenShare => `${tokenShare.share}%`);
+
   return (
-    <div className={s.component}>
+    <Grid flow="col" className={s.component}
+          colsTemplate={rates.join(' ')}>
       {shares?.map((tokenShare, index) => {
         return tokenShare.share! > 0 ? (
-          <Antd.Tooltip
+          <Tooltip
             key={index}
             placement="top"
             title={
@@ -42,14 +45,13 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
             <div
               className={s.item}
               style={{
-                width: `${tokenShare.share}%`,
                 backgroundColor: tokenShare.color,
               }}
             />
-          </Antd.Tooltip>
+          </Tooltip>
         ) : undefined;
       })}
-    </div>
+    </Grid>
   );
 };
 

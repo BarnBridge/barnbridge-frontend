@@ -1,8 +1,9 @@
 import React from 'react';
-import * as Antd from 'antd';
+import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 
 import Button from 'components/antd/button';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Heading, Label, Paragraph } from 'components/custom/typography';
@@ -16,7 +17,6 @@ import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
-import { Spin } from 'antd';
 
 type VotingHeaderState = {
   claiming: boolean;
@@ -164,12 +164,12 @@ const VotingHeader: React.FunctionComponent = () => {
                     </Paragraph>
 
                     <Grid flow="col" gap={8} align="center">
-                      <Antd.Tooltip title={`${leftMultiplier.toFormat(2)}x`}>
+                      <Tooltip title={`${leftMultiplier.toFormat(2)}x`}>
                         <Label type="lb1" bold color="red500" className={s.ratio}>
                           {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
                           {formatBigValue(leftMultiplier, 2, '-', 2)}x
                         </Label>
-                      </Antd.Tooltip>
+                      </Tooltip>
                       <Paragraph type="p2" color="grey500">
                         for
                       </Paragraph>

@@ -10,4 +10,8 @@
     @include font-p1-regular;
     color: var(--text-color-grey900);
   }
+
+  :global(.ant-tooltip-arrow-content) {
+    background: var(--color-card-bg);
+  }
 }
