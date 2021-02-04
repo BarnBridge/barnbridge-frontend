@@ -20,8 +20,6 @@ const Button: React.FunctionComponent<ButtonProps> = props => {
     btnType = type;
   }
 
-  console.log(type === 'light', s.light);
-
   return (
     <Antd.Button
       className={cx(s.component, className, type === 'light' && s.light)}
