@@ -21,10 +21,11 @@ export type SelectOption = Partial<AntdOptionProps> & {
 export type SelectProps<T> = AntdSelectProps<T> & {
   label?: React.ReactNode;
   options: SelectOption[];
+  fixScroll?: boolean;
 };
 
 const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
-  const { className, label, loading, options, ...selectProps } = props;
+  const { className, label, loading, options, fixScroll, ...selectProps } = props;
 
   return (
     <div className={s.component}>
@@ -34,6 +35,7 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
         dropdownClassName={s.dropdown}
         suffixIcon={<Icons name="dropdown-arrow" />}
         optionLabelProp="label"
+        getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
         {...selectProps}>
         {options.map(option => (
           <Antd.Select.Option

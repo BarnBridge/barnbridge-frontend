@@ -59,13 +59,13 @@ const TABS: CardTabListType[] = [
 ];
 
 type ProposalsViewState = {
-  showWhyReason: boolean;
   hasActiveProposal?: boolean;
+  showWhyReason: boolean;
 };
 
 const InitialState: ProposalsViewState = {
-  showWhyReason: false,
   hasActiveProposal: undefined,
+  showWhyReason: false,
 };
 
 const ProposalsViewInner: React.FunctionComponent = () => {
@@ -94,9 +94,10 @@ const ProposalsViewInner: React.FunctionComponent = () => {
       });
   }, [wallet.account]);
 
-  const hasRestrictions = state.hasActiveProposal !== undefined && daoCtx.thresholdRate !== undefined;
-  const hasThreshold = daoCtx.thresholdRate && daoCtx.thresholdRate >= daoCtx.minThreshold;
-  const canCreateProposal = state.hasActiveProposal === false && hasThreshold;
+  const hasCreateRestrictions = state.hasActiveProposal !== undefined
+    && daoCtx.actions.hasThreshold() !== undefined;
+  const canCreateProposal = state.hasActiveProposal === false
+    && daoCtx.actions.hasThreshold() === true;
 
   return (
     <Grid flow="row" gap={32}>
@@ -113,7 +114,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
               Create proposal
             </Button>
 
-            {hasRestrictions && !canCreateProposal && (
+            {hasCreateRestrictions && !canCreateProposal && (
               <Grid flow="col" gap={8} align="center">
                 <Small semiBold color="grey500">
                   You are not able to create a proposal.

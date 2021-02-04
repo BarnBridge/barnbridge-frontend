@@ -440,6 +440,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                       loading={abiLoading}
                       disabled={state.submitting}
                       options={functionOptions}
+                      fixScroll
                     />
                   </Form.Item>
 

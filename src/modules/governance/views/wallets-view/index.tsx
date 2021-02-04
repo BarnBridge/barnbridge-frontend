@@ -10,17 +10,19 @@ import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import { Heading } from 'components/custom/typography';
+import { useWallet } from 'wallets/wallet';
 
-type WalletViewParams = {
-  wt: string;
+type WalletViewRouteParams = {
+  action: string;
 };
 
 const WalletView: React.FunctionComponent = () => {
   const history = useHistory();
+  const wallet = useWallet();
   const {
-    params: { wt = 'deposit' },
-  } = useRouteMatch<WalletViewParams>();
-  const [activeTab, setActiveTab] = React.useState<string>(wt);
+    params: { action = 'deposit' },
+  } = useRouteMatch<WalletViewRouteParams>();
+  const [activeTab, setActiveTab] = React.useState<string>(action);
 
   function handleTabChange(tabKey: string) {
     setActiveTab(tabKey);
@@ -28,10 +30,20 @@ const WalletView: React.FunctionComponent = () => {
   }
 
   React.useEffect(() => {
-    if (wt !== activeTab) {
-      setActiveTab(wt);
+    if (action !== activeTab) {
+      setActiveTab(action);
     }
-  }, [wt]);
+  }, [action]);
+
+  if (!wallet.initialized) {
+    return null;
+  }
+
+  if (!wallet.isActive) {
+    return (
+      <Redirect to="/governance/overview" />
+    );
+  }
 
   return (
     <Grid flow="row" gap={32}>
@@ -45,26 +57,10 @@ const WalletView: React.FunctionComponent = () => {
         <Tabs.Tab key="withdraw" tab="Withdraw" />
       </Tabs>
       <Switch>
-        <Route
-          path="/governance/wallet/deposit"
-          exact
-          component={WalletDepositView}
-        />
-        <Route
-          path="/governance/wallet/lock"
-          exact
-          component={WalletLockView}
-        />
-        <Route
-          path="/governance/wallet/delegate"
-          exact
-          component={WalletDelegateView}
-        />
-        <Route
-          path="/governance/wallet/withdraw"
-          exact
-          component={WalletWithdrawView}
-        />
+        <Route path="/governance/wallet/deposit" exact component={WalletDepositView} />
+        <Route path="/governance/wallet/lock" exact component={WalletLockView} />
+        <Route path="/governance/wallet/delegate" exact component={WalletDelegateView} />
+        <Route path="/governance/wallet/withdraw" exact component={WalletWithdrawView} />
         <Redirect from="/governance/wallet" to="/governance/wallet/deposit" />
       </Switch>
     </Grid>

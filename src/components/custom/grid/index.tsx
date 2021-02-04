@@ -13,7 +13,9 @@ export type GridProps = {
   rowsTemplate?: string;
   colsTemplate?: string;
   align?: SupportedAlign;
+  alignSelf?: SupportedAlign;
   justify?: SupportedJustify;
+  justifySelf?: SupportedJustify;
   gap?: number | [number, number];
   wrap?: boolean;
   padding?: number | number[];
@@ -28,7 +30,9 @@ const Grid: React.FunctionComponent<GridProps> = props => {
     rowsTemplate,
     colsTemplate,
     align,
+    alignSelf,
     justify,
+    justifySelf,
     wrap,
     padding,
     width,
@@ -50,7 +54,9 @@ const Grid: React.FunctionComponent<GridProps> = props => {
         s.grid,
         flow && s[flow],
         align && s[`align-${align}`],
+        alignSelf && s[`align-self-${alignSelf}`],
         justify && s[`justify-${justify}`],
+        justifySelf && s[`justify-self-${justifySelf}`],
         wrap && 'text-wrap',
         className,
       )}

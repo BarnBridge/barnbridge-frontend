@@ -1,11 +1,13 @@
 import React from 'react';
 import { useHistory } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import * as Antd from 'antd';
 import { StoreValue } from 'rc-field-form/lib/interface';
 
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
+import Alert from 'components/antd/alert';
 import Textarea from 'components/antd/textarea';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
@@ -16,14 +18,15 @@ import CreateProposalActionModal, {
 } from '../../components/create-proposal-action-modal';
 import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
 import ProposalActionCard from '../../components/proposal-action-card';
+import { useDAO } from '../../components/dao-provider';
+import { fetchProposal } from '../../api';
 
 import { useWeb3Contracts } from 'web3/contracts';
+import { useWallet } from 'wallets/wallet';
 import useMergeState from 'hooks/useMergeState';
+import { useWhile } from 'hooks/useWhile';
 
 import s from './styles.module.scss';
-import { fetchProposal } from '../../api';
-import { useWhile } from '../../../../hooks/useWhile';
-import Alert from '../../../../components/antd/alert';
 
 type NewProposalForm = {
   title: string;
@@ -38,6 +41,7 @@ const InitialFormValues: NewProposalForm = {
 };
 
 type ProposalCreateViewState = {
+  hasActiveProposal?: boolean;
   showCreateActionModal: boolean;
   showDeleteActionModal: boolean;
   selectedAction?: CreateProposalActionForm;
@@ -45,6 +49,7 @@ type ProposalCreateViewState = {
 };
 
 const InitialState: ProposalCreateViewState = {
+  hasActiveProposal: undefined,
   showCreateActionModal: false,
   showDeleteActionModal: false,
   selectedAction: undefined,
@@ -54,6 +59,8 @@ const InitialState: ProposalCreateViewState = {
 const ProposalCreateView: React.FunctionComponent = () => {
   const history = useHistory();
   const web3c = useWeb3Contracts();
+  const wallet = useWallet();
+  const dao = useDAO();
 
   const [form] = Antd.Form.useForm<NewProposalForm>();
   const [state, setState] = useMergeState<ProposalCreateViewState>(
@@ -161,6 +168,39 @@ const ProposalCreateView: React.FunctionComponent = () => {
     }
 
     setState({ submitting: false });
+  }
+
+  React.useEffect(() => {
+    dao.actions.hasActiveProposal()
+      .then(hasActiveProposal => {
+        setState({ hasActiveProposal });
+      });
+  }, [wallet.account]);
+
+  if (!wallet.initialized) {
+    return null;
+  }
+
+  if (!wallet.isActive) {
+    return (
+      <Redirect to="/governance/proposals" />
+    );
+  }
+
+  const hasCreateRestrictions = state.hasActiveProposal !== undefined
+    && dao.actions.hasThreshold() !== undefined;
+
+  if (dao.isActive === undefined || !hasCreateRestrictions) {
+    return null;
+  }
+
+  const canCreateProposal = state.hasActiveProposal === false
+    && dao.actions.hasThreshold() === true;
+
+  if (!dao.isActive || !canCreateProposal) {
+    return (
+      <Redirect to="/governance/proposals" />
+    );
   }
 
   return (

@@ -18,6 +18,7 @@ const DatePicker: React.FunctionComponent<DatePickerProps> = props => {
   return (
     <DateFNSPicker
       className={cx(s.component, className)}
+      dropdownClassName={s.dropdown}
       {...datePickerProps}
     />
   );

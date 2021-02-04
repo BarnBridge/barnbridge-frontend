@@ -115,7 +115,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         break;
       case DAITokenMeta:
         walletBalance = web3c.dai.balance;
-        allowance = ZERO_BIG_NUMBER; //web3c.dai.allowance;
+        allowance = web3c.dai.allowance;
         stakedBalance = web3c.staking.dai.balance;
         effectiveStakedBalance = web3c.staking.dai.epochUserBalance;
         isEnded = web3c.yf.isEnded;

@@ -22,7 +22,7 @@ export const CoinbaseWalletConfig: WalletConnector = {
     const darkMode = args?.darkMode ?? false;
 
     return new WalletLinkConnector({
-      url: WEB3_RPC_URL,
+      url: WEB3_RPC_URL.replace(/wss/gi, 'https'),
       appName: WEB3_COINBASE_WALLET_APP_NAME,
       appLogoUrl: '',
       darkMode,

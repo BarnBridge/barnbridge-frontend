@@ -28,6 +28,7 @@ type DAOContextType = DAOProviderState & {
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
+    hasThreshold(): boolean | undefined,
   };
 };
 
@@ -36,6 +37,7 @@ const DAOContext = React.createContext<DAOContextType>({
   actions: {
     activate: Promise.reject,
     hasActiveProposal: Promise.reject,
+    hasThreshold: () => undefined,
   },
 });
 
@@ -113,12 +115,21 @@ const DAOProvider: React.FunctionComponent = props => {
       });
   }
 
+  function hasThreshold(): boolean | undefined {
+    if (state.thresholdRate === undefined) {
+      return undefined;
+    }
+
+    return state.thresholdRate >= state.minThreshold;
+  }
+
   return (
     <DAOContext.Provider
       value={{
         ...state,
         actions: {
           activate,
+          hasThreshold,
           hasActiveProposal,
         },
       }}>

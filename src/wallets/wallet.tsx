@@ -40,6 +40,7 @@ export const WalletConnectors: WalletConnector[] = [
 ];
 
 type WalletData = {
+  initialized: boolean;
   connecting?: WalletConnector;
   isActive: boolean;
   account?: string;
@@ -59,6 +60,7 @@ export type Wallet = WalletData & {
 };
 
 const WalletContext = React.createContext<Wallet>({
+  initialized: false,
   connecting: undefined,
   isActive: false,
   account: undefined,
@@ -84,15 +86,10 @@ const WalletProvider: React.FunctionComponent = props => {
     removeSessionProvider,
   ] = useSessionStorage<string | undefined>('wallet_provider');
 
-  const [connecting, setConnecting, connectingRef] = useRefState<
-    WalletConnector | undefined
-  >(undefined);
-  const [activeConnector, setActiveConnector] = React.useState<
-    WalletConnector | undefined
-  >(undefined);
-  const [activeProvider, setActiveProvider] = React.useState<any | undefined>(
-    undefined,
-  );
+  const [initialized, setInitialized] = React.useState<boolean>(false);
+  const [connecting, setConnecting, connectingRef] = useRefState<WalletConnector | undefined>(undefined);
+  const [activeConnector, setActiveConnector] = React.useState<WalletConnector | undefined>();
+  const [activeProvider, setActiveProvider] = React.useState<any | undefined>();
 
   const [walletsModal, setWalletsModal] = React.useState<boolean>(false);
   const [
@@ -179,10 +176,13 @@ const WalletProvider: React.FunctionComponent = props => {
         await connect(walletConnector);
       }
     }
+
+    setInitialized(true);
   }, []);
 
   const value = React.useMemo<Wallet>(
     () => ({
+      initialized,
       connecting,
       isActive: web3React.active,
       account: web3React.account ?? undefined,

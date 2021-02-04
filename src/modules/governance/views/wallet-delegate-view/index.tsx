@@ -59,12 +59,10 @@ const InitialState: WalletDelegateViewState = {
 };
 
 const WalletDelegateView: React.FunctionComponent = () => {
-  const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<DelegateFormData>();
 
-  const [state, setState] = useMergeState<WalletDelegateViewState>(
-    InitialState,
-  );
+  const web3c = useWeb3Contracts();
+  const [state, setState] = useMergeState<WalletDelegateViewState>(InitialState);
 
   const { userDelegatedTo } = web3c.daoBarn;
   const isDelegated =
@@ -149,14 +147,15 @@ const WalletDelegateView: React.FunctionComponent = () => {
 
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
-    } catch {}
+    } catch {
+    }
 
     setState({ saving: false });
   }
 
   const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="center">
-      <Grid flow="col" gap={12} align="center">
+    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
+      <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
         <Paragraph type="p1" semiBold color="grey900">
           BOND
@@ -214,10 +213,12 @@ const WalletDelegateView: React.FunctionComponent = () => {
                 </Form.Item>
               )}
               {state.votingType === MANUAL_VOTING_KEY && (
-                <Alert message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
+                <Alert
+                  message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
               )}
               {state.votingType === DELEGATE_VOTING_KEY && (
-                <Alert message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
+                <Alert
+                  message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
               )}
             </Grid>
             <Grid flow="row">

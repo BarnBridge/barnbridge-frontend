@@ -2,6 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 
 import { Paragraph } from 'components/custom/typography';
+import Grid from 'components/custom/grid';
 
 import s from './styles.module.scss';
 
@@ -28,15 +29,15 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
             key={index}
             placement="top"
             title={
-              <div className={s.tooltip}>
+              <Grid flow="col" gap={8} padding={[10, 16]}>
                 {tokenShare.icon}
-                <Paragraph type="p1" className={s.name}>
+                <Paragraph type="p1" color="grey500">
                   {tokenShare.name}:
                 </Paragraph>
-                <Paragraph type="p1" semiBold className={s.value}>
+                <Paragraph type="p1" semiBold color="grey900">
                   {tokenShare.value}
                 </Paragraph>
-              </div>
+              </Grid>
             }>
             <div
               className={s.item}

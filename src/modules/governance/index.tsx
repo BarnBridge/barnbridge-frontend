@@ -95,24 +95,10 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
       <div className={s.view}>
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
-          {wallet.isActive && (
-            <Route path="/governance/wallet/:wt(\w+)" component={WalletView} />
-          )}
-          {wallet.isActive && (
-            <Route path="/governance/wallet" component={WalletView} />
-          )}
-          {dao.isActive && (
-            <Route
-              path="/governance/proposals/create"
-              exact
-              component={ProposalCreateView}
-            />
-          )}
-          <Route
-            path="/governance/proposals/:id(\d+)"
-            exact
-            component={ProposalDetailView}
-          />
+          <Route path="/governance/wallet/:action(\w+)" component={WalletView} />
+          <Redirect from="/governance/wallet" to="/governance/wallet/deposit" />
+          <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
+          <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
           <Route path="/governance/proposals" exact component={ProposalsView} />
           <Redirect from="/governance" to="/governance/overview" />
         </Switch>

@@ -15,6 +15,7 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import useMergeState from 'hooks/useMergeState';
 
 type DepositFormData = {
@@ -56,7 +57,8 @@ const WalletDepositView: React.FunctionComponent = () => {
 
     try {
       await web3c.bond.approveSend(CONTRACT_DAO_BARN_ADDR, value);
-    } catch {}
+    } catch {
+    }
 
     setState({ enabling: false });
   }
@@ -72,7 +74,8 @@ const WalletDepositView: React.FunctionComponent = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
-    } catch {}
+    } catch {
+    }
 
     setState({ saving: false });
   }
@@ -87,8 +90,8 @@ const WalletDepositView: React.FunctionComponent = () => {
   }, [web3c]);
 
   const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="center">
-      <Grid flow="col" gap={12} align="center">
+    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
+      <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
         <Paragraph type="p1" semiBold color="grey900">
           BOND
@@ -147,13 +150,14 @@ const WalletDepositView: React.FunctionComponent = () => {
                 <TokenAmount
                   tokenIcon="bond-token"
                   max={web3c.bond.balance}
-                  maximumFractionDigits={4}
+                  maximumFractionDigits={BONDTokenMeta.decimals}
                   displayDecimals={4}
                   disabled={state.saving}
                   slider
                 />
               </Form.Item>
-              <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
+              <Alert
+                message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
             <Grid flow="row">
               <Form.Item

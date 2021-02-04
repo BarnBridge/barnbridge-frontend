@@ -1,15 +1,102 @@
-@import '../../../styles/mixin';
+@import 'src/styles/mixin';
 
-.component {
+.component:global(.ant-picker) {
   width: 100%;
-  height: 64px;
-  padding: 20px 16px;
-  background: #fff;
-  border: 1px solid #e3e4e6;
+  height: 48px;
+  padding: 12px 16px;
+  background: var(--color-body-bg);
+  border: 1px solid var(--color-border);
   border-radius: 4px;
 
-  :global(.ant-picker-input) input {
-    @include font-p1-semi-bold;
-    color: #aaafb3;
+  &:hover {
+    background: var(--color-body-bg) !important;
+  }
+
+  &:global(.ant-picker-large) {
+    height: 64px;
+    padding: 20px 24px;
+  }
+
+  &:global(.ant-picker-disabled) {
+    background: var(--color-overlay-bg);
+    border: none;
+
+    &::placeholder {
+      color: var(--color-text);
+    }
+  }
+
+  &:global(.ant-picker-focused) {
+    border: 1px solid var(--text-color-red500);
+    box-shadow: 0 0 0 3px rgba(255, 67, 57, 0.16);
+  }
+
+  :global(.ant-picker-input) {
+    input {
+      @include font-p1-semi-bold;
+      color: var(--color-icons);
+
+      &::placeholder {
+        color: var(--color-icons);
+      }
+    }
+
+    :global(.ant-picker-suffix) {
+      color: var(--color-icons);
+    }
+  }
+}
+
+.dropdown:global(.ant-picker-dropdown) {
+  :global(.ant-picker-panel-container) {
+    background: var(--color-overlay-bg);
+
+    :global(.ant-picker-panel) {
+      border: none;
+    }
+
+    :global(.ant-picker-cell-inner) {
+      color: var(--color-text);
+    }
+
+    :global(.ant-picker-header),
+    :global(.ant-picker-header-super-prev-btn),
+    :global(.ant-picker-header-prev-btn),
+    :global(.ant-picker-header-next-btn),
+    :global(.ant-picker-header-super-next-btn),
+    :global(.ant-picker-time-panel-cell-inner),
+    :global(.ant-picker-content) thead tr th {
+      color: var(--text-color-grey900);
+    }
+
+    :global(.ant-picker-time-panel),
+    :global(.ant-picker-time-panel-column) {
+      border-left: 1px solid var(--color-border);
+    }
+
+    :global(.ant-picker-header) {
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    :global(.ant-picker-footer) {
+      border-top: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    :global(.ant-picker-time-panel-cell-selected) {
+      :global(.ant-picker-time-panel-cell-inner) {
+        background: var(--text-color-red500);
+      }
+    }
+
+    :global(.ant-picker-time-panel-cell-inner):hover {
+      background: var(--text-color-red500);
+    }
+
+    :global(.ant-picker-cell.ant-picker-cell-today.ant-picker-cell-selected) {
+      :global(.ant-picker-cell-inner) {
+        color: var(--text-color-grey900);
+      }
+    }
   }
 }

@@ -14,6 +14,7 @@ import GasFeeList from 'components/custom/gas-fee-list';
 
 import { formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import useMergeState from 'hooks/useMergeState';
 
 type WithdrawFormData = {
@@ -64,8 +65,8 @@ const WalletWithdrawView: React.FunctionComponent = () => {
   }
 
   const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="center">
-      <Grid flow="col" gap={12} align="center">
+    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
+      <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
         <Paragraph type="p1" semiBold color="grey900">
           BOND
@@ -111,13 +112,14 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 <TokenAmount
                   tokenIcon="bond-token"
                   max={web3c.daoBarn.balance}
-                  maximumFractionDigits={4}
+                  maximumFractionDigits={BONDTokenMeta.decimals}
                   displayDecimals={4}
                   disabled={state.saving}
                   slider
                 />
               </Form.Item>
-              <Alert message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
+              <Alert
+                message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
             </Grid>
             <Grid flow="row">
               <Form.Item
