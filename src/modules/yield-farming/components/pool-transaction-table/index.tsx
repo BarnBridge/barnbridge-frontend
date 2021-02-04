@@ -6,6 +6,7 @@ import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
 import cx from 'classnames';
 
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Select, { SelectOption } from 'components/antd/select';
@@ -81,7 +82,7 @@ const Columns: ColumnsType<any> = [
       const tokenMeta = getTokenMeta(record.token);
 
       return (
-        <Antd.Tooltip
+        <Tooltip
           title={
             <span>
               <strong>{formatBigValue(record.amount)}</strong>&nbsp;
@@ -89,7 +90,7 @@ const Columns: ColumnsType<any> = [
             </span>
           }>
           {formatUSDValue(value)}
-        </Antd.Tooltip>
+        </Tooltip>
       );
     },
   },
