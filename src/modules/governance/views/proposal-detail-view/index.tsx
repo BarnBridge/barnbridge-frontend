@@ -119,7 +119,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
         </Grid>
         <Grid flow="row" gap={32}>
           <ProposalStatusCard />
-          {APIProposalState.QUEUED === proposalState && (
+          {(APIProposalState.QUEUED === proposalState || proposalCtx.isCanceled) && (
             <ProposalAbrogationCard />
           )}
           {APIProposalState.ACTIVE === proposalState && (

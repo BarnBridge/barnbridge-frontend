@@ -13,6 +13,7 @@ export type BatchContractMethod = {
 };
 
 export const WEB3_RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL);
+export const HTTPS_WEB3_RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL).replace(/wss/gi, 'https');
 
 export const DEFAULT_CONTRACT_PROVIDER =
   WEB3_RPC_URL.indexOf('wss://') === 0

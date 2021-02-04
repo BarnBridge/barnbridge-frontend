@@ -30,7 +30,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
       </Small>
     ),
     dataIndex: 'address',
-    width: '45%',
+    width: '35%',
     render: (address: string) => (
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
@@ -49,7 +49,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
       </Small>
     ),
     dataIndex: 'power',
-    width: '35%',
+    width: '38%',
     align: 'right',
     render: (power: BigNumber) => (
       <Paragraph type="p1" semiBold color="grey900" className={s.powerCell}>
@@ -64,7 +64,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
       </Small>
     ),
     dataIndex: 'support',
-    width: '20%',
+    width: '27%',
     render: (support: boolean) =>
       support ? (
         <Label type="lb2" semiBold className={s.forTag}>
@@ -100,7 +100,7 @@ const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps
   }
 
   return (
-    <Modal className={s.component} centered width={560} {...modalProps}>
+    <Modal className={s.component} centered width={620} {...modalProps}>
       <Tabs
         className={s.tabs}
         defaultActiveKey="all"

@@ -14,6 +14,7 @@ import AbrogationProposalModal from '../abrogation-proposal-modal';
 import AbrogationVoteModal, {
   VoteAbrogationState,
 } from '../abrogation-vote-modal';
+import { APIProposalState } from '../../../../api';
 
 type ProposalAbrogationCardState = {
   abrogationVoteModal: boolean;
@@ -133,9 +134,11 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
         )}
         {proposalCtx.isCanceled === true && (
           <Grid flow="row" gap={24}>
-            <Paragraph type="p1" color="grey900">
-              Abrogation proposal currently in progress.
-            </Paragraph>
+            {proposalCtx.proposal?.state === APIProposalState.QUEUED && (
+              <Paragraph type="p1" color="grey900">
+                Abrogation proposal currently in progress.
+              </Paragraph>
+            )}
             <Button
               type="primary"
               onClick={() => setState({ abrogationViewModal: true })}>

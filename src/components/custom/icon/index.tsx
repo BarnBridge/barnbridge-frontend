@@ -51,7 +51,11 @@ export type IconNames =
   | 'add-user'
   | 'search-outlined'
   | 'link-outlined'
-  | 'arrow-top-right';
+  | 'arrow-top-right'
+  | 'handshake-outlined'
+  | 'stamp-outlined'
+  | 'circle-plus-outlined'
+  | 'circle-minus-outlined';
 
 export type IconsProps = {
   name: IconNames;
