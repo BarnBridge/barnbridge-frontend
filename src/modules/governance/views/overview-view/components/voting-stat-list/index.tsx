@@ -93,7 +93,7 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
           </Label>
           <Grid flow="row" gap={4}>
             <Heading type="h2" bold color="grey900">
-              {getFormattedDuration(overview?.avgLockTimeSeconds) ?? '-'}
+              {overview?.avgLockTimeSeconds ? getFormattedDuration(overview?.avgLockTimeSeconds) : '-'}
             </Heading>
             <Paragraph type="p1" color="grey500">
               average time

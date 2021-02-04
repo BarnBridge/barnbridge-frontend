@@ -1,8 +1,8 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps } from 'antd/lib/modal';
 
+import Modal, { ModalProps } from 'components/antd/modal';
 import Select, { SelectOption } from 'components/antd/select';
+import Button from 'components/antd/button';
 
 import { useWallet } from 'wallets/wallet';
 import { LedgerWalletConfig } from 'wallets/connectors/ledger';
@@ -36,28 +36,31 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
   }
 
   function handleConnect(ev: React.MouseEvent<HTMLElement>) {
-    props.onCancel?.(ev);
+    modalProps.onCancel?.(ev);
 
-    return wallet.connect(LedgerWalletConfig, {
-      baseDerivationPath: derivationPath,
-    });
+    try {
+      wallet.connect(LedgerWalletConfig, {
+        baseDerivationPath: derivationPath,
+      }).catch(Error);
+    } catch {
+    }
   }
 
   return (
-    <Antd.Modal className={s.component} centered footer={[]} {...modalProps}>
+    <Modal className={s.component} centered {...modalProps}>
       <Select
         className={s.dropdown}
         options={WEB3_LEDGER_DERIVATION_PATHS}
         value={derivationPath}
         onSelect={handleSelect}
       />
-      <Antd.Button
+      <Button
         type="primary"
         className={s.connectBtn}
         onClick={handleConnect}>
         Connect
-      </Antd.Button>
-    </Antd.Modal>
+      </Button>
+    </Modal>
   );
 };
 

@@ -30,9 +30,10 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
         return tokenShare.share! > 0 ? (
           <Tooltip
             key={index}
+            overlayInnerStyle={{ maxWidth: '520px' }}
             placement="top"
             title={
-              <Grid flow="col" gap={8} padding={[10, 16]}>
+              <Grid flow="col" gap={8} align="center" padding={[10, 16]}>
                 {tokenShare.icon}
                 <Paragraph type="p1" color="grey500">
                   {tokenShare.name}:
