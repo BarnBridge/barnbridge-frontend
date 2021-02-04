@@ -1,0 +1,80 @@
+@import 'src/styles/mixin';
+
+.component {
+  background: var(--color-card-bg);
+  box-shadow: var(--shadow-card);
+
+  &:global(.ant-card-contain-tabs) {
+    :global(.ant-card-head) {
+      padding: 0;
+      border: none;
+
+      :global(.ant-tabs) {
+        margin: 0;
+      }
+
+      :global(.ant-tabs-nav) {
+        margin: 0;
+        padding: 0 24px;
+
+        :global(.ant-tabs-tab) {
+          padding: 24px 0;
+        }
+      }
+    }
+  }
+
+  :global(.ant-card-head) {
+    border: none;
+
+    + :global(.ant-card-body) {
+      border-top: 1px solid var(--color-border);
+    }
+  }
+
+  :global(.ant-card-head-title) {
+    max-width: calc(100% - 52px);
+    padding: 24px 0;
+  }
+
+  > :global(.ant-card-body) {
+    padding: 24px;
+
+    > :global(.ant-table-wrapper) {
+      :global(.ant-table-container),
+      :global(.ant-table-pagination) {
+        border: none;
+        border-top: 1px solid var(--color-border);
+      }
+    }
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  :global(.ant-card-actions) > li {
+    margin: 0;
+  }
+
+  &.noPaddingBody {
+    :global(.ant-card-body) {
+      padding: 0;
+    }
+  }
+
+  .delimiter {
+    width: 100%;
+    height: 1px;
+    background: var(--color-border);
+  }
+
+  .arrow {
+    width: 40px;
+    height: 40px !important;
+    margin-left: 12px;
+    background: var(--color-body-bg) !important;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+  }
+}

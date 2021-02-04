@@ -1,20 +1,22 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import Icons from 'components/custom/icon';
+
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useWallet } from 'wallets/wallet';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
-import { useWallet } from 'wallets/wallet';
 import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 
-import { ReactComponent as DAIIcon } from 'resources/svg/tokens/dai.svg';
-
-const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
+const CONTRACT_DAI_ADDR = String(
+  process.env.REACT_APP_CONTRACT_DAI_ADDR,
+).toLowerCase();
 
 export const DAITokenMeta: TokenMeta = {
-  icon: <DAIIcon key="dai" />,
+  icon: <Icons key="dai" name="dai-token" />,
   name: 'DAI',
   address: CONTRACT_DAI_ADDR,
   decimals: 18,
@@ -59,7 +61,8 @@ export function useDAIContract(): DAIContract {
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
-          transform: (value: string) => getHumanValue(new BigNumber(value), DAITokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), DAITokenMeta.decimals),
         },
         {
           method: 'allowance',
@@ -76,28 +79,28 @@ export function useDAIContract(): DAIContract {
     }));
   }, [reload, wallet.account]);
 
-  const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
-    if (!wallet.account) {
-      return Promise.reject();
-    }
+  const approveSend = React.useCallback(
+    (value: BigNumber): Promise<any> => {
+      if (!wallet.account) {
+        return Promise.reject();
+      }
 
-    return contract.send('approve', [
-      CONTRACT_STAKING_ADDR,
-      value,
-    ], {
-      from: wallet.account,
-    }).then(reload);
-  }, [reload, contract, wallet.account]);
+      return contract
+        .send('approve', [CONTRACT_STAKING_ADDR, value], {
+          from: wallet.account,
+        })
+        .then(reload);
+    },
+    [reload, contract, wallet.account],
+  );
 
-  return React.useMemo<DAIContract>(() => ({
-    ...data,
-    contract,
-    reload,
-    approveSend,
-  }), [
-    data,
-    contract,
-    reload,
-    approveSend,
-  ]);
+  return React.useMemo<DAIContract>(
+    () => ({
+      ...data,
+      contract,
+      reload,
+      approveSend,
+    }),
+    [data, contract, reload, approveSend],
+  );
 }

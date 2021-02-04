@@ -1,0 +1,48 @@
+@font-face {
+  font-family: Montserrat;
+  src: url('../resources/fonts/Montserrat-Regular.ttf');
+}
+
+@font-face {
+  font-family: Montserrat;
+  font-weight: 600;
+  src: url('../resources/fonts/Montserrat-SemiBold.ttf');
+}
+
+@font-face {
+  font-family: Montserrat;
+  font-weight: 700;
+  src: url('../resources/fonts/Montserrat-Bold.ttf');
+}
+
+@mixin text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-ellipsis {
+  @include text-ellipsis;
+}
+
+@mixin text-wrap {
+  width: auto;
+  white-space: pre-wrap;
+  overflow: hidden;
+}
+
+.text-wrap {
+  @include text-wrap;
+}
+
+$textAligns: left, center, right;
+
+@each $textAlign in $textAligns {
+  .text-#{$textAlign} {
+    text-align: #{$textAlign};
+  }
+}
+
+.inline-block {
+  display: inline-block;
+}

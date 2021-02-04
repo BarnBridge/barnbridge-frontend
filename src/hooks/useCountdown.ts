@@ -9,6 +9,11 @@ export function useWeekCountdown(endDate?: number): string[] {
       return;
     }
 
+    if (endDate < Date.now()) {
+      setCountdown(`0d 0h 0m`);
+      return;
+    }
+
     const intervalID = setInterval(() => {
       const start = new Date();
 
@@ -24,24 +29,26 @@ export function useWeekCountdown(endDate?: number): string[] {
         });
       }
 
-      setCountdown(formatDuration(duration, {
-        format: ['days', 'hours', 'minutes'],
-        delimiter: ' ',
-        zero: true,
-        locale: {
-          formatDistance: (token, value) => {
-            switch (token) {
-              case 'xDays':
-                return `${String(value).padStart(2, '0')}d`;
-              case 'xHours':
-                return `${String(value).padStart(2, '0')}h`;
-              case 'xMinutes':
-                return `${String(value).padStart(2, '0')}m`;
-            }
+      setCountdown(
+        formatDuration(duration, {
+          format: ['days', 'hours', 'minutes'],
+          delimiter: ' ',
+          zero: true,
+          locale: {
+            formatDistance: (token, value) => {
+              switch (token) {
+                case 'xDays':
+                  return `${String(value).padStart(2, '0')}d`;
+                case 'xHours':
+                  return `${String(value).padStart(2, '0')}h`;
+                case 'xMinutes':
+                  return `${String(value).padStart(2, '0')}m`;
+              }
+            },
           },
-        }
-      }));
-    }, 1000);
+        }),
+      );
+    }, 1_000);
 
     return () => {
       clearInterval(intervalID);

@@ -1,0 +1,53 @@
+@import 'src/styles/mixin';
+
+.tabs {
+  > :global(.ant-tabs-nav) {
+    margin: 0;
+    padding: 0 24px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+
+    &:before {
+      border: none;
+    }
+
+    > :global(.ant-tabs-nav-wrap) {
+      > :global(.ant-tabs-nav-list) {
+        > :global(.ant-tabs-tab) {
+          > :global(.ant-tabs-tab-btn) {
+            display: flex;
+            flex-direction: row;
+            column-gap: 8px;
+            align-items: center;
+            @include font-p1-semi-bold;
+            color: var(--text-color-grey500);
+          }
+
+          &:global(.ant-tabs-tab-active) {
+            > :global(.ant-tabs-tab-btn) {
+              color: var(--text-color-grey900);
+
+              > svg {
+                color: var(--text-color-red500);
+              }
+            }
+          }
+        }
+
+        > :global(.ant-tabs-ink-bar) {
+          height: 2px;
+          background: var(--text-color-red500);
+          border-radius: 4px 4px 0 0;
+        }
+      }
+    }
+  }
+
+  &.simple {
+    > :global(.ant-tabs-nav) {
+      padding: 0;
+      background: transparent;
+      border: none;
+    }
+  }
+}

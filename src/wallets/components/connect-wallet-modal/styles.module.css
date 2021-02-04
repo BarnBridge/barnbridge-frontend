@@ -1,0 +1,42 @@
+.component {
+    padding: 0 !important;
+    background-color: var(--bg-color-2);
+}
+
+.headerLabel {
+    margin-bottom: 4px;
+    color: var(--text-color-1);
+}
+
+.headerNote {
+    margin-bottom: 32px;
+    color: var(--text-color-2);
+}
+
+.list {
+    display: grid;
+    grid-gap: 24px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    background-color: var(--bg-color-2);
+    overflow: scroll;
+}
+
+.btn {
+    width: 100%;
+    height: 96px !important;
+    padding: 32px 0;
+    border: 1px solid #e3e4e6 !important;
+}
+
+.btn:hover {
+    border: 1px solid #ff4339 !important;
+    box-shadow: 0 16px 32px rgba(255, 67, 57, 0.04);
+}
+
+.connectorBtn:disabled {
+    background-color: var(--bg-color-6) !important;
+}
+
+.logo {
+    height: 32px;
+}

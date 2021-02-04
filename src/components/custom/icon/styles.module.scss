@@ -1,0 +1,15 @@
+.component {
+  color: var(--color-icons);
+
+  &:global(.rotate-90) {
+    transform: rotate(90deg);
+  }
+
+  &:global(.rotate-180) {
+    transform: rotate(180deg);
+  }
+
+  &:global(.rotate-270) {
+    transform: rotate(270deg);
+  }
+}

@@ -1,16 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { BrowserRouter as Router } from 'react-router-dom';
 
-import './antd.css';
-import './index.css';
+import Web3WalletProvider from 'wallets/wallet';
+import Web3ContractsProvider from 'web3/contracts';
 
-import App from './app';
+import ThemeProvider from 'components/providers/theme-provider';
+
+import 'styles/index.scss';
+
+import LayoutView from 'layout';
 
 import * as sw from './serviceWorker';
 
-ReactDOM.render(
-  <App />,
-  document.getElementById('root'),
-);
+const App: React.FunctionComponent = () => {
+  return (
+    <ThemeProvider>
+      <Web3WalletProvider>
+        <Web3ContractsProvider>
+          <Router>
+            <LayoutView />
+          </Router>
+        </Web3ContractsProvider>
+      </Web3WalletProvider>
+    </ThemeProvider>
+  );
+};
+
+ReactDOM.render(<App />, document.getElementById('root'));
 
 sw.unregister();

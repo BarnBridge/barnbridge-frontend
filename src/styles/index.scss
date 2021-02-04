@@ -1,0 +1,193 @@
+//@import "~antd/dist/antd.css";
+@import 'antd.css';
+@import 'mixin';
+@import 'text';
+@import 'default';
+@import 'dark';
+
+body {
+  margin: 0;
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-body-bg);
+  color: var(--color-text);
+}
+
+* {
+  box-sizing: border-box;
+  transition: background-color 0.5s ease, color 0.5s ease;
+}
+
+svg,
+svg * {
+  transition: none !important;
+}
+
+button {
+  font-family: Montserrat;
+}
+
+h1,
+h2,
+h3 {
+  margin-bottom: 0;
+}
+
+p {
+  margin-bottom: 0;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.ant-modal .ant-modal-body {
+  background-color: var(--bg-color-2) !important;
+}
+
+.ant-modal .ant-modal-footer:empty {
+  display: none;
+}
+
+.ant-modal .ant-modal-close {
+  color: var(--text-color-4);
+}
+
+.ant-notification-notice {
+  word-break: break-word;
+}
+
+:root {
+  --font-size-h1: 32px;
+  --font-size-h2: 24px;
+  --font-size-h3: 18px;
+  --font-size-p1: 16px;
+  --font-size-p2: 14px;
+  --font-size-lb1: 14px;
+  --font-size-lb2: 12px;
+  --font-size-sm: 12px;
+
+  --content-padding: 32px 64px;
+
+  --bg-color-1: #f8f8f8;
+  --bg-color-2: #fff;
+  --bg-color-3: #ff4339;
+  --bg-color-4: #e3e4e6;
+  --bg-color-5: #f6f8fe;
+  --bg-color-6: rgba(170, 175, 179, 0.08);
+
+  --text-color-1: #060a0d;
+  --text-color-2: #717980;
+  --text-color-3: #ff4339;
+  --text-color-4: #aaafb3;
+  --text-color-5: #000;
+  --text-color-6: #4f6ae6;
+  --text-color-7: #95a6ef;
+  --text-color-8: #f6ae5;
+  --text-color-9: #7288ea;
+  --text-color-10: #fff;
+
+  --border-color-1: #e3e4e6;
+  --border-color-2: #e3e4e6;
+
+  --shadow-color-1: rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+}
+
+.theme-dark {
+  --bg-color-1: #202529;
+  --bg-color-2: #2b2f33;
+  --bg-color-3: #fff;
+  --bg-color-4: #43484d;
+  --bg-color-5: rgba(79, 106, 230, 0.08);
+  --bg-color-6: rgba(147, 148, 150, 0.08);
+
+  --text-color-1: #fff;
+  --text-color-2: #939496;
+  --text-color-3: #ff4339;
+  --text-color-4: #606268;
+  --text-color-5: #fff;
+  --text-color-6: #7288ea;
+  --text-color-7: #4f6ae5;
+  --text-color-8: #95a6ef;
+  --text-color-10: #fff;
+
+  --border-color-1: #44494d;
+  --border-color-2: #ff4339;
+
+  --shadow-color-1: rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+:root {
+  // components/button
+  --btn-primary-color: #fff;
+  --btn-primary-bg-color: #ff4339;
+  --btn-primary-shadow-color: rgba(255, 67, 57, 0.16);
+  --btn-primary-hover-bg-color: #ff6961;
+  --btn-primary-hover-shadow-color: rgba(255, 105, 97, 0.24);
+  --btn-primary-active-bg-color: #cc362e;
+  --btn-primary-active-shadow-color: rgba(204, 54, 46, 0.16);
+  --btn-primary-disabled-bg-color: #43484d;
+  --btn-primary-disabled-color: #939496;
+  --btn-default-color: #ff4339;
+  --btn-default-bg-color: rgba(255, 67, 57, 0.08);
+  --btn-default-hover-color: #ff6961;
+  --btn-default-hover-bg-color: rgba(255, 105, 97, 0.1);
+  --btn-default-active-color: #cc362e;
+  --btn-default-active-bg-color: rgba(204, 54, 46, 0.08);
+  --btn-default-disabled-color: #939496;
+  --btn-default-disabled-bg-color: rgba(96, 98, 104, 0.09);
+  --btn-ghost-color: #ff4339;
+  --btn-ghost-bg-color: rgba(204, 54, 46, 0.04);
+  --btn-ghost-border-color: #ff4339;
+  --btn-ghost-hover-color: #ff6961;
+  --btn-ghost-hover-bg-color: rgba(255, 105, 97, 0.1);
+  --btn-ghost-hover-border-color: #ff8e88;
+  --btn-ghost-active-color: #cc362e;
+  --btn-ghost-active-bg-color: rgba(204, 54, 46, 0.04);
+  --btn-ghost-active-border-color: #cc362e;
+  --btn-ghost-disabled-color: #939496;
+  --btn-ghost-disabled-bg-color: rgba(147, 148, 150, 0.09);
+  --btn-ghost-disabled-border-color: #43484d;
+  --btn-link-color: #ff4339;
+  --btn-link-hover-color: #aaafb3;
+  --btn-link-active-color: #ff4339;
+}
+
+.theme-dark {
+  // components/button
+  --btn-primary-disabled-bg-color: #c6c9cc;
+  --btn-primary-disabled-color: #fff;
+  --btn-default-bg-color: rgba(255, 67, 57, 0.1);
+  --btn-default-disabled-color: #aaafb3;
+  --btn-default-disabled-bg-color: rgba(170, 175, 179, 0.08);
+  --btn-ghost-disabled-color: #aaafb3;
+  --btn-ghost-disabled-bg-color: rgba(170, 175, 179, 0.08);
+  --btn-ghost-disabled-border-color: #e3e4e6;
+  --btn-link-color: #606268;
+  --btn-link-hover-color: #fff;
+  --btn-link-active-color: #fff;
+}
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-h1: 24px;
+    --font-size-h2: 18px;
+    --font-size-h3: 14px;
+    --font-size-p1: 12px;
+    --font-size-p2: 11px;
+    --font-size-lb1: 11px;
+    --font-size-lb2: 9px;
+    --font-size-sm: 9px;
+
+    --content-padding: 32px 32px;
+  }
+}
+
+@media (max-width: 425px) {
+  :root {
+    --content-padding: 32px 8px;
+  }
+}

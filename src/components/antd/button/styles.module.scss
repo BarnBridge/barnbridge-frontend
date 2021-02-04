@@ -1,0 +1,115 @@
+@import 'src/styles/mixin';
+
+.component:global(.ant-btn) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  column-gap: 12px;
+  height: 48px;
+  padding: 12px 32px;
+  border-radius: 4px;
+
+  @include font-p2-bold;
+  text-align: center;
+
+  &:global(.ant-btn-sm) {
+    height: 34px;
+    padding: 9px;
+    @include font-sm-bold;
+  }
+
+  &:global(.ant-btn-lg) {
+    height: 64px;
+    padding: 20px;
+    @include font-p1-bold;
+  }
+
+  &:global(.ant-btn-primary) {
+    background: var(--text-color-red500);
+    border: none;
+    box-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
+    color: #fff;
+
+    &:hover {
+      background: var(--text-color-red400);
+      box-shadow: 0 8px 16px rgba(255, 105, 97, 0.24);
+    }
+
+    &:active {
+      background: var(--text-color-red600);
+      box-shadow: 0 4px 8px rgba(204, 54, 46, 0.16);
+    }
+
+    &:disabled,
+    &:disabled:hover {
+      background: var(--color-border); // $color-grey200
+      box-shadow: none;
+      color: var(--color-text); // fff
+    }
+  }
+
+  &:global(.ant-btn-default) {
+    background: rgba(255, 67, 57, 0.1);
+    border: none;
+    box-shadow: none;
+    color: var(--text-color-red500);
+
+    &:hover {
+      background: rgba(255, 105, 97, 0.1);
+      color: var(--text-color-red400);
+    }
+
+    &:active {
+      background: rgba(204, 54, 46, 0.08);
+      color: var(--text-color-red600);
+    }
+
+    &:disabled,
+    &:disabled:hover {
+      background: rgba(147, 148, 150, 0.08); // rgba(170, 175, 179, 0.08)
+      color: var(--text-color-grey500); // $color-grey300
+    }
+  }
+
+  &:global(.ant-btn-ghost) {
+    background: none;
+    border: 1px solid var(--text-color-red500);
+    box-shadow: none;
+    color: var(--text-color-red500);
+
+    &:hover {
+      background: rgba(255, 105, 97, 0.1);
+      border: 1px solid var(--text-color-red300);
+      color: var(--text-color-red400);
+    }
+
+    &:active {
+      background: rgba(204, 54, 46, 0.04);
+      border: 1px solid var(--text-color-red600);
+      color: var(--text-color-red600);
+    }
+
+    &:disabled,
+    &:disabled:hover {
+      background: rgba(147, 148, 150, 0.08); // rgba(170, 175, 179, 0.08)
+      border: 1px solid var(--color-border);
+      color: var(--color-text); // $color-grey300
+    }
+  }
+
+  &:global(.ant-btn-link) {
+    height: auto;
+    padding: 0;
+    border: none;
+
+    color: var(--text-color-blue500); // $color-blue400
+
+    &:hover {
+      color: var(--text-color-blue400); // $color-blue300
+    }
+
+    &:active {
+      color: var(--text-color-blue600); // $color-blue700
+    }
+  }
+}

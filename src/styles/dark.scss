@@ -1,0 +1,38 @@
+@import 'colors';
+
+:root .theme-dark {
+  --color-body-bg: #202529;
+  --color-card-bg: #282c30;
+  --color-overlay-bg: #36393d;
+  --color-mask-bg: rgba(32, 37, 41, 0.8);
+  --color-border: #43484d;
+  --color-icons: #606268;
+  --color-text: #939496;
+  --color-progress-success: #00d395;
+
+  --shadow-modal: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
+  --shadow-card: 0 0 0.5px #fff, 0 8px 16px rgba(0, 0, 0, 0.08);
+  --shadow-overlay: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
+
+  --text-color-grey900: #fff;
+  --text-color-grey900-rgb: #{hexToRGB(#fff)};
+
+  --text-color-grey500: #939496;
+  --text-color-grey300: #{$color-grey300};
+  --text-color-grey100: #{$color-grey100};
+
+  --text-color-red500: #{$color-red500};
+
+  --text-color-green500: #{$color-green500};
+  --text-color-green500-rgb: #{hexToRGB($color-green500)};
+
+  --text-color-blue500: #{$color-blue400};
+  --text-color-blue500-rgb: #{hexToRGB($color-blue500)};
+
+  --text-color-yellow500: #{$color-yellow500};
+  --text-color-yellow500-rgb: #{hexToRGB($color-yellow500)};
+
+  --text-color-red300: #{$color-red300};
+  --text-color-red400: #{$color-red400};
+  --text-color-red600: #{$color-red600};
+}

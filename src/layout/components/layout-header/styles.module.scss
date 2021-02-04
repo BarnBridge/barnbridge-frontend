@@ -1,0 +1,8 @@
+@import 'src/styles/mixin';
+
+.component {
+  height: 72px;
+  padding: 12px 64px;
+  background: var(--color-card-bg);
+  border-bottom: 1px solid var(--color-border);
+}

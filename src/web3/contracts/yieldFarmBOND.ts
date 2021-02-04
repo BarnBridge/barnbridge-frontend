@@ -3,14 +3,17 @@ import BigNumber from 'bignumber.js';
 
 import { useReload } from 'hooks/useReload';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
+import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_YIELD_FARM_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR);
+export const CONTRACT_YIELD_FARM_BOND_ADDR = String(
+  process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR,
+);
 
 type YieldFarmBONDContractData = {
+  isEnded?: boolean;
   delayedEpochs?: number;
   totalEpochs?: number;
   totalReward?: BigNumber;
@@ -32,6 +35,7 @@ export type YieldFarmBONDContract = YieldFarmBONDContractData & {
 };
 
 const InitialData: YieldFarmBONDContractData = {
+  isEnded: undefined,
   delayedEpochs: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
@@ -58,10 +62,17 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
     );
   }, []);
 
-  const [data, setData] = React.useState<YieldFarmBONDContractData>(InitialData);
+  const [data, setData] = React.useState<YieldFarmBONDContractData>(
+    InitialData,
+  );
 
   useAsyncEffect(async () => {
-    let [delayedEpochs, totalEpochs, totalReward, currentEpoch] = await contract.batch([
+    let [
+      delayedEpochs,
+      totalEpochs,
+      totalReward,
+      currentEpoch,
+    ] = await contract.batch([
       {
         method: 'EPOCHS_DELAYED_FROM_STAKING_CONTRACT',
         transform: (value: string) => Number(value),
@@ -80,19 +91,24 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       },
     ]);
 
+    const isEnded = currentEpoch > totalEpochs;
+
     currentEpoch = Math.min(currentEpoch, totalEpochs);
 
-    const epochReward = totalEpochs !== 0 ? totalReward.div(totalEpochs) : ZERO_BIG_NUMBER;
+    const epochReward =
+      totalEpochs !== 0 ? totalReward?.div(totalEpochs) : ZERO_BIG_NUMBER;
 
     let bondReward = ZERO_BIG_NUMBER;
 
     if (currentEpoch > 0) {
-      const bondEpoch = currentEpoch === totalEpochs ? currentEpoch : currentEpoch - 1;
+      const bondEpoch =
+        currentEpoch === totalEpochs ? currentEpoch : currentEpoch - 1;
       bondReward = epochReward.multipliedBy(bondEpoch);
     }
 
     setData(prevState => ({
       ...prevState,
+      isEnded,
       delayedEpochs,
       totalEpochs,
       totalReward,
@@ -105,12 +121,14 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       {
         method: 'getPoolSize',
         methodArgs: [currentEpoch],
-        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        transform: (value: string) =>
+          getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
       {
         method: 'getPoolSize',
         methodArgs: [currentEpoch + 1],
-        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        transform: (value: string) =>
+          getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
     ]);
 
@@ -133,17 +151,20 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
         {
           method: 'getEpochStake',
           methodArgs: [wallet.account, currentEpoch],
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'getEpochStake',
           methodArgs: [wallet.account, currentEpoch + 1],
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'massHarvest',
           callArgs: { from: wallet.account },
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
       ]);
     }
@@ -161,7 +182,11 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
 
     let potentialReward: BigNumber | undefined;
 
-    if (epochStake !== undefined && poolSize !== undefined && epochReward !== undefined) {
+    if (
+      epochStake !== undefined &&
+      poolSize !== undefined &&
+      epochReward !== undefined
+    ) {
       if (poolSize.isEqualTo(ZERO_BIG_NUMBER)) {
         potentialReward = ZERO_BIG_NUMBER;
       } else {
@@ -179,20 +204,20 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       return Promise.reject();
     }
 
-    return contract.send('massHarvest', [], {
-      from: wallet.account,
-    }).then(reload);
+    return contract
+      .send('massHarvest', [], {
+        from: wallet.account,
+      })
+      .then(reload);
   }, [reload, contract, wallet.account]);
 
-  return React.useMemo<YieldFarmBONDContract>(() => ({
-    ...data,
-    contract,
-    reload,
-    massHarvestSend,
-  }), [
-    data,
-    contract,
-    reload,
-    massHarvestSend,
-  ]);
+  return React.useMemo<YieldFarmBONDContract>(
+    () => ({
+      ...data,
+      contract,
+      reload,
+      massHarvestSend,
+    }),
+    [data, contract, reload, massHarvestSend],
+  );
 }

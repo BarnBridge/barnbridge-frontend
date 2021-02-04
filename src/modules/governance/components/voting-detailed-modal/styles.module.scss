@@ -1,0 +1,41 @@
+@import 'src/styles/mixin';
+
+.component {
+  :global(.ant-modal-body) {
+    padding: 0;
+  }
+
+  .row {
+    display: inline-grid;
+    grid-template-columns: min-content 1fr min-content;
+    column-gap: 16px;
+    align-items: center;
+    width: 100%;
+    padding: 24px 32px;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: rgba(113, 121, 128, 0.08);
+    border-radius: 4px;
+
+    svg {
+      color: var(--text-color-grey900);
+    }
+  }
+
+  .label,
+  .value {
+    @include font-p1-semi-bold;
+    color: var(--text-color-grey900);
+  }
+
+  .activeValue {
+    color: var(--text-color-red500);
+  }
+}
