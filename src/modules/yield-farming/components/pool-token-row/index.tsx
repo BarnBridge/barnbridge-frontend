@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
@@ -15,7 +14,12 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { Label, Paragraph, Small } from 'components/custom/typography';
 
 import { TokenMeta } from 'web3/types';
-import { formatBigValue, formatBONDValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import {
+  formatBigValue,
+  getNonHumanValue,
+  MAX_UINT_256,
+  ZERO_BIG_NUMBER,
+} from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -31,11 +35,12 @@ export type PoolTokenRowProps = {
   token: TokenMeta;
   type: 'deposit' | 'withdraw';
   expanded?: boolean;
-}
+};
 
 type PoolTokenRowState = {
   enabling: boolean;
   enabled?: boolean;
+  formDisabled: boolean;
   saving: boolean;
   expanded: boolean;
   walletBalance?: BigNumber;
@@ -47,6 +52,7 @@ type PoolTokenRowState = {
 const InitialState: PoolTokenRowState = {
   enabling: false,
   enabled: undefined,
+  formDisabled: false,
   saving: false,
   expanded: false,
   walletBalance: undefined,
@@ -58,7 +64,7 @@ const InitialState: PoolTokenRowState = {
 type PoolTokenRowFormData = {
   amount?: BigNumber;
   gasFee?: number;
-}
+};
 
 const InitialFormValues: PoolTokenRowFormData = {
   amount: undefined,
@@ -97,6 +103,7 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     let allowance: BigNumber | undefined;
     let stakedBalance: BigNumber | undefined;
     let effectiveStakedBalance: BigNumber | undefined;
+    let isEnded: boolean | undefined;
 
     switch (token) {
       case USDCTokenMeta:
@@ -104,30 +111,35 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         allowance = web3c.usdc.allowance;
         stakedBalance = web3c.staking.usdc.balance;
         effectiveStakedBalance = web3c.staking.usdc.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case DAITokenMeta:
         walletBalance = web3c.dai.balance;
         allowance = web3c.dai.allowance;
         stakedBalance = web3c.staking.dai.balance;
         effectiveStakedBalance = web3c.staking.dai.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case SUSDTokenMeta:
         walletBalance = web3c.susd.balance;
         allowance = web3c.susd.allowance;
         stakedBalance = web3c.staking.susd.balance;
         effectiveStakedBalance = web3c.staking.susd.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case UNISWAPTokenMeta:
         walletBalance = web3c.uniswap.balance;
         allowance = web3c.uniswap.allowance;
         stakedBalance = web3c.staking.uniswap.balance;
         effectiveStakedBalance = web3c.staking.uniswap.epochUserBalance;
+        isEnded = web3c.yfLP.isEnded;
         break;
       case BONDTokenMeta:
         walletBalance = web3c.bond.balance;
         allowance = web3c.bond.allowance;
         stakedBalance = web3c.staking.bond.balance;
         effectiveStakedBalance = web3c.staking.bond.epochUserBalance;
+        isEnded = web3c.yfBOND.isEnded;
         break;
       default:
         return;
@@ -137,8 +149,12 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       walletBalance,
       stakedBalance,
       effectiveStakedBalance,
-      maxAllowance: BigNumber.min(allowance ?? ZERO_BIG_NUMBER, walletBalance ?? ZERO_BIG_NUMBER),
+      maxAllowance: BigNumber.min(
+        allowance ?? ZERO_BIG_NUMBER,
+        walletBalance ?? ZERO_BIG_NUMBER,
+      ),
       enabled: allowance?.gt(ZERO_BIG_NUMBER) ?? false,
+      formDisabled: isEnded === true && isDeposit,
       expanded,
     });
   }, [web3c, token]);
@@ -186,25 +202,19 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setState({ enabling: false });
   }
 
-  // function handleSliderChange(value: number) {
-  //   setState(prevState => ({
-  //     ...prevState,
-  //     amount: value === maxAmount ? activeBalance : getHumanValue(new BigNumber(value), token.decimals),
-  //   }));
-  // }
-
   async function handleSubmit(values: any) {
-    console.log({ values });
-    return;
     setState({ saving: true });
 
     try {
-      const { amount, gasAmount } = values;
+      const { amount, gasFee } = values;
+
+      const amountValue = amount;
+      const feeValue = gasFee.value;
 
       if (isDeposit) {
-        await web3c.staking.depositSend(token, amount, gasAmount);
+        await web3c.staking.depositSend(token, amountValue, feeValue);
       } else if (isWithdraw) {
-        await web3c.staking.withdrawSend(token, amount, gasAmount);
+        await web3c.staking.withdrawSend(token, amountValue, feeValue);
       }
 
       switch (token) {
@@ -235,8 +245,6 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
     setState({ saving: false });
   }
 
-  const noAmount = false; // React.useMemo(() => !state.amount || state.amount?.isEqualTo(ZERO_BIG_NUMBER), [state.amount]);
-
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
       <Grid flow="col" gap={12} align="center">
@@ -247,20 +255,25 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Wallet Balance</Small>
+        <Small semiBold color="grey500">
+          Wallet Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBigValue(state.walletBalance, token.decimals)}
         </Paragraph>
       </Grid>
 
-      {isDeposit && (
+      {isDeposit && (!state.formDisabled || state.enabled === true) && (
         <Grid flow="row" gap={4}>
-          <Small semiBold color="grey500">Enable Token</Small>
+          <Small semiBold color="grey500">
+            Enable Token
+          </Small>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
             checked={state.enabled}
             loading={state.enabled === undefined || state.enabling}
-            onChange={handleSwitchChange} />
+            onChange={handleSwitchChange}
+          />
         </Grid>
       )}
     </Grid>
@@ -279,17 +292,22 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
         onFinish={handleSubmit}>
         <Grid colsTemplate="1fr 1fr">
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
-            <Label type="lb2" semiBold color="grey500">Staked Balance</Label>
+            <Label type="lb2" semiBold color="grey500">
+              Staked Balance
+            </Label>
             <Paragraph type="p1" semiBold color="grey900">
               {formatBigValue(state.stakedBalance, token.decimals)}
             </Paragraph>
           </Grid>
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
             <Grid flow="col" gap={8}>
-              <Label type="lb2" semiBold color="grey500">Effective Staked Balance</Label>
+              <Label type="lb2" semiBold color="grey500">
+                Effective Staked Balance
+              </Label>
               <Tooltip
                 type="info"
-                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal." />
+                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal."
+              />
             </Grid>
             <Paragraph type="p1" semiBold color="grey900">
               {formatBigValue(state.effectiveStakedBalance, token.decimals)}
@@ -302,38 +320,27 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
               <Form.Item
                 name="amount"
                 label="Amount"
-                rules={[{ required: true, message: 'Required' }]}>
-                <TokenAmount
-                  tokenIcon="bond-token"
-                  tokenLabel={token.name}
-                  placeholder={activeBalance ? `0 (Max ${activeBalance.toFormat()})` : '0'}
-                  disabled={state.saving}
-                  maximumFractionDigits={token.decimals}
-                  maxProps={{
-                    disabled: state.saving,
-                    onClick: () => {
-                      form.setFieldsValue({
-                        amount: web3c.bond.balance ?? ZERO_BIG_NUMBER,
-                      });
+                rules={[
+                  { required: true, message: 'Required' },
+                  {
+                    validator: (rule: any, value: BigNumber | undefined, cb: Function) => {
+                      if (value?.isEqualTo(ZERO_BIG_NUMBER)) {
+                        cb('Should be greater than zero');
+                      } else if (value?.isGreaterThan(maxAmount)) {
+                        cb(`Should be less than ${maxAmount}`);
+                      } else {
+                        cb();
+                      }
                     },
-                  }}
-                />
-              </Form.Item>
-              <Form.Item name="amount">
-                <Slider
-                  min={0}
-                  // max={web3c.bond.balance?.toNumber() ?? 0}
-                  max={maxAmount}
-                  step={1}
-                  disabled={state.saving}
-                  // disabled={!activeBalance}
-                  tipFormatter={value =>
-                    <span>{value ? formatBONDValue(new BigNumber(value)) : 0}</span>
                   }
-                  tooltipPlacement="bottom"
-                  // value={getNonHumanValue(state.amount ?? 0, token.decimals).toNumber() ?? 0}
-                  // tipFormatter={value =>
-                  //   <span>{formatBigValue(getHumanValue(new BigNumber(value!) ?? 0, token.decimals), token.decimals)}</span>}
+                ]}>
+                <TokenAmount
+                  tokenIcon={icon}
+                  max={activeBalance}
+                  maximumFractionDigits={token.decimals}
+                  displayDecimals={token === UNISWAPTokenMeta ? 8 : 4}
+                  disabled={state.formDisabled || state.saving}
+                  slider
                 />
               </Form.Item>
               {isDeposit && (
@@ -351,16 +358,17 @@ const PoolTokenRow: React.FunctionComponent<PoolTokenRowProps> = props => {
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>
-                <GasFeeList disabled={state.saving} />
+                <GasFeeList disabled={state.formDisabled || state.saving} />
               </Form.Item>
             </Grid>
           </Grid>
+
           <Button
             type="primary"
             htmlType="submit"
             size="large"
             loading={state.saving}
-            disabled={!state.enabled || noAmount}
+            disabled={(!state.enabled && isDeposit) || state.formDisabled}
             style={{ width: 121 }}>
             {isDeposit && 'Deposit'}
             {isWithdraw && 'Withdraw'}

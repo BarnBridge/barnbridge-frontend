@@ -1,4 +1,4 @@
-@import "../../../../styles/mixin";
+@import 'src/styles/mixin';
 
 .component {
   :global(.ant-modal-body) {
@@ -12,7 +12,7 @@
     align-items: center;
     width: 100%;
     padding: 24px 32px;
-    border-bottom: 1px solid #e3e4e6;
+    border-bottom: 1px solid var(--color-border);
   }
 
   .icon {
@@ -25,17 +25,17 @@
     border-radius: 4px;
 
     svg {
-      color: #aaafb3;
+      color: var(--text-color-grey900);
     }
   }
 
   .label,
   .value {
     @include font-p1-semi-bold;
-    color: #060a0d;
+    color: var(--text-color-grey900);
   }
 
   .activeValue {
-    color: #ff4339;
+    color: var(--text-color-red500);
   }
 }

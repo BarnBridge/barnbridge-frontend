@@ -1,42 +1,96 @@
 import React from 'react';
 import cx from 'classnames';
+import BigNumber from 'bignumber.js';
 
-import Button, { ButtonProps } from 'components/antd/button';
+import Button from 'components/antd/button';
+import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
-import NumericInput, { NumericInputProps } from 'components/custom/numeric-input';
-import { Small } from 'components/custom/typography';
+import NumericInput from 'components/custom/numeric-input';
 import Icons, { TokenIconNames } from 'components/custom/icon';
+import { formatBigValue } from 'web3/utils';
 
 import s from './styles.module.scss';
 
-export type TokenAmountProps = NumericInputProps & {
+export type TokenAmountProps = {
   className?: string;
   tokenIcon?: TokenIconNames;
-  tokenLabel?: React.ReactNode;
-  maxProps?: ButtonProps;
+  max?: number | BigNumber;
+  maximumFractionDigits?: number;
+  value?: number | BigNumber;
+  disabled?: boolean;
+  slider?: boolean;
+  displayDecimals?: number;
+  onChange?: (value?: BigNumber) => void;
 };
 
 const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
-  const { className, tokenIcon, tokenLabel, maxProps, ...rest } = props;
+  const {
+    className,
+    tokenIcon,
+    max = 100,
+    maximumFractionDigits = 4,
+    value,
+    disabled = false,
+    slider = false,
+    displayDecimals = 4,
+    onChange,
+  } = props;
 
-  const addonBefore = React.useMemo(() => (
-    <Grid flow="col" gap={4}>
-      {tokenIcon && <Icons name={tokenIcon} width={16} height={16} />}
-      {tokenLabel && <Small semiBold color="grey900">{tokenLabel}</Small>}
-    </Grid>
-  ), [tokenIcon, tokenLabel]);
+  const step = 1 / (10 ** Math.min(displayDecimals, 6));
+  const bnMaxValue = new BigNumber(max);
 
-  const addonAfter = React.useMemo(() => (
-    <Button type="default" className={s.maxBtn} {...maxProps}>MAX</Button>
-  ), [maxProps]);
+  const bnValue = value !== undefined
+    ? BigNumber.min(new BigNumber(value), bnMaxValue)
+    : undefined;
+
+  function onMaxHandle() {
+    onChange?.(bnMaxValue);
+  }
+
+  function handleInputChange(value: BigNumber) {
+    onChange?.(value ? BigNumber.min(value, bnMaxValue) : undefined);
+  }
+
+  function onSliderChange(value: number) {
+    onChange?.(new BigNumber(value));
+  }
 
   return (
-    <NumericInput
-      className={cx(s.component, className)}
-      addonBefore={addonBefore}
-      addonAfter={addonAfter}
-      {...rest}
-    />
+    <Grid flow="row" gap={32}>
+      <NumericInput
+        className={cx(s.component, className)}
+        placeholder={`0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})`}
+        addonBefore={tokenIcon ? (
+          <Grid flow="col" gap={4}>
+            <Icons name={tokenIcon} width={24} height={24} />
+          </Grid>
+        ) : undefined}
+        addonAfter={(
+          <Button
+            type="default"
+            className={s.maxBtn}
+            onClick={onMaxHandle}>
+            MAX
+          </Button>
+        )}
+        maximumFractionDigits={maximumFractionDigits}
+        disabled={disabled}
+        value={bnValue}
+        onChange={handleInputChange}
+      />
+      {slider && (
+        <Slider
+          min={0}
+          max={bnMaxValue.toNumber()}
+          step={step}
+          tooltipPlacement="bottom"
+          tipFormatter={value => value ? formatBigValue(new BigNumber(value), displayDecimals) : 0}
+          disabled={disabled}
+          value={bnValue?.toNumber()}
+          onChange={onSliderChange}
+        />
+      )}
+    </Grid>
   );
 };
 

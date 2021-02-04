@@ -45,15 +45,15 @@ const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = pro
             key={connector.id}
             type="link"
             className={s.btn}
-            onClick={() => handleConnectorSelect(connector)}
-          >
+            onClick={() => handleConnectorSelect(connector)}>
             <img src={connector.logo} alt={connector.name} className={s.logo} />
           </Button>
         ))}
       </div>
       <LedgerDerivationPathModal
         visible={ledgerModal}
-        onCancel={() => setLedgerModal(false)} />
+        onCancel={() => setLedgerModal(false)}
+      />
     </Modal>
   );
 };

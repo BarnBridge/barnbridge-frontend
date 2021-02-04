@@ -14,7 +14,8 @@ const Slider: React.FunctionComponent<SliderProps> = props => {
     <Antd.Slider
       className={cx(s.component, className)}
       tooltipPlacement="bottom"
-      {...rest} />
+      {...rest}
+    />
   );
 };
 

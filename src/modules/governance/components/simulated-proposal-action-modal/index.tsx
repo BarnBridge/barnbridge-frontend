@@ -19,14 +19,19 @@ const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalAct
     <Modal centered width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={24}>
-          <Icons name="warning-outlined" width={40} height={40} color="red500" />
+          <Icons
+            name="warning-outlined"
+            width={40}
+            height={40}
+            color="red500"
+          />
           <Grid flow="row" gap={8}>
             <Heading type="h3" semiBold color="grey900">
               Action could not be simulated
             </Heading>
             <Paragraph type="p2" semiBold color="grey500">
-              We run a simulation for every action before adding it to the proposal. The following action failed to
-              simulate:
+              We run a simulation for every action before adding it to the
+              proposal. The following action failed to simulate:
             </Paragraph>
           </Grid>
           <ProposalActionCard
@@ -37,12 +42,17 @@ const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalAct
             callData={proposalAction.functionEncodedParams}
           />
           <Paragraph type="p2" semiBold color="grey500">
-            If you think this is a mistake, you can still add this action to the proposal.
+            If you think this is a mistake, you can still add this action to the
+            proposal.
           </Paragraph>
         </Grid>
         <Grid flow="col" justify="space-between">
-          <Button type="default" onClick={modalProps.onOk}>Continue anyway</Button>
-          <Button type="primary" onClick={modalProps.onCancel}>Go back</Button>
+          <Button type="default" onClick={modalProps.onOk}>
+            Continue anyway
+          </Button>
+          <Button type="primary" onClick={modalProps.onCancel}>
+            Go back
+          </Button>
         </Grid>
       </Grid>
     </Modal>

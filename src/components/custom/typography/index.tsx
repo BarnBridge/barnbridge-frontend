@@ -6,6 +6,7 @@ import Skeleton from 'components/antd/skeleton';
 import { Colors } from 'styles/colors';
 
 import s from './styles.module.scss';
+import Tooltip from '../../antd/tooltip';
 
 type CommonProps = {
   bold?: boolean;
@@ -16,6 +17,7 @@ type CommonProps = {
   wrap?: boolean;
   className?: string;
   loading?: boolean;
+  hint?: React.ReactNode;
 };
 
 function classNamesFromProps(props: CommonProps) {
@@ -40,9 +42,13 @@ export const Heading: React.FunctionComponent<HeadingProps> = props => {
   const { type, loading, children } = props;
   const classNames = cx(s.heading, classNamesFromProps(props));
 
-  return React.createElement(type, {
-    className: classNames,
-  }, !loading ? children : <Skeleton className={classNames} />);
+  return React.createElement(
+    type,
+    {
+      className: classNames,
+    },
+    !loading ? children : <Skeleton className={classNames} />,
+  );
 };
 
 export type ParagraphProps = CommonProps & {
@@ -50,14 +56,19 @@ export type ParagraphProps = CommonProps & {
 };
 
 export const Paragraph: React.FunctionComponent<ParagraphProps> = props => {
-  const { type, loading, children } = props;
+  const { type, loading, hint, children } = props;
   const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
 
   return !loading ? (
     <p className={classNames}>
       {children}
+      {hint && (
+        <Tooltip type="info" title={hint} />
+      )}
     </p>
-  ) : <Skeleton className={classNames} />;
+  ) : (
+    <Skeleton className={classNames} />
+  );
 };
 
 export type LabelProps = CommonProps & {
@@ -65,25 +76,35 @@ export type LabelProps = CommonProps & {
 };
 
 export const Label: React.FunctionComponent<LabelProps> = props => {
-  const { type, loading, children } = props;
+  const { type, loading, hint, children } = props;
   const classNames = cx(s.label, s[type], classNamesFromProps(props));
 
   return !loading ? (
     <label className={classNames}>
       {children}
+      {hint && (
+        <Tooltip type="info" title={hint} />
+      )}
     </label>
-  ) : <Skeleton className={classNames} />;
+  ) : (
+    <Skeleton className={classNames} />
+  );
 };
 
 export type SmallProps = CommonProps;
 
 export const Small: React.FunctionComponent<SmallProps> = props => {
-  const { loading, children } = props;
+  const { loading, hint, children } = props;
   const classNames = cx(s.small, classNamesFromProps(props));
 
   return !loading ? (
     <small className={cx(s.small, classNamesFromProps(props))}>
       {children}
+      {hint && (
+        <Tooltip type="info" title={hint} />
+      )}
     </small>
-  ) : <Skeleton className={classNames} />;
+  ) : (
+    <Skeleton className={classNames} />
+  );
 };

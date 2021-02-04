@@ -85,7 +85,8 @@ const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
       {...inputProps}
       onChange={handleChange}
       onBlur={handleBlur}
-      value={valueRef.current} />
+      value={valueRef.current}
+    />
   );
 };
 

@@ -7,7 +7,7 @@ import s from './styles.module.scss';
 
 export type TableProps<T> = AntdTableProps<T>;
 
-const Table = <T extends {}, >(props: React.PropsWithChildren<TableProps<T>>) => {
+const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
   const { className, ...tableProps } = props;
 
   return (

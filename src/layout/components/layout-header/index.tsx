@@ -14,8 +14,14 @@ const LayoutHeader: React.FunctionComponent<LayoutHeaderProps> = props => {
   const { title } = props;
 
   return (
-    <Grid flow="col" align="center" justify="space-between" className={s.component}>
-      <Heading type="h3" semiBold color="grey900">{title}</Heading>
+    <Grid
+      flow="col"
+      align="center"
+      justify="space-between"
+      className={s.component}>
+      <Heading type="h3" semiBold color="grey900">
+        {title}
+      </Heading>
       <ConnectedWallet />
     </Grid>
   );

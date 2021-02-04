@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
@@ -16,16 +15,19 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import useMergeState from 'hooks/useMergeState';
 
 type DepositFormData = {
   amount?: BigNumber;
-  gasFee?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: DepositFormData = {
   amount: undefined,
-  gasFee: undefined,
+  gasPrice: undefined,
 };
 
 type WalletDepositViewState = {
@@ -64,8 +66,11 @@ const WalletDepositView: React.FunctionComponent = () => {
   async function handleSubmit(values: DepositFormData) {
     setState({ saving: true });
 
+    const { gasPrice, amount } = values;
+    const gasFee = gasPrice?.value!;
+
     try {
-      await web3c.daoBarn.actions.deposit(values.amount!, values.gasFee!);
+      await web3c.daoBarn.actions.deposit(amount!, gasFee);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
@@ -85,33 +90,42 @@ const WalletDepositView: React.FunctionComponent = () => {
   }, [web3c]);
 
   const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="center">
-      <Grid flow="col" gap={12} align="center">
+    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
+      <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
+        <Paragraph type="p1" semiBold color="grey900">
+          BOND
+        </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Staked Balance</Small>
+        <Small semiBold color="grey500">
+          Staked Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBONDValue(web3c.daoBarn.balance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Wallet Balance</Small>
+        <Small semiBold color="grey500">
+          Wallet Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
           {formatBONDValue(web3c.bond.balance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Enable Token</Small>
+        <Small semiBold color="grey500">
+          Enable Token
+        </Small>
         <Antd.Switch
           style={{ justifySelf: 'flex-start' }}
           checked={state.enabled}
           loading={state.enabled === undefined || state.enabling}
-          onChange={handleSwitchChange} />
+          onChange={handleSwitchChange}
+        />
       </Grid>
     </Grid>
   );
@@ -135,38 +149,19 @@ const WalletDepositView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  tokenLabel="BOND"
-                  placeholder={`0 (Max ${formatBONDValue(web3c.bond.balance ?? ZERO_BIG_NUMBER)})`}
+                  max={web3c.bond.balance}
+                  maximumFractionDigits={BONDTokenMeta.decimals}
+                  displayDecimals={4}
                   disabled={state.saving}
-                  maximumFractionDigits={2}
-                  maxProps={{
-                    disabled: state.saving,
-                    onClick: () => {
-                      form.setFieldsValue({
-                        amount: web3c.bond.balance ?? ZERO_BIG_NUMBER,
-                      });
-                    },
-                  }}
-                />
-              </Form.Item>
-              <Form.Item name="amount">
-                <Slider
-                  min={0}
-                  max={web3c.bond.balance?.toNumber() ?? 0}
-                  step={1}
-                  disabled={state.saving}
-                  tipFormatter={value =>
-                    <span>{value ? formatBONDValue(new BigNumber(value)) : 0}</span>
-                  }
-                  tooltipPlacement="bottom"
+                  slider
                 />
               </Form.Item>
               <Alert
-                message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+                message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
             <Grid flow="row">
               <Form.Item
-                name="gasFee"
+                name="gasPrice"
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>
@@ -179,7 +174,9 @@ const WalletDepositView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            style={{ width: 121 }}>Deposit</Button>
+            style={{ justifySelf: 'start' }}>
+            Deposit
+          </Button>
         </Grid>
       </Form>
     </Card>

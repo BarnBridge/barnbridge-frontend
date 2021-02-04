@@ -12,7 +12,9 @@ import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
 
-const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
+const CONTRACT_BOND_ADDR = String(
+  process.env.REACT_APP_CONTRACT_BOND_ADDR,
+).toLowerCase();
 
 const Contract = new Web3Contract(
   require('web3/abi/bond.json'),
@@ -60,12 +62,13 @@ export function useBONDContract(): BONDContract {
   const [data, setData] = React.useState<BONDContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    let totalSupply: BigNumber | undefined = undefined;
+    let totalSupply: BigNumber | undefined;
 
     [totalSupply] = await Contract.batch([
       {
         method: 'totalSupply',
-        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        transform: (value: string) =>
+          getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
     ]);
 
@@ -76,7 +79,7 @@ export function useBONDContract(): BONDContract {
   }, [reload, wallet.account]);
 
   useAsyncEffect(async () => {
-    let balance: BigNumber | undefined = undefined;
+    let balance: BigNumber | undefined;
     let allowance: BigNumber | undefined;
     let barnAllowance: BigNumber | undefined;
 
@@ -85,7 +88,8 @@ export function useBONDContract(): BONDContract {
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
-          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'allowance',
@@ -108,27 +112,26 @@ export function useBONDContract(): BONDContract {
     }));
   }, [reload, wallet.account]);
 
-  const approveSend = React.useCallback((address: string, value: BigNumber): Promise<any> => {
-    if (!wallet.account) {
-      return Promise.reject();
-    }
+  const approveSend = React.useCallback(
+    (address: string, value: BigNumber): Promise<any> => {
+      if (!wallet.account) {
+        return Promise.reject();
+      }
 
-    return Contract.send('approve', [
-      address,
-      value,
-    ], {
-      from: wallet.account,
-    }).then(reload);
-  }, [reload, wallet.account]);
+      return Contract.send('approve', [address, value], {
+        from: wallet.account,
+      }).then(reload);
+    },
+    [reload, wallet.account],
+  );
 
-  return React.useMemo(() => ({
-    ...data,
-    contract: Contract,
-    reload,
-    approveSend,
-  }), [
-    data,
-    reload,
-    approveSend,
-  ]);
+  return React.useMemo(
+    () => ({
+      ...data,
+      contract: Contract,
+      reload,
+      approveSend,
+    }),
+    [data, reload, approveSend],
+  );
 }

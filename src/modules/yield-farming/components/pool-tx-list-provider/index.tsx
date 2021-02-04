@@ -78,93 +78,101 @@ const PoolTxListProvider: React.FunctionComponent = props => {
 
   const poolingIntervalID = React.useRef<any | undefined>();
 
-  const fetchData = React.useCallback(async (timestamp?: number, direction: 'asc' | 'desc' = 'desc') => {
-    loadingRef.current = true;
-    forceRender({});
+  const fetchData = React.useCallback(
+    async (timestamp?: number, direction: 'asc' | 'desc' = 'desc') => {
+      loadingRef.current = true;
+      forceRender({});
 
-    const url = new URL('/staking-actions/list', API_URL);
-    url.searchParams.append('count', String(TX_LIMIT));
+      const url = new URL('/staking-actions/list', API_URL);
+      url.searchParams.append('count', String(TX_LIMIT));
 
-    if (timestamp) {
-      url.searchParams.append('timestamp', String(timestamp));
-    }
+      if (timestamp) {
+        url.searchParams.append('timestamp', String(timestamp));
+      }
 
-    url.searchParams.append('direction', direction);
+      url.searchParams.append('direction', direction);
 
-    if (userFilterRef.current) {
-      url.searchParams.append('user', userFilterRef.current);
-    }
+      if (userFilterRef.current) {
+        url.searchParams.append('user', userFilterRef.current);
+      }
 
-    if (tokenFilterRef.current) {
-      url.searchParams.append('token', tokenFilterRef.current);
-    }
+      if (tokenFilterRef.current) {
+        url.searchParams.append('token', tokenFilterRef.current);
+      }
 
-    if (typeFilterRef.current) {
-      url.searchParams.append('type', typeFilterRef.current);
-    }
+      if (typeFilterRef.current) {
+        url.searchParams.append('type', typeFilterRef.current);
+      }
 
-    try {
-      const result = await fetch(url.toString());
-      const stakingActions: StakingAction[] = await result.json();
+      try {
+        const result = await fetch(url.toString());
+        const stakingActions: StakingAction[] = await result.json();
 
-      if (stakingActions) {
-        const transactions: PoolTxListItem[] = stakingActions.map(stakingAction => ({
-          ...stakingAction,
-          blockTimestamp: stakingAction.blockTimestamp * 1000,
-          type: stakingAction.type.toUpperCase(),
-          get amount() {
-            return new BigNumber(stakingAction.amount);
-          },
-        }));
+        if (stakingActions) {
+          const transactions: PoolTxListItem[] = stakingActions.map(
+            stakingAction => ({
+              ...stakingAction,
+              blockTimestamp: stakingAction.blockTimestamp * 1_000,
+              type: stakingAction.type.toUpperCase(),
+              get amount() {
+                return new BigNumber(stakingAction.amount);
+              },
+            }),
+          );
 
-        txRef.current = [
-          ...(direction === 'asc') ? transactions.reverse() : [],
-          ...txRef.current,
-          ...(direction === 'desc') ? transactions : [],
-        ];
+          txRef.current = [
+            ...(direction === 'asc' ? transactions.reverse() : []),
+            ...txRef.current,
+            ...(direction === 'desc' ? transactions : []),
+          ];
 
-        const firstItem = first(txRef.current);
+          const firstItem = first(txRef.current);
 
-        if (firstItem) {
-          firstTimestampRef.current = firstItem.blockTimestamp / 1000;
+          if (firstItem) {
+            firstTimestampRef.current = firstItem.blockTimestamp / 1_000;
+          }
+
+          const lastItem = last(txRef.current);
+
+          if (lastItem) {
+            lastTimestampRef.current = lastItem.blockTimestamp / 1_000;
+          }
+
+          if (direction === 'desc' && transactions.length === 0) {
+            endRef.current = true;
+          }
         }
 
-        const lastItem = last(txRef.current);
-
-        if (lastItem) {
-          lastTimestampRef.current = lastItem.blockTimestamp / 1000;
-        }
-
-        if (direction === 'desc' && transactions.length === 0) {
+        if (stakingActions === null && direction === 'desc') {
           endRef.current = true;
         }
+      } catch (e) {
+        console.error(e);
       }
 
-      if (stakingActions === null && direction === 'desc') {
-        endRef.current = true;
-      }
-    } catch (e) {
-      console.error(e);
-    }
+      loadingRef.current = false;
+      loadedRef.current = true;
+      forceRender({});
+    },
+    [],
+  );
 
-    loadingRef.current = false;
-    loadedRef.current = true;
-    forceRender({});
-  }, []);
+  const load = React.useCallback(
+    (query?: PoolTxListQuery) => {
+      txRef.current = [];
+      loadedRef.current = false;
+      endRef.current = false;
+      firstTimestampRef.current = undefined;
+      lastTimestampRef.current = undefined;
+      userFilterRef.current = query?.user;
+      tokenFilterRef.current = query?.token;
+      typeFilterRef.current = query?.type;
+      forceRender({});
 
-  const load = React.useCallback((query?: PoolTxListQuery) => {
-    txRef.current = [];
-    loadedRef.current = false;
-    endRef.current = false;
-    firstTimestampRef.current = undefined;
-    lastTimestampRef.current = undefined;
-    userFilterRef.current = query?.user;
-    tokenFilterRef.current = query?.token;
-    typeFilterRef.current = query?.type;
-    forceRender({});
-
-    return fetchData();
-  }, [fetchData]);
+      return fetchData();
+    },
+    [fetchData],
+  );
 
   const loadNext = React.useCallback(async () => {
     return fetchData(lastTimestampRef.current, 'desc');
@@ -181,8 +189,7 @@ const PoolTxListProvider: React.FunctionComponent = props => {
   const startPooling = React.useCallback(() => {
     if (!poolingIntervalID.current) {
       poolingIntervalID.current = setInterval(() => {
-        loadNewer()
-          .catch(x => x);
+        loadNewer().catch(x => x);
       }, API_POOL_INTERVAL);
     }
   }, [loadNewer]);
@@ -194,27 +201,31 @@ const PoolTxListProvider: React.FunctionComponent = props => {
     }
   }, []);
 
-  const value = React.useMemo(() => ({
-    transactions: txRef.current,
-    loading: loadingRef.current,
-    loaded: loadedRef.current,
-    isEnd: endRef.current,
-    load,
-    loadNext,
-    loadNewer,
-    startPooling,
-    stopPooling,
-  }), [ // eslint-disable-line react-hooks/exhaustive-deps
-    txRef.current,
-    loadingRef.current,
-    loadedRef.current,
-    endRef.current,
-    load,
-    loadNext,
-    loadNewer,
-    startPooling,
-    stopPooling,
-  ]);
+  const value = React.useMemo(
+    () => ({
+      transactions: txRef.current,
+      loading: loadingRef.current,
+      loaded: loadedRef.current,
+      isEnd: endRef.current,
+      load,
+      loadNext,
+      loadNewer,
+      startPooling,
+      stopPooling,
+    }),
+    [
+      // eslint-disable-line react-hooks/exhaustive-deps
+      txRef.current,
+      loadingRef.current,
+      loadedRef.current,
+      endRef.current,
+      load,
+      loadNext,
+      loadNewer,
+      startPooling,
+      stopPooling,
+    ],
+  );
 
   return (
     <PoolTxListContext.Provider value={value}>

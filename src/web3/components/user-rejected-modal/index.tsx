@@ -15,7 +15,12 @@ const UserRejectedModal: React.FunctionComponent<UserRejectedModalProps> = props
     <Modal centered width={315} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16} align="center">
-          <Icons name="warning-outlined" width={40} height={40} color="red500" />
+          <Icons
+            name="warning-outlined"
+            width={40}
+            height={40}
+            color="red500"
+          />
           <Grid flow="row" gap={8} align="center">
             <Heading type="h3" semiBold color="grey900">
               Error
@@ -25,10 +30,9 @@ const UserRejectedModal: React.FunctionComponent<UserRejectedModalProps> = props
             </Paragraph>
           </Grid>
         </Grid>
-        <Button
-          type="primary"
-          onClick={modalProps.onCancel}>
-          Dismiss</Button>
+        <Button type="primary" onClick={modalProps.onCancel}>
+          Dismiss
+        </Button>
       </Grid>
     </Modal>
   );

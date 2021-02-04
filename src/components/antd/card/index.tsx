@@ -34,14 +34,18 @@ const Card: React.FunctionComponent<CardProps> = props => {
     <Antd.Card
       className={cx(s.component, className, noPaddingBody && s.noPaddingBody)}
       bordered={false}
-      extra={showExpandButton ? (
-        <Button
-          type="link"
-          className={s.arrow}
-          icon={<Icons name="chevron-right" rotate={expandedState ? 270 : 0} />}
-          onClick={() => setExpanded(prevState => !prevState)}
-        />
-      ) : undefined}
+      extra={
+        showExpandButton ? (
+          <Button
+            type="link"
+            className={s.arrow}
+            icon={
+              <Icons name="chevron-right" rotate={expandedState ? 270 : 0} />
+            }
+            onClick={() => setExpanded(prevState => !prevState)}
+          />
+        ) : undefined
+      }
       {...cardProps}>
       {expandedState && children}
     </Antd.Card>
@@ -56,6 +60,6 @@ export type StaticCardProps = {
   Delimiter: React.FunctionComponent;
 };
 
-(Card as any as StaticCardProps).Delimiter = CardDelimiter;
+((Card as any) as StaticCardProps).Delimiter = CardDelimiter;
 
 export default Card as React.FunctionComponent<CardProps> & StaticCardProps;

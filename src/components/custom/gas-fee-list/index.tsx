@@ -69,8 +69,6 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
           loading: false,
           options,
         });
-
-        props.onChange?.(options[2]);
       })
       .catch(() => {
         setState({
@@ -78,6 +76,12 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
         });
       });
   }, []);
+
+  React.useEffect(() => {
+    if (value === undefined && state.options.length > 2) {
+      props.onChange?.(state.options[2]);
+    }
+  }, [value, state.options]);
 
   function handleChange(ev: RadioChangeEvent) {
     props.onChange?.(ev.target.value);
@@ -96,26 +100,33 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
       {...groupProps}
       value={state.selected}
       onChange={handleChange}>
-      {state.loading
-        ? <Antd.Spin />
-        : (
-          <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)" >
-            {state.options.map(option => (
-              <RadioButton
-                key={option.key}
-                label={
-                  <Paragraph type="p1" semiBold color="grey900">{option.name}</Paragraph>
-                }
-                hint={
-                  <Grid flow="col" gap={4}>
-                    <Paragraph type="p1" semiBold color="grey900">{option.value}</Paragraph>
-                    <Paragraph type="p2" color="grey500">Gwei</Paragraph>
-                  </Grid>
-                }
-                value={option} />
-            ))}
-          </Grid>
-        )}
+      {state.loading ? (
+        <Antd.Spin />
+      ) : (
+        <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)">
+          {state.options.map(option => (
+            <RadioButton
+              key={option.key}
+              label={
+                <Paragraph type="p1" semiBold color="grey900">
+                  {option.name}
+                </Paragraph>
+              }
+              hint={
+                <Grid flow="col" gap={4}>
+                  <Paragraph type="p1" semiBold color="grey900">
+                    {option.value}
+                  </Paragraph>
+                  <Paragraph type="p2" color="grey500">
+                    Gwei
+                  </Paragraph>
+                </Grid>
+              }
+              value={option}
+            />
+          ))}
+        </Grid>
+      )}
     </Antd.Radio.Group>
   );
 };

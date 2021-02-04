@@ -13,11 +13,19 @@ $justifyContents: start, center, end, space-between;
       &.align-#{$align} {
         justify-items: #{$align};
       }
+
+      &.align-self-#{$align} {
+        justify-self: #{$align};
+      }
     }
 
     @each $justify in $justifyContents {
       &.justify-#{$justify} {
         align-content: #{$justify};
+      }
+
+      &.justify-self-#{$justify} {
+        align-self: #{$justify};
       }
     }
   }
@@ -30,11 +38,19 @@ $justifyContents: start, center, end, space-between;
       &.align-#{$align} {
         align-items: #{$align};
       }
+
+      &.align-self-#{$align} {
+       align-self: #{$align};
+      }
     }
 
     @each $justify in $justifyContents {
       &.justify-#{$justify} {
         justify-content: #{$justify};
+      }
+
+      &.justify-self-#{$justify} {
+        justify-self: #{$justify};
       }
     }
   }

@@ -1,45 +1,11 @@
-@import "../../../../styles/mixin";
-
 .component {
-  height: 157px;
-  padding: 24px 62px;
-  background: #fff;
+  background: var(--color-card-bg);
 }
 
-.header {
-  @include font-lb2-semi-bold;
-  width: 100%;
-  padding: 0 0 16px;
-  color: #ff4339;
-}
-
-.list {
-  display: inline-grid;
-  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
-  width: 100%;
-}
-
-.field {
-  grid-template-rows: 24px 48px;
-
-  &:not(:last-of-type) {
-    border-right: 1px solid #e3e4e6;
-    margin-right: 32px;
-    padding-right: 32px;
-  }
-
-  label {
-    @include font-p2-regular;
-  }
-}
-
-.fieldContent {
-  @include font-h2-bold;
-  display: grid;
-  grid-template-columns: repeat(3, max-content);
-  column-gap: 8px;
-  align-items: center;
-  color: #060a0d;
+.delimiter {
+  width: 1px;
+  height: 100%;
+  border-right: 1px solid var(--color-border);
 }
 
 /* RESPONSIVE */

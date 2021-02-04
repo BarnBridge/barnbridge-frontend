@@ -10,16 +10,15 @@ import cx from 'classnames';
 import Icons from 'components/custom/icon';
 
 import s from './styles.module.scss';
+import Tooltip from '../tooltip';
+import Grid from '../../custom/grid';
 
 export type FormListProps = AntdFormListProps & {};
 
 const FormList: React.FunctionComponent<FormListProps> = props => {
   const { ...listProps } = props;
 
-  return (
-    <Antd.Form.List
-      {...listProps} />
-  );
+  return <Antd.Form.List {...listProps} />;
 };
 
 export type FormItemProps = AntdFormItemProps<any> & {
@@ -27,16 +26,22 @@ export type FormItemProps = AntdFormItemProps<any> & {
 };
 
 const FormItem: React.FunctionComponent<FormItemProps> = props => {
-  const { className, hint, children, ...itemProps } = props;
+  const { className, label, hint, children, ...itemProps } = props;
 
   return (
     <Antd.Form.Item
       className={cx(s.item, className)}
-      tooltip={hint ? {
-        icon: <Icons name="info-outlined" />,
-        title: hint,
-      } : undefined}
-      {...itemProps}>
+      {...itemProps}
+      label={
+        <Grid flow="col" gap={4} align="center">
+          {label}
+          {hint && (
+            <Tooltip title={hint}>
+              <Icons name="info-outlined" width={15} height={15} />
+            </Tooltip>
+          )}
+        </Grid>
+      }>
       {children}
     </Antd.Form.Item>
   );
@@ -63,7 +68,7 @@ export type StaticFormProps = {
   List: React.FunctionComponent<FormListProps>;
 };
 
-(Form as any as StaticFormProps).Item = FormItem;
-(Form as any as StaticFormProps).List = FormList;
+((Form as any) as StaticFormProps).Item = FormItem;
+((Form as any) as StaticFormProps).List = FormList;
 
 export default Form as React.FunctionComponent<FormProps> & StaticFormProps;

@@ -22,25 +22,3 @@
     transform: translateY(-4px);
   }
 }
-
-.tooltip {
-  display: grid;
-  grid-template-columns: 24px min-content min-content;
-  grid-column-gap: 8px;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 16px;
-
-  svg {
-    width: 24px;
-    height: 24px;
-  }
-
-  .name {
-    color: #717980;
-  }
-
-  .value {
-    color: #060a0d;
-  }
-}

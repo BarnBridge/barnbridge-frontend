@@ -9,11 +9,16 @@ import { useProposal } from '../../providers/ProposalProvider';
 const ProposalQuorumCard: React.FunctionComponent = () => {
   const proposalCtx = useProposal();
 
+  const passed = (proposalCtx.quorum ?? 0) >= (proposalCtx.proposal?.minQuorum ?? 0);
+
   return (
     <Card
-      title={(
-        <Paragraph type="p1" semiBold color="grey900">Quorum</Paragraph>
-      )}>
+      title={
+        <Paragraph type="p1" semiBold color="grey900"
+                   hint="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
+          Quorum
+        </Paragraph>
+      }>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
           <Paragraph type="p1" semiBold color="grey900">
@@ -26,8 +31,9 @@ const ProposalQuorumCard: React.FunctionComponent = () => {
         <Progress
           percent={proposalCtx.quorum}
           acceptance={proposalCtx.proposal?.minQuorum}
-          strokeColor="var(--text-color-green500)"
-          trailColor="rgba(var(--text-color-green500-rgb), .16)" />
+          strokeColor={passed ? 'var(--text-color-green500)' : 'var(--text-color-red500)'}
+          trailColor={passed ? 'rgba(var(--text-color-green500-rgb), .16)' : 'rgba(var(--text-color-red500-rgb), .16)'}
+        />
       </Grid>
     </Card>
   );

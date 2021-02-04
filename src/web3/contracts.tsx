@@ -5,18 +5,49 @@ import BigNumber from 'bignumber.js';
 import { useWallet } from 'wallets/wallet';
 import { PoolTypes, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
-import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
-import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
+import {
+  BONDContract,
+  BONDTokenMeta,
+  useBONDContract,
+} from 'web3/contracts/bond';
+import {
+  USDCContract,
+  USDCTokenMeta,
+  useUSDCContract,
+} from 'web3/contracts/usdc';
 import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
-import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
-import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
-import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
-import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
-import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
+import {
+  SUSDContract,
+  SUSDTokenMeta,
+  useSUSDContract,
+} from 'web3/contracts/susd';
+import {
+  UNISWAPContract,
+  UNISWAPTokenMeta,
+  useUNISWAPContract,
+} from 'web3/contracts/uniswap';
+import {
+  useYieldFarmContract,
+  YieldFarmContract,
+} from 'web3/contracts/yieldFarm';
+import {
+  useYieldFarmLPContract,
+  YieldFarmLPContract,
+} from 'web3/contracts/yieldFarmLP';
+import {
+  useYieldFarmBONDContract,
+  YieldFarmBONDContract,
+} from 'web3/contracts/yieldFarmBOND';
 import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 import { DAOBarnContract, useDAOBarnContract } from 'web3/contracts/daoBarn';
-import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
-import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/daoGovernance';
+import {
+  DAORewardContract,
+  useDAORewardContract,
+} from 'web3/contracts/daoReward';
+import {
+  DAOGovernanceContract,
+  useDAOGovernanceContract,
+} from 'web3/contracts/daoGovernance';
 
 import UserRejectedModal from 'web3/components/user-rejected-modal';
 
@@ -80,7 +111,9 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
   const daoRewardContract = useDAORewardContract();
   const daoGovernanceContract = useDAOGovernanceContract();
 
-  const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(false);
+  const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(
+    false,
+  );
 
   React.useEffect(() => {
     const contracts = [
@@ -98,7 +131,11 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       daoGovernanceContract.contract,
     ];
 
-    function handleError(err: Error & { code: number }, contract: Web3Contract, { method }: any) {
+    function handleError(
+      err: Error & { code: number },
+      contract: Web3Contract,
+      { method }: any,
+    ) {
       console.error(`${contract.name}:${method}`, { error: err });
 
       if (err.code === 4001) {
@@ -304,9 +341,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       return undefined;
     }
 
-    return yfStaked
-      .plus(yfLPStaked)
-      .plus(yfBONDStaked);
+    return yfStaked.plus(yfLPStaked).plus(yfBONDStaked);
   }
 
   function totalEffectiveStaked(): BigNumber | undefined {
@@ -322,25 +357,31 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       return undefined;
     }
 
-    return yfStaked
-      .plus(yfLPStaked)
-      .plus(yfBONDStaked);
+    return yfStaked.plus(yfLPStaked).plus(yfBONDStaked);
   }
 
   function totalCurrentReward(): BigNumber | undefined {
-    const yfReward = yfContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfContract.currentReward;
-    const yfLPReward = yfLPContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfLPContract.currentReward;
-    const yfBONDReward = yfBONDContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfBONDContract.currentReward;
+    const yfReward =
+      yfContract.currentEpoch === 0
+        ? ZERO_BIG_NUMBER
+        : yfContract.currentReward;
+    const yfLPReward =
+      yfLPContract.currentEpoch === 0
+        ? ZERO_BIG_NUMBER
+        : yfLPContract.currentReward;
+    const yfBONDReward =
+      yfBONDContract.currentEpoch === 0
+        ? ZERO_BIG_NUMBER
+        : yfBONDContract.currentReward;
 
     if (
       yfReward === undefined ||
       yfLPReward === undefined ||
       yfBONDReward === undefined
-    ) return undefined;
+    )
+      return undefined;
 
-    return yfReward
-      .plus(yfLPReward)
-      .plus(yfBONDReward);
+    return yfReward.plus(yfLPReward).plus(yfBONDReward);
   }
 
   function totalPotentialReward(): BigNumber | undefined {
@@ -352,11 +393,10 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       yfReward === undefined ||
       yfLPReward === undefined ||
       yfBONDReward === undefined
-    ) return undefined;
+    )
+      return undefined;
 
-    return yfReward
-      .plus(yfLPReward)
-      .plus(yfBONDReward);
+    return yfReward.plus(yfLPReward).plus(yfBONDReward);
   }
 
   function totalBondReward(): BigNumber | undefined {
@@ -368,11 +408,10 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       yfTotalReward === undefined ||
       yfLPTotalReward === undefined ||
       yfBONDTotalReward === undefined
-    ) return undefined;
+    )
+      return undefined;
 
-    return yfTotalReward
-      .plus(yfLPTotalReward)
-      .plus(yfBONDTotalReward);
+    return yfTotalReward.plus(yfLPTotalReward).plus(yfBONDTotalReward);
   }
 
   function bondReward(): BigNumber | undefined {
@@ -384,11 +423,10 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       yfReward === undefined ||
       yfLPReward === undefined ||
       yfBONDReward === undefined
-    ) return undefined;
+    )
+      return undefined;
 
-    return yfReward
-      .plus(yfLPReward)
-      .plus(yfBONDReward);
+    return yfReward.plus(yfLPReward).plus(yfBONDReward);
   }
 
   const value = {

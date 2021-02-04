@@ -2,7 +2,12 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
-import { formatBONDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
+import {
+  formatBONDValue,
+  getPoolIcons,
+  getPoolNames,
+  PoolTypes,
+} from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import IconsSet from 'components/custom/icons-set';
@@ -17,7 +22,9 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
   const { yf, yfLP, yfBOND, bond } = useWeb3Contracts();
   const [yfHarvesting, setYFHarvesting] = React.useState<boolean>(false);
   const [yfLPHarvesting, setYFLPHarvesting] = React.useState<boolean>(false);
-  const [yfBONDHarvesting, setYFBONDHarvesting] = React.useState<boolean>(false);
+  const [yfBONDHarvesting, setYFBONDHarvesting] = React.useState<boolean>(
+    false,
+  );
 
   async function handleYFHarvest() {
     setYFHarvesting(true);
@@ -25,8 +32,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
     try {
       await yf.massHarvestSend();
       bond.reload();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setYFHarvesting(false);
   }
@@ -37,8 +43,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
     try {
       await yfLP.massHarvestSend();
       bond.reload();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setYFLPHarvesting(false);
   }
@@ -49,8 +54,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
     try {
       await yfBOND.massHarvestSend();
       bond.reload();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setYFBONDHarvesting(false);
   }
@@ -61,10 +65,11 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
       centered
       closable
       footer={[]}
-      {...modalProps}
-    >
+      {...modalProps}>
       <div className={s.header}>Claim your reward</div>
-      <div className={s.note}>Select the pool you want to claim your reward from</div>
+      <div className={s.note}>
+        Select the pool you want to claim your reward from
+      </div>
       <div className={s.body}>
         <Antd.Button
           className={s.option}
@@ -72,8 +77,13 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           loading={yfHarvesting}
           disabled={yf?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFHarvest}>
-          <IconsSet className={s.optionIcons} icons={getPoolIcons(PoolTypes.STABLE)} />
-          <div className={s.optionLabel}>{getPoolNames(PoolTypes.STABLE).join('/')}</div>
+          <IconsSet
+            className={s.optionIcons}
+            icons={getPoolIcons(PoolTypes.STABLE)}
+          />
+          <div className={s.optionLabel}>
+            {getPoolNames(PoolTypes.STABLE).join('/')}
+          </div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yf?.currentReward)}</strong> BOND
@@ -85,8 +95,13 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           loading={yfLPHarvesting}
           disabled={yfLP?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFLPHarvest}>
-          <IconsSet className={s.optionIcons} icons={getPoolIcons(PoolTypes.UNILP)} />
-          <div className={s.optionLabel}>{getPoolNames(PoolTypes.UNILP).join('/')}</div>
+          <IconsSet
+            className={s.optionIcons}
+            icons={getPoolIcons(PoolTypes.UNILP)}
+          />
+          <div className={s.optionLabel}>
+            {getPoolNames(PoolTypes.UNILP).join('/')}
+          </div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yfLP?.currentReward)}</strong> BOND
@@ -98,8 +113,13 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           loading={yfBONDHarvesting}
           disabled={yfBOND?.currentReward?.isEqualTo(0) !== false}
           onClick={handleYFBONDHarvest}>
-          <IconsSet className={s.optionIcons} icons={getPoolIcons(PoolTypes.BOND)} />
-          <div className={s.optionLabel}>{getPoolNames(PoolTypes.BOND).join('/')}</div>
+          <IconsSet
+            className={s.optionIcons}
+            icons={getPoolIcons(PoolTypes.BOND)}
+          />
+          <div className={s.optionLabel}>
+            {getPoolNames(PoolTypes.BOND).join('/')}
+          </div>
           <div className={s.optionRewardLabel}>REWARD</div>
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yfBOND?.currentReward)}</strong> BOND

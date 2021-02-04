@@ -3,13 +3,21 @@ import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
+import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
+import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
 import { Label, Paragraph } from 'components/custom/typography';
-import Icon from 'components/custom/icon';
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
-import { formatBigValue, formatBONDValue, formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
+import {
+  formatBigValue,
+  formatBONDValue,
+  formatUSDValue,
+  getPoolIcons,
+  getPoolNames,
+  PoolTypes,
+} from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -29,6 +37,7 @@ export type PoolCardProps = {
 type PoolCardState = {
   type?: PoolTypes;
   enabled?: boolean;
+  isEnded?: boolean;
   currentEpoch?: number;
   totalEpochs?: number;
   epochReward?: BigNumber;
@@ -56,6 +65,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         ...prevState,
         type: PoolTypes.STABLE,
         enabled: true,
+        isEnded: web3c.yfBOND.isEnded,
         currentEpoch: web3c.yf.currentEpoch,
         totalEpochs: web3c.yf.totalEpochs,
         epochReward: web3c.yf.epochReward,
@@ -134,6 +144,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         ...prevState,
         type: PoolTypes.UNILP,
         enabled: web3c.yfLP.currentEpoch! > 0,
+        isEnded: web3c.yfBOND.isEnded,
         currentEpoch: web3c.yfLP.currentEpoch,
         totalEpochs: web3c.yfLP.totalEpochs,
         epochReward: web3c.yfLP.epochReward,
@@ -147,11 +158,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             icon: UNISWAPTokenMeta.icon,
             name: UNISWAPTokenMeta.name,
             color: 'var(--text-color-3)',
-            value: formatBigValue(web3c.yfLP.nextPoolSize, UNISWAPTokenMeta.decimals),
-            share: web3c.staking.uniswap.nextEpochPoolSize
-              ?.multipliedBy(100)
-              .div(web3c.yfLP.nextPoolSize ?? 1)
-              .toNumber() ?? 0,
+            value: formatBigValue(
+              web3c.yfLP.nextPoolSize,
+              UNISWAPTokenMeta.decimals,
+            ),
+            share:
+              web3c.staking.uniswap.nextEpochPoolSize
+                ?.multipliedBy(100)
+                .div(web3c.yfLP.nextPoolSize ?? 1)
+                .toNumber() ?? 0,
           },
         ],
         myShares: [
@@ -159,11 +174,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             icon: UNISWAPTokenMeta.icon,
             name: UNISWAPTokenMeta.name,
             color: 'var(--text-color-3)',
-            value: formatBigValue(web3c.yfLP.nextEpochStake, UNISWAPTokenMeta.decimals),
-            share: web3c.staking.uniswap.nextEpochUserBalance
-              ?.multipliedBy(100)
-              .div(web3c.yfLP.nextEpochStake ?? 1)
-              .toNumber() ?? 0,
+            value: formatBigValue(
+              web3c.yfLP.nextEpochStake,
+              UNISWAPTokenMeta.decimals,
+            ),
+            share:
+              web3c.staking.uniswap.nextEpochUserBalance
+                ?.multipliedBy(100)
+                .div(web3c.yfLP.nextEpochStake ?? 1)
+                .toNumber() ?? 0,
           },
         ],
       }));
@@ -172,6 +191,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         ...prevState,
         type: PoolTypes.BOND,
         enabled: true,
+        isEnded: web3c.yfBOND.isEnded,
         currentEpoch: web3c.yfBOND.currentEpoch,
         totalEpochs: web3c.yfBOND.totalEpochs,
         epochReward: web3c.yfBOND.epochReward,
@@ -185,11 +205,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             icon: BONDTokenMeta.icon,
             name: BONDTokenMeta.name,
             color: 'var(--text-color-3)',
-            value: formatBigValue(web3c.yfBOND.nextPoolSize, BONDTokenMeta.decimals),
-            share: web3c.staking.bond.nextEpochPoolSize
-              ?.multipliedBy(100)
-              .div(web3c.yfBOND.nextPoolSize ?? 1)
-              .toNumber() ?? 0,
+            value: formatBigValue(
+              web3c.yfBOND.nextPoolSize,
+              BONDTokenMeta.decimals,
+            ),
+            share:
+              web3c.staking.bond.nextEpochPoolSize
+                ?.multipliedBy(100)
+                .div(web3c.yfBOND.nextPoolSize ?? 1)
+                .toNumber() ?? 0,
           },
         ],
         myShares: [
@@ -197,11 +221,15 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             icon: BONDTokenMeta.icon,
             name: BONDTokenMeta.name,
             color: 'var(--text-color-3)',
-            value: formatBigValue(web3c.yfBOND.nextEpochStake, BONDTokenMeta.decimals),
-            share: web3c.staking.bond.nextEpochUserBalance
-              ?.multipliedBy(100)
-              .div(web3c.yfBOND.nextEpochStake ?? 1)
-              .toNumber() ?? 0,
+            value: formatBigValue(
+              web3c.yfBOND.nextEpochStake,
+              BONDTokenMeta.decimals,
+            ),
+            share:
+              web3c.staking.bond.nextEpochUserBalance
+                ?.multipliedBy(100)
+                .div(web3c.yfBOND.nextEpochStake ?? 1)
+                .toNumber() ?? 0,
           },
         ],
       }));
@@ -218,68 +246,139 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     }
   }
 
+  function handleDaoStaking() {
+    history.push('/governance/wallet');
+  }
+
   return (
     <div className={s.component}>
       {state.type && (
         <div className={s.header}>
           <IconsSet className={s.iconSet} icons={getPoolIcons(state.type)} />
           <div className={s.infoWrap}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>{getPoolNames(state.type).join('/')}</Paragraph>
-            <Label type="lb2" semiBold
-                   className={s.epochLabel}>EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}</Label>
+            <Paragraph type="p1" semiBold className={s.nameLabel}>
+              {getPoolNames(state.type).join('/')}
+            </Paragraph>
+            <Label type="lb2" semiBold className={s.epochLabel}>
+              EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
+            </Label>
           </div>
           {wallet.isActive && (
             <Antd.Button
               type="primary"
               className={s.stakingBtn}
               disabled={!state.enabled}
-              onClick={handleStaking}>Staking</Antd.Button>
+              onClick={handleStaking}>
+              Staking
+            </Antd.Button>
           )}
         </div>
       )}
 
       <div className={s.body}>
-        <div className={s.row}>
-          <Label type="lb2" semiBold className={s.label}>Reward</Label>
-          <Paragraph type="p1" semiBold className={s.value}>{formatBONDValue(state.epochReward)} BOND</Paragraph>
-        </div>
-        {wallet.isActive && (
-          <div className={s.row}>
-            <Label type="lb2" semiBold className={s.label}>My Potential Reward</Label>
-            <Paragraph type="p1" semiBold className={s.value}>{formatBONDValue(state.potentialReward)} BOND</Paragraph>
-          </div>
+        {!state.isEnded && (
+          <>
+            <div className={s.row}>
+              <Label type="lb2" semiBold className={s.label}>
+                Reward
+              </Label>
+              <Paragraph type="p1" semiBold className={s.value}>
+                {formatBONDValue(state.epochReward)} BOND
+              </Paragraph>
+            </div>
+            {wallet.isActive && (
+              <div className={s.row}>
+                <Label type="lb2" semiBold className={s.label}>
+                  My Potential Reward
+                </Label>
+                <Paragraph type="p1" semiBold className={s.value}>
+                  {formatBONDValue(state.potentialReward)} BOND
+                </Paragraph>
+              </div>
+            )}
+
+            <div className={s.row}>
+              <div className={s.labelWrap}>
+                <Label type="lb2" semiBold className={s.label}>
+                  Pool Balance
+                </Label>
+                <Tooltip
+                  type="info"
+                  title={
+                    <span>
+                  This number shows the total staked balance of the pool, and
+                  the effective balance of the pool.
+                  <br />
+                  <br />
+                  When staking tokens during an epoch that is currently running,
+                  your effective deposit amount will be proportionally reduced
+                  by the time that has passed from that epoch. Once an epoch
+                  ends, your staked balance and effective staked balance will be
+                  the equal, therefore pool balance and effective pool balance
+                  will differ in most cases.
+                </span>
+                  }
+                />
+              </div>
+              <Paragraph type="p1" semiBold className={s.value}>
+                {formatUSDValue(state.balance)}
+              </Paragraph>
+              <Paragraph type="p2" className={s.hint}>
+                {formatUSDValue(state.effectiveBalance)} effective balance
+              </Paragraph>
+              <PoolStakeShareBar shares={state.shares} />
+            </div>
+          </>
         )}
-        <div className={s.row}>
-          <div className={s.labelWrap}>
-            <Label type="lb2" semiBold className={s.label}>Pool Balance</Label>
-            <Tooltip type="info" title={
-              <span>
-                This number shows the total staked balance of the pool, and the effective balance of the pool.
-                <br /><br />
-                When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore pool balance and effective pool balance will differ in most cases.
-              </span>
-            } />
-          </div>
-          <Paragraph type="p1" semiBold className={s.value}>{formatUSDValue(state.balance)}</Paragraph>
-          <Paragraph type="p2" className={s.hint}>{formatUSDValue(state.effectiveBalance)} effective balance</Paragraph>
-          <PoolStakeShareBar shares={state.shares} />
-        </div>
         {wallet.isActive && (
           <div className={s.row}>
             <div className={s.labelWrap}>
-              <Label type="lb2" semiBold className={s.label}>My Pool Balance</Label>
-              <Tooltip type="info" title={
-                <span>
-                  This number shows your total staked balance in the pool, and your effective staked balance in the pool.
-                  <br /><br />
-                  When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore your pool balance and your effective pool balance will differ in most cases.
-                </span>
-              } />
+              <Label type="lb2" semiBold className={s.label}>
+                My Pool Balance
+              </Label>
+              <Tooltip
+                type="info"
+                title={
+                  <span>
+                    This number shows your total staked balance in the pool, and
+                    your effective staked balance in the pool.
+                    <br />
+                    <br />
+                    When staking tokens during an epoch that is currently
+                    running, your effective deposit amount will be
+                    proportionally reduced by the time that has passed from that
+                    epoch. Once an epoch ends, your staked balance and effective
+                    staked balance will be the equal, therefore your pool
+                    balance and your effective pool balance will differ in most
+                    cases.
+                  </span>
+                }
+              />
             </div>
-            <Paragraph type="p1" semiBold className={s.value}>{formatUSDValue(state.myBalance)}</Paragraph>
-            <Paragraph type="p2" className={s.hint}>{formatUSDValue(state.myEffectiveBalance)} effective
-              balance</Paragraph>
-            <PoolStakeShareBar shares={state.myShares} />
+            <Paragraph type="p1" semiBold className={s.value}>
+              {formatUSDValue(state.myBalance)}
+            </Paragraph>
+            <Paragraph type="p2" className={s.hint}>
+              {formatUSDValue(state.myEffectiveBalance)} effective balance
+            </Paragraph>
+
+            {!state.isEnded && (
+              <PoolStakeShareBar shares={state.myShares} />
+            )}
+
+            {state.isEnded && (
+              <div className={s.box}>
+                <Grid flow="row" align="start">
+                  <Paragraph type="p2" semiBold color="grey500">
+                    The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
+                    you
+                    can
+                    still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+                  </Paragraph>
+                  <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
+                </Grid>
+              </div>
+            )}
           </div>
         )}
       </div>

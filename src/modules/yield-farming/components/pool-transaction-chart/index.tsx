@@ -5,9 +5,16 @@ import BigNumber from 'bignumber.js';
 import Select, { SelectOption } from 'components/antd/select';
 import IconsSet from 'components/custom/icons-set';
 import Grid from 'components/custom/grid';
-import PoolTxChartProvider, { usePoolTxChart } from 'modules/yield-farming/components/pool-tx-chart-provider';
+import PoolTxChartProvider, {
+  usePoolTxChart,
+} from 'modules/yield-farming/components/pool-tx-chart-provider';
 
-import { formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
+import {
+  formatUSDValue,
+  getPoolIcons,
+  getPoolNames,
+  PoolTypes,
+} from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
@@ -39,8 +46,12 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
-  const [poolFilter, setPoolFilter] = React.useState<PoolTypes>(PoolTypes.STABLE);
-  const [periodFilter, setPeriodFilter] = React.useState<string | number>('all');
+  const [poolFilter, setPoolFilter] = React.useState<PoolTypes>(
+    PoolTypes.STABLE,
+  );
+  const [periodFilter, setPeriodFilter] = React.useState<string | number>(
+    'all',
+  );
   const [typeFilter, setTypeFilter] = React.useState<string | number>('all');
 
   const PeriodFilters = React.useMemo<SelectOption[]>(() => {
@@ -64,11 +75,13 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
   }, [web3c.staking, web3c.yfLP, web3c.yfBOND, poolFilter]);
 
   React.useEffect(() => {
-    poolTxChart.load({
-      pool: poolFilter,
-      period: periodFilter !== 'all' ? String(periodFilter) : undefined,
-      type: typeFilter !== 'all' ? String(typeFilter) : undefined,
-    }).catch(x => x);
+    poolTxChart
+      .load({
+        pool: poolFilter,
+        period: periodFilter !== 'all' ? String(periodFilter) : undefined,
+        type: typeFilter !== 'all' ? String(typeFilter) : undefined,
+      })
+      .catch(x => x);
   }, [poolFilter, periodFilter, typeFilter]); // eslint-disable-line react-hooks/exhaustive-deps
 
   React.useEffect(() => {
@@ -87,10 +100,10 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
     }
 
     return poolTxChart.summaries.map(summary => {
-      const deposits = (new BigNumber(summary.deposits))
+      const deposits = new BigNumber(summary.deposits)
         .multipliedBy(price)
         .toNumber();
-      const withdrawals = (new BigNumber(summary.withdrawals))
+      const withdrawals = new BigNumber(summary.withdrawals)
         .multipliedBy(price)
         .multipliedBy(-1)
         .toNumber();
@@ -137,7 +150,9 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
             {!poolTxChart.loading && data.length === 0 && (
               <div className={s.emptyBlock}>
                 <EmptyChartSvg />
-                <div className={s.emptyLabel}>Not enough data to plot a graph</div>
+                <div className={s.emptyLabel}>
+                  Not enough data to plot a graph
+                </div>
               </div>
             )}
             {data.length > 0 && (
@@ -146,26 +161,51 @@ const PoolTransactionChartInner: React.FunctionComponent = () => {
                   data={data}
                   stackOffset="sign"
                   margin={{
-                    top: 20, right: 0, left: 60, bottom: 12,
-                  }}
-                >
-                  <ReCharts.CartesianGrid vertical={false} stroke="#666" strokeDasharray="3 3" />
+                    top: 20,
+                    right: 0,
+                    left: 60,
+                    bottom: 12,
+                  }}>
+                  <ReCharts.CartesianGrid
+                    vertical={false}
+                    stroke="#666"
+                    strokeDasharray="3 3"
+                  />
                   <ReCharts.XAxis dataKey="timestamp" tickMargin={24} />
-                  <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={(value: any) =>
-                    formatUSDValue(value, 2, 0)
-                  } />
-                  <ReCharts.Tooltip formatter={(value: any) => formatUSDValue(value)} />
+                  <ReCharts.YAxis
+                    axisLine={false}
+                    tickLine={false}
+                    tickFormatter={(value: any) => formatUSDValue(value, 2, 0)}
+                  />
+                  <ReCharts.Tooltip
+                    formatter={(value: any) => formatUSDValue(value)}
+                  />
                   <ReCharts.Legend
                     align="right"
                     verticalAlign="top"
                     iconType="circle"
-                    wrapperStyle={{ top: 0, right: 12, color: 'var(--text-color-5)' }} />
+                    wrapperStyle={{
+                      top: 0,
+                      right: 12,
+                      color: 'var(--text-color-5)',
+                    }}
+                  />
                   <ReCharts.ReferenceLine y={0} stroke="#666" />
                   {(typeFilter === 'all' || typeFilter === 'deposits') && (
-                    <ReCharts.Bar dataKey="deposits" name="Deposits" fill="#ff4339" stackId="stack" />
+                    <ReCharts.Bar
+                      dataKey="deposits"
+                      name="Deposits"
+                      fill="#ff4339"
+                      stackId="stack"
+                    />
                   )}
                   {(typeFilter === 'all' || typeFilter === 'withdrawals') && (
-                    <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" fill="#4f6ae6" stackId="stack" />
+                    <ReCharts.Bar
+                      dataKey="withdrawals"
+                      name="Withdrawals"
+                      fill="#4f6ae6"
+                      stackId="stack"
+                    />
                   )}
                 </ReCharts.BarChart>
               </ReCharts.ResponsiveContainer>

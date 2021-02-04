@@ -1,9 +1,10 @@
 import React from 'react';
 
+import useMergeState from 'hooks/useMergeState';
 import { APIVoteEntity, fetchProposalVoters } from 'modules/governance/api';
 import { useProposal } from '../ProposalProvider';
 
-type ProposalVotersProviderState = {
+export type ProposalVotersProviderState = {
   votes: APIVoteEntity[];
   total: number;
   page: number;
@@ -39,58 +40,61 @@ export function useProposalVoters(): ProposalVotersContextType {
 const ProposalVotersProvider: React.FunctionComponent = props => {
   const { children } = props;
 
-  const proposalCtx = useProposal();
-  const [state, setState] = React.useState<ProposalVotersProviderState>(InitialState);
+  const { proposal } = useProposal();
+  const [state, setState] = useMergeState<ProposalVotersProviderState>(
+    InitialState,
+  );
 
   React.useEffect(() => {
-    if (!proposalCtx.proposal?.proposalId) {
+    if (!proposal?.proposalId) {
+      setState({
+        votes: [],
+        total: 0,
+      });
       return;
     }
 
-    setState(prevState => ({
-      ...prevState,
-      loading: true,
-    }));
+    setState({ loading: true });
 
-    fetchProposalVoters(proposalCtx.proposal?.proposalId, state.page, state.pageSize, state.supportFilter)
+    fetchProposalVoters(
+      proposal.proposalId,
+      state.page,
+      state.pageSize,
+      state.supportFilter,
+    )
       .then(data => {
-        setState(prevState => ({
-          ...prevState,
+        setState({
           loading: false,
           votes: data.data,
           total: data.meta.count,
-        }));
+        });
       })
       .catch(() => {
-        setState(prevState => ({
-          ...prevState,
+        setState({
           loading: false,
           votes: [],
-        }));
+        });
       });
-  }, [proposalCtx.proposal, state.page, state.supportFilter]);
+  }, [proposal, state.page, state.supportFilter]);
 
   function changeSupportFilter(supportFilter?: boolean) {
-    setState(prevState => ({
-      ...prevState,
+    setState({
       supportFilter,
       page: 1,
-    }));
+    });
   }
 
   function changePage(page: number) {
-    setState(prevState => ({
-      ...prevState,
-      page,
-    }));
+    setState({ page });
   }
 
   return (
-    <ProposalVotersContext.Provider value={{
-      ...state,
-      changeSupportFilter,
-      changePage,
-    }}>
+    <ProposalVotersContext.Provider
+      value={{
+        ...state,
+        changeSupportFilter,
+        changePage,
+      }}>
       {children}
     </ProposalVotersContext.Provider>
   );

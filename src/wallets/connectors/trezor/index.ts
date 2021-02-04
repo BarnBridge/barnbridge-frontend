@@ -6,7 +6,9 @@ import { WEB3_RPC_URL } from 'web3/contract';
 
 import TrezorLogo from 'resources/svg/wallets/trezor-logo.svg';
 
-const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
+const WEB3_POLLING_INTERVAL = Number(
+  process.env.REACT_APP_WEB3_POLLING_INTERVAL,
+);
 const WEB3_TREZOR_EMAIL = String(process.env.REACT_APP_WEB3_TREZOR_EMAIL);
 const WEB3_TREZOR_APP_URL = String(process.env.REACT_APP_WEB3_TREZOR_APP_URL);
 

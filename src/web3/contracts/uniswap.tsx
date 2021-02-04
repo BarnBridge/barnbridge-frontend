@@ -13,7 +13,9 @@ import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
+export const CONTRACT_UNISWAP_ADDR = String(
+  process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR,
+).toLowerCase();
 
 export const UNISWAPTokenMeta: TokenMeta = {
   icon: <Icons key="uniswap" name="uniswap-token" />,
@@ -68,7 +70,8 @@ export function useUNISWAPContract(): UNISWAPContract {
     const [totalSupply, reserves, token0, token1] = await contract.batch([
       {
         method: 'totalSupply',
-        transform: (value: string) => getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
+        transform: (value: string) =>
+          getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
       },
       {
         method: 'getReserves',
@@ -98,12 +101,9 @@ export function useUNISWAPContract(): UNISWAPContract {
       bondReserve = getHumanValue(reserves[0], BONDTokenMeta.decimals);
     }
 
-    const lpPrice = usdcReserve
-      ?.div(totalSupply ?? 1)
-      .multipliedBy(2);
+    const lpPrice = usdcReserve?.div(totalSupply ?? 1).multipliedBy(2);
 
-    const bondPrice = usdcReserve
-      ?.div(bondReserve ?? 1);
+    const bondPrice = usdcReserve?.div(bondReserve ?? 1);
 
     setData(prevState => ({
       ...prevState,
@@ -124,7 +124,8 @@ export function useUNISWAPContract(): UNISWAPContract {
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
-          transform: (value: string) => getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
+          transform: (value: string) =>
+            getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
         },
         {
           method: 'allowance',
@@ -141,28 +142,28 @@ export function useUNISWAPContract(): UNISWAPContract {
     }));
   }, [reload, wallet.account]);
 
-  const approveSend = React.useCallback((value: BigNumber): Promise<any> => {
-    if (!wallet.account) {
-      return Promise.reject();
-    }
+  const approveSend = React.useCallback(
+    (value: BigNumber): Promise<any> => {
+      if (!wallet.account) {
+        return Promise.reject();
+      }
 
-    return contract.send('approve', [
-      CONTRACT_STAKING_ADDR,
-      value,
-    ], {
-      from: wallet.account,
-    }).then(reload);
-  }, [reload, contract, wallet.account]);
+      return contract
+        .send('approve', [CONTRACT_STAKING_ADDR, value], {
+          from: wallet.account,
+        })
+        .then(reload);
+    },
+    [reload, contract, wallet.account],
+  );
 
-  return React.useMemo<UNISWAPContract>(() => ({
-    ...data,
-    contract,
-    reload,
-    approveSend,
-  }), [
-    data,
-    contract,
-    reload,
-    approveSend,
-  ]);
+  return React.useMemo<UNISWAPContract>(
+    () => ({
+      ...data,
+      contract,
+      reload,
+      approveSend,
+    }),
+    [data, contract, reload, approveSend],
+  );
 }
