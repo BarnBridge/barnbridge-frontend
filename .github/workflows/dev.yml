@@ -71,7 +71,7 @@ jobs:
         REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR: '0x1B5B6dF2C72D7c406df1C30E640df8dBaE57d21d'
         REACT_APP_TOKEN_API_URL: 'https://tokenapi.barnbridge.com'
         REACT_APP_TOKEN_API_POOL_INTERVAL: 20000
-        REACT_APP_GOV_API_URL: 'https://dev.api.barnbridge.com'
+        REACT_APP_GOV_API_URL: 'https://bbtest.kwix.xyz'
 
     - name: Save artifacts
       uses: actions/upload-artifact@v2
