@@ -46,7 +46,7 @@ const PoolRewards: React.FunctionComponent = () => {
             <Icons name="bond-square-token" />
             {wallet.isActive && (
               <Button
-                type="link"
+                type="light"
                 disabled={web3c.aggregated.totalCurrentReward?.isZero()}
                 onClick={() => setState({ showHarvestModal: true })}>
                 Claim

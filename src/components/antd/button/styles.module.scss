@@ -111,5 +111,17 @@
     &:active {
       color: var(--text-color-blue600); // $color-blue700
     }
+
+    &.light {
+      color: var(--text-color-red500);
+
+      &:hover {
+        color: var(--text-color-red400);
+      }
+
+      &:active {
+        color: var(--text-color-red600);
+      }
+    }
   }
 }

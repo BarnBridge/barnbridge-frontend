@@ -37,9 +37,11 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
   function handleConnect(ev: React.MouseEvent<HTMLElement>) {
     modalProps.onCancel?.(ev);
 
-    wallet.connect(LedgerWalletConfig, {
-      baseDerivationPath: derivationPath,
-    }).catch(Error);
+    setTimeout(() => {
+      wallet.connect(LedgerWalletConfig, {
+        baseDerivationPath: derivationPath,
+      }).catch(Error);
+    });
   }
 
   return (
