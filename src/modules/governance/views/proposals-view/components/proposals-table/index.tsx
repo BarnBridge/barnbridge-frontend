@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { Link } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 
 import Grid from 'components/custom/grid';
@@ -25,9 +25,11 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
     width: '70%',
     render: (_, data: APILiteProposalEntity) => (
       <Grid flow="row" gap={8}>
-        <Paragraph type="p1" semiBold color="grey900">
-          PID-{data.proposalId}: {data.title}
-        </Paragraph>
+        <Link to={`proposals/${data.proposalId}`}>
+          <Paragraph type="p1" semiBold color="grey900">
+            PID-{data.proposalId}: {data.title}
+          </Paragraph>
+        </Link>
         <Grid flow="col" gap={16} align="center">
           <ProposalStatusTag state={data.state} />
           <Paragraph type="p2" semiBold color="grey500">
@@ -84,19 +86,10 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
 ];
 
 const ProposalsTable: React.FunctionComponent = () => {
-  const history = useHistory();
   const proposalsCtx = useProposals();
 
   function handlePaginationChange(page: number) {
     proposalsCtx.changePage(page);
-  }
-
-  function handleOnRow(data: APILiteProposalEntity) {
-    return {
-      onClick: () => {
-        history.push(`proposals/${data.proposalId}`);
-      },
-    };
   }
 
   return (
@@ -122,7 +115,6 @@ const ProposalsTable: React.FunctionComponent = () => {
         ),
         onChange: handlePaginationChange,
       }}
-      onRow={handleOnRow}
     />
   );
 };
