@@ -208,18 +208,24 @@ const WalletProvider: React.FunctionComponent = props => {
 
   return (
     <WalletContext.Provider value={value}>
-      <ConnectWalletModal
-        visible={walletsModal}
-        onCancel={() => setWalletsModal(false)}
-      />
-      <InstallMetaMaskModal
-        visible={installMetaMaskModal}
-        onCancel={() => setInstallMetaMaskModal(false)}
-      />
-      <UnsupportedChainModal
-        visible={unsupportedChainModal}
-        onCancel={() => setUnsupportedChainModal(false)}
-      />
+      {walletsModal && (
+        <ConnectWalletModal
+          visible
+          onCancel={() => setWalletsModal(false)}
+        />
+      )}
+      {installMetaMaskModal && (
+        <InstallMetaMaskModal
+          visible
+          onCancel={() => setInstallMetaMaskModal(false)}
+        />
+      )}
+      {unsupportedChainModal && (
+        <UnsupportedChainModal
+          visible
+          onCancel={() => setUnsupportedChainModal(false)}
+        />
+      )}
       {props.children}
     </WalletContext.Provider>
   );

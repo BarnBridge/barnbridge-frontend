@@ -6,6 +6,7 @@ import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
 import cx from 'classnames';
 
+import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -255,13 +256,12 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
         footer={() => (
           <>
             {!poolTxList.isEnd && (
-              <Antd.Button
-                type="primary"
-                size="large"
+              <Button
+                type="light"
                 disabled={poolTxList.loading}
                 onClick={poolTxList.loadNext}>
                 Load more transactions
-              </Antd.Button>
+              </Button>
             )}
           </>
         )}

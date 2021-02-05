@@ -59,6 +59,6 @@ export function getFormattedDuration(
   });
 }
 
-export function isValidAddress(value: string | undefined) {
-  return value && Web3.utils.isAddress(value) && value !== DEFAULT_ADDRESS;
+export function isValidAddress(value: string | undefined): boolean {
+  return !!value && Web3.utils.isAddress(value) && value !== DEFAULT_ADDRESS;
 }

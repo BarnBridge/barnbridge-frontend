@@ -12,7 +12,7 @@ import { Paragraph, Small } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 
-import { formatBONDValue } from 'web3/utils';
+import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import useMergeState from 'hooks/useMergeState';
@@ -45,7 +45,11 @@ const WalletWithdrawView: React.FunctionComponent = () => {
     InitialState,
   );
 
-  const isLocked = (web3c.daoBarn.userLockedUntil ?? 0) > Date.now();
+  const { balance: stakedBalance, userLockedUntil } = web3c.daoBarn;
+  const { balance: bondBalance } = web3c.bond;
+  const isLocked = (userLockedUntil ?? 0) > Date.now();
+  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const formDisabled = !hasStakedBalance || isLocked;
 
   async function handleSubmit(values: WithdrawFormData) {
     setState({ saving: true });
@@ -78,7 +82,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
           Staked Balance
         </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {formatBONDValue(web3c.daoBarn.balance)}
+          {formatBONDValue(stakedBalance)}
         </Paragraph>
       </Grid>
 
@@ -87,7 +91,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
           Wallet Balance
         </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {formatBONDValue(web3c.bond.balance)}
+          {formatBONDValue(bondBalance)}
         </Paragraph>
       </Grid>
 
@@ -111,10 +115,10 @@ const WalletWithdrawView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  max={web3c.daoBarn.balance}
+                  max={stakedBalance}
                   maximumFractionDigits={BONDTokenMeta.decimals}
                   displayDecimals={4}
-                  disabled={state.saving}
+                  disabled={formDisabled || state.saving}
                   slider
                 />
               </Form.Item>
@@ -136,7 +140,7 @@ const WalletWithdrawView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            disabled={isLocked}
+            disabled={formDisabled}
             style={{ justifySelf: 'start' }}>
             Withdraw
           </Button>

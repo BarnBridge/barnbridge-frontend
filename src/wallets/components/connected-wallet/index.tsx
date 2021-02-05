@@ -2,6 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
 
+import Button from 'components/antd/button';
 import { useTheme } from 'components/providers/theme-provider';
 import Identicon from 'components/custom/identicon';
 import ExternalLink from 'components/custom/externalLink';
@@ -62,19 +63,19 @@ const ConnectedWallet: React.FunctionComponent = props => {
                 </Antd.Row>
               </div>
               <Antd.Row className={s.disconnectBtnRow}>
-                <Antd.Button
+                <Button
                   type="ghost"
                   className={s.disconnectBtn}
                   onClick={handleWalletDisconnect}>
                   Disconnect
-                </Antd.Button>
+                </Button>
               </Antd.Row>
             </div>
           }
           trigger="click">
-          <Antd.Button type="primary" size="large" className={s.connectBtn}>
+          <Button type="primary" className={s.connectBtn}>
             Connecting...
-          </Antd.Button>
+          </Button>
         </Antd.Popover>
       </div>
     );
@@ -83,13 +84,12 @@ const ConnectedWallet: React.FunctionComponent = props => {
   if (!wallet.isActive) {
     return !isMobile ? (
       <div className={s.component}>
-        <Antd.Button
+        <Button
           type="primary"
-          size="large"
           className={s.connectBtn}
           onClick={handleWalletConnect}>
           Connect Wallet
-        </Antd.Button>
+        </Button>
       </div>
     ) : null;
   }

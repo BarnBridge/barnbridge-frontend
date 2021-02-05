@@ -1,5 +1,28 @@
 @import 'src/styles/mixin';
 
+:root .component {
+  --input-shadow: none;
+  --input-shadow-focused: 0 0 0 3px rgba(255, 67, 57, 0.16);
+  --input-border: 1px solid #e3e4e6;
+  --input-border-focused: 1px solid #ff4339;
+  --input-border-disabled: 1px solid #e3e4e6;
+  --input-bg: #fff;
+  --input-bg-disabled: #f8f8f9;
+  --input-text: #aaafb3;
+  --input-text-active: #13202b;
+  --input-text-disabled: #717980;
+}
+
+:root :global(.theme-dark) .component {
+  --input-border: 1px solid #43484d;
+  --input-border-disabled: none;
+  --input-bg: #202529;
+  --input-bg-disabled: #36393d;
+  --input-text: #606268;
+  --input-text-active: #fff;
+  --input-text-disabled: #939496;
+}
+
 .component {
   width: 100%;
 
@@ -7,35 +30,37 @@
   &:global(.ant-input) {
     height: 48px;
     padding: 12px 16px;
-    background: var(--color-body-bg);
-    border: 1px solid var(--color-border);
+    box-shadow: var(--input-shadow);
+    border: var(--input-border);
     border-radius: 4px;
-    box-shadow: none;
+    background: var(--input-bg);
     outline: none;
 
     @include font-p1-semi-bold;
-    color: var(--text-color-grey900);
+    color: var(--input-text);
 
     &:global(.ant-input-lg) {
       height: 64px;
       padding: 20px 24px;
     }
 
-    &:global(.ant-input-disabled) {
-      background: var(--color-overlay-bg);
-      border: none;
-
-      &::placeholder {
-        color: var(--color-text);
-      }
-    }
-
     &:focus {
-      border: 1px solid var(--text-color-red500);
+      box-shadow: var(--input-shadow-focused);
+      border: var(--input-border-focused);
+      color: var(--input-text-active);
     }
 
     &::placeholder {
-      color: var(--color-icons);
+      color: var(--input-text);
+    }
+
+    &:global(.ant-input-disabled) {
+      border: var(--input-border-disabled);
+      background: var(--input-bg-disabled);
+
+      &::placeholder {
+        color: var(--input-text-disabled);
+      }
     }
 
     /* Chrome, Safari, Edge, Opera */
@@ -52,21 +77,22 @@
   }
 
   :global(.ant-input-group) {
-    border: 1px solid var(--color-border);
+    border: var(--input-border);
     border-radius: 4px;
 
     :global(.ant-input-group-addon) {
-      background: var(--color-body-bg);
+      background: var(--input-bg);
       border: none;
 
       &:first-of-type {
-        border-right: 1px solid var(--color-border);
+        border-right: var(--input-border);
       }
     }
 
     :global(.ant-input) {
       height: 50px;
       padding: 12px 16px;
+      box-shadow: none;
       border: none;
       border-radius: 0;
 
@@ -77,33 +103,33 @@
     }
 
     &:focus-within {
-      border: 1px solid var(--text-color-red500);
-      box-shadow: 0 0 0 3px rgba(255, 67, 57, 0.16);
+      box-shadow: var(--input-shadow-focused);
+      border: var(--input-border-focused);
     }
   }
 
   &.disabled {
     :global(.ant-input-group) {
-      background: var(--color-overlay-bg);
       border: none;
+      background: var(--input-bg-disabled);
 
       :global(.ant-input),
       :global(.ant-input-group-addon) {
-        background: var(--color-overlay-bg);
         border: none;
+        background: var(--input-bg-disabled);
       }
 
       :global(.ant-input-group-addon) {
         &:first-of-type {
-          border-right: 1px solid var(--color-border);
+          border-right: var(--input-border-disabled);
         }
       }
     }
   }
 
   &:global(.ant-input-affix-wrapper) {
-    background: var(--color-body-bg);
-    border: 1px solid var(--color-border);
+    background: var(--input-bg);
+    border: var(--input-border);
 
     :global(.ant-input),
     :global(.ant-input):focus {

@@ -45,9 +45,12 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
     end: userLockedUntil ?? 0,
     delay: 1_000,
     onTick: leftTime => {
-      const bonus = votingPower
-        ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
-        .minus(delegatedPower ?? ZERO_BIG_NUMBER);
+      let bonus = votingPower
+        ?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
+
+      if (!isDelegated) {
+        bonus = bonus?.minus(myBondBalance ?? ZERO_BIG_NUMBER);
+      }
 
       const leftBonus = bonus?.multipliedBy(leftTime).div(loadedUserLockedUntil);
       const leftTotalVotingPower = votingPower

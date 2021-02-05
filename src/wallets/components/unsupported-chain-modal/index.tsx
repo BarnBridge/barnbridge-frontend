@@ -2,6 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps } from 'antd/lib/modal';
 
+import Button from 'components/antd/button';
 import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.css';
@@ -28,7 +29,7 @@ const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps>
         If you still encounter problems, you may want to switch to a different
         wallet
       </div>
-      <Antd.Button
+      <Button
         type="ghost"
         className={s.switchBtn}
         onClick={(ev: React.MouseEvent<HTMLElement>) => {
@@ -36,7 +37,7 @@ const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps>
           wallet.showWalletsModal();
         }}>
         Switch wallet
-      </Antd.Button>
+      </Button>
     </Antd.Modal>
   );
 };
