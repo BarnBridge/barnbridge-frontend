@@ -46,6 +46,10 @@ const VotingHeader: React.FunctionComponent = () => {
   const isDelegated = isValidAddress(userDelegatedTo);
   const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
 
+  function handleLeftTimeEnd() {
+    web3c.daoBarn.reload();
+  }
+
   function handleClaim() {
     setState({ claiming: true });
 
@@ -129,7 +133,7 @@ const VotingHeader: React.FunctionComponent = () => {
           </Grid>
         </Grid>
 
-        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
+        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {(leftTime) => {
             const leftMultiplier = (new BigNumber(multiplier - 1))
               .multipliedBy(leftTime)
@@ -157,7 +161,8 @@ const VotingHeader: React.FunctionComponent = () => {
                             <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
                           </li>
                         </ul>
-                        <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                        <ExternalLink
+                          href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
                           Learn more
                         </ExternalLink>
                       </>
@@ -166,7 +171,7 @@ const VotingHeader: React.FunctionComponent = () => {
                     </Paragraph>
 
                     <Grid flow="col" gap={8} align="center">
-                      <Tooltip title={`${leftMultiplier.toFormat(2)}x`}>
+                      <Tooltip title={`x${leftMultiplier}`}>
                         <Label type="lb1" bold color="red500" className={s.ratio}>
                           {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
                           {formatBigValue(leftMultiplier, 2, '-', 2)}x

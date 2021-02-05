@@ -257,8 +257,7 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
           <>
             {!poolTxList.isEnd && (
               <Button
-                type="primary"
-                size="large"
+                type="light"
                 disabled={poolTxList.loading}
                 onClick={poolTxList.loadNext}>
                 Load more transactions

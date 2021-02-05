@@ -11,6 +11,7 @@ import Icons from 'components/custom/icon';
 import { Paragraph, Small } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
+import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
 import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -31,6 +32,7 @@ const InitialFormValues: DepositFormData = {
 };
 
 type WalletDepositViewState = {
+  showDepositConfirmModal: boolean;
   enabling: boolean;
   enabled?: boolean;
   saving: boolean;
@@ -38,6 +40,7 @@ type WalletDepositViewState = {
 };
 
 const InitialState: WalletDepositViewState = {
+  showDepositConfirmModal: false,
   enabling: false,
   enabled: undefined,
   saving: false,
@@ -50,6 +53,10 @@ const WalletDepositView: React.FunctionComponent = () => {
 
   const [state, setState] = useMergeState<WalletDepositViewState>(InitialState);
 
+  const { balance: stakedBalance, userLockedUntil } = web3c.daoBarn;
+  const { balance: bondBalance, barnAllowance } = web3c.bond;
+  const isLocked = (userLockedUntil ?? 0) > Date.now();
+
   async function handleSwitchChange(checked: boolean) {
     const value = checked ? MAX_UINT_256 : ZERO_BIG_NUMBER;
 
@@ -61,6 +68,14 @@ const WalletDepositView: React.FunctionComponent = () => {
     }
 
     setState({ enabling: false });
+  }
+
+  function handleFinish(values: DepositFormData) {
+    if (isLocked) {
+      setState({ showDepositConfirmModal: true });
+    } else {
+      return handleSubmit(values);
+    }
   }
 
   async function handleSubmit(values: DepositFormData) {
@@ -81,13 +96,13 @@ const WalletDepositView: React.FunctionComponent = () => {
   }
 
   React.useEffect(() => {
-    const isEnabled = web3c.bond.barnAllowance?.gt(ZERO_BIG_NUMBER) ?? false;
+    const isEnabled = barnAllowance?.gt(ZERO_BIG_NUMBER) ?? false;
 
     setState({
       enabled: isEnabled,
       expanded: isEnabled,
     });
-  }, [web3c]);
+  }, [barnAllowance]);
 
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
@@ -103,7 +118,7 @@ const WalletDepositView: React.FunctionComponent = () => {
           Staked Balance
         </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {formatBONDValue(web3c.daoBarn.balance)}
+          {formatBONDValue(stakedBalance)}
         </Paragraph>
       </Grid>
 
@@ -112,7 +127,7 @@ const WalletDepositView: React.FunctionComponent = () => {
           Wallet Balance
         </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {formatBONDValue(web3c.bond.balance)}
+          {formatBONDValue(bondBalance)}
         </Paragraph>
       </Grid>
 
@@ -139,7 +154,7 @@ const WalletDepositView: React.FunctionComponent = () => {
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
-        onFinish={handleSubmit}>
+        onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -149,7 +164,7 @@ const WalletDepositView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  max={web3c.bond.balance}
+                  max={bondBalance}
                   maximumFractionDigits={BONDTokenMeta.decimals}
                   displayDecimals={4}
                   disabled={state.saving}
@@ -179,6 +194,19 @@ const WalletDepositView: React.FunctionComponent = () => {
           </Button>
         </Grid>
       </Form>
+
+      {state.showDepositConfirmModal && (
+        <WalletDepositConfirmModal
+          visible
+          deposit={form.getFieldsValue().amount}
+          lockDuration={userLockedUntil}
+          onCancel={() => setState({ showDepositConfirmModal: false })}
+          onOk={() => {
+            setState({ showDepositConfirmModal: false });
+            return handleSubmit(form.getFieldsValue());
+          }}
+        />
+      )}
     </Card>
   );
 };

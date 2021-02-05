@@ -73,7 +73,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
             </div>
           }
           trigger="click">
-          <Button type="primary" size="large" className={s.connectBtn}>
+          <Button type="primary" className={s.connectBtn}>
             Connecting...
           </Button>
         </Antd.Popover>
