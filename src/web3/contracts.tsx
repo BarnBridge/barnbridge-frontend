@@ -501,10 +501,12 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
 
   return (
     <Web3ContractsContext.Provider value={value}>
-      <UserRejectedModal
-        visible={userRejectedVisible}
-        onCancel={() => setUserRejectedVisible(false)}
-      />
+      {userRejectedVisible && (
+        <UserRejectedModal
+          visible
+          onCancel={() => setUserRejectedVisible(false)}
+        />
+      )}
       {props.children}
     </Web3ContractsContext.Provider>
   );

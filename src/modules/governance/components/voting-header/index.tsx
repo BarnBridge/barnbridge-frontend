@@ -126,10 +126,13 @@ const VotingHeader: React.FunctionComponent = () => {
             <Button type="light" onClick={() => setState({ showDetailedView: true })}>
               Detailed view
             </Button>
-            <VotingDetailedModal
-              visible={state.showDetailedView}
-              onCancel={() => setState({ showDetailedView: false })}
-            />
+
+            {state.showDetailedView && (
+              <VotingDetailedModal
+                visible
+                onCancel={() => setState({ showDetailedView: false })}
+              />
+            )}
           </Grid>
         </Grid>
 
