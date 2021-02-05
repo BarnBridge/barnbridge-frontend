@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
+import cx from 'classnames';
 import {
   addSeconds,
   addDays,
@@ -232,24 +233,34 @@ const WalletLockView: React.FunctionComponent = () => {
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
-              <Form.Item label="Add lock duration">
-                <Grid flow="col" gap={16}>
-                  {DURATION_OPTIONS.map(opt => (
-                    <Button
-                      key={opt}
-                      type="ghost"
-                      disabled={formDisabled || state.saving || (getLockEndDate(minAllowedDate, opt) ?? 0) > maxAllowedDate}
-                      onClick={() => {
-                        form.setFieldsValue({
-                          lockEndDate: getLockEndDate(minAllowedDate, opt),
-                        });
-                      }}>
-                      {opt}
-                    </Button>
-                  ))}
-                </Grid>
+              <Form.Item label="Add lock duration" dependencies={['lockEndDate']}>
+                {() => (
+                  <Grid flow="col" gap={16} colsTemplate={`repeat(${DURATION_OPTIONS.length}, 1fr)`}>
+                    {DURATION_OPTIONS.map(opt => {
+                      const targetDate = getLockEndDate(minAllowedDate, opt) ?? new Date();
+                      const { lockEndDate } = form.getFieldsValue();
+                      const isActive = lockEndDate?.valueOf() === targetDate?.valueOf();
+
+                      return (
+                        <Button
+                          key={opt}
+                          type="select"
+                          className={cx(isActive && s.activeOption)}
+                          disabled={formDisabled || state.saving || targetDate > maxAllowedDate}
+                          onClick={() => {
+                            form.setFieldsValue({
+                              lockEndDate: getLockEndDate(minAllowedDate, opt),
+                            });
+                            setState({});
+                          }}>
+                          <Paragraph type="p1" semiBold color="grey900">{opt}</Paragraph>
+                        </Button>
+                      );
+                    })}
+                  </Grid>
+                )}
               </Form.Item>
-              <span className={s.orLabel}>OR</span>
+              <Paragraph type="p1">OR</Paragraph>
               <Form.Item
                 name="lockEndDate"
                 label="Manual choose your lock end date"
