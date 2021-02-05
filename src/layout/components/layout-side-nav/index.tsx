@@ -70,7 +70,7 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
         <Grid flow="row" gap={24}>
           <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={expanded} />
           <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={expanded} />
-          <NavLink label="Bonds" icon="paper-bill-outlined" path="/bonds" expanded={expanded} />
+          <NavLink label="Bonds" icon="paper-bill-outlined" path="/smart-yield" expanded={expanded} />
         </Grid>
       </Grid>
       <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">

@@ -5,6 +5,7 @@ import { isMobile } from 'react-device-detect';
 
 import YieldFarmingView from 'modules/yield-farming';
 import GovernanceView from 'modules/governance';
+import SmartYieldView from 'modules/smart-yield';
 
 import Warnings from 'components/custom/warnings';
 import LayoutSideNav from './components/layout-side-nav';
@@ -14,7 +15,6 @@ import ExternalLink from 'components/custom/externalLink';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 
-import StayTuned from 'components/custom/stay-tuned';
 
 import s from './styles.module.scss';
 
@@ -30,9 +30,7 @@ const LayoutView: React.FunctionComponent = () => {
               <Route path="/yield-farming" component={YieldFarmingView} />
               <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
-              <Route path="/bonds" render={() => (
-                <StayTuned />
-              )} />
+              <Route path="/smart-yield" component={SmartYieldView} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
           </Antd.Layout.Content>

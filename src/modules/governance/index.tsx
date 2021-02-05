@@ -1,21 +1,21 @@
-import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import React from "react";
+import { useHistory } from "react-router";
+import { Redirect, Route, Switch, useRouteMatch } from "react-router-dom";
 
-import Tabs from 'components/antd/tabs';
-import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
-import LayoutHeader from 'layout/components/layout-header';
-import VotingHeader from './components/voting-header';
-import OverviewView from './views/overview-view';
-import WalletView from './views/wallets-view';
-import ProposalsView from './views/proposals-view';
-import ProposalCreateView from './views/proposal-create-view';
-import ProposalDetailView from './views/proposal-detail-view';
+import Tabs from "components/antd/tabs";
+import Grid from "components/custom/grid";
+import Icons from "components/custom/icon";
+import LayoutHeader from "layout/components/layout-header";
+import VotingHeader from "./components/voting-header";
+import OverviewView from "./views/overview-view";
+import WalletView from "./views/wallets-view";
+import ProposalsView from "./views/proposals-view";
+import ProposalCreateView from "./views/proposal-create-view";
+import ProposalDetailView from "./views/proposal-detail-view";
 
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from "wallets/wallet";
 
-import s from './styles.module.scss';
+import s from "./styles.module.scss";
 
 type GovernanceViewParams = {
   vt: string;
@@ -24,7 +24,9 @@ type GovernanceViewParams = {
 const GovernanceView: React.FunctionComponent = () => {
   const wallet = useWallet();
   const history = useHistory();
-  const { params: { vt = 'overview' } } = useRouteMatch<GovernanceViewParams>();
+  const {
+    params: { vt = "overview" },
+  } = useRouteMatch<GovernanceViewParams>();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
   function handleTabChange(tabKey: string) {
@@ -43,24 +45,41 @@ const GovernanceView: React.FunctionComponent = () => {
       <LayoutHeader title="Governance" />
       {wallet?.account && <VotingHeader />}
 
-      <Tabs
-        className={s.tabs}
-        activeKey={activeTab}
-        onChange={handleTabChange}>
+      <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
-          tab={<><Icons name="bar-charts-outlined" /> Overview</>} />
+          tab={
+            <>
+              <Icons name="bar-charts-outlined" /> Overview
+            </>
+          }
+        />
         <Tabs.Tab
           key="wallet"
           disabled={!wallet?.account}
-          tab={<><Icons name="wallet-outlined" /> Wallet</>} />
+          tab={
+            <>
+              <Icons name="wallet-outlined" /> Wallet
+            </>
+          }
+        />
         <Tabs.Tab
           key="proposals"
-          tab={<><Icons name="proposal-outlined" /> Proposals</>} />
+          tab={
+            <>
+              <Icons name="proposal-outlined" /> Proposals
+            </>
+          }
+        />
         <Tabs.Tab
           key="discussions"
           disabled
-          tab={<><Icons name="chats-outlined" /> Discussions</>} />
+          tab={
+            <>
+              <Icons name="chats-outlined" /> Discussions
+            </>
+          }
+        />
       </Tabs>
       <div className={s.view}>
         <Switch>
@@ -68,8 +87,16 @@ const GovernanceView: React.FunctionComponent = () => {
           <Route path="/governance/wallet/:wt(\w+)" component={WalletView} />
           <Route path="/governance/wallet" component={WalletView} />
           <Route path="/governance/proposals" exact component={ProposalsView} />
-          <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
-          <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
+          <Route
+            path="/governance/proposals/create"
+            exact
+            component={ProposalCreateView}
+          />
+          <Route
+            path="/governance/proposals/:id(\d+)"
+            exact
+            component={ProposalDetailView}
+          />
           <Redirect from="/governance" to="/governance/overview" />
         </Switch>
       </div>

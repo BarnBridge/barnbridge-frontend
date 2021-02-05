@@ -7,7 +7,7 @@ import s from './styles.module.scss';
 
 export type LogoIconNames = 'barnbridge';
 export type TokenIconNames = 'bond-token' | 'bond-square-token' | 'dai-token' | 'susd-token' |
-  'usdc-token' | 'uniswap-token';
+  'usdc-token' | 'uniswap-token' | 'compound' | 'aave' | 'cream_finance' | 'yearn_finance';
 export type NavIconNames = 'paper-bill-outlined' | 'chats-outlined' | 'bar-charts-outlined' |
   'savings-outlined' | 'proposal-outlined' | 'bank-outlined' | 'wallet-outlined';
 export type ThemeIconNames = 'moon' | 'sun';
