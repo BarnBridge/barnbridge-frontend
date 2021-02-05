@@ -1,7 +1,7 @@
 import React from 'react';
-import * as Antd from 'antd';
 import { useLocalStorage } from 'react-use-storage';
 
+import Button from 'components/antd/button';
 import Icons from 'components/custom/icon';
 
 import s from './styles.module.css';
@@ -52,9 +52,9 @@ const Warn: React.FunctionComponent<WarnProps> = props => {
         <span className={s.warnText}>{props.text}</span>
       </div>
       {props.closable && (
-        <Antd.Button className={s.closeBtn} type="link" onClick={handleClose}>
+        <Button type="link" className={s.closeBtn} onClick={handleClose}>
           <Icons name="close" />
-        </Antd.Button>
+        </Button>
       )}
     </div>
   );

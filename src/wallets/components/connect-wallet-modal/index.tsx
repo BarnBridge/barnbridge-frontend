@@ -25,7 +25,6 @@ const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = pro
   const { ...modalProps } = props;
 
   const wallet = useWallet();
-
   const [state, setState] = useMergeState<ConnectWalletModalState>(InitialState);
 
   function handleConnectorSelect(connector: WalletConnector) {

@@ -10,6 +10,7 @@ import {
 } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 
+import Button from 'components/antd/button';
 import IconsSet from 'components/custom/icons-set';
 
 import s from './styles.module.css';
@@ -71,7 +72,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
         Select the pool you want to claim your reward from
       </div>
       <div className={s.body}>
-        <Antd.Button
+        <Button
           className={s.option}
           type="ghost"
           loading={yfHarvesting}
@@ -88,8 +89,8 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yf?.currentReward)}</strong> BOND
           </div>
-        </Antd.Button>
-        <Antd.Button
+        </Button>
+        <Button
           className={s.option}
           type="ghost"
           loading={yfLPHarvesting}
@@ -106,8 +107,8 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yfLP?.currentReward)}</strong> BOND
           </div>
-        </Antd.Button>
-        <Antd.Button
+        </Button>
+        <Button
           className={s.option}
           type="ghost"
           loading={yfBONDHarvesting}
@@ -124,7 +125,7 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
           <div className={s.optionRewardValue}>
             <strong>{formatBONDValue(yfBOND?.currentReward)}</strong> BOND
           </div>
-        </Antd.Button>
+        </Button>
       </div>
     </Antd.Modal>
   );
