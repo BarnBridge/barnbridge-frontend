@@ -10,6 +10,7 @@ import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
+import ExternalLink from 'components/custom/externalLink';
 import { Heading, Paragraph, Small } from 'components/custom/typography';
 import ProposalsProvider, {
   useProposals,
@@ -144,6 +145,10 @@ const ProposalsViewInner: React.FunctionComponent = () => {
                           </Paragraph>
                         </li>
                       </ul>
+
+                      <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/proposals-and-voting">
+                        Learn more
+                      </ExternalLink>
                     </Grid>
                   }
                   visible={state.showWhyReason}

@@ -38,4 +38,11 @@
   --text-color-red300: #{$color-red300};
   --text-color-red400: #{$color-red400};
   --text-color-red600: #{$color-red600};
+
+  --side-nav-tick-color: #{$color-red500};
+  --side-nav-link-color: #{$color-grey300};
+  --side-nav-link-text-color: #{$color-grey900};
+  --side-nav-link-bg-color: rgba(255, 67, 57, 0.08);
+  --side-nav-link-active-color: #{$color-red500};
+  --side-nav-link-active-bg-color: rgba(255, 67, 57, 0.08);
 }

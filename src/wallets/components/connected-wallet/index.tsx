@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { isMobile } from 'react-device-detect';
 
 import { useTheme } from 'components/providers/theme-provider';
 import Identicon from 'components/custom/identicon';
@@ -80,7 +81,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
   }
 
   if (!wallet.isActive) {
-    return (
+    return !isMobile ? (
       <div className={s.component}>
         <Antd.Button
           type="primary"
@@ -90,7 +91,7 @@ const ConnectedWallet: React.FunctionComponent = props => {
           Connect Wallet
         </Antd.Button>
       </div>
-    );
+    ) : null;
   }
 
   return (

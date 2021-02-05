@@ -14,14 +14,18 @@
     border-radius: 4px;
     overflow: hidden;
     @include font-p2-regular;
-    color: var(--text-color-grey500);
+    color: var(--side-nav-link-color);
 
     &:hover {
-      background: rgba(var(--text-color-grey900-rgb), 0.08);
-      color: var(--text-color-grey900);
+      background: var(--side-nav-link-active-bg-color);
+      color: var(--side-nav-link-active-color);
+
+      .linkLabel {
+        color: var(--side-nav-link-text-color);
+      }
 
       svg {
-        color: var(--text-color-grey900);
+        color: var(--side-nav-link-active-color);
       }
     }
 
@@ -45,18 +49,32 @@
     position: relative;
   }
 
+  .isActive {
+    .activeTick {
+      visibility: visible;
+    }
+
+    .linkLabel {
+      color: var(--side-nav-link-text-color);
+    }
+
+    :global(.ant-btn.ant-btn-link) svg {
+      color: var(--side-nav-link-active-color);
+    }
+  }
+
   .activeTick {
     position: absolute;
     left: -13px;
     width: 4px;
     height: 48px;
-    background: var(--text-color-grey900);
+    background: var(--side-nav-tick-color);
     border-radius: 0 4px 4px 0;
     visibility: hidden;
+  }
 
-    &.activeTickVisible {
-      visibility: visible;
-    }
+  .linkLabel {
+    color: var(--color-text);
   }
 
   .headerWrap {

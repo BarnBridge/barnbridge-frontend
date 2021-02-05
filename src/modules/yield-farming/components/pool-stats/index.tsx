@@ -80,7 +80,7 @@ const PoolStats: React.FunctionComponent = () => {
               {formatBONDValue(aggregated.bondReward)}
             </Heading>
             <Paragraph type="p1" color="grey500">
-              out of ${totalBondReward}
+              out of {totalBondReward}
             </Paragraph>
           </Grid>
         </Grid>

@@ -12,13 +12,10 @@ export type BatchContractMethod = {
   onError?: (err: Error) => any;
 };
 
-export const WEB3_RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL);
-export const HTTPS_WEB3_RPC_URL = String(process.env.REACT_APP_WEB3_RPC_URL).replace(/wss/gi, 'https');
+export const WEB3_RPC_WSS_URL = String(process.env.REACT_APP_WEB3_RPC_WSS_URL);
+export const WEB3_RPC_HTTPS_URL = String(process.env.REACT_APP_WEB3_RPC_HTTPS_URL);
 
-export const DEFAULT_CONTRACT_PROVIDER =
-  WEB3_RPC_URL.indexOf('wss://') === 0
-    ? new Web3.providers.WebsocketProvider(WEB3_RPC_URL)
-    : new Web3.providers.HttpProvider(WEB3_RPC_URL);
+export const DEFAULT_CONTRACT_PROVIDER = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
 
 const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);

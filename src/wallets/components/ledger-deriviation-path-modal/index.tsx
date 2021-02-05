@@ -3,11 +3,10 @@ import React from 'react';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Select, { SelectOption } from 'components/antd/select';
 import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
 
 import { useWallet } from 'wallets/wallet';
 import { LedgerWalletConfig } from 'wallets/connectors/ledger';
-
-import s from './styles.module.css';
 
 const WEB3_LEDGER_DERIVATION_PATHS: SelectOption[] = [
   {
@@ -38,28 +37,28 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
   function handleConnect(ev: React.MouseEvent<HTMLElement>) {
     modalProps.onCancel?.(ev);
 
-    try {
+    setTimeout(() => {
       wallet.connect(LedgerWalletConfig, {
         baseDerivationPath: derivationPath,
       }).catch(Error);
-    } catch {
-    }
+    });
   }
 
   return (
-    <Modal className={s.component} centered {...modalProps}>
-      <Select
-        className={s.dropdown}
-        options={WEB3_LEDGER_DERIVATION_PATHS}
-        value={derivationPath}
-        onSelect={handleSelect}
-      />
-      <Button
-        type="primary"
-        className={s.connectBtn}
-        onClick={handleConnect}>
-        Connect
-      </Button>
+    <Modal centered {...modalProps}>
+      <Grid flow="row" gap={32} align="center">
+        <Select
+          options={WEB3_LEDGER_DERIVATION_PATHS}
+          value={derivationPath}
+          onSelect={handleSelect}
+          style={{ width: '352px' }}
+        />
+        <Button
+          type="primary"
+          onClick={handleConnect}>
+          Connect
+        </Button>
+      </Grid>
     </Modal>
   );
 };

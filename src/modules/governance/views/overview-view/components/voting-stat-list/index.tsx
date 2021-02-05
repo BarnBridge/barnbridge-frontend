@@ -3,14 +3,13 @@ import React from 'react';
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import { Heading, Label, Paragraph } from 'components/custom/typography';
+import ExternalLink from 'components/custom/externalLink';
 
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
 import { getFormattedDuration } from 'utils';
-import { formatBONDValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { formatBONDValue, formatUSDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import BigNumber from 'bignumber.js';
-import Button from '../../../../../../components/antd/button';
-import { UseLeftTime } from '../../../../../../hooks/useLeftTime';
+import { UseLeftTime } from 'hooks/useLeftTime';
 
 export type VotingStatListProps = {
   className?: string;
@@ -39,7 +38,7 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
               This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
             </Paragraph>
           )}>
-            Bond Locked
+            Bond Staked
           </Label>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
@@ -65,7 +64,9 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
                 This number shows the amount of vBOND currently minted. This number may differ from the amount of $BOND
                 staked because of the multiplier mechanic
               </Paragraph>
-              <Button type="link">Learn more</Button>
+              <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                Learn more
+              </ExternalLink>
             </Grid>
           )}>
             VBond
@@ -86,7 +87,9 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
                 This counter shows the average amount of time $BOND stakers locked their deposits in order to take
                 advantage of the voting power bonus.
               </Paragraph>
-              <Button type="link">Learn more</Button>
+              <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                Learn more
+              </ExternalLink>
             </Grid>
           )}>
             Avg. Lock Time
@@ -106,8 +109,9 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
         <Grid flow="row" gap={48}>
           <Label type="lb2" semiBold color="red500" hint={(
             <Paragraph type="p2">
-              This number shows the $BOND token rewards distributed so far out of the total of xxx that are going to be
-              available for the DAO Staking.
+              This number shows the $BOND token rewards distributed so far out of the total
+              of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)} that are going to be available for the
+              DAO Staking.
             </Paragraph>
           )}>
             Bond Rewards
@@ -134,7 +138,9 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
               <Paragraph type="p2">
                 This number shows the amount of vBOND that is delegated to other addresses.
               </Paragraph>
-              <Button type="link">Learn more</Button>
+              <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
+                Learn more
+              </ExternalLink>
             </Grid>
           )}>
             Delegated
@@ -163,14 +169,14 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
               <Heading type="h2" bold color="grey900">
-                {overview?.holders}
+                {overview?.holdersStakingExcluded}
               </Heading>
               <Paragraph type="p1" color="grey500">
                 holders
               </Paragraph>
             </Grid>
             <Paragraph type="p1" color="grey500">
-              {overview?.voters} voters
+              {overview?.barnUsers} stakers & {overview?.voters} voters
             </Paragraph>
           </Grid>
         </Grid>

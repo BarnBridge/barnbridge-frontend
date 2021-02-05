@@ -18,9 +18,10 @@ import Grid from 'components/custom/grid';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { Paragraph, Small } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
+import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
 
 import { getFormattedDuration } from 'utils';
-import { DEFAULT_ADDRESS, formatBONDValue } from 'web3/utils';
+import { DEFAULT_ADDRESS, formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
@@ -28,10 +29,12 @@ import useMergeState from 'hooks/useMergeState';
 import s from './styles.module.scss';
 
 type WalletLockViewState = {
+  showLockConfirmModal: boolean;
   saving: boolean;
 };
 
 const InitialState: WalletLockViewState = {
+  showLockConfirmModal: false,
   saving: false,
 };
 
@@ -93,6 +96,10 @@ const WalletLockView: React.FunctionComponent = () => {
   }, [userLockedUntil]);
 
   const maxAllowedDate = addSeconds(addDays(Date.now(), 365), 1);
+
+  function handleFinish(values: LockFormData) {
+    setState({ showLockConfirmModal: true });
+  }
 
   async function handleSubmit(values: LockFormData) {
     setState({ saving: true });
@@ -217,7 +224,7 @@ const WalletLockView: React.FunctionComponent = () => {
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
-        onFinish={handleSubmit}>
+        onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -351,12 +358,25 @@ const WalletLockView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            disabled={Boolean(userDelegatedTo) && userDelegatedTo !== DEFAULT_ADDRESS}
+            disabled={stakedBalance?.isEqualTo(ZERO_BIG_NUMBER) || (Boolean(userDelegatedTo) && userDelegatedTo !== DEFAULT_ADDRESS)}
             style={{ justifySelf: 'start' }}>
             Lock
           </Button>
         </Grid>
       </Form>
+
+      {state.showLockConfirmModal && (
+        <WalletLockConfirmModal
+          visible
+          balance={stakedBalance}
+          duration={form.getFieldsValue().lockEndDate!.valueOf()}
+          onCancel={() => setState({ showLockConfirmModal: false })}
+          onOk={() => {
+            setState({ showLockConfirmModal: false });
+            return handleSubmit(form.getFieldsValue());
+          }}
+        />
+      )}
     </Card>
   );
 };

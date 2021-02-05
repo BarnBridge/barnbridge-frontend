@@ -18,6 +18,7 @@ export type APIOverviewData = {
   totalDelegatedPower: BigNumber;
   totalVbond: BigNumber;
   holders: number;
+  holdersStakingExcluded: number;
   voters: number;
   barnUsers: number;
 };

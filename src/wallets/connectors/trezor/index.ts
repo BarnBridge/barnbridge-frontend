@@ -2,7 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { TrezorConnector } from '@web3-react/trezor-connector';
 
 import { WalletConnector } from 'wallets/types';
-import { HTTPS_WEB3_RPC_URL } from 'web3/contract';
+import { WEB3_RPC_HTTPS_URL } from 'web3/contract';
 
 import TrezorLogo from 'resources/svg/wallets/trezor-logo.svg';
 
@@ -19,7 +19,7 @@ export const TrezorWalletConfig: WalletConnector = {
   factory(chainId: number): AbstractConnector {
     return new TrezorConnector({
       chainId: chainId,
-      url: HTTPS_WEB3_RPC_URL,
+      url: WEB3_RPC_HTTPS_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       manifestEmail: WEB3_TREZOR_EMAIL,
       manifestAppUrl: WEB3_TREZOR_APP_URL,
