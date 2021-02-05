@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
+import cx from 'classnames';
 import {
   addSeconds,
   addDays,
@@ -20,8 +21,8 @@ import { Paragraph, Small } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
 
-import { getFormattedDuration } from 'utils';
-import { DEFAULT_ADDRESS, formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { getFormattedDuration, isValidAddress } from 'utils';
+import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
@@ -88,6 +89,10 @@ const WalletLockView: React.FunctionComponent = () => {
   const [state, setState] = useMergeState<WalletLockViewState>(InitialState);
 
   const { balance: stakedBalance, userLockedUntil, userDelegatedTo, multiplier = 1 } = web3c.daoBarn;
+
+  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const hasDelegation = isValidAddress(userDelegatedTo);
+  const formDisabled = !hasStakedBalance || hasDelegation;
 
   const minAllowedDate = React.useMemo(() => {
     const min = Math.max(userLockedUntil ?? 0, Date.now());
@@ -205,7 +210,7 @@ const WalletLockView: React.FunctionComponent = () => {
         <Small semiBold color="grey500">
           Lock Duration
         </Small>
-        <UseLeftTime end={userLockedUntil ?? 0} delay={1000}>
+        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
           {(leftTime) => (
             <Paragraph type="p1" semiBold color="grey900">
               {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
@@ -228,24 +233,34 @@ const WalletLockView: React.FunctionComponent = () => {
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
-              <Form.Item label="Add lock duration">
-                <Grid flow="col" gap={16}>
-                  {DURATION_OPTIONS.map(opt => (
-                    <Button
-                      key={opt}
-                      type="ghost"
-                      disabled={state.saving || (getLockEndDate(minAllowedDate, opt) ?? 0) > maxAllowedDate}
-                      onClick={() => {
-                        form.setFieldsValue({
-                          lockEndDate: getLockEndDate(minAllowedDate, opt),
-                        });
-                      }}>
-                      {opt}
-                    </Button>
-                  ))}
-                </Grid>
+              <Form.Item label="Add lock duration" dependencies={['lockEndDate']}>
+                {() => (
+                  <Grid flow="col" gap={16} colsTemplate={`repeat(${DURATION_OPTIONS.length}, 1fr)`}>
+                    {DURATION_OPTIONS.map(opt => {
+                      const targetDate = getLockEndDate(minAllowedDate, opt) ?? new Date();
+                      const { lockEndDate } = form.getFieldsValue();
+                      const isActive = lockEndDate?.valueOf() === targetDate?.valueOf();
+
+                      return (
+                        <Button
+                          key={opt}
+                          type="select"
+                          className={cx(isActive && s.activeOption)}
+                          disabled={formDisabled || state.saving || targetDate > maxAllowedDate}
+                          onClick={() => {
+                            form.setFieldsValue({
+                              lockEndDate: getLockEndDate(minAllowedDate, opt),
+                            });
+                            setState({});
+                          }}>
+                          <Paragraph type="p1" semiBold color="grey900">{opt}</Paragraph>
+                        </Button>
+                      );
+                    })}
+                  </Grid>
+                )}
               </Form.Item>
-              <span className={s.orLabel}>OR</span>
+              <Paragraph type="p1">OR</Paragraph>
               <Form.Item
                 name="lockEndDate"
                 label="Manual choose your lock end date"
@@ -256,7 +271,7 @@ const WalletLockView: React.FunctionComponent = () => {
                   disabledDate={(date: Date) => isBefore(date, minAllowedDate) || isAfter(date, maxAllowedDate)}
                   format="DD/MM/YYYY HH:mm"
                   size="large"
-                  disabled={state.saving}
+                  disabled={formDisabled || state.saving}
                 />
               </Form.Item>
               <Alert
@@ -358,7 +373,7 @@ const WalletLockView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            disabled={stakedBalance?.isEqualTo(ZERO_BIG_NUMBER) || (Boolean(userDelegatedTo) && userDelegatedTo !== DEFAULT_ADDRESS)}
+            disabled={formDisabled}
             style={{ justifySelf: 'start' }}>
             Lock
           </Button>

@@ -69,6 +69,7 @@ const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
           <Button
             type="default"
             className={s.maxBtn}
+            disabled={disabled}
             onClick={onMaxHandle}>
             MAX
           </Button>

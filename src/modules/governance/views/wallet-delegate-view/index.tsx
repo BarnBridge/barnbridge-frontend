@@ -4,7 +4,7 @@ import * as Antd from 'antd';
 import Form from 'components/antd/form';
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';
-import Select from 'components/antd/select';
+import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
@@ -12,26 +12,11 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { Paragraph, Small } from 'components/custom/typography';
 
 import { isValidAddress } from 'utils';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
-import Alert from 'components/antd/alert';
-
-const MANUAL_VOTING_KEY = 'manual';
-const DELEGATE_VOTING_KEY = 'delegate';
-
-const VOTING_TYPE_OPTIONS = [
-  {
-    value: MANUAL_VOTING_KEY,
-    label: 'Manual voting',
-  },
-  {
-    value: DELEGATE_VOTING_KEY,
-    label: 'Delegate voting',
-  },
-];
 
 type DelegateFormData = {
-  votingType?: string;
   delegateAddress?: string;
   gasPrice?: {
     value: number;
@@ -39,23 +24,16 @@ type DelegateFormData = {
 };
 
 const InitialFormValues: DelegateFormData = {
-  votingType: MANUAL_VOTING_KEY,
   delegateAddress: undefined,
   gasPrice: undefined,
 };
 
 type WalletDelegateViewState = {
   saving: boolean;
-  votingType?: string;
-  initialVotingType?: string;
-  delegateAddress?: string;
 };
 
 const InitialState: WalletDelegateViewState = {
   saving: false,
-  votingType: undefined,
-  initialVotingType: undefined,
-  delegateAddress: undefined,
 };
 
 const WalletDelegateView: React.FunctionComponent = () => {
@@ -64,79 +42,26 @@ const WalletDelegateView: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
   const [state, setState] = useMergeState<WalletDelegateViewState>(InitialState);
 
-  const { userDelegatedTo } = web3c.daoBarn;
-  const isDelegated =
-    state.votingType === DELEGATE_VOTING_KEY && isValidAddress(userDelegatedTo);
-
-  const disabledDelegate = React.useMemo<boolean>(() => {
-    if (state.votingType === MANUAL_VOTING_KEY) {
-      if (!isValidAddress(userDelegatedTo)) {
-        return true;
-      }
-    } else if (state.votingType === DELEGATE_VOTING_KEY) {
-      if (userDelegatedTo === state.delegateAddress) {
-        return true;
-      }
-    }
-
-    return false;
-  }, [state.votingType, state.delegateAddress, userDelegatedTo]);
+  const { balance: stakedBalance, userDelegatedTo, userLockedUntil } = web3c.daoBarn;
+  const isDelegated = isValidAddress(userDelegatedTo);
+  const isLocked = (userLockedUntil ?? 0) > Date.now();
+  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const formDisabled = !hasStakedBalance;
 
   React.useEffect(() => {
-    if (isValidAddress(userDelegatedTo)) {
-      form.setFieldsValue({
-        votingType: DELEGATE_VOTING_KEY,
-        delegateAddress: userDelegatedTo,
-      });
-
-      setState({
-        votingType: DELEGATE_VOTING_KEY,
-        initialVotingType: DELEGATE_VOTING_KEY,
-        delegateAddress: userDelegatedTo,
-      });
-    } else {
-      form.setFieldsValue({
-        votingType: MANUAL_VOTING_KEY,
-        delegateAddress: undefined,
-      });
-
-      setState({
-        votingType: MANUAL_VOTING_KEY,
-        initialVotingType: MANUAL_VOTING_KEY,
-        delegateAddress: undefined,
-      });
-    }
-  }, [userDelegatedTo]);
-
-  function handleValuesChange(values: Partial<DelegateFormData>) {
-    Object.keys(values).forEach(fieldName => {
-      const value = values[fieldName as keyof DelegateFormData];
-
-      if (fieldName === 'votingType') {
-        setState({
-          votingType: value as string,
-          delegateAddress: undefined,
-        });
-
-        form.setFieldsValue({
-          delegateAddress: undefined,
-        });
-      } else if (fieldName === 'delegateAddress') {
-        setState({
-          delegateAddress: value as string,
-        });
-      }
+    form.setFieldsValue({
+      delegateAddress: isValidAddress(userDelegatedTo) ? userDelegatedTo : undefined,
     });
-  }
+  }, [userDelegatedTo]);
 
   async function handleSubmit(values: DelegateFormData) {
     setState({ saving: true });
 
-    const { gasPrice, delegateAddress } = values;
+    const { delegateAddress, gasPrice } = values;
     const gasFee = gasPrice?.value!;
 
     try {
-      if (values.votingType === DELEGATE_VOTING_KEY) {
+      if (delegateAddress !== userDelegatedTo) {
         await web3c.daoBarn.actions.delegate(
           delegateAddress!,
           gasFee,
@@ -167,8 +92,7 @@ const WalletDelegateView: React.FunctionComponent = () => {
           Current Voting Type
         </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {state.initialVotingType === MANUAL_VOTING_KEY && 'Manual voting'}
-          {state.initialVotingType === DELEGATE_VOTING_KEY && 'Delegate voting'}
+          {isDelegated ? 'Delegate voting' : 'Manual voting'}
         </Paragraph>
       </Grid>
 
@@ -178,7 +102,7 @@ const WalletDelegateView: React.FunctionComponent = () => {
             Delegated Address
           </Small>
           <Paragraph type="p1" semiBold color="grey900">
-            {web3c.daoBarn.userDelegatedTo}
+            {userDelegatedTo}
           </Paragraph>
         </Grid>
       )}
@@ -193,32 +117,21 @@ const WalletDelegateView: React.FunctionComponent = () => {
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
-        onValuesChange={handleValuesChange}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
               <Form.Item
-                name="votingType"
-                label="Voting type"
+                name="delegateAddress"
+                label="Delegate address"
                 rules={[{ required: true, message: 'Required' }]}>
-                <Select options={VOTING_TYPE_OPTIONS} disabled={state.saving} />
+                <TokenInput disabled={formDisabled || state.saving} />
               </Form.Item>
-              {state.votingType === DELEGATE_VOTING_KEY && (
-                <Form.Item
-                  name="delegateAddress"
-                  label="Delegate address"
-                  rules={[{ required: true, message: 'Required' }]}>
-                  <TokenInput disabled={state.saving} />
-                </Form.Item>
-              )}
-              {state.votingType === MANUAL_VOTING_KEY && (
+              <Alert
+                message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
+              {isLocked && (
                 <Alert
                   message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
-              )}
-              {state.votingType === DELEGATE_VOTING_KEY && (
-                <Alert
-                  message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
               )}
             </Grid>
             <Grid flow="row">
@@ -231,15 +144,23 @@ const WalletDelegateView: React.FunctionComponent = () => {
               </Form.Item>
             </Grid>
           </Grid>
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            loading={state.saving}
-            disabled={disabledDelegate}
-            style={{ justifySelf: 'start' }}>
-            {isDelegated ? 'Stop Delegate' : 'Delegate'}
-          </Button>
+          <Form.Item shouldUpdate>
+            {({ getFieldsValue }) => {
+              const { delegateAddress } = getFieldsValue();
+
+              return (
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  size="large"
+                  loading={state.saving}
+                  disabled={formDisabled || !delegateAddress}
+                  style={{ justifySelf: 'start' }}>
+                  {userDelegatedTo === delegateAddress ? 'Stop Delegate' : 'Delegate'}
+                </Button>
+              );
+            }}
+          </Form.Item>
         </Grid>
       </Form>
     </Card>

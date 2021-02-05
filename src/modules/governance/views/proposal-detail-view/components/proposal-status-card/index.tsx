@@ -63,7 +63,6 @@ function getEventIcon(index: number, name: string): React.ReactNode {
 
 function formatEventTime(name: string, start: number, end: number): string {
   const mStart = new Date(start * 1_000);
-  const mEnd = end ? new Date(end * 1_000) : new Date();
   const now = new Date();
 
   if (
@@ -74,17 +73,29 @@ function formatEventTime(name: string, start: number, end: number): string {
       APIProposalState.CANCELED,
       APIProposalState.EXECUTED,
       APIProposalState.ACCEPTED,
+      APIProposalState.ABROGATED,
     ].includes(name as any)
   ) {
     return format(mStart, 'dd MMM yyyy - HH:mm');
   }
 
-  const dist = formatDistance(mEnd, now, {
+  if (end > 0) {
+    const mEnd = new Date(end * 1_000);
+
+    const dist = formatDistance(mEnd, now, {
+      addSuffix: true,
+      includeSeconds: true,
+    });
+
+    return mEnd > now ? `Ends ${dist}` : `Ended ${dist}`;
+  }
+
+  const dist = formatDistance(mStart, now, {
     addSuffix: true,
     includeSeconds: true,
   });
 
-  return now > mEnd ? `Ended ${dist}` : `Ends ${dist}`;
+  return `Started ${dist}`;
 }
 
 const ProposalStatusCard: React.FunctionComponent = () => {

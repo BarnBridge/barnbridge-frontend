@@ -32,6 +32,21 @@ const Columns: ColumnsType<APIVoterEntity> = [
     ),
   },
   {
+    dataIndex: 'bondStaked',
+    title: () => (
+      <Small semiBold color="grey300">
+        Staked Balance
+      </Small>
+    ),
+    width: 200,
+    align: 'right',
+    render: (value: BigNumber) => (
+      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+        {formatBigValue(value, 2, '-', 2)}
+      </Paragraph>
+    ),
+  },
+  {
     dataIndex: 'votingPower',
     title: () => (
       <Small semiBold color="grey300">
@@ -127,7 +142,7 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
             <Paragraph type="p2" semiBold color="grey500">
-              Showing {from} to {to} out of {total} voters
+              Showing {from} to {to} out of {total} stakers
             </Paragraph>
           ),
           onChange: setPage,

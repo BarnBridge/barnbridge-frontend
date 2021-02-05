@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
 import Button from 'components/antd/button';
@@ -264,13 +263,13 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             </Label>
           </div>
           {wallet.isActive && (
-            <Antd.Button
+            <Button
               type="primary"
               className={s.stakingBtn}
               disabled={!state.enabled}
               onClick={handleStaking}>
               Staking
-            </Antd.Button>
+            </Button>
           )}
         </div>
       )}
