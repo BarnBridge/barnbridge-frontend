@@ -158,8 +158,9 @@ const ProposalCreateView: React.FunctionComponent = () => {
       const proposal = await web3c.daoGovernance.actions.createProposal(
         payload,
       );
+      const { proposalId } = proposal.returnValues;
 
-      checkProposalWhile.start();
+      checkProposalWhile.start(proposalId);
       await checkProposalWhile.promise;
 
       form.setFieldsValue(InitialFormValues);
