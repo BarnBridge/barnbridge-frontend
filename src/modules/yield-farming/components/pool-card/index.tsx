@@ -64,7 +64,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         ...prevState,
         type: PoolTypes.STABLE,
         enabled: true,
-        isEnded: web3c.yfBOND.isEnded,
+        isEnded: web3c.yf.isEnded,
         currentEpoch: web3c.yf.currentEpoch,
         totalEpochs: web3c.yf.totalEpochs,
         epochReward: web3c.yf.epochReward,
@@ -143,7 +143,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         ...prevState,
         type: PoolTypes.UNILP,
         enabled: web3c.yfLP.currentEpoch! > 0,
-        isEnded: web3c.yfBOND.isEnded,
+        isEnded: web3c.yfLP.isEnded,
         currentEpoch: web3c.yfLP.currentEpoch,
         totalEpochs: web3c.yfLP.totalEpochs,
         epochReward: web3c.yfLP.epochReward,
@@ -364,20 +364,19 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             {!state.isEnded && (
               <PoolStakeShareBar shares={state.myShares} />
             )}
-
-            {state.isEnded && (
-              <div className={s.box}>
-                <Grid flow="row" align="start">
-                  <Paragraph type="p2" semiBold color="grey500">
-                    The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
-                    you
-                    can
-                    still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
-                  </Paragraph>
-                  <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
-                </Grid>
-              </div>
-            )}
+          </div>
+        )}
+        {state.isEnded && (
+          <div className={s.box}>
+            <Grid flow="row" align="start">
+              <Paragraph type="p2" semiBold color="grey500">
+                The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
+                you
+                can
+                still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+              </Paragraph>
+              <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
+            </Grid>
           </div>
         )}
       </div>
