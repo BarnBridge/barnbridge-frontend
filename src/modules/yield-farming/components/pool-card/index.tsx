@@ -364,20 +364,19 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             {!state.isEnded && (
               <PoolStakeShareBar shares={state.myShares} />
             )}
-
-            {state.isEnded && (
-              <div className={s.box}>
-                <Grid flow="row" align="start">
-                  <Paragraph type="p2" semiBold color="grey500">
-                    The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
-                    you
-                    can
-                    still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
-                  </Paragraph>
-                  <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
-                </Grid>
-              </div>
-            )}
+          </div>
+        )}
+        {state.isEnded && (
+          <div className={s.box}>
+            <Grid flow="row" align="start">
+              <Paragraph type="p2" semiBold color="grey500">
+                The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
+                you
+                can
+                still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+              </Paragraph>
+              <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
+            </Grid>
           </div>
         )}
       </div>
