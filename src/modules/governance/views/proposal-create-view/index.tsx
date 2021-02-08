@@ -164,7 +164,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
       await checkProposalWhile.promise;
 
       form.setFieldsValue(InitialFormValues);
-      history.push(`/governance/proposals/${proposal.returnValues.proposalId}`);
+      history.push(`/governance/proposals/${proposalId}`);
     } catch (e) {
     }
 
