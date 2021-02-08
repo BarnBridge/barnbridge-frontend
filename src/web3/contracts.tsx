@@ -396,7 +396,21 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     )
       return undefined;
 
-    return yfReward.plus(yfLPReward).plus(yfBONDReward);
+    let total = ZERO_BIG_NUMBER;
+
+    if (yfContract.isEnded === false) {
+      total = total.plus(yfReward);
+    }
+
+    if (yfLPContract.isEnded === false) {
+      total = total.plus(yfLPReward);
+    }
+
+    if (yfBONDContract.isEnded === false) {
+      total = total.plus(yfBONDReward);
+    }
+
+    return total;
   }
 
   function totalBondReward(): BigNumber | undefined {
