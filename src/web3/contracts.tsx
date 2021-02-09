@@ -341,7 +341,21 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       return undefined;
     }
 
-    return yfStaked.plus(yfLPStaked).plus(yfBONDStaked);
+    let total = ZERO_BIG_NUMBER;
+
+    if (yfContract.isEnded === false) {
+      total = total.plus(yfStaked);
+    }
+
+    if (yfLPContract.isEnded === false) {
+      total = total.plus(yfLPStaked);
+    }
+
+    if (yfBONDContract.isEnded === false) {
+      total = total.plus(yfBONDStaked);
+    }
+
+    return total;
   }
 
   function totalEffectiveStaked(): BigNumber | undefined {
@@ -357,7 +371,21 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
       return undefined;
     }
 
-    return yfStaked.plus(yfLPStaked).plus(yfBONDStaked);
+    let total = ZERO_BIG_NUMBER;
+
+    if (yfContract.isEnded === false) {
+      total = total.plus(yfStaked);
+    }
+
+    if (yfLPContract.isEnded === false) {
+      total = total.plus(yfLPStaked);
+    }
+
+    if (yfBONDContract.isEnded === false) {
+      total = total.plus(yfBONDStaked);
+    }
+
+    return total;
   }
 
   function totalCurrentReward(): BigNumber | undefined {
