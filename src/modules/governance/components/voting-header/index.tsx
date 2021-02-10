@@ -15,6 +15,7 @@ import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 import s from './styles.module.scss';
 
@@ -73,13 +74,20 @@ const VotingHeader: React.FunctionComponent = () => {
             Current reward
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading
-              type="h3"
-              bold
-              color="grey900"
-              loading={claimValue === undefined}>
-              {formatBONDValue(claimValue)}
-            </Heading>
+            <Tooltip title={(
+              <Paragraph type="p2">
+                {formatBigValue(claimValue, BONDTokenMeta.decimals)}
+              </Paragraph>
+            )}>
+              <Heading
+                type="h3"
+                bold
+                color="grey900"
+                loading={claimValue === undefined}>
+                {claimValue?.lt(0.0001) && '> '}
+                {formatBigValue(claimValue, BONDTokenMeta.decimals).slice(0, 6)}
+              </Heading>
+            </Tooltip>
             <Icons name="bond-square-token" />
             <Button
               type="light"
