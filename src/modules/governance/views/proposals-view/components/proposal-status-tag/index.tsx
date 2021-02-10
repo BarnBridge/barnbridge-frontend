@@ -16,7 +16,9 @@ const ProposalStatusTag: React.FunctionComponent<ProposalStatusTagProps> = props
 
   return (
     <div className={cx(s.component, className, s[state])}>
-      <Label type="lb2" bold>{APIProposalStateMap.get(state)}</Label>
+      <Label type="lb2" bold>
+        {APIProposalStateMap.get(state)}
+      </Label>
     </div>
   );
 };

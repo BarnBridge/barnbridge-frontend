@@ -13,9 +13,15 @@ export type TokenInputProps = AntdInputProps & {};
 const TokenInput: React.FunctionComponent<TokenInputProps> = props => {
   const { className, value, ...inputProps } = props;
 
-  const addonBefore = React.useMemo(() => Web3.utils.isAddress(String(value)) ? (
-    <Identicon address={String(value)} width={24} height={24} />
-  ) : <div />, [value]);
+  const addonBefore = React.useMemo(
+    () =>
+      Web3.utils.isAddress(String(value)) ? (
+        <Identicon address={String(value)} width={24} height={24} />
+      ) : (
+        <div />
+      ),
+    [value],
+  );
 
   return (
     <Input

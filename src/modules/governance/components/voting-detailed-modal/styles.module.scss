@@ -1,41 +1,13 @@
-@import "../../../../styles/mixin";
+@import 'src/styles/mixin';
 
 .component {
   :global(.ant-modal-body) {
     padding: 0;
   }
 
-  .row {
-    display: inline-grid;
-    grid-template-columns: min-content 1fr min-content;
-    column-gap: 16px;
-    align-items: center;
+  .separator {
     width: 100%;
-    padding: 24px 32px;
-    border-bottom: 1px solid #e3e4e6;
-  }
-
-  .icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 48px;
-    height: 48px;
-    background: rgba(113, 121, 128, 0.08);
-    border-radius: 4px;
-
-    svg {
-      color: #aaafb3;
-    }
-  }
-
-  .label,
-  .value {
-    @include font-p1-semi-bold;
-    color: #060a0d;
-  }
-
-  .activeValue {
-    color: #ff4339;
+    height: 1px;
+    border-top: 1px solid var(--color-border);
   }
 }

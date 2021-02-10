@@ -1,4 +1,4 @@
-@import "src/styles/mixin";
+@import 'src/styles/mixin';
 
 .heading {
   display: block;
@@ -58,6 +58,11 @@ h3.heading {
 }
 
 .paragraph {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  column-gap: 8px;
+  align-items: center;
   width: auto;
   color: var(--color-text);
 
@@ -97,7 +102,11 @@ h3.heading {
 }
 
 .label {
-  display: block;
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  column-gap: 8px;
+  align-items: center;
   width: auto;
   color: var(--color-text);
 
@@ -137,6 +146,11 @@ h3.heading {
 }
 
 .small {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  column-gap: 8px;
+  align-items: center;
   width: auto;
   @include font-sm-regular;
   color: var(--color-text);

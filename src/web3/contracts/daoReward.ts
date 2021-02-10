@@ -1,78 +1,140 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
+import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useWallet } from 'wallets/wallet';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
+import { BONDTokenMeta } from './bond';
 
-const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
+const CONTRACT_DAO_REWARD_ADDR = String(
+  process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR,
+).toLowerCase();
 
-type DAORewardContractData = {
-  claim?: BigNumber;
+const Contract = new Web3Contract(
+  require('web3/abi/dao_reward.json'),
+  CONTRACT_DAO_REWARD_ADDR,
+  'DAO Reward',
+);
+
+export type DaoRewardPullFeature = {
+  source: string;
+  startTs: number;
+  endTs: number;
+  totalDuration: number;
+  totalAmount: BigNumber;
+};
+
+function loadCommonData(): Promise<any> {
+  return Contract.batch([
+    {
+      method: 'pullFeature',
+      transform: (value: DaoRewardPullFeature) => ({
+        ...value,
+        totalAmount: getHumanValue(new BigNumber(value.totalAmount), BONDTokenMeta.decimals)
+      }),
+    },
+  ]).then(([poolFeature]) => {
+    return {
+      poolFeature,
+    };
+  });
+}
+
+function loadUserData(userAddress?: string): Promise<any> {
+  if (!userAddress) {
+    return Promise.reject();
+  }
+
+  return Contract.batch([
+    {
+      method: 'claim',
+      callArgs: {
+        from: userAddress,
+      },
+      transform: (value: string) =>
+        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      onError: () => ZERO_BIG_NUMBER,
+    },
+  ]).then(([claimValue]) => {
+    return {
+      claimValue,
+    };
+  });
+}
+
+function claimSend(from: string): Promise<void> {
+  return Contract.send('claim', [], {
+    from,
+  });
+}
+
+export type DAORewardContractData = {
+  contract: Web3Contract;
+  claimValue?: BigNumber;
+  poolFeature?: DaoRewardPullFeature;
+};
+
+const InitialState: DAORewardContractData = {
+  contract: Contract,
+  claimValue: undefined,
+  poolFeature: undefined,
 };
 
 export type DAORewardContract = DAORewardContractData & {
-  contract: Web3Contract;
   reload(): void;
-  claimSend(): Promise<any>;
+  actions: {
+    claim(): Promise<any>;
+    getBondRewards(): BigNumber | undefined,
+  };
 };
 
-const InitialData: DAORewardContractData = {};
-
 export function useDAORewardContract(): DAORewardContract {
-  const [reload] = useReload();
   const wallet = useWallet();
 
-  const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(
-      require('web3/abi/dao_reward.json'),
-      CONTRACT_DAO_REWARD_ADDR,
-      'DAO Reward',
-    );
-  }, []);
+  const [state, setState] = useMergeState<DAORewardContractData>(InitialState);
+  const [reload, version] = useReload();
 
-  const [data, setData] = React.useState<DAORewardContractData>(InitialData);
+  React.useEffect(() => {
+    setState({ poolFeature: undefined });
 
-  useAsyncEffect(async () => {
-    let claim: BigNumber | undefined;
+    loadCommonData().then(setState).catch(Error);
+  }, [version]);
 
-    if (wallet.account) {
-      [claim] = await contract.batch([
-        {
-          method: 'claim',
-          transform: (value: string) => new BigNumber(value),
-          onError: () => ZERO_BIG_NUMBER,
-        },
-      ]);
+  React.useEffect(() => {
+    setState({ claimValue: undefined });
+
+    loadUserData(wallet.account).then(setState).catch(Error);
+  }, [wallet.account, version]);
+
+  function getBondRewards(): BigNumber | undefined {
+    if (!state.poolFeature) {
+      return undefined;
     }
 
-    setData(prevState => ({
-      ...prevState,
-      claim,
-    }));
-  }, [reload, wallet.account]);
+    const { startTs, endTs, totalDuration, totalAmount } = state.poolFeature;
+    const now = (Date.now() / 1_000);
 
-  const claimSend = React.useCallback((): Promise<any> => {
-    if (!wallet.account) {
-      return Promise.reject();
+    if (startTs > now) {
+      return ZERO_BIG_NUMBER;
     }
 
-    return contract.send('claim', [], {
-      from: wallet.account,
-    }).then(reload);
-  }, [reload, contract, wallet.account]);
+    if (endTs <= now) {
+      return totalAmount;
+    }
 
-  return React.useMemo<DAORewardContract>(() => ({
-    ...data,
-    contract,
+    return totalAmount.multipliedBy(now - startTs).div(totalDuration);
+  }
+
+  return {
+    ...state,
     reload,
-    claimSend,
-  }), [
-    data,
-    contract,
-    reload,
-    claimSend,
-  ]);
+    actions: {
+      claim(): Promise<void> {
+        return wallet.isActive ? claimSend(wallet.account!) : Promise.reject();
+      },
+      getBondRewards,
+    },
+  };
 }

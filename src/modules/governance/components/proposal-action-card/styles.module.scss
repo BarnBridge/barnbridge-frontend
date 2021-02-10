@@ -1,4 +1,8 @@
-@import "src/styles/mixin";
+@import 'src/styles/mixin';
+
+.content {
+  min-height: 24px;
+}
 
 .address {
   float: left;
@@ -8,7 +12,7 @@
 div.paragraph:global(.ant-typography) {
   margin: 0;
   @include font-p1-regular;
-  
+
   &.expanded {
     white-space: pre-wrap;
   }

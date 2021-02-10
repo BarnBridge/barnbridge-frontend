@@ -4,7 +4,9 @@ import * as Antd from 'antd';
 import cx from 'classnames';
 
 import Button from 'components/antd/button';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
+import { Paragraph } from 'components/custom/typography';
 import Icons, { NavIconNames } from 'components/custom/icon';
 import { useTheme } from 'components/providers/theme-provider';
 
@@ -28,15 +30,17 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
   }
 
   return (
-    <Antd.Tooltip title={label} placement="right">
-      <Grid flow="col" className={s.navLink}>
-        <div className={cx(s.activeTick, isActivePath && s.activeTickVisible)} />
-        <Button type="link" onClick={handleClick}>
+    <Tooltip title={label} placement="right">
+      <Grid flow="col" className={cx(s.navLink, isActivePath && s.isActive)}>
+        <div className={s.activeTick} />
+        <Button type="light" onClick={handleClick}>
           <Icons name={icon} />
-          {expanded && label}
+          {expanded && (
+            <Paragraph type="p2" semiBold className={s.linkLabel}>{label}</Paragraph>
+          )}
         </Button>
       </Grid>
-    </Antd.Tooltip>
+    </Tooltip>
   );
 };
 
@@ -68,23 +72,40 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
           {expanded && <Icons name="barnbridge" width="113" color="grey900" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={expanded} />
-          <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={expanded} />
-          <NavLink label="Bonds" icon="paper-bill-outlined" path="/smart-yield" expanded={expanded} />
+          <NavLink
+            label="Pools"
+            icon="savings-outlined"
+            path="/yield-farming"
+            expanded={expanded}
+          />
+          <NavLink
+            label="Voting"
+            icon="bank-outlined"
+            path="/governance"
+            expanded={expanded}
+          />
+          <NavLink
+            label="Bonds"
+            icon="paper-bill-outlined"
+            path="/smart-yield"
+            expanded={expanded}
+          />
         </Grid>
       </Grid>
       <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
-        <Button type="link" onClick={handleThemeToggle}>
+        <Button type="light" onClick={handleThemeToggle}>
           <Icons name={isDarkTheme ? 'sun' : 'moon'} />
           {expanded && (
-            <>
+            <Paragraph type="p2" semiBold className={s.linkLabel}>
               {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
-            </>
+            </Paragraph>
           )}
         </Button>
-        <Button type="link" className={s.hideLink} onClick={handleExpand}>
+        <Button type="light" className={s.hideLink} onClick={handleExpand}>
           <Icons name="right-arrow-circle-outlined" />
-          {expanded && 'Hide menu'}
+          {expanded && (
+            <Paragraph type="p2" semiBold className={s.linkLabel}>Hide menu</Paragraph>
+          )}
         </Button>
       </Grid>
     </Antd.Layout.Sider>

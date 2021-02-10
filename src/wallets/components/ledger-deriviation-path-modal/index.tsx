@@ -1,13 +1,12 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps } from 'antd/lib/modal';
 
+import Modal, { ModalProps } from 'components/antd/modal';
 import Select, { SelectOption } from 'components/antd/select';
+import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
 
 import { useWallet } from 'wallets/wallet';
 import { LedgerWalletConfig } from 'wallets/connectors/ledger';
-
-import s from './styles.module.css';
 
 const WEB3_LEDGER_DERIVATION_PATHS: SelectOption[] = [
   {
@@ -27,38 +26,40 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
 
   const wallet = useWallet();
 
-  const [derivationPath, setDerivationPath] = React.useState<string>(String(WEB3_LEDGER_DERIVATION_PATHS[0].value));
+  const [derivationPath, setDerivationPath] = React.useState<string>(
+    String(WEB3_LEDGER_DERIVATION_PATHS[0].value),
+  );
 
   function handleSelect(value: string | number) {
     setDerivationPath(String(value));
   }
 
   function handleConnect(ev: React.MouseEvent<HTMLElement>) {
-    props.onCancel?.(ev);
+    modalProps.onCancel?.(ev);
 
-    return wallet.connect(LedgerWalletConfig, {
-      baseDerivationPath: derivationPath,
+    setTimeout(() => {
+      wallet.connect(LedgerWalletConfig, {
+        baseDerivationPath: derivationPath,
+      }).catch(Error);
     });
   }
 
   return (
-    <Antd.Modal
-      className={s.component}
-      centered
-      footer={[]}
-      {...modalProps}
-    >
-      <Select
-        className={s.dropdown}
-        options={WEB3_LEDGER_DERIVATION_PATHS}
-        value={derivationPath}
-        onSelect={handleSelect} />
-      <Antd.Button
-        type="primary"
-        className={s.connectBtn}
-        onClick={handleConnect}
-      >Connect</Antd.Button>
-    </Antd.Modal>
+    <Modal centered {...modalProps}>
+      <Grid flow="row" gap={32} align="center">
+        <Select
+          options={WEB3_LEDGER_DERIVATION_PATHS}
+          value={derivationPath}
+          onSelect={handleSelect}
+          style={{ width: '352px' }}
+        />
+        <Button
+          type="primary"
+          onClick={handleConnect}>
+          Connect
+        </Button>
+      </Grid>
+    </Modal>
   );
 };
 

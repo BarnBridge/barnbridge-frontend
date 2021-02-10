@@ -1,0 +1,15 @@
+.btn {
+  padding: 24px !important;
+  position: relative !important;
+
+  :global(.ant-btn-loading-icon) {
+    position: absolute !important;
+    top: 24px;
+    right: 18px;
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

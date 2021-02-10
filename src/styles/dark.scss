@@ -1,4 +1,4 @@
-@import "colors";
+@import 'colors';
 
 :root .theme-dark {
   --color-body-bg: #202529;
@@ -35,4 +35,12 @@
   --text-color-red300: #{$color-red300};
   --text-color-red400: #{$color-red400};
   --text-color-red600: #{$color-red600};
+
+  // LAYOUT-SIDE-NAV
+  --side-nav-tick-color: #{$color-red500};
+  --side-nav-link-color: #606268;
+  --side-nav-link-text-color: #fff;
+  --side-nav-link-bg-color: rgba(255, 67, 57, 0.08);
+  --side-nav-link-active-color: #{$color-red500};
+  --side-nav-link-active-bg-color: rgba(255, 67, 57, 0.08);
 }

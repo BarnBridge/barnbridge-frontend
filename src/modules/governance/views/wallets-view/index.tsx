@@ -10,15 +10,19 @@ import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import { Heading } from 'components/custom/typography';
+import { useWallet } from 'wallets/wallet';
 
-type WalletViewParams = {
-  wt: string;
+type WalletViewRouteParams = {
+  action: string;
 };
 
 const WalletView: React.FunctionComponent = () => {
   const history = useHistory();
-  const { params: { wt = 'deposit' } } = useRouteMatch<WalletViewParams>();
-  const [activeTab, setActiveTab] = React.useState<string>(wt);
+  const wallet = useWallet();
+  const {
+    params: { action = 'deposit' },
+  } = useRouteMatch<WalletViewRouteParams>();
+  const [activeTab, setActiveTab] = React.useState<string>(action);
 
   function handleTabChange(tabKey: string) {
     setActiveTab(tabKey);
@@ -26,14 +30,26 @@ const WalletView: React.FunctionComponent = () => {
   }
 
   React.useEffect(() => {
-    if (wt !== activeTab) {
-      setActiveTab(wt);
+    if (action !== activeTab) {
+      setActiveTab(action);
     }
-  }, [wt]);
+  }, [action]);
+
+  if (!wallet.initialized) {
+    return null;
+  }
+
+  if (!wallet.isActive) {
+    return (
+      <Redirect to="/governance/overview" />
+    );
+  }
 
   return (
     <Grid flow="row" gap={32}>
-      <Heading type="h1" bold color="grey900">Wallet</Heading>
+      <Heading type="h1" bold color="grey900">
+        Wallet
+      </Heading>
       <Tabs activeKey={activeTab} simple onChange={handleTabChange}>
         <Tabs.Tab key="deposit" tab="Deposit" />
         <Tabs.Tab key="lock" tab="Lock" />

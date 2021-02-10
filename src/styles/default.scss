@@ -1,4 +1,4 @@
-@import "colors";
+@import 'colors';
 
 :root {
   --color-body-bg: #f8f8f9;
@@ -10,9 +10,12 @@
   --color-text: #717980;
   --color-progress-success: #00d395;
 
-  --shadow-modal: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 16px 32px rgba(19, 32, 43, 0.4);
-  --shadow-card: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
-  --shadow-overlay: 0 0 0.5px rgba(0, 0, 0, 0.4), 0 32px 64px rgba(113, 121, 128, 0.32);
+  --shadow-modal: 0 0 0.5px rgba(6, 10, 13, 0.4),
+  0 16px 32px rgba(19, 32, 43, 0.4);
+  --shadow-card: 0 0 0.5px rgba(6, 10, 13, 0.4),
+  0 8px 16px rgba(113, 121, 128, 0.08);
+  --shadow-overlay: 0 0 0.5px rgba(0, 0, 0, 0.4),
+  0 32px 64px rgba(113, 121, 128, 0.32);
 
   --text-color-red500: #{$color-red500};
   --text-color-red500-rgb: #{hexToRGB($color-red500)};
@@ -37,4 +40,12 @@
   --text-color-red600: #{$color-red600};
 
   --text-color-purple500: #{$color-purple500};
+
+  // LAYOUT-SIDE-NAV
+  --side-nav-tick-color: #{$color-red500};
+  --side-nav-link-color: #{$color-grey300};
+  --side-nav-link-text-color: #{$color-grey900};
+  --side-nav-link-bg-color: rgba(255, 67, 57, 0.08);
+  --side-nav-link-active-color: #{$color-red500};
+  --side-nav-link-active-bg-color: rgba(255, 67, 57, 0.08);
 }

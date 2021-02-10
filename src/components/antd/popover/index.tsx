@@ -6,7 +6,9 @@ import s from './styles.module.scss';
 
 export type PopoverProps = {};
 
-const Popover: React.FunctionComponent<AntdPopoverProps & PopoverProps> = props => {
+const Popover: React.FunctionComponent<
+  AntdPopoverProps & PopoverProps
+> = props => {
   const { children, ...popoverProps } = props;
 
   return (

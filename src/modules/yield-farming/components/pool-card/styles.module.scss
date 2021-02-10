@@ -68,9 +68,18 @@
   align-items: center;
 }
 
+.box {
+  background: rgba(113, 121, 128, 0.04);
+  border: 1px solid rgba(113, 121, 128, 0.16);
+  border-radius: 4px;
+  margin: 24px;
+  padding: 16px;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .stakingBtn {
+    width: 100%;
     flex-grow: 1;
     margin-top: 8px;
   }

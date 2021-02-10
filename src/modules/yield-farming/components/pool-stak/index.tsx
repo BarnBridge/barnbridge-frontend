@@ -5,6 +5,7 @@ import * as Antd from 'antd';
 import PoolTokenRow from 'modules/yield-farming/components/pool-token-row';
 import PoolTransactionTable from 'modules/yield-farming/components/pool-transaction-table';
 
+import Button from 'components/antd/button';
 import Icons from 'components/custom/icon';
 
 import { getPoolNames, PoolTypes } from 'web3/utils';
@@ -35,16 +36,15 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
 
   return (
     <div className={s.component}>
-      <Antd.Button
+      <Button
         type="link"
         className={s.headerLabel}
         icon={<Icons name="left-arrow" />}
-        onClick={goBack}
-      >
+        onClick={goBack}>
         {props.stableToken && getPoolNames(PoolTypes.STABLE).join('/')}
         {props.unilpToken && getPoolNames(PoolTypes.UNILP).join('/')}
         {props.bondToken && getPoolNames(PoolTypes.BOND).join('/')}
-      </Antd.Button>
+      </Button>
 
       <Antd.Tabs className={s.tabs} defaultActiveKey="deposit">
         <Antd.Tabs.TabPane key="deposit" tab="Deposit">
@@ -70,7 +70,8 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
             deposits
             stableToken={props.stableToken}
             unilpToken={props.unilpToken}
-            bondToken={props.bondToken} />
+            bondToken={props.bondToken}
+          />
         </Antd.Tabs.TabPane>
         <Antd.Tabs.TabPane key="withdraw" tab="Withdraw">
           <div className={s.dataRows}>
@@ -95,7 +96,8 @@ const PoolStak: React.FunctionComponent<PoolStakProps> = props => {
             withdrawals
             stableToken={props.stableToken}
             unilpToken={props.unilpToken}
-            bondToken={props.bondToken} />
+            bondToken={props.bondToken}
+          />
         </Antd.Tabs.TabPane>
       </Antd.Tabs>
     </div>

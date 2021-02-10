@@ -11,22 +11,32 @@
 
   &.ACCEPTED,
   &.EXECUTED {
-    background-color: rgba(var(--text-color-green500-rgb), .08);
-    color: var(--text-color-green500);
+    background-color: rgba(var(--text-color-green500-rgb), 0.08);
+
+    label {
+      color: var(--text-color-green500);
+    }
   }
 
   &.WARMUP,
   &.ACTIVE,
   &.QUEUED,
   &.GRACE {
-    background-color: rgba(var(--text-color-blue500-rgb), .08);
-    color: var(--text-color-blue500);
+    background-color: rgba(var(--text-color-blue500-rgb), 0.08);
+
+    label {
+      color: var(--text-color-blue500);
+    }
   }
 
   &.EXPIRED,
   &.FAILED,
-  &.CANCELED {
-    background-color: rgba(var(--text-color-red500-rgb), .08);
-    color: var(--text-color-red500);
+  &.CANCELED,
+  &.ABROGATED {
+    background-color: rgba(var(--text-color-red500-rgb), 0.08);
+
+    label {
+      color: var(--text-color-red500);
+    }
   }
 }

@@ -6,14 +6,22 @@ import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
 import cx from 'classnames';
 
+import Button from 'components/antd/button';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Select, { SelectOption } from 'components/antd/select';
 import PoolTxListProvider, {
   PoolTxListItem,
-  usePoolTxList
+  usePoolTxList,
 } from 'modules/yield-farming/components/pool-tx-list-provider';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
+import {
+  formatBigValue,
+  formatUSDValue,
+  getEtherscanTxUrl,
+  getTokenMeta,
+  shortenAddr,
+} from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -42,9 +50,7 @@ const Columns: ColumnsType<any> = [
     width: 24,
     className: s.iconCol,
     render: (value: string) => {
-      return (
-        <div className={s.icon}>{getTokenMeta(value)?.icon}</div>
-      );
+      return <div className={s.icon}>{getTokenMeta(value)?.icon}</div>;
     },
   },
   {
@@ -56,15 +62,18 @@ const Columns: ColumnsType<any> = [
     title: 'TX Hash',
     dataIndex: 'txHash',
     render: (value: string) => (
-      <ExternalLink href={getEtherscanTxUrl(value)}>{shortenAddr(value)}</ExternalLink>
+      <ExternalLink href={getEtherscanTxUrl(value)}>
+        {shortenAddr(value)}
+      </ExternalLink>
     ),
   },
   {
     title: 'Time',
     dataIndex: 'blockTimestamp',
-    render: (value: number) => formatDistance(new Date(value), new Date(), {
-      addSuffix: true,
-    }),
+    render: (value: number) =>
+      formatDistance(new Date(value), new Date(), {
+        addSuffix: true,
+      }),
   },
   {
     title: 'Amount',
@@ -74,14 +83,15 @@ const Columns: ColumnsType<any> = [
       const tokenMeta = getTokenMeta(record.token);
 
       return (
-        <Antd.Tooltip title={(
-          <span>
-            <strong>{formatBigValue(record.amount)}</strong>&nbsp;
-            {tokenMeta?.name}
-          </span>
-        )}>
+        <Tooltip
+          title={
+            <span>
+              <strong>{formatBigValue(record.amount)}</strong>&nbsp;
+              {tokenMeta?.name}
+            </span>
+          }>
           {formatUSDValue(value)}
-        </Antd.Tooltip>
+        </Tooltip>
       );
     },
   },
@@ -124,7 +134,10 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
     }
 
     if (props.unilpToken) {
-      options.push({ value: UNISWAPTokenMeta.address, label: UNISWAPTokenMeta.name });
+      options.push({
+        value: UNISWAPTokenMeta.address,
+        label: UNISWAPTokenMeta.name,
+      });
     }
 
     if (props.bondToken) {
@@ -151,12 +164,21 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
   const typeFilterRef = React.useRef<string | number>(typeDefaultOption);
 
   React.useEffect(() => {
-    poolTxList.load({
-      user: ownTransactions ? wallet.account?.toLowerCase() : undefined,
-      token: tokenFilterRef.current !== 'all' ? String(tokenFilterRef.current) : undefined,
-      type: typeFilterRef.current !== 'all' ? String(typeFilterRef.current) : undefined,
-    }).catch(x => x);
-  }, [ // eslint-disable-line react-hooks/exhaustive-deps
+    poolTxList
+      .load({
+        user: ownTransactions ? wallet.account?.toLowerCase() : undefined,
+        token:
+          tokenFilterRef.current !== 'all'
+            ? String(tokenFilterRef.current)
+            : undefined,
+        type:
+          typeFilterRef.current !== 'all'
+            ? String(typeFilterRef.current)
+            : undefined,
+      })
+      .catch(x => x);
+  }, [
+    // eslint-disable-line react-hooks/exhaustive-deps
     ownTransactions,
     tokenFilterRef.current,
     typeFilterRef.current,
@@ -170,7 +192,9 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
     };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const data = React.useMemo<(PoolTxListItem & { usdAmount: BigNumber | undefined })[]>(() => {
+  const data = React.useMemo<
+    (PoolTxListItem & { usdAmount: BigNumber | undefined })[]
+  >(() => {
     return poolTxList.transactions.map(tx => {
       const price = web3c.getTokenUsdPrice(tx.token);
 
@@ -221,7 +245,9 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
           emptyText: (
             <div className={s.emptyBlock}>
               <EmptyBoxSvg />
-              <div className={s.emptyLabel}>There are no transactions to show</div>
+              <div className={s.emptyLabel}>
+                There are no transactions to show
+              </div>
             </div>
           ),
         }}
@@ -230,11 +256,12 @@ const PoolTransactionTableInner: React.FunctionComponent<PoolTransactionTablePro
         footer={() => (
           <>
             {!poolTxList.isEnd && (
-              <Antd.Button
-                type="primary"
-                size="large"
+              <Button
+                type="light"
                 disabled={poolTxList.loading}
-                onClick={poolTxList.loadNext}>Load more transactions</Antd.Button>
+                onClick={poolTxList.loadNext}>
+                Load more transactions
+              </Button>
             )}
           </>
         )}

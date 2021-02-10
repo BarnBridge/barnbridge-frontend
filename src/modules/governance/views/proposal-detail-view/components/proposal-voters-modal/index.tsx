@@ -9,20 +9,28 @@ import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Label, Paragraph, Small } from 'components/custom/typography';
-import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
+import ProposalVotersProvider, {
+  useProposalVoters,
+} from '../../providers/ProposalVotersProvider';
 
 import { APIVoteEntity } from 'modules/governance/api';
-import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import {
+  formatBigValue,
+  getEtherscanAddressUrl,
+  shortenAddr,
+} from 'web3/utils';
 
 import s from './styles.module.scss';
 
 const Columns: ColumnsType<APIVoteEntity> = [
   {
     title: () => (
-      <Small semiBold color="grey300">Address</Small>
+      <Small semiBold color="grey300">
+        Address
+      </Small>
     ),
     dataIndex: 'address',
-    width: '60%',
+    width: '35%',
     render: (address: string) => (
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
@@ -36,27 +44,37 @@ const Columns: ColumnsType<APIVoteEntity> = [
   },
   {
     title: () => (
-      <Small semiBold color="grey300">Votes</Small>
+      <Small semiBold color="grey300">
+        Votes
+      </Small>
     ),
     dataIndex: 'power',
-    width: '20%',
+    width: '38%',
+    align: 'right',
     render: (power: BigNumber) => (
       <Paragraph type="p1" semiBold color="grey900" className={s.powerCell}>
-        {formatBigValue(power, 0)}
+        {formatBigValue(power, 2, '-', 2)}
       </Paragraph>
     ),
   },
   {
     title: () => (
-      <Small semiBold color="grey300">Vote type</Small>
+      <Small semiBold color="grey300">
+        Vote type
+      </Small>
     ),
     dataIndex: 'support',
-    width: '20%',
-    render: (support: boolean) => support ? (
-      <Label type="lb2" semiBold className={s.forTag}>For</Label>
-    ) : (
-      <Label type="lb2" semiBold className={s.againstTag}>Against</Label>
-    ),
+    width: '27%',
+    render: (support: boolean) =>
+      support ? (
+        <Label type="lb2" semiBold className={s.forTag}>
+          For
+        </Label>
+      ) : (
+        <Label type="lb2" semiBold className={s.againstTag}>
+          Against
+        </Label>
+      ),
   },
 ];
 
@@ -82,11 +100,7 @@ const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps
   }
 
   return (
-    <Modal
-      className={s.component}
-      centered
-      width={560}
-      {...modalProps}>
+    <Modal className={s.component} centered width={620} {...modalProps}>
       <Tabs
         className={s.tabs}
         defaultActiveKey="all"
@@ -126,5 +140,5 @@ const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = p
   <ProposalVotersProvider>
     <ProposalVotersModalInner {...props} />
   </ProposalVotersProvider>
-)
+);
 export default ProposalVotersModal;

@@ -21,7 +21,8 @@ const YieldFarmingView: React.FunctionComponent = () => {
 
     if (isMobile) {
       warningDestructor = warnings.addWarn({
-        text: 'Transactions can only be made from the desktop version using Metamask',
+        text:
+          'Transactions can only be made from the desktop version using Metamask',
         closable: true,
         storageIdentity: 'bb_desktop_metamask_tx_warn',
       });
@@ -47,20 +48,28 @@ const YieldFarmingView: React.FunctionComponent = () => {
         <PoolStats />
         <div className={s.content}>
           <Switch>
-            <Route path="/yield-farming" exact render={() => (
-              <PoolOverview />
-            )} />
+            <Route
+              path="/yield-farming"
+              exact
+              render={() => <PoolOverview />}
+            />
             {wallet.isActive && (
               <>
-                <Route path="/yield-farming/stable" exact render={() => (
-                  <PoolStak stableToken />
-                )} />
-                <Route path="/yield-farming/unilp" exact render={() => (
-                  <PoolStak unilpToken />
-                )} />
-                <Route path="/yield-farming/bond" exact render={() => (
-                  <PoolStak bondToken />
-                )} />
+                <Route
+                  path="/yield-farming/stable"
+                  exact
+                  render={() => <PoolStak stableToken />}
+                />
+                <Route
+                  path="/yield-farming/unilp"
+                  exact
+                  render={() => <PoolStak unilpToken />}
+                />
+                <Route
+                  path="/yield-farming/bond"
+                  exact
+                  render={() => <PoolStak bondToken />}
+                />
               </>
             )}
           </Switch>

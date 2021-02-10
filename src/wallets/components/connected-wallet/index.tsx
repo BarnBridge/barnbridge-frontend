@@ -1,6 +1,8 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { isMobile } from 'react-device-detect';
 
+import Button from 'components/antd/button';
 import { useTheme } from 'components/providers/theme-provider';
 import Identicon from 'components/custom/identicon';
 import ExternalLink from 'components/custom/externalLink';
@@ -54,37 +56,42 @@ const ConnectedWallet: React.FunctionComponent = props => {
                     <span className={s.statName}>Wallet</span>
                   </Antd.Col>
                   <Antd.Col>
-                    <span className={s.statValue}>{wallet.connecting?.name}</span>
+                    <span className={s.statValue}>
+                      {wallet.connecting?.name}
+                    </span>
                   </Antd.Col>
                 </Antd.Row>
               </div>
               <Antd.Row className={s.disconnectBtnRow}>
-                <Antd.Button
+                <Button
                   type="ghost"
                   className={s.disconnectBtn}
-                  onClick={handleWalletDisconnect}
-                >Disconnect</Antd.Button>
+                  onClick={handleWalletDisconnect}>
+                  Disconnect
+                </Button>
               </Antd.Row>
             </div>
           }
-          trigger="click"
-        >
-          <Antd.Button type="primary" size="large" className={s.connectBtn}>
+          trigger="click">
+          <Button type="primary" className={s.connectBtn}>
             Connecting...
-          </Antd.Button>
+          </Button>
         </Antd.Popover>
       </div>
     );
   }
 
   if (!wallet.isActive) {
-    return (
+    return !isMobile ? (
       <div className={s.component}>
-        <Antd.Button type="primary" size="large" className={s.connectBtn} onClick={handleWalletConnect}>
+        <Button
+          type="primary"
+          className={s.connectBtn}
+          onClick={handleWalletConnect}>
           Connect Wallet
-        </Antd.Button>
+        </Button>
       </div>
-    );
+    ) : null;
   }
 
   return (
@@ -100,15 +107,22 @@ const ConnectedWallet: React.FunctionComponent = props => {
               </Antd.Row>
               <Antd.Row className={s.notificationBody}>
                 <div className={s.notificationZero}>
-                  {isDarkTheme ? <ZeroNotificationsDarkSvg /> : <ZeroNotificationsSvg />}
+                  {isDarkTheme ? (
+                    <ZeroNotificationsDarkSvg />
+                  ) : (
+                    <ZeroNotificationsSvg />
+                  )}
                   <span>There are no notifications to show</span>
                 </div>
               </Antd.Row>
             </div>
           }
-          trigger="click"
-        >
-          <Antd.Badge className={s.notificationBtn} dot count={0} showZero={false}>
+          trigger="click">
+          <Antd.Badge
+            className={s.notificationBtn}
+            dot
+            count={0}
+            showZero={false}>
             <Icons name="bell" />
           </Antd.Badge>
         </Antd.Popover>
@@ -120,13 +134,17 @@ const ConnectedWallet: React.FunctionComponent = props => {
             <div>
               <Antd.Row className={s.walletHeader}>
                 <Antd.Col>
-                  <Identicon address={wallet.account} className={s.walletAvatar} />
+                  <Identicon
+                    address={wallet.account}
+                    className={s.walletAvatar}
+                  />
                 </Antd.Col>
                 <Antd.Col>
                   <ExternalLink
                     href={getEtherscanAddressUrl(wallet.account!)}
-                    className={s.walletPreviewHash}
-                  >{shortenAddr(wallet.account!, 8, 8)}</ExternalLink>
+                    className={s.walletPreviewHash}>
+                    {shortenAddr(wallet.account!, 8, 8)}
+                  </ExternalLink>
                 </Antd.Col>
               </Antd.Row>
               <div className={s.stats}>
@@ -149,7 +167,9 @@ const ConnectedWallet: React.FunctionComponent = props => {
                     <span className={s.statName}>Wallet</span>
                   </Antd.Col>
                   <Antd.Col>
-                    <span className={s.statValue}>{wallet.connector?.name}</span>
+                    <span className={s.statValue}>
+                      {wallet.connector?.name}
+                    </span>
                   </Antd.Col>
                 </Antd.Row>
                 <Antd.Row className={s.statRow}>
@@ -168,16 +188,19 @@ const ConnectedWallet: React.FunctionComponent = props => {
                 <Antd.Button
                   type="ghost"
                   className={s.disconnectBtn}
-                  onClick={handleWalletDisconnect}
-                >Disconnect</Antd.Button>
+                  onClick={handleWalletDisconnect}>
+                  Disconnect
+                </Antd.Button>
               </Antd.Row>
             </div>
           }
-          trigger="click"
-        >
+          trigger="click">
           <Antd.Row className={s.walletPreview}>
             <Antd.Col>
-              <Identicon address={wallet.account} className={s.walletPreviewAvatar} />
+              <Identicon
+                address={wallet.account}
+                className={s.walletPreviewAvatar}
+              />
             </Antd.Col>
             <Antd.Col>
               <span className={s.walletPreviewHash}>
@@ -185,7 +208,11 @@ const ConnectedWallet: React.FunctionComponent = props => {
               </span>
             </Antd.Col>
             <Antd.Col>
-              <Icons name="chevron-right" rotate={270} className={s.walletPreviewArrow} />
+              <Icons
+                name="chevron-right"
+                rotate={270}
+                className={s.walletPreviewArrow}
+              />
             </Antd.Col>
           </Antd.Row>
         </Antd.Popover>

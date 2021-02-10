@@ -10,7 +10,10 @@ export type FadeBlockProps = {
 
 const FadeBlock: React.FunctionComponent<FadeBlockProps> = props => {
   return (
-    <div className={cx(s.component, props.className, { [s.visible]: props.visible })}>
+    <div
+      className={cx(s.component, props.className, {
+        [s.visible]: props.visible,
+      })}>
       {props.children}
     </div>
   );

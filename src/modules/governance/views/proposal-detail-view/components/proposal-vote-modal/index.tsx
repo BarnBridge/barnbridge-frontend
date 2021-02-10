@@ -11,7 +11,6 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { useProposal } from '../../providers/ProposalProvider';
 
 import { formatBigValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
@@ -22,14 +21,13 @@ export enum VoteState {
   VoteAgainst,
   VoteChange,
   VoteCancel,
-  VoteForAbrogation,
-  VoteAgainstAbrogation,
-  VoteCancelAbrogation,
 }
 
 type FormState = {
   changeOption?: boolean;
-  gasPrice?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: FormState = {
@@ -54,7 +52,6 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
 
   const [form] = Antd.Form.useForm<FormState>();
   const proposalCtx = useProposal();
-  const web3c = useWeb3Contracts();
 
   const [state, setState] = useMergeState<ProposalVoteModalState>(InitialState);
 
@@ -65,52 +62,32 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
 
     setState({ submitting: true });
 
-    const { proposalId } = proposalCtx.proposal;
-    const { gasPrice = 0 } = values;
+    const { gasPrice } = values;
+    const gasFee = gasPrice?.value!;
 
     try {
       await form.validateFields();
-      let r: any;
 
       if (voteState === VoteState.VoteFor) {
-        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, true);
+        await proposalCtx.proposalCastVote(true, gasFee);
       } else if (voteState === VoteState.VoteAgainst) {
-        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, false);
+        await proposalCtx.proposalCastVote(false, gasFee);
       } else if (voteState === VoteState.VoteChange) {
-        await web3c.daoGovernance.actions.castVote(gasPrice, proposalId, values.changeOption!);
+        await proposalCtx.proposalCastVote(
+          values.changeOption === true,
+          gasFee,
+        );
       } else if (voteState === VoteState.VoteCancel) {
-        await web3c.daoGovernance.actions.cancelVote(gasPrice, proposalId);
-      } else if (voteState === VoteState.VoteForAbrogation) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, true);
-      } else if (voteState === VoteState.VoteAgainstAbrogation) {
-        r = await web3c.daoGovernance.actions.abrogationCastVote(gasPrice, proposalId, false);
-      } else if (voteState === VoteState.VoteCancelAbrogation) {
-        r = await web3c.daoGovernance.actions.abrogationCancelVote(gasPrice, proposalId);
+        await proposalCtx.proposalCancelVote(gasFee);
       }
 
-      console.log("R", r);
-      props.onCancel?.();
       proposalCtx.reload();
+      props.onCancel?.();
     } catch {
     }
 
     setState({ submitting: false });
   }
-
-  const title = React.useMemo<string | undefined>(() => {
-    switch (voteState) {
-      case VoteState.VoteFor:
-      case VoteState.VoteAgainst:
-      case VoteState.VoteForAbrogation:
-      case VoteState.VoteAgainstAbrogation:
-        return 'Confirm your vote';
-      case VoteState.VoteCancel:
-      case VoteState.VoteCancelAbrogation:
-        return 'Cancel your vote';
-      case VoteState.VoteChange:
-        return 'Change your vote';
-    }
-  }, [voteState]);
 
   React.useEffect(() => {
     if (voteState === VoteState.VoteChange) {
@@ -120,16 +97,19 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
     }
   }, [voteState]);
 
-  if (!props.visible) {
-    return null;
-  }
-
   return (
     <Modal
       className={s.component}
       centered
       width={560}
-      title={title}
+      title={
+        <>
+          {voteState === VoteState.VoteFor && 'Confirm your vote'}
+          {voteState === VoteState.VoteAgainst && 'Confirm your vote'}
+          {voteState === VoteState.VoteChange && 'Change your vote'}
+          {voteState === VoteState.VoteCancel && 'Cancel your vote'}
+        </>
+      }
       {...modalProps}>
       <Form
         form={form}
@@ -137,15 +117,53 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
-          <Grid flow="col" gap={8} align="center" justify="center">
+          <Grid flow="col" gap={8} align="center">
             <Heading type="h2" bold color="grey900">
               {formatBigValue(proposalCtx.votingPower, 2)}
             </Heading>
-            <Paragraph type="p1" semiBold color="grey500">Votes</Paragraph>
+            <Paragraph type="p1" semiBold color="grey500">
+              Votes
+            </Paragraph>
           </Grid>
-          <Paragraph type="p2" semiBold color="grey500" className="text-center">
-            {proposalCtx.proposal?.title}
-          </Paragraph>
+          {(voteState === VoteState.VoteFor || voteState === VoteState.VoteAgainst) && (
+            <Grid flow="row" gap={8}>
+              <Paragraph type="p2" color="grey500">
+                You are about to vote on proposal
+              </Paragraph>
+              <Paragraph type="p2" semiBold color="grey500">
+                "{proposalCtx.proposal?.title}"
+              </Paragraph>
+              <Paragraph type="p2" color="grey500">
+                Are you sure you want to continue? You can change your vote later.
+              </Paragraph>
+            </Grid>
+          )}
+          {voteState === VoteState.VoteChange && (
+            <Grid flow="row" gap={8}>
+              <Paragraph type="p2" color="grey500">
+                You are about to change your vote on proposal
+              </Paragraph>
+              <Paragraph type="p2" semiBold color="grey500">
+                "{proposalCtx.proposal?.title}"
+              </Paragraph>
+              <Paragraph type="p2" color="grey500">
+                Are you sure you want to continue? You can change your vote again later.
+              </Paragraph>
+            </Grid>
+          )}
+          {voteState === VoteState.VoteCancel && (
+            <Grid flow="row" gap={8}>
+              <Paragraph type="p2" color="grey500">
+                You are about to cancel your vote on proposal
+              </Paragraph>
+              <Paragraph type="p2" semiBold color="grey500">
+                "{proposalCtx.proposal?.title}"
+              </Paragraph>
+              <Paragraph type="p2" color="grey500">
+                Are you sure you want to continue? You can change your vote again later.
+              </Paragraph>
+            </Grid>
+          )}
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>
@@ -154,14 +172,26 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
               name="changeOption"
               label="Vote"
               rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group className={s.changeGroup} disabled={state.submitting}>
+              <Antd.Radio.Group
+                className={s.changeGroup}
+                disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
-                    label={<Paragraph type="p1" semiBold color="grey900">For</Paragraph>}
-                    value={true} />
+                    label={
+                      <Paragraph type="p1" semiBold color="grey900">
+                        For
+                      </Paragraph>
+                    }
+                    value={true}
+                  />
                   <RadioButton
-                    label={<Paragraph type="p1" semiBold color="grey900">Against</Paragraph>}
-                    value={false} />
+                    label={
+                      <Paragraph type="p1" semiBold color="grey900">
+                        Against
+                      </Paragraph>
+                    }
+                    value={false}
+                  />
                 </Grid>
               </Antd.Radio.Group>
             </Form.Item>
@@ -193,13 +223,15 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                   disabled={isDisabled}
                   className={s.actionBtn}>
                   {voteState === VoteState.VoteFor && 'Vote for proposal'}
-                  {voteState === VoteState.VoteAgainst && 'Vote against proposal'}
+                  {voteState === VoteState.VoteAgainst &&
+                  'Vote against proposal'}
                   {voteState === VoteState.VoteCancel && 'Cancel vote'}
-                  {voteState === VoteState.VoteChange && changeOption === true && 'Vote for proposal'}
-                  {voteState === VoteState.VoteChange && changeOption === false && 'Vote against proposal'}
-                  {voteState === VoteState.VoteForAbrogation && 'Vote for cancellation proposal'}
-                  {voteState === VoteState.VoteAgainstAbrogation && 'Vote against cancellation proposal'}
-                  {voteState === VoteState.VoteCancelAbrogation && 'Cancel abrogation vote'}
+                  {voteState === VoteState.VoteChange &&
+                  changeOption === true &&
+                  'Vote for proposal'}
+                  {voteState === VoteState.VoteChange &&
+                  changeOption === false &&
+                  'Vote against proposal'}
                 </Button>
               );
             }}

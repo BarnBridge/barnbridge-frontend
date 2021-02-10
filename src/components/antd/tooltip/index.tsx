@@ -20,8 +20,7 @@ const Tooltip: React.FunctionComponent<TooltipProps> = props => {
       overlayClassName={cx(s.overlay, overlayClassName)}
       placement="bottom"
       title=""
-      {...rest}
-    >
+      {...rest}>
       {children}
       {type === 'info' && (
         <Button type="link">

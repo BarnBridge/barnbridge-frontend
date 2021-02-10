@@ -5,30 +5,34 @@ import BigNumber from 'bignumber.js';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import Slider from 'components/antd/slider';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Paragraph, Small } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
+import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
 import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import useMergeState from 'hooks/useMergeState';
 
 type DepositFormData = {
   amount?: BigNumber;
-  gasFee?: number;
+  gasPrice?: {
+    value: number;
+  };
 };
 
 const InitialFormValues: DepositFormData = {
   amount: undefined,
-  gasFee: undefined,
+  gasPrice: undefined,
 };
 
 type WalletDepositViewState = {
+  showDepositConfirmModal: boolean;
   enabling: boolean;
   enabled?: boolean;
   saving: boolean;
@@ -36,6 +40,7 @@ type WalletDepositViewState = {
 };
 
 const InitialState: WalletDepositViewState = {
+  showDepositConfirmModal: false,
   enabling: false,
   enabled: undefined,
   saving: false,
@@ -47,6 +52,10 @@ const WalletDepositView: React.FunctionComponent = () => {
   const [form] = Antd.Form.useForm<DepositFormData>();
 
   const [state, setState] = useMergeState<WalletDepositViewState>(InitialState);
+
+  const { balance: stakedBalance, userLockedUntil } = web3c.daoBarn;
+  const { balance: bondBalance, barnAllowance } = web3c.bond;
+  const isLocked = (userLockedUntil ?? 0) > Date.now();
 
   async function handleSwitchChange(checked: boolean) {
     const value = checked ? MAX_UINT_256 : ZERO_BIG_NUMBER;
@@ -61,11 +70,22 @@ const WalletDepositView: React.FunctionComponent = () => {
     setState({ enabling: false });
   }
 
+  function handleFinish(values: DepositFormData) {
+    if (isLocked) {
+      setState({ showDepositConfirmModal: true });
+    } else {
+      return handleSubmit(values);
+    }
+  }
+
   async function handleSubmit(values: DepositFormData) {
     setState({ saving: true });
 
+    const { gasPrice, amount } = values;
+    const gasFee = gasPrice?.value!;
+
     try {
-      await web3c.daoBarn.actions.deposit(values.amount!, values.gasFee!);
+      await web3c.daoBarn.actions.deposit(amount!, gasFee);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
@@ -76,42 +96,51 @@ const WalletDepositView: React.FunctionComponent = () => {
   }
 
   React.useEffect(() => {
-    const isEnabled = web3c.bond.barnAllowance?.gt(ZERO_BIG_NUMBER) ?? false;
+    const isEnabled = barnAllowance?.gt(ZERO_BIG_NUMBER) ?? false;
 
     setState({
       enabled: isEnabled,
       expanded: isEnabled,
     });
-  }, [web3c]);
+  }, [barnAllowance]);
 
   const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="center">
-      <Grid flow="col" gap={12} align="center">
+    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
+      <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">BOND</Paragraph>
-      </Grid>
-
-      <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Staked Balance</Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {formatBONDValue(web3c.daoBarn.balance)}
+          BOND
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Wallet Balance</Small>
+        <Small semiBold color="grey500">
+          Staked Balance
+        </Small>
         <Paragraph type="p1" semiBold color="grey900">
-          {formatBONDValue(web3c.bond.balance)}
+          {formatBONDValue(stakedBalance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">Enable Token</Small>
+        <Small semiBold color="grey500">
+          Wallet Balance
+        </Small>
+        <Paragraph type="p1" semiBold color="grey900">
+          {formatBONDValue(bondBalance)}
+        </Paragraph>
+      </Grid>
+
+      <Grid flow="row" gap={4}>
+        <Small semiBold color="grey500">
+          Enable Token
+        </Small>
         <Antd.Switch
           style={{ justifySelf: 'flex-start' }}
           checked={state.enabled}
           loading={state.enabled === undefined || state.enabling}
-          onChange={handleSwitchChange} />
+          onChange={handleSwitchChange}
+        />
       </Grid>
     </Grid>
   );
@@ -125,7 +154,7 @@ const WalletDepositView: React.FunctionComponent = () => {
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
-        onFinish={handleSubmit}>
+        onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -135,38 +164,19 @@ const WalletDepositView: React.FunctionComponent = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
-                  tokenLabel="BOND"
-                  placeholder={`0 (Max ${formatBONDValue(web3c.bond.balance ?? ZERO_BIG_NUMBER)})`}
+                  max={bondBalance}
+                  maximumFractionDigits={BONDTokenMeta.decimals}
+                  displayDecimals={4}
                   disabled={state.saving}
-                  maximumFractionDigits={2}
-                  maxProps={{
-                    disabled: state.saving,
-                    onClick: () => {
-                      form.setFieldsValue({
-                        amount: web3c.bond.balance ?? ZERO_BIG_NUMBER,
-                      });
-                    },
-                  }}
-                />
-              </Form.Item>
-              <Form.Item name="amount">
-                <Slider
-                  min={0}
-                  max={web3c.bond.balance?.toNumber() ?? 0}
-                  step={1}
-                  disabled={state.saving}
-                  tipFormatter={value =>
-                    <span>{value ? formatBONDValue(new BigNumber(value)) : 0}</span>
-                  }
-                  tooltipPlacement="bottom"
+                  slider
                 />
               </Form.Item>
               <Alert
-                message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+                message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
             <Grid flow="row">
               <Form.Item
-                name="gasFee"
+                name="gasPrice"
                 label="Gas Fee (Gwei)"
                 hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
                 rules={[{ required: true, message: 'Required' }]}>
@@ -179,9 +189,24 @@ const WalletDepositView: React.FunctionComponent = () => {
             htmlType="submit"
             size="large"
             loading={state.saving}
-            style={{ width: 121 }}>Deposit</Button>
+            style={{ justifySelf: 'start' }}>
+            Deposit
+          </Button>
         </Grid>
       </Form>
+
+      {state.showDepositConfirmModal && (
+        <WalletDepositConfirmModal
+          visible
+          deposit={form.getFieldsValue().amount}
+          lockDuration={userLockedUntil}
+          onCancel={() => setState({ showDepositConfirmModal: false })}
+          onOk={() => {
+            setState({ showDepositConfirmModal: false });
+            return handleSubmit(form.getFieldsValue());
+          }}
+        />
+      )}
     </Card>
   );
 };

@@ -19,25 +19,27 @@ const DARK_THEME_KEY = 'dark';
 const ThemeProvider: React.FunctionComponent = props => {
   const [theme, setTheme] = useLocalStorage('bb-theme', DEFAULT_THEME_KEY);
 
-  const value = React.useMemo<ThemeContextType>(() => ({
-    theme,
-    isDarkTheme: theme === DARK_THEME_KEY,
-    toggleDarkTheme: () => {
-      if (theme !== DARK_THEME_KEY) {
-        setTheme(DARK_THEME_KEY);
-      } else {
-        setTheme(DEFAULT_THEME_KEY);
-      }
-    },
-  }), [theme, setTheme]);
+  const value = React.useMemo<ThemeContextType>(
+    () => ({
+      theme,
+      isDarkTheme: theme === DARK_THEME_KEY,
+      toggleDarkTheme: () => {
+        if (theme !== DARK_THEME_KEY) {
+          setTheme(DARK_THEME_KEY);
+        } else {
+          setTheme(DEFAULT_THEME_KEY);
+        }
+      },
+    }),
+    [theme, setTheme],
+  );
 
   React.useEffect(() => {
-    Array.from(document.body.classList.values())
-      .forEach(value => {
-        if (value.startsWith('theme-')) {
-          document.body.classList.remove(value);
-        }
-      });
+    Array.from(document.body.classList.values()).forEach(value => {
+      if (value.startsWith('theme-')) {
+        document.body.classList.remove(value);
+      }
+    });
 
     if (theme) {
       document.body.classList.add(`theme-${theme}`);

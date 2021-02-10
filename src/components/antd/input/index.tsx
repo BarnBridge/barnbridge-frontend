@@ -5,7 +5,7 @@ import cx from 'classnames';
 
 import s from './styles.module.scss';
 
-export type InputProps = AntdInputProps;
+export type InputProps = AntdInputProps & {};
 
 const Input: React.FunctionComponent<InputProps> = props => {
   const { className, disabled, ...inputProps } = props;
@@ -15,7 +15,8 @@ const Input: React.FunctionComponent<InputProps> = props => {
       className={cx(s.component, className, disabled && s.disabled)}
       disabled={disabled}
       autoComplete="off"
-      {...inputProps} />
+      {...inputProps}
+    />
   );
 };
 

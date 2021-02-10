@@ -1,98 +1,200 @@
 import React from 'react';
-import * as Antd from 'antd';
+import { Spin } from 'antd';
+import BigNumber from 'bignumber.js';
 
 import Button from 'components/antd/button';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Heading, Label, Paragraph } from 'components/custom/typography';
+import ExternalLink from 'components/custom/externalLink';
 import VotingDetailedModal from '../voting-detailed-modal';
 
-import { inRange, isValidAddress } from 'utils';
+import { getFormattedDuration, inRange, isValidAddress } from 'utils';
 import { formatBigValue, formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
-import { useWeekCountdown } from 'hooks/useCountdown';
+import { UseLeftTime } from 'hooks/useLeftTime';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
+type VotingHeaderState = {
+  claiming: boolean;
+  showDetailedView: boolean;
+};
+
+const InitialState: VotingHeaderState = {
+  claiming: false,
+  showDetailedView: false,
+}
+
 const VotingHeader: React.FunctionComponent = () => {
   const web3c = useWeb3Contracts();
-  const [detailedView, showDetailedView] = React.useState<boolean>(false);
 
-  const { claim: reward } = web3c.daoReward;
+  const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
+
+  const { claimValue } = web3c.daoReward;
   const { balance: bondBalance } = web3c.bond;
   const {
     votingPower,
     userLockedUntil,
     userDelegatedTo,
     multiplier = 1,
-    balance: myBondBalance,
+    balance: stakedBalance,
   } = web3c.daoBarn;
 
-  const [countdown] = useWeekCountdown(userLockedUntil);
   const isDelegated = isValidAddress(userDelegatedTo);
+  const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
+
+  function handleLeftTimeEnd() {
+    web3c.daoBarn.reload();
+  }
+
+  function handleClaim() {
+    setState({ claiming: true });
+
+    web3c.daoReward.actions.claim()
+      .catch(Error)
+      .then(() => {
+        web3c.daoReward.reload();
+        web3c.bond.reload();
+        setState({ claiming: false });
+      });
+  }
 
   return (
-    <div className={s.component}>
-      <Label type="lb2" semiBold color="red500" className="mb-16">My Voting Power</Label>
-
+    <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
+      <Label type="lb2" semiBold color="red500">
+        My Voting Power
+      </Label>
       <Grid flow="col" gap={24}>
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">Current reward</Paragraph>
-          <Grid flow="col" gap={16}>
-            <Heading type="h3" bold color="grey900">{formatBONDValue(reward)}</Heading>
+          <Paragraph type="p2" color="grey500">
+            Current reward
+          </Paragraph>
+          <Grid flow="col" gap={16} align="center">
+            <Heading
+              type="h3"
+              bold
+              color="grey900"
+              loading={claimValue === undefined}>
+              {formatBONDValue(claimValue)}
+            </Heading>
             <Icons name="bond-square-token" />
             <Button
-              type="link"
-              disabled={reward?.isZero()}
-              onClick={() => web3c.daoReward.claimSend()}>Claim</Button>
+              type="light"
+              disabled={claimValue?.isZero()}
+              onClick={handleClaim}>
+              {!state.claiming
+                ? 'Claim'
+                : <Spin spinning />
+              }
+            </Button>
           </Grid>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">Bond Balance</Paragraph>
-          <Grid flow="col" gap={16}>
-            <Heading type="h3" bold color="grey900">{formatBONDValue(bondBalance)}</Heading>
+          <Paragraph type="p2" color="grey500">
+            Bond Balance
+          </Paragraph>
+          <Grid flow="col" gap={16} align="center">
+            <Heading
+              type="h3"
+              bold
+              color="grey900"
+              loading={bondBalance === undefined}>
+              {formatBONDValue(bondBalance)}
+            </Heading>
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Paragraph type="p2" color="grey500">
-            {isDelegated ? 'Total delegated voting power' : 'Total voting power'}
+            Total voting power
           </Paragraph>
-          <Grid flow="col" gap={16}>
-            <Heading type="h3" bold color="grey900">
-              {isDelegated
-                ? formatBONDValue(myBondBalance)
-                : formatBONDValue(votingPower)}
+          <Grid flow="col" gap={16} align="center">
+            <Heading
+              type="h3"
+              bold
+              color="grey900"
+              loading={
+                (isDelegated ? stakedBalance : votingPower) === undefined
+              }>
+              {formatBONDValue(votingPower)}
             </Heading>
-            <Button
-              type="link"
-              onClick={() => showDetailedView(true)}>Detailed view</Button>
-            <VotingDetailedModal
-              visible={detailedView}
-              onCancel={() => showDetailedView(false)} />
-          </Grid>
-        </Grid>
-        <div className={s.delimiter} />
-        <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">Multiplier & Lock timer</Paragraph>
-          <Grid flow="col" gap={16}>
-            <Antd.Tooltip title={`${multiplier}x`}>
-              <Label type="lb1" bold color="red500" className={s.ratio}>
-                {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(multiplier, 2, '-', 2)}x
-              </Label>
-            </Antd.Tooltip>
-            {countdown && (
-              <>
-                <Paragraph type="p2" color="grey500">for</Paragraph>
-                <Heading type="h3" bold color="grey900">{countdown}</Heading>
-              </>
+            <Button type="light" onClick={() => setState({ showDetailedView: true })}>
+              Detailed view
+            </Button>
+
+            {state.showDetailedView && (
+              <VotingDetailedModal
+                visible
+                onCancel={() => setState({ showDetailedView: false })}
+              />
             )}
           </Grid>
         </Grid>
+
+        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
+          {(leftTime) => {
+            const leftMultiplier = (new BigNumber(multiplier - 1))
+              .multipliedBy(leftTime)
+              .div(loadedUserLockedUntil)
+              .plus(1);
+
+            return leftMultiplier.gt(1)
+              ? (
+                <>
+                  <div className={s.delimiter} />
+                  <Grid flow="row" gap={4}>
+                    <Paragraph type="p2" color="grey500" hint={(
+                      <>
+                        <Paragraph type="p2">
+                          The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus
+                          of
+                          up
+                          to 2x vBOND. The bonus is linear, as per the following example:
+                        </Paragraph>
+                        <ul>
+                          <li>
+                            <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
+                          </li>
+                          <li>
+                            <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
+                          </li>
+                        </ul>
+                        <ExternalLink
+                          href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                          Learn more
+                        </ExternalLink>
+                      </>
+                    )}>
+                      Multiplier & Lock timer
+                    </Paragraph>
+
+                    <Grid flow="col" gap={8} align="center">
+                      <Tooltip title={`x${leftMultiplier}`}>
+                        <Label type="lb1" bold color="red500" className={s.ratio}>
+                          {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
+                          {formatBigValue(leftMultiplier, 2, '-', 2)}x
+                        </Label>
+                      </Tooltip>
+                      <Paragraph type="p2" color="grey500">
+                        for
+                      </Paragraph>
+                      <Heading type="h3" bold color="grey900">
+                        {getFormattedDuration(0, userLockedUntil)}
+                      </Heading>
+                    </Grid>
+                  </Grid>
+                </>
+              )
+              : undefined;
+          }}
+        </UseLeftTime>
       </Grid>
-    </div>
+    </Grid>
   );
 };
 

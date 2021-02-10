@@ -9,11 +9,7 @@ export type IconsSetProps = {
 };
 
 const IconsSet: React.FunctionComponent<IconsSetProps> = props => {
-  return (
-    <div className={cx(s.component, props.className)}>
-      {props.icons}
-    </div>
-  );
+  return <div className={cx(s.component, props.className)}>{props.icons}</div>;
 };
 
 export default IconsSet;

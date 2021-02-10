@@ -13,11 +13,13 @@ export type GridProps = {
   rowsTemplate?: string;
   colsTemplate?: string;
   align?: SupportedAlign;
+  alignSelf?: SupportedAlign;
   justify?: SupportedJustify;
+  justifySelf?: SupportedJustify;
   gap?: number | [number, number];
   wrap?: boolean;
   padding?: number | number[];
-  width?: number;
+  width?: string | number;
 };
 
 const Grid: React.FunctionComponent<GridProps> = props => {
@@ -28,10 +30,12 @@ const Grid: React.FunctionComponent<GridProps> = props => {
     rowsTemplate,
     colsTemplate,
     align,
+    alignSelf,
     justify,
+    justifySelf,
     wrap,
     padding,
-    width = 0,
+    width,
     children,
   } = props;
 
@@ -50,7 +54,9 @@ const Grid: React.FunctionComponent<GridProps> = props => {
         s.grid,
         flow && s[flow],
         align && s[`align-${align}`],
+        alignSelf && s[`align-self-${alignSelf}`],
         justify && s[`justify-${justify}`],
+        justifySelf && s[`justify-self-${justifySelf}`],
         wrap && 'text-wrap',
         className,
       )}
@@ -63,7 +69,7 @@ const Grid: React.FunctionComponent<GridProps> = props => {
         paddingRight: paddingRight > 0 ? paddingRight : undefined,
         paddingBottom: paddingBottom > 0 ? paddingBottom : undefined,
         paddingLeft: paddingLeft > 0 ? paddingLeft : undefined,
-        width: width > 0 ? width : undefined,
+        width,
       }}>
       {children}
     </div>
