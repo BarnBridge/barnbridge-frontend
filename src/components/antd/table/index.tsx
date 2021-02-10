@@ -8,12 +8,15 @@ import s from './styles.module.scss';
 export type TableProps<T> = AntdTableProps<T>;
 
 const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
-  const { className, ...tableProps } = props;
+  const { className, pagination, ...tableProps } = props;
 
   return (
     <Antd.Table<T>
       className={cx(s.component, className)}
-      pagination={false}
+      pagination={pagination ? {
+        showSizeChanger: false,
+        ...pagination,
+      } : false}
       {...tableProps}
     />
   );
