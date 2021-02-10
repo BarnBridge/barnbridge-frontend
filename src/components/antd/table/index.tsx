@@ -16,7 +16,7 @@ const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
       pagination={pagination ? {
         showSizeChanger: false,
         ...pagination,
-      } : undefined}
+      } : false}
       {...tableProps}
     />
   );
