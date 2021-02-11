@@ -1,0 +1,28 @@
+.card {
+  background: #FFFFFF;
+  border: 1px solid #E3E4E6;
+  box-sizing: border-box;
+  border-radius: 4px;
+  text-align: left;
+  position: relative;
+  padding: 32px;
+}
+
+.card::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border: 2px solid #E3E4E6;
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  border-radius: 50%;
+}
+
+.card.selected {
+  border-color: #FF4339;
+}
+
+.card.selected::after {
+  border: 8px solid #FF4339;
+}

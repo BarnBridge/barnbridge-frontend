@@ -66,6 +66,10 @@ h3.heading {
   width: auto;
   color: var(--color-text);
 
+  &.block {
+    display: grid;
+  }
+
   &.p1 {
     @include font-p1-regular;
 
@@ -109,6 +113,10 @@ h3.heading {
   align-items: center;
   width: auto;
   color: var(--color-text);
+
+  &.block {
+    display: grid;
+  }
 
   &.lb1 {
     @include font-lb1-regular;
@@ -161,6 +169,10 @@ h3.heading {
 
   &.semiBold {
     @include font-sm-semi-bold;
+  }
+
+  &.block {
+    display: grid;
   }
 
   :global(.ant-skeleton-content .ant-skeleton-title) {

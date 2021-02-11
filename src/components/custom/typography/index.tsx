@@ -11,6 +11,7 @@ import Tooltip from '../../antd/tooltip';
 type CommonProps = {
   bold?: boolean;
   semiBold?: boolean;
+  block?: boolean;
   color?: Colors;
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
@@ -21,11 +22,12 @@ type CommonProps = {
 };
 
 function classNamesFromProps(props: CommonProps) {
-  const { bold, semiBold, color, align, ellipsis, wrap, className } = props;
+  const { bold, semiBold, block, color, align, ellipsis, wrap, className } = props;
 
   return cx(
     bold && s.bold,
     semiBold && s.semiBold,
+    block && s.block,
     color && `clr-${color}-prior`,
     align && `text-${align}`,
     ellipsis && 'text-ellipsis',

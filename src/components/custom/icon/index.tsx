@@ -61,7 +61,9 @@ export type IconNames =
   | 'handshake-outlined'
   | 'stamp-outlined'
   | 'circle-plus-outlined'
-  | 'circle-minus-outlined';
+  | 'circle-minus-outlined'
+  | 'senior_tranche'
+  | 'junior_tranche';
 
 export type IconsProps = {
   name: IconNames;
