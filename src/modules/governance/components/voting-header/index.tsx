@@ -11,10 +11,11 @@ import ExternalLink from 'components/custom/externalLink';
 import VotingDetailedModal from '../voting-detailed-modal';
 
 import { getFormattedDuration, inRange, isValidAddress } from 'utils';
-import { formatBigValue, formatBONDValue } from 'web3/utils';
+import { formatBigValue, formatBONDValue, isSmallBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 
 import s from './styles.module.scss';
 
@@ -73,13 +74,20 @@ const VotingHeader: React.FunctionComponent = () => {
             Current reward
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading
-              type="h3"
-              bold
-              color="grey900"
-              loading={claimValue === undefined}>
-              {formatBONDValue(claimValue)}
-            </Heading>
+            <Tooltip title={(
+              <Paragraph type="p2">
+                {formatBigValue(claimValue, BONDTokenMeta.decimals)}
+              </Paragraph>
+            )}>
+              <Heading
+                type="h3"
+                bold
+                color="grey900"
+                loading={claimValue === undefined}>
+                {isSmallBONDValue(claimValue) && '> '}
+                {formatBONDValue(claimValue)}
+              </Heading>
+            </Tooltip>
             <Icons name="bond-square-token" />
             <Button
               type="light"
