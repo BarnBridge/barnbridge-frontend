@@ -11,7 +11,7 @@ import ExternalLink from 'components/custom/externalLink';
 import VotingDetailedModal from '../voting-detailed-modal';
 
 import { getFormattedDuration, inRange, isValidAddress } from 'utils';
-import { formatBigValue, formatBONDValue } from 'web3/utils';
+import { formatBigValue, formatBONDValue, isSmallBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
@@ -84,8 +84,8 @@ const VotingHeader: React.FunctionComponent = () => {
                 bold
                 color="grey900"
                 loading={claimValue === undefined}>
-                {claimValue?.lt(0.0001) && '> '}
-                {formatBigValue(claimValue, BONDTokenMeta.decimals).slice(0, 6)}
+                {isSmallBONDValue(claimValue) && '> '}
+                {formatBONDValue(claimValue)}
               </Heading>
             </Tooltip>
             <Icons name="bond-square-token" />

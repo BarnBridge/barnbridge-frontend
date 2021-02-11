@@ -114,6 +114,10 @@ export function formatBONDValue(value?: BigNumber): string {
   return formatBigValue(value, 4);
 }
 
+export function isSmallBONDValue(value?: BigNumber): boolean {
+  return !!value && value.gt(ZERO_BIG_NUMBER) && value.lt(0.0001);
+}
+
 export function shortenAddr(
   addr: string | undefined,
   first: number = 6,
