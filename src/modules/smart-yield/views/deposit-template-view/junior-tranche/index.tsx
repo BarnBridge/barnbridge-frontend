@@ -1,17 +1,12 @@
 import * as Antd from 'antd';
 import { useHistory, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import Icon from 'components/custom/icon';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph, Small } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
-import PoolDetails from 'modules/smart-yield/components/pool-details';
-// import Grid from "components/custom/grid";
-// import s from './s.module.scss';
 
 type FormData = {
   amount?: BigNumber;
@@ -27,7 +22,7 @@ const InitialFormValues: FormData = {
 
 export default function JuniorTranche() {
   const history = useHistory();
-  const { id } = useParams<{ id: string; tranche: string }>();
+  const { id } = useParams<{ id: string }>();
   const [form] = Antd.Form.useForm<FormData>();
 
   function handleFinish(values: FormData) {

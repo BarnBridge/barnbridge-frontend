@@ -5,55 +5,19 @@ import BigNumber from 'bignumber.js';
 import {
   addSeconds,
   addDays,
-  addMonths,
   isBefore,
   isAfter,
-  getUnixTime,
 } from 'date-fns';
 import { useWeb3Contracts } from 'web3/contracts';
-import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
 import Icon from 'components/custom/icon';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph, Small } from 'components/custom/typography';
+import { Paragraph } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
-import PoolDetails from 'modules/smart-yield/components/pool-details';
-// import Grid from "components/custom/grid";
-// import s from './s.module.scss';
-
-const DURATION_1_WEEK = '1w';
-const DURATION_1_MONTH = '1mo';
-const DURATION_3_MONTH = '3mo';
-const DURATION_6_MONTH = '6mo';
-const DURATION_1_YEAR = '1y';
-
-const DURATION_OPTIONS: string[] = [
-  DURATION_1_WEEK,
-  DURATION_1_MONTH,
-  DURATION_3_MONTH,
-  DURATION_6_MONTH,
-  DURATION_1_YEAR,
-];
-
-function getLockEndDate(startDate: Date, duration: string): Date | undefined {
-  switch (duration) {
-    case DURATION_1_WEEK:
-      return addDays(startDate, 7);
-    case DURATION_1_MONTH:
-      return addMonths(startDate, 1);
-    case DURATION_3_MONTH:
-      return addMonths(startDate, 3);
-    case DURATION_6_MONTH:
-      return addMonths(startDate, 6);
-    case DURATION_1_YEAR:
-      return addDays(startDate, 365);
-    default:
-      return undefined;
-  }
-}
+import { DURATION_OPTIONS, getLockEndDate } from 'utils/date';
 
 type FormData = {
   amount?: BigNumber;
@@ -73,7 +37,7 @@ export default function SeniorTranche() {
   const { id } = useParams<{ id: string; tranche: string }>();
   const [form] = Antd.Form.useForm<FormData>();
   const web3c = useWeb3Contracts();
-  const { balance: stakedBalance, userLockedUntil, userDelegatedTo, multiplier = 1 } = web3c.daoBarn;
+  const { userLockedUntil } = web3c.daoBarn;
 
   const minAllowedDate = useMemo(() => {
     const min = Math.max(userLockedUntil ?? 0, Date.now());

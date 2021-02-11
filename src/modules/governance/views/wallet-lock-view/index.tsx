@@ -4,7 +4,6 @@ import cx from 'classnames';
 import {
   addSeconds,
   addDays,
-  addMonths,
   isBefore,
   isAfter,
   getUnixTime,
@@ -26,6 +25,7 @@ import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+import { DURATION_OPTIONS, getLockEndDate } from 'utils/date';
 
 import s from './styles.module.scss';
 
@@ -50,37 +50,6 @@ const InitialFormValues: LockFormData = {
   lockEndDate: undefined,
   gasPrice: undefined,
 };
-
-const DURATION_1_WEEK = '1w';
-const DURATION_1_MONTH = '1mo';
-const DURATION_3_MONTH = '3mo';
-const DURATION_6_MONTH = '6mo';
-const DURATION_1_YEAR = '1y';
-
-const DURATION_OPTIONS: string[] = [
-  DURATION_1_WEEK,
-  DURATION_1_MONTH,
-  DURATION_3_MONTH,
-  DURATION_6_MONTH,
-  DURATION_1_YEAR,
-];
-
-function getLockEndDate(startDate: Date, duration: string): Date | undefined {
-  switch (duration) {
-    case DURATION_1_WEEK:
-      return addDays(startDate, 7);
-    case DURATION_1_MONTH:
-      return addMonths(startDate, 1);
-    case DURATION_3_MONTH:
-      return addMonths(startDate, 3);
-    case DURATION_6_MONTH:
-      return addMonths(startDate, 6);
-    case DURATION_1_YEAR:
-      return addDays(startDate, 365);
-    default:
-      return undefined;
-  }
-}
 
 const WalletLockView: React.FunctionComponent = () => {
   const [form] = Antd.Form.useForm<LockFormData>();

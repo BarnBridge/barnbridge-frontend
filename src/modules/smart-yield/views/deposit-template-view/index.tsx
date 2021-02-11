@@ -1,20 +1,8 @@
-import { useState } from 'react';
-import {
-  useHistory,
-  useParams,
-  Redirect,
-  Route,
-  Switch,
-  useRouteMatch,
-} from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import Card from 'components/antd/card';
-import Alert from 'components/antd/alert';
-import Button from 'components/antd/button';
-import Icon from 'components/custom/icon';
 import { Paragraph, Small, Heading } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 import MarketCoinCard from 'modules/smart-yield/components/market-coin-card';
-import RadioCard from 'modules/smart-yield/components/radio-card';
 import PoolDetails from 'modules/smart-yield/components/pool-details';
 import s from './s.module.scss';
 import SelectTranche from './select-tranche';
@@ -22,9 +10,6 @@ import SeniorTranche from './senior-tranche';
 import JuniorTranche from './junior-tranche';
 
 export default function DepositTemplateView() {
-  const history = useHistory();
-  const { id } = useParams<{ id: string }>();
-
   return (
     <>
       <Grid flow="col" gap={64} align="center" className={s.pageHeader}>

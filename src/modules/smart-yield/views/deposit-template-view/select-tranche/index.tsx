@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
-import Card from 'components/antd/card';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Icon from 'components/custom/icon';
-import { Paragraph, Small, Heading } from 'components/custom/typography';
+import { Paragraph, Small } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
-import MarketCoinCard from 'modules/smart-yield/components/market-coin-card';
 import RadioCard from 'modules/smart-yield/components/radio-card';
-import PoolDetails from 'modules/smart-yield/components/pool-details';
-// import s from './s.module.scss';
 
 export default function SelectTranche() {
   const history = useHistory();
