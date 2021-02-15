@@ -4,22 +4,54 @@ import { Paragraph, Small, Heading } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 import MarketCoinCard from 'modules/smart-yield/components/market-coin-card';
 import PoolDetails from 'modules/smart-yield/components/pool-details';
-import s from './s.module.scss';
 import SelectTranche from './select-tranche';
 import SeniorTranche from './senior-tranche';
 import JuniorTranche from './junior-tranche';
 
-export default function DepositTemplateView() {
+export default function DepositView() {
   return (
     <>
-      <Grid flow="col" gap={64} align="center" className={s.pageHeader}>
+      <Grid flow="col" gap={64} align="center" className="mb-64">
         <MarketCoinCard />
-        <Grid flow="row" gap={4}>
-          <Small semiBold>Wallet balance</Small>
-          <Paragraph type="p1" semiBold color="grey900">
+        <div>
+          <Small semiBold block className="mb-4">
+            Wallet balance
+          </Small>
+          <Paragraph type="p1" semiBold color="grey900" block>
             25,381.3247
           </Paragraph>
-        </Grid>
+        </div>
+        <div>
+          <Small semiBold block className="mb-4">
+            Portfolio balance
+          </Small>
+          <Paragraph type="p1" semiBold color="grey900" block>
+            5,230.9971
+          </Paragraph>
+        </div>
+
+        <Switch>
+          <Route path="/smart-yield/deposit/:id/senior">
+            <div>
+              <Small semiBold block className="mb-4">
+                Senior APY
+              </Small>
+              <Paragraph type="p1" semiBold color="green500" block>
+                6.42%
+              </Paragraph>
+            </div>
+          </Route>
+          <Route path="/smart-yield/deposit/:id/junior">
+            <div>
+              <Small semiBold block className="mb-4">
+                Junior APY
+              </Small>
+              <Paragraph type="p1" semiBold color="purple500" block>
+                21.33%
+              </Paragraph>
+            </div>
+          </Route>
+        </Switch>
       </Grid>
       <Grid flow="col" gap={32} colsTemplate="1fr minmax(240px, 482px)">
         <Card>

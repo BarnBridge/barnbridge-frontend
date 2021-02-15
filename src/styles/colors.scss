@@ -79,10 +79,10 @@ $sizes: 900, 800, 700, 600, 500, 400, 300, 200, 100, 50;
 $gaps: 4, 8, 12, 16, 24, 32, 40, 48, 64;
 
 @each $gap in $gaps {
-  .mr-#{$gap} {
+  .mr-#{$gap}.mr-#{$gap} {
     margin-right: #{$gap}px;
   }
-  .mb-#{$gap} {
+  .mb-#{$gap}.mb-#{$gap} {
     margin-bottom: #{$gap}px;
   }
 }

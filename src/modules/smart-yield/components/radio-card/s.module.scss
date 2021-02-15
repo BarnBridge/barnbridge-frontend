@@ -1,18 +1,21 @@
 .card {
-  background: #FFFFFF;
-  border: 1px solid #E3E4E6;
+  background: #ffffff;
+  border: 1px solid #e3e4e6;
   box-sizing: border-box;
   border-radius: 4px;
   text-align: left;
   position: relative;
   padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .card::after {
   content: '';
   width: 24px;
   height: 24px;
-  border: 2px solid #E3E4E6;
+  border: 2px solid #e3e4e6;
   position: absolute;
   top: 32px;
   right: 32px;
@@ -20,9 +23,9 @@
 }
 
 .card.selected {
-  border-color: #FF4339;
+  border-color: #ff4339;
 }
 
 .card.selected::after {
-  border: 8px solid #FF4339;
+  border: 8px solid #ff4339;
 }

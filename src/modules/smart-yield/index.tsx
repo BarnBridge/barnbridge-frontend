@@ -1,17 +1,14 @@
 import React from "react";
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch, useHistory } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
 import MarketsView from './views/markets-view';
-// import SelectTrancheView from './views/select-tranche-view';
-import DepositTemplateView from './views/deposit-template-view';
-// import JuniorTrancheView from './views/junior-tranche-view';
-// import SeniorTrancheView from './views/senior-tranche-view';
+import DepositTemplateView from './views/deposit-view';
 import PortfolioView from './views/portfolio-view';
+import Withdraw from "./views/deposit-view/withdraw";
 
 import s from './s.module.scss';
 
@@ -53,9 +50,8 @@ const SmartYieldView: React.FunctionComponent = () => {
       <div className={s.view}>
         <Switch>
           <Route path="/smart-yield/deposit" exact component={MarketsView} />
+          <Route path="/smart-yield/deposit/:id/withdraw" exact component={Withdraw} />
           <Route path="/smart-yield/deposit/:id" component={DepositTemplateView} />
-          {/* <Route path="/smart-yield/deposit/:id/senior" component={SeniorTrancheView} /> */}
-          {/* <Route path="/smart-yield/deposit/:id/junior" component={JuniorTrancheView} /> */}
           <Route path="/smart-yield/portfolio" component={PortfolioView} />
           <Redirect from="/smart-yield" to="/smart-yield/deposit" />
         </Switch>

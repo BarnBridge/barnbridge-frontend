@@ -63,7 +63,12 @@ export type IconNames =
   | 'circle-plus-outlined'
   | 'circle-minus-outlined'
   | 'senior_tranche'
-  | 'junior_tranche';
+  | 'junior_tranche'
+  | 'senior_tranche_simplified'
+  | 'junior_tranche_simplified'
+  | 'withdrawal_regular'
+  | 'withdrawal_instant'
+  | 'statistics';
 
 export type IconsProps = {
   name: IconNames;

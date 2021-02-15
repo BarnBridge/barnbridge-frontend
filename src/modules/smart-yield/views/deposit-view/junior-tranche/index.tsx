@@ -15,7 +15,7 @@ type FormData = {
   };
 };
 
-const InitialFormValues: FormData = {
+const initialFormValues: FormData = {
   amount: undefined,
   gasPrice: undefined,
 };
@@ -38,7 +38,7 @@ export default function JuniorTranche() {
     <>
       <Form
         form={form}
-        initialValues={InitialFormValues}
+        initialValues={initialFormValues}
         validateTrigger={['onSubmit']}
         onFinish={handleFinish}>
         <Form.Item
