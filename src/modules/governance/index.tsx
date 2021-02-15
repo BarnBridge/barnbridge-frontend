@@ -91,6 +91,18 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
             </ExternalLink>
           }
         />
+        <Tabs.Tab
+          key="forum"
+          tab={
+            <ExternalLink href="https://forum.barnbridge.com/">
+              <Grid flow="col" gap={8} align="center">
+                <Icons name="forum-outlined" />
+                <Paragraph type="p1" semiBold color="grey500">Forum</Paragraph>
+                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+              </Grid>
+            </ExternalLink>
+          }
+        />
       </Tabs>
       <div className={s.view}>
         <Switch>
