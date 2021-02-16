@@ -8,7 +8,7 @@ import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
 import { Text } from 'components/custom/typography';
 import LayoutHeader from 'layout/components/layout-header';
-import DAOProvider  from './components/dao-provider';
+import DAOProvider from './components/dao-provider';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
 import WalletView from './views/wallets-view';

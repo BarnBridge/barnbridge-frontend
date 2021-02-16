@@ -27,11 +27,11 @@ const Progress: React.FC<ProgressProps> = props => {
       success={
         acceptanceMode
           ? {
-              percent: acceptance,
-              strokeColor: acceptanceFulfilled
-                ? String(props.strokeColor)
-                : props.trailColor,
-            }
+            percent: acceptance,
+            strokeColor: acceptanceFulfilled
+              ? String(props.strokeColor)
+              : props.trailColor,
+          }
           : undefined
       }
       {...progressProps}

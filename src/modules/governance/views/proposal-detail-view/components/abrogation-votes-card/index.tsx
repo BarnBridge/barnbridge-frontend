@@ -6,9 +6,7 @@ import Alert from 'components/antd/alert';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import AbrogationVoteModal, {
-  VoteAbrogationState,
-} from '../abrogation-vote-modal';
+import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
 import AbrogationVotersModal from '../abrogation-voters-modal';
 import { useAbrogation } from '../../providers/AbrogationProvider';
 

@@ -5,49 +5,18 @@ import BigNumber from 'bignumber.js';
 import { useWallet } from 'wallets/wallet';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
-import {
-  BONDContract,
-  BONDTokenMeta,
-  useBONDContract,
-} from 'web3/contracts/bond';
-import {
-  USDCContract,
-  USDCTokenMeta,
-  useUSDCContract,
-} from 'web3/contracts/usdc';
+import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
+import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
-import {
-  SUSDContract,
-  SUSDTokenMeta,
-  useSUSDContract,
-} from 'web3/contracts/susd';
-import {
-  UNISWAPContract,
-  UNISWAPTokenMeta,
-  useUNISWAPContract,
-} from 'web3/contracts/uniswap';
-import {
-  useYieldFarmContract,
-  YieldFarmContract,
-} from 'web3/contracts/yieldFarm';
-import {
-  useYieldFarmLPContract,
-  YieldFarmLPContract,
-} from 'web3/contracts/yieldFarmLP';
-import {
-  useYieldFarmBONDContract,
-  YieldFarmBONDContract,
-} from 'web3/contracts/yieldFarmBOND';
+import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
+import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
+import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
+import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
 import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 import { DAOBarnContract, useDAOBarnContract } from 'web3/contracts/daoBarn';
-import {
-  DAORewardContract,
-  useDAORewardContract,
-} from 'web3/contracts/daoReward';
-import {
-  DAOGovernanceContract,
-  useDAOGovernanceContract,
-} from 'web3/contracts/daoGovernance';
+import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
+import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/daoGovernance';
 import { PoolTypes } from 'modules/yield-farming/utils';
 
 import UserRejectedModal from 'web3/components/user-rejected-modal';

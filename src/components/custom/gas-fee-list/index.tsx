@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { RadioGroupProps, RadioChangeEvent } from 'antd/lib/radio';
+import { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
 
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';

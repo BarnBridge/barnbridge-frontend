@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Antd from 'antd';
 import {
-  FormProps as AntdFormProps,
-  FormListProps as AntdFormListProps,
   FormItemProps as AntdFormItemProps,
+  FormListProps as AntdFormListProps,
+  FormProps as AntdFormProps,
 } from 'antd/lib/form';
 import cx from 'classnames';
 

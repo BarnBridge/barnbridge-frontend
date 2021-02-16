@@ -11,9 +11,7 @@ import { useDAO } from '../../../../components/dao-provider';
 
 import useMergeState from 'hooks/useMergeState';
 import AbrogationProposalModal from '../abrogation-proposal-modal';
-import AbrogationVoteModal, {
-  VoteAbrogationState,
-} from '../abrogation-vote-modal';
+import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
 import { APIProposalState } from '../../../../api';
 
 type ProposalAbrogationCardState = {

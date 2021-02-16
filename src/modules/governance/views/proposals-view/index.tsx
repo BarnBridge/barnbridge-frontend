@@ -12,9 +12,7 @@ import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
 import { Text } from 'components/custom/typography';
-import ProposalsProvider, {
-  useProposals,
-} from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
+import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
 import ProposalsTable from './components/proposals-table';
 import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';

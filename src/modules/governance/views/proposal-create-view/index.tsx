@@ -13,9 +13,7 @@ import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
-import CreateProposalActionModal, {
-  CreateProposalActionForm,
-} from '../../components/create-proposal-action-modal';
+import CreateProposalActionModal, { CreateProposalActionForm } from '../../components/create-proposal-action-modal';
 import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
 import ProposalActionCard from '../../components/proposal-action-card';
 import { useDAO } from '../../components/dao-provider';

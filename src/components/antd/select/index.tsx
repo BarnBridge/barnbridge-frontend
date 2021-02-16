@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Antd from 'antd';
 import {
+  OptionProps as AntdOptionProps,
   SelectProps as AntdSelectProps,
   SelectValue as AntdSelectValue,
-  OptionProps as AntdOptionProps,
 } from 'antd/lib/select';
 import cx from 'classnames';
 

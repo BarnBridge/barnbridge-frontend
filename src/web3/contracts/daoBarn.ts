@@ -74,13 +74,13 @@ function loadUserData(userAddress?: string): Promise<any> {
     },
   ]).then(
     ([
-      balance,
-      votingPower,
-      multiplier,
-      userLockedUntil,
-      delegatedPower,
-      userDelegatedTo,
-    ]) => ({
+       balance,
+       votingPower,
+       multiplier,
+       userLockedUntil,
+       delegatedPower,
+       userDelegatedTo,
+     ]) => ({
       balance,
       votingPower,
       multiplier,

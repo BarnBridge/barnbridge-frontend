@@ -9,16 +9,10 @@ import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import AbrogationVotersProvider, {
-  useAbrogationVoters,
-} from '../../providers/AbrogationVotersProvider';
+import AbrogationVotersProvider, { useAbrogationVoters } from '../../providers/AbrogationVotersProvider';
 
 import { APIVoteEntity } from 'modules/governance/api';
-import {
-  formatBigValue,
-  getEtherscanAddressUrl,
-  shortenAddr,
-} from 'web3/utils';
+import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import s from './styles.module.scss';
 

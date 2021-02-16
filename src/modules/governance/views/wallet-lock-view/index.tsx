@@ -1,14 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
-import {
-  addSeconds,
-  addDays,
-  addMonths,
-  isBefore,
-  isAfter,
-  getUnixTime,
-} from 'date-fns';
+import { addDays, addMonths, addSeconds, getUnixTime, isAfter, isBefore } from 'date-fns';
 
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';

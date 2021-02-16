@@ -1,9 +1,4 @@
-import {
-  Interface,
-  FunctionFragment,
-  Result,
-  defaultAbiCoder,
-} from '@ethersproject/abi';
+import { defaultAbiCoder, FunctionFragment, Interface, Result } from '@ethersproject/abi';
 
 export type AbiInterfaceType = Interface;
 export type AbiFragmentType = FunctionFragment;
@@ -19,7 +14,8 @@ function parseValues(values: Array<any>): Array<any> {
         if (typeof value === 'object') {
           return value;
         }
-      } catch {}
+      } catch {
+      }
     }
 
     return item;

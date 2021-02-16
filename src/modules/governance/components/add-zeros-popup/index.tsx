@@ -12,9 +12,7 @@ export type AddZerosPopupProps = {
   onAdd: (value: number) => void;
 };
 
-const AddZerosPopup: React.FC<
-  PopoverProps & AddZerosPopupProps
-> = props => {
+const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
   const { max, onAdd, ...popoverProps } = props;
   const [visible, setVisible] = React.useState<boolean>(false);
   const [value, setValue] = React.useState<string>('');

@@ -1,11 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { useSessionStorage } from 'react-use-storage';
-import {
-  UnsupportedChainIdError,
-  useWeb3React,
-  Web3ReactProvider,
-} from '@web3-react/core';
+import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core';
 import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import { Web3Provider } from '@ethersproject/providers';
 
