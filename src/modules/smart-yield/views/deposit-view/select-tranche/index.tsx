@@ -3,7 +3,7 @@ import { useHistory, useParams } from 'react-router-dom';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Icon from 'components/custom/icon';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Paragraph, Small, Text } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 
@@ -18,24 +18,18 @@ export default function SelectTranche() {
         <RadioCard
           selected={tranche === 'senior'}
           onClick={() => setTranche('senior')}>
-          <Icon name="senior_tranche" width={64} height={64} />
-          <br />
-          <Small semiBold>Senior tranche</Small>
-          <br />
-          <Paragraph type="p1" semiBold color="primary">
-            Fixed APY
-          </Paragraph>
-          <br />
-          <Paragraph type="p1" bold color="green">
-            6.42%
-          </Paragraph>
+          <Icon name="senior_tranche" width={64} height={64} className="mb-24" />
+          <Text type="small" weight="semibold" className="mb-4">Senior tranche</Text>
+          <Text type="p1" weight="semibold" color="primary" className="mb-8">Fixed APY</Text>
+          <Text type="p1" weight="bold" color="green">6.42%</Text>
         </RadioCard>
         <RadioCard
           selected={tranche === 'junior'}
           onClick={() => setTranche('junior')}>
-          <Icon name="junior_tranche" width={64} height={64} />
-          <br />
-          <Small semiBold>Junior tranche</Small>
+          <Icon name="junior_tranche" width={64} height={64} className="mb-24" />
+          <Text type="small" weight="semibold" className="mb-4">Junior tranche</Text>
+          <Text type="p1" weight="semibold" color="primary" className="mb-8">Variable APY</Text>
+          <Text type="p1" weight="bold" color="purple">21.33%</Text>
         </RadioCard>
       </Grid>
       {tranche && (

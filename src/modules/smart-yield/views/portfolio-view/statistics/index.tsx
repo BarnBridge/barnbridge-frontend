@@ -1,12 +1,14 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { shortenAddr } from 'web3/utils';
 import Card from 'components/antd/card';
-import { Paragraph, Small, Heading } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 import Table from 'components/antd/table';
 import Button from 'components/antd/button';
 import IconBubble from 'components/custom/icon-bubble';
 import Icons from 'components/custom/icon';
+import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
+import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 
 const dataMock = [
   {
@@ -21,24 +23,22 @@ const dataMock = [
 ];
 
 export default function PortfolioStatistics() {
-  const history = useHistory();
-
   const columns = [
     {
       dataIndex: 'token',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Token Name
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="col" gap={16} align="center">
           <IconBubble name="usdc-token" bubbleName="compound" />
           <Grid flow="row" gap={4} className="ml-auto">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
               {value[0]}
-            </Paragraph>
-            <Small semiBold>{value[1]}</Small>
+            </Text>
+            <Text type="small" weight="semibold" color="secondary">{value[1]}</Text>
           </Grid>
         </Grid>
       ),
@@ -46,104 +46,95 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'transactionHash',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Transaction Hash
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="primary">
-            {value}
-          </Paragraph>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(value, 8, 8)}
+          </Text>
         </Grid>
       ),
     },
     {
       dataIndex: 'date',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Date
-        </Small>
+        </Text>
       ),
       render: (value: Date) => (
         <>
-          <Paragraph type="p1" semiBold color="green">
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {value.toLocaleDateString()}
-          </Paragraph>
-          <Small semiBold>
+          </Text>
+          <Text type="small" weight="semibold">
             {value.toLocaleTimeString()}
-          </Small>
+          </Text>
         </>
       ),
     },
     {
       dataIndex: 'amount',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Amount
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="primary">
-            {value[0]}
-          </Paragraph>
-          <Small semiBold>${value[1]}</Small>
+          <Text type="p1" weight="semibold" color="primary">
+            {value}
+          </Text>
+          <Text type="small" weight="semibold">${value}</Text>
         </Grid>
       ),
     },
     {
       dataIndex: 'tranch',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Tranch
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="purple">
+        <Text type="p1" weight="semibold" color="primary">
           {value}
-        </Paragraph>
+        </Text>
       ),
     },
     {
       dataIndex: 'transactionType',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Transaction type
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           {value}
-        </Paragraph>
+        </Text>
       ),
     },
 
   ];
 
   return (
-    <Grid gap={32} rowsTemplate="auto auto" colsTemplate="40% 60%">
-      <Card>
-        <Paragraph type="p1" semiBold color="primary">
-          Portfolio balance
-        </Paragraph>
-      </Card>
-      <Card>
-        <Grid flow="col" colsTemplate="1fr max-content">
-          <Paragraph type="p1" semiBold color="primary">
-            Portfolio value
-          </Paragraph>
-          <Small semiBold>Last month</Small>
-        </Grid>
-      </Card>
+    <>
+      <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
+        <PortfolioBalance />
+        <PortfolioValue />
+      </div>
       <Card
         style={{ gridColumn: '1 / 3' }}
         noPaddingBody
         title={
           <Grid flow="col" colsTemplate="1fr max-content">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               Transaction history
-            </Paragraph>
+            </Text>
             <Button type="light" onClick={() => console.log('Le open filter modal')}>
               <Icons name="filter" />
               Filter
@@ -158,6 +149,6 @@ export default function PortfolioStatistics() {
           // loading={loading}
         />
       </Card>
-    </Grid>
+    </>
   );
 }

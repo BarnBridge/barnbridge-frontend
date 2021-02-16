@@ -29,3 +29,21 @@ export default function TabCard({ title, subtitle, icon, className, tag = "butto
     </Component>
   )
 }
+
+export function TabCard2({ title, subtitle, icon, className, tag = "button", active = false, ...rest }: Props) {
+  let Component = tag;
+
+  return (
+    <Component className={cn(s.container, className, {[s.active]: active})} {...rest}>
+      <div className={s.icon}>
+        {icon}
+      </div>
+      <Grid flow="row">
+        <Paragraph type="p1" semiBold color="primary">
+          {title}
+        </Paragraph>
+        <Small semiBold color="secondary">{subtitle}</Small>
+      </Grid>
+    </Component>
+  )
+}

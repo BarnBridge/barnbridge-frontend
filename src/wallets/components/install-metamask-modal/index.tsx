@@ -17,8 +17,8 @@ const InstallMetaMaskModal: React.FC<ModalProps> = props => {
           <Heading type="h2" bold color="primary">
             Install MetaMask
           </Heading>
-          <Text type="p1" semiBold color="secondary">
-            You need to have <Text tag="span" type="p1" bold color="primary">MetaMask</Text> installed to continue.
+          <Text type="p1" weight="semibold" color="secondary">
+            You need to have <Text tag="span" type="p1" weight="bold" color="primary">MetaMask</Text> installed to continue.
             <br />
             Once you have installed it, please refresh the page
           </Text>

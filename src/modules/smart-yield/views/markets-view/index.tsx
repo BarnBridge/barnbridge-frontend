@@ -1,7 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import Card from 'components/antd/card';
-import { Paragraph, Small, Heading } from 'components/custom/typography';
+import { Paragraph, Small, Heading, Text } from 'components/custom/typography';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import Button from 'components/antd/button';
@@ -176,6 +176,13 @@ const OverviewView: React.FunctionComponent = () => {
   return (
     <>
       <Grid flow="col" gap={24} className="mb-64">
+        {/*<button onClick={() => console.log('asd qwe')} className="tab-card">*/}
+        {/*  <Icons name="compound" width={40} height={40} className="mr-16" />*/}
+        {/*  <Grid flow="row">*/}
+        {/*    <Text type="p1" weight="semibold" color="primary">Compound</Text>*/}
+        {/*    <Text type="small" weight="semibold" color="secondary">Markets</Text>*/}
+        {/*  </Grid>*/}
+        {/*</button>*/}
         <TabCard
           title="Compound"
           subtitle="Markets"

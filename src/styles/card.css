@@ -1,8 +1,7 @@
-
-.container {
+.tab-card {
   display: flex;
   background-color: var(--theme-card-color);
-  box-shadow: var(--shadow-card);
+  box-shadow: var(--theme-card-shadow);
   border: 1px solid var(--theme-border-color);
   border-radius: 4px;
   padding: 16px;
@@ -10,12 +9,6 @@
   text-align: left;
 }
 
-.container.active {
+.tab-card.active {
   border-color: var(--theme-red-color);
-}
-
-.icon {
-  // width: 40px;
-  margin-right: 16px;
-  display: flex;
 }

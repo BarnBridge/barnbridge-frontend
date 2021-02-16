@@ -93,8 +93,6 @@ export type TextProps = {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label' | 'p' | 'div' | 'span' | 'small';
   type: 'h1' | 'h2' | 'h3' | 'p1' | 'p2' | 'lb1' | 'lb2' | 'small';
   weight?: 'semibold' | 'bold';
-  bold?: boolean;
-  semiBold?: boolean;
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'purple';
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
@@ -102,13 +100,11 @@ export type TextProps = {
   className?: string;
 };
 
-export const Text: React.FC<TextProps> = React.memo(props => {
+export const Text: React.FC<TextProps> = props => {
   const {
     tag = 'div',
     type,
     weight,
-    bold,
-    semiBold,
     color,
     align,
     ellipsis,
@@ -124,8 +120,6 @@ export const Text: React.FC<TextProps> = React.memo(props => {
       className: cx(
         s.text,
         s[type],
-        bold && s.bold,
-        semiBold && s.semiBold,
         weight && s[`weight-${weight}`],
         color && s[`${color}-color`],
         align && `text-${align}`,
@@ -137,7 +131,7 @@ export const Text: React.FC<TextProps> = React.memo(props => {
     },
     children,
   );
-});
+};
 
 export type HintProps = {
   text: React.ReactNode;

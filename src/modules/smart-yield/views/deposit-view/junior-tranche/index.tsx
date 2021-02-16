@@ -7,6 +7,7 @@ import Icon from 'components/custom/icon';
 import Grid from 'components/custom/grid';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
+import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 
 type FormData = {
   amount?: BigNumber;
@@ -40,7 +41,9 @@ export default function JuniorTranche() {
         form={form}
         initialValues={initialFormValues}
         validateTrigger={['onSubmit']}
-        onFinish={handleFinish}>
+        onFinish={handleFinish}
+        className="mb-32"
+      >
         <Form.Item
           name="amount"
           label="Amount"
@@ -62,6 +65,7 @@ export default function JuniorTranche() {
           <GasFeeList disabled={false} />
         </Form.Item>
       </Form>
+      <TransactionDetails className="mb-32" />
       <Grid flow="col" gap={64} align="center" justify="space-between">
         <Button
           type="light"

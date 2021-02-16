@@ -18,6 +18,7 @@ import { Paragraph } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { DURATION_OPTIONS, getLockEndDate } from 'utils/date';
+import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 
 type FormData = {
   amount?: BigNumber;
@@ -62,7 +63,9 @@ export default function SeniorTranche() {
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
-        onFinish={handleFinish}>
+        onFinish={handleFinish}
+        className="mb-32"
+      >
         <Form.Item
           name="amount"
           label="Amount"
@@ -137,6 +140,7 @@ export default function SeniorTranche() {
           <GasFeeList disabled={false} />
         </Form.Item>
       </Form>
+      <TransactionDetails className="mb-32" />
       <Grid flow="col" gap={64} align="center" justify="space-between">
         <Button
           type="light"
