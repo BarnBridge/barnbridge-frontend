@@ -67,7 +67,6 @@ const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProp
   return (
     <Modal
       className={s.component}
-      centered
       width={560}
       title="Queue for execution"
       {...modalProps}>
@@ -77,7 +76,7 @@ const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProp
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
-          <Paragraph type="p2" semiBold color="grey500">
+          <Paragraph type="p2" semiBold color="secondary">
             Once a proposal is accepted, it will have to wait in the queue before it can be executed.
             During this time it can only be cancelled by an abrogation proposal.
           </Paragraph>

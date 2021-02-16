@@ -91,7 +91,7 @@ const ProposalVotesCard: React.FunctionComponent = () => {
     <Card
       className={s.component}
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           Votes
         </Paragraph>
       }
@@ -103,51 +103,51 @@ const ProposalVotesCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={32} className={s.row}>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               For
             </Paragraph>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="grey900">
+              <Paragraph type="p1" semiBold color="primary">
                 {proposalCtx.proposal?.forVotes.toFormat(2)}
               </Paragraph>
-              <Paragraph type="p1" color="grey500">
+              <Paragraph type="p1" color="secondary">
                 ({proposalCtx.forRate?.toFixed(2)}%)
               </Paragraph>
             </Grid>
           </Grid>
           <Progress
             percent={proposalCtx.forRate}
-            strokeColor="var(--text-color-green500)"
-            trailColor="rgba(var(--text-color-green500-rgb), .16)"
+            strokeColor="var(--theme-green-color)"
+            trailColor="rgba(var(--theme-green-color-rgb), .16)"
           />
         </Grid>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               Against
             </Paragraph>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="grey900">
+              <Paragraph type="p1" semiBold color="primary">
                 {proposalCtx.proposal?.againstVotes.toFormat(2)}
               </Paragraph>
-              <Paragraph type="p1" color="grey500">
+              <Paragraph type="p1" color="secondary">
                 ({proposalCtx.againstRate?.toFixed(2)}%)
               </Paragraph>
             </Grid>
           </Grid>
           <Progress
             percent={proposalCtx.againstRate}
-            strokeColor="var(--text-color-red500)"
-            trailColor="rgba(var(--text-color-red500-rgb), .16)"
+            strokeColor="var(--theme-red-color)"
+            trailColor="rgba(var(--theme-red-color-rgb), .16)"
           />
         </Grid>
       </Grid>
       <Grid flow="row" gap={24} className={s.row}>
         <Grid flow="row" gap={8}>
-          <Paragraph type="p1" color="grey500">
+          <Paragraph type="p1" color="secondary">
             Your voting power for this proposal
           </Paragraph>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {formatBigValue(proposalCtx.votingPower, 2)}
           </Paragraph>
         </Grid>
@@ -194,12 +194,11 @@ const ProposalVotesCard: React.FunctionComponent = () => {
       </Grid>
 
       {state.showVotersModal && (
-        <ProposalVotersModal visible onCancel={handleHideVotersModal} />
+        <ProposalVotersModal onCancel={handleHideVotersModal} />
       )}
 
       {state.showVoteModal && (
         <ProposalVoteModal
-          visible
           voteState={state.voteState}
           onCancel={handleHideVoteModal}
         />

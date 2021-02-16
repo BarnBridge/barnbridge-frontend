@@ -5,7 +5,7 @@ import Button from 'components/antd/button';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Paragraph } from 'components/custom/typography';
+import { Hint, Paragraph } from 'components/custom/typography';
 import { useDAO } from '../../../../components/dao-provider';
 
 import { formatBONDValue } from 'web3/utils';
@@ -33,31 +33,34 @@ const ActivationThreshold: React.FunctionComponent<ActivationThresholdProps> = p
   return (
     <Card className={className}>
       <Grid flow="row" gap={24} align="start">
-        <Paragraph type="p1" semiBold color="grey900" hint={(
+        <Hint text={(
           <Paragraph type="p2">
-            For the DAO to be activated, a threshold of {formatBONDValue(dao.activationThreshold)} $BOND tokens staked has to be met.
+            For the DAO to be activated, a threshold of {formatBONDValue(dao.activationThreshold)} $BOND tokens staked
+            has to be met.
           </Paragraph>
         )}>
-          Activation threshold
-        </Paragraph>
+          <Paragraph type="p1" semiBold color="primary">
+            Activation threshold
+          </Paragraph>
+        </Hint>
         <Grid gap={12} colsTemplate="auto 24px" width="100%">
           <Progress
             percent={dao.activationRate}
             trailColor="var(--color-border)"
             strokeWidth={24}
             strokeColor={{
-              '0%': 'var(--text-color-blue500)',
-              '100%': 'var(--text-color-green500)',
+              '0%': 'var(--theme-blue-color)',
+              '100%': 'var(--theme-green-color)',
             }}
           />
           <Icons name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
           <Icons name="bond-square-token" />
-          <Paragraph type="p1" bold color="grey900">
+          <Paragraph type="p1" bold color="primary">
             {formatBONDValue(dao.bondStaked)}
           </Paragraph>
-          <Paragraph type="p1" semiBold color="grey500">
+          <Paragraph type="p1" semiBold color="secondary">
             / {formatBONDValue(dao.activationThreshold)} already staked.
           </Paragraph>
         </Grid>

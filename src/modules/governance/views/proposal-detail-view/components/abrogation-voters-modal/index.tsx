@@ -25,7 +25,7 @@ import s from './styles.module.scss';
 const Columns: ColumnsType<APIVoteEntity> = [
   {
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Address
       </Small>
     ),
@@ -35,7 +35,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(address)}>
-          <Paragraph type="p1" semiBold color="blue500">
+          <Paragraph type="p1" semiBold color="blue">
             {shortenAddr(address)}
           </Paragraph>
         </ExternalLink>
@@ -44,7 +44,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
   },
   {
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Votes
       </Small>
     ),
@@ -52,14 +52,14 @@ const Columns: ColumnsType<APIVoteEntity> = [
     width: '38%',
     align: 'right',
     render: (power: BigNumber) => (
-      <Paragraph type="p1" semiBold color="grey900" className={s.powerCell}>
+      <Paragraph type="p1" semiBold color="primary" className={s.powerCell}>
         {formatBigValue(power, 0)}
       </Paragraph>
     ),
   },
   {
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Vote type
       </Small>
     ),
@@ -100,7 +100,7 @@ const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalP
   }
 
   return (
-    <Modal className={s.component} centered width={620} {...modalProps}>
+    <Modal className={s.component} width={620} {...modalProps}>
       <Tabs
         className={s.tabs}
         defaultActiveKey="all"
@@ -125,7 +125,7 @@ const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalP
           pageSize: abrogationVotesCtx.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Paragraph type="p2" semiBold color="grey500">
+            <Paragraph type="p2" semiBold color="secondary">
               Showing {from} to {to} out of {total} votes
             </Paragraph>
           ),

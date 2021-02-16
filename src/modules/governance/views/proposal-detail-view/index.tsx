@@ -74,11 +74,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
       </Grid>
 
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-        <Heading
-          type="h2"
-          semiBold
-          color="grey900"
-          loading={!proposalCtx.proposal}>
+        <Heading type="h2" semiBold color="primary">
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
         </Heading>
 
@@ -134,7 +130,6 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
 
       {state.showQueueForExecution && (
         <QueueForExecutionModal
-          visible
           onCancel={() => setState({ showQueueForExecution: false })} />
       )}
     </Grid>

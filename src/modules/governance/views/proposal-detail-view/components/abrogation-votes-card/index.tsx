@@ -83,7 +83,7 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
     <Card
       className={s.component}
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           Abrogation proposal votes
         </Paragraph>
       }
@@ -95,51 +95,51 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={32} className={s.row}>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               For
             </Paragraph>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="grey900">
+              <Paragraph type="p1" semiBold color="primary">
                 {abrogationCtx.abrogation?.forVotes.toFormat(2)}
               </Paragraph>
-              <Paragraph type="p1" color="grey500">
+              <Paragraph type="p1" color="secondary">
                 ({abrogationCtx.forRate?.toFixed(2)}%)
               </Paragraph>
             </Grid>
           </Grid>
           <Progress
             percent={abrogationCtx.forRate}
-            strokeColor="var(--text-color-green500)"
-            trailColor="rgba(var(--text-color-green500-rgb), .16)"
+            strokeColor="var(--theme-green-color)"
+            trailColor="rgba(var(--theme-green-color-rgb), .16)"
           />
         </Grid>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               Against
             </Paragraph>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="grey900">
+              <Paragraph type="p1" semiBold color="primary">
                 {abrogationCtx.abrogation?.againstVotes.toFormat(2)}
               </Paragraph>
-              <Paragraph type="p1" color="grey500">
+              <Paragraph type="p1" color="secondary">
                 ({abrogationCtx.againstRate?.toFixed(2)}%)
               </Paragraph>
             </Grid>
           </Grid>
           <Progress
             percent={abrogationCtx.againstRate}
-            strokeColor="var(--text-color-red500)"
-            trailColor="rgba(var(--text-color-red500-rgb), .16)"
+            strokeColor="var(--theme-red-color)"
+            trailColor="rgba(var(--theme-red-color-rgb), .16)"
           />
         </Grid>
       </Grid>
       <Grid flow="row" gap={24} className={s.row}>
         <Grid flow="row" gap={8}>
-          <Paragraph type="p1" color="grey500">
+          <Paragraph type="p1" color="secondary">
             Your voting power for this proposal
           </Paragraph>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {formatBigValue(abrogationCtx.votingPower, 2)}
           </Paragraph>
         </Grid>
@@ -186,12 +186,11 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
       </Grid>
 
       {state.showVotersModal && (
-        <AbrogationVotersModal visible onCancel={handleHideVotersModal} />
+        <AbrogationVotersModal onCancel={handleHideVotersModal} />
       )}
 
       {state.showVoteModal && (
         <AbrogationVoteModal
-          visible
           voteState={state.voteState}
           onCancel={handleHideVoteModal}
         />

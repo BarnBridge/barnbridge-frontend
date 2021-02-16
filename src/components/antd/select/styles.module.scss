@@ -1,58 +1,64 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
-.component {
+.component:global(.ant-select.ant-select-single) {
   position: relative;
+  height: 48px;
 
-  .select:global(.ant-select) {
-    &:global(.ant-select-lg) {
+  &:global(.ant-select-sm) {
+    height: 32px;
+
+    :global(.ant-select-selector) {
+      height: 32px;
+      padding: 4px 24px 4px 16px;
+    }
+  }
+
+  &:global(.ant-select-lg) {
+    height: 64px;
+
+    :global(.ant-select-selector) {
       height: 64px;
       padding: 20px 32px 20px 24px;
     }
+  }
 
-    :global(.ant-select-selector) {
-      height: 48px;
-      padding: 12px 32px 12px 16px;
-      background: var(--color-body-bg);
-      border: 1px solid var(--color-border);
-
-      :global(.ant-select-selection-item),
-      :global(.ant-select-selection-placeholder) {
-        @include font-p1-semi-bold;
-        color: var(--text-color-grey900);
-      }
-    }
-
-    :global(.ant-select-arrow) {
-      top: calc(50% - 6px);
-      right: 16px;
-      width: 24px;
-      height: 24px;
+  &:global(.ant-select-open) {
+    :global(.ant-select-arrow) svg {
+      transform: rotate(-180deg);
     }
   }
 
-  .spin {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    z-index: 1;
-  }
+  :global(.ant-select-selector) {
+    height: 48px;
+    padding: 12px 32px 12px 16px;
+    background: var(--theme-body-color);
+    border: 1px solid var(--theme-border-color);
 
-  .loading {
-    :global(.ant-select-arrow) {
-      display: none;
+    :global(.ant-select-selection-item),
+    :global(.ant-select-selection-placeholder) {
+      @include font-p1-semi-bold;
+      color: var(--theme-primary-color);
     }
   }
 
-  .caret {
-    width: 20px;
-    height: 14px;
+  :global(.ant-select-arrow) {
+    top: 50%;
+    right: 16px;
+    width: 24px;
+    height: 24px;
+    margin: 0;
+    transform: translateY(-50%);
+
+    :global(.ant-spin) {
+      margin-top: 4px;
+    }
   }
 }
 
 .dropdown:global(.ant-select-dropdown) {
   padding: 4px;
-  background: var(--color-overlay-bg);
-  border: 1px solid var(--color-border);
+  background: var(--theme-overlay-color);
+  border: 1px solid var(--theme-border-color);
   border-radius: 4px;
 
   :global(.ant-select-item) {
@@ -62,18 +68,18 @@
 
     :global(.ant-select-item-option-content) {
       @include font-p2-semi-bold;
-      color: var(--color-text);
+      color: var(--theme-secondary-color);
     }
 
     &:global(.ant-select-item-option-selected) {
-      background: var(--color-overlay-bg);
+      background: var(--theme-overlay-color);
     }
 
     &:global(.ant-select-item-option-active) {
-      background: var(--color-border);
+      background: var(--theme-border-color);
 
       :global(.ant-select-item-option-content) {
-        color: var(--text-color-grey900);
+        color: var(--theme-primary-color);
       }
     }
 

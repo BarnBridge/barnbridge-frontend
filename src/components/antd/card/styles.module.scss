@@ -1,8 +1,6 @@
-@import 'src/styles/mixin';
-
 .component {
-  background: var(--color-card-bg);
-  box-shadow: var(--shadow-card);
+  background: var(--theme-card-color);
+  box-shadow: var(--theme-card-shadow);
 
   &:global(.ant-card-contain-tabs) {
     :global(.ant-card-head) {
@@ -28,23 +26,33 @@
     border: none;
 
     + :global(.ant-card-body) {
-      border-top: 1px solid var(--color-border);
+      border-top: 1px solid var(--theme-border-color);
     }
   }
 
   :global(.ant-card-head-title) {
-    max-width: calc(100% - 52px);
     padding: 24px 0;
   }
 
   > :global(.ant-card-body) {
     padding: 24px;
 
-    > :global(.ant-table-wrapper) {
-      :global(.ant-table-container),
-      :global(.ant-table-pagination) {
-        border: none;
-        border-top: 1px solid var(--color-border);
+    //.ant-table.ant-table-empty .ant-table-container
+    //.ant-table-thead .ant-table-cell
+    //> :global(.ant-table-wrapper) {
+    //  :global(.ant-table-container),
+    //  :global(.ant-table-pagination) {
+    //    border: none;
+    //    border-top: 1px solid var(--theme-border-color);
+    //  }
+    //}
+
+    > :global(.ant-table-wrapper .ant-table-container) {
+      border: none;
+
+      :global(.ant-table-thead .ant-table-cell) {
+        border-top: none;
+        border-radius: 0;
       }
     }
 
@@ -66,15 +74,15 @@
   .delimiter {
     width: 100%;
     height: 1px;
-    background: var(--color-border);
+    background: var(--theme-border-color);
   }
 
   .arrow {
     width: 40px;
     height: 40px !important;
     margin-left: 12px;
-    background: var(--color-body-bg) !important;
-    border: 1px solid var(--color-border);
+    background: var(--theme-body-color) !important;
+    border: 1px solid var(--theme-border-color);
     border-radius: 4px;
   }
 }

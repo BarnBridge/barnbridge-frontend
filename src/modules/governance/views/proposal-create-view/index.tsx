@@ -216,7 +216,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
       </Grid>
 
       <Grid flow="row" gap={16}>
-        <Heading type="h1" bold color="grey900" className="mb-16">
+        <Heading type="h1" bold color="primary" className="mb-16">
           Create Proposal
         </Heading>
         <Form
@@ -232,7 +232,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
               align="start">
               <Card
                 title={
-                  <Paragraph type="p1" semiBold color="grey900">
+                  <Paragraph type="p1" semiBold color="primary">
                     Proposal description
                   </Paragraph>
                 }>
@@ -262,7 +262,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
               <Card
                 title={
-                  <Paragraph type="p1" semiBold color="grey900">
+                  <Paragraph type="p1" semiBold color="primary">
                     Actions
                   </Paragraph>
                 }>
@@ -278,11 +278,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                       message: 'At least one action is required!',
                     },
                     {
-                      validator: (
-                        _,
-                        value: StoreValue,
-                        callback: (error?: string) => void,
-                      ) => {
+                      validator: (_, value: StoreValue) => {
                         return value.length > 10
                           ? Promise.reject()
                           : Promise.resolve();
@@ -290,7 +286,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
                       message: 'Maximum 10 actions are allowed!',
                     },
                   ]}>
-                  {(fields, {}, { errors }) => (
+                  {(fields, _, { errors }) => (
                     <Grid flow="row" gap={24}>
                       {fields.map((field, index) => {
                         const fieldData: CreateProposalActionForm = form.getFieldValue(
@@ -364,7 +360,6 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
         {state.showCreateActionModal && (
           <CreateProposalActionModal
-            visible
             edit={state.selectedAction !== undefined}
             initialValues={state.selectedAction}
             onCancel={() =>
@@ -379,7 +374,6 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
         {state.showDeleteActionModal && (
           <DeleteProposalActionModal
-            visible
             onCancel={() =>
               setState({
                 showDeleteActionModal: false,

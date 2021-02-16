@@ -18,20 +18,20 @@ const WalletLockConfirmModal: React.FunctionComponent<WalletLockConfirmModalProp
   const { balance, duration, ...modalProps } = props;
 
   return (
-    <Modal centered width={560} {...modalProps}>
+    <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16}>
           <Icons
             name="warning-outlined"
             width={40}
             height={40}
-            color="red500"
+            color="red"
           />
           <Grid flow="row" gap={8}>
-            <Heading type="h3" semiBold color="grey900">
+            <Heading type="h3" semiBold color="primary">
               Are you sure you want to lock your balance?
             </Heading>
-            <Paragraph type="p2" semiBold color="grey500">
+            <Paragraph type="p2" semiBold color="secondary">
               You are about to lock {formatBONDValue(balance)} $BOND for {getFormattedDuration(0, duration)}.
               <br /><br />
               You cannot undo this or partially lock your balance.
@@ -41,7 +41,7 @@ const WalletLockConfirmModal: React.FunctionComponent<WalletLockConfirmModalProp
               All future deposits you make will be locked for the same time.
               <br /><br />
             </Paragraph>
-            <Paragraph type="p2" bold color="grey900">
+            <Paragraph type="p2" bold color="primary">
               The multiplier you get for locking tokens only applies to your voting power, it does not earn more
               rewards.
             </Paragraph>

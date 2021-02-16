@@ -40,6 +40,8 @@ const Modal: React.FunctionComponent<ModalProps> = props => {
     <Antd.Modal
       zIndex={1}
       className={cx(s.component, className)}
+      visible
+      centered
       footer={null}
       closeIcon={<Icons name="close-circle-outlined" />}
       onCancel={handleCancel}
@@ -51,11 +53,12 @@ const Modal: React.FunctionComponent<ModalProps> = props => {
           zIndex={2}
           className={s.component}
           visible
+          centered
           footer={null}
           closeIcon={<></>}
           onCancel={() => showConfirm(false)}>
           <Grid flow="row" gap={32}>
-            <Paragraph type="p2" semiBold color="grey500">{confirmText}</Paragraph>
+            <Paragraph type="p2" semiBold color="secondary">{confirmText}</Paragraph>
             <Grid flow="col" justify="space-between">
               <Button type="ghost" onClick={() => showConfirm(false)}>No</Button>
               <Button type="primary" onClick={onCancel}>Yes</Button>

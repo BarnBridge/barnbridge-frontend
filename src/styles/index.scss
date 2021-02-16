@@ -1,24 +1,24 @@
-//@import "~antd/dist/antd.css";
 @import 'antd.css';
-@import 'mixin';
+@import 'flex';
+@import 'grid';
+@import 'box';
 @import 'text';
-@import 'default';
-@import 'dark';
 
 body {
   margin: 0;
   font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-    'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-    'Helvetica Neue', sans-serif;
+  'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+  'Helvetica Neue', sans-serif;
+  font-weight: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-body-bg);
-  color: var(--color-text);
+  background: var(--theme-body-color);
+  color: var(--theme-secondary-color);
 }
 
 * {
   box-sizing: border-box;
-  transition: background-color 0.5s ease, color 0.5s ease;
+  transition: background 0.5s ease, color 0.5s ease;
 }
 
 svg,
@@ -40,16 +40,8 @@ p {
   min-height: 100vh;
 }
 
-.ant-modal .ant-modal-body {
-  background-color: var(--bg-color-2) !important;
-}
-
-.ant-modal .ant-modal-footer:empty {
-  display: none;
-}
-
-.ant-modal .ant-modal-close {
-  color: var(--text-color-4);
+body.mobile-menu-open {
+  overflow: hidden;
 }
 
 .ant-notification-notice {
@@ -65,45 +57,6 @@ p {
   --font-size-lb1: 14px;
   --font-size-lb2: 12px;
   --font-size-sm: 12px;
-
-  --content-padding: 32px 64px;
-
-  --bg-color-1: #f8f8f8;
-  --bg-color-2: #fff;
-  --bg-color-4: #e3e4e6;
-  --bg-color-6: rgba(170, 175, 179, 0.08);
-
-  --text-color-1: #060a0d;
-  --text-color-2: #717980;
-  --text-color-3: #ff4339;
-  --text-color-4: #aaafb3;
-  --text-color-5: #000;
-  --text-color-6: #4f6ae6;
-  --text-color-9: #7288ea;
-
-  --border-color-1: #e3e4e6;
-  --border-color-2: #e3e4e6;
-
-  --shadow-color-1: rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
-}
-
-.theme-dark {
-  --bg-color-1: #202529;
-  --bg-color-2: #2b2f33;
-  --bg-color-4: #43484d;
-  --bg-color-6: rgba(147, 148, 150, 0.08);
-
-  --text-color-1: #fff;
-  --text-color-2: #939496;
-  --text-color-3: #ff4339;
-  --text-color-4: #606268;
-  --text-color-5: #fff;
-  --text-color-6: #7288ea;
-
-  --border-color-1: #44494d;
-  --border-color-2: #ff4339;
-
-  --shadow-color-1: rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
 }
 
 @media (max-width: 768px) {
@@ -116,13 +69,51 @@ p {
     --font-size-lb1: 11px;
     --font-size-lb2: 9px;
     --font-size-sm: 9px;
-
-    --content-padding: 32px 32px;
   }
 }
 
-@media (max-width: 425px) {
-  :root {
-    --content-padding: 32px 8px;
-  }
+:root {
+  --theme-body-color: #f8f8f9; // grey50
+  --theme-card-color: #fff;
+  --theme-overlay-color: #fff;
+  --theme-mask-color: rgba(19, 32, 43, 0.8);
+  --theme-border-color: #e3e4e6; // grey100
+  --theme-icon-color: #aaafb3; // grey300
+
+  --theme-primary-color: #060a0d; // grey900
+  --theme-secondary-color: #717980; // grey500
+  --theme-default-color: #aaafb3; // grey300
+
+  --theme-card-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+  --theme-modal-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 16px 32px rgba(19, 32, 43, 0.4);
+  --theme-overlay-shadow: 0 0 0.5px rgba(0, 0, 0, 0.4), 0 32px 64px rgba(113, 121, 128, 0.32);
+
+  --theme-red-color: #ff4339; // red500
+  --theme-red-color-rgb: 255, 67, 57; // red500
+
+  --theme-green-color: #00d395; // green500
+  --theme-green-color-rgb: 0, 211, 149; // green500
+
+  --theme-blue-color: #4f6ae6; // blue500
+  --theme-blue-color-rgb: 79, 106, 230; // blue500
+
+  --theme-yellow-color: #ffd160; // yellow500
+  --theme-yellow-color-rgb: 255, 209, 96; // yellow500
+}
+
+[data-theme='dark'] {
+  --theme-body-color: #202529;
+  --theme-card-color: #282c30;
+  --theme-overlay-color: #36393d;
+  --theme-mask-color: rgba(32, 37, 41, 0.8);
+  --theme-border-color: #43484d;
+  --theme-icon-color: #606268;
+
+  --theme-primary-color: #fff;
+  --theme-secondary-color: #939496;
+  --theme-default-color: #606268;
+
+  --theme-card-shadow: 0 0 0.5px #fff, 0 8px 16px rgba(0, 0, 0, 0.08);
+  --theme-modal-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
+  --theme-overlay-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
 }

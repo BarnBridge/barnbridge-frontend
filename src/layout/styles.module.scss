@@ -1,45 +1,9 @@
-@import 'src/styles/mixin';
-
-.container {
+.layout {
   min-height: 100vh;
-}
-
-.main {
-  position: relative;
-  background-color: var(--color-body-bg);
-}
-
-:global(.mobile-menu-open) .main {
-  max-height: 100vh;
-  overflow: hidden;
-}
-
-.content {
+  background: var(--theme-body-color);
 }
 
 .footer {
-  padding: 0 64px 32px;
-  background-color: transparent;
-  text-align: right;
-}
-
-.footerLinks a {
-  margin-left: 24px;
-  font-family: Montserrat;
-  font-style: normal;
-  font-weight: 600;
-  font-size: 14px;
-  line-height: 24px;
-  color: var(--text-color-4);
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .siderNav {
-    display: none;
-  }
-
-  .footer {
-    display: none;
-  }
+  padding: 32px;
+  background: var(--theme-body-color);
 }

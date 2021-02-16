@@ -108,16 +108,16 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
             <RadioButton
               key={option.key}
               label={
-                <Paragraph type="p1" semiBold color="grey900">
+                <Paragraph type="p1" semiBold color="primary">
                   {option.name}
                 </Paragraph>
               }
               hint={
                 <Grid flow="col" gap={4}>
-                  <Paragraph type="p1" semiBold color="grey900">
+                  <Paragraph type="p1" semiBold color="primary">
                     {option.value}
                   </Paragraph>
-                  <Paragraph type="p2" color="grey500">
+                  <Paragraph type="p2" color="secondary">
                     Gwei
                   </Paragraph>
                 </Grid>

@@ -16,9 +16,9 @@ import Grid from '../../custom/grid';
 export type FormListProps = AntdFormListProps & {};
 
 const FormList: React.FunctionComponent<FormListProps> = props => {
-  const { ...listProps } = props;
+  const { children, ...listProps } = props;
 
-  return <Antd.Form.List {...listProps} />;
+  return <Antd.Form.List children={children} {...listProps} />;
 };
 
 export type FormItemProps = AntdFormItemProps<any> & {

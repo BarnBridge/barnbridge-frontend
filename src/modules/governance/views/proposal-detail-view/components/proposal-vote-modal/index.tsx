@@ -100,7 +100,6 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
   return (
     <Modal
       className={s.component}
-      centered
       width={560}
       title={
         <>
@@ -118,48 +117,48 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
           <Grid flow="col" gap={8} align="center">
-            <Heading type="h2" bold color="grey900">
+            <Heading type="h2" bold color="primary">
               {formatBigValue(proposalCtx.votingPower, 2)}
             </Heading>
-            <Paragraph type="p1" semiBold color="grey500">
+            <Paragraph type="p1" semiBold color="secondary">
               Votes
             </Paragraph>
           </Grid>
           {(voteState === VoteState.VoteFor || voteState === VoteState.VoteAgainst) && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="grey500">
+              <Paragraph type="p2" color="secondary">
                 You are about to vote on proposal
               </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
+              <Paragraph type="p2" semiBold color="secondary">
                 "{proposalCtx.proposal?.title}"
               </Paragraph>
-              <Paragraph type="p2" color="grey500">
+              <Paragraph type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote later.
               </Paragraph>
             </Grid>
           )}
           {voteState === VoteState.VoteChange && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="grey500">
+              <Paragraph type="p2" color="secondary">
                 You are about to change your vote on proposal
               </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
+              <Paragraph type="p2" semiBold color="secondary">
                 "{proposalCtx.proposal?.title}"
               </Paragraph>
-              <Paragraph type="p2" color="grey500">
+              <Paragraph type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
               </Paragraph>
             </Grid>
           )}
           {voteState === VoteState.VoteCancel && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="grey500">
+              <Paragraph type="p2" color="secondary">
                 You are about to cancel your vote on proposal
               </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
+              <Paragraph type="p2" semiBold color="secondary">
                 "{proposalCtx.proposal?.title}"
               </Paragraph>
-              <Paragraph type="p2" color="grey500">
+              <Paragraph type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
               </Paragraph>
             </Grid>
@@ -178,7 +177,7 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="grey900">
+                      <Paragraph type="p1" semiBold color="primary">
                         For
                       </Paragraph>
                     }
@@ -186,7 +185,7 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                   />
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="grey900">
+                      <Paragraph type="p1" semiBold color="primary">
                         Against
                       </Paragraph>
                     }

@@ -28,7 +28,7 @@ const TABS: CardTabListType[] = [
   {
     key: 'all',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Paragraph type="p1" semiBold color="primary">
         All proposals
       </Paragraph>
     ),
@@ -36,7 +36,7 @@ const TABS: CardTabListType[] = [
   {
     key: 'active',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Paragraph type="p1" semiBold color="primary">
         Active
       </Paragraph>
     ),
@@ -44,7 +44,7 @@ const TABS: CardTabListType[] = [
   {
     key: 'executed',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Paragraph type="p1" semiBold color="primary">
         Executed
       </Paragraph>
     ),
@@ -52,7 +52,7 @@ const TABS: CardTabListType[] = [
   {
     key: 'failed',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Paragraph type="p1" semiBold color="primary">
         Failed
       </Paragraph>
     ),
@@ -103,7 +103,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col" align="center" justify="space-between">
-        <Heading type="h1" bold color="grey900">
+        <Heading type="h1" bold color="primary">
           Proposals
         </Heading>
         {wallet.isActive && (
@@ -117,7 +117,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
 
             {hasCreateRestrictions && !canCreateProposal && (
               <Grid flow="col" gap={8} align="center">
-                <Small semiBold color="grey500">
+                <Small semiBold color="secondary">
                   You are not able to create a proposal.
                 </Small>
                 <Popover
