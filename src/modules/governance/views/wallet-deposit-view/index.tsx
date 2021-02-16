@@ -108,31 +108,31 @@ const WalletDepositView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           BOND
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Staked Balance
         </Small>
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           {formatBONDValue(stakedBalance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Wallet Balance
         </Small>
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           {formatBONDValue(bondBalance)}
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Enable Token
         </Small>
         <Antd.Switch
@@ -197,7 +197,6 @@ const WalletDepositView: React.FunctionComponent = () => {
 
       {state.showDepositConfirmModal && (
         <WalletDepositConfirmModal
-          visible
           deposit={form.getFieldsValue().amount}
           lockDuration={userLockedUntil}
           onCancel={() => setState({ showDepositConfirmModal: false })}

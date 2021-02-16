@@ -15,7 +15,7 @@ const AbrogationDetailsCard: React.FunctionComponent = () => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           Details
         </Paragraph>
       }
@@ -23,7 +23,7 @@ const AbrogationDetailsCard: React.FunctionComponent = () => {
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500">
+            <Small semiBold color="secondary">
               Created by
             </Small>
             <Grid flow="col" gap={8}>
@@ -36,11 +36,7 @@ const AbrogationDetailsCard: React.FunctionComponent = () => {
                 href={`${getEtherscanAddressUrl(
                   abrogationCtx.abrogation?.caller!,
                 )}`}>
-                <Paragraph
-                  type="p1"
-                  semiBold
-                  color="blue500"
-                  loading={!abrogationCtx.abrogation}>
+                <Paragraph type="p1" semiBold color="blue">
                   {shortenAddr(abrogationCtx.abrogation?.caller)}
                 </Paragraph>
               </ExternalLink>
@@ -50,14 +46,10 @@ const AbrogationDetailsCard: React.FunctionComponent = () => {
       </Grid>
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Description
         </Small>
-        <Paragraph
-          type="p1"
-          color="grey900"
-          loading={!abrogationCtx.abrogation}
-          wrap>
+        <Paragraph type="p1" color="primary" wrap>
           {abrogationCtx.abrogation?.description}
         </Paragraph>
       </Grid>

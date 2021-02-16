@@ -22,11 +22,11 @@ export default function SelectTranche() {
           <br />
           <Small semiBold>Senior tranche</Small>
           <br />
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             Fixed APY
           </Paragraph>
           <br />
-          <Paragraph type="p1" bold color="green500">
+          <Paragraph type="p1" bold color="green">
             6.42%
           </Paragraph>
         </RadioCard>

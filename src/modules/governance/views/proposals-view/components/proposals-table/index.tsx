@@ -18,7 +18,7 @@ import s from './styles.module.scss';
 const Columns: ColumnsType<APILiteProposalEntity> = [
   {
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Proposal
       </Small>
     ),
@@ -26,13 +26,13 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
     render: (_, data: APILiteProposalEntity) => (
       <Grid flow="row" gap={8}>
         <Link to={`proposals/${data.proposalId}`}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             PID-{data.proposalId}: {data.title}
           </Paragraph>
         </Link>
         <Grid flow="col" gap={16} align="center">
           <ProposalStatusTag state={data.state} />
-          <Paragraph type="p2" semiBold color="grey500">
+          <Paragraph type="p2" semiBold color="secondary">
             {data.stateTimeLeft ? `${getFormattedDuration(data.stateTimeLeft)} left` : ''}
           </Paragraph>
         </Grid>
@@ -41,7 +41,7 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
   },
   {
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Votes
       </Small>
     ),
@@ -62,20 +62,20 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
           <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
             <Progress
               percent={forRate.toNumber()}
-              strokeColor="var(--text-color-green500)"
-              trailColor="rgba(var(--text-color-green500-rgb), .16)"
+              strokeColor="var(--theme-green-color)"
+              trailColor="rgba(var(--theme-green-color-rgb), .16)"
             />
-            <Paragraph type="p2" semiBold color="grey500" align="right">
+            <Paragraph type="p2" semiBold color="secondary" align="right">
               {forRate.toFormat(2)}%
             </Paragraph>
           </Grid>
           <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
             <Progress
               percent={againstRate.toNumber()}
-              strokeColor="var(--text-color-red500)"
-              trailColor="rgba(var(--text-color-red500-rgb), .16)"
+              strokeColor="var(--theme-red-color)"
+              trailColor="rgba(var(--theme-red-color-rgb), .16)"
             />
-            <Paragraph type="p2" semiBold color="grey500" align="right">
+            <Paragraph type="p2" semiBold color="secondary" align="right">
               {againstRate.toFormat(2)}%
             </Paragraph>
           </Grid>
@@ -109,7 +109,7 @@ const ProposalsTable: React.FunctionComponent = () => {
         pageSize: proposalsCtx.pageSize,
         position: ['bottomRight'],
         showTotal: (total: number, [from, to]: [number, number]) => (
-          <Paragraph type="p2" semiBold color="grey500">
+          <Paragraph type="p2" semiBold color="secondary">
             Showing {from} to {to} out of {total} proposals
           </Paragraph>
         ),

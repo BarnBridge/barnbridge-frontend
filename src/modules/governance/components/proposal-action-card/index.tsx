@@ -89,9 +89,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
     },
     {
       key: 'delete',
-      icon: <Icons name="bin-outlined" color="red500" />,
+      icon: <Icons name="bin-outlined" color="red" />,
       title: (
-        <Paragraph type="p1" semiBold color="red500">
+        <Paragraph type="p1" semiBold color="red">
           Delete action
         </Paragraph>
       ),
@@ -127,7 +127,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   return (
     <ExpandableCard
       title={
-        <Paragraph type="p2" semiBold color="grey900">
+        <Paragraph type="p2" semiBold color="primary">
           {title}
         </Paragraph>
       }
@@ -141,7 +141,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
           </PopoverMenu>
         ) : (
           <Button type="link" onClick={handleShowSignature}>
-            <Small semiBold color="grey500">
+            <Small semiBold color="secondary">
               {isSignature ? 'Show transaction' : 'Show function signature'}
             </Small>
           </Button>
@@ -151,7 +151,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
         ellipsis || expanded ? (
           <Grid flow="col" align="center" justify="center">
             <Button type="link" onClick={handleExpand}>
-              <Small semiBold color="grey500">
+              <Small semiBold color="secondary">
                 {expanded ? 'Hide details' : 'Show more'}
               </Small>
             </Button>
@@ -161,7 +161,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
       {...cardProps}>
       <div className={s.content}>
         <ExternalLink href={etherscanLink}>
-          <Paragraph type="p1" semiBold className={s.address} color="blue500">
+          <Paragraph type="p1" semiBold className={s.address} color="blue">
             {shortenAddr(target)}
           </Paragraph>
         </ExternalLink>

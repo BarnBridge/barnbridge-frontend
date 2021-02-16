@@ -13,42 +13,31 @@ export function useTheme(): ThemeContextType {
   return React.useContext<ThemeContextType>(ThemeContext);
 }
 
-const DEFAULT_THEME_KEY = 'default';
-const DARK_THEME_KEY = 'dark';
+const mqlDark = window.matchMedia('(prefers-color-scheme: dark)');
+const defaultTheme = mqlDark.matches ? 'dark' : 'light';
 
-const ThemeProvider: React.FunctionComponent = props => {
-  const [theme, setTheme] = useLocalStorage('bb-theme', DEFAULT_THEME_KEY);
+const ThemeProvider: React.FC = props => {
+  const { children } = props;
 
-  const value = React.useMemo<ThemeContextType>(
-    () => ({
-      theme,
-      isDarkTheme: theme === DARK_THEME_KEY,
-      toggleDarkTheme: () => {
-        if (theme !== DARK_THEME_KEY) {
-          setTheme(DARK_THEME_KEY);
-        } else {
-          setTheme(DEFAULT_THEME_KEY);
-        }
-      },
-    }),
-    [theme, setTheme],
-  );
+  const [theme, setTheme] = useLocalStorage('bb_theme', defaultTheme);
 
   React.useEffect(() => {
-    Array.from(document.body.classList.values()).forEach(value => {
-      if (value.startsWith('theme-')) {
-        document.body.classList.remove(value);
-      }
-    });
-
     if (theme) {
-      document.body.classList.add(`theme-${theme}`);
+      document.body.setAttribute('data-theme', theme);
+    } else {
+      document.body.removeAttribute('data-theme');
     }
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={value}>
-      {props.children}
+    <ThemeContext.Provider value={{
+      theme,
+      isDarkTheme: theme === 'dark',
+      toggleDarkTheme: () => {
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+      },
+    }}>
+      {children}
     </ThemeContext.Provider>
   );
 };

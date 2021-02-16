@@ -19,7 +19,7 @@ const LayoutHeader: React.FunctionComponent<LayoutHeaderProps> = props => {
       align="center"
       justify="space-between"
       className={s.component}>
-      <Heading type="h3" semiBold color="grey900">
+      <Heading type="h3" semiBold color="primary">
         {title}
       </Heading>
       <ConnectedWallet />

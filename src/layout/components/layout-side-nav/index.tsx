@@ -44,11 +44,7 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
   );
 };
 
-export type LayoutSideNavProps = {
-  className?: string;
-};
-
-const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
+const LayoutSideNav: React.FunctionComponent = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
@@ -69,7 +65,7 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
       <Grid flow="row" gap={48} className={s.headerWrap}>
         <Grid flow="col" gap={12} className={s.headerLogo}>
           <Icons name="bond-square-token" />
-          {expanded && <Icons name="barnbridge" width="113" color="grey900" />}
+          {expanded && <Icons name="barnbridge" width="113" color="primary" />}
         </Grid>
         <Grid flow="row" gap={24}>
           <NavLink

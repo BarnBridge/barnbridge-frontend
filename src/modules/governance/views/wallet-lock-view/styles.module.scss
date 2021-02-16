@@ -1,6 +1,4 @@
-@import 'src/styles/mixin';
-
 .activeOption {
-  box-shadow: var(--btn-select-shadow-active) !important;
   border: var(--btn-select-border-active) !important;
+  box-shadow: var(--btn-select-shadow-active) !important;
 }

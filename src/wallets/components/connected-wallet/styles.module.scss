@@ -1,0 +1,19 @@
+.notification {
+  &:hover svg {
+    color: var(--theme-primary-color);
+  }
+}
+
+.accountLink {
+  &:global(.ant-popover-open) {
+    .dropdownArrow {
+      transform: rotate(-180deg);
+    }
+  }
+}
+
+.statusTag {
+  padding: 4px 12px;
+  background: rgba(0, 211, 149, 0.1);
+  border-radius: 12px;
+}

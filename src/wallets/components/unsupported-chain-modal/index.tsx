@@ -1,44 +1,45 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps } from 'antd/lib/modal';
 
 import Button from 'components/antd/button';
+import Modal, { ModalProps } from 'components/antd/modal';
+import Grid from 'components/custom/grid';
+import { Heading, Paragraph } from 'components/custom/typography';
+import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import { useWallet } from 'wallets/wallet';
-
-import s from './styles.module.css';
 
 export type UnsupportedChainModalProps = ModalProps & {};
 
 const UnsupportedChainModal: React.FunctionComponent<UnsupportedChainModalProps> = props => {
   const { ...modalProps } = props;
 
+  const ethWeb3 = useEthWeb3();
   const wallet = useWallet();
 
   return (
-    <Antd.Modal
-      className={s.component}
-      centered
-      closable={false}
-      footer={[]}
-      {...modalProps}>
-      <div className={s.headerLabel}>Wrong network</div>
-      <div className={s.text}>
-        Please switch your wallet network to <b>Mainnet</b> to use the app
-      </div>
-      <div className={s.text}>
-        If you still encounter problems, you may want to switch to a different
-        wallet
-      </div>
-      <Button
-        type="ghost"
-        className={s.switchBtn}
-        onClick={(ev: React.MouseEvent<HTMLElement>) => {
-          props.onCancel?.(ev);
-          wallet.showWalletsModal();
-        }}>
-        Switch wallet
-      </Button>
-    </Antd.Modal>
+    <Modal width={568} {...modalProps}>
+      <Grid flow="row" gap={24} align="start">
+        <Grid flow="row" gap={16}>
+          <Heading type="h2" bold color="primary">
+            Wrong network
+          </Heading>
+          <Paragraph type="p1" semiBold color="secondary">
+            Please switch your wallet network to {ethWeb3.networkName ?? '<!>'} to use the app
+          </Paragraph>
+          <Paragraph type="p1" color="secondary">
+            If you still encounter problems, you may want to switch to a different wallet
+          </Paragraph>
+        </Grid>
+
+        <Button
+          type="ghost"
+          onClick={() => {
+            props.onCancel?.();
+            wallet.showWalletsModal();
+          }}>
+          Switch wallet
+        </Button>
+      </Grid>
+    </Modal>
   );
 };
 

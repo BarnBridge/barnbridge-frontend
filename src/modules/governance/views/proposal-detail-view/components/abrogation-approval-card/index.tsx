@@ -3,7 +3,7 @@ import React from 'react';
 import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Hint, Paragraph } from 'components/custom/typography';
 import { useAbrogation } from '../../providers/AbrogationProvider';
 
 const AbrogationApprovalCard: React.FunctionComponent = () => {
@@ -14,25 +14,27 @@ const AbrogationApprovalCard: React.FunctionComponent = () => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="grey900"
-                   hint="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
-          Abrogation proposal approval
-        </Paragraph>
+        <Hint
+          text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
+          <Paragraph type="p1" semiBold color="primary">
+            Abrogation proposal approval
+          </Paragraph>
+        </Hint>
       }>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {abrogationCtx.approvalRate?.toFixed(2)}%
           </Paragraph>
-          <Paragraph type="p1" color="grey500">
+          <Paragraph type="p1" color="secondary">
             (&gt; {abrogationCtx.acceptanceThreshold}% required)
           </Paragraph>
         </Grid>
         <Progress
           percent={abrogationCtx.approvalRate}
           acceptance={abrogationCtx.acceptanceThreshold}
-          strokeColor={passed ? 'var(--text-color-green500)' : 'var(--text-color-red500)'}
-          trailColor={passed ? 'rgba(var(--text-color-green500-rgb), .16)' : 'rgba(var(--text-color-red500-rgb), .16)'}
+          strokeColor={passed ? 'var(--theme-green-color)' : 'var(--theme-red-color)'}
+          trailColor={passed ? 'rgba(var(--theme-green-color-rgb), .16)' : 'rgba(var(--theme-red-color-rgb), .16)'}
         />
       </Grid>
     </Card>

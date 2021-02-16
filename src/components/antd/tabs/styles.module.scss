@@ -1,11 +1,11 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
 .tabs {
   > :global(.ant-tabs-nav) {
     margin: 0;
     padding: 0 24px;
-    background: var(--color-card-bg);
-    border: 1px solid var(--color-border);
+    background: var(--theme-card-color);
+    border: 1px solid var(--theme-border-color);
 
     &:before {
       border: none;
@@ -20,15 +20,15 @@
             column-gap: 8px;
             align-items: center;
             @include font-p1-semi-bold;
-            color: var(--text-color-grey500);
+            color: var(--theme-secondary-color);
           }
 
           &:global(.ant-tabs-tab-active) {
             > :global(.ant-tabs-tab-btn) {
-              color: var(--text-color-grey900);
+              color: var(--theme-primary-color);
 
               > svg {
-                color: var(--text-color-red500);
+                color: var(--theme-red-color);
               }
             }
           }
@@ -36,7 +36,7 @@
 
         > :global(.ant-tabs-ink-bar) {
           height: 2px;
-          background: var(--text-color-red500);
+          background: var(--theme-red-color);
           border-radius: 4px 4px 0 0;
         }
       }

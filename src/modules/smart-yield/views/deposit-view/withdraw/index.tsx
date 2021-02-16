@@ -44,24 +44,24 @@ export default function Withdraw() {
       <Grid flow="col" gap={64} align="center" className="mb-64">
         <MarketCoinCard />
         <div>
-          <Small semiBold block className="mb-4">
+          <Small semiBold className="mb-4">
             Wallet balance
           </Small>
-          <Paragraph type="p1" semiBold color="grey900" block>
+          <Paragraph type="p1" semiBold color="primary">
             25,381.3247
           </Paragraph>
         </div>
         <div>
-          <Small semiBold block className="mb-4">
+          <Small semiBold className="mb-4">
             Portfolio balance
           </Small>
-          <Paragraph type="p1" semiBold color="grey900" block>
+          <Paragraph type="p1" semiBold color="primary">
             5,230.9971
           </Paragraph>
         </div>
       </Grid>
       <Card>
-        <Heading type="h3" semiBold color="grey900">
+        <Heading type="h3" semiBold color="primary">
           Initiate Withdraw
         </Heading>
         <Paragraph type="p2" semiBold>
@@ -108,22 +108,22 @@ export default function Withdraw() {
               selected={withdrawType === 'regular'}
               onClick={() => setWithdrawType('regular')}>
               <Icon name="withdrawal_regular" width={64} height={64} />
-              <Paragraph type="p1" semiBold color="grey900">Regular withdraw</Paragraph>
+              <Paragraph type="p1" semiBold color="primary">Regular withdraw</Paragraph>
               <Small semiBold>Wait time</Small>
-              <Paragraph type="p1" semiBold color="grey900">60 days</Paragraph>
+              <Paragraph type="p1" semiBold color="primary">60 days</Paragraph>
               <Small semiBold>Total withdrawable amount</Small>
-              <Paragraph type="p1" semiBold color="grey900">5,318.4489 USDC</Paragraph>
+              <Paragraph type="p1" semiBold color="primary">5,318.4489 USDC</Paragraph>
             </RadioCard>
             <RadioCard
               selected={withdrawType === 'instant'}
               onClick={() => setWithdrawType('instant')}>
               <Icon name="withdrawal_instant" width={64} height={64} />
               <br />
-              <Paragraph type="p1" semiBold color="grey900">Instant withdraw</Paragraph>
+              <Paragraph type="p1" semiBold color="primary">Instant withdraw</Paragraph>
               <Small semiBold>Wait time</Small>
-              <Paragraph type="p1" semiBold color="grey900">None</Paragraph>
+              <Paragraph type="p1" semiBold color="primary">None</Paragraph>
               <Small semiBold>Total withdrawable amount</Small>
-              <Paragraph type="p1" semiBold color="grey900">5,000.0000 USDC</Paragraph>
+              <Paragraph type="p1" semiBold color="primary">5,000.0000 USDC</Paragraph>
             </RadioCard>
           </Grid>
         </Form>

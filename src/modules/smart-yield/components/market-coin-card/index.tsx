@@ -8,7 +8,7 @@ export default function MarketCoinCard() {
       <IconBubble name="usdc-token" bubbleName="compound" />
       <Grid flow="row" gap={4} className="ml-auto">
         <div>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             USD Coin
           </Paragraph>
           {' '}

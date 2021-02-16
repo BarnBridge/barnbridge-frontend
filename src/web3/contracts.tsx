@@ -3,7 +3,7 @@ import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 
 import { useWallet } from 'wallets/wallet';
-import { PoolTypes, ZERO_BIG_NUMBER } from 'web3/utils';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import {
   BONDContract,
@@ -48,6 +48,7 @@ import {
   DAOGovernanceContract,
   useDAOGovernanceContract,
 } from 'web3/contracts/daoGovernance';
+import { PoolTypes } from 'modules/yield-farming/utils';
 
 import UserRejectedModal from 'web3/components/user-rejected-modal';
 
@@ -545,7 +546,6 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     <Web3ContractsContext.Provider value={value}>
       {userRejectedVisible && (
         <UserRejectedModal
-          visible
           onCancel={() => setUserRejectedVisible(false)}
         />
       )}

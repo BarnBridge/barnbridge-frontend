@@ -27,7 +27,7 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'token',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Token Name
         </Small>
       ),
@@ -35,7 +35,7 @@ export default function PortfolioStatistics() {
         <Grid flow="col" gap={16} align="center">
           <IconBubble name="usdc-token" bubbleName="compound" />
           <Grid flow="row" gap={4} className="ml-auto">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               {value[0]}
             </Paragraph>
             <Small semiBold>{value[1]}</Small>
@@ -46,13 +46,13 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'transactionHash',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Transaction Hash
         </Small>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {value}
           </Paragraph>
         </Grid>
@@ -61,16 +61,16 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'date',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Date
         </Small>
       ),
       render: (value: Date) => (
         <>
-          <Paragraph type="p1" semiBold color="green500">
+          <Paragraph type="p1" semiBold color="green">
             {value.toLocaleDateString()}
           </Paragraph>
-          <Small semiBold color="grey300">
+          <Small semiBold>
             {value.toLocaleTimeString()}
           </Small>
         </>
@@ -79,13 +79,13 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'amount',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Amount
         </Small>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {value[0]}
           </Paragraph>
           <Small semiBold>${value[1]}</Small>
@@ -95,12 +95,12 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'tranch',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Tranch
         </Small>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="purple500">
+        <Paragraph type="p1" semiBold color="purple">
           {value}
         </Paragraph>
       ),
@@ -108,12 +108,12 @@ export default function PortfolioStatistics() {
     {
       dataIndex: 'transactionType',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Transaction type
         </Small>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           {value}
         </Paragraph>
       ),
@@ -124,13 +124,13 @@ export default function PortfolioStatistics() {
   return (
     <Grid gap={32} rowsTemplate="auto auto" colsTemplate="40% 60%">
       <Card>
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           Portfolio balance
         </Paragraph>
       </Card>
       <Card>
         <Grid flow="col" colsTemplate="1fr max-content">
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             Portfolio value
           </Paragraph>
           <Small semiBold>Last month</Small>
@@ -141,7 +141,7 @@ export default function PortfolioStatistics() {
         noPaddingBody
         title={
           <Grid flow="col" colsTemplate="1fr max-content">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               Transaction history
             </Paragraph>
             <Button type="light" onClick={() => console.log('Le open filter modal')}>

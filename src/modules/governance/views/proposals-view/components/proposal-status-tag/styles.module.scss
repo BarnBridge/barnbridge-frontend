@@ -11,10 +11,10 @@
 
   &.ACCEPTED,
   &.EXECUTED {
-    background-color: rgba(var(--text-color-green500-rgb), 0.08);
+    background: rgba(var(--theme-green-color-rgb), 0.08);
 
     label {
-      color: var(--text-color-green500);
+      color: var(--theme-green-color);
     }
   }
 
@@ -22,10 +22,10 @@
   &.ACTIVE,
   &.QUEUED,
   &.GRACE {
-    background-color: rgba(var(--text-color-blue500-rgb), 0.08);
+    background: rgba(var(--theme-blue-color-rgb), 0.08);
 
     label {
-      color: var(--text-color-blue500);
+      color: var(--theme-blue-color);
     }
   }
 
@@ -33,10 +33,10 @@
   &.FAILED,
   &.CANCELED,
   &.ABROGATED {
-    background-color: rgba(var(--text-color-red500-rgb), 0.08);
+    background: rgba(var(--theme-red-color-rgb), 0.08);
 
     label {
-      color: var(--text-color-red500);
+      color: var(--theme-red-color);
     }
   }
 }

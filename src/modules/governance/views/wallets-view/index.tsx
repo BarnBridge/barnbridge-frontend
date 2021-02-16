@@ -47,7 +47,7 @@ const WalletView: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={32}>
-      <Heading type="h1" bold color="grey900">
+      <Heading type="h1" bold color="primary">
         Wallet
       </Heading>
       <Tabs activeKey={activeTab} simple onChange={handleTabChange}>

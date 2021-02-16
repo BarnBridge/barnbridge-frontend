@@ -120,7 +120,7 @@ export default function SeniorTranche() {
                       });
                       // setState({});
                     }}>
-                    <Paragraph type="p1" semiBold color="grey900">
+                    <Paragraph type="p1" semiBold color="primary">
                       {opt}
                     </Paragraph>
                   </Button>

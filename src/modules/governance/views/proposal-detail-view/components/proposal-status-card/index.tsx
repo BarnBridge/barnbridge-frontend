@@ -25,7 +25,7 @@ function getEventIcon(index: number, name: string): React.ReactNode {
       name="close-circle-outlined"
       width={40}
       height={40}
-      color="red500"
+      color="red"
     />);
   }
 
@@ -40,7 +40,7 @@ function getEventIcon(index: number, name: string): React.ReactNode {
       name="check-circle-outlined"
       width={40}
       height={40}
-      color="green500"
+      color="green"
     />);
   }
 
@@ -49,7 +49,7 @@ function getEventIcon(index: number, name: string): React.ReactNode {
       name="history-circle-outlined"
       width={40}
       height={40}
-      color="blue500"
+      color="blue"
     />);
   }
 
@@ -57,7 +57,7 @@ function getEventIcon(index: number, name: string): React.ReactNode {
     name="check-circle-outlined"
     width={40}
     height={40}
-    color="green500"
+    color="green"
   />);
 }
 
@@ -110,7 +110,7 @@ const ProposalStatusCard: React.FunctionComponent = () => {
             <Grid flow="row" gap={4}>
               {event.txHash ? (
                 <Grid flow="col" gap={8} align="center">
-                  <Paragraph type="p1" semiBold color="grey900">
+                  <Paragraph type="p1" semiBold color="primary">
                     {APIProposalStateMap.get(event.name as APIProposalState)}
                   </Paragraph>
                   <ExternalLink
@@ -120,7 +120,7 @@ const ProposalStatusCard: React.FunctionComponent = () => {
                   </ExternalLink>
                 </Grid>
               ) : (
-                <Paragraph type="p1" semiBold color="grey900">
+                <Paragraph type="p1" semiBold color="primary">
                   {APIProposalStateMap.get(event.name as APIProposalState)}
                 </Paragraph>
               )}
@@ -130,7 +130,7 @@ const ProposalStatusCard: React.FunctionComponent = () => {
                 delay={10_000}
                 onEnd={() => proposalCtx.reload()}>
                 {(() => (
-                  <Paragraph type="p2" semiBold color="grey500">
+                  <Paragraph type="p2" semiBold color="secondary">
                     {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
                   </Paragraph>
                 ))}

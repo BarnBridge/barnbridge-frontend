@@ -1,24 +1,23 @@
 import React from 'react';
 
-import { WalletConnector } from 'wallets/types';
-import { useWallet, WalletConnectors } from 'wallets/wallet';
-import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
-import useMergeState from 'hooks/useMergeState';
-
-import Modal, { ModalProps } from 'components/antd/modal';
-import { Heading, Paragraph } from 'components/custom/typography';
 import Button from 'components/antd/button';
+import Modal, { ModalProps } from 'components/antd/modal';
+import Grid from 'components/custom/grid';
+import { Heading, Paragraph } from 'components/custom/typography';
+import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
 
-import s from './styles.module.css';
+import { useWallet, WalletConnectors } from 'wallets/wallet';
+import { WalletConnector } from 'wallets/types';
+import useMergeState from 'hooks/useMergeState';
 
 export type ConnectWalletModalProps = ModalProps & {};
 
 type ConnectWalletModalState = {
-  showLedgerDerivationPathModal: boolean;
+  showLedgerModal: boolean;
 };
 
 const InitialState: ConnectWalletModalState = {
-  showLedgerDerivationPathModal: false,
+  showLedgerModal: false,
 };
 
 const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = props => {
@@ -33,37 +32,45 @@ const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = pro
     }
 
     if (connector.id === 'ledger') {
-      return setState({ showLedgerDerivationPathModal: true });
+      setState({
+        showLedgerModal: true,
+      });
+      return;
     }
 
-    return wallet.connect(connector);
+    wallet.connect(connector)
+      .catch(Error);
   }
 
   return (
-    <Modal className={s.component} width={568} {...modalProps}>
-      <Heading type="h2" bold className={s.headerLabel}>
-        Connect Wallet
-      </Heading>
-      <Paragraph type="p1" className={s.headerNote}>
-        Please select the wallet of your liking
-      </Paragraph>
-      <div className={s.list}>
-        {WalletConnectors.map(connector => (
-          <Button
-            key={connector.id}
-            type="link"
-            className={s.btn}
-            onClick={() => handleConnectorSelect(connector)}>
-            <img src={connector.logo} alt={connector.name} className={s.logo} />
-          </Button>
-        ))}
-      </div>
+    <Modal width={568} {...modalProps}>
+      <Grid flow="row" gap={32}>
+        <Grid flow="row" gap={4}>
+          <Heading type="h2" bold color="primary">
+            Connect Wallet
+          </Heading>
+          <Paragraph type="p1" color="secondary">
+            Please select the wallet of your liking
+          </Paragraph>
+        </Grid>
 
-      {state.showLedgerDerivationPathModal && (
+        <Grid gap={24} colsTemplate="repeat(auto-fit, minmax(120px, 240px))">
+          {WalletConnectors.map(connector => (
+            <Button
+              key={connector.id}
+              type="select"
+              style={{ height: '96px' }}
+              onClick={() => handleConnectorSelect(connector)}>
+              <img src={connector.logo} alt={connector.name} height={32} />
+            </Button>
+          ))}
+        </Grid>
+      </Grid>
+
+      {state.showLedgerModal && (
         <LedgerDerivationPathModal
-          visible
           onCancel={() => {
-            setState({ showLedgerDerivationPathModal: false });
+            setState({ showLedgerModal: false });
           }}
         />
       )}

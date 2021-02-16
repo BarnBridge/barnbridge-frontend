@@ -1,6 +1,4 @@
-import React from 'react';
 import BigNumber from 'bignumber.js';
-import memoize from 'lodash/memoize';
 
 import { TokenMeta } from 'web3/types';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -39,17 +37,6 @@ export function getEtherscanAddressUrl(
       return `https://rinkeby.etherscan.io/address/${address}`;
     default:
       throw new Error(`Not supported chainId=${chainId}.`);
-  }
-}
-
-export function getNetworkName(chainId: number | undefined): string {
-  switch (chainId) {
-    case 1:
-      return 'Mainnet';
-    case 4:
-      return 'Rinkeby';
-    default:
-      return '-';
   }
 }
 
@@ -144,40 +131,6 @@ export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
       return undefined;
   }
 }
-
-export enum PoolTypes {
-  STABLE = 'stable',
-  UNILP = 'unilp',
-  BOND = 'bond',
-}
-
-export const getPoolIcons = memoize(
-  (poolType: PoolTypes): React.ReactNode[] => {
-    switch (poolType) {
-      case PoolTypes.STABLE:
-        return [USDCTokenMeta.icon, DAITokenMeta.icon, SUSDTokenMeta.icon];
-      case PoolTypes.UNILP:
-        return [UNISWAPTokenMeta.icon];
-      case PoolTypes.BOND:
-        return [BONDTokenMeta.icon];
-      default:
-        return [];
-    }
-  },
-);
-
-export const getPoolNames = memoize((poolType: PoolTypes): string[] => {
-  switch (poolType) {
-    case PoolTypes.STABLE:
-      return [USDCTokenMeta.name, DAITokenMeta.name, SUSDTokenMeta.name];
-    case PoolTypes.UNILP:
-      return [UNISWAPTokenMeta.name];
-    case PoolTypes.BOND:
-      return [BONDTokenMeta.name];
-    default:
-      return [];
-  }
-});
 
 export function fetchContractABI(address: string): any {
   return fetch(

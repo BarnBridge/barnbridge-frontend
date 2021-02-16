@@ -16,20 +16,20 @@ const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalAct
   const { proposalAction, ...modalProps } = props;
 
   return (
-    <Modal centered width={560} {...modalProps}>
+    <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={24}>
           <Icons
             name="warning-outlined"
             width={40}
             height={40}
-            color="red500"
+            color="red"
           />
           <Grid flow="row" gap={8}>
-            <Heading type="h3" semiBold color="grey900">
+            <Heading type="h3" semiBold color="primary">
               Action could not be simulated
             </Heading>
-            <Paragraph type="p2" semiBold color="grey500">
+            <Paragraph type="p2" semiBold color="secondary">
               We run a simulation for every action before adding it to the
               proposal. The following action failed to simulate:
             </Paragraph>
@@ -41,7 +41,7 @@ const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalAct
             signature={proposalAction.functionSignature!}
             callData={proposalAction.functionEncodedParams}
           />
-          <Paragraph type="p2" semiBold color="grey500">
+          <Paragraph type="p2" semiBold color="secondary">
             If you think this is a mistake, you can still add this action to the
             proposal.
           </Paragraph>

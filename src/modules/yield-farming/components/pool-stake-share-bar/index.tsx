@@ -35,10 +35,10 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
             title={
               <Grid flow="col" gap={8} align="center" padding={[10, 16]}>
                 {tokenShare.icon}
-                <Paragraph type="p1" color="grey500">
+                <Paragraph type="p1" color="secondary">
                   {tokenShare.name}:
                 </Paragraph>
-                <Paragraph type="p1" semiBold color="grey900">
+                <Paragraph type="p1" semiBold color="primary">
                   {tokenShare.value}
                 </Paragraph>
               </Grid>

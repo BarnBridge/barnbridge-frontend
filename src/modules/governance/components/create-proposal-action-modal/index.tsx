@@ -11,7 +11,7 @@ import Select from 'components/antd/select';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
-import { Heading, Small } from 'components/custom/typography';
+import { Heading, Hint, Small } from 'components/custom/typography';
 import AddZerosPopup from '../add-zeros-popup';
 import SimulatedProposalActionModal from '../simulated-proposal-action-modal';
 
@@ -310,10 +310,12 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           </Form.Item>
 
           <Grid flow="col" align="center" justify="space-between">
-            <Small semiBold color="grey500"
-                   hint="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
-              Is this a proxy address?
-            </Small>
+            <Hint
+              text="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
+              <Small semiBold color="secondary">
+                Is this a proxy address?
+              </Small>
+            </Hint>
             <Form.Item name="isProxyAddress">
               <Antd.Switch disabled={state.submitting} />
             </Form.Item>
@@ -360,7 +362,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                     name="actionValue"
                     label={
                       <Grid flow="col" gap={8}>
-                        <Small semiBold color="grey500">
+                        <Small semiBold color="secondary">
                           Action Value
                         </Small>
                         <AddZerosPopup
@@ -452,7 +454,7 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                           name={['functionParams', input.name]}
                           label={
                             <Grid flow="col" gap={8}>
-                              <Small semiBold color="grey500">
+                              <Small semiBold color="secondary">
                                 {input.name} ({input.type})
                               </Small>
                               {/(u?int\d+)/g.test(input.type) && (
@@ -563,7 +565,6 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
 
         {state.showSimulatedActionModal && state.simulatedAction && (
           <SimulatedProposalActionModal
-            visible
             proposalAction={state.simulatedAction}
             onOk={() => handleSimulatedAction(true)}
             onCancel={() => handleSimulatedAction(false)}

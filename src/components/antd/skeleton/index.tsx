@@ -10,15 +10,15 @@ export type SkeletonProps = AntdSkeletonProps & {
   height?: number;
 };
 
-const Skeleton: React.FunctionComponent<SkeletonProps> = props => {
-  const { className, children, width, height, ...skeletonProps } = props;
+const Skeleton: React.FC<SkeletonProps> = props => {
+  const { className, width, height, loading, children, ...skeletonProps } = props;
 
   return (
     <Antd.Skeleton
-      className={cx(s.component, className)}
-      active
-      loading
+      className={cx(s.skeleton, className)}
       title={{ width, style: { height } }}
+      active
+      loading={loading !== false}
       paragraph={{ rows: 0 }}
       {...skeletonProps}>
       {children}

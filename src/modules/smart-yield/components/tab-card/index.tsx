@@ -21,10 +21,10 @@ export default function TabCard({ title, subtitle, icon, className, tag = "butto
         {icon}
       </div>
       <Grid flow="row">
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           {title}
         </Paragraph>
-        <Small semiBold color="grey500">{subtitle}</Small>
+        <Small semiBold color="secondary">{subtitle}</Small>
       </Grid>
     </Component>
   )

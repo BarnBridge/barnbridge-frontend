@@ -82,26 +82,26 @@ const WalletDelegateView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           BOND
         </Paragraph>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Current Voting Type
         </Small>
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           {isDelegated ? 'Delegate voting' : 'Manual voting'}
         </Paragraph>
       </Grid>
 
       {isDelegated && (
         <Grid flow="row" gap={4}>
-          <Small semiBold color="grey500">
+          <Small semiBold color="secondary">
             Delegated Address
           </Small>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {userDelegatedTo}
           </Paragraph>
         </Grid>

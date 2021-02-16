@@ -1,33 +1,38 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
 
-import { useWallet } from 'wallets/wallet';
-import { useWarnings } from 'components/custom/warnings';
+import Grid from 'components/custom/grid';
 import LayoutHeader from 'layout/components/layout-header';
+import { useWarning } from 'components/providers/warning-provider';
+
 import PoolRewards from './components/pool-rewards';
 import PoolStats from './components/pool-stats';
-import PoolOverview from './components/pool-overview';
-import PoolStak from './components/pool-stak';
+import PoolsOverviewView from './views/pools-overview-view';
+import PoolDetailsView from './views/pool-details-view';
 
-import s from './styles.module.scss';
+import { useWallet } from 'wallets/wallet';
+import { PoolActions, PoolTypes } from './utils';
+
+const PATH_POOLS_OPTS = [PoolTypes.STABLE, PoolTypes.UNILP, PoolTypes.BOND].join('|');
+const PATH_ACTIONS_OPTS = [PoolActions.DEPOSIT, PoolActions.WITHDRAW].join('|');
 
 const YieldFarmingView: React.FunctionComponent = () => {
   const wallet = useWallet();
-  const warnings = useWarnings();
+  const warning = useWarning();
 
   React.useEffect(() => {
     let warningDestructor: Function;
 
     if (isMobile) {
-      warningDestructor = warnings.addWarn({
+      warningDestructor = warning.addWarn({
         text:
           'Transactions can only be made from the desktop version using Metamask',
         closable: true,
         storageIdentity: 'bb_desktop_metamask_tx_warn',
       });
     } else {
-      warningDestructor = warnings.addWarn({
+      warningDestructor = warning.addWarn({
         text: 'Do not send funds directly to the contract!',
         closable: true,
         storageIdentity: 'bb_send_funds_warn',
@@ -40,42 +45,28 @@ const YieldFarmingView: React.FunctionComponent = () => {
   }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <div className={s.component}>
+    <Grid flow="row">
       <LayoutHeader title="Yield Farming" />
       {!isMobile && wallet.isActive && <PoolRewards />}
 
-      <div className={s.body}>
+      <div className="grid flow-row row-gap-64 p-64 sm-pv-24 sm-ph-8">
         <PoolStats />
-        <div className={s.content}>
-          <Switch>
-            <Route
-              path="/yield-farming"
-              exact
-              render={() => <PoolOverview />}
-            />
-            {wallet.isActive && (
-              <>
-                <Route
-                  path="/yield-farming/stable"
-                  exact
-                  render={() => <PoolStak stableToken />}
-                />
-                <Route
-                  path="/yield-farming/unilp"
-                  exact
-                  render={() => <PoolStak unilpToken />}
-                />
-                <Route
-                  path="/yield-farming/bond"
-                  exact
-                  render={() => <PoolStak bondToken />}
-                />
-              </>
-            )}
-          </Switch>
-        </div>
+        <Switch>
+          <Route
+            path="/yield-farming"
+            exact
+            component={PoolsOverviewView} />
+          <Route
+            path={`/yield-farming/:pool(${PATH_POOLS_OPTS})/:action(${PATH_ACTIONS_OPTS})`}
+            exact
+            component={PoolDetailsView} />
+          <Redirect
+            from={`/yield-farming/:pool(${PATH_POOLS_OPTS})`}
+            to={`/yield-farming/:pool/${PoolActions.DEPOSIT}`} />
+          <Redirect to="/yield-farming" />
+        </Switch>
       </div>
-    </div>
+    </Grid>
   );
 };
 

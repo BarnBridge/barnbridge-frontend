@@ -39,7 +39,7 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'originator',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Originator
         </Small>
       ),
@@ -47,7 +47,7 @@ const OverviewView: React.FunctionComponent = () => {
         <Grid flow="col" gap={16} align="center">
           <IconBubble name="usdc-token" bubbleName="compound" />
           <Grid flow="row" gap={4} className="ml-auto">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Paragraph type="p1" semiBold color="primary">
               {value[0]}
             </Paragraph>
             <Small semiBold>{value[1]}</Small>
@@ -58,13 +58,13 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'seniorLiquidity',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Senior Liquidity
         </Small>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {value[0]}
           </Paragraph>
           <Small semiBold>{value[1]}</Small>
@@ -74,12 +74,12 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'seniorAPY',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Senior APY
         </Small>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="green500">
+        <Paragraph type="p1" semiBold color="primary">
           {value}
         </Paragraph>
       ),
@@ -87,13 +87,13 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'juniorLiquidity',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Junior Liquidity
         </Small>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {value[0]}
           </Paragraph>
           <Small semiBold>{value[1]}</Small>
@@ -103,12 +103,12 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'juniorAPY',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Junior APY
         </Small>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="purple500">
+        <Paragraph type="p1" semiBold color="purple">
           {value}
         </Paragraph>
       ),
@@ -116,12 +116,12 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'originatorAPY',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Originator APY
         </Small>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           {value}
         </Paragraph>
       ),
@@ -129,13 +129,13 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'jTokenConversionRate',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           jToken conversion rate
         </Small>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {value[0]}
           </Paragraph>
           <Small semiBold>{value[1]}</Small>
@@ -145,13 +145,13 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'walletBalance',
       title: () => (
-        <Small semiBold color="grey300">
+        <Small semiBold>
           Wallet balance
         </Small>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             {value[0]}
           </Paragraph>
           <Small semiBold>{value[1]}</Small>
@@ -204,15 +204,15 @@ const OverviewView: React.FunctionComponent = () => {
           } /* type="button" onClick={() => console.log('asd')} */
         />
       </Grid>
-      <Paragraph type="p1" semiBold color="grey500" className="mb-8">
+      <Paragraph type="p1" semiBold color="secondary" className="mb-8">
         Compound total liquidity
       </Paragraph>
-      <Heading type="h2" color="grey900" bold className="mb-40">
+      <Heading type="h2" color="primary" className="mb-40">
         $ 1,643,900,581.86
       </Heading>
       <Card
         // title={
-        //   <Paragraph type="p1" semiBold color="grey900">
+        //   <Paragraph type="p1" semiBold color="primary">
         //     Voter weights
         //   </Paragraph>
         // }

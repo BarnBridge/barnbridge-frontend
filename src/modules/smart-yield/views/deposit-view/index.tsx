@@ -14,18 +14,18 @@ export default function DepositView() {
       <Grid flow="col" gap={64} align="center" className="mb-64">
         <MarketCoinCard />
         <div>
-          <Small semiBold block className="mb-4">
+          <Small semiBold className="mb-4">
             Wallet balance
           </Small>
-          <Paragraph type="p1" semiBold color="grey900" block>
+          <Paragraph type="p1" semiBold color="primary">
             25,381.3247
           </Paragraph>
         </div>
         <div>
-          <Small semiBold block className="mb-4">
+          <Small semiBold className="mb-4">
             Portfolio balance
           </Small>
-          <Paragraph type="p1" semiBold color="grey900" block>
+          <Paragraph type="p1" semiBold color="primary">
             5,230.9971
           </Paragraph>
         </div>
@@ -33,20 +33,20 @@ export default function DepositView() {
         <Switch>
           <Route path="/smart-yield/deposit/:id/senior">
             <div>
-              <Small semiBold block className="mb-4">
+              <Small semiBold className="mb-4">
                 Senior APY
               </Small>
-              <Paragraph type="p1" semiBold color="green500" block>
+              <Paragraph type="p1" semiBold color="primary">
                 6.42%
               </Paragraph>
             </div>
           </Route>
           <Route path="/smart-yield/deposit/:id/junior">
             <div>
-              <Small semiBold block className="mb-4">
+              <Small semiBold className="mb-4">
                 Junior APY
               </Small>
-              <Paragraph type="p1" semiBold color="purple500" block>
+              <Paragraph type="p1" semiBold color="purple">
                 21.33%
               </Paragraph>
             </div>
@@ -55,7 +55,7 @@ export default function DepositView() {
       </Grid>
       <Grid flow="col" gap={32} colsTemplate="1fr minmax(240px, 482px)">
         <Card>
-          <Heading type="h3" semiBold color="grey900" className="mb-16">
+          <Heading type="h3" semiBold color="primary" className="mb-16">
             Select your preferred tranche
           </Heading>
           <Paragraph type="p2" semiBold className="mb-32">
