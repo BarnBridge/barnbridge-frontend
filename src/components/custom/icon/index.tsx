@@ -68,7 +68,8 @@ export type IconNames =
   | 'junior_tranche_simplified'
   | 'withdrawal_regular'
   | 'withdrawal_instant'
-  | 'statistics';
+  | 'statistics'
+  | 'filter';
 
 export type IconsProps = {
   name: IconNames;

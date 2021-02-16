@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import Card from 'components/antd/card';
 import { Paragraph, Small, Heading } from 'components/custom/typography';
 import Table from 'components/antd/table';
@@ -9,7 +10,6 @@ import Select from 'components/antd/select';
 import IconBubble from 'components/custom/icon-bubble';
 import TabCard from 'modules/smart-yield/components/tab-card';
 import s from './s.module.scss';
-import { useHistory } from 'react-router-dom';
 
 const dataMock = [
   {
