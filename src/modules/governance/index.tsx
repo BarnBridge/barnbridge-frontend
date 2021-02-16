@@ -96,7 +96,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
             <ExternalLink href="https://forum.barnbridge.com/">
               <Grid flow="col" gap={8} align="center">
                 <Icons name="forum-outlined" />
-                <Paragraph type="p1" semiBold color="grey500">Forum</Paragraph>
+                <Paragraph type="p1" semiBold color="secondary">Forum</Paragraph>
                 <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
               </Grid>
             </ExternalLink>
