@@ -7,7 +7,7 @@ export type useWhileOptions = {
 };
 
 export type useWhileReturn = {
-  start: () => void;
+  start: (...args: any[]) => void;
   stop: () => void;
   promise: Promise<any>;
 };

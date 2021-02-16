@@ -1,6 +1,6 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
-.component {
+.component:global(.ant-alert) {
   padding: 16px 24px;
   border-radius: 4px;
 
@@ -20,23 +20,23 @@
   }
 
   &:global(.ant-alert-info) {
-    --alert-bg-color: var(--text-color-blue500-rgb);
-    --alert-text-color: var(--text-color-blue500);
+    --alert-bg-color: var(--theme-blue-color-rgb);
+    --alert-text-color: var(--theme-blue-color);
   }
 
   &:global(.ant-alert-success) {
-    --alert-bg-color: var(--text-color-green500-rgb);
-    --alert-text-color: var(--text-color-green500);
+    --alert-bg-color: var(--theme-green-color-rgb);
+    --alert-text-color: var(--theme-green-color);
   }
 
   &:global(.ant-alert-warning) {
-    --alert-bg-color: var(--text-color-yellow500-rgb);
-    --alert-text-color: var(--text-color-yellow500);
+    --alert-bg-color: var(--theme-yellow-color-rgb);
+    --alert-text-color: var(--theme-yellow-color);
   }
 
   &:global(.ant-alert-error) {
-    --alert-bg-color: var(--text-color-red500-rgb);
-    --alert-text-color: var(--text-color-red500);
+    --alert-bg-color: var(--theme-red-color-rgb);
+    --alert-text-color: var(--theme-red-color);
   }
 
   background: rgba(var(--alert-bg-color), 0.04);

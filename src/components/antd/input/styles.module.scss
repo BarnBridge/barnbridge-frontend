@@ -1,4 +1,4 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
 :root .component {
   --input-shadow: none;
@@ -13,7 +13,7 @@
   --input-text-disabled: #717980;
 }
 
-:root :global(.theme-dark) .component {
+[data-theme='dark'] .component {
   --input-border: 1px solid #43484d;
   --input-border-disabled: none;
   --input-bg: #202529;

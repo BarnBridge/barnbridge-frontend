@@ -1,19 +1,22 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { PopoverProps as AntdPopoverProps } from 'antd/lib/popover';
+import cx from 'classnames';
 
 import s from './styles.module.scss';
 
-export type PopoverProps = {};
+export type PopoverProps = {
+  noPadding?: boolean;
+};
 
 const Popover: React.FunctionComponent<
   AntdPopoverProps & PopoverProps
 > = props => {
-  const { children, ...popoverProps } = props;
+  const { noPadding, children, ...popoverProps } = props;
 
   return (
     <Antd.Popover
-      overlayClassName={s.overlay}
+      overlayClassName={cx(s.overlay, noPadding && s.noPadding)}
       trigger="click"
       placement="bottom"
       {...popoverProps}>

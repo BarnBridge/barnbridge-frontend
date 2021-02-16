@@ -1,4 +1,4 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
 .form {
   opacity: 1;
@@ -18,15 +18,15 @@
     :global(.ant-form-item-tooltip) {
       width: 16px;
       height: 16px;
-      color: var(--text-color-4);
+      color: var(--theme-icon-color);
     }
   }
 
   &:global(.ant-form-item-has-error) {
     :global(.ant-input),
     :global(.ant-input-group-addon) {
-      background-color: inherit;
-      border-color: var(--text-color-red500);
+      background: inherit;
+      border-color: var(--theme-red-color);
     }
   }
 }

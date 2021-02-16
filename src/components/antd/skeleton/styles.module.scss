@@ -1,11 +1,9 @@
-.component {
-  & :global {
-    .ant-skeleton-title {
-      margin: 4px 0;
-    }
+.skeleton:global(.ant-skeleton) {
+  :global(.ant-skeleton-title) {
+    margin: 0;
+  }
 
-    .ant-skeleton-paragraph:empty {
-      display: none;
-    }
+  :global(.ant-skeleton-paragraph):empty {
+    display: none;
   }
 }

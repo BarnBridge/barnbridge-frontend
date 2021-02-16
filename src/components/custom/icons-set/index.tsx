@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 
-import s from './styles.module.css';
+import s from './styles.module.scss';
 
 export type IconsSetProps = {
   icons: React.ReactNode[];

@@ -1,10 +1,10 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
 .component {
   position: relative;
   padding: 24px 12px;
-  background: var(--color-card-bg);
-  border: 1px solid var(--color-border);
+  background: var(--theme-card-color);
+  border: 1px solid var(--theme-border-color);
 
   :global(.ant-btn.ant-btn-link) {
     justify-content: flex-start;
@@ -14,18 +14,18 @@
     border-radius: 4px;
     overflow: hidden;
     @include font-p2-regular;
-    color: var(--side-nav-link-color);
+    color: var(--theme-icon-color);
 
     &:hover {
-      background: var(--side-nav-link-active-bg-color);
-      color: var(--side-nav-link-active-color);
+      background: rgba(var(--theme-red-color-rgb), 0.08);
+      color: var(--theme-red-color);
 
       .linkLabel {
-        color: var(--side-nav-link-text-color);
+        color: var(--theme-primary-color);
       }
 
       svg {
-        color: var(--side-nav-link-active-color);
+        color: var(--theme-red-color);
       }
     }
 
@@ -55,11 +55,11 @@
     }
 
     .linkLabel {
-      color: var(--side-nav-link-text-color);
+      color: var(--theme-primary-color);
     }
 
     :global(.ant-btn.ant-btn-link) svg {
-      color: var(--side-nav-link-active-color);
+      color: var(--theme-red-color);
     }
   }
 
@@ -68,17 +68,16 @@
     left: -13px;
     width: 4px;
     height: 48px;
-    background: var(--side-nav-tick-color);
+    background: var(--theme-red-color);
     border-radius: 0 4px 4px 0;
     visibility: hidden;
   }
 
   .linkLabel {
-    color: var(--color-text);
+    color: var(--theme-secondary-color);
   }
 
   .headerWrap {
-    position: fixed;
     top: 24px;
   }
 

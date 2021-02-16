@@ -6,13 +6,14 @@ import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Hint, Paragraph, Small } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 import ProposalActionCard from '../../../../components/proposal-action-card';
 
 import { APIProposalState } from 'modules/governance/api';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
+import Skeleton from 'components/antd/skeleton';
 
 type ProposalDetailsCardState = {
   cancelling: boolean;
@@ -63,7 +64,7 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           Details
         </Paragraph>
       }
@@ -71,7 +72,7 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500">
+            <Small semiBold color="secondary">
               Created by
             </Small>
             <Grid flow="col" gap={8}>
@@ -84,21 +85,19 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
                 href={`${getEtherscanAddressUrl(
                   proposalCtx.proposal?.proposer!,
                 )}`}>
-                <Paragraph
-                  type="p1"
-                  semiBold
-                  color="blue500"
-                  loading={!proposalCtx.proposal}>
+                <Paragraph type="p1" semiBold color="blue">
                   {shortenAddr(proposalCtx.proposal?.proposer)}
                 </Paragraph>
               </ExternalLink>
             </Grid>
           </Grid>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500"
-                   hint={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
-              Creator threshold
-            </Small>
+            <Hint
+              text={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
+              <Small semiBold color="secondary">
+                Creator threshold
+              </Small>
+            </Hint>
             <Grid flow="col" gap={8}>
               {proposalCtx.thresholdRate !== undefined && (
                 <>
@@ -109,13 +108,11 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
                         : 'close-circle-outlined'
                     }
                   />
-                  <Paragraph
-                    type="p1"
-                    semiBold
-                    color="grey900"
-                    loading={proposalCtx.proposal === undefined}>
-                    {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
-                  </Paragraph>
+                  <Skeleton loading={proposalCtx.proposal === undefined}>
+                    <Paragraph type="p1" semiBold color="primary">
+                      {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
+                    </Paragraph>
+                  </Skeleton>
                 </>
               )}
             </Grid>
@@ -132,20 +129,16 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
       </Grid>
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Description
         </Small>
-        <Paragraph
-          type="p1"
-          color="grey900"
-          loading={!proposalCtx.proposal}
-          wrap>
+        <Paragraph type="p1" color="primary" wrap>
           {proposalCtx.proposal?.description}
         </Paragraph>
       </Grid>
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="grey500">
+        <Small semiBold color="secondary">
           Actions
         </Small>
         {proposalCtx.proposal?.targets.map((target: string, index: number) => (

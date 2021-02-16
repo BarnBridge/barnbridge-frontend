@@ -1,9 +1,9 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
 .heading {
   display: block;
   width: auto;
-  color: var(--color-text);
+  color: var(--theme-default-color);
 }
 
 h1.heading {
@@ -15,11 +15,6 @@ h1.heading {
 
   &.semiBold {
     @include font-h1-semi-bold;
-  }
-
-  :global(.ant-skeleton-content .ant-skeleton-title) {
-    margin: 4px 0;
-    height: var(--font-size-h1);
   }
 }
 
@@ -33,11 +28,6 @@ h2.heading {
   &.semiBold {
     @include font-h2-semi-bold;
   }
-
-  :global(.ant-skeleton-content .ant-skeleton-title) {
-    margin: 4px 0;
-    height: var(--font-size-h2);
-  }
 }
 
 h3.heading {
@@ -50,21 +40,12 @@ h3.heading {
   &.semiBold {
     @include font-h3-semi-bold;
   }
-
-  :global(.ant-skeleton-content .ant-skeleton-title) {
-    margin: 3px 0;
-    height: var(--font-size-h3);
-  }
 }
 
 .paragraph {
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
-  column-gap: 8px;
-  align-items: center;
+  display: block;
   width: auto;
-  color: var(--color-text);
+  color: var(--theme-default-color);
 
   &.p1 {
     @include font-p1-regular;
@@ -75,11 +56,6 @@ h3.heading {
 
     &.semiBold {
       @include font-p1-semi-bold;
-    }
-
-    :global(.ant-skeleton-content .ant-skeleton-title) {
-      margin: 4px 0;
-      height: var(--font-size-p1);
     }
   }
 
@@ -93,22 +69,13 @@ h3.heading {
     &.semiBold {
       @include font-p2-semi-bold;
     }
-
-    :global(.ant-skeleton-content .ant-skeleton-title) {
-      margin: 5px 0;
-      height: var(--font-size-p2);
-    }
   }
 }
 
 .label {
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
-  column-gap: 8px;
-  align-items: center;
+  display: block;
   width: auto;
-  color: var(--color-text);
+  color: var(--theme-default-color);
 
   &.lb1 {
     @include font-lb1-regular;
@@ -119,11 +86,6 @@ h3.heading {
 
     &.semiBold {
       @include font-lb1-semi-bold;
-    }
-
-    :global(.ant-skeleton-content .ant-skeleton-title) {
-      margin: 5px 0;
-      height: var(--font-size-lb1);
     }
   }
 
@@ -137,23 +99,14 @@ h3.heading {
     &.semiBold {
       @include font-lb2-semi-bold;
     }
-
-    :global(.ant-skeleton-content .ant-skeleton-title) {
-      margin: 2px 0;
-      height: var(--font-size-lb2);
-    }
   }
 }
 
 .small {
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
-  column-gap: 8px;
-  align-items: center;
+  display: block;
   width: auto;
   @include font-sm-regular;
-  color: var(--color-text);
+  color: var(--theme-default-color);
 
   &.bold {
     @include font-sm-bold;
@@ -162,9 +115,94 @@ h3.heading {
   &.semiBold {
     @include font-sm-semi-bold;
   }
+}
 
-  :global(.ant-skeleton-content .ant-skeleton-title) {
-    margin: 2px 0;
-    height: var(--font-size-sm);
+.text {
+  font-weight: normal;
+  color: var(--theme-default-color);
+
+  &.weight-semibold {
+    font-weight: 600;
+  }
+
+  &.weight-bold {
+    font-weight: bold;
+  }
+
+  &.h1 {
+    font-size: var(--font-size-h1);
+    line-height: calc(var(--font-size-h1) + 8px);
+  }
+
+  &.h2 {
+    font-size: var(--font-size-h2);
+    line-height: calc(var(--font-size-h2) + 8px);
+  }
+
+  &.h3 {
+    font-size: var(--font-size-h3);
+    line-height: calc(var(--font-size-h3) + 6px);
+  }
+
+  &.p1 {
+    font-size: var(--font-size-p1);
+    line-height: calc(var(--font-size-p1) + 8px);
+  }
+
+  &.p2 {
+    font-size: var(--font-size-p2);
+    line-height: calc(var(--font-size-p2) + 10px);
+  }
+
+  &.lb1 {
+    font-size: var(--font-size-lb1);
+    line-height: calc(var(--font-size-lb1) + 10px);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &.lb2 {
+    font-size: var(--font-size-lb2);
+    line-height: calc(var(--font-size-lb2) + 4px);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+
+  &.small {
+    font-size: var(--font-size-sm);
+    line-height: calc(var(--font-size-sm) + 4px);
+  }
+}
+
+.primary-color {
+  color: var(--theme-primary-color);
+}
+
+.secondary-color {
+  color: var(--theme-secondary-color);
+}
+
+.red-color {
+  color: var(--theme-red-color);
+}
+
+.green-color {
+  color: var(--theme-green-color);
+}
+
+.blue-color {
+  color: var(--theme-blue-color);
+}
+
+div.hint {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-template-columns: repeat(auto-fit, minmax(0, max-content));
+  column-gap: 8px;
+  align-items: center;
+  width: auto;
+
+  .tooltip {
+    align-self: start;
   }
 }

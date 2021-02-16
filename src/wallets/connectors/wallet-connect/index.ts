@@ -2,7 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 
 import { WalletConnector } from 'wallets/types';
-import { WEB3_RPC_HTTPS_URL } from 'web3/contract';
+import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
 
 import WalletConnectLogo from 'resources/svg/wallets/walletconnect-logo.svg';
 

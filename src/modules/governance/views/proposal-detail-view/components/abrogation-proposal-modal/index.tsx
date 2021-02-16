@@ -24,18 +24,14 @@ const AbrogationProposalModalInner: React.FunctionComponent<AbrogationProposalMo
       <Grid flow="row" gap={16} align="center">
         <Grid flow="col" gap={8} align="start" width={1070}>
           <Icons name="warning-outlined" />
-          <Paragraph type="p1" semiBold color="red500">
+          <Paragraph type="p1" semiBold color="red">
             Abrogation proposal
           </Paragraph>
         </Grid>
 
         <Grid flow="row" gap={64} align="center">
           <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-            <Heading
-              type="h2"
-              semiBold
-              color="grey900"
-              loading={!proposalCtx.proposal}>
+            <Heading type="h2" semiBold color="primary">
               PID-{proposalCtx.proposal?.proposalId}:{' '}
               {proposalCtx.proposal?.title}
             </Heading>

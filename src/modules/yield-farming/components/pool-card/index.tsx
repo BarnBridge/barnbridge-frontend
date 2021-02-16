@@ -3,20 +3,13 @@ import { useHistory } from 'react-router';
 import BigNumber from 'bignumber.js';
 
 import Button from 'components/antd/button';
-import Tooltip from 'components/antd/tooltip';
+import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
-import { Label, Paragraph } from 'components/custom/typography';
+import { Hint, Label, Paragraph } from 'components/custom/typography';
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
-import {
-  formatBigValue,
-  formatBONDValue,
-  formatUSDValue,
-  getPoolIcons,
-  getPoolNames,
-  PoolTypes,
-} from 'web3/utils';
+import { formatBigValue, formatBONDValue, formatUSDValue, } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -24,17 +17,16 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import { getPoolIcons, getPoolNames, PoolTypes } from '../../utils';
+import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
 export type PoolCardProps = {
-  stableToken?: boolean;
-  unilpToken?: boolean;
-  bondToken?: boolean;
+  pool: PoolTypes;
 };
 
-type PoolCardState = {
-  type?: PoolTypes;
+type State = {
   enabled?: boolean;
   isEnded?: boolean;
   currentEpoch?: number;
@@ -50,21 +42,19 @@ type PoolCardState = {
 };
 
 const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
+  const { pool } = props;
+
   const history = useHistory();
   const wallet = useWallet();
   const web3c = useWeb3Contracts();
 
-  const { stableToken = false, unilpToken = false, bondToken = false } = props;
-
-  const [state, setState] = React.useState<PoolCardState>({});
+  const [state, setState] = useMergeState<State>({});
 
   React.useEffect(() => {
-    if (stableToken) {
-      setState(prevState => ({
-        ...prevState,
-        type: PoolTypes.STABLE,
+    if (pool === PoolTypes.STABLE) {
+      setState({
         enabled: true,
-        isEnded: web3c.yfBOND.isEnded,
+        isEnded: web3c.yf.isEnded,
         currentEpoch: web3c.yf.currentEpoch,
         totalEpochs: web3c.yf.totalEpochs,
         epochReward: web3c.yf.epochReward,
@@ -137,13 +127,11 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
               .toNumber(),
           },
         ],
-      }));
-    } else if (unilpToken) {
-      setState(prevState => ({
-        ...prevState,
-        type: PoolTypes.UNILP,
+      });
+    } else if (pool === PoolTypes.UNILP) {
+      setState({
         enabled: web3c.yfLP.currentEpoch! > 0,
-        isEnded: web3c.yfBOND.isEnded,
+        isEnded: web3c.yfLP.isEnded,
         currentEpoch: web3c.yfLP.currentEpoch,
         totalEpochs: web3c.yfLP.totalEpochs,
         epochReward: web3c.yfLP.epochReward,
@@ -156,7 +144,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           {
             icon: UNISWAPTokenMeta.icon,
             name: UNISWAPTokenMeta.name,
-            color: 'var(--text-color-3)',
+            color: 'var(--theme-red-color)',
             value: formatBigValue(
               web3c.yfLP.nextPoolSize,
               UNISWAPTokenMeta.decimals,
@@ -172,7 +160,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           {
             icon: UNISWAPTokenMeta.icon,
             name: UNISWAPTokenMeta.name,
-            color: 'var(--text-color-3)',
+            color: 'var(--theme-red-color)',
             value: formatBigValue(
               web3c.yfLP.nextEpochStake,
               UNISWAPTokenMeta.decimals,
@@ -184,11 +172,9 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                 .toNumber() ?? 0,
           },
         ],
-      }));
-    } else if (bondToken) {
-      setState(prevState => ({
-        ...prevState,
-        type: PoolTypes.BOND,
+      });
+    } else if (pool === PoolTypes.BOND) {
+      setState({
         enabled: true,
         isEnded: web3c.yfBOND.isEnded,
         currentEpoch: web3c.yfBOND.currentEpoch,
@@ -203,7 +189,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           {
             icon: BONDTokenMeta.icon,
             name: BONDTokenMeta.name,
-            color: 'var(--text-color-3)',
+            color: 'var(--theme-red-color)',
             value: formatBigValue(
               web3c.yfBOND.nextPoolSize,
               BONDTokenMeta.decimals,
@@ -219,7 +205,7 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
           {
             icon: BONDTokenMeta.icon,
             name: BONDTokenMeta.name,
-            color: 'var(--text-color-3)',
+            color: 'var(--theme-red-color)',
             value: formatBigValue(
               web3c.yfBOND.nextEpochStake,
               BONDTokenMeta.decimals,
@@ -231,17 +217,21 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                 .toNumber() ?? 0,
           },
         ],
-      }));
+      });
     }
-  }, [stableToken, unilpToken, bondToken, web3c]);
+  }, [pool, web3c]);
 
   function handleStaking() {
-    if (stableToken) {
-      history.push('/yield-farming/stable');
-    } else if (unilpToken) {
-      history.push('/yield-farming/unilp');
-    } else if (bondToken) {
-      history.push('/yield-farming/bond');
+    switch (pool) {
+      case PoolTypes.STABLE:
+        history.push('/yield-farming/stable');
+        break;
+      case PoolTypes.UNILP:
+        history.push('/yield-farming/unilp');
+        break;
+      case PoolTypes.BOND:
+        history.push('/yield-farming/bond');
+        break;
     }
   }
 
@@ -249,62 +239,65 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
     history.push('/governance/wallet');
   }
 
-  return (
-    <div className={s.component}>
-      {state.type && (
-        <div className={s.header}>
-          <IconsSet className={s.iconSet} icons={getPoolIcons(state.type)} />
-          <div className={s.infoWrap}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>
-              {getPoolNames(state.type).join('/')}
-            </Paragraph>
-            <Label type="lb2" semiBold className={s.epochLabel}>
-              EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
-            </Label>
-          </div>
-          {wallet.isActive && (
-            <Button
-              type="primary"
-              className={s.stakingBtn}
-              disabled={!state.enabled}
-              onClick={handleStaking}>
-              Staking
-            </Button>
-          )}
-        </div>
+  const CardTitle = (
+    <Grid flow="col" align="center" justify="space-between">
+      <Grid flow="col" gap={16}>
+        <IconsSet icons={getPoolIcons(pool)} />
+        <Grid flow="row">
+          <Paragraph type="p1" semiBold color="primary">
+            {getPoolNames(pool).join('/')}
+          </Paragraph>
+          <Label type="lb2" semiBold color="red">
+            EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
+          </Label>
+        </Grid>
+      </Grid>
+      {wallet.isActive && (
+        <Button
+          type="primary"
+          disabled={!state.enabled}
+          onClick={handleStaking}>
+          Staking
+        </Button>
       )}
+    </Grid>
+  );
 
-      <div className={s.body}>
-        {!state.isEnded && (
-          <>
-            <div className={s.row}>
-              <Label type="lb2" semiBold className={s.label}>
-                Reward
-              </Label>
-              <Paragraph type="p1" semiBold className={s.value}>
-                {formatBONDValue(state.epochReward)} BOND
+  return (
+    <Card title={CardTitle} noPaddingBody className={s.card}>
+      {!state.isEnded && (
+        <>
+          <Grid flow="row" gap={4} padding={24}>
+            <Label type="lb2" semiBold color="secondary">
+              Reward
+            </Label>
+            <Grid flow="col" gap={4}>
+              <Paragraph type="p1" semiBold color="primary">
+                {formatBONDValue(state.epochReward)}
               </Paragraph>
-            </div>
-            {wallet.isActive && (
-              <div className={s.row}>
-                <Label type="lb2" semiBold className={s.label}>
-                  My Potential Reward
-                </Label>
-                <Paragraph type="p1" semiBold className={s.value}>
-                  {formatBONDValue(state.potentialReward)} BOND
+              <Paragraph type="p2" color="secondary">
+                BOND
+              </Paragraph>
+            </Grid>
+          </Grid>
+          {wallet.isActive && (
+            <Grid flow="row" gap={4} padding={24}>
+              <Label type="lb2" semiBold color="secondary">
+                My Potential Reward
+              </Label>
+              <Grid flow="col" gap={4}>
+                <Paragraph type="p1" semiBold color="primary">
+                  {formatBONDValue(state.potentialReward)}
                 </Paragraph>
-              </div>
-            )}
-
-            <div className={s.row}>
-              <div className={s.labelWrap}>
-                <Label type="lb2" semiBold className={s.label}>
-                  Pool Balance
-                </Label>
-                <Tooltip
-                  type="info"
-                  title={
-                    <span>
+                <Paragraph type="p2" color="secondary">
+                  BOND
+                </Paragraph>
+              </Grid>
+            </Grid>
+          )}
+          <Grid flow="row" gap={4} padding={24}>
+            <Label type="lb2" semiBold color="secondary">
+              <Hint text={<span>
                   This number shows the total staked balance of the pool, and
                   the effective balance of the pool.
                   <br />
@@ -315,30 +308,22 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                   ends, your staked balance and effective staked balance will be
                   the equal, therefore pool balance and effective pool balance
                   will differ in most cases.
-                </span>
-                  }
-                />
-              </div>
-              <Paragraph type="p1" semiBold className={s.value}>
-                {formatUSDValue(state.balance)}
-              </Paragraph>
-              <Paragraph type="p2" className={s.hint}>
-                {formatUSDValue(state.effectiveBalance)} effective balance
-              </Paragraph>
-              <PoolStakeShareBar shares={state.shares} />
-            </div>
-          </>
-        )}
-        {wallet.isActive && (
-          <div className={s.row}>
-            <div className={s.labelWrap}>
-              <Label type="lb2" semiBold className={s.label}>
-                My Pool Balance
-              </Label>
-              <Tooltip
-                type="info"
-                title={
-                  <span>
+                </span>}>Pool Balance</Hint>
+            </Label>
+            <Paragraph type="p1" semiBold color="primary">
+              {formatUSDValue(state.balance)}
+            </Paragraph>
+            <Paragraph type="p2" color="secondary">
+              {formatUSDValue(state.effectiveBalance)} effective balance
+            </Paragraph>
+            <PoolStakeShareBar shares={state.shares} />
+          </Grid>
+        </>
+      )}
+      {wallet.isActive && (
+        <Grid flow="row" gap={4} padding={24}>
+          <Label type="lb2" semiBold color="secondary">
+            <Hint text={<span>
                     This number shows your total staked balance in the pool, and
                     your effective staked balance in the pool.
                     <br />
@@ -350,38 +335,33 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                     staked balance will be the equal, therefore your pool
                     balance and your effective pool balance will differ in most
                     cases.
-                  </span>
-                }
-              />
-            </div>
-            <Paragraph type="p1" semiBold className={s.value}>
-              {formatUSDValue(state.myBalance)}
+                  </span>}>My Pool Balance</Hint>
+          </Label>
+          <Paragraph type="p1" semiBold color="primary">
+            {formatUSDValue(state.myBalance)}
+          </Paragraph>
+          <Paragraph type="p2" color="secondary">
+            {formatUSDValue(state.myEffectiveBalance)} effective balance
+          </Paragraph>
+          {!state.isEnded && (
+            <PoolStakeShareBar shares={state.myShares} />
+          )}
+        </Grid>
+      )}
+      {state.isEnded && (
+        <div className={s.box}>
+          <Grid flow="row" align="start">
+            <Paragraph type="p2" semiBold color="secondary">
+              The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled,
+              but you can still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
             </Paragraph>
-            <Paragraph type="p2" className={s.hint}>
-              {formatUSDValue(state.myEffectiveBalance)} effective balance
-            </Paragraph>
-
-            {!state.isEnded && (
-              <PoolStakeShareBar shares={state.myShares} />
-            )}
-
-            {state.isEnded && (
-              <div className={s.box}>
-                <Grid flow="row" align="start">
-                  <Paragraph type="p2" semiBold color="grey500">
-                    The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
-                    you
-                    can
-                    still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
-                  </Paragraph>
-                  <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
-                </Grid>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+            <Button type="link" onClick={handleDaoStaking}>
+              Go to governance staking
+            </Button>
+          </Grid>
+        </div>
+      )}
+    </Card>
   );
 };
 

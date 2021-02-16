@@ -2,7 +2,7 @@ import React from 'react';
 
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
-import { Heading, Label, Paragraph } from 'components/custom/typography';
+import { Heading, Hint, Label, Paragraph } from 'components/custom/typography';
 import ExternalLink from 'components/custom/externalLink';
 
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
@@ -33,23 +33,25 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
       colsTemplate="repeat(auto-fit, minmax(392px, 1fr))">
       <Card>
         <Grid flow="row" gap={48}>
-          <Label type="lb2" semiBold color="red500" hint={(
+          <Hint text={(
             <Paragraph type="p2">
               This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
             </Paragraph>
           )}>
-            Bond Staked
-          </Label>
+            <Label type="lb2" semiBold color="red">
+              Bond Staked
+            </Label>
+          </Hint>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
-              <Heading type="h2" bold color="grey900">
+              <Heading type="h2" bold color="primary">
                 {formatBONDValue(web3c.daoBarn.bondStaked)}
               </Heading>
-              <Paragraph type="p1" color="grey500">
+              <Paragraph type="p1" color="secondary">
                 BOND
               </Paragraph>
             </Grid>
-            <Paragraph type="p1" color="grey500">
+            <Paragraph type="p1" color="secondary">
               {formatUSDValue(web3c.aggregated.bondLockedPrice)}
             </Paragraph>
           </Grid>
@@ -58,7 +60,7 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Label type="lb2" semiBold color="red500" hint={(
+          <Hint text={(
             <Grid flow="row" gap={8} align="start">
               <Paragraph type="p2">
                 This number shows the amount of vBOND currently minted. This number may differ from the amount of $BOND
@@ -69,10 +71,12 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
               </ExternalLink>
             </Grid>
           )}>
-            VBond
-          </Label>
+            <Label type="lb2" semiBold color="red">
+              VBond
+            </Label>
+          </Hint>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="grey900">
+            <Heading type="h2" bold color="primary">
               {formatBONDValue(overview?.totalVbond)}
             </Heading>
           </Grid>
@@ -81,7 +85,7 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Label type="lb2" semiBold color="red500" hint={(
+          <Hint text={(
             <Grid flow="row" gap={8} align="start">
               <Paragraph type="p2">
                 This counter shows the average amount of time $BOND stakers locked their deposits in order to take
@@ -92,13 +96,15 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
               </ExternalLink>
             </Grid>
           )}>
-            Avg. Lock Time
-          </Label>
+            <Label type="lb2" semiBold color="red">
+              Avg. Lock Time
+            </Label>
+          </Hint>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="grey900">
+            <Heading type="h2" bold color="primary">
               {overview?.avgLockTimeSeconds ? getFormattedDuration(overview?.avgLockTimeSeconds) : '-'}
             </Heading>
-            <Paragraph type="p1" color="grey500">
+            <Paragraph type="p1" color="secondary">
               average time
             </Paragraph>
           </Grid>
@@ -107,24 +113,26 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Label type="lb2" semiBold color="red500" hint={(
+          <Hint text={(
             <Paragraph type="p2">
               This number shows the $BOND token rewards distributed so far out of the total
               of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)} that are going to be available for the
               DAO Staking.
             </Paragraph>
           )}>
-            Bond Rewards
-          </Label>
+            <Label type="lb2" semiBold color="red">
+              Bond Rewards
+            </Label>
+          </Hint>
           <Grid flow="row" gap={4}>
             <UseLeftTime end={(web3c.daoReward.poolFeature?.endTs ?? 0) * 1000} delay={5_000}>
               {() => (
-                <Heading type="h2" bold color="grey900">
+                <Heading type="h2" bold color="primary">
                   {formatBONDValue(web3c.daoReward.actions.getBondRewards())}
                 </Heading>
               )}
             </UseLeftTime>
-            <Paragraph type="p1" color="grey500">
+            <Paragraph type="p1" color="secondary">
               out of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)}
             </Paragraph>
           </Grid>
@@ -133,23 +141,26 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Label type="lb2" semiBold color="red500" hint={(
+          <Hint text={(
             <Grid flow="row" gap={8} align="start">
               <Paragraph type="p2">
                 This number shows the amount of vBOND that is delegated to other addresses.
               </Paragraph>
-              <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
+              <ExternalLink
+                href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
                 Learn more
               </ExternalLink>
             </Grid>
           )}>
-            Delegated
-          </Label>
+            <Label type="lb2" semiBold color="red">
+              Delegated
+            </Label>
+          </Hint>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="grey900">
+            <Heading type="h2" bold color="primary">
               {formatBONDValue(overview?.totalDelegatedPower)}
             </Heading>
-            <Paragraph type="p1" color="grey500">
+            <Paragraph type="p1" color="secondary">
               out of {formatBONDValue(web3c.bond.totalSupply)}
             </Paragraph>
           </Grid>
@@ -158,24 +169,26 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Label type="lb2" semiBold color="red500" hint={(
+          <Hint text={(
             <Paragraph type="p2">
               This card shows the number of holders of $BOND and compares it to the number of stakers and voters in the
               DAO.
             </Paragraph>
           )}>
-            Addresses
-          </Label>
+            <Label type="lb2" semiBold color="red">
+              Addresses
+            </Label>
+          </Hint>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
-              <Heading type="h2" bold color="grey900">
+              <Heading type="h2" bold color="primary">
                 {overview?.holdersStakingExcluded}
               </Heading>
-              <Paragraph type="p1" color="grey500">
+              <Paragraph type="p1" color="secondary">
                 holders
               </Paragraph>
             </Grid>
-            <Paragraph type="p1" color="grey500">
+            <Paragraph type="p1" color="secondary">
               {overview?.barnUsers} stakers & {overview?.voters} voters
             </Paragraph>
           </Grid>

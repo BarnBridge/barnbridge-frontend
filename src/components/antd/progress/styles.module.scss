@@ -18,17 +18,17 @@
     :global(.ant-progress-success-bg) {
       top: 9px;
       height: 0 !important;
-      background-color: transparent;
+      background: transparent;
 
       &:before,
       &:after {
         content: '';
-        width: 4px;
-        height: 8px;
         position: absolute;
         left: 100%;
         z-index: 1;
-        background-color: inherit;
+        width: 4px;
+        height: 8px;
+        background: inherit;
       }
 
       &:before {

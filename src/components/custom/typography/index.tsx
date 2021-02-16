@@ -1,23 +1,18 @@
 import React from 'react';
 import cx from 'classnames';
 
-import Skeleton from 'components/antd/skeleton';
-
-import { Colors } from 'styles/colors';
+import Tooltip from 'components/antd/tooltip';
 
 import s from './styles.module.scss';
-import Tooltip from '../../antd/tooltip';
 
 type CommonProps = {
   bold?: boolean;
   semiBold?: boolean;
-  color?: Colors;
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue';
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
   wrap?: boolean;
   className?: string;
-  loading?: boolean;
-  hint?: React.ReactNode;
 };
 
 function classNamesFromProps(props: CommonProps) {
@@ -26,7 +21,7 @@ function classNamesFromProps(props: CommonProps) {
   return cx(
     bold && s.bold,
     semiBold && s.semiBold,
-    color && `clr-${color}-prior`,
+    color && s[`${color}-color`],
     align && `text-${align}`,
     ellipsis && 'text-ellipsis',
     wrap && 'text-wrap',
@@ -38,8 +33,8 @@ export type HeadingProps = CommonProps & {
   type: 'h1' | 'h2' | 'h3';
 };
 
-export const Heading: React.FunctionComponent<HeadingProps> = props => {
-  const { type, loading, children } = props;
+export const Heading: React.FC<HeadingProps> = props => {
+  const { type, children } = props;
   const classNames = cx(s.heading, classNamesFromProps(props));
 
   return React.createElement(
@@ -47,7 +42,7 @@ export const Heading: React.FunctionComponent<HeadingProps> = props => {
     {
       className: classNames,
     },
-    !loading ? children : <Skeleton className={classNames} />,
+    children,
   );
 };
 
@@ -55,19 +50,14 @@ export type ParagraphProps = CommonProps & {
   type: 'p1' | 'p2';
 };
 
-export const Paragraph: React.FunctionComponent<ParagraphProps> = props => {
-  const { type, loading, hint, children } = props;
+export const Paragraph: React.FC<ParagraphProps> = props => {
+  const { type, children } = props;
   const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
 
-  return !loading ? (
+  return (
     <p className={classNames}>
       {children}
-      {hint && (
-        <Tooltip type="info" title={hint} />
-      )}
     </p>
-  ) : (
-    <Skeleton className={classNames} />
   );
 };
 
@@ -75,36 +65,93 @@ export type LabelProps = CommonProps & {
   type: 'lb1' | 'lb2';
 };
 
-export const Label: React.FunctionComponent<LabelProps> = props => {
-  const { type, loading, hint, children } = props;
+export const Label: React.FC<LabelProps> = props => {
+  const { type, children } = props;
   const classNames = cx(s.label, s[type], classNamesFromProps(props));
 
-  return !loading ? (
+  return (
     <label className={classNames}>
       {children}
-      {hint && (
-        <Tooltip type="info" title={hint} />
-      )}
     </label>
-  ) : (
-    <Skeleton className={classNames} />
   );
 };
 
 export type SmallProps = CommonProps;
 
-export const Small: React.FunctionComponent<SmallProps> = props => {
-  const { loading, hint, children } = props;
+export const Small: React.FC<SmallProps> = props => {
+  const { children } = props;
   const classNames = cx(s.small, classNamesFromProps(props));
 
-  return !loading ? (
-    <small className={cx(s.small, classNamesFromProps(props))}>
+  return (
+    <small className={classNames}>
       {children}
-      {hint && (
-        <Tooltip type="info" title={hint} />
-      )}
     </small>
+  );
+};
+
+export type TextProps = {
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label' | 'p' | 'div' | 'span' | 'small';
+  type: 'h1' | 'h2' | 'h3' | 'p1' | 'p2' | 'lb1' | 'lb2' | 'small';
+  weight?: 'semibold' | 'bold';
+  bold?: boolean;
+  semiBold?: boolean;
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue';
+  align?: 'left' | 'center' | 'right';
+  ellipsis?: boolean;
+  wrap?: boolean;
+  className?: string;
+};
+
+export const Text: React.FC<TextProps> = React.memo(props => {
+  const {
+    tag = 'div',
+    type,
+    weight,
+    bold,
+    semiBold,
+    color,
+    align,
+    ellipsis,
+    wrap,
+    className,
+    children,
+    ...textProps
+  } = props;
+
+  return React.createElement(
+    tag,
+    {
+      className: cx(
+        s.text,
+        s[type],
+        bold && s.bold,
+        semiBold && s.semiBold,
+        weight && s[`weight-${weight}`],
+        color && s[`${color}-color`],
+        align && `text-${align}`,
+        ellipsis && 'text-ellipsis',
+        wrap && 'text-wrap',
+        className,
+      ),
+      ...textProps,
+    },
+    children,
+  );
+});
+
+export type HintProps = {
+  text: React.ReactNode;
+};
+
+export const Hint: React.FC<HintProps> = props => {
+  const { text, children } = props;
+
+  return text ? (
+    <div className={s.hint}>
+      <span>{children}</span>
+      <Tooltip type="info" title={text} className={s.tooltip} />
+    </div>
   ) : (
-    <Skeleton className={classNames} />
+    <>{children}</>
   );
 };
