@@ -1,10 +1,9 @@
 import React from 'react';
 
 import Button from 'components/antd/button';
-import Tooltip from 'components/antd/tooltip';
 import Icons from 'components/custom/icon';
 import Grid from 'components/custom/grid';
-import { Heading, Label, Paragraph } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import PoolHarvestModal from '../../modals/pool-harvest-modal';
 
 import { useWallet } from 'wallets/wallet';
@@ -22,7 +21,7 @@ const InitialState: PoolRewardsState = {
   showHarvestModal: false,
 };
 
-const PoolRewards: React.FunctionComponent = () => {
+const PoolRewards: React.FC = () => {
   const wallet = useWallet();
   const web3c = useWeb3Contracts();
 
@@ -30,19 +29,19 @@ const PoolRewards: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
-      <Label type="lb2" semiBold color="red">
+      <Text type="lb2" weight="semibold" color="red">
         My Rewards
-      </Label>
+      </Text>
 
       <Grid flow="col" gap={24}>
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="secondary">
+          <Text type="p2" color="secondary">
             Current reward
-          </Paragraph>
+          </Text>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="primary">
+            <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(web3c.aggregated.totalCurrentReward)}
-            </Heading>
+            </Text>
             <Icons name="bond-square-token" />
             {wallet.isActive && (
               <Button
@@ -56,31 +55,30 @@ const PoolRewards: React.FunctionComponent = () => {
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="secondary">
+          <Text type="p2" color="secondary">
             Bond Balance
-          </Paragraph>
+          </Text>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="primary">
+            <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(web3c.bond.balance)}
-            </Heading>
+            </Text>
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Grid flow="col" gap={8} align="center">
-            <Paragraph type="p2" color="secondary">
-              Potential reward this epoch
-            </Paragraph>
-            <Tooltip
-              type="info"
-              title="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake."
-            />
+            <Hint
+              text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake.">
+              <Text type="p2" color="secondary">
+                Potential reward this epoch
+              </Text>
+            </Hint>
           </Grid>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="primary">
+            <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(web3c.aggregated.totalPotentialReward)}
-            </Heading>
+            </Text>
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>

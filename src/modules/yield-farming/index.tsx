@@ -17,7 +17,7 @@ import { PoolActions, PoolTypes } from './utils';
 const PATH_POOLS_OPTS = [PoolTypes.STABLE, PoolTypes.UNILP, PoolTypes.BOND].join('|');
 const PATH_ACTIONS_OPTS = [PoolActions.DEPOSIT, PoolActions.WITHDRAW].join('|');
 
-const YieldFarmingView: React.FunctionComponent = () => {
+const YieldFarmingView: React.FC = () => {
   const wallet = useWallet();
   const warning = useWarning();
 
@@ -42,7 +42,7 @@ const YieldFarmingView: React.FunctionComponent = () => {
     return () => {
       warningDestructor?.();
     };
-  }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isMobile]);
 
   return (
     <Grid flow="row">

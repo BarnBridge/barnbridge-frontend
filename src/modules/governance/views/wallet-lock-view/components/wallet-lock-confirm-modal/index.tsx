@@ -5,7 +5,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { formatBONDValue } from 'web3/utils';
 import { getFormattedDuration } from 'utils';
 
@@ -14,7 +14,7 @@ export type WalletLockConfirmModalProps = ModalProps & {
   duration?: number;
 };
 
-const WalletLockConfirmModal: React.FunctionComponent<WalletLockConfirmModalProps> = props => {
+const WalletLockConfirmModal: React.FC<WalletLockConfirmModalProps> = props => {
   const { balance, duration, ...modalProps } = props;
 
   return (
@@ -28,10 +28,10 @@ const WalletLockConfirmModal: React.FunctionComponent<WalletLockConfirmModalProp
             color="red"
           />
           <Grid flow="row" gap={8}>
-            <Heading type="h3" semiBold color="primary">
+            <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to lock your balance?
-            </Heading>
-            <Paragraph type="p2" semiBold color="secondary">
+            </Text>
+            <Text type="p2" weight="semibold" color="secondary">
               You are about to lock {formatBONDValue(balance)} $BOND for {getFormattedDuration(0, duration)}.
               <br /><br />
               You cannot undo this or partially lock your balance.
@@ -40,11 +40,11 @@ const WalletLockConfirmModal: React.FunctionComponent<WalletLockConfirmModalProp
               <br /><br />
               All future deposits you make will be locked for the same time.
               <br /><br />
-            </Paragraph>
-            <Paragraph type="p2" bold color="primary">
+            </Text>
+            <Text type="p2" weight="bold" color="primary">
               The multiplier you get for locking tokens only applies to your voting power, it does not earn more
               rewards.
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
         <Grid flow="col" justify="space-between">

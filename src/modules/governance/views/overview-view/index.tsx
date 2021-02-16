@@ -6,7 +6,7 @@ import VotingStatList from './components/voting-stat-list';
 import VotersTable from './components/voters-table';
 import { useDAO } from '../../components/dao-provider';
 
-const OverviewView: React.FunctionComponent = () => {
+const OverviewView: React.FC = () => {
   const dao = useDAO();
 
   return (

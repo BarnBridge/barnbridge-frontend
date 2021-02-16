@@ -6,7 +6,7 @@ import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import LayoutHeader from 'layout/components/layout-header';
 import DAOProvider  from './components/dao-provider';
 import VotingHeader from './components/voting-header';
@@ -24,7 +24,7 @@ type GovernanceViewParams = {
   vt: string;
 };
 
-const GovernanceViewInternal: React.FunctionComponent = () => {
+const GovernanceViewInternal: React.FC = () => {
   const history = useHistory();
   const {
     params: { vt = 'overview' },
@@ -84,7 +84,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
             <ExternalLink href="https://signal.barnbridge.com/">
               <Grid flow="col" gap={8} align="center">
                 <Icons name="chats-outlined" />
-                <Paragraph type="p1" semiBold color="secondary">Signal</Paragraph>
+                <Text type="p1" weight="semibold" color="secondary">Signal</Text>
                 <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
               </Grid>
             </ExternalLink>
@@ -96,7 +96,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
             <ExternalLink href="https://forum.barnbridge.com/">
               <Grid flow="col" gap={8} align="center">
                 <Icons name="forum-outlined" />
-                <Paragraph type="p1" semiBold color="secondary">Forum</Paragraph>
+                <Text type="p1" weight="semibold" color="secondary">Forum</Text>
                 <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
               </Grid>
             </ExternalLink>
@@ -118,7 +118,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
   );
 };
 
-const GovernanceView: React.FunctionComponent = props => {
+const GovernanceView: React.FC = props => {
   return (
     <DAOProvider>
       <GovernanceViewInternal>{props.children}</GovernanceViewInternal>

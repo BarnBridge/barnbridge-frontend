@@ -7,7 +7,7 @@ import Button from 'components/antd/button';
 import Textarea from 'components/antd/textarea';
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { useProposal } from '../../providers/ProposalProvider';
 import { useAbrogation } from '../../providers/AbrogationProvider';
@@ -52,7 +52,7 @@ const InitialState: AbrogationVoteModalState = {
   submitting: false,
 };
 
-const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = props => {
+const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
   const proposalCtx = useProposal();
@@ -132,59 +132,59 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
         onFinish={handleSubmit}>
         {voteState === VoteAbrogationState.VoteInitiate && (
           <Grid flow="row" gap={16} padding={32}>
-            <Paragraph type="p2" semiBold color="secondary">
+            <Text type="p2" weight="semibold" color="secondary">
               {proposalCtx.proposal?.title}
-            </Paragraph>
+            </Text>
           </Grid>
         )}
         {voteState !== VoteAbrogationState.VoteInitiate && (
           <Grid flow="row" gap={16} className={s.row}>
             <Grid flow="col" gap={8} align="center">
-              <Heading type="h2" bold color="primary">
+              <Text type="h2" weight="bold" color="primary">
                 {formatBigValue(proposalCtx.votingPower, 2)}
-              </Heading>
-              <Paragraph type="p1" semiBold color="secondary">
+              </Text>
+              <Text type="p1" weight="semibold" color="secondary">
                 Votes
-              </Paragraph>
+              </Text>
             </Grid>
             {(voteState === VoteAbrogationState.VoteFor || voteState === VoteAbrogationState.VoteAgainst) && (
               <Grid flow="row" gap={8}>
-                <Paragraph type="p2" color="secondary">
+                <Text type="p2" color="secondary">
                   You are about to vote {voteState === VoteAbrogationState.VoteFor ? 'FOR' : 'AGAINST'} the abrogation
                   proposal for
-                </Paragraph>
-                <Paragraph type="p2" semiBold color="secondary">
+                </Text>
+                <Text type="p2" weight="semibold" color="secondary">
                   "{proposalCtx.proposal?.title}"
-                </Paragraph>
-                <Paragraph type="p2" color="secondary">
+                </Text>
+                <Text type="p2" color="secondary">
                   You can change your vote later.
-                </Paragraph>
+                </Text>
               </Grid>
             )}
             {voteState === VoteAbrogationState.VoteChange && (
               <Grid flow="row" gap={8}>
-                <Paragraph type="p2" color="secondary">
+                <Text type="p2" color="secondary">
                   You are about to change your vote on the abrogation proposal for
-                </Paragraph>
-                <Paragraph type="p2" semiBold color="secondary">
+                </Text>
+                <Text type="p2" weight="semibold" color="secondary">
                   "{proposalCtx.proposal?.title}"
-                </Paragraph>
-                <Paragraph type="p2" color="secondary">
+                </Text>
+                <Text type="p2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
-                </Paragraph>
+                </Text>
               </Grid>
             )}
             {voteState === VoteAbrogationState.VoteCancel && (
               <Grid flow="row" gap={8}>
-                <Paragraph type="p2" color="secondary">
+                <Text type="p2" color="secondary">
                   You are about to cancel your vote on the abrogation proposal for
-                </Paragraph>
-                <Paragraph type="p2" semiBold color="secondary">
+                </Text>
+                <Text type="p2" weight="semibold" color="secondary">
                   "{proposalCtx.proposal?.title}"
-                </Paragraph>
-                <Paragraph type="p2" color="secondary">
+                </Text>
+                <Text type="p2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
-                </Paragraph>
+                </Text>
               </Grid>
             )}
           </Grid>
@@ -214,17 +214,17 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="primary">
+                      <Text type="p1" weight="semibold" color="primary">
                         For
-                      </Paragraph>
+                      </Text>
                     }
                     value={true}
                   />
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="primary">
+                      <Text type="p1" weight="semibold" color="primary">
                         Against
-                      </Paragraph>
+                      </Text>
                     }
                     value={false}
                   />

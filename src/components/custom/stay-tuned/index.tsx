@@ -1,21 +1,21 @@
 import React from 'react';
 
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 import { ReactComponent as RocketSvg } from 'resources/svg/rocket.svg';
 
-const StayTuned: React.FunctionComponent = () => {
+const StayTuned: React.FC = () => {
   return (
     <Grid className="full-height" flow="row" gap={48} align="center" justify="center">
       <RocketSvg style={{ maxWidth: '310px', maxHeight: '377px' }} />
       <Grid flow="row" gap={8}>
-        <Heading type="h1" bold color="primary">
+        <Text type="h1" weight="bold" color="primary">
           Stay tuned!
-        </Heading>
-        <Paragraph type="p1" semiBold color="secondary">
+        </Text>
+        <Text type="p1" weight="semibold" color="secondary">
           We are launching soon
-        </Paragraph>
+        </Text>
       </Grid>
     </Grid>
   );

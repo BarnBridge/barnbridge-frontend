@@ -9,6 +9,7 @@ import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { useTheme } from 'components/providers/theme-provider';
 
 import { useWallet } from 'wallets/wallet';
@@ -16,8 +17,6 @@ import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
-
-import { Label, Paragraph } from 'components/custom/typography';
 
 import s from './styles.module.scss';
 
@@ -35,15 +34,15 @@ const ConnectedWallet: React.FC = () => {
             <Grid flow="row" gap={32} padding={[32, 24]}>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
                 <Icons name="node-status" />
-                <Paragraph type="p1" color="secondary">Status</Paragraph>
-                <Label type="lb2" semiBold color="green" className={s.statusTag}>Connecting</Label>
+                <Text type="p1" color="secondary">Status</Text>
+                <Text type="lb2" weight="semibold" color="green" className={s.statusTag}>Connecting</Text>
               </Grid>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
                 <Icons name="wallet-outlined" />
-                <Paragraph type="p1" color="secondary">Wallet</Paragraph>
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" color="secondary">Wallet</Text>
+                <Text type="p1" weight="semibold" color="primary">
                   {wallet.connecting?.name}
-                </Paragraph>
+                </Text>
               </Grid>
             </Grid>
             <Card.Delimiter />
@@ -81,9 +80,9 @@ const ConnectedWallet: React.FC = () => {
       content={
         <Card
           title={(
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               Notifications
-            </Paragraph>
+            </Text>
           )}
           noPaddingBody>
           <Grid flow="row" gap={24} align="center" padding={48}>
@@ -92,9 +91,9 @@ const ConnectedWallet: React.FC = () => {
             ) : (
               <ZeroNotificationsSvg width={138} height={128} />
             )}
-            <Paragraph type="p1" color="secondary" align="center">
+            <Text type="p1" color="secondary" align="center">
               There are no notifications to show
-            </Paragraph>
+            </Text>
           </Grid>
         </Card>
       }>
@@ -118,9 +117,9 @@ const ConnectedWallet: React.FC = () => {
             <Grid flow="col" gap={16} align="center" justify="start">
               <Identicon address={wallet.account} width={40} height={40} />
               <ExternalLink href={getEtherscanAddressUrl(wallet.account!)}>
-                <Paragraph type="p1" semiBold color="blue">
+                <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(wallet.account, 8, 8)}
-                </Paragraph>
+                </Text>
               </ExternalLink>
             </Grid>
           }
@@ -128,24 +127,24 @@ const ConnectedWallet: React.FC = () => {
           <Grid flow="row" gap={32} padding={[32, 24]}>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icons name="node-status" />
-              <Paragraph type="p1" color="secondary">Status</Paragraph>
-              <Label type="lb2" semiBold color="green" className={s.statusTag}>
+              <Text type="p1" color="secondary">Status</Text>
+              <Text type="lb2" weight="semibold" color="green" className={s.statusTag}>
                 Connected
-              </Label>
+              </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icons name="wallet-outlined" />
-              <Paragraph type="p1" color="secondary">Wallet</Paragraph>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" color="secondary">Wallet</Text>
+              <Text type="p1" weight="semibold" color="primary">
                 {wallet.connector?.name}
-              </Paragraph>
+              </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icons name="network" />
-              <Paragraph type="p1" color="secondary">Network</Paragraph>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" color="secondary">Network</Text>
+              <Text type="p1" weight="semibold" color="primary">
                 {wallet.networkName}
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Card.Delimiter />
@@ -159,9 +158,9 @@ const ConnectedWallet: React.FC = () => {
       <Button type="link" className={s.accountLink}>
         <Grid flow="col" gap={8} align="center">
           <Identicon address={wallet.account} width={24} height={24} />
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {shortenAddr(wallet.account)}
-          </Paragraph>
+          </Text>
           <Icons name="dropdown-arrow" className={s.dropdownArrow} />
         </Grid>
       </Button>

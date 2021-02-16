@@ -10,7 +10,7 @@ import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icons, { IconNames } from 'components/custom/icon';
 import FadeBlock from 'components/custom/fade-block';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { useTheme } from 'components/providers/theme-provider';
 
 import s from './styles.module.scss';
@@ -21,7 +21,7 @@ type MobileMenuLinkProps = {
   label: string;
 };
 
-const MobileMenuLink: React.FunctionComponent<MobileMenuLinkProps> = props => {
+const MobileMenuLink: React.FC<MobileMenuLinkProps> = props => {
   const { path, icon, label } = props;
 
   const history = useHistory();
@@ -36,15 +36,15 @@ const MobileMenuLink: React.FunctionComponent<MobileMenuLinkProps> = props => {
       {isActivePath && <div className={s.active} />}
       <Grid flow="col" gap={24}>
         <Icons name={icon} />
-        <Paragraph type="p2" semiBold>
+        <Text type="p2" weight="semibold">
           {label}
-        </Paragraph>
+        </Text>
       </Grid>
     </Button>
   );
 };
 
-const MobileMenu: React.FunctionComponent = () => {
+const MobileMenu: React.FC = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
   const location = useLocation();
   const [isOpen, setIsOpen] = React.useState<boolean>(false);
@@ -116,9 +116,9 @@ const MobileMenu: React.FunctionComponent = () => {
           <Button type="link" className={s.link} onClick={handleThemeToggle}>
             <Grid flow="col" gap={24}>
               <Icons name={isDarkTheme ? 'sun' : 'moon'} />
-              <Paragraph type="p2" semiBold>
+              <Text type="p2" weight="semibold">
                 {!isDarkTheme ? 'Dark' : 'Light'} Theme
-              </Paragraph>
+              </Text>
             </Grid>
           </Button>
         </FadeBlock>

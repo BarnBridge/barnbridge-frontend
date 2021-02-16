@@ -77,7 +77,7 @@ export function useWallet(): Wallet {
   return React.useContext(WalletContext);
 }
 
-const WalletProvider: React.FunctionComponent = props => {
+const WalletProvider: React.FC = props => {
   const web3React = useWeb3React();
 
   const [
@@ -234,7 +234,7 @@ function getLibrary(provider: any) {
   return library;
 }
 
-const Web3WalletProvider: React.FunctionComponent = props => {
+const Web3WalletProvider: React.FC = props => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <WalletProvider>{props.children}</WalletProvider>

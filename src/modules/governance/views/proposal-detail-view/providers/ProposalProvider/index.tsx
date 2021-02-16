@@ -56,7 +56,7 @@ export type ProposalProviderProps = {
   proposalId?: number;
 };
 
-const ProposalProvider: React.FunctionComponent<ProposalProviderProps> = props => {
+const ProposalProvider: React.FC<ProposalProviderProps> = props => {
   const { proposalId, children } = props;
 
   const history = useHistory();

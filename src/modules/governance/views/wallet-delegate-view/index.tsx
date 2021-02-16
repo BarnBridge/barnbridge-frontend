@@ -9,7 +9,7 @@ import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
 import GasFeeList from 'components/custom/gas-fee-list';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 import { isValidAddress } from 'utils';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
@@ -36,7 +36,7 @@ const InitialState: WalletDelegateViewState = {
   saving: false,
 };
 
-const WalletDelegateView: React.FunctionComponent = () => {
+const WalletDelegateView: React.FC = () => {
   const [form] = Antd.Form.useForm<DelegateFormData>();
 
   const web3c = useWeb3Contracts();
@@ -82,28 +82,28 @@ const WalletDelegateView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           BOND
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Current Voting Type
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {isDelegated ? 'Delegate voting' : 'Manual voting'}
-        </Paragraph>
+        </Text>
       </Grid>
 
       {isDelegated && (
         <Grid flow="row" gap={4}>
-          <Small semiBold color="secondary">
+          <Text type="small" weight="semibold" color="secondary">
             Delegated Address
-          </Small>
-          <Paragraph type="p1" semiBold color="primary">
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
             {userDelegatedTo}
-          </Paragraph>
+          </Text>
         </Grid>
       )}
 

@@ -6,12 +6,11 @@ import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
-import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import Icons, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
-import { Label, Paragraph, Small } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 
 import { TokenMeta } from 'web3/types';
 import { formatBigValue, getNonHumanValue, ZERO_BIG_NUMBER, } from 'web3/utils';
@@ -64,7 +63,7 @@ const InitialFormValues: FormData = {
   gasFee: undefined,
 };
 
-const PoolTokenWithdraw: React.FunctionComponent<PoolTokenWithdrawProps> = props => {
+const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<FormData>();
 
@@ -193,18 +192,18 @@ const PoolTokenWithdraw: React.FunctionComponent<PoolTokenWithdrawProps> = props
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
       <Grid flow="col" gap={12} align="center">
         {icon && <Icons name={icon} width={40} height={40} />}
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           {token.name}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Wallet Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBigValue(state.walletBalance, token.decimals)}
-        </Paragraph>
+        </Text>
       </Grid>
     </Grid>
   );
@@ -223,26 +222,25 @@ const PoolTokenWithdraw: React.FunctionComponent<PoolTokenWithdrawProps> = props
         onFinish={handleSubmit}>
         <Grid colsTemplate="1fr 1fr">
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
-            <Label type="lb2" semiBold color="secondary">
+            <Text type="lb2" weight="semibold" color="secondary">
               Staked Balance
-            </Label>
-            <Paragraph type="p1" semiBold color="primary">
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
               {formatBigValue(state.stakedBalance, token.decimals)}
-            </Paragraph>
+            </Text>
           </Grid>
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
             <Grid flow="col" gap={8}>
-              <Label type="lb2" semiBold color="secondary">
-                Effective Staked Balance
-              </Label>
-              <Tooltip
-                type="info"
-                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal."
-              />
+              <Hint
+                text="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal.">
+                <Text type="lb2" weight="semibold" color="secondary">
+                  Effective Staked Balance
+                </Text>
+              </Hint>
             </Grid>
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               {formatBigValue(state.effectiveStakedBalance, token.decimals)}
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
         <Grid flow="row" gap={32} padding={24}>
@@ -274,8 +272,8 @@ const PoolTokenWithdraw: React.FunctionComponent<PoolTokenWithdrawProps> = props
                   slider
                 />
               </Form.Item>
-                <Alert
-                  message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+              <Alert
+                message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
             </Grid>
             <Grid flow="row">
               <Form.Item

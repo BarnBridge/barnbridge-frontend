@@ -8,7 +8,7 @@ import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
@@ -47,7 +47,7 @@ const InitialState: WalletDepositViewState = {
   expanded: false,
 };
 
-const WalletDepositView: React.FunctionComponent = () => {
+const WalletDepositView: React.FC = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<DepositFormData>();
 
@@ -108,33 +108,33 @@ const WalletDepositView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           BOND
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Staked Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(stakedBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Wallet Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(bondBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Enable Token
-        </Small>
+        </Text>
         <Antd.Switch
           style={{ justifySelf: 'flex-start' }}
           checked={state.enabled}

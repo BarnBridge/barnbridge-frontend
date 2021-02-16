@@ -6,7 +6,7 @@ import cx from 'classnames';
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Icons, { NavIconNames } from 'components/custom/icon';
 import { useTheme } from 'components/providers/theme-provider';
 
@@ -19,7 +19,7 @@ export type NavLinkProps = {
   expanded: boolean;
 };
 
-const NavLink: React.FunctionComponent<NavLinkProps> = props => {
+const NavLink: React.FC<NavLinkProps> = props => {
   const { icon, label, path, expanded } = props;
 
   const history = useHistory();
@@ -36,7 +36,7 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
         <Button type="light" onClick={handleClick}>
           <Icons name={icon} />
           {expanded && (
-            <Paragraph type="p2" semiBold className={s.linkLabel}>{label}</Paragraph>
+            <Text type="p2" weight="semibold" className={s.linkLabel}>{label}</Text>
           )}
         </Button>
       </Grid>
@@ -44,7 +44,7 @@ const NavLink: React.FunctionComponent<NavLinkProps> = props => {
   );
 };
 
-const LayoutSideNav: React.FunctionComponent = () => {
+const LayoutSideNav: React.FC = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
@@ -92,15 +92,15 @@ const LayoutSideNav: React.FunctionComponent = () => {
         <Button type="light" onClick={handleThemeToggle}>
           <Icons name={isDarkTheme ? 'sun' : 'moon'} />
           {expanded && (
-            <Paragraph type="p2" semiBold className={s.linkLabel}>
+            <Text type="p2" weight="semibold" className={s.linkLabel}>
               {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
-            </Paragraph>
+            </Text>
           )}
         </Button>
         <Button type="light" className={s.hideLink} onClick={handleExpand}>
           <Icons name="right-arrow-circle-outlined" />
           {expanded && (
-            <Paragraph type="p2" semiBold className={s.linkLabel}>Hide menu</Paragraph>
+            <Text type="p2" weight="semibold" className={s.linkLabel}>Hide menu</Text>
           )}
         </Button>
       </Grid>

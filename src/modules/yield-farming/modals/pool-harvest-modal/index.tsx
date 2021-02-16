@@ -5,7 +5,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
-import { Heading, Label, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { getPoolIcons, getPoolNames, PoolTypes } from 'modules/yield-farming/utils';
 import { formatBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -23,7 +23,7 @@ type PoolHarvestSelectProps = {
   onClick: () => void;
 };
 
-const PoolHarvestSelect: React.FunctionComponent<PoolHarvestSelectProps> = props => {
+const PoolHarvestSelect: React.FC<PoolHarvestSelectProps> = props => {
   const { icons, label, reward, loading, onClick } = props;
 
   return (
@@ -36,21 +36,21 @@ const PoolHarvestSelect: React.FunctionComponent<PoolHarvestSelectProps> = props
       <Grid flow="row" gap={24} width="100%">
         <Grid flow="row" gap={8} align="start">
           <IconsSet icons={icons} />
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {label}
-          </Paragraph>
+          </Text>
         </Grid>
         <Grid flow="row" gap={8}>
-          <Label type="lb2" semiBold color="secondary">
+          <Text type="lb2" weight="semibold" color="secondary">
             Reward
-          </Label>
+          </Text>
           <Grid flow="col" gap={4}>
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               {formatBONDValue(reward)}
-            </Paragraph>
-            <Paragraph type="p2" color="secondary">
+            </Text>
+            <Text type="p2" color="secondary">
               BOND
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       </Grid>
@@ -70,7 +70,7 @@ const InitialState: State = {
   yfBONDHarvesting: false,
 };
 
-const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props => {
+const PoolHarvestModal: React.FC<PoolHarvestModalProps> = props => {
   const { ...modalProps } = props;
 
   const { yf, yfLP, yfBOND, bond } = useWeb3Contracts();
@@ -116,12 +116,12 @@ const PoolHarvestModal: React.FunctionComponent<PoolHarvestModalProps> = props =
     <Modal width={832} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={8}>
-          <Heading type="h3" semiBold color="primary">
+          <Text type="h3" weight="semibold" color="primary">
             Claim your reward
-          </Heading>
-          <Paragraph type="p2" semiBold color="secondary">
+          </Text>
+          <Text type="p2" weight="semibold" color="secondary">
             Select the pool you want to claim your reward from
-          </Paragraph>
+          </Text>
         </Grid>
         <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, 240px)">
           <PoolHarvestSelect

@@ -45,7 +45,7 @@ export type ProposalsProviderProps = {
   searchFilter?: string;
 };
 
-const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props => {
+const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
   const { stateFilter, searchFilter, children } = props;
 
   const [state, setState] = useMergeState<ProposalsProviderState>(InitialState);

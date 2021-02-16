@@ -11,7 +11,7 @@ import Popover from 'components/antd/popover';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
-import { Heading, Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import ProposalsProvider, {
   useProposals,
 } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
@@ -28,33 +28,33 @@ const TABS: CardTabListType[] = [
   {
     key: 'all',
     tab: (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         All proposals
-      </Paragraph>
+      </Text>
     ),
   },
   {
     key: 'active',
     tab: (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         Active
-      </Paragraph>
+      </Text>
     ),
   },
   {
     key: 'executed',
     tab: (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         Executed
-      </Paragraph>
+      </Text>
     ),
   },
   {
     key: 'failed',
     tab: (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         Failed
-      </Paragraph>
+      </Text>
     ),
   },
 ];
@@ -69,7 +69,7 @@ const InitialState: ProposalsViewState = {
   showWhyReason: false,
 };
 
-const ProposalsViewInner: React.FunctionComponent = () => {
+const ProposalsViewInner: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const daoCtx = useDAO();
@@ -103,9 +103,9 @@ const ProposalsViewInner: React.FunctionComponent = () => {
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col" align="center" justify="space-between">
-        <Heading type="h1" bold color="primary">
+        <Text type="h1" weight="bold" color="primary">
           Proposals
-        </Heading>
+        </Text>
         {wallet.isActive && (
           <Grid flow="row" gap={8} align="end" justify="end">
             <Button
@@ -117,32 +117,32 @@ const ProposalsViewInner: React.FunctionComponent = () => {
 
             {hasCreateRestrictions && !canCreateProposal && (
               <Grid flow="col" gap={8} align="center">
-                <Small semiBold color="secondary">
+                <Text type="small" weight="semibold" color="secondary">
                   You are not able to create a proposal.
-                </Small>
+                </Text>
                 <Popover
                   title="Why you can’t create a proposal"
                   placement="bottomLeft"
                   overlayStyle={{ width: 520 }}
                   content={
                     <Grid flow="row" gap={8}>
-                      <Paragraph type="p2" semiBold>
+                      <Text type="p2" weight="semibold">
                         There are 2 possible reasons for why you can’t create a
                         proposal:
-                      </Paragraph>
+                      </Text>
 
                       <ul>
                         <li>
-                          <Paragraph type="p2" semiBold>
+                          <Text type="p2" weight="semibold">
                             You already are the creator of an ongoing proposal
-                          </Paragraph>
+                          </Text>
                         </li>
                         <li>
-                          <Paragraph type="p2" semiBold>
+                          <Text type="p2" weight="semibold">
                             You don’t have enough voting power to create a proposal. The creator of a proposal needs to
                             have a voting power of at least {daoCtx.minThreshold}% of the amount of $BOND staked in the
                             DAO.
-                          </Paragraph>
+                          </Text>
                         </li>
                       </ul>
 

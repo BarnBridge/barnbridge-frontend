@@ -9,7 +9,7 @@ import s from './styles.module.scss';
 
 export type AlertProps = AntdAlertProps & {};
 
-const Alert: React.FunctionComponent<AlertProps> = props => {
+const Alert: React.FC<AlertProps> = props => {
   const { className, type = 'info', ...alertProps } = props;
 
   const icon = React.useMemo<React.ReactNode>(() => {

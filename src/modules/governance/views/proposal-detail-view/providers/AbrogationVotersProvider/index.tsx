@@ -39,7 +39,7 @@ export function useAbrogationVoters(): AbrogationVotersContextType {
   return React.useContext(AbrogationVotersContext);
 }
 
-const AbrogationVotersProvider: React.FunctionComponent = props => {
+const AbrogationVotersProvider: React.FC = props => {
   const { children } = props;
 
   const { abrogation } = useAbrogation();

@@ -5,7 +5,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { useDAO } from '../../../../components/dao-provider';
 import { useProposal } from '../../providers/ProposalProvider';
@@ -34,7 +34,7 @@ const InitialState: QueueForExecutionModalState = {
   submitting: false,
 };
 
-const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProps> = props => {
+const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
   const { ...modalProps } = props;
 
   const [form] = Antd.Form.useForm<FormState>();
@@ -76,10 +76,10 @@ const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProp
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
-          <Paragraph type="p2" semiBold color="secondary">
+          <Text type="p2" weight="semibold" color="secondary">
             Once a proposal is accepted, it will have to wait in the queue before it can be executed.
             During this time it can only be cancelled by an abrogation proposal.
-          </Paragraph>
+          </Text>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>

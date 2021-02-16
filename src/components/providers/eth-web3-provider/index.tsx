@@ -42,7 +42,7 @@ export function useEthWeb3(): EthWeb3ContextType {
   return React.useContext(EthWeb3Context);
 }
 
-const EthWeb3Provider: React.FunctionComponent = props => {
+const EthWeb3Provider: React.FC = props => {
   const { children } = props;
 
   const windowState = useWindowState();

@@ -9,7 +9,7 @@ export type ButtonProps = Omit<AntdButtonProps, 'type'> & {
   type: 'default' | 'primary' | 'ghost' | 'link' | 'light' | 'select';
 };
 
-const Button: React.FunctionComponent<ButtonProps> = props => {
+const Button: React.FC<ButtonProps> = props => {
   const { children, className, type, ...btnProps } = props;
 
   let btnType: AntdButtonType;

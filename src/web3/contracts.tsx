@@ -97,7 +97,7 @@ export function useWeb3Contracts(): Web3Contracts {
   return React.useContext(Web3ContractsContext);
 }
 
-const Web3ContractsProvider: React.FunctionComponent = props => {
+const Web3ContractsProvider: React.FC = props => {
   const wallet = useWallet();
   const bondContract = useBONDContract();
   const daiContract = useDAIContract();
@@ -157,7 +157,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
         contract.off('error', handleError);
       });
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []);
 
   React.useEffect(() => {
     const contracts = [
@@ -178,7 +178,7 @@ const Web3ContractsProvider: React.FunctionComponent = props => {
     contracts.forEach(contract => {
       contract.setProvider(wallet.provider);
     });
-  }, [wallet.provider]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [wallet.provider]);
 
   function getPoolUsdPrice(poolType: PoolTypes): BigNumber | undefined {
     switch (poolType) {

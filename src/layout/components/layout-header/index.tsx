@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Grid from 'components/custom/grid';
-import { Heading } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import ConnectedWallet from 'wallets/components/connected-wallet';
 
 import s from './styles.module.scss';
@@ -10,7 +10,7 @@ export type LayoutHeaderProps = {
   title: React.ReactNode;
 };
 
-const LayoutHeader: React.FunctionComponent<LayoutHeaderProps> = props => {
+const LayoutHeader: React.FC<LayoutHeaderProps> = props => {
   const { title } = props;
 
   return (
@@ -19,9 +19,9 @@ const LayoutHeader: React.FunctionComponent<LayoutHeaderProps> = props => {
       align="center"
       justify="space-between"
       className={s.component}>
-      <Heading type="h3" semiBold color="primary">
+      <Text type="h3" weight="semibold" color="primary">
         {title}
-      </Heading>
+      </Text>
       <ConnectedWallet />
     </Grid>
   );

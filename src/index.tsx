@@ -14,7 +14,7 @@ import LayoutView from 'layout';
 
 import * as sw from './serviceWorker';
 
-const App: React.FunctionComponent = () => {
+const App: React.FC = () => {
   return (
     <WindowStateProvider>
       <ThemeProvider>

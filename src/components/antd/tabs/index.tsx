@@ -10,7 +10,7 @@ import s from './styles.module.scss';
 
 export type TabProps = AntdTabPaneProps;
 
-const Tab: React.FunctionComponent<TabProps> = props => {
+const Tab: React.FC<TabProps> = props => {
   const { className, ...tabProps } = props;
 
   return <Antd.Tabs.TabPane className={cx(s.tab, className)} {...tabProps} />;
@@ -21,10 +21,10 @@ export type TabsProps = AntdTabsProps & {
 };
 
 export type StaticTabsProps = {
-  Tab: React.FunctionComponent<TabProps>;
+  Tab: React.FC<TabProps>;
 };
 
-const Tabs: React.FunctionComponent<TabsProps> & StaticTabsProps = ((
+const Tabs: React.FC<TabsProps> & StaticTabsProps = ((
   props: TabsProps,
 ) => {
   const { className, simple = false, ...tabsProps } = props;

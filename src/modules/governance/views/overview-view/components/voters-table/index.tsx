@@ -7,7 +7,7 @@ import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import ExternalLink from 'components/custom/externalLink';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
 import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
@@ -16,17 +16,17 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'address',
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Address
-      </Small>
+      </Text>
     ),
     render: (value: string) => (
       <Grid flow="col" gap={16} align="center">
         <Identicon address={value} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(value)}>
-          <Paragraph type="p1" semiBold color="blue" ellipsis>
+          <Text type="p1" weight="semibold" color="blue" ellipsis>
             {value}
-          </Paragraph>
+          </Text>
         </ExternalLink>
       </Grid>
     ),
@@ -34,61 +34,61 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'bondStaked',
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Staked Balance
-      </Small>
+      </Text>
     ),
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
-      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
+      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
         {formatBigValue(value, 2, '-', 2)}
-      </Paragraph>
+      </Text>
     ),
   },
   {
     dataIndex: 'votingPower',
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Voting Power
-      </Small>
+      </Text>
     ),
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
-      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
+      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
         {formatBigValue(value, 2, '-', 2)}
-      </Paragraph>
+      </Text>
     ),
   },
   {
     dataIndex: 'votes',
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Votes
-      </Small>
+      </Text>
     ),
     width: 150,
     align: 'right',
     render: (value: number) => (
-      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
+      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
         {value}
-      </Paragraph>
+      </Text>
     ),
   },
   {
     dataIndex: 'proposals',
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Proposals
-      </Small>
+      </Text>
     ),
     width: 150,
     align: 'right',
     render: (value: number) => (
-      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
+      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
         {value}
-      </Paragraph>
+      </Text>
     ),
   },
 ];
@@ -97,7 +97,7 @@ export type VotersTableProps = {
   className?: string;
 };
 
-const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
+const VotersTable: React.FC<VotersTableProps> = props => {
   const { className } = props;
 
   const [loading, setLoading] = React.useState<boolean>(false);
@@ -123,9 +123,9 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           Voter weights
-        </Paragraph>
+        </Text>
       }
       noPaddingBody>
       <Table<APIVoterEntity>
@@ -141,9 +141,9 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
           current: page,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Paragraph type="p2" semiBold color="secondary">
+            <Text type="p2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} stakers
-            </Paragraph>
+            </Text>
           ),
           onChange: setPage,
         }}

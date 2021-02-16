@@ -4,7 +4,7 @@ import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
 
 import LayoutSideNav from 'layout/components/layout-side-nav';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import MobileMenu from 'components/custom/mobile-menu';
 import ExternalLink from 'components/custom/externalLink';
 import StayTuned from 'components/custom/stay-tuned';
@@ -27,7 +27,7 @@ const DOCS_LINK = 'https://docs.barnbridge.com/';
 const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
 const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
-const LayoutView: React.FunctionComponent = () => {
+const LayoutView: React.FC = () => {
   return (
     <Antd.Layout className={s.layout}>
       {!isMobile ? <LayoutSideNav /> : <MobileMenu />}
@@ -44,44 +44,44 @@ const LayoutView: React.FunctionComponent = () => {
           <Antd.Layout.Footer className={s.footer}>
             <div className="flex wrap col-gap-24 row-gap-24 justify-end">
               <ExternalLink href={WEBSITE_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Website
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={DISCORD_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Discord
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={TWITTER_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Twitter
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={WHITEPAPER_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Whitepaper
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={GITHUB_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Github
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={DOCS_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Docs
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={UNISWAP_LIQUIDITY_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Uniswap v2 USDC/BOND add liquidity
-                </Paragraph>
+                </Text>
               </ExternalLink>
               <ExternalLink href={UNISWAP_MARKET_LINK}>
-                <Paragraph type="p2" semiBold>
+                <Text type="p2" weight="semibold">
                   Uniswap v2 USDC/BOND market
-                </Paragraph>
+                </Text>
               </ExternalLink>
             </div>
           </Antd.Layout.Footer>

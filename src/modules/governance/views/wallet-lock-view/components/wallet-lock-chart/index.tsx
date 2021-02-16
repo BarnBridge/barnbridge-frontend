@@ -9,7 +9,7 @@ import {
 import { flow } from 'lodash/fp'
 import BigNumber from 'bignumber.js';
 
-import { Hint, Paragraph, Small } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import ExternalLink from 'components/custom/externalLink';
 
 import { formatBigValue, formatBONDValue } from 'web3/utils';
@@ -134,7 +134,7 @@ export type WalletLockChartProps = {
   lockEndDate: Date;
 };
 
-const WalletLockChart: React.FunctionComponent<WalletLockChartProps> = props => {
+const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   const { lockEndDate } = props;
 
   const web3c = useWeb3Contracts();
@@ -164,28 +164,28 @@ const WalletLockChart: React.FunctionComponent<WalletLockChartProps> = props => 
     <Antd.Card className={s.card} title={(
       <Hint text={(
         <>
-          <Paragraph type="p2">
+          <Text type="p2">
             The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up
             to 2x vBOND. The bonus is linear, as per the following example:
-          </Paragraph>
+          </Text>
           <ul>
             <li>
-              <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
+              <Text type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Text>
             </li>
             <li>
-              <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
+              <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
             </li>
           </ul>
           <ExternalLink href="#">Learn more</ExternalLink>
         </>
       )}>
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           {formatBONDValue(myBonus)}<span> vBOND bonus - </span>
           {inRange(multiplier, 1, 1.01) ? '>' : ''}
           {formatBigValue(multiplier, 2)}x
           <span> for </span>
           {formatDistanceToNow(lockEndDate)}
-        </Small>
+        </Text>
       </Hint>
     )}>
       <ReCharts.ResponsiveContainer width="100%" height={154}>

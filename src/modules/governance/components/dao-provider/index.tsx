@@ -45,7 +45,7 @@ export function useDAO(): DAOContextType {
   return React.useContext(DAOContext);
 }
 
-const DAOProvider: React.FunctionComponent = props => {
+const DAOProvider: React.FC = props => {
   const { children } = props;
 
   const web3c = useWeb3Contracts();

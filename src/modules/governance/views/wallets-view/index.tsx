@@ -9,14 +9,14 @@ import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
 
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
-import { Heading } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { useWallet } from 'wallets/wallet';
 
 type WalletViewRouteParams = {
   action: string;
 };
 
-const WalletView: React.FunctionComponent = () => {
+const WalletView: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const {
@@ -47,9 +47,9 @@ const WalletView: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={32}>
-      <Heading type="h1" bold color="primary">
+      <Text type="h1" weight="bold" color="primary">
         Wallet
-      </Heading>
+      </Text>
       <Tabs activeKey={activeTab} simple onChange={handleTabChange}>
         <Tabs.Tab key="deposit" tab="Deposit" />
         <Tabs.Tab key="lock" tab="Lock" />

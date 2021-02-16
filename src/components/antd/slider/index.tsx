@@ -7,7 +7,7 @@ import s from './styles.module.scss';
 
 export type SliderProps = SliderSingleProps & {};
 
-const Slider: React.FunctionComponent<SliderProps> = props => {
+const Slider: React.FC<SliderProps> = props => {
   const { className, ...rest } = props;
 
   return (

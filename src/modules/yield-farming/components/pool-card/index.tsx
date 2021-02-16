@@ -6,7 +6,7 @@ import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
-import { Hint, Label, Paragraph } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
 import { formatBigValue, formatBONDValue, formatUSDValue, } from 'web3/utils';
@@ -41,7 +41,7 @@ type State = {
   myShares?: PoolTokenShare[];
 };
 
-const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
+const PoolCard: React.FC<PoolCardProps> = props => {
   const { pool } = props;
 
   const history = useHistory();
@@ -244,12 +244,12 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       <Grid flow="col" gap={16}>
         <IconsSet icons={getPoolIcons(pool)} />
         <Grid flow="row">
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {getPoolNames(pool).join('/')}
-          </Paragraph>
-          <Label type="lb2" semiBold color="red">
+          </Text>
+          <Text type="lb2" weight="semibold" color="red">
             EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
-          </Label>
+          </Text>
         </Grid>
       </Grid>
       {wallet.isActive && (
@@ -268,81 +268,90 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       {!state.isEnded && (
         <>
           <Grid flow="row" gap={4} padding={24}>
-            <Label type="lb2" semiBold color="secondary">
+            <Text type="lb2" weight="semibold" color="secondary">
               Reward
-            </Label>
+            </Text>
             <Grid flow="col" gap={4}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {formatBONDValue(state.epochReward)}
-              </Paragraph>
-              <Paragraph type="p2" color="secondary">
+              </Text>
+              <Text type="p2" color="secondary">
                 BOND
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           {wallet.isActive && (
             <Grid flow="row" gap={4} padding={24}>
-              <Label type="lb2" semiBold color="secondary">
+              <Text type="lb2" weight="semibold" color="secondary">
                 My Potential Reward
-              </Label>
+              </Text>
               <Grid flow="col" gap={4}>
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" weight="semibold" color="primary">
                   {formatBONDValue(state.potentialReward)}
-                </Paragraph>
-                <Paragraph type="p2" color="secondary">
+                </Text>
+                <Text type="p2" color="secondary">
                   BOND
-                </Paragraph>
+                </Text>
               </Grid>
             </Grid>
           )}
           <Grid flow="row" gap={4} padding={24}>
-            <Label type="lb2" semiBold color="secondary">
-              <Hint text={<span>
-                  This number shows the total staked balance of the pool, and
-                  the effective balance of the pool.
-                  <br />
-                  <br />
-                  When staking tokens during an epoch that is currently running,
-                  your effective deposit amount will be proportionally reduced
-                  by the time that has passed from that epoch. Once an epoch
-                  ends, your staked balance and effective staked balance will be
-                  the equal, therefore pool balance and effective pool balance
-                  will differ in most cases.
-                </span>}>Pool Balance</Hint>
-            </Label>
-            <Paragraph type="p1" semiBold color="primary">
+            <Hint text={
+              <span>
+                This number shows the total staked balance of the pool, and
+                the effective balance of the pool.
+                <br />
+                <br />
+                When staking tokens during an epoch that is currently running,
+                your effective deposit amount will be proportionally reduced
+                by the time that has passed from that epoch. Once an epoch
+                ends, your staked balance and effective staked balance will be
+                the equal, therefore pool balance and effective pool balance
+                will differ in most cases.
+              </span>
+            }>
+              <Text type="lb2" weight="semibold" color="secondary">
+                Pool Balance
+              </Text>
+            </Hint>
+
+            <Text type="p1" weight="semibold" color="primary">
               {formatUSDValue(state.balance)}
-            </Paragraph>
-            <Paragraph type="p2" color="secondary">
+            </Text>
+            <Text type="p2" color="secondary">
               {formatUSDValue(state.effectiveBalance)} effective balance
-            </Paragraph>
+            </Text>
             <PoolStakeShareBar shares={state.shares} />
           </Grid>
         </>
       )}
       {wallet.isActive && (
         <Grid flow="row" gap={4} padding={24}>
-          <Label type="lb2" semiBold color="secondary">
-            <Hint text={<span>
-                    This number shows your total staked balance in the pool, and
-                    your effective staked balance in the pool.
-                    <br />
-                    <br />
-                    When staking tokens during an epoch that is currently
-                    running, your effective deposit amount will be
-                    proportionally reduced by the time that has passed from that
-                    epoch. Once an epoch ends, your staked balance and effective
-                    staked balance will be the equal, therefore your pool
-                    balance and your effective pool balance will differ in most
-                    cases.
-                  </span>}>My Pool Balance</Hint>
-          </Label>
-          <Paragraph type="p1" semiBold color="primary">
+          <Hint text={
+            <span>
+              This number shows your total staked balance in the pool, and
+              your effective staked balance in the pool.
+              <br />
+              <br />
+              When staking tokens during an epoch that is currently
+              running, your effective deposit amount will be
+              proportionally reduced by the time that has passed from that
+              epoch. Once an epoch ends, your staked balance and effective
+              staked balance will be the equal, therefore your pool
+              balance and your effective pool balance will differ in most
+              cases.
+            </span>
+          }>
+            <Text type="lb2" weight="semibold" color="secondary">
+              My Pool Balance
+            </Text>
+          </Hint>
+          <Text type="p1" weight="semibold" color="primary">
             {formatUSDValue(state.myBalance)}
-          </Paragraph>
-          <Paragraph type="p2" color="secondary">
+          </Text>
+          <Text type="p2" color="secondary">
             {formatUSDValue(state.myEffectiveBalance)} effective balance
-          </Paragraph>
+          </Text>
           {!state.isEnded && (
             <PoolStakeShareBar shares={state.myShares} />
           )}
@@ -351,12 +360,12 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
       {state.isEnded && (
         <div className={s.box}>
           <Grid flow="row" align="start">
-            <Paragraph type="p2" semiBold color="secondary">
+            <Text type="p2" weight="semibold" color="secondary">
               The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
               you
               can
               still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
-            </Paragraph>
+            </Text>
             <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
           </Grid>
         </div>

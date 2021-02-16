@@ -4,7 +4,7 @@ import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 const UserRejectedModal: React.FC<ModalProps> = props => {
   const { ...modalProps } = props;
@@ -20,12 +20,12 @@ const UserRejectedModal: React.FC<ModalProps> = props => {
             color="red"
           />
           <Grid flow="row" gap={8} align="center">
-            <Heading type="h3" semiBold color="primary">
+            <Text type="h3" weight="semibold" color="primary">
               Error
-            </Heading>
-            <Paragraph type="p2" semiBold color="secondary">
+            </Text>
+            <Text type="p2" weight="semibold" color="secondary">
               Transaction rejected
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
         <Button type="primary" onClick={modalProps.onCancel}>

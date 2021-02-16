@@ -14,7 +14,7 @@ export type CardProps = AntdCardProps & {
   noPaddingBody?: boolean;
 };
 
-const Card: React.FunctionComponent<CardProps> = props => {
+const Card: React.FC<CardProps> = props => {
   const {
     className,
     showExpandButton = false,
@@ -52,14 +52,14 @@ const Card: React.FunctionComponent<CardProps> = props => {
   );
 };
 
-const CardDelimiter: React.FunctionComponent = () => (
+const CardDelimiter: React.FC = () => (
   <div className={s.delimiter} />
 );
 
 export type StaticCardProps = {
-  Delimiter: React.FunctionComponent;
+  Delimiter: React.FC;
 };
 
 ((Card as any) as StaticCardProps).Delimiter = CardDelimiter;
 
-export default Card as React.FunctionComponent<CardProps> & StaticCardProps;
+export default Card as React.FC<CardProps> & StaticCardProps;

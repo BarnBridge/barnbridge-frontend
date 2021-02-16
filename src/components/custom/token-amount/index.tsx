@@ -23,7 +23,7 @@ export type TokenAmountProps = {
   onChange?: (value?: BigNumber) => void;
 };
 
-const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
+const TokenAmount: React.FC<TokenAmountProps> = props => {
   const {
     className,
     tokenIcon,

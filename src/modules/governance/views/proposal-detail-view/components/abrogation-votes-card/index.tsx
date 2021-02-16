@@ -5,7 +5,7 @@ import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import AbrogationVoteModal, {
   VoteAbrogationState,
 } from '../abrogation-vote-modal';
@@ -29,7 +29,7 @@ const InitialState: AbrogationVotesCardState = {
   voteState: VoteAbrogationState.None,
 };
 
-const AbrogationVotesCard: React.FunctionComponent = () => {
+const AbrogationVotesCard: React.FC = () => {
   const abrogationCtx = useAbrogation();
 
   const [state, setState] = useMergeState<AbrogationVotesCardState>(
@@ -83,9 +83,9 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
     <Card
       className={s.component}
       title={
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           Abrogation proposal votes
-        </Paragraph>
+        </Text>
       }
       extra={
         <Button type="link" onClick={handleShowVotersModal}>
@@ -95,16 +95,16 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={32} className={s.row}>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               For
-            </Paragraph>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {abrogationCtx.abrogation?.forVotes.toFormat(2)}
-              </Paragraph>
-              <Paragraph type="p1" color="secondary">
+              </Text>
+              <Text type="p1" color="secondary">
                 ({abrogationCtx.forRate?.toFixed(2)}%)
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Progress
@@ -115,16 +115,16 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
         </Grid>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               Against
-            </Paragraph>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {abrogationCtx.abrogation?.againstVotes.toFormat(2)}
-              </Paragraph>
-              <Paragraph type="p1" color="secondary">
+              </Text>
+              <Text type="p1" color="secondary">
                 ({abrogationCtx.againstRate?.toFixed(2)}%)
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Progress
@@ -136,12 +136,12 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
       </Grid>
       <Grid flow="row" gap={24} className={s.row}>
         <Grid flow="row" gap={8}>
-          <Paragraph type="p1" color="secondary">
+          <Text type="p1" color="secondary">
             Your voting power for this proposal
-          </Paragraph>
-          <Paragraph type="p1" semiBold color="primary">
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(abrogationCtx.votingPower, 2)}
-          </Paragraph>
+          </Text>
         </Grid>
         <Grid flow="row" gap={24}>
           {!abrogationCtx.receipt?.hasVoted ? (

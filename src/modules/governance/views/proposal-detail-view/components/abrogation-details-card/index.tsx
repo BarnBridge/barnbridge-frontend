@@ -4,28 +4,28 @@ import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import ExternalLink from 'components/custom/externalLink';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { useAbrogation } from '../../providers/AbrogationProvider';
 
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
-const AbrogationDetailsCard: React.FunctionComponent = () => {
+const AbrogationDetailsCard: React.FC = () => {
   const abrogationCtx = useAbrogation();
 
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           Details
-        </Paragraph>
+        </Text>
       }
       noPaddingBody>
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="secondary">
+            <Text type="small" weight="semibold" color="secondary">
               Created by
-            </Small>
+            </Text>
             <Grid flow="col" gap={8}>
               <Identicon
                 address={abrogationCtx.abrogation?.caller}
@@ -36,9 +36,9 @@ const AbrogationDetailsCard: React.FunctionComponent = () => {
                 href={`${getEtherscanAddressUrl(
                   abrogationCtx.abrogation?.caller!,
                 )}`}>
-                <Paragraph type="p1" semiBold color="blue">
+                <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(abrogationCtx.abrogation?.caller)}
-                </Paragraph>
+                </Text>
               </ExternalLink>
             </Grid>
           </Grid>
@@ -46,12 +46,12 @@ const AbrogationDetailsCard: React.FunctionComponent = () => {
       </Grid>
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Description
-        </Small>
-        <Paragraph type="p1" color="primary" wrap>
+        </Text>
+        <Text type="p1" color="primary" wrap>
           {abrogationCtx.abrogation?.description}
-        </Paragraph>
+        </Text>
       </Grid>
     </Card>
   );

@@ -11,7 +11,7 @@ import Select from 'components/antd/select';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
-import { Heading, Hint, Small } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import AddZerosPopup from '../add-zeros-popup';
 import SimulatedProposalActionModal from '../simulated-proposal-action-modal';
 
@@ -78,7 +78,7 @@ const InitialState: CreateProposalActionModalState = {
   submitting: false,
 };
 
-const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionModalProps> = props => {
+const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = props => {
   const { edit = false, initialValues = InitialFormValues } = props;
 
   const [form] = Antd.Form.useForm<CreateProposalActionForm>();
@@ -290,9 +290,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
       confirmText="Are you sure you want to close this form?"
       {...props}>
       <div className={s.wrap}>
-        <Heading type="h2" semiBold className={s.headerLabel}>
+        <Text type="h2" weight="semibold" className={s.headerLabel}>
           {edit ? 'Edit action' : 'Add new action'}
-        </Heading>
+        </Text>
 
         <Form
           className={s.form}
@@ -312,9 +312,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
           <Grid flow="col" align="center" justify="space-between">
             <Hint
               text="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
-              <Small semiBold color="secondary">
+              <Text type="small" weight="semibold" color="secondary">
                 Is this a proxy address?
-              </Small>
+              </Text>
             </Hint>
             <Form.Item name="isProxyAddress">
               <Antd.Switch disabled={state.submitting} />
@@ -362,9 +362,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                     name="actionValue"
                     label={
                       <Grid flow="col" gap={8}>
-                        <Small semiBold color="secondary">
+                        <Text type="small" weight="semibold" color="secondary">
                           Action Value
-                        </Small>
+                        </Text>
                         <AddZerosPopup
                           max={max}
                           onAdd={value => {
@@ -454,9 +454,9 @@ const CreateProposalActionModal: React.FunctionComponent<CreateProposalActionMod
                           name={['functionParams', input.name]}
                           label={
                             <Grid flow="col" gap={8}>
-                              <Small semiBold color="secondary">
+                              <Text type="small" weight="semibold" color="secondary">
                                 {input.name} ({input.type})
-                              </Small>
+                              </Text>
                               {/(u?int\d+)/g.test(input.type) && (
                                 <AddZerosPopup
                                   onAdd={value => {

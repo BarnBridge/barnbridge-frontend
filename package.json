@@ -17,15 +17,7 @@
     "import:abi": "node tools/import_abi.js"
   },
   "eslintConfig": {
-    "extends": "react-app",
-    "rules": {
-      "react-hooks/exhaustive-deps": [
-        "off",
-        {
-          "additionalHooks": "useMergeState"
-        }
-      ]
-    }
+    "extends": "react-app"
   },
   "browserslist": {
     "production": [

@@ -4,7 +4,7 @@ import { useHistory } from 'react-router';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Heading } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 import ProposalVoteResultsCard from './components/proposal-vote-results-card';
 import ProposalDetailsCard from './components/proposal-details-card';
@@ -30,7 +30,7 @@ const InitialState: ProposalDetailViewInnerState = {
   executing: false,
 };
 
-const ProposalDetailViewInner: React.FunctionComponent = () => {
+const ProposalDetailViewInner: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const proposalCtx = useProposal();
@@ -74,9 +74,9 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
       </Grid>
 
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-        <Heading type="h2" semiBold color="primary">
+        <Text type="h2" weight="semibold" color="primary">
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
-        </Heading>
+        </Text>
 
         <Grid flow="col" justify="end">
           {wallet.account && (

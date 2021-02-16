@@ -11,7 +11,7 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import PoolTxListProvider, {
   PoolTxListItem,
   usePoolTxList,
@@ -42,15 +42,15 @@ const Columns: ColumnsType<any> = [
     title: '',
     dataIndex: 'token',
     width: 24,
-    // render: (value: string) => getTokenMeta(value)?.icon,
+    render: (value: string) => getTokenMeta(value)?.icon,
   },
   {
     title: 'From',
     dataIndex: 'user',
     render: (value: string) => (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {shortenAddr(value)}
-      </Paragraph>
+      </Text>
     ),
   },
   {
@@ -58,9 +58,9 @@ const Columns: ColumnsType<any> = [
     dataIndex: 'txHash',
     render: (value: string) => (
       <ExternalLink href={getEtherscanTxUrl(value)}>
-        <Paragraph type="p1" semiBold color="blue">
+        <Text type="p1" weight="semibold" color="blue">
           {shortenAddr(value)}
-        </Paragraph>
+        </Text>
       </ExternalLink>
     ),
   },
@@ -68,11 +68,11 @@ const Columns: ColumnsType<any> = [
     title: 'Time',
     dataIndex: 'blockTimestamp',
     render: (value: number) => (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {formatDistance(new Date(value * 1_000), new Date(), {
           addSuffix: true,
         })}
-      </Paragraph>
+      </Text>
     ),
   },
   {
@@ -90,9 +90,9 @@ const Columns: ColumnsType<any> = [
               {tokenMeta?.name}
             </span>
           }>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {formatUSDValue(value)}
-          </Paragraph>
+          </Text>
         </Tooltip>
       );
     },
@@ -101,9 +101,9 @@ const Columns: ColumnsType<any> = [
     title: 'Type',
     dataIndex: 'type',
     render: (value: string) => (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {capitalize(value)}
-      </Paragraph>
+      </Text>
     ),
   },
 ];
@@ -115,7 +115,7 @@ export type PoolTxTableProps = {
   action?: PoolActions;
 };
 
-const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
+const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
   const { label, ownTransactions, pool, action } = props;
 
   const wallet = useWallet();
@@ -193,9 +193,9 @@ const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
 
   const CardTitle = (
     <Grid flow="col" align="center" justify="space-between">
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {label}
-      </Paragraph>
+      </Text>
       <Grid flow="col" gap={24}>
         <Select
           label="Tokens"
@@ -222,9 +222,9 @@ const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
   const CardEmptyText = (
     <Grid flow="row" gap={16} align="center" padding={[54, 0]}>
       <EmptyBoxSvg />
-      <Paragraph type="p1" color="secondary">
+      <Text type="p1" color="secondary">
         There are no transactions to show
-      </Paragraph>
+      </Text>
     </Grid>
   );
 
@@ -255,7 +255,7 @@ const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
   );
 };
 
-const PoolTxTable: React.FunctionComponent<PoolTxTableProps> = props => (
+const PoolTxTable: React.FC<PoolTxTableProps> = props => (
   <PoolTxListProvider>
     <PoolTxTableInner {...props} />
   </PoolTxListProvider>

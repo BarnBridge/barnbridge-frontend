@@ -43,7 +43,7 @@ export function useAbrogation(): AbrogationContextType {
   return React.useContext(AbrogationContext);
 }
 
-const AbrogationProvider: React.FunctionComponent = props => {
+const AbrogationProvider: React.FC = props => {
   const { children } = props;
 
   const history = useHistory();

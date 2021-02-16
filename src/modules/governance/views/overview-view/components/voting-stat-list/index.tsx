@@ -2,7 +2,7 @@ import React from 'react';
 
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
-import { Heading, Hint, Label, Paragraph } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import ExternalLink from 'components/custom/externalLink';
 
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
@@ -15,7 +15,7 @@ export type VotingStatListProps = {
   className?: string;
 };
 
-const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
+const VotingStatList: React.FC<VotingStatListProps> = props => {
   const { className } = props;
 
   const web3c = useWeb3Contracts();
@@ -34,26 +34,26 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
       <Card>
         <Grid flow="row" gap={48}>
           <Hint text={(
-            <Paragraph type="p2">
+            <Text type="p2">
               This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
-            </Paragraph>
+            </Text>
           )}>
-            <Label type="lb2" semiBold color="red">
+            <Text type="lb2" weight="semibold" color="red">
               Bond Staked
-            </Label>
+            </Text>
           </Hint>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
-              <Heading type="h2" bold color="primary">
+              <Text type="h2" weight="bold" color="primary">
                 {formatBONDValue(web3c.daoBarn.bondStaked)}
-              </Heading>
-              <Paragraph type="p1" color="secondary">
+              </Text>
+              <Text type="p1" color="secondary">
                 BOND
-              </Paragraph>
+              </Text>
             </Grid>
-            <Paragraph type="p1" color="secondary">
+            <Text type="p1" color="secondary">
               {formatUSDValue(web3c.aggregated.bondLockedPrice)}
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       </Card>
@@ -62,23 +62,23 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
         <Grid flow="row" gap={48}>
           <Hint text={(
             <Grid flow="row" gap={8} align="start">
-              <Paragraph type="p2">
+              <Text type="p2">
                 This number shows the amount of vBOND currently minted. This number may differ from the amount of $BOND
                 staked because of the multiplier mechanic
-              </Paragraph>
+              </Text>
               <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
                 Learn more
               </ExternalLink>
             </Grid>
           )}>
-            <Label type="lb2" semiBold color="red">
+            <Text type="lb2" weight="semibold" color="red">
               VBond
-            </Label>
+            </Text>
           </Hint>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="primary">
+            <Text type="h2" weight="bold" color="primary">
               {formatBONDValue(overview?.totalVbond)}
-            </Heading>
+            </Text>
           </Grid>
         </Grid>
       </Card>
@@ -87,26 +87,26 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
         <Grid flow="row" gap={48}>
           <Hint text={(
             <Grid flow="row" gap={8} align="start">
-              <Paragraph type="p2">
+              <Text type="p2">
                 This counter shows the average amount of time $BOND stakers locked their deposits in order to take
                 advantage of the voting power bonus.
-              </Paragraph>
+              </Text>
               <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
                 Learn more
               </ExternalLink>
             </Grid>
           )}>
-            <Label type="lb2" semiBold color="red">
+            <Text type="lb2" weight="semibold" color="red">
               Avg. Lock Time
-            </Label>
+            </Text>
           </Hint>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="primary">
+            <Text type="h2" weight="bold" color="primary">
               {overview?.avgLockTimeSeconds ? getFormattedDuration(overview?.avgLockTimeSeconds) : '-'}
-            </Heading>
-            <Paragraph type="p1" color="secondary">
+            </Text>
+            <Text type="p1" color="secondary">
               average time
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       </Card>
@@ -114,27 +114,27 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
       <Card>
         <Grid flow="row" gap={48}>
           <Hint text={(
-            <Paragraph type="p2">
+            <Text type="p2">
               This number shows the $BOND token rewards distributed so far out of the total
               of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)} that are going to be available for the
               DAO Staking.
-            </Paragraph>
+            </Text>
           )}>
-            <Label type="lb2" semiBold color="red">
+            <Text type="lb2" weight="semibold" color="red">
               Bond Rewards
-            </Label>
+            </Text>
           </Hint>
           <Grid flow="row" gap={4}>
             <UseLeftTime end={(web3c.daoReward.poolFeature?.endTs ?? 0) * 1000} delay={5_000}>
               {() => (
-                <Heading type="h2" bold color="primary">
+                <Text type="h2" weight="bold" color="primary">
                   {formatBONDValue(web3c.daoReward.actions.getBondRewards())}
-                </Heading>
+                </Text>
               )}
             </UseLeftTime>
-            <Paragraph type="p1" color="secondary">
+            <Text type="p1" color="secondary">
               out of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)}
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       </Card>
@@ -143,26 +143,26 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
         <Grid flow="row" gap={48}>
           <Hint text={(
             <Grid flow="row" gap={8} align="start">
-              <Paragraph type="p2">
+              <Text type="p2">
                 This number shows the amount of vBOND that is delegated to other addresses.
-              </Paragraph>
+              </Text>
               <ExternalLink
                 href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
                 Learn more
               </ExternalLink>
             </Grid>
           )}>
-            <Label type="lb2" semiBold color="red">
+            <Text type="lb2" weight="semibold" color="red">
               Delegated
-            </Label>
+            </Text>
           </Hint>
           <Grid flow="row" gap={4}>
-            <Heading type="h2" bold color="primary">
+            <Text type="h2" weight="bold" color="primary">
               {formatBONDValue(overview?.totalDelegatedPower)}
-            </Heading>
-            <Paragraph type="p1" color="secondary">
+            </Text>
+            <Text type="p1" color="secondary">
               out of {formatBONDValue(web3c.bond.totalSupply)}
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       </Card>
@@ -170,27 +170,27 @@ const VotingStatList: React.FunctionComponent<VotingStatListProps> = props => {
       <Card>
         <Grid flow="row" gap={48}>
           <Hint text={(
-            <Paragraph type="p2">
+            <Text type="p2">
               This card shows the number of holders of $BOND and compares it to the number of stakers and voters in the
               DAO.
-            </Paragraph>
+            </Text>
           )}>
-            <Label type="lb2" semiBold color="red">
+            <Text type="lb2" weight="semibold" color="red">
               Addresses
-            </Label>
+            </Text>
           </Hint>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
-              <Heading type="h2" bold color="primary">
+              <Text type="h2" weight="bold" color="primary">
                 {overview?.holdersStakingExcluded}
-              </Heading>
-              <Paragraph type="p1" color="secondary">
+              </Text>
+              <Text type="p1" color="secondary">
                 holders
-              </Paragraph>
+              </Text>
             </Grid>
-            <Paragraph type="p1" color="secondary">
+            <Text type="p1" color="secondary">
               {overview?.barnUsers} stakers & {overview?.voters} voters
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       </Card>

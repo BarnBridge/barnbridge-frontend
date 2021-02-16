@@ -101,7 +101,7 @@ async function fetchPoolTransactions(
     });
 }
 
-const PoolTxListProvider: React.FunctionComponent = props => {
+const PoolTxListProvider: React.FC = props => {
   const { children } = props;
 
   const ethWeb3 = useEthWeb3();

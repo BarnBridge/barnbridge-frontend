@@ -1,13 +1,13 @@
 import React from 'react';
 import { useLocalStorage } from 'react-use-storage';
+import cx from 'classnames';
 
 import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
 import s from './styles.module.scss';
-import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-import cx from 'classnames';
 
 export type WarningContextType = {
   addWarn: (opts: WarnType) => Function;
@@ -31,7 +31,7 @@ type WarnProps = WarnType & {
   onClose?: () => void;
 };
 
-const Warn: React.FunctionComponent<WarnProps> = props => {
+const Warn: React.FC<WarnProps> = props => {
   const { storageIdentity, text, closable, onClose } = props;
 
   const [storageState, setStorageState] = useLocalStorage(
@@ -55,7 +55,7 @@ const Warn: React.FunctionComponent<WarnProps> = props => {
       className={cx(s.warning, 'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24')}>
       <Grid flow="col" gap={16} align="center">
         <Icons name="warning-outlined" color="red" />
-        <Paragraph type="p2" semiBold className={s.text}>{text}</Paragraph>
+        <Text type="p2" weight="semibold" className={s.text}>{text}</Text>
       </Grid>
       {closable && (
         <Button type="link" onClick={handleClose}>
@@ -66,7 +66,7 @@ const Warn: React.FunctionComponent<WarnProps> = props => {
   );
 };
 
-const WarningProvider: React.FunctionComponent = props => {
+const WarningProvider: React.FC = props => {
   const [warns, setWarns] = React.useState<WarnType[]>([]);
 
   function addWarn(warn: WarnType) {

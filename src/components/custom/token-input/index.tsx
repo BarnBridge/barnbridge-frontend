@@ -10,7 +10,7 @@ import s from './styles.module.scss';
 
 export type TokenInputProps = AntdInputProps & {};
 
-const TokenInput: React.FunctionComponent<TokenInputProps> = props => {
+const TokenInput: React.FC<TokenInputProps> = props => {
   const { className, value, ...inputProps } = props;
 
   const addonBefore = React.useMemo(

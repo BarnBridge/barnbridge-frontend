@@ -12,7 +12,7 @@ export type DatePickerProps = AntdPickerProps<Date> & {};
 
 const DateFNSPicker = generatePicker<Date>(dateFnsGenerateConfig);
 
-const DatePicker: React.FunctionComponent<DatePickerProps> = props => {
+const DatePicker: React.FC<DatePickerProps> = props => {
   const { className, ...datePickerProps } = props;
 
   return (

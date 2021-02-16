@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Icons from 'components/custom/icon';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 import { isValidAddress } from 'utils';
 import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
@@ -26,7 +26,7 @@ const InitialState: VotingDetailedModalState = {
   leftTotalVotingPower: undefined,
 };
 
-const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = props => {
+const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   const web3c = useWeb3Contracts();
   const {
     votingPower,
@@ -87,61 +87,61 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
               <Icons name="wallet-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="secondary">
+              <Text type="p1" weight="semibold" color="secondary">
                 My staked balance
-              </Paragraph>
+              </Text>
             </Grid>
             <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {formatBONDValue(myBondBalance)}
                 <Icons name="circle-plus-outlined" width={18} height={18} color="green" />
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
 
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
               <Icons name="wallet-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="secondary">
+              <Text type="p1" weight="semibold" color="secondary">
                 Delegated by me
-              </Paragraph>
+              </Text>
             </Grid>
             <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {isDelegated ? formatBONDValue(myBondBalance) : 0}
                 <Icons name="circle-minus-outlined" width={18} height={18} color="red" />
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
 
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
               <Icons name="rate-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="secondary">
+              <Text type="p1" weight="semibold" color="secondary">
                 Locked balance bonus
-              </Paragraph>
+              </Text>
             </Grid>
             <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {state.leftBonus?.gt(ZERO_BIG_NUMBER) ? '> ' : ''}
                 {formatBONDValue(state.leftBonus)}
                 <Icons name="circle-plus-outlined" width={18} height={18} color="green" />
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
 
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
               <Icons name="handshake-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="secondary">
+              <Text type="p1" weight="semibold" color="secondary">
                 Delegated to me
-              </Paragraph>
+              </Text>
             </Grid>
             <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {formatBONDValue(delegatedPower)}
                 <Icons name="circle-plus-outlined" width={18} height={18} color="green" />
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
         </Grid>
@@ -149,14 +149,14 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
         <Grid flow="col" justify="space-between" padding={[32]}>
           <Grid flow="col" gap={16}>
             <Icons name="stamp-outlined" width={20} height={20} />
-            <Paragraph type="p1" semiBold color="secondary">
+            <Text type="p1" weight="semibold" color="secondary">
               My total voting power
-            </Paragraph>
+            </Text>
           </Grid>
           <Grid flow="col" gap={16}>
-            <Heading type="h3" bold color="primary">
+            <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(state.leftTotalVotingPower)}
-            </Heading>
+            </Text>
           </Grid>
         </Grid>
       </Grid>

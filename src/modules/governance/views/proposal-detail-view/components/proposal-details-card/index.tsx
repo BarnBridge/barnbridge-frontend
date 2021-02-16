@@ -6,7 +6,7 @@ import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
-import { Hint, Paragraph, Small } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 import ProposalActionCard from '../../../../components/proposal-action-card';
 
@@ -23,7 +23,7 @@ const InitialState: ProposalDetailsCardState = {
   cancelling: false,
 };
 
-const ProposalDetailsCard: React.FunctionComponent = () => {
+const ProposalDetailsCard: React.FC = () => {
   const wallet = useWallet();
   const proposalCtx = useProposal();
 
@@ -64,17 +64,17 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           Details
-        </Paragraph>
+        </Text>
       }
       noPaddingBody>
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="secondary">
+            <Text type="small" weight="semibold" color="secondary">
               Created by
-            </Small>
+            </Text>
             <Grid flow="col" gap={8}>
               <Identicon
                 address={proposalCtx.proposal?.proposer}
@@ -85,18 +85,18 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
                 href={`${getEtherscanAddressUrl(
                   proposalCtx.proposal?.proposer!,
                 )}`}>
-                <Paragraph type="p1" semiBold color="blue">
+                <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(proposalCtx.proposal?.proposer)}
-                </Paragraph>
+                </Text>
               </ExternalLink>
             </Grid>
           </Grid>
           <Grid flow="row" gap={4}>
             <Hint
               text={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
-              <Small semiBold color="secondary">
+              <Text type="small" weight="semibold" color="secondary">
                 Creator threshold
-              </Small>
+              </Text>
             </Hint>
             <Grid flow="col" gap={8}>
               {proposalCtx.thresholdRate !== undefined && (
@@ -109,9 +109,9 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
                     }
                   />
                   <Skeleton loading={proposalCtx.proposal === undefined}>
-                    <Paragraph type="p1" semiBold color="primary">
+                    <Text type="p1" weight="semibold" color="primary">
                       {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
-                    </Paragraph>
+                    </Text>
                   </Skeleton>
                 </>
               )}
@@ -129,18 +129,18 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
       </Grid>
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Description
-        </Small>
-        <Paragraph type="p1" color="primary" wrap>
+        </Text>
+        <Text type="p1" color="primary" wrap>
           {proposalCtx.proposal?.description}
-        </Paragraph>
+        </Text>
       </Grid>
       <Card.Delimiter />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Actions
-        </Small>
+        </Text>
         {proposalCtx.proposal?.targets.map((target: string, index: number) => (
           <ProposalActionCard
             key={index}

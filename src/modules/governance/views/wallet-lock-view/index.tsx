@@ -17,7 +17,7 @@ import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
 import Grid from 'components/custom/grid';
 import GasFeeList from 'components/custom/gas-fee-list';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
 import WalletLockChart from './components/wallet-lock-chart';
@@ -83,7 +83,7 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
   }
 }
 
-const WalletLockView: React.FunctionComponent = () => {
+const WalletLockView: React.FC = () => {
   const [form] = Antd.Form.useForm<LockFormData>();
 
   const web3c = useWeb3Contracts();
@@ -138,29 +138,29 @@ const WalletLockView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           BOND
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Staked Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(stakedBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Lock Duration
-        </Small>
+        </Text>
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
           {(leftTime) => (
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
-            </Paragraph>
+            </Text>
           )}
         </UseLeftTime>
       </Grid>
@@ -199,14 +199,14 @@ const WalletLockView: React.FunctionComponent = () => {
                             });
                             setState({});
                           }}>
-                          <Paragraph type="p1" semiBold color="primary">{opt}</Paragraph>
+                          <Text type="p1" weight="semibold" color="primary">{opt}</Text>
                         </Button>
                       );
                     })}
                   </Grid>
                 )}
               </Form.Item>
-              <Paragraph type="p1">OR</Paragraph>
+              <Text type="p1">OR</Text>
               <Form.Item
                 name="lockEndDate"
                 label="Manual choose your lock end date"

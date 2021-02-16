@@ -7,7 +7,7 @@ import Card from 'components/antd/card';
 import Select, { SelectOption } from 'components/antd/select';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import PoolTxChartProvider, { usePoolTxChart } from 'modules/yield-farming/providers/pool-tx-chart-provider';
 import { getPoolIcons, getPoolNames, PoolTypes } from 'modules/yield-farming/utils';
 import { formatUSDValue } from 'web3/utils';
@@ -38,7 +38,7 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const PoolTxChartInner: React.FunctionComponent = () => {
+const PoolTxChartInner: React.FC = () => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
@@ -138,9 +138,9 @@ const PoolTxChartInner: React.FunctionComponent = () => {
   const ChartEmpty = (
     <Grid flow="row" gap={24} align="center" justify="center" padding={[54, 0]}>
       <EmptyChartSvg />
-      <Paragraph type="p1" color="secondary">
+      <Text type="p1" color="secondary">
         Not enough data to plot a graph
-      </Paragraph>
+      </Text>
     </Grid>
   );
 
@@ -205,7 +205,7 @@ const PoolTxChartInner: React.FunctionComponent = () => {
   );
 };
 
-const PoolTxChart: React.FunctionComponent = () => (
+const PoolTxChart: React.FC = () => (
   <PoolTxChartProvider>
     <PoolTxChartInner />
   </PoolTxChartProvider>

@@ -8,7 +8,7 @@ import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 
@@ -37,7 +37,7 @@ const InitialState: WalletWithdrawViewState = {
   saving: false,
 };
 
-const WalletWithdrawView: React.FunctionComponent = () => {
+const WalletWithdrawView: React.FC = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
 
@@ -72,27 +72,27 @@ const WalletWithdrawView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           BOND
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Staked Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(stakedBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Wallet Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(bondBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <div />

@@ -57,7 +57,7 @@ export type UseLeftTimeProps = useLeftTimeOptions & {
   children: (leftTime: number) => React.ReactNode;
 };
 
-export const UseLeftTime: React.FunctionComponent<UseLeftTimeProps> = props => {
+export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
   const { children } = props;
 
   const [leftTime, setLeftTime] = React.useState<number>(0);

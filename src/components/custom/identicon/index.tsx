@@ -14,7 +14,7 @@ export type IdenticonProps = {
 
 const EMPTY_ADDRESS = '000000000000000';
 
-const Identicon: React.FunctionComponent<IdenticonProps> = props => {
+const Identicon: React.FC<IdenticonProps> = props => {
   const {
     address = EMPTY_ADDRESS,
     className,

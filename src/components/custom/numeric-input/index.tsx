@@ -14,7 +14,7 @@ function removeComma(value: string): string {
   return value.replace(/,/g, '');
 }
 
-const NumericInput: React.FunctionComponent<NumericInputProps> = props => {
+const NumericInput: React.FC<NumericInputProps> = props => {
   const { maximumFractionDigits, ...inputProps } = props;
 
   const [, forceRender] = React.useState<{}>({});

@@ -3,7 +3,7 @@ import { format, formatDistance } from 'date-fns';
 
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
 import { useProposal } from '../../providers/ProposalProvider';
@@ -98,7 +98,7 @@ function formatEventTime(name: string, start: number, end: number): string {
   return `Started ${dist}`;
 }
 
-const ProposalStatusCard: React.FunctionComponent = () => {
+const ProposalStatusCard: React.FC = () => {
   const proposalCtx = useProposal();
 
   return (
@@ -110,9 +110,9 @@ const ProposalStatusCard: React.FunctionComponent = () => {
             <Grid flow="row" gap={4}>
               {event.txHash ? (
                 <Grid flow="col" gap={8} align="center">
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     {APIProposalStateMap.get(event.name as APIProposalState)}
-                  </Paragraph>
+                  </Text>
                   <ExternalLink
                     href={getEtherscanTxUrl(`0x${event.txHash}`)}
                     style={{ height: '16px' }}>
@@ -120,9 +120,9 @@ const ProposalStatusCard: React.FunctionComponent = () => {
                   </ExternalLink>
                 </Grid>
               ) : (
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" weight="semibold" color="primary">
                   {APIProposalStateMap.get(event.name as APIProposalState)}
-                </Paragraph>
+                </Text>
               )}
 
               <UseLeftTime
@@ -130,9 +130,9 @@ const ProposalStatusCard: React.FunctionComponent = () => {
                 delay={10_000}
                 onEnd={() => proposalCtx.reload()}>
                 {(() => (
-                  <Paragraph type="p2" semiBold color="secondary">
+                  <Text type="p2" weight="semibold" color="secondary">
                     {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
-                  </Paragraph>
+                  </Text>
                 ))}
               </UseLeftTime>
             </Grid>

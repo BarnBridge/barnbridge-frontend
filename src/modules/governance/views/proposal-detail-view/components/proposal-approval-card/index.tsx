@@ -3,10 +3,10 @@ import React from 'react';
 import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import { Hint, Paragraph } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 
-const ProposalApprovalCard: React.FunctionComponent = () => {
+const ProposalApprovalCard: React.FC = () => {
   const proposalCtx = useProposal();
 
   const passed = (proposalCtx.forRate ?? 0) >= (proposalCtx.proposal?.acceptanceThreshold ?? 0);
@@ -16,19 +16,19 @@ const ProposalApprovalCard: React.FunctionComponent = () => {
       title={
         <Hint
           text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             Approval
-          </Paragraph>
+          </Text>
         </Hint>
       }>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {proposalCtx.forRate?.toFixed(2)}%
-          </Paragraph>
-          <Paragraph type="p1" color="secondary">
+          </Text>
+          <Text type="p1" color="secondary">
             (&gt; {proposalCtx.proposal?.acceptanceThreshold}% required)
-          </Paragraph>
+          </Text>
         </Grid>
         <Progress
           percent={proposalCtx.forRate}

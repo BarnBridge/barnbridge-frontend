@@ -11,7 +11,7 @@ import Alert from 'components/antd/alert';
 import Textarea from 'components/antd/textarea';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 import CreateProposalActionModal, {
   CreateProposalActionForm,
@@ -56,7 +56,7 @@ const InitialState: ProposalCreateViewState = {
   submitting: false,
 };
 
-const ProposalCreateView: React.FunctionComponent = () => {
+const ProposalCreateView: React.FC = () => {
   const history = useHistory();
   const web3c = useWeb3Contracts();
   const wallet = useWallet();
@@ -216,9 +216,9 @@ const ProposalCreateView: React.FunctionComponent = () => {
       </Grid>
 
       <Grid flow="row" gap={16}>
-        <Heading type="h1" bold color="primary" className="mb-16">
+        <Text type="h1" weight="bold" color="primary" className="mb-16">
           Create Proposal
-        </Heading>
+        </Text>
         <Form
           form={form}
           initialValues={InitialFormValues}
@@ -232,9 +232,9 @@ const ProposalCreateView: React.FunctionComponent = () => {
               align="start">
               <Card
                 title={
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     Proposal description
-                  </Paragraph>
+                  </Text>
                 }>
                 <Grid flow="row" gap={24}>
                   <Form.Item
@@ -262,9 +262,9 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
               <Card
                 title={
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     Actions
-                  </Paragraph>
+                  </Text>
                 }>
                 <Form.List
                   name="actions"

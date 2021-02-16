@@ -19,7 +19,7 @@ const YesNoOptions: CheckboxOptionType[] = [
   },
 ];
 
-const YesNoSelector: React.FunctionComponent<YesNoSelectorProps> = props => {
+const YesNoSelector: React.FC<YesNoSelectorProps> = props => {
   const { className, ...groupProps } = props;
 
   return (

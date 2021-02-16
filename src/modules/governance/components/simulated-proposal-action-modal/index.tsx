@@ -4,7 +4,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { CreateProposalActionForm } from '../create-proposal-action-modal';
 import ProposalActionCard from '../proposal-action-card';
 
@@ -12,7 +12,7 @@ export type SimulatedProposalActionModalProps = ModalProps & {
   proposalAction: CreateProposalActionForm;
 };
 
-const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalActionModalProps> = props => {
+const SimulatedProposalActionModal: React.FC<SimulatedProposalActionModalProps> = props => {
   const { proposalAction, ...modalProps } = props;
 
   return (
@@ -26,13 +26,13 @@ const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalAct
             color="red"
           />
           <Grid flow="row" gap={8}>
-            <Heading type="h3" semiBold color="primary">
+            <Text type="h3" weight="semibold" color="primary">
               Action could not be simulated
-            </Heading>
-            <Paragraph type="p2" semiBold color="secondary">
+            </Text>
+            <Text type="p2" weight="semibold" color="secondary">
               We run a simulation for every action before adding it to the
               proposal. The following action failed to simulate:
-            </Paragraph>
+            </Text>
           </Grid>
           <ProposalActionCard
             title=""
@@ -41,10 +41,10 @@ const SimulatedProposalActionModal: React.FunctionComponent<SimulatedProposalAct
             signature={proposalAction.functionSignature!}
             callData={proposalAction.functionEncodedParams}
           />
-          <Paragraph type="p2" semiBold color="secondary">
+          <Text type="p2" weight="semibold" color="secondary">
             If you think this is a mistake, you can still add this action to the
             proposal.
-          </Paragraph>
+          </Text>
         </Grid>
         <Grid flow="col" justify="space-between">
           <Button type="default" onClick={modalProps.onOk}>

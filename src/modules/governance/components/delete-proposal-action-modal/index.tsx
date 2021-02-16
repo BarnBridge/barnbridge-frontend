@@ -4,11 +4,11 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 export type DeleteProposalActionModalProps = ModalProps & {};
 
-const DeleteProposalActionModal: React.FunctionComponent<DeleteProposalActionModalProps> = props => {
+const DeleteProposalActionModal: React.FC<DeleteProposalActionModalProps> = props => {
   const { ...modalProps } = props;
 
   return (
@@ -22,13 +22,13 @@ const DeleteProposalActionModal: React.FunctionComponent<DeleteProposalActionMod
             color="red"
           />
           <Grid flow="row" gap={8}>
-            <Heading type="h3" semiBold color="primary">
+            <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to delete the action?
-            </Heading>
-            <Paragraph type="p2" semiBold color="secondary">
+            </Text>
+            <Text type="p2" weight="semibold" color="secondary">
               Are you sure you want to delete the action? Bad things will happen
               if you do. Be careful :)
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
         <Grid flow="col" justify="space-between">

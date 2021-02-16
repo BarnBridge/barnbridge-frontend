@@ -3,10 +3,10 @@ import React from 'react';
 import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import { Hint, Paragraph } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 
-const ProposalQuorumCard: React.FunctionComponent = () => {
+const ProposalQuorumCard: React.FC = () => {
   const proposalCtx = useProposal();
 
   const passed = (proposalCtx.quorum ?? 0) >= (proposalCtx.proposal?.minQuorum ?? 0);
@@ -16,19 +16,19 @@ const ProposalQuorumCard: React.FunctionComponent = () => {
       title={
         <Hint
           text="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             Quorum
-          </Paragraph>
+          </Text>
         </Hint>
       }>
       <Grid flow="row" gap={16}>
         <Grid flow="col" gap={8}>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {proposalCtx.quorum?.toFixed(2)}%
-          </Paragraph>
-          <Paragraph type="p1" color="secondary">
+          </Text>
+          <Text type="p1" color="secondary">
             (&gt; {proposalCtx.proposal?.minQuorum}% required)
-          </Paragraph>
+          </Text>
         </Grid>
         <Progress
           percent={proposalCtx.quorum}

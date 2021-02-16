@@ -37,7 +37,7 @@ export function useProposalVoters(): ProposalVotersContextType {
   return React.useContext(ProposalVotersContext);
 }
 
-const ProposalVotersProvider: React.FunctionComponent = props => {
+const ProposalVotersProvider: React.FC = props => {
   const { children } = props;
 
   const { proposal } = useProposal();

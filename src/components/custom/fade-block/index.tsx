@@ -8,7 +8,7 @@ export type FadeBlockProps = {
   visible: boolean;
 };
 
-const FadeBlock: React.FunctionComponent<FadeBlockProps> = props => {
+const FadeBlock: React.FC<FadeBlockProps> = props => {
   return (
     <div
       className={cx(s.component, props.className, {

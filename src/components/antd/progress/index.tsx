@@ -10,7 +10,7 @@ export type ProgressProps = AntdProgressProps & {
   acceptance?: number;
 };
 
-const Progress: React.FunctionComponent<ProgressProps> = props => {
+const Progress: React.FC<ProgressProps> = props => {
   const { className, acceptance, ...progressProps } = props;
   const acceptanceMode = acceptance !== undefined;
   const acceptanceFulfilled = Number(acceptance) <= Number(props.percent);

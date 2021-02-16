@@ -6,7 +6,7 @@ import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { useProposal } from '../../providers/ProposalProvider';
 
@@ -47,7 +47,7 @@ const InitialState: ProposalVoteModalState = {
   submitting: false,
 };
 
-const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalProps> = props => {
+const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
   const [form] = Antd.Form.useForm<FormState>();
@@ -117,50 +117,50 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
           <Grid flow="col" gap={8} align="center">
-            <Heading type="h2" bold color="primary">
+            <Text type="h2" weight="bold" color="primary">
               {formatBigValue(proposalCtx.votingPower, 2)}
-            </Heading>
-            <Paragraph type="p1" semiBold color="secondary">
+            </Text>
+            <Text type="p1" weight="semibold" color="secondary">
               Votes
-            </Paragraph>
+            </Text>
           </Grid>
           {(voteState === VoteState.VoteFor || voteState === VoteState.VoteAgainst) && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="secondary">
+              <Text type="p2" color="secondary">
                 You are about to vote on proposal
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="secondary">
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
                 "{proposalCtx.proposal?.title}"
-              </Paragraph>
-              <Paragraph type="p2" color="secondary">
+              </Text>
+              <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote later.
-              </Paragraph>
+              </Text>
             </Grid>
           )}
           {voteState === VoteState.VoteChange && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="secondary">
+              <Text type="p2" color="secondary">
                 You are about to change your vote on proposal
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="secondary">
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
                 "{proposalCtx.proposal?.title}"
-              </Paragraph>
-              <Paragraph type="p2" color="secondary">
+              </Text>
+              <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
-              </Paragraph>
+              </Text>
             </Grid>
           )}
           {voteState === VoteState.VoteCancel && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="secondary">
+              <Text type="p2" color="secondary">
                 You are about to cancel your vote on proposal
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="secondary">
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
                 "{proposalCtx.proposal?.title}"
-              </Paragraph>
-              <Paragraph type="p2" color="secondary">
+              </Text>
+              <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
-              </Paragraph>
+              </Text>
             </Grid>
           )}
         </Grid>
@@ -177,17 +177,17 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="primary">
+                      <Text type="p1" weight="semibold" color="primary">
                         For
-                      </Paragraph>
+                      </Text>
                     }
                     value={true}
                   />
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="primary">
+                      <Text type="p1" weight="semibold" color="primary">
                         Against
-                      </Paragraph>
+                      </Text>
                     }
                     value={false}
                   />

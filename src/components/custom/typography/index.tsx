@@ -2,6 +2,7 @@ import React from 'react';
 import cx from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
+import Icons from 'components/custom/icon';
 
 import s from './styles.module.scss';
 
@@ -93,8 +94,6 @@ export type TextProps = {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label' | 'p' | 'div' | 'span' | 'small';
   type: 'h1' | 'h2' | 'h3' | 'p1' | 'p2' | 'lb1' | 'lb2' | 'small';
   weight?: 'semibold' | 'bold';
-  bold?: boolean;
-  semiBold?: boolean;
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue';
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
@@ -107,8 +106,6 @@ export const Text: React.FC<TextProps> = React.memo(props => {
     tag = 'div',
     type,
     weight,
-    bold,
-    semiBold,
     color,
     align,
     ellipsis,
@@ -124,8 +121,6 @@ export const Text: React.FC<TextProps> = React.memo(props => {
       className: cx(
         s.text,
         s[type],
-        bold && s.bold,
-        semiBold && s.semiBold,
         weight && s[`weight-${weight}`],
         color && s[`${color}-color`],
         align && `text-${align}`,
@@ -149,7 +144,9 @@ export const Hint: React.FC<HintProps> = props => {
   return text ? (
     <div className={s.hint}>
       <span>{children}</span>
-      <Tooltip type="info" title={text} className={s.tooltip} />
+      <Tooltip title={text} className={s.tooltip}>
+        <Icons name="info-outlined" width={16} height={16} />
+      </Tooltip>
     </div>
   ) : (
     <>{children}</>

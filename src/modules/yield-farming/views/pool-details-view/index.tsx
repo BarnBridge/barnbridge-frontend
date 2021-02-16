@@ -6,7 +6,7 @@ import Button from 'components/antd/button';
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Heading, Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 import PoolTokenDeposit from 'modules/yield-farming/components/pool-token-deposit';
 import PoolTokenWithdraw from 'modules/yield-farming/components/pool-token-withdraw';
@@ -25,7 +25,7 @@ type RouteParams = {
   action: PoolActions;
 };
 
-const PoolDetailsView: React.FunctionComponent = () => {
+const PoolDetailsView: React.FC = () => {
   const {
     params: {
       pool = PoolTypes.STABLE,
@@ -70,9 +70,9 @@ const PoolDetailsView: React.FunctionComponent = () => {
       <Button type="link" onClick={handleBackClick}>
         <Grid flow="col" gap={16} align="center">
           <Icons name="left-arrow" />
-          <Heading type="h1" bold color="primary">
+          <Text type="h1" weight="bold" color="primary">
             {getPoolNames(pool).join('/')}
-          </Heading>
+          </Text>
         </Grid>
       </Button>
 
@@ -102,9 +102,9 @@ const PoolDetailsView: React.FunctionComponent = () => {
               </Grid>
 
               <Grid flow="row" gap={24}>
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" weight="semibold" color="primary">
                   Transactions
-                </Paragraph>
+                </Text>
                 <PoolTxTable
                   label="My Transactions"
                   ownTransactions
@@ -133,9 +133,9 @@ const PoolDetailsView: React.FunctionComponent = () => {
               </Grid>
 
               <Grid flow="row" gap={24}>
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" weight="semibold" color="primary">
                   Transactions
-                </Paragraph>
+                </Text>
                 <PoolTxTable
                   label="My Transactions"
                   ownTransactions

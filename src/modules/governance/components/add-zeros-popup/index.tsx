@@ -4,7 +4,7 @@ import Popover, { PopoverProps } from 'components/antd/popover';
 import Button from 'components/antd/button';
 import Input from 'components/antd/input';
 import Grid from 'components/custom/grid';
-import { Paragraph, Small } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
 
 export type AddZerosPopupProps = {
@@ -12,7 +12,7 @@ export type AddZerosPopupProps = {
   onAdd: (value: number) => void;
 };
 
-const AddZerosPopup: React.FunctionComponent<
+const AddZerosPopup: React.FC<
   PopoverProps & AddZerosPopupProps
 > = props => {
   const { max, onAdd, ...popoverProps } = props;
@@ -43,9 +43,9 @@ const AddZerosPopup: React.FunctionComponent<
   const content = (
     <Grid flow="row" gap={24}>
       <Grid flow="row" gap={8}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Number of zeros
-        </Small>
+        </Text>
         <Grid flow="col" gap={16}>
           <Button type="ghost" onClick={() => setValue('6')}>
             6
@@ -65,9 +65,9 @@ const AddZerosPopup: React.FunctionComponent<
           />
         </Grid>
       </Grid>
-      <Paragraph type="p2" semiBold color="secondary">
+      <Text type="p2" weight="semibold" color="secondary">
         Use the options above to add trailing zeros to the input amount.
-      </Paragraph>
+      </Text>
       <Grid flow="col" gap={16} justify="space-between">
         <Button type="ghost" onClick={handleCancel}>
           Cancel
