@@ -79,7 +79,6 @@ const VotingHeader: React.FunctionComponent = () => {
                   {formatBONDValue(claimValue)}
                 </Heading>
               </Skeleton>
-
             </Tooltip>
             <Icons name="bond-square-token" />
             <Button

@@ -352,12 +352,12 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         <div className={s.box}>
           <Grid flow="row" align="start">
             <Paragraph type="p2" semiBold color="secondary">
-              The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled,
-              but you can still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+              The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
+              you
+              can
+              still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
             </Paragraph>
-            <Button type="link" onClick={handleDaoStaking}>
-              Go to governance staking
-            </Button>
+            <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
           </Grid>
         </div>
       )}

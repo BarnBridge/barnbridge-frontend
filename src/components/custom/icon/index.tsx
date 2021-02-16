@@ -16,6 +16,7 @@ export type TokenIconNames =
 export type NavIconNames =
   | 'paper-bill-outlined'
   | 'chats-outlined'
+  | 'forum-outlined'
   | 'bar-charts-outlined'
   | 'savings-outlined'
   | 'proposal-outlined'

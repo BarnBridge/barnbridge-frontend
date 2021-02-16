@@ -78,25 +78,8 @@ const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProp
         <Grid flow="row" gap={16} className={s.row}>
           <Paragraph type="p2" semiBold color="secondary">
             Once a proposal is accepted, it will have to wait in the queue before it can be executed.
-            During this time it can only be cancelled by an abrogation proposal
+            During this time it can only be cancelled by an abrogation proposal.
           </Paragraph>
-          <ul>
-            <li>
-              <Paragraph type="p2" semiBold color="secondary">
-                the creator
-              </Paragraph>
-            </li>
-            <li>
-              <Paragraph type="p2" semiBold color="secondary">
-                anyone if the creator’s balance falls below the {daoCtx.minThreshold}% threshold
-              </Paragraph>
-            </li>
-            <li>
-              <Paragraph type="p2" semiBold color="secondary">
-                cancellation proposal
-              </Paragraph>
-            </li>
-          </ul>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>
