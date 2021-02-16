@@ -10,14 +10,21 @@
     "start": "react-scripts start",
     "start:prod": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.production.local",
     "lessc": "lessc src/styles/antd.less src/styles/antd.css -js",
-    "lint:script": "eslint src --ext '.ts,.tsx' --color",
+    "lint:script": "eslint src/ --ext '.ts,.tsx' --color",
     "lint:style": "stylelint 'src/**/*.scss' --syntax scss",
+    "prettier:check": "prettier --check src/",
     "tsc": "tsc --noEmit",
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "import:abi": "node tools/import_abi.js"
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "importSort": {
+    ".ts, .tsx": {
+      "style": "vmv",
+      "parser": "typescript"
+    }
   },
   "browserslist": {
     "production": [
@@ -36,7 +43,7 @@
     "@ethersproject/providers": "5.0.21",
     "@rooks/use-debounce": "4.8.1",
     "@rooks/use-interval": "4.8.1",
-    "@rooks/use-window-event-listener": "^4.8.1",
+    "@rooks/use-window-event-listener": "4.8.1",
     "@web3-react/core": "6.1.1",
     "@web3-react/injected-connector": "6.0.7",
     "@web3-react/ledger-connector": "6.1.1",
@@ -74,8 +81,11 @@
     "@typescript-eslint/parser": "4.14.2",
     "dotenv": "8.2.0",
     "husky": "4.3.8",
+    "import-sort-style-vmv": "2.0.2",
     "lessc": "1.0.2",
     "node-sass": "5.0.0",
+    "prettier": "2.2.1",
+    "prettier-plugin-import-sort": "0.0.6",
     "react-scripts": "4.0.2",
     "source-map-explorer": "2.5.2",
     "stylelint": "13.10.0",
