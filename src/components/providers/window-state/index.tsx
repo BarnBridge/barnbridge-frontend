@@ -25,10 +25,11 @@ const WindowStateProvider: React.FC = props => {
   });
 
   return (
-    <WindowStateContext.Provider value={{
-      visibilityState,
-      isVisible: visibilityState === 'visible',
-    }}>
+    <WindowStateContext.Provider
+      value={{
+        visibilityState,
+        isVisible: visibilityState === 'visible',
+      }}>
       {children}
     </WindowStateContext.Provider>
   );

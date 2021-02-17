@@ -31,9 +31,7 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
     <Antd.Select<T>
       className={cx(s.component, className)}
       dropdownClassName={s.dropdown}
-      suffixIcon={loading
-        ? <Antd.Spin size="small" />
-        : <Icons name="dropdown-arrow" />}
+      suffixIcon={loading ? <Antd.Spin size="small" /> : <Icons name="dropdown-arrow" />}
       optionLabelProp="label"
       getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
       {...selectProps}>
@@ -44,7 +42,9 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
           label={
             <Grid flow="col" gap={12}>
               {label && (
-                <Text type="p2" color="secondary">{label}</Text>
+                <Text type="p2" color="secondary">
+                  {label}
+                </Text>
               )}
               <Text type="p2" weight="semibold" color="primary">
                 {option.label}

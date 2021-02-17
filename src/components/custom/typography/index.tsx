@@ -26,7 +26,7 @@ function classNamesFromProps(props: CommonProps) {
     align && `text-${align}`,
     ellipsis && 'text-ellipsis',
     wrap && 'text-wrap',
-    className,
+    className
   );
 }
 
@@ -43,7 +43,7 @@ export const Heading: React.FC<HeadingProps> = props => {
     {
       className: classNames,
     },
-    children,
+    children
   );
 };
 
@@ -55,11 +55,7 @@ export const Paragraph: React.FC<ParagraphProps> = props => {
   const { type, children } = props;
   const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
 
-  return (
-    <p className={classNames}>
-      {children}
-    </p>
-  );
+  return <p className={classNames}>{children}</p>;
 };
 
 export type LabelProps = CommonProps & {
@@ -70,11 +66,7 @@ export const Label: React.FC<LabelProps> = props => {
   const { type, children } = props;
   const classNames = cx(s.label, s[type], classNamesFromProps(props));
 
-  return (
-    <label className={classNames}>
-      {children}
-    </label>
-  );
+  return <label className={classNames}>{children}</label>;
 };
 
 export type SmallProps = CommonProps;
@@ -83,11 +75,7 @@ export const Small: React.FC<SmallProps> = props => {
   const { children } = props;
   const classNames = cx(s.small, classNamesFromProps(props));
 
-  return (
-    <small className={classNames}>
-      {children}
-    </small>
-  );
+  return <small className={classNames}>{children}</small>;
 };
 
 export type TextProps = {
@@ -102,18 +90,7 @@ export type TextProps = {
 };
 
 export const Text: React.FC<TextProps> = React.memo(props => {
-  const {
-    tag = 'div',
-    type,
-    weight,
-    color,
-    align,
-    ellipsis,
-    wrap,
-    className,
-    children,
-    ...textProps
-  } = props;
+  const { tag = 'div', type, weight, color, align, ellipsis, wrap, className, children, ...textProps } = props;
 
   return React.createElement(
     tag,
@@ -126,11 +103,11 @@ export const Text: React.FC<TextProps> = React.memo(props => {
         align && `text-${align}`,
         ellipsis && 'text-ellipsis',
         wrap && 'text-wrap',
-        className,
+        className
       ),
       ...textProps,
     },
-    children,
+    children
   );
 });
 

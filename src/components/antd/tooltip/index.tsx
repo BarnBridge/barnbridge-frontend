@@ -11,11 +11,7 @@ const Tooltip: React.FC<TooltipProps> = props => {
   const { overlayClassName, children, ...tooltipProps } = props;
 
   return (
-    <Antd.Tooltip
-      title=""
-      placement="bottom"
-      overlayClassName={cx(s.overlay, overlayClassName)}
-      {...tooltipProps}>
+    <Antd.Tooltip title="" placement="bottom" overlayClassName={cx(s.overlay, overlayClassName)} {...tooltipProps}>
       {children}
     </Antd.Tooltip>
   );

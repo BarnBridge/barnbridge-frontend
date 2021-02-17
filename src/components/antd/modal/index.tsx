@@ -17,14 +17,7 @@ export type ModalProps = AntdModalProps & {
 };
 
 const Modal: React.FC<ModalProps> = props => {
-  const {
-    className,
-    children,
-    confirmClose = false,
-    confirmText,
-    onCancel,
-    ...modalProps
-  } = props;
+  const { className, children, confirmClose = false, confirmText, onCancel, ...modalProps } = props;
 
   const [confirmVisible, showConfirm] = React.useState<boolean>(false);
 
@@ -58,10 +51,16 @@ const Modal: React.FC<ModalProps> = props => {
           closeIcon={<></>}
           onCancel={() => showConfirm(false)}>
           <Grid flow="row" gap={32}>
-            <Text type="p2" weight="semibold" color="secondary">{confirmText}</Text>
+            <Text type="p2" weight="semibold" color="secondary">
+              {confirmText}
+            </Text>
             <Grid flow="col" justify="space-between">
-              <Button type="ghost" onClick={() => showConfirm(false)}>No</Button>
-              <Button type="primary" onClick={onCancel}>Yes</Button>
+              <Button type="ghost" onClick={() => showConfirm(false)}>
+                No
+              </Button>
+              <Button type="primary" onClick={onCancel}>
+                Yes
+              </Button>
             </Grid>
           </Grid>
         </Antd.Modal>

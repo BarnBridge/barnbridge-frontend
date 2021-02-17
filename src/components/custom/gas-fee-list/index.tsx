@@ -5,7 +5,6 @@ import { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-
 import useMergeState from 'hooks/useMergeState';
 
 type GasFeeOption = {

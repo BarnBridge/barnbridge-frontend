@@ -1,15 +1,15 @@
+import '@animated-burgers/burger-squeeze/dist/styles.css';
+
 import React from 'react';
 import { useHistory, useLocation } from 'react-router';
 import { useRouteMatch } from 'react-router-dom';
 import Burger from '@animated-burgers/burger-squeeze';
 import cx from 'classnames';
 
-import '@animated-burgers/burger-squeeze/dist/styles.css';
-
 import Button from 'components/antd/button';
+import FadeBlock from 'components/custom/fade-block';
 import Grid from 'components/custom/grid';
 import Icons, { IconNames } from 'components/custom/icon';
-import FadeBlock from 'components/custom/fade-block';
 import { Text } from 'components/custom/typography';
 import { useTheme } from 'components/providers/theme-provider';
 
@@ -90,25 +90,13 @@ const MobileMenu: React.FC = () => {
       <Grid flow="row" align="start" justify="space-between" className={s.list}>
         <Grid flow="row" gap={24} align="start" width="100%">
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink
-              path="/yield-farming"
-              icon="savings-outlined"
-              label="Pools"
-            />
+            <MobileMenuLink path="/yield-farming" icon="savings-outlined" label="Pools" />
           </FadeBlock>
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink
-              path="/governance"
-              icon="bank-outlined"
-              label="Voting"
-            />
+            <MobileMenuLink path="/governance" icon="bank-outlined" label="Voting" />
           </FadeBlock>
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink
-              path="/bonds"
-              icon="paper-bill-outlined"
-              label="Bonds"
-            />
+            <MobileMenuLink path="/bonds" icon="paper-bill-outlined" label="Bonds" />
           </FadeBlock>
         </Grid>
 

@@ -24,12 +24,7 @@ const Button: React.FC<ButtonProps> = props => {
 
   return (
     <Antd.Button
-      className={cx(
-        s.component,
-        className,
-        type === 'light' && s.light,
-        type === 'select' && s.select,
-      )}
+      className={cx(s.component, className, type === 'light' && s.light, type === 'select' && s.select)}
       type={btnType}
       {...btnProps}>
       {props.children}

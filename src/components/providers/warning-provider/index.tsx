@@ -34,9 +34,7 @@ type WarnProps = WarnType & {
 const Warn: React.FC<WarnProps> = props => {
   const { storageIdentity, text, closable, onClose } = props;
 
-  const [storageState, setStorageState] = useLocalStorage(
-    storageIdentity ?? '',
-  );
+  const [storageState, setStorageState] = useLocalStorage(storageIdentity ?? '');
 
   function handleClose() {
     onClose?.();
@@ -52,10 +50,15 @@ const Warn: React.FC<WarnProps> = props => {
 
   return (
     <div
-      className={cx(s.warning, 'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24')}>
+      className={cx(
+        s.warning,
+        'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24'
+      )}>
       <Grid flow="col" gap={16} align="center">
         <Icons name="warning-outlined" color="red" />
-        <Text type="p2" weight="semibold" className={s.text}>{text}</Text>
+        <Text type="p2" weight="semibold" className={s.text}>
+          {text}
+        </Text>
       </Grid>
       {closable && (
         <Button type="link" onClick={handleClose}>
@@ -82,9 +85,10 @@ const WarningProvider: React.FC = props => {
   }
 
   return (
-    <WarningContext.Provider value={{
-      addWarn,
-    }}>
+    <WarningContext.Provider
+      value={{
+        addWarn,
+      }}>
       <Grid flow="row">
         {warns.map((warn, idx) => (
           <Warn key={idx} {...warn} onClose={() => removeWarm(warn)} />

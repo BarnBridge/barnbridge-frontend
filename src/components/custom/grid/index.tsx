@@ -58,7 +58,7 @@ const Grid: React.FC<GridProps> = props => {
         justify && s[`justify-${justify}`],
         justifySelf && s[`justify-self-${justifySelf}`],
         wrap && 'text-wrap',
-        className,
+        className
       )}
       style={{
         gridTemplateRows: rowsTemplate,

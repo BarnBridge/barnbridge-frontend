@@ -23,15 +23,7 @@ const Alert: React.FC<AlertProps> = props => {
     }
   }, [type]);
 
-  return (
-    <Antd.Alert
-      className={cx(s.component, className)}
-      type={type}
-      showIcon
-      icon={icon}
-      {...alertProps}
-    />
-  );
+  return <Antd.Alert className={cx(s.component, className)} type={type} showIcon icon={icon} {...alertProps} />;
 };
 
 export default Alert;

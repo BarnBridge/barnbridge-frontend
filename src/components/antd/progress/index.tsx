@@ -17,21 +17,14 @@ const Progress: React.FC<ProgressProps> = props => {
 
   return (
     <Antd.Progress
-      className={cx(
-        s.component,
-        acceptanceMode && s.acceptance,
-        acceptanceFulfilled && s.fulfilled,
-        className,
-      )}
+      className={cx(s.component, acceptanceMode && s.acceptance, acceptanceFulfilled && s.fulfilled, className)}
       showInfo={false}
       success={
         acceptanceMode
           ? {
-            percent: acceptance,
-            strokeColor: acceptanceFulfilled
-              ? String(props.strokeColor)
-              : props.trailColor,
-          }
+              percent: acceptance,
+              strokeColor: acceptanceFulfilled ? String(props.strokeColor) : props.trailColor,
+            }
           : undefined
       }
       {...progressProps}

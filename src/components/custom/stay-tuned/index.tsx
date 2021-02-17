@@ -2,7 +2,6 @@ import React from 'react';
 
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-
 import { ReactComponent as RocketSvg } from 'resources/svg/rocket.svg';
 
 const StayTuned: React.FC = () => {

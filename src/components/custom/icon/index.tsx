@@ -74,12 +74,7 @@ const Icons: React.FC<IconsProps> = props => {
 
   return (
     <svg
-      className={cx(
-        s.component,
-        className,
-        rotate && `rotate-${rotate}`,
-        color && s[`${color}-color`],
-      )}
+      className={cx(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
       style={style}>

@@ -10,12 +10,7 @@ export type TextareaProps = AntdTextAreaProps;
 const Textarea: React.FC<TextareaProps> = props => {
   const { className, ...inputProps } = props;
 
-  return (
-    <Antd.Input.TextArea
-      className={cx(s.component, className)}
-      {...inputProps}
-    />
-  );
+  return <Antd.Input.TextArea className={cx(s.component, className)} {...inputProps} />;
 };
 
 export default Textarea;

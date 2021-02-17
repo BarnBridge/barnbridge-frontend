@@ -10,13 +10,7 @@ export type SliderProps = SliderSingleProps & {};
 const Slider: React.FC<SliderProps> = props => {
   const { className, ...rest } = props;
 
-  return (
-    <Antd.Slider
-      className={cx(s.component, className)}
-      tooltipPlacement="bottom"
-      {...rest}
-    />
-  );
+  return <Antd.Slider className={cx(s.component, className)} tooltipPlacement="bottom" {...rest} />;
 };
 
 export default Slider;

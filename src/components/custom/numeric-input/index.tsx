@@ -80,14 +80,7 @@ const NumericInput: React.FC<NumericInputProps> = props => {
     }
   }
 
-  return (
-    <Input
-      {...inputProps}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      value={valueRef.current}
-    />
-  );
+  return <Input {...inputProps} onChange={handleChange} onBlur={handleBlur} value={valueRef.current} />;
 };
 
 export default NumericInput;

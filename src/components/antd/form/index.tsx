@@ -9,9 +9,10 @@ import cx from 'classnames';
 
 import Icons from 'components/custom/icon';
 
-import s from './styles.module.scss';
-import Tooltip from '../tooltip';
 import Grid from '../../custom/grid';
+import Tooltip from '../tooltip';
+
+import s from './styles.module.scss';
 
 export type FormListProps = AntdFormListProps & {};
 
@@ -53,11 +54,7 @@ const Form: React.FC<FormProps> = props => {
   const { className, children, ...formProps } = props;
 
   return (
-    <Antd.Form
-      className={cx(s.form, className)}
-      layout="vertical"
-      requiredMark={false}
-      {...formProps}>
+    <Antd.Form className={cx(s.form, className)} layout="vertical" requiredMark={false} {...formProps}>
       {children}
     </Antd.Form>
   );

@@ -21,18 +21,10 @@ export type StaticTabsProps = {
   Tab: React.FC<TabProps>;
 };
 
-const Tabs: React.FC<TabsProps> & StaticTabsProps = ((
-  props: TabsProps,
-) => {
+const Tabs: React.FC<TabsProps> & StaticTabsProps = ((props: TabsProps) => {
   const { className, simple = false, ...tabsProps } = props;
 
-  return (
-    <Antd.Tabs
-      className={cx(s.tabs, className, simple && s.simple)}
-      tabBarGutter={32}
-      {...tabsProps}
-    />
-  );
+  return <Antd.Tabs className={cx(s.tabs, className, simple && s.simple)} tabBarGutter={32} {...tabsProps} />;
 }) as any;
 
 Tabs.Tab = Tab;

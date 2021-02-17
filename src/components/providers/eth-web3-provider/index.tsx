@@ -53,7 +53,8 @@ const EthWeb3Provider: React.FC = props => {
       return;
     }
 
-    EthWeb3.eth.getBlockNumber()
+    EthWeb3.eth
+      .getBlockNumber()
       .then(value => {
         if (value) {
           setBlockNumber(value);
@@ -81,10 +82,11 @@ const EthWeb3Provider: React.FC = props => {
   }, [windowState.isVisible]);
 
   return (
-    <EthWeb3Context.Provider value={{
-      ...InitialContextValue,
-      blockNumber,
-    }}>
+    <EthWeb3Context.Provider
+      value={{
+        ...InitialContextValue,
+        blockNumber,
+      }}>
       {children}
     </EthWeb3Context.Provider>
   );

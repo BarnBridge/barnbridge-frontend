@@ -1,13 +1,13 @@
 import React from 'react';
-import cx from 'classnames';
 import BigNumber from 'bignumber.js';
+import cx from 'classnames';
+import { formatBigValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
-import NumericInput from 'components/custom/numeric-input';
 import Icons, { TokenIconNames } from 'components/custom/icon';
-import { formatBigValue } from 'web3/utils';
+import NumericInput from 'components/custom/numeric-input';
 
 import s from './styles.module.scss';
 
@@ -36,12 +36,10 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
     onChange,
   } = props;
 
-  const step = 1 / (10 ** Math.min(displayDecimals, 6));
+  const step = 1 / 10 ** Math.min(displayDecimals, 6);
   const bnMaxValue = new BigNumber(max);
 
-  const bnValue = value !== undefined
-    ? BigNumber.min(new BigNumber(value), bnMaxValue)
-    : undefined;
+  const bnValue = value !== undefined ? BigNumber.min(new BigNumber(value), bnMaxValue) : undefined;
 
   function onMaxHandle() {
     onChange?.(bnMaxValue);
@@ -60,20 +58,18 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
       <NumericInput
         className={cx(s.component, className)}
         placeholder={`0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})`}
-        addonBefore={tokenIcon ? (
-          <Grid flow="col" gap={4}>
-            <Icons name={tokenIcon} width={24} height={24} />
-          </Grid>
-        ) : undefined}
-        addonAfter={(
-          <Button
-            type="default"
-            className={s.maxBtn}
-            disabled={disabled}
-            onClick={onMaxHandle}>
+        addonBefore={
+          tokenIcon ? (
+            <Grid flow="col" gap={4}>
+              <Icons name={tokenIcon} width={24} height={24} />
+            </Grid>
+          ) : undefined
+        }
+        addonAfter={
+          <Button type="default" className={s.maxBtn} disabled={disabled} onClick={onMaxHandle}>
             MAX
           </Button>
-        )}
+        }
         maximumFractionDigits={maximumFractionDigits}
         disabled={disabled}
         value={bnValue}
@@ -85,7 +81,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
           max={bnMaxValue.toNumber()}
           step={step}
           tooltipPlacement="bottom"
-          tipFormatter={value => value ? formatBigValue(new BigNumber(value), displayDecimals) : 0}
+          tipFormatter={value => (value ? formatBigValue(new BigNumber(value), displayDecimals) : 0)}
           disabled={disabled}
           value={bnValue?.toNumber()}
           onChange={onSliderChange}
