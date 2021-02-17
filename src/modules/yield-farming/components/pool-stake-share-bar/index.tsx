@@ -24,34 +24,31 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
   const rates = (shares ?? []).map(tokenShare => `${tokenShare.share}%`);
 
   return (
-    <Grid flow="col" className={s.component}
-          colsTemplate={rates.join(' ')}>
-      {shares?.map((tokenShare, index) => {
-        return tokenShare.share! > 0 ? (
-          <Tooltip
-            key={index}
-            overlayInnerStyle={{ maxWidth: '520px' }}
-            placement="top"
-            title={
-              <Grid flow="col" gap={8} align="center" padding={[10, 16]}>
-                {tokenShare.icon}
-                <Paragraph type="p1" color="grey500">
-                  {tokenShare.name}:
-                </Paragraph>
-                <Paragraph type="p1" semiBold color="grey900">
-                  {tokenShare.value}
-                </Paragraph>
-              </Grid>
-            }>
-            <div
-              className={s.item}
-              style={{
-                backgroundColor: tokenShare.color,
-              }}
-            />
-          </Tooltip>
-        ) : undefined;
-      })}
+    <Grid flow="col" className={s.component} colsTemplate={rates.join(' ')}>
+      {shares?.map((tokenShare, index) => (
+        <Tooltip
+          key={index}
+          overlayInnerStyle={{ maxWidth: '520px' }}
+          placement="top"
+          title={
+            <Grid flow="col" gap={8} align="center" padding={[10, 16]}>
+              {tokenShare.icon}
+              <Paragraph type="p1" color="grey500">
+                {tokenShare.name}:
+              </Paragraph>
+              <Paragraph type="p1" semiBold color="grey900">
+                {tokenShare.value}
+              </Paragraph>
+            </Grid>
+          }>
+          <div
+            className={s.item}
+            style={{
+              backgroundColor: tokenShare.color,
+            }}
+          />
+        </Tooltip>
+      ))}
     </Grid>
   );
 };

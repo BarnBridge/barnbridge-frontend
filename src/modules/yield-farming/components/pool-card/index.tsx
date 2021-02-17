@@ -357,12 +357,14 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
             <Paragraph type="p1" semiBold className={s.value}>
               {formatUSDValue(state.myBalance)}
             </Paragraph>
-            <Paragraph type="p2" className={s.hint}>
-              {formatUSDValue(state.myEffectiveBalance)} effective balance
-            </Paragraph>
 
             {!state.isEnded && (
-              <PoolStakeShareBar shares={state.myShares} />
+              <>
+                <Paragraph type="p2" className={s.hint}>
+                  {formatUSDValue(state.myEffectiveBalance)} effective balance
+                </Paragraph>
+                <PoolStakeShareBar shares={state.myShares} />
+              </>
             )}
           </div>
         )}
