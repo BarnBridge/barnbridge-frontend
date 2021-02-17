@@ -4,6 +4,7 @@ import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
+
 import { useAbrogation } from '../../providers/AbrogationProvider';
 
 const AbrogationApprovalCard: React.FC = () => {
@@ -14,8 +15,7 @@ const AbrogationApprovalCard: React.FC = () => {
   return (
     <Card
       title={
-        <Hint
-          text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
+        <Hint text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
           <Text type="p1" weight="semibold" color="primary">
             Abrogation proposal approval
           </Text>

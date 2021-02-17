@@ -1,16 +1,16 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import Icons from 'components/custom/icon';
 import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-
-import { isValidAddress } from 'utils';
-import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 import { useLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+
+import { isValidAddress } from 'utils';
 
 import s from './styles.module.scss';
 
@@ -28,13 +28,7 @@ const InitialState: VotingDetailedModalState = {
 
 const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   const web3c = useWeb3Contracts();
-  const {
-    votingPower,
-    userDelegatedTo,
-    delegatedPower,
-    userLockedUntil,
-    balance: myBondBalance,
-  } = web3c.daoBarn;
+  const { votingPower, userDelegatedTo, delegatedPower, userLockedUntil, balance: myBondBalance } = web3c.daoBarn;
 
   const [state, setState] = useMergeState<VotingDetailedModalState>(InitialState);
 
@@ -45,17 +39,14 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
     end: userLockedUntil ?? 0,
     delay: 1_000,
     onTick: leftTime => {
-      let bonus = votingPower
-        ?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
+      let bonus = votingPower?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
 
       if (!isDelegated) {
         bonus = bonus?.minus(myBondBalance ?? ZERO_BIG_NUMBER);
       }
 
       const leftBonus = bonus?.multipliedBy(leftTime).div(loadedUserLockedUntil);
-      const leftTotalVotingPower = votingPower
-        ?.minus(bonus ?? ZERO_BIG_NUMBER)
-        .plus(leftBonus ?? ZERO_BIG_NUMBER);
+      const leftTotalVotingPower = votingPower?.minus(bonus ?? ZERO_BIG_NUMBER).plus(leftBonus ?? ZERO_BIG_NUMBER);
 
       setState({
         leftBonus,
@@ -66,9 +57,9 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
 
   React.useEffect(() => {
     setState({
-      leftBonus: isDelegated ? ZERO_BIG_NUMBER : votingPower
-        ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
-        .minus(delegatedPower ?? ZERO_BIG_NUMBER),
+      leftBonus: isDelegated
+        ? ZERO_BIG_NUMBER
+        : votingPower?.minus(myBondBalance ?? ZERO_BIG_NUMBER).minus(delegatedPower ?? ZERO_BIG_NUMBER),
       leftTotalVotingPower: votingPower,
     });
 
@@ -78,10 +69,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   }, [isDelegated]);
 
   return (
-    <Modal
-      className={s.component}
-      title="Voting power detailed view"
-      {...props}>
+    <Modal className={s.component} title="Voting power detailed view" {...props}>
       <Grid flow="row">
         <Grid flow="row" padding={[16, 0]}>
           <Grid flow="col" justify="space-between" padding={[16, 32]}>

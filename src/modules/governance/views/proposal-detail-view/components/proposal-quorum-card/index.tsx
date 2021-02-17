@@ -4,6 +4,7 @@ import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
+
 import { useProposal } from '../../providers/ProposalProvider';
 
 const ProposalQuorumCard: React.FC = () => {
@@ -14,8 +15,7 @@ const ProposalQuorumCard: React.FC = () => {
   return (
     <Card
       title={
-        <Hint
-          text="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
+        <Hint text="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
           <Text type="p1" weight="semibold" color="primary">
             Quorum
           </Text>

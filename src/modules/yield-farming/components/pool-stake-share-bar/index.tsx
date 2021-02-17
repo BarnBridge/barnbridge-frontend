@@ -1,8 +1,8 @@
 import React from 'react';
 
 import Tooltip from 'components/antd/tooltip';
-import { Text } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
 
 import s from './styles.module.scss';
 
@@ -24,8 +24,7 @@ const PoolStakeShareBar: React.FC<PoolStakeShareBarProps> = props => {
   const rates = (shares ?? []).map(tokenShare => `${tokenShare.share}%`);
 
   return (
-    <Grid flow="col" className={s.component}
-          colsTemplate={rates.join(' ')}>
+    <Grid flow="col" className={s.component} colsTemplate={rates.join(' ')}>
       {shares?.map((tokenShare, index) => {
         return tokenShare.share! > 0 ? (
           <Tooltip

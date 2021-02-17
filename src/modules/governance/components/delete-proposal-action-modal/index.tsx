@@ -1,7 +1,7 @@
 import React from 'react';
 
-import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
+import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
@@ -15,19 +15,13 @@ const DeleteProposalActionModal: React.FC<DeleteProposalActionModalProps> = prop
     <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16}>
-          <Icons
-            name="warning-outlined"
-            width={40}
-            height={40}
-            color="red"
-          />
+          <Icons name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8}>
             <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to delete the action?
             </Text>
             <Text type="p2" weight="semibold" color="secondary">
-              Are you sure you want to delete the action? Bad things will happen
-              if you do. Be careful :)
+              Are you sure you want to delete the action? Bad things will happen if you do. Be careful :)
             </Text>
           </Grid>
         </Grid>

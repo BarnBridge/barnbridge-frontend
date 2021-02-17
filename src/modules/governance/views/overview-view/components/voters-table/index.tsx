@@ -1,16 +1,15 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Table from 'components/antd/table';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
-import ExternalLink from 'components/custom/externalLink';
 import { Text } from 'components/custom/typography';
-
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
-import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {

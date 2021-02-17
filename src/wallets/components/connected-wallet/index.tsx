@@ -1,22 +1,20 @@
 import React from 'react';
-import * as Antd from 'antd';
 import { isMobile } from 'react-device-detect';
+import * as Antd from 'antd';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Popover from 'components/antd/popover';
-import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
-import Identicon from 'components/custom/identicon';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
+import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { useTheme } from 'components/providers/theme-provider';
-
-import { useWallet } from 'wallets/wallet';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
-
-import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
+import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
+import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.scss';
 
@@ -34,12 +32,18 @@ const ConnectedWallet: React.FC = () => {
             <Grid flow="row" gap={32} padding={[32, 24]}>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
                 <Icons name="node-status" />
-                <Text type="p1" color="secondary">Status</Text>
-                <Text type="lb2" weight="semibold" color="green" className={s.statusTag}>Connecting</Text>
+                <Text type="p1" color="secondary">
+                  Status
+                </Text>
+                <Text type="lb2" weight="semibold" color="green" className={s.statusTag}>
+                  Connecting
+                </Text>
               </Grid>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
                 <Icons name="wallet-outlined" />
-                <Text type="p1" color="secondary">Wallet</Text>
+                <Text type="p1" color="secondary">
+                  Wallet
+                </Text>
                 <Text type="p1" weight="semibold" color="primary">
                   {wallet.connecting?.name}
                 </Text>
@@ -54,18 +58,14 @@ const ConnectedWallet: React.FC = () => {
           </Card>
         }
         trigger="click">
-        <Button type="primary">
-          Connecting...
-        </Button>
+        <Button type="primary">Connecting...</Button>
       </Popover>
     );
   }
 
   if (!wallet.isActive) {
     return !isMobile ? (
-      <Button
-        type="primary"
-        onClick={() => wallet.showWalletsModal()}>
+      <Button type="primary" onClick={() => wallet.showWalletsModal()}>
         Connect Wallet
       </Button>
     ) : null;
@@ -79,11 +79,11 @@ const ConnectedWallet: React.FC = () => {
       noPadding
       content={
         <Card
-          title={(
+          title={
             <Text type="p1" weight="semibold" color="primary">
               Notifications
             </Text>
-          )}
+          }
           noPaddingBody>
           <Grid flow="row" gap={24} align="center" padding={48}>
             {isDarkTheme ? (
@@ -97,10 +97,7 @@ const ConnectedWallet: React.FC = () => {
           </Grid>
         </Card>
       }>
-      <Antd.Badge
-        dot
-        count={0}
-        showZero={false}>
+      <Antd.Badge dot count={0} showZero={false}>
         <Icons name="bell-outlined" />
       </Antd.Badge>
     </Popover>
@@ -127,21 +124,27 @@ const ConnectedWallet: React.FC = () => {
           <Grid flow="row" gap={32} padding={[32, 24]}>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icons name="node-status" />
-              <Text type="p1" color="secondary">Status</Text>
+              <Text type="p1" color="secondary">
+                Status
+              </Text>
               <Text type="lb2" weight="semibold" color="green" className={s.statusTag}>
                 Connected
               </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icons name="wallet-outlined" />
-              <Text type="p1" color="secondary">Wallet</Text>
+              <Text type="p1" color="secondary">
+                Wallet
+              </Text>
               <Text type="p1" weight="semibold" color="primary">
                 {wallet.connector?.name}
               </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icons name="network" />
-              <Text type="p1" color="secondary">Network</Text>
+              <Text type="p1" color="secondary">
+                Network
+              </Text>
               <Text type="p1" weight="semibold" color="primary">
                 {wallet.networkName}
               </Text>

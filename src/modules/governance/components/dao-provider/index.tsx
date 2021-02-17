@@ -1,9 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
+
 import { APIProposalStateId } from '../../api';
 
 export type DAOProviderState = {
@@ -28,7 +29,7 @@ type DAOContextType = DAOProviderState & {
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
-    hasThreshold(): boolean | undefined,
+    hasThreshold(): boolean | undefined;
   };
 };
 
@@ -59,10 +60,7 @@ const DAOProvider: React.FC = props => {
     let activationRate: number | undefined;
 
     if (bondStaked && activationThreshold?.gt(ZERO_BIG_NUMBER)) {
-      activationRate = bondStaked
-        .multipliedBy(100)
-        .div(activationThreshold)
-        .toNumber();
+      activationRate = bondStaked.multipliedBy(100).div(activationThreshold).toNumber();
       activationRate = Math.min(activationRate, 100);
     }
 
@@ -95,24 +93,20 @@ const DAOProvider: React.FC = props => {
   }
 
   function hasActiveProposal(): Promise<boolean> {
-    return web3c.daoGovernance.actions
-      .getLatestProposalId()
-      .then(proposalId => {
-        if (!proposalId) {
-          return Promise.resolve(false);
-        }
+    return web3c.daoGovernance.actions.getLatestProposalId().then(proposalId => {
+      if (!proposalId) {
+        return Promise.resolve(false);
+      }
 
-        return web3c.daoGovernance.actions
-          .getProposalState(proposalId)
-          .then(proposalState => {
-            return ![
-              APIProposalStateId.CANCELED,
-              APIProposalStateId.EXECUTED,
-              APIProposalStateId.FAILED,
-              APIProposalStateId.EXPIRED,
-            ].includes(proposalState as any);
-          });
+      return web3c.daoGovernance.actions.getProposalState(proposalId).then(proposalState => {
+        return ![
+          APIProposalStateId.CANCELED,
+          APIProposalStateId.EXECUTED,
+          APIProposalStateId.FAILED,
+          APIProposalStateId.EXPIRED,
+        ].includes(proposalState as any);
       });
+    });
   }
 
   function hasThreshold(): boolean | undefined {

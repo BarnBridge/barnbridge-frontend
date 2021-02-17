@@ -1,14 +1,14 @@
 import React from 'react';
+import { formatBONDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { useDAO } from '../../../../components/dao-provider';
 
-import { formatBONDValue } from 'web3/utils';
+import { useDAO } from '../../../../components/dao-provider';
 
 export type ActivationThresholdProps = {
   className?: string;
@@ -33,12 +33,13 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
   return (
     <Card className={className}>
       <Grid flow="row" gap={24} align="start">
-        <Hint text={(
-          <Text type="p2">
-            For the DAO to be activated, a threshold of {formatBONDValue(dao.activationThreshold)} $BOND tokens staked
-            has to be met.
-          </Text>
-        )}>
+        <Hint
+          text={
+            <Text type="p2">
+              For the DAO to be activated, a threshold of {formatBONDValue(dao.activationThreshold)} $BOND tokens staked
+              has to be met.
+            </Text>
+          }>
           <Text type="p1" weight="semibold" color="primary">
             Activation threshold
           </Text>

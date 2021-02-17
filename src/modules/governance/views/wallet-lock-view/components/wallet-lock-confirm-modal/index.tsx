@@ -1,12 +1,13 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { formatBONDValue } from 'web3/utils';
 
-import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
+import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { formatBONDValue } from 'web3/utils';
+
 import { getFormattedDuration } from 'utils';
 
 export type WalletLockConfirmModalProps = ModalProps & {
@@ -21,25 +22,24 @@ const WalletLockConfirmModal: React.FC<WalletLockConfirmModalProps> = props => {
     <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16}>
-          <Icons
-            name="warning-outlined"
-            width={40}
-            height={40}
-            color="red"
-          />
+          <Icons name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8}>
             <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to lock your balance?
             </Text>
             <Text type="p2" weight="semibold" color="secondary">
               You are about to lock {formatBONDValue(balance)} $BOND for {getFormattedDuration(0, duration)}.
-              <br /><br />
+              <br />
+              <br />
               You cannot undo this or partially lock your balance.
-              <br /><br />
+              <br />
+              <br />
               Locked tokens will be unavailable for withdrawal until the lock timer ends.
-              <br /><br />
+              <br />
+              <br />
               All future deposits you make will be locked for the same time.
-              <br /><br />
+              <br />
+              <br />
             </Text>
             <Text type="p2" weight="bold" color="primary">
               The multiplier you get for locking tokens only applies to your voting power, it does not earn more

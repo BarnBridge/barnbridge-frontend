@@ -1,12 +1,13 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { formatBONDValue } from 'web3/utils';
 
-import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
+import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { formatBONDValue } from 'web3/utils';
+
 import { getFormattedDuration } from 'utils';
 
 export type WalletDepositConfirmModalProps = ModalProps & {
@@ -21,12 +22,7 @@ const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = prop
     <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16}>
-          <Icons
-            name="warning-outlined"
-            width={40}
-            height={40}
-            color="red"
-          />
+          <Icons name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8}>
             <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to deposit?

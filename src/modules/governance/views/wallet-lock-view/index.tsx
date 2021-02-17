@@ -2,24 +2,25 @@ import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
 import { addDays, addMonths, addSeconds, getUnixTime, isAfter, isBefore } from 'date-fns';
-
-import Card from 'components/antd/card';
-import Form from 'components/antd/form';
-import DatePicker from 'components/antd/datepicker';
-import Button from 'components/antd/button';
-import Alert from 'components/antd/alert';
-import Grid from 'components/custom/grid';
-import GasFeeList from 'components/custom/gas-fee-list';
-import { Text } from 'components/custom/typography';
-import Icons from 'components/custom/icon';
-import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
-import WalletLockChart from './components/wallet-lock-chart';
-
-import { getFormattedDuration, isValidAddress } from 'utils';
-import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
+import DatePicker from 'components/antd/datepicker';
+import Form from 'components/antd/form';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+
+import WalletLockChart from './components/wallet-lock-chart';
+import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
+
+import { getFormattedDuration, isValidAddress } from 'utils';
 
 import s from './styles.module.scss';
 
@@ -107,23 +108,17 @@ const WalletLockView: React.FC = () => {
     const gasFee = gasPrice?.value!;
 
     try {
-      await web3c.daoBarn.actions.lock(
-        getUnixTime(lockEndDate!),
-        gasFee,
-      );
+      await web3c.daoBarn.actions.lock(getUnixTime(lockEndDate!), gasFee);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
 
   React.useEffect(() => {
     form.setFieldsValue({
-      lockEndDate: userLockedUntil && userLockedUntil > Date.now()
-        ? new Date(userLockedUntil)
-        : undefined,
+      lockEndDate: userLockedUntil && userLockedUntil > Date.now() ? new Date(userLockedUntil) : undefined,
     });
   }, [userLockedUntil]);
 
@@ -150,7 +145,7 @@ const WalletLockView: React.FC = () => {
           Lock Duration
         </Text>
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
-          {(leftTime) => (
+          {leftTime => (
             <Text type="p1" weight="semibold" color="primary">
               {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
             </Text>
@@ -164,11 +159,7 @@ const WalletLockView: React.FC = () => {
 
   return (
     <Card title={CardTitle}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleFinish}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -192,7 +183,9 @@ const WalletLockView: React.FC = () => {
                             });
                             setState({});
                           }}>
-                          <Text type="p1" weight="semibold" color="primary">{opt}</Text>
+                          <Text type="p1" weight="semibold" color="primary">
+                            {opt}
+                          </Text>
                         </Button>
                       );
                     })}
@@ -213,8 +206,7 @@ const WalletLockView: React.FC = () => {
                   disabled={formDisabled || state.saving}
                 />
               </Form.Item>
-              <Alert
-                message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
+              <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
             </Grid>
             <Grid flow="row">
               <Form.Item
@@ -231,9 +223,7 @@ const WalletLockView: React.FC = () => {
             {({ getFieldsValue }) => {
               const { lockEndDate } = getFieldsValue();
 
-              return lockEndDate ? (
-                <WalletLockChart lockEndDate={lockEndDate} />
-              ) : null;
+              return lockEndDate ? <WalletLockChart lockEndDate={lockEndDate} /> : null;
             }}
           </Form.Item>
 

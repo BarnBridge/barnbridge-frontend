@@ -1,30 +1,27 @@
 import React from 'react';
-import * as Antd from 'antd';
 import { useSessionStorage } from 'react-use-storage';
-import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core';
-import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import { Web3Provider } from '@ethersproject/providers';
+import { UnsupportedChainIdError, Web3ReactProvider, useWeb3React } from '@web3-react/core';
+import { NoEthereumProviderError } from '@web3-react/injected-connector';
+import * as Antd from 'antd';
 
+import { getNetworkName } from 'components/providers/eth-web3-provider';
 import { useAsyncEffect } from 'hooks/useAsyncEffect';
 import { useRefState } from 'hooks/useRefState';
-
-import { WalletConnector } from 'wallets/types';
+import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
+import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
+import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
 import { CoinbaseWalletConfig } from 'wallets/connectors/coinbase';
 import { LedgerWalletConfig } from 'wallets/connectors/ledger';
 import { MetaMaskWalletConfig } from 'wallets/connectors/metamask';
 import { PortisWalletConfig } from 'wallets/connectors/portis';
 import { TrezorWalletConfig } from 'wallets/connectors/trezor';
 import { WalletConnectConfig } from 'wallets/connectors/wallet-connect';
-import { getNetworkName } from 'components/providers/eth-web3-provider';
 
-import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
-import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
-import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
+import { WalletConnector } from 'wallets/types';
 
 const WEB3_CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
-const WEB3_POLLING_INTERVAL = Number(
-  process.env.REACT_APP_WEB3_POLLING_INTERVAL,
-);
+const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
 
 export const WalletConnectors: WalletConnector[] = [
   MetaMaskWalletConfig,
@@ -48,10 +45,7 @@ type WalletData = {
 
 export type Wallet = WalletData & {
   showWalletsModal: () => void;
-  connect: (
-    connector: WalletConnector,
-    args?: Record<string, any>,
-  ) => Promise<void>;
+  connect: (connector: WalletConnector, args?: Record<string, any>) => Promise<void>;
   disconnect: () => void;
 };
 
@@ -76,11 +70,9 @@ export function useWallet(): Wallet {
 const WalletProvider: React.FC = props => {
   const web3React = useWeb3React();
 
-  const [
-    sessionProvider,
-    setSessionProvider,
-    removeSessionProvider,
-  ] = useSessionStorage<string | undefined>('wallet_provider');
+  const [sessionProvider, setSessionProvider, removeSessionProvider] = useSessionStorage<string | undefined>(
+    'wallet_provider',
+  );
 
   const [initialized, setInitialized] = React.useState<boolean>(false);
   const [connecting, setConnecting, connectingRef] = useRefState<WalletConnector | undefined>(undefined);
@@ -88,14 +80,8 @@ const WalletProvider: React.FC = props => {
   const [activeProvider, setActiveProvider] = React.useState<any | undefined>();
 
   const [walletsModal, setWalletsModal] = React.useState<boolean>(false);
-  const [
-    unsupportedChainModal,
-    setUnsupportedChainModal,
-  ] = React.useState<boolean>(false);
-  const [
-    installMetaMaskModal,
-    setInstallMetaMaskModal,
-  ] = React.useState<boolean>(false);
+  const [unsupportedChainModal, setUnsupportedChainModal] = React.useState<boolean>(false);
+  const [installMetaMaskModal, setInstallMetaMaskModal] = React.useState<boolean>(false);
 
   const disconnect = React.useCallback(() => {
     web3React.deactivate();
@@ -107,10 +93,7 @@ const WalletProvider: React.FC = props => {
   }, [web3React, activeConnector, removeSessionProvider, setConnecting]);
 
   const connect = React.useCallback(
-    async (
-      walletConnector: WalletConnector,
-      args?: Record<string, any>,
-    ): Promise<void> => {
+    async (walletConnector: WalletConnector, args?: Record<string, any>): Promise<void> => {
       if (connectingRef.current) {
         return;
       }
@@ -152,10 +135,7 @@ const WalletProvider: React.FC = props => {
         setSessionProvider(walletConnector.id);
       }
 
-      await web3React
-        .activate(connector, undefined, true)
-        .then(onSuccess)
-        .catch(onError);
+      await web3React.activate(connector, undefined, true).then(onSuccess).catch(onError);
 
       setConnecting(undefined);
     },
@@ -164,9 +144,7 @@ const WalletProvider: React.FC = props => {
 
   useAsyncEffect(async () => {
     if (sessionProvider) {
-      const walletConnector = WalletConnectors.find(
-        c => c.id === sessionProvider,
-      );
+      const walletConnector = WalletConnectors.find(c => c.id === sessionProvider);
 
       if (walletConnector) {
         await connect(walletConnector);
@@ -192,33 +170,14 @@ const WalletProvider: React.FC = props => {
       connect,
       disconnect,
     }),
-    [
-      web3React,
-      connecting,
-      activeConnector,
-      activeProvider,
-      disconnect,
-      connect,
-    ],
+    [web3React, connecting, activeConnector, activeProvider, disconnect, connect],
   );
 
   return (
     <WalletContext.Provider value={value}>
-      {walletsModal && (
-        <ConnectWalletModal
-          onCancel={() => setWalletsModal(false)}
-        />
-      )}
-      {installMetaMaskModal && (
-        <InstallMetaMaskModal
-          onCancel={() => setInstallMetaMaskModal(false)}
-        />
-      )}
-      {unsupportedChainModal && (
-        <UnsupportedChainModal
-          onCancel={() => setUnsupportedChainModal(false)}
-        />
-      )}
+      {walletsModal && <ConnectWalletModal onCancel={() => setWalletsModal(false)} />}
+      {installMetaMaskModal && <InstallMetaMaskModal onCancel={() => setInstallMetaMaskModal(false)} />}
+      {unsupportedChainModal && <UnsupportedChainModal onCancel={() => setUnsupportedChainModal(false)} />}
       {props.children}
     </WalletContext.Provider>
   );

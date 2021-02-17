@@ -1,17 +1,17 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { formatBigValue } from 'web3/utils';
 
-import Modal, { ModalProps } from 'components/antd/modal';
-import Form from 'components/antd/form';
 import Button from 'components/antd/button';
+import Form from 'components/antd/form';
+import Modal, { ModalProps } from 'components/antd/modal';
 import RadioButton from 'components/antd/radio-button';
+import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import GasFeeList from 'components/custom/gas-fee-list';
-import { useProposal } from '../../providers/ProposalProvider';
-
-import { formatBigValue } from 'web3/utils';
 import useMergeState from 'hooks/useMergeState';
+
+import { useProposal } from '../../providers/ProposalProvider';
 
 import s from './styles.module.scss';
 
@@ -73,18 +73,14 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
       } else if (voteState === VoteState.VoteAgainst) {
         await proposalCtx.proposalCastVote(false, gasFee);
       } else if (voteState === VoteState.VoteChange) {
-        await proposalCtx.proposalCastVote(
-          values.changeOption === true,
-          gasFee,
-        );
+        await proposalCtx.proposalCastVote(values.changeOption === true, gasFee);
       } else if (voteState === VoteState.VoteCancel) {
         await proposalCtx.proposalCancelVote(gasFee);
       }
 
       proposalCtx.reload();
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setState({ submitting: false });
   }
@@ -167,13 +163,8 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>
           {voteState === VoteState.VoteChange && (
-            <Form.Item
-              name="changeOption"
-              label="Vote"
-              rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group
-                className={s.changeGroup}
-                disabled={state.submitting}>
+            <Form.Item name="changeOption" label="Vote" rules={[{ required: true, message: 'Required' }]}>
+              <Antd.Radio.Group className={s.changeGroup} disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
@@ -195,10 +186,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
               </Antd.Radio.Group>
             </Form.Item>
           )}
-          <Form.Item
-            name="gasPrice"
-            label="Gas Fee (Gwei)"
-            rules={[{ required: true, message: 'Required' }]}>
+          <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
             <GasFeeList disabled={state.submitting} />
           </Form.Item>
 
@@ -222,15 +210,10 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                   disabled={isDisabled}
                   className={s.actionBtn}>
                   {voteState === VoteState.VoteFor && 'Vote for proposal'}
-                  {voteState === VoteState.VoteAgainst &&
-                  'Vote against proposal'}
+                  {voteState === VoteState.VoteAgainst && 'Vote against proposal'}
                   {voteState === VoteState.VoteCancel && 'Cancel vote'}
-                  {voteState === VoteState.VoteChange &&
-                  changeOption === true &&
-                  'Vote for proposal'}
-                  {voteState === VoteState.VoteChange &&
-                  changeOption === false &&
-                  'Vote against proposal'}
+                  {voteState === VoteState.VoteChange && changeOption === true && 'Vote for proposal'}
+                  {voteState === VoteState.VoteChange && changeOption === false && 'Vote against proposal'}
                 </Button>
               );
             }}

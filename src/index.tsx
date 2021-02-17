@@ -1,16 +1,15 @@
+import 'styles/index.scss';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
+import Web3ContractsProvider from 'web3/contracts';
 
 import EthWeb3Provider from 'components/providers/eth-web3-provider';
 import ThemeProvider from 'components/providers/theme-provider';
 import WindowStateProvider from 'components/providers/window-state';
-import Web3WalletProvider from 'wallets/wallet';
-import Web3ContractsProvider from 'web3/contracts';
-
-import 'styles/index.scss';
-
 import LayoutView from 'layout';
+import Web3WalletProvider from 'wallets/wallet';
 
 import * as sw from './serviceWorker';
 

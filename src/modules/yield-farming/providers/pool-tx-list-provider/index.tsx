@@ -92,12 +92,10 @@ async function fetchPoolTransactions(
         return [];
       }
 
-      return stakingActions.map(
-        stakingAction => ({
-          ...stakingAction,
-          amount: new BigNumber(stakingAction.amount),
-        }),
-      );
+      return stakingActions.map(stakingAction => ({
+        ...stakingAction,
+        amount: new BigNumber(stakingAction.amount),
+      }));
     });
 }
 
@@ -114,14 +112,7 @@ const PoolTxListProvider: React.FC = props => {
       loaded: false,
     });
 
-    fetchPoolTransactions(
-      undefined,
-      'desc',
-      state.limit,
-      state.userFilter,
-      state.tokenFilter,
-      state.typeFilter,
-    )
+    fetchPoolTransactions(undefined, 'desc', state.limit, state.userFilter, state.tokenFilter, state.typeFilter)
       .then(transactions => {
         setState({
           loading: false,
@@ -136,11 +127,7 @@ const PoolTxListProvider: React.FC = props => {
           transactions: [],
         });
       });
-  }, [
-    state.userFilter,
-    state.tokenFilter,
-    state.typeFilter,
-  ]);
+  }, [state.userFilter, state.tokenFilter, state.typeFilter]);
 
   React.useEffect(() => {
     if (state.transactions.length > 0) {
@@ -150,21 +137,11 @@ const PoolTxListProvider: React.FC = props => {
         loading: true,
       });
 
-      fetchPoolTransactions(
-        blockTimestamp,
-        'asc',
-        100,
-        state.userFilter,
-        state.tokenFilter,
-        state.typeFilter,
-      )
+      fetchPoolTransactions(blockTimestamp, 'asc', 100, state.userFilter, state.tokenFilter, state.typeFilter)
         .then(transactions => {
           setState(prevState => ({
             loading: false,
-            transactions: [
-              ...transactions,
-              ...prevState.transactions,
-            ],
+            transactions: [...transactions, ...prevState.transactions],
           }));
         })
         .catch(() => {
@@ -183,22 +160,12 @@ const PoolTxListProvider: React.FC = props => {
         loading: true,
       });
 
-      fetchPoolTransactions(
-        blockTimestamp,
-        'desc',
-        state.limit,
-        state.userFilter,
-        state.tokenFilter,
-        state.typeFilter,
-      )
+      fetchPoolTransactions(blockTimestamp, 'desc', state.limit, state.userFilter, state.tokenFilter, state.typeFilter)
         .then(transactions => {
           setState(prevState => ({
             loading: false,
             isEnd: transactions.length < state.limit,
-            transactions: [
-              ...prevState.transactions,
-              ...transactions,
-            ],
+            transactions: [...prevState.transactions, ...transactions],
           }));
         })
         .catch(() => {

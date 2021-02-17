@@ -1,10 +1,11 @@
 import React from 'react';
 
-import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
+
 import { useAbrogation } from '../../providers/AbrogationProvider';
 import AbrogationVotersModal from '../abrogation-voters-modal';
 
@@ -66,8 +67,7 @@ const AbrogationVoteResultsCard: React.FC = () => {
         <Grid flow="col" justify="space-between">
           <div />
           <Grid flow="row" gap={4} align="end">
-            <Hint
-              text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
+            <Hint text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
               <Text type="small" weight="semibold" color="secondary" align="right">
                 Approval
               </Text>
@@ -84,9 +84,7 @@ const AbrogationVoteResultsCard: React.FC = () => {
         </Grid>
       </Grid>
 
-      {votersModal && (
-        <AbrogationVotersModal onCancel={() => showVotersModal(false)} />
-      )}
+      {votersModal && <AbrogationVotersModal onCancel={() => showVotersModal(false)} />}
     </Card>
   );
 };

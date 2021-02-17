@@ -1,18 +1,18 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import Tabs from 'components/antd/tabs';
 import Table from 'components/antd/table';
-import Grid from 'components/custom/grid';
+import Tabs from 'components/antd/tabs';
 import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import AbrogationVotersProvider, { useAbrogationVoters } from '../../providers/AbrogationVotersProvider';
-
 import { APIVoteEntity } from 'modules/governance/api';
-import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+
+import AbrogationVotersProvider, { useAbrogationVoters } from '../../providers/AbrogationVotersProvider';
 
 import s from './styles.module.scss';
 
@@ -95,10 +95,7 @@ const AbrogationVotersModalInner: React.FC<AbrogationVotersModalProps> = props =
 
   return (
     <Modal className={s.component} width={620} {...modalProps}>
-      <Tabs
-        className={s.tabs}
-        defaultActiveKey="all"
-        onChange={handleStateChange}>
+      <Tabs className={s.tabs} defaultActiveKey="all" onChange={handleStateChange}>
         <Tabs.Tab key="all" tab="All Votes" />
         <Tabs.Tab key="for" tab="For" />
         <Tabs.Tab key="against" tab="Against" />

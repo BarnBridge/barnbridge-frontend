@@ -2,14 +2,13 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 
-import WalletDepositView from 'modules/governance/views/wallet-deposit-view';
-import WalletLockView from 'modules/governance/views/wallet-lock-view';
-import WalletDelegateView from 'modules/governance/views/wallet-delegate-view';
-import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
-
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import WalletDelegateView from 'modules/governance/views/wallet-delegate-view';
+import WalletDepositView from 'modules/governance/views/wallet-deposit-view';
+import WalletLockView from 'modules/governance/views/wallet-lock-view';
+import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
 import { useWallet } from 'wallets/wallet';
 
 type WalletViewRouteParams = {
@@ -40,9 +39,7 @@ const WalletView: React.FC = () => {
   }
 
   if (!wallet.isActive) {
-    return (
-      <Redirect to="/governance/overview" />
-    );
+    return <Redirect to="/governance/overview" />;
   }
 
   return (

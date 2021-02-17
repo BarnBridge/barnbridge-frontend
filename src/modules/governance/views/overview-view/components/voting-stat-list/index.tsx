@@ -1,15 +1,15 @@
 import React from 'react';
+import { useWeb3Contracts } from 'web3/contracts';
+import { formatBONDValue, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
-import ExternalLink from 'components/custom/externalLink';
-
-import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
-import { getFormattedDuration } from 'utils';
-import { formatBONDValue, formatUSDValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
+
+import { getFormattedDuration } from 'utils';
 
 export type VotingStatListProps = {
   className?: string;
@@ -26,18 +26,15 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
   }, []);
 
   return (
-    <Grid
-      className={className}
-      gap={[32, 32]}
-      justify="start"
-      colsTemplate="repeat(auto-fit, minmax(392px, 1fr))">
+    <Grid className={className} gap={[32, 32]} justify="start" colsTemplate="repeat(auto-fit, minmax(392px, 1fr))">
       <Card>
         <Grid flow="row" gap={48}>
-          <Hint text={(
-            <Text type="p2">
-              This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
-            </Text>
-          )}>
+          <Hint
+            text={
+              <Text type="p2">
+                This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
+              </Text>
+            }>
             <Text type="lb2" weight="semibold" color="red">
               Bond Staked
             </Text>
@@ -60,17 +57,18 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Hint text={(
-            <Grid flow="row" gap={8} align="start">
-              <Text type="p2">
-                This number shows the amount of vBOND currently minted. This number may differ from the amount of $BOND
-                staked because of the multiplier mechanic
-              </Text>
-              <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
-                Learn more
-              </ExternalLink>
-            </Grid>
-          )}>
+          <Hint
+            text={
+              <Grid flow="row" gap={8} align="start">
+                <Text type="p2">
+                  This number shows the amount of vBOND currently minted. This number may differ from the amount of
+                  $BOND staked because of the multiplier mechanic
+                </Text>
+                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                  Learn more
+                </ExternalLink>
+              </Grid>
+            }>
             <Text type="lb2" weight="semibold" color="red">
               VBond
             </Text>
@@ -85,17 +83,18 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Hint text={(
-            <Grid flow="row" gap={8} align="start">
-              <Text type="p2">
-                This counter shows the average amount of time $BOND stakers locked their deposits in order to take
-                advantage of the voting power bonus.
-              </Text>
-              <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
-                Learn more
-              </ExternalLink>
-            </Grid>
-          )}>
+          <Hint
+            text={
+              <Grid flow="row" gap={8} align="start">
+                <Text type="p2">
+                  This counter shows the average amount of time $BOND stakers locked their deposits in order to take
+                  advantage of the voting power bonus.
+                </Text>
+                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                  Learn more
+                </ExternalLink>
+              </Grid>
+            }>
             <Text type="lb2" weight="semibold" color="red">
               Avg. Lock Time
             </Text>
@@ -113,13 +112,14 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Hint text={(
-            <Text type="p2">
-              This number shows the $BOND token rewards distributed so far out of the total
-              of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)} that are going to be available for the
-              DAO Staking.
-            </Text>
-          )}>
+          <Hint
+            text={
+              <Text type="p2">
+                This number shows the $BOND token rewards distributed so far out of the total of{' '}
+                {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)} that are going to be available for the DAO
+                Staking.
+              </Text>
+            }>
             <Text type="lb2" weight="semibold" color="red">
               Bond Rewards
             </Text>
@@ -141,17 +141,15 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Hint text={(
-            <Grid flow="row" gap={8} align="start">
-              <Text type="p2">
-                This number shows the amount of vBOND that is delegated to other addresses.
-              </Text>
-              <ExternalLink
-                href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
-                Learn more
-              </ExternalLink>
-            </Grid>
-          )}>
+          <Hint
+            text={
+              <Grid flow="row" gap={8} align="start">
+                <Text type="p2">This number shows the amount of vBOND that is delegated to other addresses.</Text>
+                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
+                  Learn more
+                </ExternalLink>
+              </Grid>
+            }>
             <Text type="lb2" weight="semibold" color="red">
               Delegated
             </Text>
@@ -169,12 +167,13 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
 
       <Card>
         <Grid flow="row" gap={48}>
-          <Hint text={(
-            <Text type="p2">
-              This card shows the number of holders of $BOND and compares it to the number of stakers and voters in the
-              DAO.
-            </Text>
-          )}>
+          <Hint
+            text={
+              <Text type="p2">
+                This card shows the number of holders of $BOND and compares it to the number of stakers and voters in
+                the DAO.
+              </Text>
+            }>
             <Text type="lb2" weight="semibold" color="red">
               Addresses
             </Text>

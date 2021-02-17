@@ -1,15 +1,15 @@
 import React from 'react';
-
-import Button from 'components/antd/button';
-import Icons from 'components/custom/icon';
-import Grid from 'components/custom/grid';
-import { Hint, Text } from 'components/custom/typography';
-import PoolHarvestModal from '../../modals/pool-harvest-modal';
-
-import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue } from 'web3/utils';
+
+import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import { Hint, Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+import { useWallet } from 'wallets/wallet';
+
+import PoolHarvestModal from '../../modals/pool-harvest-modal';
 
 import s from './styles.module.scss';
 
@@ -68,8 +68,7 @@ const PoolRewards: React.FC = () => {
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Grid flow="col" gap={8} align="center">
-            <Hint
-              text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake.">
+            <Hint text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake.">
               <Text type="p2" color="secondary">
                 Potential reward this epoch
               </Text>
@@ -84,11 +83,7 @@ const PoolRewards: React.FC = () => {
         </Grid>
       </Grid>
 
-      {state.showHarvestModal && (
-        <PoolHarvestModal
-          onCancel={() => setState({ showHarvestModal: false })}
-        />
-      )}
+      {state.showHarvestModal && <PoolHarvestModal onCancel={() => setState({ showHarvestModal: false })} />}
     </Grid>
   );
 };

@@ -1,17 +1,18 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-
-import Grid from 'components/custom/grid';
-import Table from 'components/antd/table';
-import Progress from 'components/antd/progress';
-import { Text } from 'components/custom/typography';
-import ProposalStatusTag from '../proposal-status-tag';
-import { useProposals } from '../../providers/ProposalsProvider';
-
-import { APILiteProposalEntity } from 'modules/governance/api';
-import { getFormattedDuration } from 'utils';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
+
+import Progress from 'components/antd/progress';
+import Table from 'components/antd/table';
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
+import { APILiteProposalEntity } from 'modules/governance/api';
+
+import { useProposals } from '../../providers/ProposalsProvider';
+import ProposalStatusTag from '../proposal-status-tag';
+
+import { getFormattedDuration } from 'utils';
 
 import s from './styles.module.scss';
 

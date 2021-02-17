@@ -1,12 +1,13 @@
 import React from 'react';
 
-import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
-import ProposalVotersModal from '../proposal-voters-modal';
+
 import { useProposal } from '../../providers/ProposalProvider';
+import ProposalVotersModal from '../proposal-voters-modal';
 
 import s from './styles.module.scss';
 
@@ -65,8 +66,7 @@ const ProposalVoteResultsCard: React.FC = () => {
       <Grid flow="row" className={s.row}>
         <Grid flow="col" justify="space-between">
           <Grid flow="row" gap={4}>
-            <Hint
-              text="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
+            <Hint text="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
               <Text type="small" weight="semibold" color="secondary">
                 Quorum
               </Text>
@@ -81,8 +81,7 @@ const ProposalVoteResultsCard: React.FC = () => {
             </Grid>
           </Grid>
           <Grid flow="row" gap={4} align="end">
-            <Hint
-              text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
+            <Hint text="Approval is the percentage of votes on a proposal that the total support must be greater than for the proposal to be approved. For example, if “Approval” is set to 51%, then more than 51% of the votes on a proposal must vote “Yes” for the proposal to pass.">
               <Text type="small" weight="semibold" color="secondary" align="right">
                 Approval
               </Text>
@@ -99,9 +98,7 @@ const ProposalVoteResultsCard: React.FC = () => {
         </Grid>
       </Grid>
 
-      {votersModal && (
-        <ProposalVotersModal onCancel={() => showVotersModal(false)} />
-      )}
+      {votersModal && <ProposalVotersModal onCancel={() => showVotersModal(false)} />}
     </Card>
   );
 };

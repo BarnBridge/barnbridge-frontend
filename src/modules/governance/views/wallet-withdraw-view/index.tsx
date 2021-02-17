@@ -1,20 +1,19 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-
-import Form from 'components/antd/form';
-import Card from 'components/antd/card';
-import Alert from 'components/antd/alert';
-import Button from 'components/antd/button';
-import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
-import { Text } from 'components/custom/typography';
-import TokenAmount from 'components/custom/token-amount';
-import GasFeeList from 'components/custom/gas-fee-list';
-
-import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
+import Form from 'components/antd/form';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import TokenAmount from 'components/custom/token-amount';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
 type WithdrawFormData = {
@@ -41,9 +40,7 @@ const WalletWithdrawView: React.FC = () => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
 
-  const [state, setState] = useMergeState<WalletWithdrawViewState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<WalletWithdrawViewState>(InitialState);
 
   const { balance: stakedBalance, userLockedUntil } = web3c.daoBarn;
   const { balance: bondBalance } = web3c.bond;
@@ -62,8 +59,7 @@ const WalletWithdrawView: React.FC = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
@@ -101,18 +97,11 @@ const WalletWithdrawView: React.FC = () => {
 
   return (
     <Card title={CardTitle}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleSubmit}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
-              <Form.Item
-                name="amount"
-                label="Amount"
-                rules={[{ required: true, message: 'Required' }]}>
+              <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
                   max={stakedBalance}
@@ -122,8 +111,7 @@ const WalletWithdrawView: React.FC = () => {
                   slider
                 />
               </Form.Item>
-              <Alert
-                message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
+              <Alert message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
             </Grid>
             <Grid flow="row">
               <Form.Item

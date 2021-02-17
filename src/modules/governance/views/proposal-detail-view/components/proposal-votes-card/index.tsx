@@ -1,16 +1,16 @@
 import React from 'react';
+import { formatBigValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import ProposalVotersModal from '../proposal-voters-modal';
-import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
-import { useProposal } from '../../providers/ProposalProvider';
 
-import { formatBigValue } from 'web3/utils';
+import { useProposal } from '../../providers/ProposalProvider';
+import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
+import ProposalVotersModal from '../proposal-voters-modal';
 
 import s from './styles.module.scss';
 
@@ -29,9 +29,7 @@ const InitialState: ProposalVotesCardState = {
 const ProposalVotesCard: React.FC = () => {
   const proposalCtx = useProposal();
 
-  const [state, setState] = React.useState<ProposalVotesCardState>(
-    InitialState,
-  );
+  const [state, setState] = React.useState<ProposalVotesCardState>(InitialState);
 
   function handleShowVotersModal() {
     setState(prevState => ({
@@ -154,37 +152,21 @@ const ProposalVotesCard: React.FC = () => {
         <Grid flow="row" gap={24}>
           {!proposalCtx.receipt?.hasVoted ? (
             <Grid gap={24} colsTemplate="1fr 1fr">
-              <Button
-                type="primary"
-                className={s.actionBtn}
-                onClick={handleVoteForModal}>
+              <Button type="primary" className={s.actionBtn} onClick={handleVoteForModal}>
                 Vote for
               </Button>
-              <Button
-                type="default"
-                className={s.actionBtn}
-                onClick={handleVoteAgainstModal}>
+              <Button type="default" className={s.actionBtn} onClick={handleVoteAgainstModal}>
                 Vote against
               </Button>
             </Grid>
           ) : (
             <>
-              <Alert
-                message={`You already voted ${
-                  proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'
-                } the proposal`}
-              />
+              <Alert message={`You already voted ${proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'} the proposal`} />
               <Grid flow="col" gap={24} colsTemplate="1fr 1fr">
-                <Button
-                  type="primary"
-                  className={s.actionBtn}
-                  onClick={handleVoteChangeModal}>
+                <Button type="primary" className={s.actionBtn} onClick={handleVoteChangeModal}>
                   Change vote
                 </Button>
-                <Button
-                  type="default"
-                  className={s.actionBtn}
-                  onClick={handleVoteCancelModal}>
+                <Button type="default" className={s.actionBtn} onClick={handleVoteCancelModal}>
                   Cancel vote
                 </Button>
               </Grid>
@@ -193,16 +175,9 @@ const ProposalVotesCard: React.FC = () => {
         </Grid>
       </Grid>
 
-      {state.showVotersModal && (
-        <ProposalVotersModal onCancel={handleHideVotersModal} />
-      )}
+      {state.showVotersModal && <ProposalVotersModal onCancel={handleHideVotersModal} />}
 
-      {state.showVoteModal && (
-        <ProposalVoteModal
-          voteState={state.voteState}
-          onCancel={handleHideVoteModal}
-        />
-      )}
+      {state.showVoteModal && <ProposalVoteModal voteState={state.voteState} onCancel={handleHideVoteModal} />}
     </Card>
   );
 };

@@ -1,11 +1,11 @@
 import React from 'react';
 
-import Popover, { PopoverProps } from 'components/antd/popover';
 import Button from 'components/antd/button';
 import Input from 'components/antd/input';
+import Popover, { PopoverProps } from 'components/antd/popover';
 import Grid from 'components/custom/grid';
-import { Text } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
 export type AddZerosPopupProps = {
   max?: number;
@@ -54,13 +54,7 @@ const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
           <Button type="ghost" onClick={() => setValue('18')}>
             18
           </Button>
-          <Input
-            type="number"
-            value={value}
-            max={max}
-            placeholder={`Max ${max}`}
-            onChange={handleChange}
-          />
+          <Input type="number" value={value} max={max} placeholder={`Max ${max}`} onChange={handleChange} />
         </Grid>
       </Grid>
       <Text type="p2" weight="semibold" color="secondary">
@@ -86,10 +80,7 @@ const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
       visible={visible}
       onVisibleChange={setVisible}
       {...popoverProps}>
-      <Button
-        type="link"
-        icon={<Icons name="plus-square-outlined" width={16} height={16} />}
-      />
+      <Button type="link" icon={<Icons name="plus-square-outlined" width={16} height={16} />} />
     </Popover>
   );
 };

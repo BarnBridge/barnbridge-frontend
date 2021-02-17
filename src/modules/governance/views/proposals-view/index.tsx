@@ -1,24 +1,24 @@
 import React from 'react';
 import { useHistory } from 'react-router';
-import { CardTabListType } from 'antd/lib/card';
-import * as Antd from 'antd';
 import useDebounce from '@rooks/use-debounce';
+import * as Antd from 'antd';
+import { CardTabListType } from 'antd/lib/card';
 
-import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import ExternalLink from 'components/custom/externalLink';
 import { Text } from 'components/custom/typography';
+import useMergeState from 'hooks/useMergeState';
 import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
-import ProposalsTable from './components/proposals-table';
+import { useWallet } from 'wallets/wallet';
+
 import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';
-
-import useMergeState from 'hooks/useMergeState';
-import { useWallet } from 'wallets/wallet';
+import ProposalsTable from './components/proposals-table';
 
 import s from './styles.module.scss';
 
@@ -79,24 +79,18 @@ const ProposalsViewInner: React.FC = () => {
     proposalsCtx.changeStateFilter(stateFilter);
   }
 
-  const handleSearchChange = useDebounce(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      proposalsCtx.changeSearchFilter(ev.target.value);
-    },
-    400,
-  );
+  const handleSearchChange = useDebounce((ev: React.ChangeEvent<HTMLInputElement>) => {
+    proposalsCtx.changeSearchFilter(ev.target.value);
+  }, 400);
 
   React.useEffect(() => {
-    daoCtx.actions.hasActiveProposal()
-      .then(hasActiveProposal => {
-        setState({ hasActiveProposal });
-      });
+    daoCtx.actions.hasActiveProposal().then(hasActiveProposal => {
+      setState({ hasActiveProposal });
+    });
   }, [wallet.account]);
 
-  const hasCreateRestrictions = state.hasActiveProposal !== undefined
-    && daoCtx.actions.hasThreshold() !== undefined;
-  const canCreateProposal = state.hasActiveProposal === false
-    && daoCtx.actions.hasThreshold() === true;
+  const hasCreateRestrictions = state.hasActiveProposal !== undefined && daoCtx.actions.hasThreshold() !== undefined;
+  const canCreateProposal = state.hasActiveProposal === false && daoCtx.actions.hasThreshold() === true;
 
   return (
     <Grid flow="row" gap={32}>
@@ -106,10 +100,7 @@ const ProposalsViewInner: React.FC = () => {
         </Text>
         {wallet.isActive && (
           <Grid flow="row" gap={8} align="end" justify="end">
-            <Button
-              type="primary"
-              disabled={!canCreateProposal}
-              onClick={() => history.push('proposals/create')}>
+            <Button type="primary" disabled={!canCreateProposal} onClick={() => history.push('proposals/create')}>
               Create proposal
             </Button>
 
@@ -125,8 +116,7 @@ const ProposalsViewInner: React.FC = () => {
                   content={
                     <Grid flow="row" gap={8}>
                       <Text type="p2" weight="semibold">
-                        There are 2 possible reasons for why you can’t create a
-                        proposal:
+                        There are 2 possible reasons for why you can’t create a proposal:
                       </Text>
 
                       <ul>
@@ -150,9 +140,7 @@ const ProposalsViewInner: React.FC = () => {
                     </Grid>
                   }
                   visible={state.showWhyReason}
-                  onVisibleChange={visible =>
-                    setState({ showWhyReason: visible })
-                  }>
+                  onVisibleChange={visible => setState({ showWhyReason: visible })}>
                   <Button type="link">See why</Button>
                 </Popover>
               </Grid>
@@ -195,10 +183,7 @@ const ProposalsView = () => {
   if (!dao.isActive) {
     return (
       <Grid flow="row" gap={24} align="start">
-        <Button
-          type="link"
-          icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>
+        <Button type="link" icon={<Icons name="left-arrow" />} onClick={handleBackClick}>
           Overview
         </Button>
         <ActivationThreshold className={s.activationThreshold} />

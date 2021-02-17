@@ -1,24 +1,24 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { FormInstance } from 'antd/lib/form';
-
-import Modal, { ModalProps } from 'components/antd/modal';
-import Form from 'components/antd/form';
-import Button from 'components/antd/button';
-import Input from 'components/antd/input';
-import Textarea from 'components/antd/textarea';
-import Select from 'components/antd/select';
-import YesNoSelector from 'components/antd/yes-no-selector';
-import Alert from 'components/antd/alert';
-import Grid from 'components/custom/grid';
-import { Hint, Text } from 'components/custom/typography';
-import AddZerosPopup from '../add-zeros-popup';
-import SimulatedProposalActionModal from '../simulated-proposal-action-modal';
-
-import { fetchContractABI } from 'web3/utils';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
 import Web3Contract from 'web3/contract';
+import { fetchContractABI } from 'web3/utils';
+
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Form from 'components/antd/form';
+import Input from 'components/antd/input';
+import Modal, { ModalProps } from 'components/antd/modal';
+import Select from 'components/antd/select';
+import Textarea from 'components/antd/textarea';
+import YesNoSelector from 'components/antd/yes-no-selector';
+import Grid from 'components/custom/grid';
+import { Hint, Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+
+import AddZerosPopup from '../add-zeros-popup';
+import SimulatedProposalActionModal from '../simulated-proposal-action-modal';
 
 import s from './styles.module.scss';
 
@@ -82,9 +82,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
   const { edit = false, initialValues = InitialFormValues } = props;
 
   const [form] = Antd.Form.useForm<CreateProposalActionForm>();
-  const [state, setState] = useMergeState<CreateProposalActionModalState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<CreateProposalActionModalState>(InitialState);
 
   function loadAbiInterface(address: string) {
     form.setFieldsValue({
@@ -105,10 +103,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       });
   }
 
-  function handleFormValuesChange(
-    values: Partial<CreateProposalActionForm>,
-    allValues: CreateProposalActionForm,
-  ) {
+  function handleFormValuesChange(values: Partial<CreateProposalActionForm>, allValues: CreateProposalActionForm) {
     const {
       targetAddress,
       isProxyAddress,
@@ -121,10 +116,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
     } = allValues;
 
     Object.keys(values).forEach((fieldName: string) => {
-      if (
-        fieldName === 'targetAddress' ||
-        fieldName === 'implementationAddress'
-      ) {
+      if (fieldName === 'targetAddress' || fieldName === 'implementationAddress') {
         form.setFieldsValue({
           abiLoading: false,
           abiInterface: undefined,
@@ -177,9 +169,9 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
           loadAbiInterface(address);
         }
       } else if (fieldName === 'functionSignature') {
-        const selectedFunctionMeta = (
-          abiInterface?.writableFunctions ?? []
-        ).find(fn => fn.format() === functionSignature);
+        const selectedFunctionMeta = (abiInterface?.writableFunctions ?? []).find(
+          fn => fn.format() === functionSignature,
+        );
         let functionStrParams = '';
 
         if (selectedFunctionMeta) {
@@ -200,10 +192,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       } else if (fieldName === 'functionParams') {
         if (functionMeta) {
           const paramsValues = Object.values(functionParams);
-          const encodedParams = AbiInterface.encodeFunctionData(
-            functionMeta,
-            paramsValues,
-          );
+          const encodedParams = AbiInterface.encodeFunctionData(functionMeta, paramsValues);
 
           form.setFieldsValue({
             functionEncodedParams: encodedParams,
@@ -255,9 +244,9 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       cancel = true;
     } catch (e) {
       e &&
-      Antd.notification.error({
-        message: e.message,
-      });
+        Antd.notification.error({
+          message: e.message,
+        });
     }
 
     setState({ submitting: false });
@@ -310,8 +299,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
           </Form.Item>
 
           <Grid flow="col" align="center" justify="space-between">
-            <Hint
-              text="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
+            <Hint text="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
               <Text type="small" weight="semibold" color="secondary">
                 Is this a proxy address?
               </Text>
@@ -332,10 +320,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                     hidden={!isProxyAddress}
                     preserve={false}
                     rules={[{ required: true, message: 'Required' }]}>
-                    <Input
-                      placeholder="Implementation address"
-                      disabled={state.submitting}
-                    />
+                    <Input placeholder="Implementation address" disabled={state.submitting} />
                   </Form.Item>
                 )
               );
@@ -350,8 +335,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
             <YesNoSelector disabled={state.submitting} />
           </Form.Item>
 
-          <Form.Item
-            shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
+          <Form.Item shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
             {({ getFieldsValue }) => {
               const { addValueAttribute, actionValue } = getFieldsValue();
               const max = 78 - (actionValue?.length ?? 0);
@@ -368,9 +352,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                         <AddZerosPopup
                           max={max}
                           onAdd={value => {
-                            const {
-                              actionValue: prevActionValue,
-                            } = getFieldsValue();
+                            const { actionValue: prevActionValue } = getFieldsValue();
 
                             if (prevActionValue) {
                               const zeros = '0'.repeat(value);
@@ -405,10 +387,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
           <Form.Item name="functionStrParams" preserve={false} hidden />
           <Form.Item name="functionEncodedParams" preserve={false} hidden />
 
-          <Form.Item
-            shouldUpdate={(prevValues: CreateProposalActionForm) =>
-              prevValues.addFunctionCall === true
-            }>
+          <Form.Item shouldUpdate={(prevValues: CreateProposalActionForm) => prevValues.addFunctionCall === true}>
             {({ getFieldsValue }: FormInstance<CreateProposalActionForm>) => {
               const {
                 targetAddress,
@@ -438,12 +417,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                     label="Select function"
                     preserve={false}
                     rules={[{ required: true, message: 'Required' }]}>
-                    <Select
-                      loading={abiLoading}
-                      disabled={state.submitting}
-                      options={functionOptions}
-                      fixScroll
-                    />
+                    <Select loading={abiLoading} disabled={state.submitting} options={functionOptions} fixScroll />
                   </Form.Item>
 
                   {functionMeta && (
@@ -460,22 +434,14 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                               {/(u?int\d+)/g.test(input.type) && (
                                 <AddZerosPopup
                                   onAdd={value => {
-                                    const prevActionValue =
-                                      functionParams[input.name];
+                                    const prevActionValue = functionParams[input.name];
 
                                     if (prevActionValue) {
                                       const zeros = '0'.repeat(value);
-                                      functionParams[
-                                        input.name
-                                        ] = `${prevActionValue}${zeros}`;
+                                      functionParams[input.name] = `${prevActionValue}${zeros}`;
 
-                                      const paramsValues = Object.values(
-                                        functionParams,
-                                      );
-                                      const encodedParams = AbiInterface.encodeFunctionData(
-                                        functionMeta,
-                                        paramsValues,
-                                      );
+                                      const paramsValues = Object.values(functionParams);
+                                      const encodedParams = AbiInterface.encodeFunctionData(functionMeta, paramsValues);
 
                                       form.setFieldsValue({
                                         functionParams,
@@ -489,20 +455,12 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                           }
                           preserve={false}
                           rules={[{ required: true, message: 'Required' }]}>
-                          <Input
-                            disabled={state.submitting}
-                            placeholder={`${input.name} (${input.type})`}
-                          />
+                          <Input disabled={state.submitting} placeholder={`${input.name} (${input.type})`} />
                         </Form.Item>
                       ))}
 
                       <Form.Item label={`Function type: ${functionMeta.name}`}>
-                        <Textarea
-                          className={s.textarea}
-                          rows={5}
-                          value={functionStrParams}
-                          disabled
-                        />
+                        <Textarea className={s.textarea} rows={5} value={functionStrParams} disabled />
                       </Form.Item>
 
                       <Form.Item label="Hex data">
@@ -517,10 +475,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                     </Grid>
                   )}
 
-                  {targetAddress &&
-                  addFunctionCall &&
-                  !abiLoading &&
-                  !abiInterface && (
+                  {targetAddress && addFunctionCall && !abiLoading && !abiInterface && (
                     <Alert
                       type="error"
                       message="The target address you entered is not a validated contract address. Please check the information you entered and try again"
@@ -548,16 +503,10 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
           </Form.Item>
 
           <div className={s.actions}>
-            <Button
-              type="default"
-              disabled={state.submitting}
-              onClick={props.onCancel}>
+            <Button type="default" disabled={state.submitting} onClick={props.onCancel}>
               {edit ? 'Cancel Changes' : 'Cancel'}
             </Button>
-            <Button
-              type="primary"
-              htmlType="submit"
-              loading={state.submitting}>
+            <Button type="primary" htmlType="submit" loading={state.submitting}>
               {edit ? 'Save Changes' : 'Add Action'}
             </Button>
           </div>

@@ -1,17 +1,16 @@
 import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
+import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
-import { Text } from 'components/custom/typography';
 import ExpandableCard, { ExpandableCardProps } from 'components/custom/expandable-card';
-import Grid from 'components/custom/grid';
 import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
-import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
+import { Text } from 'components/custom/typography';
 
 import s from './styles.module.scss';
 
@@ -56,9 +55,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
   }, [functionFragment, callData]);
 
   const stringParams = React.useMemo<string>(() => {
-    const params = functionParamValues?.map(param =>
-      AbiInterface.stringifyParamValue(param),
-    );
+    const params = functionParamValues?.map(param => AbiInterface.stringifyParamValue(param));
     return params?.join(',\n') ?? '';
   }, [functionParamValues]);
 
@@ -127,10 +124,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
       }
       extra={
         showSettings ? (
-          <PopoverMenu
-            items={ActionMenuItems}
-            placement="bottomLeft"
-            onClick={key => handleActionMenu(String(key))}>
+          <PopoverMenu items={ActionMenuItems} placement="bottomLeft" onClick={key => handleActionMenu(String(key))}>
             <Button type="link" icon={<Icons name="gear" />} />
           </PopoverMenu>
         ) : (
@@ -167,10 +161,8 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
               rows: expanded ? 9999 : 2,
               expandable: false,
               onEllipsis: handleEllipsis,
-            }}>.
-            {isSignature
-              ? signature
-              : `${functionFragment?.name}(${stringParams})`}
+            }}>
+            .{isSignature ? signature : `${functionFragment?.name}(${stringParams})`}
           </Antd.Typography.Paragraph>
         )}
       </div>

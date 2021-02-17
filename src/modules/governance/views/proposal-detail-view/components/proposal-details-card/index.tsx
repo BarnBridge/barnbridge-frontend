@@ -1,19 +1,19 @@
 import React from 'react';
-
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
-import Grid from 'components/custom/grid';
-import Identicon from 'components/custom/identicon';
-import Icons from 'components/custom/icon';
-import ExternalLink from 'components/custom/externalLink';
-import { Hint, Text } from 'components/custom/typography';
-import { useProposal } from '../../providers/ProposalProvider';
-import ProposalActionCard from '../../../../components/proposal-action-card';
-
-import { APIProposalState } from 'modules/governance/api';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
-import { useWallet } from 'wallets/wallet';
+
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Skeleton from 'components/antd/skeleton';
+import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import Identicon from 'components/custom/identicon';
+import { Hint, Text } from 'components/custom/typography';
+import { APIProposalState } from 'modules/governance/api';
+import { useWallet } from 'wallets/wallet';
+
+import ProposalActionCard from '../../../../components/proposal-action-card';
+import { useProposal } from '../../providers/ProposalProvider';
 
 type ProposalDetailsCardState = {
   cancelling: boolean;
@@ -27,16 +27,12 @@ const ProposalDetailsCard: React.FC = () => {
   const wallet = useWallet();
   const proposalCtx = useProposal();
 
-  const [state, setState] = React.useState<ProposalDetailsCardState>(
-    InitialState,
-  );
+  const [state, setState] = React.useState<ProposalDetailsCardState>(InitialState);
 
   const canCancel =
     ((proposalCtx.thresholdRate && proposalCtx.thresholdRate < proposalCtx.minThreshold) ||
       proposalCtx.proposal?.proposer === wallet.account) &&
-    [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(
-      proposalCtx.proposal?.state as any,
-    );
+    [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalCtx.proposal?.state as any);
 
   function handleProposalCancel() {
     setState(prevState => ({
@@ -76,15 +72,8 @@ const ProposalDetailsCard: React.FC = () => {
               Created by
             </Text>
             <Grid flow="col" gap={8}>
-              <Identicon
-                address={proposalCtx.proposal?.proposer}
-                width={24}
-                height={24}
-              />
-              <ExternalLink
-                href={`${getEtherscanAddressUrl(
-                  proposalCtx.proposal?.proposer!,
-                )}`}>
+              <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
+              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer!)}`}>
                 <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(proposalCtx.proposal?.proposer)}
                 </Text>
@@ -118,10 +107,7 @@ const ProposalDetailsCard: React.FC = () => {
             </Grid>
           </Grid>
           {canCancel && (
-            <Button
-              type="default"
-              loading={state.cancelling}
-              onClick={handleProposalCancel}>
+            <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
               Cancel proposal
             </Button>
           )}

@@ -1,23 +1,23 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import { MAX_UINT_256, ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
-import Button from 'components/antd/button';
-import Alert from 'components/antd/alert';
+import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Text } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
-import GasFeeList from 'components/custom/gas-fee-list';
-import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
-
-import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
-import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+
+import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
 type DepositFormData = {
   amount?: BigNumber;
@@ -64,8 +64,7 @@ const WalletDepositView: React.FC = () => {
 
     try {
       await web3c.bond.approveSend(CONTRACT_DAO_BARN_ADDR, value);
-    } catch {
-    }
+    } catch {}
 
     setState({ enabling: false });
   }
@@ -89,8 +88,7 @@ const WalletDepositView: React.FC = () => {
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
       web3c.bond.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
@@ -146,22 +144,12 @@ const WalletDepositView: React.FC = () => {
   );
 
   return (
-    <Card
-      title={CardTitle}
-      showExpandButton={state.enabled}
-      expanded={state.expanded}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleFinish}>
+    <Card title={CardTitle} showExpandButton={state.enabled} expanded={state.expanded}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
-              <Form.Item
-                name="amount"
-                label="Amount"
-                rules={[{ required: true, message: 'Required' }]}>
+              <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
                   max={bondBalance}
@@ -171,8 +159,7 @@ const WalletDepositView: React.FC = () => {
                   slider
                 />
               </Form.Item>
-              <Alert
-                message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
+              <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
             <Grid flow="row">
               <Form.Item
@@ -184,12 +171,7 @@ const WalletDepositView: React.FC = () => {
               </Form.Item>
             </Grid>
           </Grid>
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            loading={state.saving}
-            style={{ justifySelf: 'start' }}>
+          <Button type="primary" htmlType="submit" size="large" loading={state.saving} style={{ justifySelf: 'start' }}>
             Deposit
           </Button>
         </Grid>

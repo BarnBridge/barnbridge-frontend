@@ -1,9 +1,9 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { PortisConnector } from '@web3-react/portis-connector';
 
-import { WalletConnector } from 'wallets/types';
-
 import PortisLogo from 'resources/svg/wallets/portis-logo.svg';
+
+import { WalletConnector } from 'wallets/types';
 
 const WEB3_PORTIS_APP_ID = String(process.env.REACT_APP_WEB3_PORTIS_APP_ID);
 

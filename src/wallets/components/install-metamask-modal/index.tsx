@@ -18,18 +18,17 @@ const InstallMetaMaskModal: React.FC<ModalProps> = props => {
             Install MetaMask
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            You need to have <Text tag="span" type="p1" weight="bold" color="primary">MetaMask</Text> installed to
-            continue.
+            You need to have{' '}
+            <Text tag="span" type="p1" weight="bold" color="primary">
+              MetaMask
+            </Text>{' '}
+            installed to continue.
             <br />
             Once you have installed it, please refresh the page
           </Text>
         </Grid>
         <Grid flow="col" justify="space-between">
-          <Button
-            type="primary"
-            href={METAMASK_CHROME_EXT_URL}
-            rel="noopener noreferrer"
-            target="_blank">
+          <Button type="primary" href={METAMASK_CHROME_EXT_URL} rel="noopener noreferrer" target="_blank">
             Install MetaMask
           </Button>
 

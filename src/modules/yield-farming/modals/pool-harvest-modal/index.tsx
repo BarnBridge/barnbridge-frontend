@@ -1,15 +1,16 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { useWeb3Contracts } from 'web3/contracts';
+import { formatBONDValue } from 'web3/utils';
 
-import Modal, { ModalProps } from 'components/antd/modal';
 import Button from 'components/antd/button';
+import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { getPoolIcons, getPoolNames, PoolTypes } from 'modules/yield-farming/utils';
-import { formatBONDValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 import useMergeState from 'hooks/useMergeState';
+
+import { PoolTypes, getPoolIcons, getPoolNames } from 'modules/yield-farming/utils';
 
 import s from './styles.module.scss';
 
@@ -82,8 +83,7 @@ const PoolHarvestModal: React.FC<PoolHarvestModalProps> = props => {
     try {
       await yf.massHarvestSend();
       bond.reload();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ yfHarvesting: false });
   }
@@ -94,8 +94,7 @@ const PoolHarvestModal: React.FC<PoolHarvestModalProps> = props => {
     try {
       await yfLP.massHarvestSend();
       bond.reload();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ yfLPHarvesting: false });
   }
@@ -106,8 +105,7 @@ const PoolHarvestModal: React.FC<PoolHarvestModalProps> = props => {
     try {
       await yfBOND.massHarvestSend();
       bond.reload();
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ yfBONDHarvesting: false });
   }

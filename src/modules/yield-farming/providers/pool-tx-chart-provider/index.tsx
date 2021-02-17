@@ -69,13 +69,12 @@ async function fetchPoolTransactions(
         return summaries;
       }
 
-      Object.entries(stakingActions)
-        .forEach(([k, v]) => {
-          summaries.push({
-            deposits: Number(v.sumDeposits),
-            withdrawals: Number(v.sumWithdrawals),
-          });
+      Object.entries(stakingActions).forEach(([k, v]) => {
+        summaries.push({
+          deposits: Number(v.sumDeposits),
+          withdrawals: Number(v.sumWithdrawals),
         });
+      });
 
       return summaries;
     });
@@ -93,11 +92,7 @@ const PoolTxChartProvider: React.FC = props => {
       loading: true,
     });
 
-    fetchPoolTransactions(
-      state.poolFilter,
-      state.periodFilter,
-      state.typeFilter,
-    )
+    fetchPoolTransactions(state.poolFilter, state.periodFilter, state.typeFilter)
       .then(summaries => {
         setState({
           loading: false,
@@ -110,15 +105,9 @@ const PoolTxChartProvider: React.FC = props => {
           summaries: [],
         });
       });
-  }, [
-    state.poolFilter,
-    state.periodFilter,
-    state.typeFilter,
-  ]);
+  }, [state.poolFilter, state.periodFilter, state.typeFilter]);
 
-  React.useEffect(() => {
-
-  }, [ethWeb3.blockNumber]);
+  React.useEffect(() => {}, [ethWeb3.blockNumber]);
 
   function changePoolFilter(poolFilter?: string) {
     setState({ poolFilter });
@@ -133,12 +122,13 @@ const PoolTxChartProvider: React.FC = props => {
   }
 
   return (
-    <PoolTxChartContext.Provider value={{
-      ...state,
-      changePoolFilter,
-      changePeriodFilter,
-      changeTypeFilter,
-    }}>
+    <PoolTxChartContext.Provider
+      value={{
+        ...state,
+        changePoolFilter,
+        changePeriodFilter,
+        changeTypeFilter,
+      }}>
       {children}
     </PoolTxChartContext.Provider>
   );

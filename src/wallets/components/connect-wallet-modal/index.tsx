@@ -4,11 +4,11 @@ import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
-
-import { useWallet, WalletConnectors } from 'wallets/wallet';
-import { WalletConnector } from 'wallets/types';
 import useMergeState from 'hooks/useMergeState';
+import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
+import { WalletConnectors, useWallet } from 'wallets/wallet';
+
+import { WalletConnector } from 'wallets/types';
 
 export type ConnectWalletModalProps = ModalProps & {};
 
@@ -38,8 +38,7 @@ const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
       return;
     }
 
-    wallet.connect(connector)
-      .catch(Error);
+    wallet.connect(connector).catch(Error);
   }
 
   return (

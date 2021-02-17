@@ -1,15 +1,14 @@
 import React from 'react';
 import cx from 'classnames';
-
-import Card from 'components/antd/card';
-import Grid from 'components/custom/grid';
-import { Hint, Text } from 'components/custom/typography';
-import ExternalLink from 'components/custom/externalLink';
-
-import { formatBONDValue, formatUSDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { formatBONDValue, formatUSDValue } from 'web3/utils';
+
+import Card from 'components/antd/card';
+import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
+import { Hint, Text } from 'components/custom/typography';
 import { useWeekCountdown } from 'hooks/useCountdown';
 
 import s from './styles.module.scss';
@@ -31,20 +30,19 @@ const PoolStats: React.FC = () => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Hint text={(
-              <span>
-                This number shows the Total Value Locked across the staking
-                pool(s), and the effective Total Value Locked.
-                <br />
-                <br />
-                When staking tokens during an epoch that is currently running,
-                your effective deposit amount will be proportionally reduced
-                by the time that has passed from that epoch. Once an epoch
-                ends, your staked balance and effective staked balance will be
-                the equal, therefore TVL and effective TVL will differ in most
-                cases.
-              </span>
-            )}>
+            <Hint
+              text={
+                <span>
+                  This number shows the Total Value Locked across the staking pool(s), and the effective Total Value
+                  Locked.
+                  <br />
+                  <br />
+                  When staking tokens during an epoch that is currently running, your effective deposit amount will be
+                  proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked
+                  balance and effective staked balance will be the equal, therefore TVL and effective TVL will differ in
+                  most cases.
+                </span>
+              }>
               <Text type="lb2" weight="semibold" color="red">
                 Total Value Locked
               </Text>
@@ -93,9 +91,10 @@ const PoolStats: React.FC = () => {
             <Text type="h2" weight="bold" color="primary">
               {formatUSDValue(uniswap.bondPrice)}
             </Text>
-            <ExternalLink
-              href={UNISWAP_EXCHANGE_LINK}>
-              <Text type="p1" weight="semibold" color="blue">Uniswap market</Text>
+            <ExternalLink href={UNISWAP_EXCHANGE_LINK}>
+              <Text type="p1" weight="semibold" color="blue">
+                Uniswap market
+              </Text>
             </ExternalLink>
           </Grid>
         </Grid>
@@ -104,8 +103,7 @@ const PoolStats: React.FC = () => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Hint
-              text="This counter shows the time left in the current epoch. The pool(s) below are synchronized and have epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive rewards proportional to the time they are staked, but the funds must stay staked until the clock runs out and the epoch ends in order to be able to harvest the rewards.">
+            <Hint text="This counter shows the time left in the current epoch. The pool(s) below are synchronized and have epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive rewards proportional to the time they are staked, but the funds must stay staked until the clock runs out and the epoch ends in order to be able to harvest the rewards.">
               <Text type="lb2" weight="semibold" color="red">
                 Time Left
               </Text>

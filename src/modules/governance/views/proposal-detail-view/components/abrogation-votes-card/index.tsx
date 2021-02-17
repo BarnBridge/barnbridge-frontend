@@ -1,17 +1,17 @@
 import React from 'react';
+import { formatBigValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import useMergeState from 'hooks/useMergeState';
+
+import { useAbrogation } from '../../providers/AbrogationProvider';
 import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
 import AbrogationVotersModal from '../abrogation-voters-modal';
-import { useAbrogation } from '../../providers/AbrogationProvider';
-
-import { formatBigValue } from 'web3/utils';
-import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
@@ -30,9 +30,7 @@ const InitialState: AbrogationVotesCardState = {
 const AbrogationVotesCard: React.FC = () => {
   const abrogationCtx = useAbrogation();
 
-  const [state, setState] = useMergeState<AbrogationVotesCardState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<AbrogationVotesCardState>(InitialState);
 
   function handleShowVotersModal() {
     setState({ showVotersModal: true });
@@ -144,16 +142,10 @@ const AbrogationVotesCard: React.FC = () => {
         <Grid flow="row" gap={24}>
           {!abrogationCtx.receipt?.hasVoted ? (
             <Grid gap={24} colsTemplate="1fr 1fr">
-              <Button
-                type="primary"
-                className={s.actionBtn}
-                onClick={handleVoteForModal}>
+              <Button type="primary" className={s.actionBtn} onClick={handleVoteForModal}>
                 Vote for
               </Button>
-              <Button
-                type="default"
-                className={s.actionBtn}
-                onClick={handleVoteAgainstModal}>
+              <Button type="default" className={s.actionBtn} onClick={handleVoteAgainstModal}>
                 Vote against
               </Button>
             </Grid>
@@ -165,16 +157,10 @@ const AbrogationVotesCard: React.FC = () => {
                 } the proposal abrogation`}
               />
               <Grid flow="col" gap={24} colsTemplate="1fr 1fr">
-                <Button
-                  type="primary"
-                  className={s.actionBtn}
-                  onClick={handleVoteChangeModal}>
+                <Button type="primary" className={s.actionBtn} onClick={handleVoteChangeModal}>
                   Change vote
                 </Button>
-                <Button
-                  type="default"
-                  className={s.actionBtn}
-                  onClick={handleVoteCancelModal}>
+                <Button type="default" className={s.actionBtn} onClick={handleVoteCancelModal}>
                   Cancel vote
                 </Button>
               </Grid>
@@ -183,16 +169,9 @@ const AbrogationVotesCard: React.FC = () => {
         </Grid>
       </Grid>
 
-      {state.showVotersModal && (
-        <AbrogationVotersModal onCancel={handleHideVotersModal} />
-      )}
+      {state.showVotersModal && <AbrogationVotersModal onCancel={handleHideVotersModal} />}
 
-      {state.showVoteModal && (
-        <AbrogationVoteModal
-          voteState={state.voteState}
-          onCancel={handleHideVoteModal}
-        />
-      )}
+      {state.showVoteModal && <AbrogationVoteModal voteState={state.voteState} onCancel={handleHideVoteModal} />}
     </Card>
   );
 };

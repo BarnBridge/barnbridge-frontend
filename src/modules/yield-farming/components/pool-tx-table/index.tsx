@@ -1,8 +1,15 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatDistance } from 'date-fns';
 import BigNumber from 'bignumber.js';
+import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -16,18 +23,10 @@ import PoolTxListProvider, {
   PoolTxListItem,
   usePoolTxList,
 } from 'modules/yield-farming/providers/pool-tx-list-provider';
-import { PoolActions, PoolTypes } from 'modules/yield-farming/utils';
-
-import { useWallet } from 'wallets/wallet';
-import { useWeb3Contracts } from 'web3/contracts';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { DAITokenMeta } from 'web3/contracts/dai';
-import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
-
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
+import { useWallet } from 'wallets/wallet';
+
+import { PoolActions, PoolTypes } from 'modules/yield-farming/utils';
 
 import s from './styles.module.scss';
 
@@ -230,10 +229,7 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
 
   const CardFooter = (
     <Grid align="center" justify="center">
-      <Button
-        type="light"
-        disabled={poolTxList.loading}
-        onClick={poolTxList.loadNext}>
+      <Button type="light" disabled={poolTxList.loading} onClick={poolTxList.loadNext}>
         Load more transactions
       </Button>
     </Grid>

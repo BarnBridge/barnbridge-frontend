@@ -1,20 +1,20 @@
 import React from 'react';
 import * as Antd from 'antd';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
-import Form from 'components/antd/form';
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
+import Form from 'components/antd/form';
+import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
-import GasFeeList from 'components/custom/gas-fee-list';
 import { Text } from 'components/custom/typography';
+import useMergeState from 'hooks/useMergeState';
 
 import { isValidAddress } from 'utils';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
-import useMergeState from 'hooks/useMergeState';
 
 type DelegateFormData = {
   delegateAddress?: string;
@@ -62,18 +62,14 @@ const WalletDelegateView: React.FC = () => {
 
     try {
       if (delegateAddress !== userDelegatedTo) {
-        await web3c.daoBarn.actions.delegate(
-          delegateAddress!,
-          gasFee,
-        );
+        await web3c.daoBarn.actions.delegate(delegateAddress!, gasFee);
       } else {
         await web3c.daoBarn.actions.stopDelegate(gasFee);
       }
 
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
@@ -113,11 +109,7 @@ const WalletDelegateView: React.FC = () => {
 
   return (
     <Card title={CardTitle}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleSubmit}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -127,11 +119,9 @@ const WalletDelegateView: React.FC = () => {
                 rules={[{ required: true, message: 'Required' }]}>
                 <TokenInput disabled={formDisabled || state.saving} />
               </Form.Item>
-              <Alert
-                message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
+              <Alert message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
               {isLocked && (
-                <Alert
-                  message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
+                <Alert message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
               )}
             </Grid>
             <Grid flow="row">

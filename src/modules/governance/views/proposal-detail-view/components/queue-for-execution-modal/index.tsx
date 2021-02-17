@@ -1,22 +1,22 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import Modal, { ModalProps } from 'components/antd/modal';
-import Form from 'components/antd/form';
 import Button from 'components/antd/button';
+import Form from 'components/antd/form';
+import Modal, { ModalProps } from 'components/antd/modal';
+import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import GasFeeList from 'components/custom/gas-fee-list';
+import useMergeState from 'hooks/useMergeState';
+
 import { useDAO } from '../../../../components/dao-provider';
 import { useProposal } from '../../providers/ProposalProvider';
-
-import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
 type FormState = {
   gasPrice?: {
-    value: number,
+    value: number;
   };
 };
 
@@ -58,18 +58,13 @@ const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
 
       proposalCtx.reload();
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setState({ submitting: false });
   }
 
   return (
-    <Modal
-      className={s.component}
-      width={560}
-      title="Queue for execution"
-      {...modalProps}>
+    <Modal className={s.component} width={560} title="Queue for execution" {...modalProps}>
       <Form
         form={form}
         initialValues={InitialFormValues}
@@ -77,24 +72,17 @@ const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
           <Text type="p2" weight="semibold" color="secondary">
-            Once a proposal is accepted, it will have to wait in the queue before it can be executed.
-            During this time it can only be cancelled by an abrogation proposal.
+            Once a proposal is accepted, it will have to wait in the queue before it can be executed. During this time
+            it can only be cancelled by an abrogation proposal.
           </Text>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={32} className={s.row}>
-          <Form.Item
-            name="gasPrice"
-            label="Gas Fee (Gwei)"
-            rules={[{ required: true, message: 'Required' }]}>
+          <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
             <GasFeeList disabled={state.submitting} />
           </Form.Item>
 
-          <Button
-            htmlType="submit"
-            type="primary"
-            loading={state.submitting}
-            className={s.actionBtn}>
+          <Button htmlType="submit" type="primary" loading={state.submitting} className={s.actionBtn}>
             Queue proposal for execution
           </Button>
         </Grid>
