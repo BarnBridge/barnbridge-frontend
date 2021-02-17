@@ -216,7 +216,7 @@ export function useDAOGovernanceContract(): DAOGovernanceContract {
     });
 
     loadCommonData().then(setState).catch(Error);
-  }, [version]);
+  }, [version, setState]);
 
   return {
     ...state,

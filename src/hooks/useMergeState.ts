@@ -8,22 +8,22 @@ function useMergeState<S>(
 ): [S, React.Dispatch<MergeStateUpdate<S>>] {
   const [state, set] = React.useState<S>(initialState);
 
-  return [
-    state,
-    (updater: MergeStateUpdate<S>) =>
-      set(prev => {
-        const next = {
-          ...prev,
-          ...(typeof updater === 'function' ? (updater as Function)(prev) : updater),
-        };
+  const setState = React.useCallback((updater: MergeStateUpdate<S>) => {
+    set(prev => {
+      const next = {
+        ...prev,
+        ...(typeof updater === 'function' ? (updater as Function)(prev) : updater),
+      };
 
-        if (typeof callback === 'function') {
-          callback(next);
-        }
+      if (typeof callback === 'function') {
+        callback(next);
+      }
 
-        return next;
-      }),
-  ];
+      return next;
+    });
+  }, [callback]);
+
+  return [state, setState];
 }
 
 export default useMergeState;

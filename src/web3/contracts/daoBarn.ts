@@ -175,7 +175,7 @@ export function useDAOBarnContract(): DAOBarnContract {
     });
 
     loadCommonData().then(setState).catch(Error);
-  }, [version]);
+  }, [version, setState]);
 
   React.useEffect(() => {
     setState({
@@ -188,7 +188,7 @@ export function useDAOBarnContract(): DAOBarnContract {
     });
 
     loadUserData(wallet.account).then(setState).catch(Error);
-  }, [wallet.account, version]);
+  }, [wallet.account, version, setState]);
 
   return {
     ...state,

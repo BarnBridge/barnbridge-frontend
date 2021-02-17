@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSessionStorage } from 'react-use-storage';
 import { Web3Provider } from '@ethersproject/providers';
-import { UnsupportedChainIdError, Web3ReactProvider, useWeb3React } from '@web3-react/core';
+import { UnsupportedChainIdError, useWeb3React, Web3ReactProvider } from '@web3-react/core';
 import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import * as Antd from 'antd';
 
@@ -170,7 +170,7 @@ const WalletProvider: React.FC = props => {
       connect,
       disconnect,
     }),
-    [web3React, connecting, activeConnector, activeProvider, disconnect, connect],
+    [web3React, initialized, connecting, activeConnector, activeProvider, disconnect, connect],
   );
 
   return (

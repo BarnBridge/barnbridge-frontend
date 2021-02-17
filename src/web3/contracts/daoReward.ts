@@ -94,13 +94,13 @@ export function useDAORewardContract(): DAORewardContract {
     setState({ poolFeature: undefined });
 
     loadCommonData().then(setState).catch(Error);
-  }, [version]);
+  }, [version, setState]);
 
   React.useEffect(() => {
     setState({ claimValue: undefined });
 
     loadUserData(wallet.account).then(setState).catch(Error);
-  }, [wallet.account, version]);
+  }, [wallet.account, version, setState]);
 
   function getBondRewards(): BigNumber | undefined {
     if (!state.poolFeature) {

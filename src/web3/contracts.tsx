@@ -99,6 +99,7 @@ const Web3ContractsProvider: React.FC = props => {
       daoGovernanceContract.contract,
     ];
 
+    console.log("INIT");
     function handleError(err: Error & { code: number }, contract: Web3Contract, { method }: any) {
       console.error(`${contract.name}:${method}`, { error: err });
 
@@ -120,7 +121,20 @@ const Web3ContractsProvider: React.FC = props => {
         contract.off('error', handleError);
       });
     };
-  }, []);
+  }, [
+    bondContract.contract,
+    daiContract.contract,
+    usdcContract.contract,
+    susdContract.contract,
+    uniswapContract.contract,
+    yfContract.contract,
+    yfLPContract.contract,
+    yfBONDContract.contract,
+    stakingContract.contract,
+    daoBarnContract.contract,
+    daoRewardContract.contract,
+    daoGovernanceContract.contract,
+  ]);
 
   React.useEffect(() => {
     const contracts = [
