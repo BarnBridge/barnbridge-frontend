@@ -1,21 +1,18 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-
-import Icons from 'components/custom/icon';
-
-import { useReload } from 'hooks/useReload';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { useWallet } from 'wallets/wallet';
-import { TokenMeta } from 'web3/types';
-import { getHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/contract';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import { TokenMeta } from 'web3/types';
+import { getHumanValue } from 'web3/utils';
 
-export const CONTRACT_UNISWAP_ADDR = String(
-  process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR,
-).toLowerCase();
+import Icons from 'components/custom/icon';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useReload } from 'hooks/useReload';
+import { useWallet } from 'wallets/wallet';
+
+export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
 
 export const UNISWAPTokenMeta: TokenMeta = {
   icon: <Icons key="uniswap" name="uniswap-token" />,
@@ -57,11 +54,7 @@ export function useUNISWAPContract(): UNISWAPContract {
   const wallet = useWallet();
 
   const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(
-      require('web3/abi/uniswap_v2.json'),
-      CONTRACT_UNISWAP_ADDR,
-      'UNISWAP',
-    );
+    return new Web3Contract(require('web3/abi/uniswap_v2.json'), CONTRACT_UNISWAP_ADDR, 'UNISWAP');
   }, []);
 
   const [data, setData] = React.useState<UNISWAPContractData>(InitialData);
@@ -70,15 +63,11 @@ export function useUNISWAPContract(): UNISWAPContract {
     const [totalSupply, reserves, token0, token1] = await contract.batch([
       {
         method: 'totalSupply',
-        transform: (value: string) =>
-          getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
+        transform: (value: string) => getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
       },
       {
         method: 'getReserves',
-        transform: (value: string[]) => [
-          new BigNumber(value[0]),
-          new BigNumber(value[1]),
-        ],
+        transform: (value: string[]) => [new BigNumber(value[0]), new BigNumber(value[1])],
       },
       {
         method: 'token0',
@@ -124,8 +113,7 @@ export function useUNISWAPContract(): UNISWAPContract {
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
-          transform: (value: string) =>
-            getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
+          transform: (value: string) => getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
         },
         {
           method: 'allowance',

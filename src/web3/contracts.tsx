@@ -1,25 +1,25 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-
-import { useWallet } from 'wallets/wallet';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import UserRejectedModal from 'web3/components/user-rejected-modal';
 import Web3Contract from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
-import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { DAIContract, DAITokenMeta, useDAIContract } from 'web3/contracts/dai';
+import { DAOBarnContract, useDAOBarnContract } from 'web3/contracts/daoBarn';
+import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/daoGovernance';
+import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
+import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
 import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
-import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
-import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
-import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
-import { StakingContract, useStakingContract } from 'web3/contracts/staking';
-import { DAOBarnContract, useDAOBarnContract } from 'web3/contracts/daoBarn';
-import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
-import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/daoGovernance';
-import { PoolTypes } from 'modules/yield-farming/utils';
+import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
+import { YieldFarmContract, useYieldFarmContract } from 'web3/contracts/yieldFarm';
+import { YieldFarmBONDContract, useYieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
+import { YieldFarmLPContract, useYieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
-import UserRejectedModal from 'web3/components/user-rejected-modal';
+import { useWallet } from 'wallets/wallet';
+
+import { PoolTypes } from 'modules/yield-farming/utils';
 
 export type Web3ContractsData = {
   bond: BONDContract;
@@ -81,9 +81,7 @@ const Web3ContractsProvider: React.FC = props => {
   const daoRewardContract = useDAORewardContract();
   const daoGovernanceContract = useDAOGovernanceContract();
 
-  const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(
-    false,
-  );
+  const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const contracts = [
@@ -101,11 +99,7 @@ const Web3ContractsProvider: React.FC = props => {
       daoGovernanceContract.contract,
     ];
 
-    function handleError(
-      err: Error & { code: number },
-      contract: Web3Contract,
-      { method }: any,
-    ) {
+    function handleError(err: Error & { code: number }, contract: Web3Contract, { method }: any) {
       console.error(`${contract.name}:${method}`, { error: err });
 
       if (err.code === 4001) {
@@ -303,11 +297,7 @@ const Web3ContractsProvider: React.FC = props => {
     const yfLPStaked = yfLPStakedValue();
     const yfBONDStaked = yfBONDStakedValue();
 
-    if (
-      yfStaked === undefined ||
-      yfLPStaked === undefined ||
-      yfBONDStaked === undefined
-    ) {
+    if (yfStaked === undefined || yfLPStaked === undefined || yfBONDStaked === undefined) {
       return undefined;
     }
 
@@ -333,11 +323,7 @@ const Web3ContractsProvider: React.FC = props => {
     const yfLPStaked = yfLPEffectiveStakedValue();
     const yfBONDStaked = yfBONDEffectiveStakedValue();
 
-    if (
-      yfStaked === undefined ||
-      yfLPStaked === undefined ||
-      yfBONDStaked === undefined
-    ) {
+    if (yfStaked === undefined || yfLPStaked === undefined || yfBONDStaked === undefined) {
       return undefined;
     }
 
@@ -359,25 +345,11 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function totalCurrentReward(): BigNumber | undefined {
-    const yfReward =
-      yfContract.currentEpoch === 0
-        ? ZERO_BIG_NUMBER
-        : yfContract.currentReward;
-    const yfLPReward =
-      yfLPContract.currentEpoch === 0
-        ? ZERO_BIG_NUMBER
-        : yfLPContract.currentReward;
-    const yfBONDReward =
-      yfBONDContract.currentEpoch === 0
-        ? ZERO_BIG_NUMBER
-        : yfBONDContract.currentReward;
+    const yfReward = yfContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfContract.currentReward;
+    const yfLPReward = yfLPContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfLPContract.currentReward;
+    const yfBONDReward = yfBONDContract.currentEpoch === 0 ? ZERO_BIG_NUMBER : yfBONDContract.currentReward;
 
-    if (
-      yfReward === undefined ||
-      yfLPReward === undefined ||
-      yfBONDReward === undefined
-    )
-      return undefined;
+    if (yfReward === undefined || yfLPReward === undefined || yfBONDReward === undefined) return undefined;
 
     return yfReward.plus(yfLPReward).plus(yfBONDReward);
   }
@@ -387,12 +359,7 @@ const Web3ContractsProvider: React.FC = props => {
     const yfLPReward = yfLPContract.potentialReward;
     const yfBONDReward = yfBONDContract.potentialReward;
 
-    if (
-      yfReward === undefined ||
-      yfLPReward === undefined ||
-      yfBONDReward === undefined
-    )
-      return undefined;
+    if (yfReward === undefined || yfLPReward === undefined || yfBONDReward === undefined) return undefined;
 
     let total = ZERO_BIG_NUMBER;
 
@@ -416,11 +383,7 @@ const Web3ContractsProvider: React.FC = props => {
     const yfLPTotalReward = yfLPContract.totalReward;
     const yfBONDTotalReward = yfBONDContract.totalReward;
 
-    if (
-      yfTotalReward === undefined ||
-      yfLPTotalReward === undefined ||
-      yfBONDTotalReward === undefined
-    )
+    if (yfTotalReward === undefined || yfLPTotalReward === undefined || yfBONDTotalReward === undefined)
       return undefined;
 
     return yfTotalReward.plus(yfLPTotalReward).plus(yfBONDTotalReward);
@@ -431,12 +394,7 @@ const Web3ContractsProvider: React.FC = props => {
     const yfLPReward = yfLPContract.bondReward;
     const yfBONDReward = yfBONDContract.bondReward;
 
-    if (
-      yfReward === undefined ||
-      yfLPReward === undefined ||
-      yfBONDReward === undefined
-    )
-      return undefined;
+    if (yfReward === undefined || yfLPReward === undefined || yfBONDReward === undefined) return undefined;
 
     return yfReward.plus(yfLPReward).plus(yfBONDReward);
   }
@@ -513,11 +471,7 @@ const Web3ContractsProvider: React.FC = props => {
 
   return (
     <Web3ContractsContext.Provider value={value}>
-      {userRejectedVisible && (
-        <UserRejectedModal
-          onCancel={() => setUserRejectedVisible(false)}
-        />
-      )}
+      {userRejectedVisible && <UserRejectedModal onCancel={() => setUserRejectedVisible(false)} />}
       {props.children}
     </Web3ContractsContext.Provider>
   );

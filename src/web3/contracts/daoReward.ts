@@ -1,22 +1,17 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import Web3Contract from 'web3/contract';
+import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
-import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import Web3Contract from 'web3/contract';
+
 import { BONDTokenMeta } from './bond';
 
-const CONTRACT_DAO_REWARD_ADDR = String(
-  process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR,
-).toLowerCase();
+const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
 
-const Contract = new Web3Contract(
-  require('web3/abi/dao_reward.json'),
-  CONTRACT_DAO_REWARD_ADDR,
-  'DAO Reward',
-);
+const Contract = new Web3Contract(require('web3/abi/dao_reward.json'), CONTRACT_DAO_REWARD_ADDR, 'DAO Reward');
 
 export type DaoRewardPullFeature = {
   source: string;
@@ -53,8 +48,7 @@ function loadUserData(userAddress?: string): Promise<any> {
       callArgs: {
         from: userAddress,
       },
-      transform: (value: string) =>
-        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       onError: () => ZERO_BIG_NUMBER,
     },
   ]).then(([claimValue]) => {
@@ -86,7 +80,7 @@ export type DAORewardContract = DAORewardContractData & {
   reload(): void;
   actions: {
     claim(): Promise<any>;
-    getBondRewards(): BigNumber | undefined,
+    getBondRewards(): BigNumber | undefined;
   };
 };
 
@@ -114,7 +108,7 @@ export function useDAORewardContract(): DAORewardContract {
     }
 
     const { startTs, endTs, totalDuration, totalAmount } = state.poolFeature;
-    const now = (Date.now() / 1_000);
+    const now = Date.now() / 1_000;
 
     if (startTs > now) {
       return ZERO_BIG_NUMBER;

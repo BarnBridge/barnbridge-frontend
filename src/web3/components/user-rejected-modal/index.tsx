@@ -13,12 +13,7 @@ const UserRejectedModal: React.FC<ModalProps> = props => {
     <Modal width={315} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16} align="center">
-          <Icons
-            name="warning-outlined"
-            width={40}
-            height={40}
-            color="red"
-          />
+          <Icons name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8} align="center">
             <Text type="h3" weight="semibold" color="primary">
               Error

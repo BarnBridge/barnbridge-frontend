@@ -1,30 +1,24 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import Web3Contract from 'web3/contract';
+import { BONDTokenMeta, VBONDTokenMeta } from 'web3/contracts/bond';
+import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
-import { getNowTs } from 'utils';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
-import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
-import Web3Contract from 'web3/contract';
-import { BONDTokenMeta, VBONDTokenMeta } from 'web3/contracts/bond';
 
-export const CONTRACT_DAO_BARN_ADDR = String(
-  process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR,
-).toLowerCase();
+import { getNowTs } from 'utils';
 
-const Contract = new Web3Contract(
-  require('web3/abi/dao_barn.json'),
-  CONTRACT_DAO_BARN_ADDR,
-  'DAO Barn',
-);
+export const CONTRACT_DAO_BARN_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR).toLowerCase();
+
+const Contract = new Web3Contract(require('web3/abi/dao_barn.json'), CONTRACT_DAO_BARN_ADDR, 'DAO Barn');
 
 function loadCommonData(): Promise<any> {
   return Contract.batch([
     {
       method: 'bondStaked',
-      transform: (value: string) =>
-        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
   ]).then(([bondStaked]) => {
     return {
@@ -42,20 +36,17 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'balanceOf',
       methodArgs: [userAddress],
-      transform: (value: string) =>
-        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
     {
       method: 'votingPower',
       methodArgs: [userAddress],
-      transform: (value: string) =>
-        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
     {
       method: 'multiplierAtTs',
       methodArgs: [userAddress, getNowTs()],
-      transform: (value: string) =>
-        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals)?.toNumber(),
+      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals)?.toNumber(),
     },
     {
       method: 'userLockedUntil',
@@ -65,38 +56,24 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'delegatedPower',
       methodArgs: [userAddress],
-      transform: (value: string) =>
-        getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+      transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
     },
     {
       method: 'userDelegatedTo',
       methodArgs: [userAddress],
     },
-  ]).then(
-    ([
-       balance,
-       votingPower,
-       multiplier,
-       userLockedUntil,
-       delegatedPower,
-       userDelegatedTo,
-     ]) => ({
-      balance,
-      votingPower,
-      multiplier,
-      userLockedUntil,
-      delegatedPower,
-      userDelegatedTo,
-    }),
-  );
+  ]).then(([balance, votingPower, multiplier, userLockedUntil, delegatedPower, userDelegatedTo]) => ({
+    balance,
+    votingPower,
+    multiplier,
+    userLockedUntil,
+    delegatedPower,
+    userDelegatedTo,
+  }));
 }
 
 function bondStakedAtTsCall(timestamp: number): Promise<BigNumber | undefined> {
-  return Contract.call(
-    'bondStakedAtTs',
-    [timestamp],
-    {},
-  ).then((value: string) =>
+  return Contract.call('bondStakedAtTs', [timestamp], {}).then((value: string) =>
     getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
   );
 }
@@ -107,54 +84,27 @@ function votingPowerCall(address: string): Promise<BigNumber | undefined> {
   );
 }
 
-function votingPowerAtTsCall(
-  address: string,
-  timestamp: number,
-): Promise<BigNumber | undefined> {
-  return Contract.call(
-    'votingPowerAtTs',
-    [address, timestamp],
-    {},
-  ).then((value: string) =>
+function votingPowerAtTsCall(address: string, timestamp: number): Promise<BigNumber | undefined> {
+  return Contract.call('votingPowerAtTs', [address, timestamp], {}).then((value: string) =>
     getHumanValue(new BigNumber(value), VBONDTokenMeta.decimals),
   );
 }
 
-function depositSend(
-  amount: BigNumber,
-  from: string,
-  gasPrice: number,
-): Promise<void> {
-  return Contract.send(
-    'deposit',
-    [getNonHumanValue(amount, VBONDTokenMeta.decimals)],
-    {
-      from,
-      gasPrice: getGasValue(gasPrice),
-    },
-  );
+function depositSend(amount: BigNumber, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('deposit', [getNonHumanValue(amount, VBONDTokenMeta.decimals)], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
 }
 
-function withdrawSend(
-  amount: BigNumber,
-  from: string,
-  gasPrice: number,
-): Promise<void> {
-  return Contract.send(
-    'withdraw',
-    [getNonHumanValue(amount, VBONDTokenMeta.decimals)],
-    {
-      from,
-      gasPrice: getGasValue(gasPrice),
-    },
-  );
+function withdrawSend(amount: BigNumber, from: string, gasPrice: number): Promise<void> {
+  return Contract.send('withdraw', [getNonHumanValue(amount, VBONDTokenMeta.decimals)], {
+    from,
+    gasPrice: getGasValue(gasPrice),
+  });
 }
 
-function delegateSend(
-  to: string,
-  from: string,
-  gasPrice: number,
-): Promise<void> {
+function delegateSend(to: string, from: string, gasPrice: number): Promise<void> {
   return Contract.send('delegate', [to], {
     from,
     gasPrice: getGasValue(gasPrice),
@@ -168,11 +118,7 @@ function stopDelegateSend(from: string, gasPrice: number): Promise<void> {
   });
 }
 
-function lockSend(
-  timestamp: number,
-  from: string,
-  gasPrice: number,
-): Promise<void> {
+function lockSend(timestamp: number, from: string, gasPrice: number): Promise<void> {
   return Contract.send('lock', [timestamp], {
     from,
     gasPrice: getGasValue(gasPrice),
@@ -255,34 +201,22 @@ export function useDAOBarnContract(): DAOBarnContract {
         return votingPowerCall(address);
       },
       votingPowerAtTs(timestamp: number): Promise<BigNumber | undefined> {
-        return wallet.isActive
-          ? votingPowerAtTsCall(wallet.account!, timestamp)
-          : Promise.reject();
+        return wallet.isActive ? votingPowerAtTsCall(wallet.account!, timestamp) : Promise.reject();
       },
       deposit(amount: BigNumber, gasPrice: number): Promise<void> {
-        return wallet.isActive
-          ? depositSend(amount, wallet.account!, gasPrice)
-          : Promise.reject();
+        return wallet.isActive ? depositSend(amount, wallet.account!, gasPrice) : Promise.reject();
       },
       withdraw(amount: BigNumber, gasPrice: number): Promise<void> {
-        return wallet.isActive
-          ? withdrawSend(amount, wallet.account!, gasPrice)
-          : Promise.reject();
+        return wallet.isActive ? withdrawSend(amount, wallet.account!, gasPrice) : Promise.reject();
       },
       delegate(to: string, gasPrice: number): Promise<void> {
-        return wallet.isActive
-          ? delegateSend(to, wallet.account!, gasPrice)
-          : Promise.reject();
+        return wallet.isActive ? delegateSend(to, wallet.account!, gasPrice) : Promise.reject();
       },
       stopDelegate(gasPrice: number): Promise<void> {
-        return wallet.isActive
-          ? stopDelegateSend(wallet.account!, gasPrice)
-          : Promise.reject();
+        return wallet.isActive ? stopDelegateSend(wallet.account!, gasPrice) : Promise.reject();
       },
       lock(timestamp: number, gasPrice: number): Promise<void> {
-        return wallet.isActive
-          ? lockSend(timestamp, wallet.account!, gasPrice)
-          : Promise.reject();
+        return wallet.isActive ? lockSend(timestamp, wallet.account!, gasPrice) : Promise.reject();
       },
     },
   };

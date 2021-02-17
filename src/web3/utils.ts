@@ -1,11 +1,10 @@
 import BigNumber from 'bignumber.js';
-
-import { TokenMeta } from 'web3/types';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { TokenMeta } from 'web3/types';
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
@@ -44,17 +43,11 @@ export function getExponentValue(decimals: number = 0): BigNumber {
   return new BigNumber(10).pow(decimals);
 }
 
-export function getHumanValue(
-  value?: BigNumber,
-  decimals: number = 0,
-): BigNumber | undefined {
+export function getHumanValue(value?: BigNumber, decimals: number = 0): BigNumber | undefined {
   return value?.div(getExponentValue(decimals));
 }
 
-export function getNonHumanValue(
-  value: BigNumber | number,
-  decimals: number = 0,
-): BigNumber {
+export function getNonHumanValue(value: BigNumber | number, decimals: number = 0): BigNumber {
   return new BigNumber(value).multipliedBy(getExponentValue(decimals));
 }
 
@@ -78,15 +71,10 @@ export function formatBigValue(
     return defaultValue;
   }
 
-  return new BigNumber(bnValue.toFixed(decimals))
-    .toFormat(minDecimals);
+  return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatUSDValue(
-  value?: BigNumber,
-  decimals: number = 2,
-  minDecimals: number = decimals,
-): string {
+export function formatUSDValue(value?: BigNumber, decimals: number = 2, minDecimals: number = decimals): string {
   if (value === undefined) {
     return '-';
   }
@@ -105,14 +93,8 @@ export function isSmallBONDValue(value?: BigNumber): boolean {
   return !!value && value.gt(ZERO_BIG_NUMBER) && value.lt(0.0001);
 }
 
-export function shortenAddr(
-  addr: string | undefined,
-  first: number = 6,
-  last: number = 4,
-): string | undefined {
-  return addr
-    ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...')
-    : undefined;
+export function shortenAddr(addr: string | undefined, first: number = 6, last: number = 4): string | undefined {
+  return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
 }
 
 export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
