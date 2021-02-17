@@ -6,8 +6,8 @@ import cx from 'classnames';
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
-import { Text } from 'components/custom/typography';
 import Icons, { NavIconNames } from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { useTheme } from 'components/providers/theme-provider';
 
 import s from './styles.module.scss';
@@ -36,7 +36,9 @@ const NavLink: React.FC<NavLinkProps> = props => {
         <Button type="light" onClick={handleClick}>
           <Icons name={icon} />
           {expanded && (
-            <Text type="p2" weight="semibold" className={s.linkLabel}>{label}</Text>
+            <Text type="p2" weight="semibold" className={s.linkLabel}>
+              {label}
+            </Text>
           )}
         </Button>
       </Grid>
@@ -68,24 +70,9 @@ const LayoutSideNav: React.FC = () => {
           {expanded && <Icons name="barnbridge" width="113" color="primary" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink
-            label="Pools"
-            icon="savings-outlined"
-            path="/yield-farming"
-            expanded={expanded}
-          />
-          <NavLink
-            label="Voting"
-            icon="bank-outlined"
-            path="/governance"
-            expanded={expanded}
-          />
-          <NavLink
-            label="Bonds"
-            icon="paper-bill-outlined"
-            path="/bonds"
-            expanded={expanded}
-          />
+          <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={expanded} />
+          <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={expanded} />
+          <NavLink label="Bonds" icon="paper-bill-outlined" path="/bonds" expanded={expanded} />
         </Grid>
       </Grid>
       <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
@@ -100,7 +87,9 @@ const LayoutSideNav: React.FC = () => {
         <Button type="light" className={s.hideLink} onClick={handleExpand}>
           <Icons name="right-arrow-circle-outlined" />
           {expanded && (
-            <Text type="p2" weight="semibold" className={s.linkLabel}>Hide menu</Text>
+            <Text type="p2" weight="semibold" className={s.linkLabel}>
+              Hide menu
+            </Text>
           )}
         </Button>
       </Grid>

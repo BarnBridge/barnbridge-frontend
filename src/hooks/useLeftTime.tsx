@@ -15,16 +15,20 @@ export function useLeftTime(options: useLeftTimeOptions): [Function, Function] {
     return Math.max(options.end.valueOf() - Date.now(), 0);
   }
 
-  const [start, stop] = useInterval(() => {
-    const leftTime = getLeftTime();
+  const [start, stop] = useInterval(
+    () => {
+      const leftTime = getLeftTime();
 
-    options.onTick?.(leftTime);
+      options.onTick?.(leftTime);
 
-    if (leftTime === 0) {
-      stop();
-      options.onEnd?.();
-    }
-  }, options.delay ?? 1_000, false);
+      if (leftTime === 0) {
+        stop();
+        options.onEnd?.();
+      }
+    },
+    options.delay ?? 1_000,
+    false,
+  );
 
   function startFn() {
     start();
@@ -80,7 +84,5 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
     onEnd: props.onEnd,
   });
 
-  return (
-    <>{children(leftTime)}</>
-  );
+  return <>{children(leftTime)}</>;
 };

@@ -1,20 +1,18 @@
 import React from 'react';
+import { isMobile } from 'react-device-detect';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import * as Antd from 'antd';
-import { isMobile } from 'react-device-detect';
-
-import LayoutSideNav from 'layout/components/layout-side-nav';
-import { Text } from 'components/custom/typography';
-import MobileMenu from 'components/custom/mobile-menu';
-import ExternalLink from 'components/custom/externalLink';
-import StayTuned from 'components/custom/stay-tuned';
-import WarningProvider from 'components/providers/warning-provider';
-
-import YieldFarmingView from 'modules/yield-farming';
-import GovernanceView from 'modules/governance';
-
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
+
+import ExternalLink from 'components/custom/externalLink';
+import MobileMenu from 'components/custom/mobile-menu';
+import StayTuned from 'components/custom/stay-tuned';
+import { Text } from 'components/custom/typography';
+import WarningProvider from 'components/providers/warning-provider';
+import LayoutSideNav from 'layout/components/layout-side-nav';
+import GovernanceView from 'modules/governance';
+import YieldFarmingView from 'modules/yield-farming';
 
 import s from './styles.module.scss';
 

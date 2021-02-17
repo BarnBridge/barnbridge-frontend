@@ -14,11 +14,7 @@ const LayoutHeader: React.FC<LayoutHeaderProps> = props => {
   const { title } = props;
 
   return (
-    <Grid
-      flow="col"
-      align="center"
-      justify="space-between"
-      className={s.component}>
+    <Grid flow="col" align="center" justify="space-between" className={s.component}>
       <Text type="h3" weight="semibold" color="primary">
         {title}
       </Text>

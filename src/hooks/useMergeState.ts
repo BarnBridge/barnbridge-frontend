@@ -14,9 +14,7 @@ function useMergeState<S>(
       set(prev => {
         const next = {
           ...prev,
-          ...(typeof updater === 'function'
-            ? (updater as Function)(prev)
-            : updater),
+          ...(typeof updater === 'function' ? (updater as Function)(prev) : updater),
         };
 
         if (typeof callback === 'function') {
