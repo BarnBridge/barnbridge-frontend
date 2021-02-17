@@ -52,7 +52,7 @@ const Warn: React.FC<WarnProps> = props => {
     <div
       className={cx(
         s.warning,
-        'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24'
+        'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24',
       )}>
       <Grid flow="col" gap={16} align="center">
         <Icons name="warning-outlined" color="red" />

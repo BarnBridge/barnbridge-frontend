@@ -26,7 +26,7 @@ function classNamesFromProps(props: CommonProps) {
     align && `text-${align}`,
     ellipsis && 'text-ellipsis',
     wrap && 'text-wrap',
-    className
+    className,
   );
 }
 
@@ -43,7 +43,7 @@ export const Heading: React.FC<HeadingProps> = props => {
     {
       className: classNames,
     },
-    children
+    children,
   );
 };
 
@@ -103,11 +103,11 @@ export const Text: React.FC<TextProps> = React.memo(props => {
         align && `text-${align}`,
         ellipsis && 'text-ellipsis',
         wrap && 'text-wrap',
-        className
+        className,
       ),
       ...textProps,
     },
-    children
+    children,
   );
 });
 
