@@ -7,7 +7,7 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBONDValue, formatBigValue, formatUSDValue } from 'web3/utils';
+import { formatBigValue, formatBONDValue, formatUSDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -19,7 +19,7 @@ import { useWallet } from 'wallets/wallet';
 
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
-import { PoolTypes, getPoolIcons, getPoolNames } from '../../utils';
+import { getPoolIcons, getPoolNames, PoolTypes } from '../../utils';
 
 import s from './styles.module.scss';
 
@@ -330,10 +330,14 @@ const PoolCard: React.FC<PoolCardProps> = props => {
           <Text type="p1" weight="semibold" color="primary">
             {formatUSDValue(state.myBalance)}
           </Text>
-          <Text type="p2" color="secondary">
-            {formatUSDValue(state.myEffectiveBalance)} effective balance
-          </Text>
-          {!state.isEnded && <PoolStakeShareBar shares={state.myShares} />}
+          {!state.isEnded && (
+            <>
+              <Text type="p2" color="secondary">
+                {formatUSDValue(state.myEffectiveBalance)} effective balance
+              </Text>
+              <PoolStakeShareBar shares={state.myShares} />
+            </>
+          )}
         </Grid>
       )}
       {state.isEnded && (

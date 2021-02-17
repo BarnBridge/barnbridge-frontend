@@ -51,9 +51,9 @@ class Web3Contract extends EventEmitter {
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
-    // if (methods.length === 0) {
-    //   return Promise.reject();
-    // }
+    if (methods.length === 0) {
+      return Promise.reject();
+    }
 
     // if (methods.length === 1) {
     //   const method = methods[0];
