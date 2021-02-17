@@ -21,7 +21,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from 'date-fns';
-import { flow } from 'lodash/fp'
+import { flow } from 'lodash/fp';
 import BigNumber from 'bignumber.js';
 
 import { Hint, Text } from 'components/custom/typography';
@@ -157,22 +157,22 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
 
   const multiplier = React.useMemo<number>(() =>
       getPeriodRate(addYears(new Date(), 1), new Date(), lockEndDate),
-    [lockEndDate]
+    [lockEndDate],
   );
 
   const myBonus = React.useMemo<BigNumber | undefined>(() =>
       stakedBalance?.multipliedBy((multiplier - 1)),
-    [stakedBalance, multiplier]
+    [stakedBalance, multiplier],
   );
 
   const granularity = React.useMemo<GranularityType>(() =>
       getGranularityType(lockEndDate),
-    [lockEndDate]
+    [lockEndDate],
   );
 
   const data = React.useMemo<GranularPeriod[]>(() =>
       getGranularPeriods(granularity, lockEndDate),
-    [granularity, lockEndDate]
+    [granularity, lockEndDate],
   );
 
   return (

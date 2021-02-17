@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import { CardTabListType } from 'antd/lib/card';
 import * as Antd from 'antd';
-import useDebounce from "@rooks/use-debounce";
+import useDebounce from '@rooks/use-debounce';
 
 import Card from 'components/antd/card';
 import Button from 'components/antd/button';

@@ -261,12 +261,12 @@
       <path d="m10.4 10.4h6.4" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
     </symbol>
     <!-- FORUM OUTLINED -->
-        <symbol id="icon__forum-outlined" viewBox="0 0 24 24" fill="none">
-            <path
-                  d="M8.33333 9.09451H3.44444C2.09441 9.09451 1 10.186 1 11.5323V20.7787C1 21.8646 2.31651 22.4084 3.08646 21.6405L4.47452 20.2563C4.93294 19.7991 5.55469 19.5422 6.203 19.5422H13.2222C14.5723 19.5422 15.6667 18.4508 15.6667 17.1044V14.3184M8.33333 11.0099V5.43781C8.33333 4.09144 9.42775 3 10.7778 3H20.5556C21.9056 3 23 4.09144 23 5.43781V14.6841C23 15.7701 21.6835 16.3139 20.9135 15.546L19.5255 14.1618C19.0671 13.7046 18.4453 13.4477 17.797 13.4477H10.7778C9.42775 13.4477 8.33333 12.3563 8.33333 11.0099Z"
-                  stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </symbol>
-        <!-- BAR CHARTS OUTLINED -->
+    <symbol id="icon__forum-outlined" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M8.33333 9.09451H3.44444C2.09441 9.09451 1 10.186 1 11.5323V20.7787C1 21.8646 2.31651 22.4084 3.08646 21.6405L4.47452 20.2563C4.93294 19.7991 5.55469 19.5422 6.203 19.5422H13.2222C14.5723 19.5422 15.6667 18.4508 15.6667 17.1044V14.3184M8.33333 11.0099V5.43781C8.33333 4.09144 9.42775 3 10.7778 3H20.5556C21.9056 3 23 4.09144 23 5.43781V14.6841C23 15.7701 21.6835 16.3139 20.9135 15.546L19.5255 14.1618C19.0671 13.7046 18.4453 13.4477 17.797 13.4477H10.7778C9.42775 13.4477 8.33333 12.3563 8.33333 11.0099Z"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <!-- BAR CHARTS OUTLINED -->
     <symbol id="icon__bar-charts-outlined" viewBox="0 0 24 24" fill="none">
       <rect x="1.5996" y="1.6" width="20.8" height="20.8" rx="3" stroke="currentColor" stroke-linecap="round"
             stroke-width="1.5"/>

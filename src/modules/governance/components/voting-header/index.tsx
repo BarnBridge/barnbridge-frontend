@@ -28,7 +28,7 @@ type VotingHeaderState = {
 const InitialState: VotingHeaderState = {
   claiming: false,
   showDetailedView: false,
-}
+};
 
 const VotingHeader: React.FC = () => {
   const web3c = useWeb3Contracts();

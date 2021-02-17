@@ -25,7 +25,7 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr, } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
 

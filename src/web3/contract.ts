@@ -30,6 +30,10 @@ class Web3Contract extends EventEmitter {
     this.ethContract = new EthWeb3.eth.Contract(abi, address) as any;
   }
 
+  get writeFunctions(): Web3ContractAbiItem[] {
+    return this.abi.filter(r => r.type === 'function' && !r.constant);
+  }
+
   static tryCall(to: string, from: string, data: string, value: string): any {
     return EthWeb3.eth.call({
       to,
@@ -37,10 +41,6 @@ class Web3Contract extends EventEmitter {
       data,
       value,
     });
-  }
-
-  get writeFunctions(): Web3ContractAbiItem[] {
-    return this.abi.filter(r => r.type === 'function' && !r.constant);
   }
 
   setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {

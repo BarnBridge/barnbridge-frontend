@@ -35,7 +35,7 @@ export function getFormattedDuration(
     delimiter: ' ',
     zero: true,
     locale: {
-      formatDistance: function (token, value) {
+      formatDistance: function(token, value) {
         let v: number | undefined;
 
         switch (token) {

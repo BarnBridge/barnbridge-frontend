@@ -35,16 +35,6 @@ export class AbiInterface {
     );
   }
 
-  encodeFunctionData(
-    functionFragment: AbiFunctionFragment | string,
-    values?: Array<any>,
-  ): string {
-    return this.abi.encodeFunctionData(
-      functionFragment,
-      parseValues(values ?? []),
-    );
-  }
-
   static encodeFunctionData(
     functionFragment: AbiFunctionFragment | string,
     values?: Array<any>,
@@ -98,5 +88,15 @@ export class AbiInterface {
     } catch (e) {
       console.error('AbiInterface::stringifyParamValue', e.message);
     }
+  }
+
+  encodeFunctionData(
+    functionFragment: AbiFunctionFragment | string,
+    values?: Array<any>,
+  ): string {
+    return this.abi.encodeFunctionData(
+      functionFragment,
+      parseValues(values ?? []),
+    );
   }
 }

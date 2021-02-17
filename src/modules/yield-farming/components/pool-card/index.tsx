@@ -9,7 +9,7 @@ import IconsSet from 'components/custom/icons-set';
 import { Hint, Text } from 'components/custom/typography';
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
-import { formatBigValue, formatBONDValue, formatUSDValue, } from 'web3/utils';
+import { formatBigValue, formatBONDValue, formatUSDValue } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';

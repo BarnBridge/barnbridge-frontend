@@ -32,7 +32,7 @@ function loadCommonData(): Promise<any> {
       method: 'pullFeature',
       transform: (value: DaoRewardPullFeature) => ({
         ...value,
-        totalAmount: getHumanValue(new BigNumber(value.totalAmount), BONDTokenMeta.decimals)
+        totalAmount: getHumanValue(new BigNumber(value.totalAmount), BONDTokenMeta.decimals),
       }),
     },
   ]).then(([poolFeature]) => {

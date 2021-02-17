@@ -13,7 +13,7 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import { Hint, Text } from 'components/custom/typography';
 
 import { TokenMeta } from 'web3/types';
-import { formatBigValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER, } from 'web3/utils';
+import { formatBigValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -313,7 +313,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
                         cb();
                       }
                     },
-                  }
+                  },
                 ]}>
                 <TokenAmount
                   tokenIcon={icon}
