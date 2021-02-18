@@ -1,9 +1,11 @@
 import React from 'react';
 
+export type MergeStateUpdate<S> = Partial<S> | ((prevState: S) => Partial<S>);
+
 function useMergeState<S>(
   initialState: S | (() => S),
   callback?: (state: S) => void,
-): [S, React.Dispatch<React.SetStateAction<Partial<S>>>] {
+): [S, React.Dispatch<MergeStateUpdate<S>>] {
   const [state, set] = React.useState<S>(initialState);
 
   const setState = React.useCallback((updater: React.SetStateAction<Partial<S>>) => {

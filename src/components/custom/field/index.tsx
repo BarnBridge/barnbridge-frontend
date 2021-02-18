@@ -2,7 +2,6 @@ import React from 'react';
 import cx from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
 
 import s from './styles.module.scss';
 

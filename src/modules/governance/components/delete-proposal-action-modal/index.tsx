@@ -12,20 +12,20 @@ const DeleteProposalActionModal: React.FunctionComponent<DeleteProposalActionMod
   const { ...modalProps } = props;
 
   return (
-    <Modal centered width={560} {...modalProps}>
+    <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16}>
           <Icons
             name="warning-outlined"
             width={40}
             height={40}
-            color="red500"
+            color="red"
           />
           <Grid flow="row" gap={8}>
-            <Heading type="h3" semiBold color="grey900">
+            <Heading type="h3" semiBold color="primary">
               Are you sure you want to delete the action?
             </Heading>
-            <Paragraph type="p2" semiBold color="grey500">
+            <Paragraph type="p2" semiBold color="secondary">
               Are you sure you want to delete the action? Bad things will happen
               if you do. Be careful :)
             </Paragraph>

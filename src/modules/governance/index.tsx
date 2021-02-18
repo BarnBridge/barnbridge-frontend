@@ -5,8 +5,10 @@ import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
+import ExternalLink from 'components/custom/externalLink';
+import { Paragraph } from 'components/custom/typography';
 import LayoutHeader from 'layout/components/layout-header';
-import DAOProvider, { useDAO } from './components/dao-provider';
+import DAOProvider  from './components/dao-provider';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
 import WalletView from './views/wallets-view';
@@ -17,8 +19,6 @@ import ProposalDetailView from './views/proposal-detail-view';
 import { useWallet } from 'wallets/wallet';
 
 import s from './styles.module.scss';
-import ExternalLink from '../../components/custom/externalLink';
-import { Paragraph } from '../../components/custom/typography';
 
 type GovernanceViewParams = {
   vt: string;
@@ -31,7 +31,6 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
   } = useRouteMatch<GovernanceViewParams>();
 
   const wallet = useWallet();
-  const dao = useDAO();
 
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
@@ -85,7 +84,19 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
             <ExternalLink href="https://signal.barnbridge.com/">
               <Grid flow="col" gap={8} align="center">
                 <Icons name="chats-outlined" />
-                <Paragraph type="p1" semiBold color="grey500">Signal</Paragraph>
+                <Paragraph type="p1" semiBold color="secondary">Signal</Paragraph>
+                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+              </Grid>
+            </ExternalLink>
+          }
+        />
+        <Tabs.Tab
+          key="forum"
+          tab={
+            <ExternalLink href="https://forum.barnbridge.com/">
+              <Grid flow="col" gap={8} align="center">
+                <Icons name="forum-outlined" />
+                <Paragraph type="p1" semiBold color="secondary">Forum</Paragraph>
                 <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
               </Grid>
             </ExternalLink>

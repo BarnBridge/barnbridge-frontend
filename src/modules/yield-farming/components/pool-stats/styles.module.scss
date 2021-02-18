@@ -1,22 +1,7 @@
 .component {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(254px, 1fr));
-  grid-gap: 32px;
-  width: 100%;
-}
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
 
-.link {
-  font-weight: 600;
-  color: var(--text-color-6);
-}
-
-.link:hover {
-  color: var(--text-color-9);
-}
-
-/* RESPONSIVE */
-@media (max-width: 768px) {
-  .component {
-    grid-gap: 6px;
+  @media (max-width: 768px) {
+    grid-template-columns: repeat(auto-fit, minmax(0, 175px));
   }
 }

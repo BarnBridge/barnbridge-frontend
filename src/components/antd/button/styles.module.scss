@@ -1,4 +1,4 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 @import 'src/styles/colors';
 
 :root .component {
@@ -94,7 +94,7 @@
   --btn-select-bg: #fff;
 }
 
-:root :global(.theme-dark) .component {
+[data-theme='dark'] .component {
   // primary disabled
   --btn-primary-bg-disabled: #43484d;
   --btn-primary-text-disabled: #939496;

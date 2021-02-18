@@ -2,7 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
 import { WalletConnector } from 'wallets/types';
-import { WEB3_RPC_HTTPS_URL } from 'web3/contract';
+import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
 
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 

@@ -1,4 +1,4 @@
-@import 'src/styles/mixin';
+@import 'src/styles/text';
 
 .component:global(.ant-popover) {
   :global(.ant-popover-inner-content) {
@@ -18,15 +18,15 @@
       margin: 4px;
 
       @include font-p1-semi-bold;
-      color: var(--color-text);
+      color: var(--theme-secondary-color);
 
       &:global(.ant-menu-item-active) {
-        background: var(--color-body-bg);
+        background: var(--theme-body-color);
         border-radius: 4px;
-        color: var(--text-color-grey900);
+        color: var(--theme-primary-color);
 
         svg {
-          color: var(--text-color-grey500);
+          color: var(--theme-secondary-color);
         }
       }
     }

@@ -1,4 +1,4 @@
-import Web3 from 'web3';
+import { DEFAULT_CONTRACT_PROVIDER, EthWeb3, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
 import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import EventEmitter from 'wolfy87-eventemitter';
@@ -11,14 +11,6 @@ export type BatchContractMethod = {
   transform?: (value: any) => any;
   onError?: (err: Error) => any;
 };
-
-export const WEB3_RPC_WSS_URL = String(process.env.REACT_APP_WEB3_RPC_WSS_URL);
-export const WEB3_RPC_HTTPS_URL = String(process.env.REACT_APP_WEB3_RPC_HTTPS_URL);
-
-export const DEFAULT_CONTRACT_PROVIDER = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
-
-const WEB3_ERROR_VALUE = 3.9638773911973445e75;
-const web3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
 
 export type Web3ContractAbiItem = AbiItem;
 
@@ -35,11 +27,11 @@ class Web3Contract extends EventEmitter {
     this.address = address;
     this.name = name;
 
-    this.ethContract = new web3.eth.Contract(abi, address) as any;
+    this.ethContract = new EthWeb3.eth.Contract(abi, address) as any;
   }
 
   static tryCall(to: string, from: string, data: string, value: string): any {
-    return web3.eth.call({
+    return EthWeb3.eth.call({
       to,
       from,
       data,
@@ -71,7 +63,7 @@ class Web3Contract extends EventEmitter {
     //     .then(value => [value]);
     // }
 
-    const batch = new web3.BatchRequest();
+    const batch = new EthWeb3.BatchRequest();
 
     const promises = methods.map((method: BatchContractMethod) => {
       return new Promise(resolve => {

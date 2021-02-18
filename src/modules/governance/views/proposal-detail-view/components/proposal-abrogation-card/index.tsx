@@ -44,7 +44,7 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
     <>
       <Card
         title={
-          <Paragraph type="p1" semiBold color="grey900">
+          <Paragraph type="p1" semiBold color="primary">
             Abrogation proposal
           </Paragraph>
         }>
@@ -55,40 +55,40 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
         )}
         {proposalCtx.isCanceled === false && (
           <Grid flow="row" gap={24}>
-            <Paragraph type="p1" color="grey900">
+            <Paragraph type="p1" color="primary">
               This is a special type of proposal, with the following thresholds:
             </Paragraph>
             <ul>
               <li>
-                <Paragraph type="p1" color="grey900">
+                <Paragraph type="p1" color="primary">
                   Acceptance criteria: 50% of staked BOND
                 </Paragraph>
               </li>
               <li>
-                <Paragraph type="p1" color="grey900">
+                <Paragraph type="p1" color="primary">
                   A proposal can only have one associated abrogation proposal at
                   any given time
                 </Paragraph>
               </li>
               <li>
-                <Paragraph type="p1" color="grey900">
+                <Paragraph type="p1" color="primary">
                   Anyone can vote on these proposals
                 </Paragraph>
               </li>
               <li>
-                <Paragraph type="p1" color="grey900">
+                <Paragraph type="p1" color="primary">
                   There is a new snapshot for voter balances - taken at
                   Abrogation Proposal’s start time
                 </Paragraph>
               </li>
               <li>
-                <Paragraph type="p1" color="grey900">
+                <Paragraph type="p1" color="primary">
                   Abrogation Proposal’s duration is never greater than the
                   Initial Proposal’s queue period
                 </Paragraph>
               </li>
               <li>
-                <Paragraph type="p1" color="grey900">
+                <Paragraph type="p1" color="primary">
                   When someone goes to execute the Initial Proposal - there is a
                   check if an Abrogation Proposal that met its acceptance
                   criteria exists
@@ -107,7 +107,7 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
 
               {!hasThreshold && (
                 <Grid flow="col" gap={8} align="center">
-                  <Small semiBold color="grey500">
+                  <Small semiBold color="secondary">
                     You are not able to abrogate proposal.
                   </Small>
                   <Popover
@@ -135,7 +135,7 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
         {proposalCtx.isCanceled === true && (
           <Grid flow="row" gap={24}>
             {proposalCtx.proposal?.state === APIProposalState.QUEUED && (
-              <Paragraph type="p1" color="grey900">
+              <Paragraph type="p1" color="primary">
                 Abrogation proposal currently in progress.
               </Paragraph>
             )}
@@ -149,14 +149,12 @@ const ProposalAbrogationCard: React.FunctionComponent = () => {
       </Card>
       {state.abrogationVoteModal && (
         <AbrogationVoteModal
-          visible
           voteState={VoteAbrogationState.VoteInitiate}
           onCancel={() => setState({ abrogationVoteModal: false })}
         />
       )}
       {state.abrogationViewModal && (
         <AbrogationProposalModal
-          visible
           onCancel={() => setState({ abrogationViewModal: false })}
         />
       )}

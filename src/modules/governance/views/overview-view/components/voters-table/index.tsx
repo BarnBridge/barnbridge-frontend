@@ -16,7 +16,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'address',
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Address
       </Small>
     ),
@@ -24,7 +24,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
       <Grid flow="col" gap={16} align="center">
         <Identicon address={value} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(value)}>
-          <Paragraph type="p1" semiBold color="blue500" ellipsis>
+          <Paragraph type="p1" semiBold color="blue" ellipsis>
             {value}
           </Paragraph>
         </ExternalLink>
@@ -34,14 +34,14 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'bondStaked',
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Staked Balance
       </Small>
     ),
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
-      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
         {formatBigValue(value, 2, '-', 2)}
       </Paragraph>
     ),
@@ -49,14 +49,14 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'votingPower',
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Voting Power
       </Small>
     ),
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
-      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
         {formatBigValue(value, 2, '-', 2)}
       </Paragraph>
     ),
@@ -64,14 +64,14 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'votes',
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Votes
       </Small>
     ),
     width: 150,
     align: 'right',
     render: (value: number) => (
-      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
         {value}
       </Paragraph>
     ),
@@ -79,14 +79,14 @@ const Columns: ColumnsType<APIVoterEntity> = [
   {
     dataIndex: 'proposals',
     title: () => (
-      <Small semiBold color="grey300">
+      <Small semiBold>
         Proposals
       </Small>
     ),
     width: 150,
     align: 'right',
     render: (value: number) => (
-      <Paragraph type="p1" semiBold color="grey900" className="ml-auto">
+      <Paragraph type="p1" semiBold color="primary" className="ml-auto">
         {value}
       </Paragraph>
     ),
@@ -123,7 +123,7 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Paragraph type="p1" semiBold color="primary">
           Voter weights
         </Paragraph>
       }
@@ -141,7 +141,7 @@ const VotersTable: React.FunctionComponent<VotersTableProps> = props => {
           current: page,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Paragraph type="p2" semiBold color="grey500">
+            <Paragraph type="p2" semiBold color="secondary">
               Showing {from} to {to} out of {total} stakers
             </Paragraph>
           ),

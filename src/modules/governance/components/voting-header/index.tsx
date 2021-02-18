@@ -3,14 +3,15 @@ import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 
 import Button from 'components/antd/button';
+import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Heading, Label, Paragraph } from 'components/custom/typography';
+import { Heading, Hint, Label, Paragraph } from 'components/custom/typography';
 import ExternalLink from 'components/custom/externalLink';
 import VotingDetailedModal from '../voting-detailed-modal';
 
-import { getFormattedDuration, inRange, isValidAddress } from 'utils';
+import { getFormattedDuration, inRange } from 'utils';
 import { formatBigValue, formatBONDValue, isSmallBONDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -36,15 +37,8 @@ const VotingHeader: React.FunctionComponent = () => {
 
   const { claimValue } = web3c.daoReward;
   const { balance: bondBalance } = web3c.bond;
-  const {
-    votingPower,
-    userLockedUntil,
-    userDelegatedTo,
-    multiplier = 1,
-    balance: stakedBalance,
-  } = web3c.daoBarn;
+  const { votingPower, userLockedUntil, multiplier = 1 } = web3c.daoBarn;
 
-  const isDelegated = isValidAddress(userDelegatedTo);
   const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
 
   function handleLeftTimeEnd() {
@@ -65,12 +59,12 @@ const VotingHeader: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
-      <Label type="lb2" semiBold color="red500">
+      <Label type="lb2" semiBold color="red">
         My Voting Power
       </Label>
       <Grid flow="col" gap={24}>
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">
+          <Paragraph type="p2" color="secondary">
             Current reward
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
@@ -79,14 +73,12 @@ const VotingHeader: React.FunctionComponent = () => {
                 {formatBigValue(claimValue, BONDTokenMeta.decimals)}
               </Paragraph>
             )}>
-              <Heading
-                type="h3"
-                bold
-                color="grey900"
-                loading={claimValue === undefined}>
-                {isSmallBONDValue(claimValue) && '> '}
-                {formatBONDValue(claimValue)}
-              </Heading>
+              <Skeleton loading={claimValue === undefined}>
+                <Heading type="h3" bold color="primary">
+                  {isSmallBONDValue(claimValue) && '> '}
+                  {formatBONDValue(claimValue)}
+                </Heading>
+              </Skeleton>
             </Tooltip>
             <Icons name="bond-square-token" />
             <Button
@@ -102,42 +94,35 @@ const VotingHeader: React.FunctionComponent = () => {
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">
+          <Paragraph type="p2" color="secondary">
             Bond Balance
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading
-              type="h3"
-              bold
-              color="grey900"
-              loading={bondBalance === undefined}>
-              {formatBONDValue(bondBalance)}
-            </Heading>
+            <Skeleton loading={bondBalance === undefined}>
+              <Heading type="h3" bold color="primary">
+                {formatBONDValue(bondBalance)}
+              </Heading>
+            </Skeleton>
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">
+          <Paragraph type="p2" color="secondary">
             Total voting power
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading
-              type="h3"
-              bold
-              color="grey900"
-              loading={
-                (isDelegated ? stakedBalance : votingPower) === undefined
-              }>
-              {formatBONDValue(votingPower)}
-            </Heading>
+            <Skeleton loading={votingPower === undefined}>
+              <Heading type="h3" bold color="primary">
+                {formatBONDValue(votingPower)}
+              </Heading>
+            </Skeleton>
             <Button type="light" onClick={() => setState({ showDetailedView: true })}>
               Detailed view
             </Button>
 
             {state.showDetailedView && (
               <VotingDetailedModal
-                visible
                 onCancel={() => setState({ showDetailedView: false })}
               />
             )}
@@ -156,7 +141,7 @@ const VotingHeader: React.FunctionComponent = () => {
                 <>
                   <div className={s.delimiter} />
                   <Grid flow="row" gap={4}>
-                    <Paragraph type="p2" color="grey500" hint={(
+                    <Hint text={(
                       <>
                         <Paragraph type="p2">
                           The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus
@@ -178,20 +163,22 @@ const VotingHeader: React.FunctionComponent = () => {
                         </ExternalLink>
                       </>
                     )}>
-                      Multiplier & Lock timer
-                    </Paragraph>
+                      <Paragraph type="p2" color="secondary">
+                        Multiplier & Lock timer
+                      </Paragraph>
+                    </Hint>
 
                     <Grid flow="col" gap={8} align="center">
                       <Tooltip title={`x${leftMultiplier}`}>
-                        <Label type="lb1" bold color="red500" className={s.ratio}>
+                        <Label type="lb1" bold color="red" className={s.ratio}>
                           {inRange(multiplier, 1, 1.01) ? '>' : ''}{' '}
                           {formatBigValue(leftMultiplier, 2, '-', 2)}x
                         </Label>
                       </Tooltip>
-                      <Paragraph type="p2" color="grey500">
+                      <Paragraph type="p2" color="secondary">
                         for
                       </Paragraph>
-                      <Heading type="h3" bold color="grey900">
+                      <Heading type="h3" bold color="primary">
                         {getFormattedDuration(0, userLockedUntil)}
                       </Heading>
                     </Grid>

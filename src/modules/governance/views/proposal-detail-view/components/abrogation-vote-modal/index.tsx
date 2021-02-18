@@ -113,7 +113,6 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
   return (
     <Modal
       className={s.component}
-      centered
       width={560}
       title={
         <>
@@ -133,7 +132,7 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
         onFinish={handleSubmit}>
         {voteState === VoteAbrogationState.VoteInitiate && (
           <Grid flow="row" gap={16} padding={32}>
-            <Paragraph type="p2" semiBold color="grey500">
+            <Paragraph type="p2" semiBold color="secondary">
               {proposalCtx.proposal?.title}
             </Paragraph>
           </Grid>
@@ -141,49 +140,49 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
         {voteState !== VoteAbrogationState.VoteInitiate && (
           <Grid flow="row" gap={16} className={s.row}>
             <Grid flow="col" gap={8} align="center">
-              <Heading type="h2" bold color="grey900">
+              <Heading type="h2" bold color="primary">
                 {formatBigValue(proposalCtx.votingPower, 2)}
               </Heading>
-              <Paragraph type="p1" semiBold color="grey500">
+              <Paragraph type="p1" semiBold color="secondary">
                 Votes
               </Paragraph>
             </Grid>
             {(voteState === VoteAbrogationState.VoteFor || voteState === VoteAbrogationState.VoteAgainst) && (
               <Grid flow="row" gap={8}>
-                <Paragraph type="p2" color="grey500">
+                <Paragraph type="p2" color="secondary">
                   You are about to vote {voteState === VoteAbrogationState.VoteFor ? 'FOR' : 'AGAINST'} the abrogation
                   proposal for
                 </Paragraph>
-                <Paragraph type="p2" semiBold color="grey500">
+                <Paragraph type="p2" semiBold color="secondary">
                   "{proposalCtx.proposal?.title}"
                 </Paragraph>
-                <Paragraph type="p2" color="grey500">
+                <Paragraph type="p2" color="secondary">
                   You can change your vote later.
                 </Paragraph>
               </Grid>
             )}
             {voteState === VoteAbrogationState.VoteChange && (
               <Grid flow="row" gap={8}>
-                <Paragraph type="p2" color="grey500">
+                <Paragraph type="p2" color="secondary">
                   You are about to change your vote on the abrogation proposal for
                 </Paragraph>
-                <Paragraph type="p2" semiBold color="grey500">
+                <Paragraph type="p2" semiBold color="secondary">
                   "{proposalCtx.proposal?.title}"
                 </Paragraph>
-                <Paragraph type="p2" color="grey500">
+                <Paragraph type="p2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
                 </Paragraph>
               </Grid>
             )}
             {voteState === VoteAbrogationState.VoteCancel && (
               <Grid flow="row" gap={8}>
-                <Paragraph type="p2" color="grey500">
+                <Paragraph type="p2" color="secondary">
                   You are about to cancel your vote on the abrogation proposal for
                 </Paragraph>
-                <Paragraph type="p2" semiBold color="grey500">
+                <Paragraph type="p2" semiBold color="secondary">
                   "{proposalCtx.proposal?.title}"
                 </Paragraph>
-                <Paragraph type="p2" color="grey500">
+                <Paragraph type="p2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
                 </Paragraph>
               </Grid>
@@ -215,7 +214,7 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="grey900">
+                      <Paragraph type="p1" semiBold color="primary">
                         For
                       </Paragraph>
                     }
@@ -223,7 +222,7 @@ const AbrogationVoteModal: React.FunctionComponent<AbrogationVoteModalProps> = p
                   />
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="grey900">
+                      <Paragraph type="p1" semiBold color="primary">
                         Against
                       </Paragraph>
                     }

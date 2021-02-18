@@ -12,7 +12,7 @@ export type ButtonProps = Omit<AntdButtonProps, 'type'> & {
 const Button: React.FunctionComponent<ButtonProps> = props => {
   const { children, className, type, ...btnProps } = props;
 
-  let btnType: AntdButtonType = 'default';
+  let btnType: AntdButtonType;
 
   if (type === 'light') {
     btnType = 'link';

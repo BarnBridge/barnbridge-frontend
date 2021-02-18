@@ -1,12 +1,10 @@
-@import 'src/styles/mixin';
-
 .component {
+  top: 0;
+  bottom: 0;
   width: 100vw !important;
   height: 100vh;
   margin: 0 auto;
   padding: 24px;
-  top: 0;
-  bottom: 0;
 
   :global(.ant-modal-content) {
     height: 100%;

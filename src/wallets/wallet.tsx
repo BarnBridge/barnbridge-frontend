@@ -19,7 +19,7 @@ import { MetaMaskWalletConfig } from 'wallets/connectors/metamask';
 import { PortisWalletConfig } from 'wallets/connectors/portis';
 import { TrezorWalletConfig } from 'wallets/connectors/trezor';
 import { WalletConnectConfig } from 'wallets/connectors/wallet-connect';
-import { getNetworkName } from 'web3/utils';
+import { getNetworkName } from 'components/providers/eth-web3-provider';
 
 import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
 import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
@@ -210,19 +210,16 @@ const WalletProvider: React.FunctionComponent = props => {
     <WalletContext.Provider value={value}>
       {walletsModal && (
         <ConnectWalletModal
-          visible
           onCancel={() => setWalletsModal(false)}
         />
       )}
       {installMetaMaskModal && (
         <InstallMetaMaskModal
-          visible
           onCancel={() => setInstallMetaMaskModal(false)}
         />
       )}
       {unsupportedChainModal && (
         <UnsupportedChainModal
-          visible
           onCancel={() => setUnsupportedChainModal(false)}
         />
       )}

@@ -5,9 +5,9 @@
 
   .row {
     padding: 24px;
+  }
 
-    &:not(:last-child) {
-      border-bottom: 1px solid var(--color-border);
-    }
+  .row:not(:last-child) {
+    border-bottom: 1px solid var(--theme-border-color);
   }
 }

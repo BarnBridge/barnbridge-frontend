@@ -5,7 +5,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icons from 'components/custom/icon';
 import Grid from 'components/custom/grid';
 import { Heading, Label, Paragraph } from 'components/custom/typography';
-import PoolHarvestModal from '../pool-harvest-modal';
+import PoolHarvestModal from '../../modals/pool-harvest-modal';
 
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -30,17 +30,17 @@ const PoolRewards: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
-      <Label type="lb2" semiBold color="red500">
+      <Label type="lb2" semiBold color="red">
         My Rewards
       </Label>
 
       <Grid flow="col" gap={24}>
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">
+          <Paragraph type="p2" color="secondary">
             Current reward
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">
+            <Heading type="h3" bold color="primary">
               {formatBONDValue(web3c.aggregated.totalCurrentReward)}
             </Heading>
             <Icons name="bond-square-token" />
@@ -56,11 +56,11 @@ const PoolRewards: React.FunctionComponent = () => {
         </Grid>
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
-          <Paragraph type="p2" color="grey500">
+          <Paragraph type="p2" color="secondary">
             Bond Balance
           </Paragraph>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">
+            <Heading type="h3" bold color="primary">
               {formatBONDValue(web3c.bond.balance)}
             </Heading>
             <Icons name="bond-square-token" />
@@ -69,7 +69,7 @@ const PoolRewards: React.FunctionComponent = () => {
         <div className={s.delimiter} />
         <Grid flow="row" gap={4}>
           <Grid flow="col" gap={8} align="center">
-            <Paragraph type="p2" color="grey500">
+            <Paragraph type="p2" color="secondary">
               Potential reward this epoch
             </Paragraph>
             <Tooltip
@@ -78,7 +78,7 @@ const PoolRewards: React.FunctionComponent = () => {
             />
           </Grid>
           <Grid flow="col" gap={16} align="center">
-            <Heading type="h3" bold color="grey900">
+            <Heading type="h3" bold color="primary">
               {formatBONDValue(web3c.aggregated.totalPotentialReward)}
             </Heading>
             <Icons name="bond-square-token" />
@@ -88,7 +88,6 @@ const PoolRewards: React.FunctionComponent = () => {
 
       {state.showHarvestModal && (
         <PoolHarvestModal
-          visible
           onCancel={() => setState({ showHarvestModal: false })}
         />
       )}

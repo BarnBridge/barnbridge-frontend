@@ -32,6 +32,7 @@ export type IconNames =
   | 'right-arrow-circle-outlined'
   | 'left-arrow'
   | 'bell'
+  | 'bell-outlined'
   | 'chevron-right'
   | 'close-circle-outlined'
   | 'check-circle-outlined'
@@ -40,7 +41,7 @@ export type IconNames =
   | 'dropdown-arrow'
   | 'warning-outlined'
   | 'gear'
-  | 'earth'
+  | 'node-status'
   | 'info-outlined'
   | 'network'
   | 'pencil-outlined'
@@ -62,7 +63,7 @@ export type IconsProps = {
   name: IconNames;
   width?: number | string;
   height?: number | string;
-  color?: string;
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue';
   rotate?: 0 | 90 | 180 | 270;
   className?: string;
   style?: CSSProperties;
@@ -77,7 +78,7 @@ const Icons: React.FunctionComponent<IconsProps> = props => {
         s.component,
         className,
         rotate && `rotate-${rotate}`,
-        color && `clr-${color}`,
+        color && s[`${color}-color`],
       )}
       width={width}
       height={height ?? width}

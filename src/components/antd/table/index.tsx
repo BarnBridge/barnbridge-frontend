@@ -13,6 +13,8 @@ const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
   return (
     <Antd.Table<T>
       className={cx(s.component, className)}
+      bordered={false}
+      showSorterTooltip={false}
       pagination={pagination ? {
         showSizeChanger: false,
         ...pagination,

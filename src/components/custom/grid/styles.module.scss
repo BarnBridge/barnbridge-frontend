@@ -40,7 +40,7 @@ $justifyContents: start, center, end, space-between;
       }
 
       &.align-self-#{$align} {
-       align-self: #{$align};
+        align-self: #{$align};
       }
     }
 
