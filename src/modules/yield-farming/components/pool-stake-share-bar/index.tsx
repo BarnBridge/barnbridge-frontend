@@ -48,7 +48,7 @@ const PoolStakeShareBar: React.FunctionComponent<PoolStakeShareBarProps> = props
             }}
           />
         </Tooltip>
-      )}
+      ))}
     </Grid>
   );
 };
