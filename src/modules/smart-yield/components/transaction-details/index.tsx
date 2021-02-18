@@ -14,8 +14,6 @@ export default function TransactionDetails({ className }: { className?: string }
     <section className={cn(s.container, className)}>
       <header className={s.header}>
         <Text type="p2" weight="semibold" color="secondary">Transaction details</Text>
-
-
         <Popover
           title="Customize transaction"
           overlayStyle={{ width: 423 }}
