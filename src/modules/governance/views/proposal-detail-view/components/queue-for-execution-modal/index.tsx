@@ -2,6 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 
 import Button from 'components/antd/button';
+import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Modal, { ModalProps } from 'components/antd/modal';
 import GasFeeList from 'components/custom/gas-fee-list';
@@ -76,7 +77,7 @@ const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
             it can only be cancelled by an abrogation proposal.
           </Text>
         </Grid>
-        <div className={s.delimiter} />
+        <Divider />
         <Grid flow="row" gap={32} className={s.row}>
           <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
             <GasFeeList disabled={state.submitting} />

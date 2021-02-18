@@ -2,6 +2,7 @@ import React from 'react';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
+import Divider from 'components/antd/divider';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
@@ -37,7 +38,7 @@ const AbrogationDetailsCard: React.FC = () => {
           </Grid>
         </Grid>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="row" gap={16} padding={24}>
         <Text type="small" weight="semibold" color="secondary">
           Description

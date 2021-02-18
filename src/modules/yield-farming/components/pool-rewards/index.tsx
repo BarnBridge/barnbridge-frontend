@@ -3,6 +3,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
+import Divider from 'components/antd/divider';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
@@ -53,7 +54,7 @@ const PoolRewards: React.FC = () => {
             )}
           </Grid>
         </Grid>
-        <div className={s.delimiter} />
+        <Divider type="vertical" />
         <Grid flow="row" gap={4}>
           <Text type="p2" color="secondary">
             Bond Balance
@@ -65,7 +66,7 @@ const PoolRewards: React.FC = () => {
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>
-        <div className={s.delimiter} />
+        <Divider type="vertical" />
         <Grid flow="row" gap={4}>
           <Grid flow="col" gap={8} align="center">
             <Hint text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake.">

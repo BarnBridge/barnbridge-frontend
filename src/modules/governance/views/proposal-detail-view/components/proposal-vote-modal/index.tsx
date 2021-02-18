@@ -3,6 +3,7 @@ import * as Antd from 'antd';
 import { formatBigValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
+import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Modal, { ModalProps } from 'components/antd/modal';
 import RadioButton from 'components/antd/radio-button';
@@ -160,7 +161,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
             </Grid>
           )}
         </Grid>
-        <div className={s.delimiter} />
+        <Divider />
         <Grid flow="row" gap={32} className={s.row}>
           {voteState === VoteState.VoteChange && (
             <Form.Item name="changeOption" label="Vote" rules={[{ required: true, message: 'Required' }]}>

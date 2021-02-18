@@ -6,6 +6,7 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { formatBONDValue, formatBigValue, isSmallBONDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
+import Divider from 'components/antd/divider';
 import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
@@ -84,7 +85,7 @@ const VotingHeader: React.FC = () => {
             </Button>
           </Grid>
         </Grid>
-        <div className={s.delimiter} />
+        <Divider type="vertical" />
         <Grid flow="row" gap={4}>
           <Text type="p2" color="secondary">
             Bond Balance
@@ -98,7 +99,7 @@ const VotingHeader: React.FC = () => {
             <Icons name="bond-square-token" />
           </Grid>
         </Grid>
-        <div className={s.delimiter} />
+        <Divider type="vertical" />
         <Grid flow="row" gap={4}>
           <Text type="p2" color="secondary">
             Total voting power
@@ -126,7 +127,7 @@ const VotingHeader: React.FC = () => {
 
             return leftMultiplier.gt(1) ? (
               <>
-                <div className={s.delimiter} />
+                <Divider type="vertical" />
                 <Grid flow="row" gap={4}>
                   <Hint
                     text={

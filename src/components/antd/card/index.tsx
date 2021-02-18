@@ -43,12 +43,4 @@ const Card: React.FC<CardProps> = props => {
   );
 };
 
-const CardDelimiter: React.FC = () => <div className={s.delimiter} />;
-
-export type StaticCardProps = {
-  Delimiter: React.FC;
-};
-
-((Card as any) as StaticCardProps).Delimiter = CardDelimiter;
-
-export default Card as React.FC<CardProps> & StaticCardProps;
+export default Card;

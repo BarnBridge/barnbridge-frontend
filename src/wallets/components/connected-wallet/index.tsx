@@ -5,6 +5,7 @@ import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
+import Divider from 'components/antd/divider';
 import Popover from 'components/antd/popover';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -49,7 +50,7 @@ const ConnectedWallet: React.FC = () => {
                 </Text>
               </Grid>
             </Grid>
-            <Card.Delimiter />
+            <Divider />
             <Grid padding={24}>
               <Button type="ghost" onClick={() => wallet.disconnect()}>
                 Disconnect
@@ -150,7 +151,7 @@ const ConnectedWallet: React.FC = () => {
               </Text>
             </Grid>
           </Grid>
-          <Card.Delimiter />
+          <Divider />
           <Grid padding={24}>
             <Button type="ghost" onClick={() => wallet.disconnect()}>
               Disconnect
@@ -173,7 +174,7 @@ const ConnectedWallet: React.FC = () => {
   return (
     <Grid flow="col" gap={24} justify="center">
       {NotificationSection}
-      <div className="bb-v-divider" />
+      <Divider type="vertical" />
       {AccountSection}
     </Grid>
   );

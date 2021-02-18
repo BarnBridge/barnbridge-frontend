@@ -3,6 +3,7 @@ import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
+import Divider from 'components/antd/divider';
 import Skeleton from 'components/antd/skeleton';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -113,7 +114,7 @@ const ProposalDetailsCard: React.FC = () => {
           )}
         </Grid>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="row" gap={16} padding={24}>
         <Text type="small" weight="semibold" color="secondary">
           Description
@@ -122,7 +123,7 @@ const ProposalDetailsCard: React.FC = () => {
           {proposalCtx.proposal?.description}
         </Text>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="row" gap={16} padding={24}>
         <Text type="small" weight="semibold" color="secondary">
           Actions
