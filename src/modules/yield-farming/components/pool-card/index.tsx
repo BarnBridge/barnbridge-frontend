@@ -336,32 +336,36 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                     balance and your effective pool balance will differ in most
                     cases.
                   </span>}>My Pool Balance</Hint>
-          </Label>
-          <Paragraph type="p1" semiBold color="primary">
-            {formatUSDValue(state.myBalance)}
-          </Paragraph>
-          <Paragraph type="p2" color="secondary">
-            {formatUSDValue(state.myEffectiveBalance)} effective balance
-          </Paragraph>
-          {!state.isEnded && (
-            <PoolStakeShareBar shares={state.myShares} />
-          )}
-        </Grid>
-      )}
-      {state.isEnded && (
-        <div className={s.box}>
-          <Grid flow="row" align="start">
-            <Paragraph type="p2" semiBold color="secondary">
-              The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
-              you
-              can
-              still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+            </Label>
+            <Paragraph type="p1" semiBold color="primary">
+              {formatUSDValue(state.myBalance)}
             </Paragraph>
-            <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
+
+            {!state.isEnded && (
+              <>
+                <Paragraph type="p2" color="secondary">
+                  {formatUSDValue(state.myEffectiveBalance)} effective balance
+                </Paragraph>
+                <PoolStakeShareBar shares={state.myShares} />
+              </>
+            )}
           </Grid>
-        </div>
-      )}
-    </Card>
+        )}
+        {state.isEnded && (
+          <div className={s.box}>
+            <Grid flow="row" align="start">
+              <Paragraph type="p2" semiBold color="secondary">
+                The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
+                you
+                can
+                still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+              </Paragraph>
+              <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
+            </Grid>
+          </div>
+        )}
+      </div>
+    </div>
   );
 };
 
