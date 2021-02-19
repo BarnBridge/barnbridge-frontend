@@ -7,18 +7,14 @@ export type IconBubbleProps = {
   name: string;
   bubbleName: string;
   className?: string;
+  style?: Object;
 };
 
 const IconBubble: React.FunctionComponent<IconBubbleProps> = (props) => {
-  const { name, bubbleName, className } = props;
-  // return (
-  //   <div className={cx(s.component, props.className)}>
-  //     {props.icons}
-  //   </div>
-  // );
+  const { name, bubbleName, style = {}, ...rest } = props;
 
   return (
-    <svg role="none" style={{ height: 40, width: 40 }}>
+    <svg role="none" style={{ height: 40, width: 40, ...style }} {...rest}>
       <mask id="circle">
         <circle cx="20" cy="20" fill="white" r="20"></circle>
         <circle cx="30" cy="10" fill="black" r="12"></circle>
