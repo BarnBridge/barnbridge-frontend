@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import BigNumber from 'bignumber.js';
+import cx from 'classnames';
 
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
@@ -19,7 +20,6 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 
 import s from './styles.module.scss';
-import cx from 'classnames';
 
 export type PoolCardProps = {
   stableToken?: boolean;
@@ -246,21 +246,21 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   return (
     <div className={s.component}>
       {state.type && (
-        <div className={cx("flex flow-col wrap col-gap-24 row-gap-12 align-start justify-space-between", s.header)}>
+        <div className={cx('flex flow-col wrap col-gap-24 row-gap-12 align-start justify-space-between', s.header)}>
           <div className="flex flow-col col-gap-24" style={{ flexGrow: 3 }}>
             <IconsSet icons={getPoolIcons(state.type)} />
             <div className="flex flow-row row-gap-4 align-start">
-              <Paragraph type='p1' semiBold color="grey900">
+              <Paragraph type="p1" semiBold color="grey900">
                 {getPoolNames(state.type).join('/')}
               </Paragraph>
-              <Label type='lb2' semiBold color="red500">
+              <Label type="lb2" semiBold color="red500">
                 EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
               </Label>
             </div>
           </div>
           {wallet.isActive && (
             <Button
-              type='primary'
+              type="primary"
               className="flex-grow"
               disabled={!state.enabled}
               onClick={handleStaking}>
@@ -274,19 +274,19 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         {!state.isEnded && (
           <>
             <div className={s.row}>
-              <Label type='lb2' semiBold className={s.label}>
+              <Label type="lb2" semiBold className={s.label}>
                 Reward
               </Label>
-              <Paragraph type='p1' semiBold className={s.value}>
+              <Paragraph type="p1" semiBold className={s.value}>
                 {formatBONDValue(state.epochReward)} BOND
               </Paragraph>
             </div>
             {wallet.isActive && (
               <div className={s.row}>
-                <Label type='lb2' semiBold className={s.label}>
+                <Label type="lb2" semiBold className={s.label}>
                   My Potential Reward
                 </Label>
-                <Paragraph type='p1' semiBold className={s.value}>
+                <Paragraph type="p1" semiBold className={s.value}>
                   {formatBONDValue(state.potentialReward)} BOND
                 </Paragraph>
               </div>
@@ -294,11 +294,11 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
 
             <div className={s.row}>
               <div className={s.labelWrap}>
-                <Label type='lb2' semiBold className={s.label}>
+                <Label type="lb2" semiBold className={s.label}>
                   Pool Balance
                 </Label>
                 <Tooltip
-                  type='info'
+                  type="info"
                   title={
                     <span>
                   This number shows the total staked balance of the pool, and
@@ -315,10 +315,10 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                   }
                 />
               </div>
-              <Paragraph type='p1' semiBold className={s.value}>
+              <Paragraph type="p1" semiBold className={s.value}>
                 {formatUSDValue(state.balance)}
               </Paragraph>
-              <Paragraph type='p2' className={s.hint}>
+              <Paragraph type="p2" className={s.hint}>
                 {formatUSDValue(state.effectiveBalance)} effective balance
               </Paragraph>
               <PoolStakeShareBar shares={state.shares} />
@@ -328,11 +328,11 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         {wallet.isActive && (
           <div className={s.row}>
             <div className={s.labelWrap}>
-              <Label type='lb2' semiBold className={s.label}>
+              <Label type="lb2" semiBold className={s.label}>
                 My Pool Balance
               </Label>
               <Tooltip
-                type='info'
+                type="info"
                 title={
                   <span>
                     This number shows your total staked balance in the pool, and
@@ -350,13 +350,13 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
                 }
               />
             </div>
-            <Paragraph type='p1' semiBold className={s.value}>
+            <Paragraph type="p1" semiBold className={s.value}>
               {formatUSDValue(state.myBalance)}
             </Paragraph>
 
             {!state.isEnded && (
               <>
-                <Paragraph type='p2' className={s.hint}>
+                <Paragraph type="p2" className={s.hint}>
                   {formatUSDValue(state.myEffectiveBalance)} effective balance
                 </Paragraph>
                 <PoolStakeShareBar shares={state.myShares} />
@@ -366,14 +366,14 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
         )}
         {state.isEnded && (
           <div className={s.box}>
-            <Grid flow='row' align='start'>
-              <Paragraph type='p2' semiBold color='grey500'>
+            <Grid flow="row" align="start">
+              <Paragraph type="p2" semiBold color="grey500">
                 The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but
                 you
                 can
                 still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
               </Paragraph>
-              <Button type='link' onClick={handleDaoStaking}>Go to governance staking</Button>
+              <Button type="link" onClick={handleDaoStaking}>Go to governance staking</Button>
             </Grid>
           </div>
         )}
