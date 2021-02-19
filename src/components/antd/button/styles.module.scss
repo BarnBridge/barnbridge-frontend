@@ -210,14 +210,14 @@
 
     &:hover {
       box-shadow: var(--btn-ghost-shadow-hover);
-      border: 1px solid var(--btn-ghost-border-hover);
+      border: var(--btn-ghost-border-hover);
       background: var(--btn-ghost-bg-hover);
       color: var(--btn-ghost-text-hover);
     }
 
     &:active {
       box-shadow: var(--btn-ghost-shadow-active);
-      border: 1px solid var(--btn-ghost-border-active);
+      border: var(--btn-ghost-border-active);
       background: var(--btn-ghost-bg-active);
       color: var(--btn-ghost-text-active);
     }
@@ -225,7 +225,7 @@
     &:disabled,
     &:disabled:hover {
       box-shadow: var(--btn-ghost-shadow-disabled);
-      border: 1px solid var(--btn-ghost-border-disabled);
+      border: var(--btn-ghost-border-disabled);
       background: var(--btn-ghost-bg-disabled);
       color: var(--btn-ghost-text-disabled);
     }

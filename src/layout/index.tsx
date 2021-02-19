@@ -39,7 +39,9 @@ const LayoutView: React.FunctionComponent = () => {
           <Antd.Layout.Content>
             <Switch>
               <Route path="/yield-farming" component={YieldFarmingView} />
+              <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
+              <Route path="/smart-yield/:vt(\w+)" component={isDev ? SmartYieldView : StayTuned} />
               <Route path="/smart-yield" component={isDev ? SmartYieldView : StayTuned} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>

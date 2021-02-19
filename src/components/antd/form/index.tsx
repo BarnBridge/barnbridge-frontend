@@ -1,9 +1,9 @@
 import React from 'react';
 import * as Antd from 'antd';
 import {
-  FormProps as AntdFormProps,
-  FormListProps as AntdFormListProps,
   FormItemProps as AntdFormItemProps,
+  FormListProps as AntdFormListProps,
+  FormProps as AntdFormProps,
 } from 'antd/lib/form';
 import cx from 'classnames';
 
@@ -32,8 +32,8 @@ const FormItem: React.FunctionComponent<FormItemProps> = props => {
     <Antd.Form.Item
       className={cx(s.item, className)}
       {...itemProps}
-      label={
-        <Grid flow="col" gap={4} align="center">
+      label={label
+        ? <Grid flow="col" gap={4} align="center">
           {label}
           {hint && (
             <Tooltip title={hint}>
@@ -41,7 +41,7 @@ const FormItem: React.FunctionComponent<FormItemProps> = props => {
             </Tooltip>
           )}
         </Grid>
-      }>
+        : undefined}>
       {children}
     </Antd.Form.Item>
   );

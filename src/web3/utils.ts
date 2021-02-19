@@ -21,6 +21,8 @@ export function getEtherscanTxUrl(
       return `https://etherscan.io/tx/${txHash}`;
     case 4:
       return `https://rinkeby.etherscan.io/tx/${txHash}`;
+    case 42:
+      return `https://kovan.etherscan.io/tx/${txHash}`;
     default:
       throw new Error(`Not supported chainId=${chainId}.`);
   }
@@ -35,6 +37,8 @@ export function getEtherscanAddressUrl(
       return `https://etherscan.io/address/${address}`;
     case 4:
       return `https://rinkeby.etherscan.io/address/${address}`;
+    case 42:
+      return `https://kovan.etherscan.io/address/${address}`;
     default:
       throw new Error(`Not supported chainId=${chainId}.`);
   }

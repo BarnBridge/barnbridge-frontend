@@ -10,20 +10,8 @@ import Select from 'components/antd/select';
 import IconBubble from 'components/custom/icon-bubble';
 import TabCard from 'modules/smart-yield/components/tab-card';
 import s from './s.module.scss';
-
-const dataMock = [
-  {
-    address: 'asdqwe123',
-    originator: ['USDC', 'Compound'],
-    seniorLiquidity: ['578.32', '$ 579.46 M'],
-    seniorAPY: '6.42%',
-    juniorLiquidity: ['831.32 M', '$ 832.46 M'],
-    juniorAPY: '21.33%',
-    originatorAPY: '3.47%',
-    jTokenConversionRate: ['1 USDC', '= 0.9778 jUSDC'],
-    walletBalance: ['25,381.32', '$ 27,812.44'],
-  },
-];
+import { formatBigValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
 
 const originatorOptionsMock = [
   { value: '', label: 'All originators' },
@@ -34,6 +22,8 @@ const originatorOptionsMock = [
 const OverviewView: React.FunctionComponent = () => {
   const history = useHistory();
   const [originator, setOriginator] = React.useState('');
+
+  const web3c = useWeb3Contracts();
 
   const columns = [
     {
@@ -164,12 +154,29 @@ const OverviewView: React.FunctionComponent = () => {
       render: (value: string) => (
         <Button
           type="primary"
-          onClick={() => history.push(`/smart-yield/deposit/${value}`)}
+          onClick={() => history.push(`/smart-yield/${value}/deposit`)}
           // onClick={(value) => console.log(value)}
         >
           Deposit
         </Button>
       ),
+    },
+  ];
+
+  const dataMock = [
+    {
+      address: '0xb7a4f3e9097c08da09517b5ab877f7a917224ede',
+      originator: ['USDC', 'Compound'],
+      seniorLiquidity: ['578.32', '$ 579.46 M'],
+      seniorAPY: '6.42%',
+      juniorLiquidity: ['831.32 M', '$ 832.46 M'],
+      juniorAPY: '21.33%',
+      originatorAPY: '3.47%',
+      jTokenConversionRate: ['1 USDC', `= ${formatBigValue(web3c.sy.price)} jUSDC`],
+      walletBalance: [
+        formatUSDValue(web3c.sy.balance),
+        formatUSDValue(web3c.sy.balance?.multipliedBy(web3c.sy.price ?? 1))
+      ],
     },
   ];
 
@@ -215,7 +222,7 @@ const OverviewView: React.FunctionComponent = () => {
         Compound total liquidity
       </Paragraph>
       <Heading type="h2" color="primary" className="mb-40">
-        $ 1,643,900,581.86
+        {formatUSDValue(web3c.sy.underlyingTotal)}
       </Heading>
       <Card
         // title={
