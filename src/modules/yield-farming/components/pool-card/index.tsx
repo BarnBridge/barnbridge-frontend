@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import BigNumber from 'bignumber.js';
+import cx from 'classnames';
 
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
@@ -9,14 +10,7 @@ import IconsSet from 'components/custom/icons-set';
 import { Label, Paragraph } from 'components/custom/typography';
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
-import {
-  formatBigValue,
-  formatBONDValue,
-  formatUSDValue,
-  getPoolIcons,
-  getPoolNames,
-  PoolTypes,
-} from 'web3/utils';
+import { formatBigValue, formatBONDValue, formatUSDValue, getPoolIcons, getPoolNames, PoolTypes } from 'web3/utils';
 import { useWallet } from 'wallets/wallet';
 import { useWeb3Contracts } from 'web3/contracts';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -252,20 +246,22 @@ const PoolCard: React.FunctionComponent<PoolCardProps> = props => {
   return (
     <div className={s.component}>
       {state.type && (
-        <div className={s.header}>
-          <IconsSet className={s.iconSet} icons={getPoolIcons(state.type)} />
-          <div className={s.infoWrap}>
-            <Paragraph type="p1" semiBold className={s.nameLabel}>
-              {getPoolNames(state.type).join('/')}
-            </Paragraph>
-            <Label type="lb2" semiBold className={s.epochLabel}>
-              EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
-            </Label>
+        <div className={cx('flex flow-col wrap col-gap-24 row-gap-12 align-start justify-space-between', s.header)}>
+          <div className="flex flow-col col-gap-24" style={{ flexGrow: 3 }}>
+            <IconsSet icons={getPoolIcons(state.type)} />
+            <div className="flex flow-row row-gap-4 align-start">
+              <Paragraph type="p1" semiBold color="grey900">
+                {getPoolNames(state.type).join('/')}
+              </Paragraph>
+              <Label type="lb2" semiBold color="red500">
+                EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
+              </Label>
+            </div>
           </div>
           {wallet.isActive && (
             <Button
               type="primary"
-              className={s.stakingBtn}
+              className="flex-grow"
               disabled={!state.enabled}
               onClick={handleStaking}>
               Staking
