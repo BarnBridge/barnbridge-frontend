@@ -1,0 +1,89 @@
+$gaps: 4, 8, 12, 16, 24, 32, 48, 64;
+$alignItems: start, center, end;
+$justifyContents: start, center, end, space-between;
+
+.grid {
+  display: grid;
+
+  &.flow-col {
+    grid-auto-flow: column;
+    grid-template-rows: repeat(auto-fit, minmax(0, max-content));
+  }
+
+  &.flow-row {
+    grid-auto-flow: row;
+    grid-template-rows: repeat(auto-fit, minmax(0, max-content));
+  }
+
+  @each $gap in $gaps {
+    &.gap-#{$gap} {
+      grid-column-gap: #{$gap}px;
+      grid-row-gap: #{$gap}px;
+    }
+
+    &.col-gap-#{$gap} {
+      grid-column-gap: #{$gap}px;
+    }
+
+    &.row-gap-#{$gap} {
+      grid-row-gap: #{$gap}px;
+    }
+  }
+
+  @each $align in $alignItems {
+    &.align-#{$align} {
+      align-items: #{$align};
+    }
+
+    &.align-self-#{$align} {
+      align-self: #{$align};
+    }
+  }
+
+  @each $justify in $justifyContents {
+    &.justify-#{$justify} {
+      justify-content: #{$justify};
+    }
+
+    &.justify-self-#{$justify} {
+      justify-self: #{$justify};
+    }
+  }
+
+  @media (max-width: 768px) {
+    @each $gap in $gaps {
+      &.sm-gap-#{$gap} {
+        grid-column-gap: #{$gap}px;
+        grid-row-gap: #{$gap}px;
+      }
+
+      &.sm-col-gap-#{$gap} {
+        grid-column-gap: #{$gap}px;
+      }
+
+      &.sm-row-gap-#{$gap} {
+        grid-row-gap: #{$gap}px;
+      }
+    }
+
+    @each $align in $alignItems {
+      &.sm-align-#{$align} {
+        align-items: #{$align};
+      }
+
+      &.sm-align-self-#{$align} {
+        align-self: #{$align};
+      }
+    }
+
+    @each $justify in $justifyContents {
+      &.sm-justify-#{$justify} {
+        justify-content: #{$justify};
+      }
+
+      &.sm-justify-self-#{$justify} {
+        justify-self: #{$justify};
+      }
+    }
+  }
+}
