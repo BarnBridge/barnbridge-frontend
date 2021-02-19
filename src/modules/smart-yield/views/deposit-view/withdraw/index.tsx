@@ -130,7 +130,7 @@ export default function Withdraw() {
         <Grid flow="col" gap={64} align="center" justify="space-between">
           <Button
             type="light"
-            onClick={() => history.push(`/smart-yield/deposit/${id}`)}>
+            onClick={() => history.push(`/smart-yield/${id}/deposit`)}>
             <Icon name="left-arrow" width={9} height={8} />
             Cancel
           </Button>

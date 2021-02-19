@@ -42,13 +42,13 @@ export default function SelectTranche() {
       <Grid flow="col" gap={64} align="center" justify="space-between">
         <Button
           type="light"
-          onClick={() => history.push(`/smart-yield/deposit`)}>
+          onClick={() => history.push(`/smart-yield/${id}/deposit`)}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
         <Button
           type="primary"
-          onClick={() => history.push(`/smart-yield/deposit/${id}/${tranche}`)}
+          onClick={() => history.push(`/smart-yield/${id}/deposit/${tranche}`)}
           {...{ disabled: !tranche }}>
           Next Step
         </Button>

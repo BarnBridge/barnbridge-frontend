@@ -14,13 +14,15 @@ export type BatchContractMethod = {
 
 export type Web3ContractAbiItem = AbiItem;
 
+const ERC20_ABI = require('web3/abi/erc20.json');
+
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
   readonly address: string;
   readonly name: string;
   readonly ethContract: Contract & Eth;
 
-  constructor(abi: Web3ContractAbiItem[], address: string, name: string) {
+  constructor(abi: Web3ContractAbiItem[] = ERC20_ABI, address: string, name: string) {
     super();
 
     this.abi = abi;
