@@ -55,7 +55,8 @@ const EthWeb3Provider: React.FC = props => {
       return;
     }
 
-    EthWeb3.eth.getBlockNumber()
+    EthWeb3.eth
+      .getBlockNumber()
       .then(value => {
         if (value) {
           setBlockNumber(value);

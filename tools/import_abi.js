@@ -21,7 +21,7 @@ function loadABI(name, address) {
       format: 'raw',
       address,
     },
-  }).then(({ data }) => {
+  }).then(({data}) => {
     return fs.writeFile(`${TARGET_FOLDER}/${name}.json`, JSON.stringify(data), 'utf8');
   }).catch(error => {
     console.error(error);
@@ -47,7 +47,7 @@ function PromiseSequence(tasks, cb) {
       Promise.resolve()
     )
     .then(() => results);
-};
+}
 
 (async () => {
   PromiseSequence([

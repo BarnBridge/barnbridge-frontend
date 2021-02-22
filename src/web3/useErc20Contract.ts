@@ -1,10 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-
-import { useWallet } from 'wallets/wallet';
 import Web3Contract from 'web3/contract';
-import { getHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import { MAX_UINT_256, ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
+
 import useMergeState from 'hooks/useMergeState';
+import { useWallet } from 'wallets/wallet';
 
 export type Erc20ContractState = {
   name?: string;
@@ -56,14 +56,15 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
       decimals: undefined,
     });
 
-    contract.batch([
-      {
-        method: 'name',
-      },
-      {
-        method: 'decimals',
-      }
-    ])
+    contract
+      .batch([
+        {
+          method: 'name',
+        },
+        {
+          method: 'decimals',
+        },
+      ])
       .then(([name, decimals]) => {
         setState({
           name,
@@ -85,11 +86,14 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
       return;
     }
 
-    contract.batch([{
-      method: 'balanceOf',
-      methodArgs: [wallet.account],
-      transform: value => value ? getHumanValue(new BigNumber(value), state.decimals) : undefined,
-    }])
+    contract
+      .batch([
+        {
+          method: 'balanceOf',
+          methodArgs: [wallet.account],
+          transform: value => (value ? getHumanValue(new BigNumber(value), state.decimals) : undefined),
+        },
+      ])
       .then(([balance]) => {
         setState({
           balance,
@@ -111,11 +115,14 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
       return;
     }
 
-    contract.batch([{
-      method: 'allowance',
-      methodArgs: [wallet.account, targetAddress],
-      transform: value => value ? new BigNumber(value) : undefined,
-    }])
+    contract
+      .batch([
+        {
+          method: 'allowance',
+          methodArgs: [wallet.account, targetAddress],
+          transform: value => (value ? new BigNumber(value) : undefined),
+        },
+      ])
       .then(([allowance]) => {
         setState({
           allowance,
@@ -144,7 +151,8 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
     loadAllowance();
   }, [loadAllowance]);
 
-  const approve = React.useCallback(async (value: BigNumber): Promise<void> => {
+  const approve = React.useCallback(
+    async (value: BigNumber): Promise<void> => {
       if (!wallet.account) {
         return Promise.reject();
       }
@@ -159,8 +167,7 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
         });
 
         loadAllowance();
-      } catch {
-      }
+      } catch {}
 
       setState({
         isApproving: false,
@@ -179,21 +186,21 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
 
   const reloadBalance = React.useCallback(loadBalance, []);
 
-  return React.useMemo(() => ({
-    state,
-    computed: {
-      get maxAllowed(): BigNumber {
-        return BigNumber.min(
-          state.allowance ?? ZERO_BIG_NUMBER,
-          state.balance ?? ZERO_BIG_NUMBER,
-        );
+  return React.useMemo(
+    () => ({
+      state,
+      computed: {
+        get maxAllowed(): BigNumber {
+          return BigNumber.min(state.allowance ?? ZERO_BIG_NUMBER, state.balance ?? ZERO_BIG_NUMBER);
+        },
       },
-    },
-    actions: {
-      approve,
-      approveMin,
-      approveMax,
-      reloadBalance,
-    },
-  }), [state, approve]);
+      actions: {
+        approve,
+        approveMin,
+        approveMax,
+        reloadBalance,
+      },
+    }),
+    [state, approve],
+  );
 }

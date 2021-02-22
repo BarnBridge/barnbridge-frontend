@@ -8,9 +8,7 @@ import s from './styles.module.scss';
 const Divider: React.FC<AntdDividerProps> = props => {
   const { className, ...dividerProps } = props;
 
-  return (
-    <Antd.Divider className={cx(s.divider, className)} {...dividerProps} />
-  );
+  return <Antd.Divider className={cx(s.divider, className)} {...dividerProps} />;
 };
 
 export default Divider;

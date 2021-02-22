@@ -10,13 +10,13 @@ import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/
 import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
 import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
+import { SYContract, useSYContract } from 'web3/contracts/sy';
+import { SYControllerContract, useSYControllerContract } from 'web3/contracts/syController';
 import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
 import { YieldFarmContract, useYieldFarmContract } from 'web3/contracts/yieldFarm';
 import { YieldFarmBONDContract, useYieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
 import { YieldFarmLPContract, useYieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
-import { SYContract, useSYContract } from 'web3/contracts/sy';
-import { SYControllerContract, useSYControllerContract } from 'web3/contracts/syController';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { useWallet } from 'wallets/wallet';
