@@ -96,7 +96,7 @@ const MobileMenu: React.FC = () => {
             <MobileMenuLink path="/governance" icon="bank-outlined" label="Voting" />
           </FadeBlock>
           <FadeBlock visible={isOpen}>
-            <MobileMenuLink path="/bonds" icon="paper-bill-outlined" label="Bonds" />
+            <MobileMenuLink path="/smart-yield" icon="paper-bill-outlined" label="Bonds" />
           </FadeBlock>
         </Grid>
 

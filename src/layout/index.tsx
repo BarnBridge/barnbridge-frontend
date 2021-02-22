@@ -12,6 +12,7 @@ import { Text } from 'components/custom/typography';
 import WarningProvider from 'components/providers/warning-provider';
 import LayoutSideNav from 'layout/components/layout-side-nav';
 import GovernanceView from 'modules/governance';
+import SmartYieldView from 'modules/smart-yield';
 import YieldFarmingView from 'modules/yield-farming';
 
 import s from './styles.module.scss';
@@ -25,6 +26,8 @@ const DOCS_LINK = 'https://docs.barnbridge.com/';
 const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
 const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+
 const LayoutView: React.FC = () => {
   return (
     <Antd.Layout className={s.layout}>
@@ -34,8 +37,10 @@ const LayoutView: React.FC = () => {
           <Antd.Layout.Content>
             <Switch>
               <Route path="/yield-farming" component={YieldFarmingView} />
+              <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
-              <Route path="/bonds" render={() => <StayTuned />} />
+              <Route path="/smart-yield/:vt(\w+)" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
+              <Route path="/smart-yield" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
           </Antd.Layout.Content>
