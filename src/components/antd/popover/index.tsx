@@ -9,9 +9,7 @@ export type PopoverProps = {
   noPadding?: boolean;
 };
 
-const Popover: React.FunctionComponent<
-  AntdPopoverProps & PopoverProps
-> = props => {
+const Popover: React.FC<AntdPopoverProps & PopoverProps> = props => {
   const { noPadding, children, ...popoverProps } = props;
 
   return (

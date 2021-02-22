@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import * as Antd from 'antd';
 import cn from 'classnames';
 
-import Popover from 'components/antd/popover';
 import Button from 'components/antd/button';
-import Input from 'components/antd/input';
 import Form from 'components/antd/form';
-import { Text } from 'components/custom/typography';
+import Input from 'components/antd/input';
+import Popover from 'components/antd/popover';
 import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
 
@@ -67,7 +67,9 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
                 form.setFieldsValue({
                   slippageTolerance: 0.1,
                 });
-              }}>0.1%</Button>
+              }}>
+              0.1%
+            </Button>
             <Button
               type="ghost"
               style={{ width: 70 }}
@@ -75,7 +77,9 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
                 form.setFieldsValue({
                   slippageTolerance: 0.3,
                 });
-              }}>0.3%</Button>
+              }}>
+              0.3%
+            </Button>
             <Button
               type="ghost"
               style={{ width: 70 }}
@@ -83,7 +87,9 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
                 form.setFieldsValue({
                   slippageTolerance: 0.5,
                 });
-              }}>0.5%</Button>
+              }}>
+              0.5%
+            </Button>
             <Form.Item
               name="slippageTolerance"
               rules={[
@@ -95,20 +101,24 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
             </Form.Item>
           </div>
         </Form.Item>
-        <Form.Item
-          name="deadline"
-          label="Transaction deadline"
-          rules={[{ required: true, message: 'Required' }]}>
+        <Form.Item name="deadline" label="Transaction deadline" rules={[{ required: true, message: 'Required' }]}>
           <Input
             type="number"
             className={s.deadlineInput}
             suffix={
-              <Text type="p1" weight="semibold" color="primary">minutes</Text>
-            } />
+              <Text type="p1" weight="semibold" color="primary">
+                minutes
+              </Text>
+            }
+          />
         </Form.Item>
         <div className="grid flow-col align-center justify-space-between">
-          <Button type="light" onClick={handleReset}>Reset changes</Button>
-          <Button type="primary" htmlType="submit">Apply changes</Button>
+          <Button type="light" onClick={handleReset}>
+            Reset changes
+          </Button>
+          <Button type="primary" htmlType="submit">
+            Apply changes
+          </Button>
         </div>
       </div>
     </Form>
@@ -135,7 +145,9 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
   return (
     <section className={cn(s.container, className)}>
       <header className={s.header}>
-        <Text type="p2" weight="semibold" color="secondary">Transaction details</Text>
+        <Text type="p2" weight="semibold" color="secondary">
+          Transaction details
+        </Text>
         <Popover
           title="Customize transaction"
           overlayStyle={{ width: 423 }}
@@ -147,8 +159,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
             />
           }
           visible={visible}
-          onVisibleChange={setVisible}
-        >
+          onVisibleChange={setVisible}>
           <Button type="light" className={s.settingsButton}>
             <Icons name="gear" />
           </Button>
@@ -156,16 +167,24 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
       </header>
       <div className="p-24">
         <div className="flex mb-24">
-          <Text type="small" weight="semibold" color="secondary">Slippage tolerance</Text>
-          <Text type="small" weight="semibold" color="primary" className="ml-auto">{slippageTolerance}%</Text>
+          <Text type="small" weight="semibold" color="secondary">
+            Slippage tolerance
+          </Text>
+          <Text type="small" weight="semibold" color="primary" className="ml-auto">
+            {slippageTolerance}%
+          </Text>
         </div>
         <div className="flex">
-          <Text type="small" weight="semibold" color="secondary">Transaction deadline</Text>
-          <Text type="small" weight="semibold" color="primary" className="ml-auto">{deadline} minutes</Text>
+          <Text type="small" weight="semibold" color="secondary">
+            Transaction deadline
+          </Text>
+          <Text type="small" weight="semibold" color="primary" className="ml-auto">
+            {deadline} minutes
+          </Text>
         </div>
       </div>
     </section>
-  )
+  );
 };
 
 export default TransactionDetails;

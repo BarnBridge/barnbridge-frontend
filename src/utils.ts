@@ -1,6 +1,5 @@
 import { add, formatDuration, intervalToDuration } from 'date-fns';
 import Web3 from 'web3';
-
 import { DEFAULT_ADDRESS } from 'web3/utils';
 
 export function getNowTs(): number {
@@ -11,19 +10,13 @@ export function inRange(value: number, min: number, max: number): boolean {
   return min < value && value < max;
 }
 
-export function getFormattedDuration(
-  value?: number,
-  endValue?: number,
-): string | undefined {
+export function getFormattedDuration(value?: number, endValue?: number): string | undefined {
   if (value === undefined) {
     return;
   }
 
   const start = new Date();
-  const end =
-    endValue !== undefined
-      ? new Date(endValue!)
-      : add(start, { seconds: value });
+  const end = endValue !== undefined ? new Date(endValue!) : add(start, { seconds: value });
 
   const duration = intervalToDuration({
     start,

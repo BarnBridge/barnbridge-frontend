@@ -1,9 +1,4 @@
-import {
-  Interface,
-  FunctionFragment,
-  Result,
-  defaultAbiCoder,
-} from '@ethersproject/abi';
+import { FunctionFragment, Interface, Result, defaultAbiCoder } from '@ethersproject/abi';
 
 export type AbiInterfaceType = Interface;
 export type AbiFragmentType = FunctionFragment;
@@ -34,45 +29,23 @@ export class AbiInterface {
   }
 
   get writableFunctions(): AbiFragmentType[] {
-    return Object.values(this.abi.functions).filter(
-      fn => !['view', 'pure'].includes(fn.stateMutability),
-    );
+    return Object.values(this.abi.functions).filter(fn => !['view', 'pure'].includes(fn.stateMutability));
   }
 
-  encodeFunctionData(
-    functionFragment: AbiFunctionFragment | string,
-    values?: Array<any>,
-  ): string {
-    return this.abi.encodeFunctionData(
-      functionFragment,
-      parseValues(values ?? []),
-    );
-  }
-
-  static encodeFunctionData(
-    functionFragment: AbiFunctionFragment | string,
-    values?: Array<any>,
-  ): string | undefined {
+  static encodeFunctionData(functionFragment: AbiFunctionFragment | string, values?: Array<any>): string | undefined {
     try {
       const fragment =
-        typeof functionFragment === 'string'
-          ? FunctionFragment.fromString(functionFragment)
-          : functionFragment;
+        typeof functionFragment === 'string' ? FunctionFragment.fromString(functionFragment) : functionFragment;
       return defaultAbiCoder.encode(fragment.inputs, parseValues(values ?? []));
     } catch (e) {
       console.error('AbiInterface::encodeFunctionData', e.message);
     }
   }
 
-  static decodeFunctionData(
-    functionFragment: AbiFunctionFragment | string,
-    data: string,
-  ): AbiDecodeResult | undefined {
+  static decodeFunctionData(functionFragment: AbiFunctionFragment | string, data: string): AbiDecodeResult | undefined {
     try {
       const fragment =
-        typeof functionFragment === 'string'
-          ? FunctionFragment.fromString(functionFragment)
-          : functionFragment;
+        typeof functionFragment === 'string' ? FunctionFragment.fromString(functionFragment) : functionFragment;
       const hexData = data.indexOf('0x') !== 0 ? `0x${data}` : data;
       return defaultAbiCoder.decode(fragment.inputs, hexData);
     } catch (e) {
@@ -80,9 +53,7 @@ export class AbiInterface {
     }
   }
 
-  static getFunctionFragmentFrom(
-    signature: string,
-  ): AbiFunctionFragment | undefined {
+  static getFunctionFragmentFrom(signature: string): AbiFunctionFragment | undefined {
     try {
       return FunctionFragment.fromString(signature);
     } catch (e) {
@@ -102,5 +73,9 @@ export class AbiInterface {
     } catch (e) {
       console.error('AbiInterface::stringifyParamValue', e.message);
     }
+  }
+
+  encodeFunctionData(functionFragment: AbiFunctionFragment | string, values?: Array<any>): string {
+    return this.abi.encodeFunctionData(functionFragment, parseValues(values ?? []));
   }
 }

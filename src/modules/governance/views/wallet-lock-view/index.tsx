@@ -1,32 +1,26 @@
 import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
-import {
-  addSeconds,
-  addDays,
-  isBefore,
-  isAfter,
-  getUnixTime,
-} from 'date-fns';
-
-import Card from 'components/antd/card';
-import Form from 'components/antd/form';
-import DatePicker from 'components/antd/datepicker';
-import Button from 'components/antd/button';
-import Alert from 'components/antd/alert';
-import Grid from 'components/custom/grid';
-import GasFeeList from 'components/custom/gas-fee-list';
-import { Paragraph, Small } from 'components/custom/typography';
-import Icons from 'components/custom/icon';
-import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
-import WalletLockChart from './components/wallet-lock-chart';
-
-import { getFormattedDuration, isValidAddress } from 'utils';
-import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { addDays, addMonths, addSeconds, getUnixTime, isAfter, isBefore } from 'date-fns';
 import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
+import DatePicker from 'components/antd/datepicker';
+import Form from 'components/antd/form';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
-import { DURATION_OPTIONS, getLockEndDate } from 'utils/date';
+
+import WalletLockChart from './components/wallet-lock-chart';
+import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
+
+import { getFormattedDuration, isValidAddress } from 'utils';
 
 import s from './styles.module.scss';
 
@@ -52,7 +46,38 @@ const InitialFormValues: LockFormData = {
   gasPrice: undefined,
 };
 
-const WalletLockView: React.FunctionComponent = () => {
+const DURATION_1_WEEK = '1w';
+const DURATION_1_MONTH = '1mo';
+const DURATION_3_MONTH = '3mo';
+const DURATION_6_MONTH = '6mo';
+const DURATION_1_YEAR = '1y';
+
+const DURATION_OPTIONS: string[] = [
+  DURATION_1_WEEK,
+  DURATION_1_MONTH,
+  DURATION_3_MONTH,
+  DURATION_6_MONTH,
+  DURATION_1_YEAR,
+];
+
+function getLockEndDate(startDate: Date, duration: string): Date | undefined {
+  switch (duration) {
+    case DURATION_1_WEEK:
+      return addDays(startDate, 7);
+    case DURATION_1_MONTH:
+      return addMonths(startDate, 1);
+    case DURATION_3_MONTH:
+      return addMonths(startDate, 3);
+    case DURATION_6_MONTH:
+      return addMonths(startDate, 6);
+    case DURATION_1_YEAR:
+      return addDays(startDate, 365);
+    default:
+      return undefined;
+  }
+}
+
+const WalletLockView: React.FC = () => {
   const [form] = Antd.Form.useForm<LockFormData>();
 
   const web3c = useWeb3Contracts();
@@ -83,23 +108,17 @@ const WalletLockView: React.FunctionComponent = () => {
     const gasFee = gasPrice?.value!;
 
     try {
-      await web3c.daoBarn.actions.lock(
-        getUnixTime(lockEndDate!),
-        gasFee,
-      );
+      await web3c.daoBarn.actions.lock(getUnixTime(lockEndDate!), gasFee);
       form.setFieldsValue(InitialFormValues);
       web3c.daoBarn.reload();
-    } catch {
-    }
+    } catch {}
 
     setState({ saving: false });
   }
 
   React.useEffect(() => {
     form.setFieldsValue({
-      lockEndDate: userLockedUntil && userLockedUntil > Date.now()
-        ? new Date(userLockedUntil)
-        : undefined,
+      lockEndDate: userLockedUntil && userLockedUntil > Date.now() ? new Date(userLockedUntil) : undefined,
     });
   }, [userLockedUntil]);
 
@@ -107,29 +126,29 @@ const WalletLockView: React.FunctionComponent = () => {
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
         <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           BOND
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Staked Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(stakedBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Lock Duration
-        </Small>
+        </Text>
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
-          {(leftTime) => (
-            <Paragraph type="p1" semiBold color="primary">
+          {leftTime => (
+            <Text type="p1" weight="semibold" color="primary">
               {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
-            </Paragraph>
+            </Text>
           )}
         </UseLeftTime>
       </Grid>
@@ -140,11 +159,7 @@ const WalletLockView: React.FunctionComponent = () => {
 
   return (
     <Card title={CardTitle}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleFinish}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -168,14 +183,16 @@ const WalletLockView: React.FunctionComponent = () => {
                             });
                             setState({});
                           }}>
-                          <Paragraph type="p1" semiBold color="primary">{opt}</Paragraph>
+                          <Text type="p1" weight="semibold" color="primary">
+                            {opt}
+                          </Text>
                         </Button>
                       );
                     })}
                   </Grid>
                 )}
               </Form.Item>
-              <Paragraph type="p1">OR</Paragraph>
+              <Text type="p1">OR</Text>
               <Form.Item
                 name="lockEndDate"
                 label="Manual choose your lock end date"
@@ -189,8 +206,7 @@ const WalletLockView: React.FunctionComponent = () => {
                   disabled={formDisabled || state.saving}
                 />
               </Form.Item>
-              <Alert
-                message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
+              <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
             </Grid>
             <Grid flow="row">
               <Form.Item
@@ -207,9 +223,7 @@ const WalletLockView: React.FunctionComponent = () => {
             {({ getFieldsValue }) => {
               const { lockEndDate } = getFieldsValue();
 
-              return lockEndDate ? (
-                <WalletLockChart lockEndDate={lockEndDate} />
-              ) : null;
+              return lockEndDate ? <WalletLockChart lockEndDate={lockEndDate} /> : null;
             }}
           </Form.Item>
 

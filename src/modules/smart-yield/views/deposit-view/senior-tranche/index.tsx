@@ -3,22 +3,23 @@ import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { addMonths, differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
 
-import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
+import Form from 'components/antd/form';
 import Input from 'components/antd/input';
-import Icon from 'components/custom/icon';
-import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
-import { DURATION_1_MONTH, DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_MONTH, getLockEndDate } from 'utils/date';
-import { getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
+import TokenAmount from 'components/custom/token-amount';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
-import { useWeb3Contracts } from 'web3/contracts';
+
+import { DURATION_1_MONTH, DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_MONTH, getLockEndDate } from 'utils/date';
 
 type FormData = {
   amount?: BigNumber;
@@ -46,12 +47,7 @@ const InitialState: State = {
   saving: false,
 };
 
-const DURATION_OPTIONS = [
-  DURATION_1_WEEK,
-  DURATION_2_WEEK,
-  DURATION_1_MONTH,
-  DURATION_3_MONTH,
-];
+const DURATION_OPTIONS = [DURATION_1_WEEK, DURATION_2_WEEK, DURATION_1_MONTH, DURATION_3_MONTH];
 
 export default function SeniorTranche() {
   const history = useHistory();
@@ -66,36 +62,39 @@ export default function SeniorTranche() {
     form.setFieldsValue(values);
   }, []);
 
-  const handleFinish = React.useCallback(async (values: FormData) => {
-    const { amount, lockEndDate, gasPrice, slippageTolerance, deadline } = values;
+  const handleFinish = React.useCallback(
+    async (values: FormData) => {
+      const { amount, lockEndDate, gasPrice, slippageTolerance, deadline } = values;
 
-    if (!amount || !gasPrice) {
-      return;
-    }
+      if (!amount || !gasPrice) {
+        return;
+      }
 
-    setState({
-      saving: true,
-    });
+      setState({
+        saving: true,
+      });
 
-    const amountScaled = getNonHumanValue(amount, tokenPool.erc20?.state.decimals);
+      const amountScaled = getNonHumanValue(amount, tokenPool.erc20?.state.decimals);
 
-    const deadlineTs = Math.floor((Date.now() / 1_000) + (Number(deadline ?? 0) * 60));
-    const lockDays = differenceInDays(lockEndDate ?? startOfDay(new Date()), startOfDay(new Date()));
+      const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
+      const lockDays = differenceInDays(lockEndDate ?? startOfDay(new Date()), startOfDay(new Date()));
 
-    try {
-      const minGain = await web3c.sy.getBondGain(amountScaled, lockDays) ?? ZERO_BIG_NUMBER;
-      const minGainMFee = new BigNumber(1).minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
-        .multipliedBy(minGain);
+      try {
+        const minGain = (await web3c.sy.getBondGain(amountScaled, lockDays)) ?? ZERO_BIG_NUMBER;
+        const minGainMFee = new BigNumber(1)
+          .minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
+          .multipliedBy(minGain);
 
-      await tokenPool.actions.seniorDeposit(amountScaled, minGainMFee, deadlineTs, lockDays ?? 0, gasPrice.value);
-      form.resetFields();
-    } catch {
-    }
+        await tokenPool.actions.seniorDeposit(amountScaled, minGainMFee, deadlineTs, lockDays ?? 0, gasPrice.value);
+        form.resetFields();
+      } catch {}
 
-    setState({
-      saving: false,
-    });
-  }, [tokenPool.actions.seniorDeposit, form.resetFields, setState]);
+      setState({
+        saving: false,
+      });
+    },
+    [tokenPool.actions.seniorDeposit, form.resetFields, setState],
+  );
 
   return (
     <Form
@@ -104,10 +103,7 @@ export default function SeniorTranche() {
       validateTrigger={['onSubmit']}
       onFinish={handleFinish}
       className="grid flow-row row-gap-32">
-      <Form.Item
-        name="amount"
-        label="Amount"
-        rules={[{ required: true, message: 'Required' }]}>
+      <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon="usdc-token"
           max={tokenPool.erc20?.computed.maxAllowed ?? ZERO_BIG_NUMBER}
@@ -117,15 +113,10 @@ export default function SeniorTranche() {
           slider
         />
       </Form.Item>
-      <Form.Item
-        name="lockEndDate"
-        label="Lock end date"
-        rules={[{ required: true, message: 'Required' }]}>
+      <Form.Item name="lockEndDate" label="Lock end date" rules={[{ required: true, message: 'Required' }]}>
         <DatePicker
           showNow={false}
-          disabledDate={
-            (date: Date) => isBefore(date, new Date()) || isAfter(date, addMonths(new Date(), 3))
-          }
+          disabledDate={(date: Date) => isBefore(date, new Date()) || isAfter(date, addMonths(new Date(), 3))}
           format="DD/MM/YYYY"
           size="large"
           disabled={state.saving}
@@ -133,10 +124,7 @@ export default function SeniorTranche() {
       </Form.Item>
       <Form.Item label="Add lock duration" shouldUpdate>
         {() => (
-          <Grid
-            flow="col"
-            gap={16}
-            colsTemplate={`repeat(${DURATION_OPTIONS.length}, 1fr)`}>
+          <Grid flow="col" gap={16} colsTemplate={`repeat(${DURATION_OPTIONS.length}, 1fr)`}>
             {DURATION_OPTIONS.map(opt => {
               return (
                 <Button
@@ -149,9 +137,9 @@ export default function SeniorTranche() {
                     });
                     setState({});
                   }}>
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     {opt}
-                  </Paragraph>
+                  </Text>
                 </Button>
               );
             })}
@@ -179,7 +167,8 @@ export default function SeniorTranche() {
             <TransactionDetails
               slippageTolerance={slippageTolerance}
               deadline={deadline}
-              onChange={handleTxDetailsChange} />
+              onChange={handleTxDetailsChange}
+            />
           );
         }}
       </Form.Item>

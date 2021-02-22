@@ -1,7 +1,6 @@
-import React from "react";
-import cx from "classnames";
+import React from 'react';
+
 import Sprite from 'resources/svg/icons-sprite.svg';
-import s from "./styles.module.css";
 
 export type IconBubbleProps = {
   name: string;
@@ -10,7 +9,7 @@ export type IconBubbleProps = {
   style?: Object;
 };
 
-const IconBubble: React.FunctionComponent<IconBubbleProps> = (props) => {
+const IconBubble: React.FunctionComponent<IconBubbleProps> = props => {
   const { name, bubbleName, style = {}, ...rest } = props;
 
   return (

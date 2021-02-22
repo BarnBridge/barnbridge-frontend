@@ -83,17 +83,12 @@ export type IconsProps = {
   style?: CSSProperties;
 };
 
-const Icons: React.FunctionComponent<IconsProps> = props => {
+const Icons: React.FC<IconsProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style } = props;
 
   return (
     <svg
-      className={cx(
-        s.component,
-        className,
-        rotate && `rotate-${rotate}`,
-        color && s[`${color}-color`],
-      )}
+      className={cx(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
       style={style}>

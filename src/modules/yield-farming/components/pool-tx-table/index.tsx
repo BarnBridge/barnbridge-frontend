@@ -1,8 +1,15 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatDistance } from 'date-fns';
 import BigNumber from 'bignumber.js';
+import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,23 +18,15 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import PoolTxListProvider, {
   PoolTxListItem,
   usePoolTxList,
 } from 'modules/yield-farming/providers/pool-tx-list-provider';
-import { PoolActions, PoolTypes } from 'modules/yield-farming/utils';
-
-import { useWallet } from 'wallets/wallet';
-import { useWeb3Contracts } from 'web3/contracts';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { DAITokenMeta } from 'web3/contracts/dai';
-import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr, } from 'web3/utils';
-
 import { ReactComponent as EmptyBoxSvg } from 'resources/svg/empty-box.svg';
+import { useWallet } from 'wallets/wallet';
+
+import { PoolActions, PoolTypes } from 'modules/yield-farming/utils';
 
 import s from './styles.module.scss';
 
@@ -42,15 +41,15 @@ const Columns: ColumnsType<any> = [
     title: '',
     dataIndex: 'token',
     width: 24,
-    // render: (value: string) => getTokenMeta(value)?.icon,
+    render: (value: string) => getTokenMeta(value)?.icon,
   },
   {
     title: 'From',
     dataIndex: 'user',
     render: (value: string) => (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {shortenAddr(value)}
-      </Paragraph>
+      </Text>
     ),
   },
   {
@@ -58,9 +57,9 @@ const Columns: ColumnsType<any> = [
     dataIndex: 'txHash',
     render: (value: string) => (
       <ExternalLink href={getEtherscanTxUrl(value)}>
-        <Paragraph type="p1" semiBold color="blue">
+        <Text type="p1" weight="semibold" color="blue">
           {shortenAddr(value)}
-        </Paragraph>
+        </Text>
       </ExternalLink>
     ),
   },
@@ -68,11 +67,11 @@ const Columns: ColumnsType<any> = [
     title: 'Time',
     dataIndex: 'blockTimestamp',
     render: (value: number) => (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {formatDistance(new Date(value * 1_000), new Date(), {
           addSuffix: true,
         })}
-      </Paragraph>
+      </Text>
     ),
   },
   {
@@ -90,9 +89,9 @@ const Columns: ColumnsType<any> = [
               {tokenMeta?.name}
             </span>
           }>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {formatUSDValue(value)}
-          </Paragraph>
+          </Text>
         </Tooltip>
       );
     },
@@ -101,9 +100,9 @@ const Columns: ColumnsType<any> = [
     title: 'Type',
     dataIndex: 'type',
     render: (value: string) => (
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {capitalize(value)}
-      </Paragraph>
+      </Text>
     ),
   },
 ];
@@ -115,7 +114,7 @@ export type PoolTxTableProps = {
   action?: PoolActions;
 };
 
-const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
+const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
   const { label, ownTransactions, pool, action } = props;
 
   const wallet = useWallet();
@@ -193,9 +192,9 @@ const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
 
   const CardTitle = (
     <Grid flow="col" align="center" justify="space-between">
-      <Paragraph type="p1" semiBold color="primary">
+      <Text type="p1" weight="semibold" color="primary">
         {label}
-      </Paragraph>
+      </Text>
       <Grid flow="col" gap={24}>
         <Select
           label="Tokens"
@@ -222,18 +221,15 @@ const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
   const CardEmptyText = (
     <Grid flow="row" gap={16} align="center" padding={[54, 0]}>
       <EmptyBoxSvg />
-      <Paragraph type="p1" color="secondary">
+      <Text type="p1" color="secondary">
         There are no transactions to show
-      </Paragraph>
+      </Text>
     </Grid>
   );
 
   const CardFooter = (
     <Grid align="center" justify="center">
-      <Button
-        type="light"
-        disabled={poolTxList.loading}
-        onClick={poolTxList.loadNext}>
+      <Button type="light" disabled={poolTxList.loading} onClick={poolTxList.loadNext}>
         Load more transactions
       </Button>
     </Grid>
@@ -249,13 +245,13 @@ const PoolTxTableInner: React.FunctionComponent<PoolTxTableProps> = props => {
         locale={{
           emptyText: CardEmptyText,
         }}
-        footer={() => !poolTxList.isEnd && CardFooter}
+        footer={() => !poolTxList.isEnd && poolTxList.transactions.length > 0 && CardFooter}
       />
     </Card>
   );
 };
 
-const PoolTxTable: React.FunctionComponent<PoolTxTableProps> = props => (
+const PoolTxTable: React.FC<PoolTxTableProps> = props => (
   <PoolTxListProvider>
     <PoolTxTableInner {...props} />
   </PoolTxListProvider>

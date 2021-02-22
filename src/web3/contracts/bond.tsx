@@ -1,26 +1,19 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-
-import Icons from 'components/custom/icon';
-
-import { useReload } from 'hooks/useReload';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { useWallet } from 'wallets/wallet';
+import Web3Contract from 'web3/contract';
+import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
-import Web3Contract from 'web3/contract';
-import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
-import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
 
-const CONTRACT_BOND_ADDR = String(
-  process.env.REACT_APP_CONTRACT_BOND_ADDR,
-).toLowerCase();
+import Icons from 'components/custom/icon';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useReload } from 'hooks/useReload';
+import { useWallet } from 'wallets/wallet';
 
-const Contract = new Web3Contract(
-  require('web3/abi/bond.json'),
-  CONTRACT_BOND_ADDR,
-  'BOND',
-);
+const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
+
+const Contract = new Web3Contract(require('web3/abi/bond.json'), CONTRACT_BOND_ADDR, 'BOND');
 
 export const BONDTokenMeta: TokenMeta = {
   icon: <Icons key="bond" name="bond-token" />,
@@ -67,8 +60,7 @@ export function useBONDContract(): BONDContract {
     [totalSupply] = await Contract.batch([
       {
         method: 'totalSupply',
-        transform: (value: string) =>
-          getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+        transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
     ]);
 
@@ -88,8 +80,7 @@ export function useBONDContract(): BONDContract {
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
-          transform: (value: string) =>
-            getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
+          transform: (value: string) => getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'allowance',

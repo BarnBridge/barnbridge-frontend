@@ -3,12 +3,12 @@ import * as Antd from 'antd';
 import { ModalProps as AntdModalProps } from 'antd/lib/modal';
 import cx from 'classnames';
 
+import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
 import s from './styles.module.scss';
-import { Paragraph } from '../../custom/typography';
-import Grid from '../../custom/grid';
-import Button from '../button';
 
 export type ModalProps = AntdModalProps & {
   confirmClose?: boolean;
@@ -16,15 +16,8 @@ export type ModalProps = AntdModalProps & {
   onCancel: (e?: React.MouseEvent<HTMLElement>) => void;
 };
 
-const Modal: React.FunctionComponent<ModalProps> = props => {
-  const {
-    className,
-    children,
-    confirmClose = false,
-    confirmText,
-    onCancel,
-    ...modalProps
-  } = props;
+const Modal: React.FC<ModalProps> = props => {
+  const { className, children, confirmClose = false, confirmText, onCancel, ...modalProps } = props;
 
   const [confirmVisible, showConfirm] = React.useState<boolean>(false);
 
@@ -58,10 +51,16 @@ const Modal: React.FunctionComponent<ModalProps> = props => {
           closeIcon={<></>}
           onCancel={() => showConfirm(false)}>
           <Grid flow="row" gap={32}>
-            <Paragraph type="p2" semiBold color="secondary">{confirmText}</Paragraph>
+            <Text type="p2" weight="semibold" color="secondary">
+              {confirmText}
+            </Text>
             <Grid flow="col" justify="space-between">
-              <Button type="ghost" onClick={() => showConfirm(false)}>No</Button>
-              <Button type="primary" onClick={onCancel}>Yes</Button>
+              <Button type="ghost" onClick={() => showConfirm(false)}>
+                No
+              </Button>
+              <Button type="primary" onClick={onCancel}>
+                Yes
+              </Button>
             </Grid>
           </Grid>
         </Antd.Modal>

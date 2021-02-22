@@ -15,7 +15,7 @@ export function useWindowState(): WindowStateContextType {
   return React.useContext(WindowStateContext);
 }
 
-const WindowStateProvider: React.FunctionComponent = props => {
+const WindowStateProvider: React.FC = props => {
   const { children } = props;
 
   const [visibilityState, setVisibilityState] = React.useState<VisibilityState>(window.document.visibilityState);
@@ -25,10 +25,11 @@ const WindowStateProvider: React.FunctionComponent = props => {
   });
 
   return (
-    <WindowStateContext.Provider value={{
-      visibilityState,
-      isVisible: visibilityState === 'visible',
-    }}>
+    <WindowStateContext.Provider
+      value={{
+        visibilityState,
+        isVisible: visibilityState === 'visible',
+      }}>
       {children}
     </WindowStateContext.Provider>
   );

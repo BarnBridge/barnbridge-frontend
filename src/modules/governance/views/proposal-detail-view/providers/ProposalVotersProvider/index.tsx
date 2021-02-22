@@ -2,6 +2,7 @@ import React from 'react';
 
 import useMergeState from 'hooks/useMergeState';
 import { APIVoteEntity, fetchProposalVoters } from 'modules/governance/api';
+
 import { useProposal } from '../ProposalProvider';
 
 export type ProposalVotersProviderState = {
@@ -37,13 +38,11 @@ export function useProposalVoters(): ProposalVotersContextType {
   return React.useContext(ProposalVotersContext);
 }
 
-const ProposalVotersProvider: React.FunctionComponent = props => {
+const ProposalVotersProvider: React.FC = props => {
   const { children } = props;
 
   const { proposal } = useProposal();
-  const [state, setState] = useMergeState<ProposalVotersProviderState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<ProposalVotersProviderState>(InitialState);
 
   React.useEffect(() => {
     if (!proposal?.proposalId) {
@@ -56,12 +55,7 @@ const ProposalVotersProvider: React.FunctionComponent = props => {
 
     setState({ loading: true });
 
-    fetchProposalVoters(
-      proposal.proposalId,
-      state.page,
-      state.pageSize,
-      state.supportFilter,
-    )
+    fetchProposalVoters(proposal.proposalId, state.page, state.pageSize, state.supportFilter)
       .then(data => {
         setState({
           loading: false,

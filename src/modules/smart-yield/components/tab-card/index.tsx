@@ -1,6 +1,8 @@
 import cn from 'classnames';
-import { Paragraph, Small } from "components/custom/typography";
-import Grid from "components/custom/grid";
+
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
+
 import s from './s.module.scss';
 
 export type Props = {
@@ -12,38 +14,20 @@ export type Props = {
   active?: boolean;
 };
 
-export default function TabCard({ title, subtitle, icon, className, tag = "button", active = false, ...rest }: Props) {
+export default function TabCard({ title, subtitle, icon, className, tag = 'button', active = false, ...rest }: Props) {
   let Component = tag;
 
   return (
-    <Component className={cn(s.container, className, {[s.active]: active})} {...rest}>
-      <div className={s.icon}>
-        {icon}
-      </div>
+    <Component className={cn(s.container, className, { [s.active]: active })} {...rest}>
+      <div className={s.icon}>{icon}</div>
       <Grid flow="row">
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           {title}
-        </Paragraph>
-        <Small semiBold color="secondary">{subtitle}</Small>
+        </Text>
+        <Text type="small" weight="semibold" color="secondary">
+          {subtitle}
+        </Text>
       </Grid>
     </Component>
-  )
-}
-
-export function TabCard2({ title, subtitle, icon, className, tag = "button", active = false, ...rest }: Props) {
-  let Component = tag;
-
-  return (
-    <Component className={cn(s.container, className, {[s.active]: active})} {...rest}>
-      <div className={s.icon}>
-        {icon}
-      </div>
-      <Grid flow="row">
-        <Paragraph type="p1" semiBold color="primary">
-          {title}
-        </Paragraph>
-        <Small semiBold color="secondary">{subtitle}</Small>
-      </Grid>
-    </Component>
-  )
+  );
 }

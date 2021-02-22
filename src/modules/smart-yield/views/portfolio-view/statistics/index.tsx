@@ -1,12 +1,13 @@
 import React from 'react';
 import { shortenAddr } from 'web3/utils';
-import Card from 'components/antd/card';
-import { Text } from 'components/custom/typography';
-import Grid from 'components/custom/grid';
-import Table from 'components/antd/table';
+
 import Button from 'components/antd/button';
-import IconBubble from 'components/custom/icon-bubble';
+import Card from 'components/antd/card';
+import Table from 'components/antd/table';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
+import IconBubble from 'components/custom/icon-bubble';
+import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 
@@ -18,7 +19,7 @@ const dataMock = [
     date: new Date(),
     amount: '25381.32',
     tranch: 'Senior',
-    transactionType: 'Withdraw'
+    transactionType: 'Withdraw',
   },
 ];
 
@@ -37,7 +38,9 @@ const columns = [
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {value[0]}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">{value[1]}</Text>
+          <Text type="small" weight="semibold" color="secondary">
+            {value[1]}
+          </Text>
         </Grid>
       </Grid>
     ),
@@ -87,7 +90,9 @@ const columns = [
         <Text type="p1" weight="semibold" color="primary">
           {value}
         </Text>
-        <Text type="small" weight="semibold">${value}</Text>
+        <Text type="small" weight="semibold">
+          ${value}
+        </Text>
       </Grid>
     ),
   },
@@ -117,7 +122,6 @@ const columns = [
       </Text>
     ),
   },
-
 ];
 
 export default function PortfolioStatistics() {

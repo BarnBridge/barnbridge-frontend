@@ -1,8 +1,9 @@
-import { DEFAULT_CONTRACT_PROVIDER, EthWeb3, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
 import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
-import EventEmitter from 'wolfy87-eventemitter';
 import { AbiItem } from 'web3-utils';
+import EventEmitter from 'wolfy87-eventemitter';
+
+import { DEFAULT_CONTRACT_PROVIDER, EthWeb3, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
 
 export type BatchContractMethod = {
   method: string;
@@ -14,15 +15,13 @@ export type BatchContractMethod = {
 
 export type Web3ContractAbiItem = AbiItem;
 
-const ERC20_ABI = require('web3/abi/erc20.json');
-
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
   readonly address: string;
   readonly name: string;
   readonly ethContract: Contract & Eth;
 
-  constructor(abi: Web3ContractAbiItem[] = ERC20_ABI, address: string, name: string) {
+  constructor(abi: Web3ContractAbiItem[], address: string, name: string) {
     super();
 
     this.abi = abi;
@@ -30,6 +29,10 @@ class Web3Contract extends EventEmitter {
     this.name = name;
 
     this.ethContract = new EthWeb3.eth.Contract(abi, address) as any;
+  }
+
+  get writeFunctions(): Web3ContractAbiItem[] {
+    return this.abi.filter(r => r.type === 'function' && !r.constant);
   }
 
   static tryCall(to: string, from: string, data: string, value: string): any {
@@ -41,10 +44,6 @@ class Web3Contract extends EventEmitter {
     });
   }
 
-  get writeFunctions(): Web3ContractAbiItem[] {
-    return this.abi.filter(r => r.type === 'function' && !r.constant);
-  }
-
   setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {
     if (this.ethContract.currentProvider !== provider) {
       this.ethContract.setProvider(provider);
@@ -52,9 +51,9 @@ class Web3Contract extends EventEmitter {
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
-    // if (methods.length === 0) {
-    //   return Promise.reject();
-    // }
+    if (methods.length === 0) {
+      return Promise.reject();
+    }
 
     // if (methods.length === 1) {
     //   const method = methods[0];
@@ -84,29 +83,23 @@ class Web3Contract extends EventEmitter {
         }
 
         try {
-          const request = contractMethod(...methodArgs).call.request(
-            callArgs,
-            (err: Error, value: string) => {
-              if (err) {
-                if (onError instanceof Function) {
-                  return resolve(onError(err));
-                } else {
-                  console.error(`${this.name}:${methodName}.call`, err);
-                  return resolve(undefined);
-                }
-              }
-
-              if (+value === WEB3_ERROR_VALUE) {
-                console.error(
-                  `${this.name}:${methodName}.call`,
-                  'Contract call failure!',
-                );
+          const request = contractMethod(...methodArgs).call.request(callArgs, (err: Error, value: string) => {
+            if (err) {
+              if (onError instanceof Function) {
+                return resolve(onError(err));
+              } else {
+                console.error(`${this.name}:${methodName}.call`, err);
                 return resolve(undefined);
               }
+            }
 
-              resolve(transform(value));
-            },
-          );
+            if (+value === WEB3_ERROR_VALUE) {
+              console.error(`${this.name}:${methodName}.call`, 'Contract call failure!');
+              return resolve(undefined);
+            }
+
+            resolve(transform(value));
+          });
 
           batch.add(request);
         } catch (e) {
@@ -117,25 +110,16 @@ class Web3Contract extends EventEmitter {
 
     try {
       batch.execute();
-    } catch {
-    }
+    } catch {}
 
     return Promise.all(promises);
   }
 
-  call(
-    method: string,
-    methodArgs: any[] = [],
-    sendArgs: Record<string, any> = {},
-  ): Promise<any> {
+  call(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     return this.execute('call', method, methodArgs, sendArgs);
   }
 
-  send(
-    method: string,
-    methodArgs: any[] = [],
-    sendArgs: Record<string, any> = {},
-  ): Promise<any> {
+  send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     return this.execute('send', method, methodArgs, sendArgs);
   }
 
@@ -161,14 +145,11 @@ class Web3Contract extends EventEmitter {
         reject(err);
       };
 
-      let pr = contractMethod(...methodArgs)?.[type](
-        sendArgs,
-        async (err: Error) => {
-          if (err) {
-            reject(err);
-          }
-        },
-      );
+      let pr = contractMethod(...methodArgs)?.[type](sendArgs, async (err: Error) => {
+        if (err) {
+          reject(err);
+        }
+      });
 
       pr.then(resolve);
 

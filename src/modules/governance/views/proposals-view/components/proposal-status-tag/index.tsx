@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'classnames';
 
-import { Label } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 
 import s from './styles.module.scss';
@@ -11,14 +11,14 @@ export type ProposalStatusTagProps = {
   state: APIProposalState;
 };
 
-const ProposalStatusTag: React.FunctionComponent<ProposalStatusTagProps> = props => {
+const ProposalStatusTag: React.FC<ProposalStatusTagProps> = props => {
   const { state, className } = props;
 
   return (
     <div className={cx(s.component, className, s[state])}>
-      <Label type="lb2" bold>
+      <Text type="lb2" weight="bold">
         {APIProposalStateMap.get(state)}
-      </Label>
+      </Text>
     </div>
   );
 };
