@@ -135,9 +135,7 @@ const PoolTxListProvider: React.FC = props => {
   const loadNew = React.useCallback(() => {
     const { transactions, userFilter, tokenFilter, typeFilter } = stateRef.current;
 
-    const lastTimestamp = transactions.length > 0
-      ? transactions[0].blockTimestamp
-      : (Date.now() / 1_000);
+    const lastTimestamp = transactions.length > 0 ? transactions[0].blockTimestamp : Date.now() / 1_000;
 
     setState({
       loading: true,
@@ -183,17 +181,26 @@ const PoolTxListProvider: React.FC = props => {
     }
   }, [setState]);
 
-  const changeUserFilter = React.useCallback((userFilter?: string) => {
-    setState({ userFilter });
-  }, [setState]);
+  const changeUserFilter = React.useCallback(
+    (userFilter?: string) => {
+      setState({ userFilter });
+    },
+    [setState],
+  );
 
-  const changeTokenFilter = React.useCallback((tokenFilter?: string) => {
-    setState({ tokenFilter });
-  }, [setState]);
+  const changeTokenFilter = React.useCallback(
+    (tokenFilter?: string) => {
+      setState({ tokenFilter });
+    },
+    [setState],
+  );
 
-  const changeTypeFilter = React.useCallback((typeFilter?: string) => {
-    setState({ typeFilter });
-  }, [setState]);
+  const changeTypeFilter = React.useCallback(
+    (typeFilter?: string) => {
+      setState({ typeFilter });
+    },
+    [setState],
+  );
 
   React.useEffect(() => {
     load();
@@ -207,25 +214,18 @@ const PoolTxListProvider: React.FC = props => {
     loadNew();
   }, [ethWeb3.blockNumber, loadNew]);
 
-  const value = React.useMemo(() => ({
-    ...state,
-    loadNext,
-    changeUserFilter,
-    changeTokenFilter,
-    changeTypeFilter,
-  }), [
-    state,
-    loadNext,
-    changeUserFilter,
-    changeTokenFilter,
-    changeTypeFilter,
-  ]);
-
-  return (
-    <PoolTxListContext.Provider value={value}>
-      {children}
-    </PoolTxListContext.Provider>
+  const value = React.useMemo(
+    () => ({
+      ...state,
+      loadNext,
+      changeUserFilter,
+      changeTokenFilter,
+      changeTypeFilter,
+    }),
+    [state, loadNext, changeUserFilter, changeTokenFilter, changeTypeFilter],
   );
+
+  return <PoolTxListContext.Provider value={value}>{children}</PoolTxListContext.Provider>;
 };
 
 export default PoolTxListProvider;

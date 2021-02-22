@@ -7,7 +7,7 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBigValue, formatBONDValue, formatUSDValue } from 'web3/utils';
+import { formatBONDValue, formatBigValue, formatUSDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -19,7 +19,7 @@ import { useWallet } from 'wallets/wallet';
 
 import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
-import { getPoolIcons, getPoolNames, PoolTypes } from '../../utils';
+import { PoolTypes, getPoolIcons, getPoolNames } from '../../utils';
 
 import s from './styles.module.scss';
 
