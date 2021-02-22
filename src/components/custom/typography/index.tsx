@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
 import Icons from 'components/custom/icon';
@@ -19,7 +19,7 @@ type CommonProps = {
 function classNamesFromProps(props: CommonProps) {
   const { bold, semiBold, color, align, ellipsis, wrap, className } = props;
 
-  return cx(
+  return cn(
     bold && s.bold,
     semiBold && s.semiBold,
     color && s[`${color}-color`],
@@ -36,7 +36,7 @@ export type HeadingProps = CommonProps & {
 
 export const Heading: React.FC<HeadingProps> = props => {
   const { type, children } = props;
-  const classNames = cx(s.heading, classNamesFromProps(props));
+  const classNames = cn(s.heading, classNamesFromProps(props));
 
   return React.createElement(
     type,
@@ -53,7 +53,7 @@ export type ParagraphProps = CommonProps & {
 
 export const Paragraph: React.FC<ParagraphProps> = props => {
   const { type, children } = props;
-  const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
+  const classNames = cn(s.paragraph, s[type], classNamesFromProps(props));
 
   return <p className={classNames}>{children}</p>;
 };
@@ -64,7 +64,7 @@ export type LabelProps = CommonProps & {
 
 export const Label: React.FC<LabelProps> = props => {
   const { type, children } = props;
-  const classNames = cx(s.label, s[type], classNamesFromProps(props));
+  const classNames = cn(s.label, s[type], classNamesFromProps(props));
 
   return <label className={classNames}>{children}</label>;
 };
@@ -73,7 +73,7 @@ export type SmallProps = CommonProps;
 
 export const Small: React.FC<SmallProps> = props => {
   const { children } = props;
-  const classNames = cx(s.small, classNamesFromProps(props));
+  const classNames = cn(s.small, classNamesFromProps(props));
 
   return <small className={classNames}>{children}</small>;
 };
@@ -95,7 +95,7 @@ export const Text: React.FC<TextProps> = React.memo(props => {
   return React.createElement(
     tag,
     {
-      className: cx(
+      className: cn(
         s.text,
         s[type],
         weight && s[`weight-${weight}`],
@@ -113,13 +113,14 @@ export const Text: React.FC<TextProps> = React.memo(props => {
 
 export type HintProps = {
   text: React.ReactNode;
+  className?: string;
 };
 
 export const Hint: React.FC<HintProps> = props => {
-  const { text, children } = props;
+  const { text, className, children } = props;
 
   return text ? (
-    <div className={s.hint}>
+    <div className={cn(s.hint, className)}>
       <span>{children}</span>
       <Tooltip title={text} className={s.tooltip}>
         <Icons name="info-outlined" width={16} height={16} />

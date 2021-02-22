@@ -103,21 +103,24 @@ const PoolTxListProvider: React.FC = props => {
   const { children } = props;
 
   const ethWeb3 = useEthWeb3();
-
   const [state, setState] = useMergeState<PoolTxListState>(InitialState);
+  const stateRef = React.useRef<PoolTxListState>(state);
+  stateRef.current = state;
 
-  React.useEffect(() => {
+  const load = React.useCallback(() => {
+    const { limit, userFilter, tokenFilter, typeFilter } = stateRef.current;
+
     setState({
       loading: true,
       loaded: false,
     });
 
-    fetchPoolTransactions(undefined, 'desc', state.limit, state.userFilter, state.tokenFilter, state.typeFilter)
+    fetchPoolTransactions(undefined, 'desc', limit, userFilter, tokenFilter, typeFilter)
       .then(transactions => {
         setState({
           loading: false,
           loaded: true,
-          isEnd: transactions.length < state.limit,
+          isEnd: transactions.length < limit,
           transactions,
         });
       })
@@ -127,44 +130,48 @@ const PoolTxListProvider: React.FC = props => {
           transactions: [],
         });
       });
-  }, [state.userFilter, state.tokenFilter, state.typeFilter]);
+  }, [setState]);
 
-  React.useEffect(() => {
-    if (state.transactions.length > 0) {
-      const { blockTimestamp } = state.transactions[0];
+  const loadNew = React.useCallback(() => {
+    const { transactions, userFilter, tokenFilter, typeFilter } = stateRef.current;
 
-      setState({
-        loading: true,
-      });
+    const lastTimestamp = transactions.length > 0
+      ? transactions[0].blockTimestamp
+      : (Date.now() / 1_000);
 
-      fetchPoolTransactions(blockTimestamp, 'asc', 100, state.userFilter, state.tokenFilter, state.typeFilter)
-        .then(transactions => {
-          setState(prevState => ({
-            loading: false,
-            transactions: [...transactions, ...prevState.transactions],
-          }));
-        })
-        .catch(() => {
-          setState({
-            loading: false,
-          });
+    setState({
+      loading: true,
+    });
+
+    fetchPoolTransactions(lastTimestamp, 'asc', 100, userFilter, tokenFilter, typeFilter)
+      .then(transactions => {
+        setState(prevState => ({
+          loading: false,
+          transactions: [...transactions, ...prevState.transactions],
+        }));
+      })
+      .catch(() => {
+        setState({
+          loading: false,
         });
-    }
-  }, [ethWeb3.blockNumber]);
+      });
+  }, [setState]);
 
-  function loadNext() {
-    if (state.transactions.length > 0) {
-      const { blockTimestamp } = state.transactions[state.transactions.length - 1];
+  const loadNext = React.useCallback(() => {
+    const { transactions, limit, userFilter, tokenFilter, typeFilter } = stateRef.current;
+
+    if (transactions.length > 0) {
+      const { blockTimestamp } = transactions[transactions.length - 1];
 
       setState({
         loading: true,
       });
 
-      fetchPoolTransactions(blockTimestamp, 'desc', state.limit, state.userFilter, state.tokenFilter, state.typeFilter)
+      fetchPoolTransactions(blockTimestamp, 'desc', limit, userFilter, tokenFilter, typeFilter)
         .then(transactions => {
           setState(prevState => ({
             loading: false,
-            isEnd: transactions.length < state.limit,
+            isEnd: transactions.length < limit,
             transactions: [...prevState.transactions, ...transactions],
           }));
         })
@@ -174,29 +181,48 @@ const PoolTxListProvider: React.FC = props => {
           });
         });
     }
-  }
+  }, [setState]);
 
-  function changeUserFilter(userFilter?: string) {
+  const changeUserFilter = React.useCallback((userFilter?: string) => {
     setState({ userFilter });
-  }
+  }, [setState]);
 
-  function changeTokenFilter(tokenFilter?: string) {
+  const changeTokenFilter = React.useCallback((tokenFilter?: string) => {
     setState({ tokenFilter });
-  }
+  }, [setState]);
 
-  function changeTypeFilter(typeFilter?: string) {
+  const changeTypeFilter = React.useCallback((typeFilter?: string) => {
     setState({ typeFilter });
-  }
+  }, [setState]);
+
+  React.useEffect(() => {
+    load();
+  }, [load, state.limit, state.userFilter, state.tokenFilter, state.typeFilter]);
+
+  React.useEffect(() => {
+    if (!stateRef.current.loaded) {
+      return;
+    }
+
+    loadNew();
+  }, [ethWeb3.blockNumber, loadNew]);
+
+  const value = React.useMemo(() => ({
+    ...state,
+    loadNext,
+    changeUserFilter,
+    changeTokenFilter,
+    changeTypeFilter,
+  }), [
+    state,
+    loadNext,
+    changeUserFilter,
+    changeTokenFilter,
+    changeTypeFilter,
+  ]);
 
   return (
-    <PoolTxListContext.Provider
-      value={{
-        ...state,
-        loadNext,
-        changeUserFilter,
-        changeTokenFilter,
-        changeTypeFilter,
-      }}>
+    <PoolTxListContext.Provider value={value}>
       {children}
     </PoolTxListContext.Provider>
   );

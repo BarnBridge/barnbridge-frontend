@@ -245,7 +245,7 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
         locale={{
           emptyText: CardEmptyText,
         }}
-        footer={() => !poolTxList.isEnd && CardFooter}
+        footer={() => !poolTxList.isEnd && poolTxList.transactions.length > 0 && CardFooter}
       />
     </Card>
   );
