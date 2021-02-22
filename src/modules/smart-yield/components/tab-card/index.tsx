@@ -1,6 +1,7 @@
 import cn from 'classnames';
-import { Text } from "components/custom/typography";
-import Grid from "components/custom/grid";
+
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
 
@@ -13,20 +14,20 @@ export type Props = {
   active?: boolean;
 };
 
-export default function TabCard({ title, subtitle, icon, className, tag = "button", active = false, ...rest }: Props) {
+export default function TabCard({ title, subtitle, icon, className, tag = 'button', active = false, ...rest }: Props) {
   let Component = tag;
 
   return (
     <Component className={cn(s.container, className, { [s.active]: active })} {...rest}>
-      <div className={s.icon}>
-        {icon}
-      </div>
+      <div className={s.icon}>{icon}</div>
       <Grid flow="row">
         <Text type="p1" weight="semibold" color="primary">
           {title}
         </Text>
-        <Text type="small" weight="semibold" color="secondary">{subtitle}</Text>
+        <Text type="small" weight="semibold" color="secondary">
+          {subtitle}
+        </Text>
       </Grid>
     </Component>
-  )
+  );
 }

@@ -1,19 +1,20 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import * as Antd from 'antd';
-
-import Card from 'components/antd/card';
-import { Text } from 'components/custom/typography';
-import Grid from 'components/custom/grid';
-import MarketCoinCard from 'modules/smart-yield/components/market-coin-card';
-import PoolDetails from 'modules/smart-yield/components/pool-details';
-import SelectTranche from './select-tranche';
-import SeniorTranche from './senior-tranche';
-import JuniorTranche from './junior-tranche';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBigValue } from 'web3/utils';
-import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
+
+import Card from 'components/antd/card';
 import Tooltip from 'components/antd/tooltip';
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
+import MarketCoinCard from 'modules/smart-yield/components/market-coin-card';
+import PoolDetails from 'modules/smart-yield/components/pool-details';
+import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
+
+import JuniorTranche from './junior-tranche';
+import SelectTranche from './select-tranche';
+import SeniorTranche from './senior-tranche';
 
 export default function DepositView() {
   const web3c = useWeb3Contracts();
@@ -22,8 +23,7 @@ export default function DepositView() {
   async function handleSwitchChange(checked: boolean) {
     try {
       await tokenPool.actions.enableToken(checked);
-    } catch {
-    }
+    } catch {}
   }
 
   return (
@@ -91,8 +91,7 @@ export default function DepositView() {
           <Text type="p2" weight="semibold" className="mb-32">
             You can choose between fixed, or variable interest.
             <br />
-            Be aware of the risk involved and read the warnings before going
-            further
+            Be aware of the risk involved and read the warnings before going further
           </Text>
           <Switch>
             <Route path="/smart-yield/:id/deposit/" exact>

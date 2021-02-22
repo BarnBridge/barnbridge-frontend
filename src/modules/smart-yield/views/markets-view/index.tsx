@@ -1,16 +1,17 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { useWeb3Contracts } from 'web3/contracts';
+import { formatBigValue, formatUSDValue } from 'web3/utils';
+
+import Button from 'components/antd/button';
 import Card from 'components/antd/card';
-import { Text } from 'components/custom/typography';
+import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
-import Button from 'components/antd/button';
 import Icons from 'components/custom/icon';
-import Select from 'components/antd/select';
 import IconBubble from 'components/custom/icon-bubble';
+import { Text } from 'components/custom/typography';
 import TabCard from 'modules/smart-yield/components/tab-card';
-import { formatBigValue, formatUSDValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
 
 import s from './s.module.scss';
 
@@ -41,7 +42,9 @@ const OverviewView: React.FunctionComponent = () => {
             <Text type="p1" weight="semibold" color="primary">
               {value[0]}
             </Text>
-            <Text type="small" weight="semibold">{value[1]}</Text>
+            <Text type="small" weight="semibold">
+              {value[1]}
+            </Text>
           </Grid>
         </Grid>
       ),
@@ -58,7 +61,9 @@ const OverviewView: React.FunctionComponent = () => {
           <Text type="p1" weight="semibold" color="primary">
             {value[0]}
           </Text>
-          <Text type="small" weight="semibold">{value[1]}</Text>
+          <Text type="small" weight="semibold">
+            {value[1]}
+          </Text>
         </Grid>
       ),
     },
@@ -87,7 +92,9 @@ const OverviewView: React.FunctionComponent = () => {
           <Text type="p1" weight="semibold" color="primary">
             {value[0]}
           </Text>
-          <Text type="small" weight="semibold">{value[1]}</Text>
+          <Text type="small" weight="semibold">
+            {value[1]}
+          </Text>
         </Grid>
       ),
     },
@@ -129,7 +136,9 @@ const OverviewView: React.FunctionComponent = () => {
           <Text type="p1" weight="semibold" color="primary">
             {value[0]}
           </Text>
-          <Text type="small" weight="semibold">{value[1]}</Text>
+          <Text type="small" weight="semibold">
+            {value[1]}
+          </Text>
         </Grid>
       ),
     },
@@ -145,7 +154,9 @@ const OverviewView: React.FunctionComponent = () => {
           <Text type="p1" weight="semibold" color="primary">
             {value[0]}
           </Text>
-          <Text type="small" weight="semibold">{value[1]}</Text>
+          <Text type="small" weight="semibold">
+            {value[1]}
+          </Text>
         </Grid>
       ),
     },
@@ -176,7 +187,7 @@ const OverviewView: React.FunctionComponent = () => {
       jTokenConversionRate: ['1 USDC', `= ${formatBigValue(web3c.sy.price)} jUSDC`],
       walletBalance: [
         formatUSDValue(web3c.sy.balance),
-        formatUSDValue(web3c.sy.balance?.multipliedBy(web3c.sy.price ?? 1))
+        formatUSDValue(web3c.sy.balance?.multipliedBy(web3c.sy.price ?? 1)),
       ],
     },
   ];
@@ -200,9 +211,7 @@ const OverviewView: React.FunctionComponent = () => {
         <TabCard
           title="Aave"
           subtitle="Markets"
-          icon={
-            <Icons name="aave" width={40} height={40} />
-          } /* type="button" onClick={() => console.log('asd')} */
+          icon={<Icons name="aave" width={40} height={40} />} /* type="button" onClick={() => console.log('asd')} */
         />
         <TabCard
           title="Cream Finance"

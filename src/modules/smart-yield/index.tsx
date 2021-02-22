@@ -1,14 +1,15 @@
-import React from "react";
+import React from 'react';
 import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
+import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
+
 import OverviewView from './views/markets-view';
 import PortfolioView from './views/portfolio-view';
 
-import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
 import { isValidAddress } from 'utils';
 
 import s from './s.module.scss';
@@ -19,7 +20,9 @@ type SmartYieldViewParams = {
 
 const SmartYieldView: React.FunctionComponent = () => {
   const history = useHistory();
-  const { params: { vt = 'overview' } } = useRouteMatch<SmartYieldViewParams>();
+  const {
+    params: { vt = 'overview' },
+  } = useRouteMatch<SmartYieldViewParams>();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
   function handleTabChange(tabKey: string) {
@@ -42,16 +45,23 @@ const SmartYieldView: React.FunctionComponent = () => {
     <Grid flow="row">
       <LayoutHeader title="Smart Yield" />
 
-      <Tabs
-        className={s.tabs}
-        activeKey={activeTab}
-        onChange={handleTabChange}>
+      <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
-          tab={<><Icons name="bar-charts-outlined" /> Overview</>} />
+          tab={
+            <>
+              <Icons name="bar-charts-outlined" /> Overview
+            </>
+          }
+        />
         <Tabs.Tab
           key="portfolio"
-          tab={<><Icons name="wallet-outlined" /> Portfolio</>} />
+          tab={
+            <>
+              <Icons name="wallet-outlined" /> Portfolio
+            </>
+          }
+        />
       </Tabs>
       <div className={s.view}>
         <Switch>

@@ -1,9 +1,9 @@
 import React from 'react';
 import { Route, Switch, useRouteMatch } from 'react-router-dom';
 
+import TokenPoolProvider from 'modules/smart-yield/providers/token-pool-provider';
 import DepositTemplateView from 'modules/smart-yield/views/deposit-view';
 import Withdraw from 'modules/smart-yield/views/deposit-view/withdraw';
-import TokenPoolProvider from 'modules/smart-yield/providers/token-pool-provider';
 
 type TokenPoolViewParams = {
   address: string;

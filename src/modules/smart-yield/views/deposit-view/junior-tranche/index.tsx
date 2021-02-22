@@ -1,18 +1,19 @@
 import React from 'react';
-import * as Antd from 'antd';
 import { useHistory } from 'react-router-dom';
+import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import Form from 'components/antd/form';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
+
 import Button from 'components/antd/button';
+import Form from 'components/antd/form';
+import Input from 'components/antd/input';
+import GasFeeList from 'components/custom/gas-fee-list';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
-import GasFeeList from 'components/custom/gas-fee-list';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import useMergeState from 'hooks/useMergeState';
-import { getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
-import Input from 'components/antd/input';
-import { useWeb3Contracts } from 'web3/contracts';
 
 type FormData = {
   amount?: BigNumber;
@@ -51,40 +52,46 @@ export default function JuniorTranche() {
     form.setFieldsValue(values);
   }, []);
 
-  const handleFinish = React.useCallback(async (values: FormData) => {
-    const { amount, gasPrice, slippageTolerance, deadline } = values;
+  const handleFinish = React.useCallback(
+    async (values: FormData) => {
+      const { amount, gasPrice, slippageTolerance, deadline } = values;
 
-    if (!amount || !gasPrice) {
-      return;
-    }
+      if (!amount || !gasPrice) {
+        return;
+      }
 
-    setState({
-      saving: true,
-    });
+      setState({
+        saving: true,
+      });
 
-    const rate = new BigNumber(1e18)
-      .minus((web3c.syController.juniorFee ?? ZERO_BIG_NUMBER)
-        .plus(getNonHumanValue(slippageTolerance ?? ZERO_BIG_NUMBER, 18).dividedBy(100)));
+      const rate = new BigNumber(1e18).minus(
+        (web3c.syController.juniorFee ?? ZERO_BIG_NUMBER).plus(
+          getNonHumanValue(slippageTolerance ?? ZERO_BIG_NUMBER, 18).dividedBy(100),
+        ),
+      );
 
-    const amountScaled = getNonHumanValue(amount, tokenPool.erc20?.state.decimals);
+      const amountScaled = getNonHumanValue(amount, tokenPool.erc20?.state.decimals);
 
-    const minTokens = new BigNumber(amountScaled
-      .multipliedBy(rate)
-      .dividedBy(web3c.sy.price ?? 1)
-      .toFixed(0));
+      const minTokens = new BigNumber(
+        amountScaled
+          .multipliedBy(rate)
+          .dividedBy(web3c.sy.price ?? 1)
+          .toFixed(0),
+      );
 
-    const deadlineTs = Math.floor((Date.now() / 1_000) + (Number(deadline ?? 0) * 60));
+      const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
-    try {
-      await tokenPool.actions.juniorDeposit(amountScaled, minTokens, deadlineTs, gasPrice.value);
-      form.resetFields();
-    } catch {
-    }
+      try {
+        await tokenPool.actions.juniorDeposit(amountScaled, minTokens, deadlineTs, gasPrice.value);
+        form.resetFields();
+      } catch {}
 
-    setState({
-      saving: false,
-    });
-  }, [tokenPool.actions.juniorDeposit, form.resetFields, setState]);
+      setState({
+        saving: false,
+      });
+    },
+    [tokenPool.actions.juniorDeposit, form.resetFields, setState],
+  );
 
   return (
     <Form
@@ -93,10 +100,7 @@ export default function JuniorTranche() {
       validateTrigger={['onSubmit']}
       onFinish={handleFinish}
       className="grid flow-row row-gap-32">
-      <Form.Item
-        name="amount"
-        label="Amount"
-        rules={[{ required: true, message: 'Required' }]}>
+      <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon="usdc-token"
           max={tokenPool.erc20?.computed.maxAllowed ?? ZERO_BIG_NUMBER}
@@ -127,7 +131,8 @@ export default function JuniorTranche() {
             <TransactionDetails
               slippageTolerance={slippageTolerance}
               deadline={deadline}
-              onChange={handleTxDetailsChange} />
+              onChange={handleTxDetailsChange}
+            />
           );
         }}
       </Form.Item>
