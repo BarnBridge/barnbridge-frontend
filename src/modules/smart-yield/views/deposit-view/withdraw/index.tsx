@@ -5,7 +5,7 @@ import * as Antd from 'antd';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import { Paragraph, Small, Heading } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
@@ -26,9 +26,7 @@ export default function Withdraw() {
   const history = useHistory();
   const { id } = useParams<{ id: string }>();
   const [form] = Antd.Form.useForm<FormData>();
-  const [withdrawType, setWithdrawType] = useState<
-    'regular' | 'instant' | undefined
-  >();
+  const [withdrawType, setWithdrawType] = useState<'regular' | 'instant' | undefined>();
 
   function handleFinish(values: FormData) {
     console.log(values);
@@ -44,32 +42,32 @@ export default function Withdraw() {
       <Grid flow="col" gap={64} align="center" className="mb-64">
         <MarketCoinCard />
         <div>
-          <Small semiBold className="mb-4">
+          <Text type="small" weight="semibold" className="mb-4">
             Wallet balance
-          </Small>
-          <Paragraph type="p1" semiBold color="primary">
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
             25,381.3247
-          </Paragraph>
+          </Text>
         </div>
         <div>
-          <Small semiBold className="mb-4">
+          <Text type="small" weight="semibold" className="mb-4">
             Portfolio balance
-          </Small>
-          <Paragraph type="p1" semiBold color="primary">
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
             5,230.9971
-          </Paragraph>
+          </Text>
         </div>
       </Grid>
       <Card>
-        <Heading type="h3" semiBold color="primary">
+        <Text type="h3" weight="semibold" color="primary">
           Initiate Withdraw
-        </Heading>
-        <Paragraph type="p2" semiBold>
+        </Text>
+        <Text type="p2" weight="semibold">
           You can choose between fixed, or variable interest.
           <br />
           Be aware of the risk involved and read the warnings before going
           further
-        </Paragraph>
+        </Text>
 
         <Form
           form={form}
@@ -108,22 +106,22 @@ export default function Withdraw() {
               selected={withdrawType === 'regular'}
               onClick={() => setWithdrawType('regular')}>
               <Icon name="withdrawal_regular" width={64} height={64} />
-              <Paragraph type="p1" semiBold color="primary">Regular withdraw</Paragraph>
-              <Small semiBold>Wait time</Small>
-              <Paragraph type="p1" semiBold color="primary">60 days</Paragraph>
-              <Small semiBold>Total withdrawable amount</Small>
-              <Paragraph type="p1" semiBold color="primary">5,318.4489 USDC</Paragraph>
+              <Text type="p1" weight="semibold" color="primary">Regular withdraw</Text>
+              <Text type="small" weight="semibold">Wait time</Text>
+              <Text type="p1" weight="semibold" color="primary">60 days</Text>
+              <Text type="small" weight="semibold">Total withdrawable amount</Text>
+              <Text type="p1" weight="semibold" color="primary">5,318.4489 USDC</Text>
             </RadioCard>
             <RadioCard
               selected={withdrawType === 'instant'}
               onClick={() => setWithdrawType('instant')}>
               <Icon name="withdrawal_instant" width={64} height={64} />
               <br />
-              <Paragraph type="p1" semiBold color="primary">Instant withdraw</Paragraph>
-              <Small semiBold>Wait time</Small>
-              <Paragraph type="p1" semiBold color="primary">None</Paragraph>
-              <Small semiBold>Total withdrawable amount</Small>
-              <Paragraph type="p1" semiBold color="primary">5,000.0000 USDC</Paragraph>
+              <Text type="p1" weight="semibold" color="primary">Instant withdraw</Text>
+              <Text type="small" weight="semibold">Wait time</Text>
+              <Text type="p1" weight="semibold" color="primary">None</Text>
+              <Text type="small" weight="semibold">Total withdrawable amount</Text>
+              <Text type="p1" weight="semibold" color="primary">5,000.0000 USDC</Text>
             </RadioCard>
           </Grid>
         </Form>
@@ -137,7 +135,7 @@ export default function Withdraw() {
           <Button
             type="primary"
             onClick={() => console.log('Le initiate withdraw')}>
-              Initiate withdraw
+            Initiate withdraw
           </Button>
         </Grid>
       </Card>

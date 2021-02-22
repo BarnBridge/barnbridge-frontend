@@ -1,23 +1,16 @@
 import React from 'react';
 import * as Antd from 'antd';
 import cx from 'classnames';
+import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
-import { Paragraph, Small } from 'components/custom/typography';
-import ExpandableCard, {
-  ExpandableCardProps,
-} from 'components/custom/expandable-card';
-import Grid from 'components/custom/grid';
+import ExpandableCard, { ExpandableCardProps } from 'components/custom/expandable-card';
 import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
-import {
-  AbiDecodeResult,
-  AbiFunctionFragment,
-  AbiInterface,
-} from 'web3/abiInterface';
+import { Text } from 'components/custom/typography';
 
 import s from './styles.module.scss';
 
@@ -31,7 +24,7 @@ export type ProposalActionCardProps = ExpandableCardProps & {
   onEditAction?: Function;
 };
 
-const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = props => {
+const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
   const {
     className,
     title,
@@ -62,9 +55,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   }, [functionFragment, callData]);
 
   const stringParams = React.useMemo<string>(() => {
-    const params = functionParamValues?.map(param =>
-      AbiInterface.stringifyParamValue(param),
-    );
+    const params = functionParamValues?.map(param => AbiInterface.stringifyParamValue(param));
     return params?.join(',\n') ?? '';
   }, [functionParamValues]);
 
@@ -77,9 +68,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
       key: 'sig',
       icon: <Icons name="chevron-right" />,
       title: (
-        <Paragraph type="p1" semiBold>
+        <Text type="p1" weight="semibold">
           {isSignature ? 'Show transaction' : 'Show function signature'}
-        </Paragraph>
+        </Text>
       ),
     },
     {
@@ -91,9 +82,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
       key: 'delete',
       icon: <Icons name="bin-outlined" color="red" />,
       title: (
-        <Paragraph type="p1" semiBold color="red">
+        <Text type="p1" weight="semibold" color="red">
           Delete action
-        </Paragraph>
+        </Text>
       ),
     },
   ];
@@ -127,23 +118,20 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   return (
     <ExpandableCard
       title={
-        <Paragraph type="p2" semiBold color="primary">
+        <Text type="p2" weight="semibold" color="primary">
           {title}
-        </Paragraph>
+        </Text>
       }
       extra={
         showSettings ? (
-          <PopoverMenu
-            items={ActionMenuItems}
-            placement="bottomLeft"
-            onClick={key => handleActionMenu(String(key))}>
+          <PopoverMenu items={ActionMenuItems} placement="bottomLeft" onClick={key => handleActionMenu(String(key))}>
             <Button type="link" icon={<Icons name="gear" />} />
           </PopoverMenu>
         ) : (
           <Button type="link" onClick={handleShowSignature}>
-            <Small semiBold color="secondary">
+            <Text type="small" weight="semibold" color="secondary">
               {isSignature ? 'Show transaction' : 'Show function signature'}
-            </Small>
+            </Text>
           </Button>
         )
       }
@@ -151,9 +139,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
         ellipsis || expanded ? (
           <Grid flow="col" align="center" justify="center">
             <Button type="link" onClick={handleExpand}>
-              <Small semiBold color="secondary">
+              <Text type="small" weight="semibold" color="secondary">
                 {expanded ? 'Hide details' : 'Show more'}
-              </Small>
+              </Text>
             </Button>
           </Grid>
         ) : null
@@ -161,9 +149,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
       {...cardProps}>
       <div className={s.content}>
         <ExternalLink href={etherscanLink}>
-          <Paragraph type="p1" semiBold className={s.address} color="blue">
+          <Text type="p1" weight="semibold" className={s.address} color="blue">
             {shortenAddr(target)}
-          </Paragraph>
+          </Text>
         </ExternalLink>
         {signature && (
           <Antd.Typography.Paragraph
@@ -173,10 +161,8 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
               rows: expanded ? 9999 : 2,
               expandable: false,
               onEllipsis: handleEllipsis,
-            }}>.
-            {isSignature
-              ? signature
-              : `${functionFragment?.name}(${stringParams})`}
+            }}>
+            .{isSignature ? signature : `${functionFragment?.name}(${stringParams})`}
           </Antd.Typography.Paragraph>
         )}
       </div>

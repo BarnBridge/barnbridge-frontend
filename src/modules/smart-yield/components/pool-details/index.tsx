@@ -1,8 +1,9 @@
-import Card  from "components/antd/card";
-import { Paragraph, Small, Text } from "components/custom/typography";
+import Card from "components/antd/card";
+import { Text } from "components/custom/typography";
 import Grid from "components/custom/grid";
-import s from './s.module.scss';
+import Divider from 'components/antd/divider';
 
+import s from './s.module.scss';
 
 export default function PoolDetails() {
   return (
@@ -12,7 +13,7 @@ export default function PoolDetails() {
           Pool details
         </Text>
       </div>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
         <Grid flow="row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">Junior Liquidity</Text>
@@ -23,7 +24,7 @@ export default function PoolDetails() {
           <Text type="p1" weight="semibold" color="primary">1,322.16 M</Text>
         </Grid>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
         <Grid flow="row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4"># of juniors</Text>
@@ -34,7 +35,7 @@ export default function PoolDetails() {
           <Text type="p1" weight="semibold" color="primary">5,731</Text>
         </Grid>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
         <Grid flow="row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">Junior APY</Text>
@@ -45,7 +46,7 @@ export default function PoolDetails() {
           <Text type="p1" weight="semibold" color="green">6.42%</Text>
         </Grid>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
         <Grid flow="row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">Junior liquidity locked</Text>

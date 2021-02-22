@@ -10,7 +10,7 @@ import DatePicker from 'components/antd/datepicker';
 import Input from 'components/antd/input';
 import Icon from 'components/custom/icon';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
 import { DURATION_1_MONTH, DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_MONTH, getLockEndDate } from 'utils/date';
@@ -149,9 +149,9 @@ export default function SeniorTranche() {
                     });
                     setState({});
                   }}>
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     {opt}
-                  </Paragraph>
+                  </Text>
                 </Button>
               );
             })}

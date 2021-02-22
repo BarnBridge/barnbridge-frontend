@@ -1,33 +1,27 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import Tabs from 'components/antd/tabs';
 import Table from 'components/antd/table';
-import Grid from 'components/custom/grid';
+import Tabs from 'components/antd/tabs';
 import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
-import { Label, Paragraph, Small } from 'components/custom/typography';
-import ProposalVotersProvider, {
-  useProposalVoters,
-} from '../../providers/ProposalVotersProvider';
-
+import { Text } from 'components/custom/typography';
 import { APIVoteEntity } from 'modules/governance/api';
-import {
-  formatBigValue,
-  getEtherscanAddressUrl,
-  shortenAddr,
-} from 'web3/utils';
+
+import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
 
 import s from './styles.module.scss';
 
 const Columns: ColumnsType<APIVoteEntity> = [
   {
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Address
-      </Small>
+      </Text>
     ),
     dataIndex: 'address',
     width: '35%',
@@ -35,52 +29,52 @@ const Columns: ColumnsType<APIVoteEntity> = [
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(address)}>
-          <Paragraph type="p1" semiBold color="blue">
+          <Text type="p1" weight="semibold" color="blue">
             {shortenAddr(address)}
-          </Paragraph>
+          </Text>
         </ExternalLink>
       </Grid>
     ),
   },
   {
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Votes
-      </Small>
+      </Text>
     ),
     dataIndex: 'power',
     width: '38%',
     align: 'right',
     render: (power: BigNumber) => (
-      <Paragraph type="p1" semiBold color="primary" className={s.powerCell}>
+      <Text type="p1" weight="semibold" color="primary" className={s.powerCell}>
         {formatBigValue(power, 2, '-', 2)}
-      </Paragraph>
+      </Text>
     ),
   },
   {
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Vote type
-      </Small>
+      </Text>
     ),
     dataIndex: 'support',
     width: '27%',
     render: (support: boolean) =>
       support ? (
-        <Label type="lb2" semiBold className={s.forTag}>
+        <Text type="lb2" weight="semibold" className={s.forTag}>
           For
-        </Label>
+        </Text>
       ) : (
-        <Label type="lb2" semiBold className={s.againstTag}>
+        <Text type="lb2" weight="semibold" className={s.againstTag}>
           Against
-        </Label>
+        </Text>
       ),
   },
 ];
 
 export type ProposalVotersModalProps = ModalProps;
 
-const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps> = props => {
+const ProposalVotersModalInner: React.FC<ProposalVotersModalProps> = props => {
   const { ...modalProps } = props;
 
   const proposalVotesCtx = useProposalVoters();
@@ -101,10 +95,7 @@ const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps
 
   return (
     <Modal className={s.component} width={620} {...modalProps}>
-      <Tabs
-        className={s.tabs}
-        defaultActiveKey="all"
-        onChange={handleStateChange}>
+      <Tabs className={s.tabs} defaultActiveKey="all" onChange={handleStateChange}>
         <Tabs.Tab key="all" tab="All Votes" />
         <Tabs.Tab key="for" tab="For" />
         <Tabs.Tab key="against" tab="Against" />
@@ -125,9 +116,9 @@ const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps
           pageSize: proposalVotesCtx.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Paragraph type="p2" semiBold color="secondary">
+            <Text type="p2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} votes
-            </Paragraph>
+            </Text>
           ),
           onChange: handlePaginationChange,
         }}
@@ -136,7 +127,7 @@ const ProposalVotersModalInner: React.FunctionComponent<ProposalVotersModalProps
   );
 };
 
-const ProposalVotersModal: React.FunctionComponent<ProposalVotersModalProps> = props => (
+const ProposalVotersModal: React.FC<ProposalVotersModalProps> = props => (
   <ProposalVotersProvider>
     <ProposalVotersModalInner {...props} />
   </ProposalVotersProvider>

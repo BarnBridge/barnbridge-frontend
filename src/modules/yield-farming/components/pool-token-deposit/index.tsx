@@ -1,27 +1,25 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { DAITokenMeta } from 'web3/contracts/dai';
+import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import { SUSDTokenMeta } from 'web3/contracts/susd';
+import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { TokenMeta } from 'web3/types';
+import { MAX_UINT_256, ZERO_BIG_NUMBER, formatBigValue, getNonHumanValue } from 'web3/utils';
 
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
-import Button from 'components/antd/button';
-import Alert from 'components/antd/alert';
-import Tooltip from 'components/antd/tooltip';
+import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icons, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
-import GasFeeList from 'components/custom/gas-fee-list';
-import { Label, Paragraph, Small } from 'components/custom/typography';
-
-import { TokenMeta } from 'web3/types';
-import { formatBigValue, getNonHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER, } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { DAITokenMeta } from 'web3/contracts/dai';
-import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import { Hint, Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
@@ -65,7 +63,7 @@ const InitialFormValues: FormData = {
   gasFee: undefined,
 };
 
-const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props => {
+const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
   const web3c = useWeb3Contracts();
   const [form] = Antd.Form.useForm<FormData>();
 
@@ -141,10 +139,7 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
       walletBalance,
       stakedBalance,
       effectiveStakedBalance,
-      maxAllowance: BigNumber.min(
-        allowance ?? ZERO_BIG_NUMBER,
-        walletBalance ?? ZERO_BIG_NUMBER,
-      ),
+      maxAllowance: BigNumber.min(allowance ?? ZERO_BIG_NUMBER, walletBalance ?? ZERO_BIG_NUMBER),
       enabled: allowance?.gt(ZERO_BIG_NUMBER) ?? false,
       formDisabled: isEnded === true,
       expanded,
@@ -182,8 +177,7 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
         default:
           break;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ enabling: false });
   }
@@ -221,8 +215,7 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
           web3c.yfBOND.reload();
           break;
       }
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ saving: false });
   }
@@ -231,25 +224,25 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
       <Grid flow="col" gap={12} align="center">
         {icon && <Icons name={icon} width={40} height={40} />}
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           {token.name}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="secondary">
+        <Text type="small" weight="semibold" color="secondary">
           Wallet Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="primary">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBigValue(state.walletBalance, token.decimals)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       {(!state.formDisabled || state.enabled === true) && (
         <Grid flow="row" gap={4}>
-          <Small semiBold color="secondary">
+          <Text type="small" weight="semibold" color="secondary">
             Enable Token
-          </Small>
+          </Text>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
             checked={state.enabled}
@@ -262,39 +255,28 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
   );
 
   return (
-    <Card
-      title={CardTitle}
-      className={s.card}
-      noPaddingBody
-      showExpandButton={state.enabled}
-      expanded={state.expanded}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleSubmit}>
+    <Card title={CardTitle} className={s.card} noPaddingBody showExpandButton={state.enabled} expanded={state.expanded}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Grid colsTemplate="1fr 1fr">
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
-            <Label type="lb2" semiBold color="secondary">
+            <Text type="lb2" weight="semibold" color="secondary">
               Staked Balance
-            </Label>
-            <Paragraph type="p1" semiBold color="primary">
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
               {formatBigValue(state.stakedBalance, token.decimals)}
-            </Paragraph>
+            </Text>
           </Grid>
           <Grid flow="row" gap={4} padding={24} className={s.balanceBlock}>
             <Grid flow="col" gap={8}>
-              <Label type="lb2" semiBold color="secondary">
-                Effective Staked Balance
-              </Label>
-              <Tooltip
-                type="info"
-                title="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal."
-              />
+              <Hint text="This value represents your 'effective stake' in this pool - meaning the portion of your total staked balance that is earning rewards this epoch. When depositing new tokens during an epoch that is currently running, your effective deposit amount will be proportionally sized by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will become equal.">
+                <Text type="lb2" weight="semibold" color="secondary">
+                  Effective Staked Balance
+                </Text>
+              </Hint>
             </Grid>
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               {formatBigValue(state.effectiveStakedBalance, token.decimals)}
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
         <Grid flow="row" gap={32} padding={24}>
@@ -315,7 +297,7 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
                         cb();
                       }
                     },
-                  }
+                  },
                 ]}>
                 <TokenAmount
                   tokenIcon={icon}
@@ -326,8 +308,7 @@ const PoolTokenDeposit: React.FunctionComponent<PoolTokenDepositProps> = props =
                   slider
                 />
               </Form.Item>
-              <Alert
-                message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
+              <Alert message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch." />
             </Grid>
             <Grid flow="row">
               <Form.Item

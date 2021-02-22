@@ -1,16 +1,15 @@
 import React, { useState } from 'react';
+
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
-import { Paragraph, Small, Text } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import Grid from 'components/custom/grid';
-import Input from 'components/antd/input';
-import s from 'modules/smart-yield/components/transaction-details/s.module.scss';
 import Popover from 'components/antd/popover';
 import Select from 'components/antd/select';
+import Divider from 'components/antd/divider';
 
 const originatorFilterOptions =
   [{
@@ -115,27 +114,27 @@ export default function PortfolioSenior() {
               <Text type="small" weight="semibold">Compound</Text>
             </div>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Deposited</Text>
             <Text type="p1" weight="semibold" color="primary">10,000.00</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Redeemable</Text>
             <Text type="p1" weight="semibold" color="primary">10,381.22</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Time left until maturity</Text>
             <Text type="p1" weight="semibold" color="primary">30 days 4 hours</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">APY</Text>
             <Text type="p1" weight="semibold" color="primary">5.33%</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <Button type="primary">Redeem</Button>
             <Button type="ghost">Sell</Button>
@@ -149,27 +148,27 @@ export default function PortfolioSenior() {
               <Text type="small" weight="semibold">Compound</Text>
             </div>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Deposited</Text>
             <Text type="p1" weight="semibold" color="primary">75,000.00</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Redeemable</Text>
             <Text type="p1" weight="semibold" color="primary">10,381.22</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Time left until maturity</Text>
             <Text type="p1" weight="semibold" color="primary">30 days 4 hours</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">APY</Text>
             <Text type="p1" weight="semibold" color="primary">5.33%</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <Button type="primary">Redeem</Button>
             <Button type="ghost">Sell</Button>
@@ -183,27 +182,27 @@ export default function PortfolioSenior() {
               <Text type="small" weight="semibold">Compound</Text>
             </div>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Deposited</Text>
             <Text type="p1" weight="semibold" color="primary">1,000,000.00</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Redeemable</Text>
             <Text type="p1" weight="semibold" color="primary">10,381.22</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">Time left until maturity</Text>
             <Text type="p1" weight="semibold" color="primary">30 days 4 hours</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="p-24">
             <Text type="small" weight="semibold" color="secondary">APY</Text>
             <Text type="p1" weight="semibold" color="primary">5.33%</Text>
           </div>
-          <Card.Delimiter />
+          <Divider />
           <div className="grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
             <Button type="primary">Redeem</Button>
             <Button type="ghost">Sell</Button>

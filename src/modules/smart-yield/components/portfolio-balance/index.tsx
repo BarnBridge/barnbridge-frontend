@@ -1,12 +1,14 @@
+import React from 'react';
+
 import { Text } from 'components/custom/typography';
 import Card from 'components/antd/card';
-import React from 'react';
+import Divider from 'components/antd/divider';
 
 export default function PortfolioBalance(props: any) {
   return (
     <Card noPaddingBody {...props}>
       <Text type="p1" weight="semibold" color="primary" className="p-24">Portfolio balance</Text>
-      <Card.Delimiter />
+      <Divider />
       <div className="p-24 grid flow-col">
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">Total balance</Text>
@@ -17,7 +19,7 @@ export default function PortfolioBalance(props: any) {
           <Text type="p1" weight="semibold" color="red">12.37%</Text>
         </div>
       </div>
-      <Card.Delimiter />
+      <Divider />
       <div className="p-24 grid flow-col">
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">Senior balance</Text>

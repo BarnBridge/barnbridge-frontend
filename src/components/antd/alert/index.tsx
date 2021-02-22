@@ -9,7 +9,7 @@ import s from './styles.module.scss';
 
 export type AlertProps = AntdAlertProps & {};
 
-const Alert: React.FunctionComponent<AlertProps> = props => {
+const Alert: React.FC<AlertProps> = props => {
   const { className, type = 'info', ...alertProps } = props;
 
   const icon = React.useMemo<React.ReactNode>(() => {
@@ -23,15 +23,7 @@ const Alert: React.FunctionComponent<AlertProps> = props => {
     }
   }, [type]);
 
-  return (
-    <Antd.Alert
-      className={cx(s.component, className)}
-      type={type}
-      showIcon
-      icon={icon}
-      {...alertProps}
-    />
-  );
+  return <Antd.Alert className={cx(s.component, className)} type={type} showIcon icon={icon} {...alertProps} />;
 };
 
 export default Alert;

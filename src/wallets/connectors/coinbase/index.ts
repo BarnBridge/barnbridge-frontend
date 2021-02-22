@@ -1,14 +1,12 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 
-import { WalletConnector } from 'wallets/types';
 import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
-
 import CoinbaseWalletLogo from 'resources/svg/wallets/coinbase-logo.svg';
 
-const WEB3_COINBASE_WALLET_APP_NAME = String(
-  process.env.REACT_APP_WEB3_COINBASE_WALLET_APP_NAME,
-);
+import { WalletConnector } from 'wallets/types';
+
+const WEB3_COINBASE_WALLET_APP_NAME = String(process.env.REACT_APP_WEB3_COINBASE_WALLET_APP_NAME);
 
 export type CoinbaseWalletArgs = {
   darkMode?: boolean;

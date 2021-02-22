@@ -45,7 +45,7 @@ export type ProposalsProviderProps = {
   searchFilter?: string;
 };
 
-const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props => {
+const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
   const { stateFilter, searchFilter, children } = props;
 
   const [state, setState] = useMergeState<ProposalsProviderState>(InitialState);
@@ -63,12 +63,7 @@ const ProposalsProvider: React.FunctionComponent<ProposalsProviderProps> = props
       loading: true,
     });
 
-    fetchProposals(
-      state.page,
-      state.pageSize,
-      state.stateFilter,
-      state.searchFilter,
-    )
+    fetchProposals(state.page, state.pageSize, state.stateFilter, state.searchFilter)
       .then(data => {
         setState({
           loading: false,

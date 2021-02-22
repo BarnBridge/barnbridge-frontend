@@ -15,10 +15,14 @@ const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
       className={cx(s.component, className)}
       bordered={false}
       showSorterTooltip={false}
-      pagination={pagination ? {
-        showSizeChanger: false,
-        ...pagination,
-      } : false}
+      pagination={
+        pagination
+          ? {
+              showSizeChanger: false,
+              ...pagination,
+            }
+          : false
+      }
       {...tableProps}
     />
   );

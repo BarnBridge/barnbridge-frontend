@@ -1,7 +1,9 @@
+import React from 'react';
+
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import Card from 'components/antd/card';
-import React from 'react';
+import Divider from 'components/antd/divider';
 
 export default function PortfolioValue(props: any) {
   return (
@@ -10,7 +12,7 @@ export default function PortfolioValue(props: any) {
         <Text type="p1" weight="semibold" color="primary">Portfolio value</Text>
         <Text type="small" weight="semibold">Last month</Text>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
     </Card>
   )
 }

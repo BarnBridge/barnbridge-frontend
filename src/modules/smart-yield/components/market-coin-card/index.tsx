@@ -1,4 +1,4 @@
-import { Paragraph, Small } from "components/custom/typography";
+import { Text } from "components/custom/typography";
 import Grid from "components/custom/grid";
 import IconBubble from "components/custom/icon-bubble";
 
@@ -8,15 +8,15 @@ export default function MarketCoinCard() {
       <IconBubble name="usdc-token" bubbleName="compound" />
       <Grid flow="row" gap={4} className="ml-auto">
         <div>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             USD Coin
-          </Paragraph>
+          </Text>
           {' '}
-          <Paragraph type="p1" semiBold>
+          <Text type="p1" weight="semibold">
             (USDC)
-          </Paragraph>
+          </Text>
         </div>
-        <Small semiBold>Compound</Small>
+        <Text type="small" weight="semibold">Compound</Text>
       </Grid>
     </Grid>
   );

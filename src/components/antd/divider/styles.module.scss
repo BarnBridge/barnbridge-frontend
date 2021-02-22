@@ -1,0 +1,9 @@
+.divider:global(.ant-divider) {
+  margin: 0;
+  border-color: var(--theme-border-color);
+
+  &:global(.ant-divider-vertical) {
+    top: 0;
+    height: 100%;
+  }
+}

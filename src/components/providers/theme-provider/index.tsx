@@ -30,13 +30,14 @@ const ThemeProvider: React.FC = props => {
   }, [theme]);
 
   return (
-    <ThemeContext.Provider value={{
-      theme,
-      isDarkTheme: theme === 'dark',
-      toggleDarkTheme: () => {
-        setTheme(theme === 'dark' ? 'light' : 'dark');
-      },
-    }}>
+    <ThemeContext.Provider
+      value={{
+        theme,
+        isDarkTheme: theme === 'dark',
+        toggleDarkTheme: () => {
+          setTheme(theme === 'dark' ? 'light' : 'dark');
+        },
+      }}>
       {children}
     </ThemeContext.Provider>
   );

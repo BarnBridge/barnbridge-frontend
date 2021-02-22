@@ -1,16 +1,16 @@
 import React from 'react';
+import { formatBigValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-import ProposalVotersModal from '../proposal-voters-modal';
-import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
-import { useProposal } from '../../providers/ProposalProvider';
+import { Text } from 'components/custom/typography';
 
-import { formatBigValue } from 'web3/utils';
+import { useProposal } from '../../providers/ProposalProvider';
+import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
+import ProposalVotersModal from '../proposal-voters-modal';
 
 import s from './styles.module.scss';
 
@@ -26,12 +26,10 @@ const InitialState: ProposalVotesCardState = {
   voteState: VoteState.None,
 };
 
-const ProposalVotesCard: React.FunctionComponent = () => {
+const ProposalVotesCard: React.FC = () => {
   const proposalCtx = useProposal();
 
-  const [state, setState] = React.useState<ProposalVotesCardState>(
-    InitialState,
-  );
+  const [state, setState] = React.useState<ProposalVotesCardState>(InitialState);
 
   function handleShowVotersModal() {
     setState(prevState => ({
@@ -91,9 +89,9 @@ const ProposalVotesCard: React.FunctionComponent = () => {
     <Card
       className={s.component}
       title={
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           Votes
-        </Paragraph>
+        </Text>
       }
       extra={
         <Button type="link" onClick={handleShowVotersModal}>
@@ -103,16 +101,16 @@ const ProposalVotesCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={32} className={s.row}>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               For
-            </Paragraph>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {proposalCtx.proposal?.forVotes.toFormat(2)}
-              </Paragraph>
-              <Paragraph type="p1" color="secondary">
+              </Text>
+              <Text type="p1" color="secondary">
                 ({proposalCtx.forRate?.toFixed(2)}%)
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Progress
@@ -123,16 +121,16 @@ const ProposalVotesCard: React.FunctionComponent = () => {
         </Grid>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               Against
-            </Paragraph>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="primary">
+              <Text type="p1" weight="semibold" color="primary">
                 {proposalCtx.proposal?.againstVotes.toFormat(2)}
-              </Paragraph>
-              <Paragraph type="p1" color="secondary">
+              </Text>
+              <Text type="p1" color="secondary">
                 ({proposalCtx.againstRate?.toFixed(2)}%)
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Progress
@@ -144,47 +142,31 @@ const ProposalVotesCard: React.FunctionComponent = () => {
       </Grid>
       <Grid flow="row" gap={24} className={s.row}>
         <Grid flow="row" gap={8}>
-          <Paragraph type="p1" color="secondary">
+          <Text type="p1" color="secondary">
             Your voting power for this proposal
-          </Paragraph>
-          <Paragraph type="p1" semiBold color="primary">
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(proposalCtx.votingPower, 2)}
-          </Paragraph>
+          </Text>
         </Grid>
         <Grid flow="row" gap={24}>
           {!proposalCtx.receipt?.hasVoted ? (
             <Grid gap={24} colsTemplate="1fr 1fr">
-              <Button
-                type="primary"
-                className={s.actionBtn}
-                onClick={handleVoteForModal}>
+              <Button type="primary" className={s.actionBtn} onClick={handleVoteForModal}>
                 Vote for
               </Button>
-              <Button
-                type="default"
-                className={s.actionBtn}
-                onClick={handleVoteAgainstModal}>
+              <Button type="default" className={s.actionBtn} onClick={handleVoteAgainstModal}>
                 Vote against
               </Button>
             </Grid>
           ) : (
             <>
-              <Alert
-                message={`You already voted ${
-                  proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'
-                } the proposal`}
-              />
+              <Alert message={`You already voted ${proposalCtx.receipt?.support ? 'FOR' : 'AGAINST'} the proposal`} />
               <Grid flow="col" gap={24} colsTemplate="1fr 1fr">
-                <Button
-                  type="primary"
-                  className={s.actionBtn}
-                  onClick={handleVoteChangeModal}>
+                <Button type="primary" className={s.actionBtn} onClick={handleVoteChangeModal}>
                   Change vote
                 </Button>
-                <Button
-                  type="default"
-                  className={s.actionBtn}
-                  onClick={handleVoteCancelModal}>
+                <Button type="default" className={s.actionBtn} onClick={handleVoteCancelModal}>
                   Cancel vote
                 </Button>
               </Grid>
@@ -193,16 +175,9 @@ const ProposalVotesCard: React.FunctionComponent = () => {
         </Grid>
       </Grid>
 
-      {state.showVotersModal && (
-        <ProposalVotersModal onCancel={handleHideVotersModal} />
-      )}
+      {state.showVotersModal && <ProposalVotersModal onCancel={handleHideVotersModal} />}
 
-      {state.showVoteModal && (
-        <ProposalVoteModal
-          voteState={state.voteState}
-          onCancel={handleHideVoteModal}
-        />
-      )}
+      {state.showVoteModal && <ProposalVoteModal voteState={state.voteState} onCancel={handleHideVoteModal} />}
     </Card>
   );
 };

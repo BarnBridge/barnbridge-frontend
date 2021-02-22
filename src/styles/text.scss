@@ -15,13 +15,7 @@
   src: url('../resources/fonts/Montserrat-Bold.ttf');
 }
 
-@mixin font(
-  $size,
-  $height,
-  $weight: normal,
-  $style: normal,
-  $family: Montserrat
-) {
+@mixin font($size, $height, $weight: normal, $style: normal, $family: Montserrat) {
   font-family: $family;
   font-weight: $weight;
   font-style: $style;

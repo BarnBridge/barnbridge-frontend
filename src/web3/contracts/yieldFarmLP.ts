@@ -18,6 +18,7 @@ type YieldFarmLPContractData = {
   totalEpochs?: number;
   totalReward?: BigNumber;
   epochReward?: BigNumber;
+  nextCurrentEpoch?: number;
   currentEpoch?: number;
   bondReward?: BigNumber;
   poolSize?: BigNumber;
@@ -40,6 +41,7 @@ const InitialData: YieldFarmLPContractData = {
   totalEpochs: undefined,
   totalReward: undefined,
   epochReward: undefined,
+  nextCurrentEpoch: undefined,
   currentEpoch: undefined,
   bondReward: undefined,
   poolSize: undefined,
@@ -80,6 +82,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       },
     ]);
 
+    const nextCurrentEpoch = currentEpoch;
     const isEnded = currentEpoch > totalEpochs;
 
     currentEpoch = Math.min(currentEpoch, totalEpochs);
@@ -102,6 +105,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       totalEpochs,
       totalReward,
       epochReward,
+      nextCurrentEpoch,
       currentEpoch,
       bondReward,
     }));
@@ -109,13 +113,13 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
     const [poolSize, nextPoolSize] = await contract.batch([
       {
         method: 'getPoolSize',
-        methodArgs: [currentEpoch],
+        methodArgs: [nextCurrentEpoch],
         transform: (value: string) =>
           getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
       {
         method: 'getPoolSize',
-        methodArgs: [currentEpoch + 1],
+        methodArgs: [nextCurrentEpoch + 1],
         transform: (value: string) =>
           getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
       },
@@ -129,23 +133,23 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
   }, [reload]);
 
   useAsyncEffect(async () => {
-    const { currentEpoch } = data;
+    const { nextCurrentEpoch } = data;
 
     let epochStake: BigNumber | undefined;
     let nextEpochStake: BigNumber | undefined;
     let currentReward: BigNumber | undefined;
 
-    if (wallet.account && currentEpoch !== undefined) {
+    if (wallet.account && nextCurrentEpoch !== undefined) {
       [epochStake, nextEpochStake, currentReward] = await contract.batch([
         {
           method: 'getEpochStake',
-          methodArgs: [wallet.account, currentEpoch],
+          methodArgs: [wallet.account, nextCurrentEpoch],
           transform: (value: string) =>
             getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
         {
           method: 'getEpochStake',
-          methodArgs: [wallet.account, currentEpoch + 1],
+          methodArgs: [wallet.account, nextCurrentEpoch + 1],
           transform: (value: string) =>
             getHumanValue(new BigNumber(value), BONDTokenMeta.decimals),
         },
@@ -164,7 +168,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       nextEpochStake,
       currentReward,
     }));
-  }, [reload, wallet.account, data.currentEpoch]);
+  }, [reload, wallet.account, data.nextCurrentEpoch]);
 
   useAsyncEffect(async () => {
     const { epochStake, poolSize, epochReward } = data;

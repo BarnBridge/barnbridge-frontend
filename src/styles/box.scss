@@ -69,15 +69,3 @@ $paddings: 4, 8, 12, 16, 24, 32, 48, 64;
 .full-height {
   height: 100%;
 }
-
-.bb-divider {
-  width: 100%;
-  height: 1px;
-  border-top: 1px solid var(--theme-border-color);
-}
-
-.bb-v-divider {
-  width: 1px;
-  height: 100%;
-  border-left: 1px solid var(--theme-border-color);
-}

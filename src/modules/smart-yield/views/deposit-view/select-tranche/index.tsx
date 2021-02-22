@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useHistory, useParams } from 'react-router-dom';
+
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Icon from 'components/custom/icon';
-import { Paragraph, Small, Text } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 

@@ -3,12 +3,12 @@ import React from 'react';
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
-import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
-
-import { useWallet, WalletConnectors } from 'wallets/wallet';
-import { WalletConnector } from 'wallets/types';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
+import { WalletConnectors, useWallet } from 'wallets/wallet';
+
+import { WalletConnector } from 'wallets/types';
 
 export type ConnectWalletModalProps = ModalProps & {};
 
@@ -20,7 +20,7 @@ const InitialState: ConnectWalletModalState = {
   showLedgerModal: false,
 };
 
-const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = props => {
+const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
   const { ...modalProps } = props;
 
   const wallet = useWallet();
@@ -38,20 +38,19 @@ const ConnectWalletModal: React.FunctionComponent<ConnectWalletModalProps> = pro
       return;
     }
 
-    wallet.connect(connector)
-      .catch(Error);
+    wallet.connect(connector).catch(Error);
   }
 
   return (
     <Modal width={568} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={4}>
-          <Heading type="h2" bold color="primary">
+          <Text type="h2" weight="bold" color="primary">
             Connect Wallet
-          </Heading>
-          <Paragraph type="p1" color="secondary">
+          </Text>
+          <Text type="p1" color="secondary">
             Please select the wallet of your liking
-          </Paragraph>
+          </Text>
         </Grid>
 
         <Grid gap={24} colsTemplate="repeat(auto-fit, minmax(120px, 240px))">

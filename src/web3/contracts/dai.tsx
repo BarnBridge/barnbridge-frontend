@@ -1,19 +1,16 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-
-import Icons from 'components/custom/icon';
-
-import { useReload } from 'hooks/useReload';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { useWallet } from 'wallets/wallet';
-import { TokenMeta } from 'web3/types';
-import { getHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import { TokenMeta } from 'web3/types';
+import { getHumanValue } from 'web3/utils';
 
-const CONTRACT_DAI_ADDR = String(
-  process.env.REACT_APP_CONTRACT_DAI_ADDR,
-).toLowerCase();
+import Icons from 'components/custom/icon';
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useReload } from 'hooks/useReload';
+import { useWallet } from 'wallets/wallet';
+
+const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase();
 
 export const DAITokenMeta: TokenMeta = {
   icon: <Icons key="dai" name="dai-token" />,
@@ -43,11 +40,7 @@ export function useDAIContract(): DAIContract {
   const wallet = useWallet();
 
   const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(
-      require('web3/abi/dai.json'),
-      CONTRACT_DAI_ADDR,
-      'DAI',
-    );
+    return new Web3Contract(require('web3/abi/dai.json'), CONTRACT_DAI_ADDR, 'DAI');
   }, []);
 
   const [data, setData] = React.useState<DAIContractData>(InitialData);
@@ -61,8 +54,7 @@ export function useDAIContract(): DAIContract {
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
-          transform: (value: string) =>
-            getHumanValue(new BigNumber(value), DAITokenMeta.decimals),
+          transform: (value: string) => getHumanValue(new BigNumber(value), DAITokenMeta.decimals),
         },
         {
           method: 'allowance',

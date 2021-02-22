@@ -3,28 +3,26 @@ import { useHistory } from 'react-router';
 import { Redirect } from 'react-router-dom';
 import * as Antd from 'antd';
 import { StoreValue } from 'rc-field-form/lib/interface';
+import { useWeb3Contracts } from 'web3/contracts';
 
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
-import Alert from 'components/antd/alert';
 import Textarea from 'components/antd/textarea';
-import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
 import Icons from 'components/custom/icon';
-import CreateProposalActionModal, {
-  CreateProposalActionForm,
-} from '../../components/create-proposal-action-modal';
-import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
-import ProposalActionCard from '../../components/proposal-action-card';
-import { useDAO } from '../../components/dao-provider';
-import { fetchProposal } from '../../api';
-
-import { useWeb3Contracts } from 'web3/contracts';
-import { useWallet } from 'wallets/wallet';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import { useWhile } from 'hooks/useWhile';
+import { useWallet } from 'wallets/wallet';
+
+import { fetchProposal } from '../../api';
+import CreateProposalActionModal, { CreateProposalActionForm } from '../../components/create-proposal-action-modal';
+import { useDAO } from '../../components/dao-provider';
+import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
+import ProposalActionCard from '../../components/proposal-action-card';
 
 import s from './styles.module.scss';
 
@@ -56,16 +54,14 @@ const InitialState: ProposalCreateViewState = {
   submitting: false,
 };
 
-const ProposalCreateView: React.FunctionComponent = () => {
+const ProposalCreateView: React.FC = () => {
   const history = useHistory();
   const web3c = useWeb3Contracts();
   const wallet = useWallet();
   const dao = useDAO();
 
   const [form] = Antd.Form.useForm<NewProposalForm>();
-  const [state, setState] = useMergeState<ProposalCreateViewState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<ProposalCreateViewState>(InitialState);
 
   const checkProposalWhile = useWhile({
     callback: async (proposalId: number) => {
@@ -82,9 +78,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
     let actions = form.getFieldValue('actions');
 
     if (state.selectedAction) {
-      actions = actions.map((action: CreateProposalActionForm) =>
-        action === state.selectedAction ? payload : action,
-      );
+      actions = actions.map((action: CreateProposalActionForm) => (action === state.selectedAction ? payload : action));
     } else {
       actions.push(payload);
     }
@@ -99,11 +93,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
     if (selectedAction) {
       form.setFieldsValue({
-        actions: form
-          .getFieldValue('actions')
-          .filter(
-            (action: CreateProposalActionForm) => action !== selectedAction,
-          ),
+        actions: form.getFieldValue('actions').filter((action: CreateProposalActionForm) => action !== selectedAction),
       });
     }
 
@@ -155,9 +145,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
         ),
       };
 
-      const proposal = await web3c.daoGovernance.actions.createProposal(
-        payload,
-      );
+      const proposal = await web3c.daoGovernance.actions.createProposal(payload);
       const { proposalId } = proposal.returnValues;
 
       checkProposalWhile.start(proposalId);
@@ -165,17 +153,15 @@ const ProposalCreateView: React.FunctionComponent = () => {
 
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposalId}`);
-    } catch (e) {
-    }
+    } catch (e) {}
 
     setState({ submitting: false });
   }
 
   React.useEffect(() => {
-    dao.actions.hasActiveProposal()
-      .then(hasActiveProposal => {
-        setState({ hasActiveProposal });
-      });
+    dao.actions.hasActiveProposal().then(hasActiveProposal => {
+      setState({ hasActiveProposal });
+    });
   }, [wallet.account]);
 
   if (!wallet.initialized) {
@@ -183,105 +169,78 @@ const ProposalCreateView: React.FunctionComponent = () => {
   }
 
   if (!wallet.isActive) {
-    return (
-      <Redirect to="/governance/proposals" />
-    );
+    return <Redirect to="/governance/proposals" />;
   }
 
-  const hasCreateRestrictions = state.hasActiveProposal !== undefined
-    && dao.actions.hasThreshold() !== undefined;
+  const hasCreateRestrictions = state.hasActiveProposal !== undefined && dao.actions.hasThreshold() !== undefined;
 
   if (dao.isActive === undefined || !hasCreateRestrictions) {
     return null;
   }
 
-  const canCreateProposal = state.hasActiveProposal === false
-    && dao.actions.hasThreshold() === true;
+  const canCreateProposal = state.hasActiveProposal === false && dao.actions.hasThreshold() === true;
 
   if (!dao.isActive || !canCreateProposal) {
-    return (
-      <Redirect to="/governance/proposals" />
-    );
+    return <Redirect to="/governance/proposals" />;
   }
 
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col">
-        <Button
-          type="link"
-          icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>
+        <Button type="link" icon={<Icons name="left-arrow" />} onClick={handleBackClick}>
           Proposals
         </Button>
       </Grid>
 
       <Grid flow="row" gap={16}>
-        <Heading type="h1" bold color="primary" className="mb-16">
+        <Text type="h1" weight="bold" color="primary" className="mb-16">
           Create Proposal
-        </Heading>
+        </Text>
         <Form
           form={form}
           initialValues={InitialFormValues}
           validateTrigger={['onSubmit', 'onChange']}
           onFinish={handleSubmit}>
           <Grid flow="row" gap={32}>
-            <Grid
-              flow="col"
-              gap={24}
-              colsTemplate="repeat(auto-fit, minmax(0, 1fr))"
-              align="start">
+            <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 1fr))" align="start">
               <Card
                 title={
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     Proposal description
-                  </Paragraph>
+                  </Text>
                 }>
                 <Grid flow="row" gap={24}>
-                  <Form.Item
-                    name="title"
-                    label="Title"
-                    rules={[{ required: true, message: 'Required' }]}>
-                    <Input
-                      placeholder="Placeholder"
-                      disabled={state.submitting}
-                    />
+                  <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Required' }]}>
+                    <Input placeholder="Placeholder" disabled={state.submitting} />
                   </Form.Item>
                   <Form.Item
                     name="description"
                     label="Description"
                     hint="Be careful with the length of the description, this will eventually have to be stored on chain and the gas needed might make the proposal creation transaction more expensive."
                     rules={[{ required: true, message: 'Required' }]}>
-                    <Textarea
-                      placeholder="Placeholder"
-                      rows={6}
-                      disabled={state.submitting}
-                    />
+                    <Textarea placeholder="Placeholder" rows={6} disabled={state.submitting} />
                   </Form.Item>
                 </Grid>
               </Card>
 
               <Card
                 title={
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     Actions
-                  </Paragraph>
+                  </Text>
                 }>
                 <Form.List
                   name="actions"
                   rules={[
                     {
                       validator: (_, value: StoreValue) => {
-                        return value.length === 0
-                          ? Promise.reject()
-                          : Promise.resolve();
+                        return value.length === 0 ? Promise.reject() : Promise.resolve();
                       },
                       message: 'At least one action is required!',
                     },
                     {
                       validator: (_, value: StoreValue) => {
-                        return value.length > 10
-                          ? Promise.reject()
-                          : Promise.resolve();
+                        return value.length > 10 ? Promise.reject() : Promise.resolve();
                       },
                       message: 'Maximum 10 actions are allowed!',
                     },
@@ -289,14 +248,8 @@ const ProposalCreateView: React.FunctionComponent = () => {
                   {(fields, _, { errors }) => (
                     <Grid flow="row" gap={24}>
                       {fields.map((field, index) => {
-                        const fieldData: CreateProposalActionForm = form.getFieldValue(
-                          ['actions', index],
-                        );
-                        const {
-                          targetAddress,
-                          functionSignature,
-                          functionEncodedParams,
-                        } = fieldData;
+                        const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
+                        const { targetAddress, functionSignature, functionEncodedParams } = fieldData;
 
                         return (
                           <Form.Item key={field.key} noStyle>
@@ -329,16 +282,12 @@ const ProposalCreateView: React.FunctionComponent = () => {
                           icon={<Icons name="plus-circle-outlined" />}
                           disabled={state.submitting}
                           className={s.addActionBtn}
-                          onClick={() =>
-                            setState({ showCreateActionModal: true })
-                          }>
+                          onClick={() => setState({ showCreateActionModal: true })}>
                           Add new action
                         </Button>
                       )}
 
-                      {fields.length >= 10 && (
-                        <Alert type="info" message="Maximum 10 actions are allowed." />
-                      )}
+                      {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
 
                       <Antd.Form.ErrorList errors={errors} />
                     </Grid>
@@ -347,11 +296,7 @@ const ProposalCreateView: React.FunctionComponent = () => {
               </Card>
             </Grid>
             <div>
-              <Button
-                type="primary"
-                htmlType="submit"
-                size="large"
-                loading={state.submitting}>
+              <Button type="primary" htmlType="submit" size="large" loading={state.submitting}>
                 Create proposal
               </Button>
             </div>

@@ -1,11 +1,10 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { RadioGroupProps, RadioChangeEvent } from 'antd/lib/radio';
+import { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
 
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
 type GasFeeOption = {
@@ -25,7 +24,7 @@ export type GasFeeListProps = RadioGroupProps & {
   onChange?: (value: GasFeeOption) => void;
 };
 
-const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
+const GasFeeList: React.FC<GasFeeListProps> = props => {
   const { className, value, onChange, ...groupProps } = props;
 
   const [state, setState] = useMergeState<GasFeeListState>({
@@ -108,18 +107,18 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
             <RadioButton
               key={option.key}
               label={
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" weight="semibold" color="primary">
                   {option.name}
-                </Paragraph>
+                </Text>
               }
               hint={
                 <Grid flow="col" gap={4}>
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     {option.value}
-                  </Paragraph>
-                  <Paragraph type="p2" color="secondary">
+                  </Text>
+                  <Text type="p2" weight="semibold" color="secondary">
                     Gwei
-                  </Paragraph>
+                  </Text>
                 </Grid>
               }
               value={option}

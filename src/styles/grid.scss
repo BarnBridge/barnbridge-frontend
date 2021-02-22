@@ -7,7 +7,7 @@ $justifyContents: start, center, end, space-between;
 
   &.flow-col {
     grid-auto-flow: column;
-    grid-template-rows: repeat(auto-fit, minmax(0, max-content));
+    grid-template-columns: repeat(auto-fit, minmax(0, max-content));
   }
 
   &.flow-row {

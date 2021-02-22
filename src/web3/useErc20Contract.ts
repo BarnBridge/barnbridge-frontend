@@ -45,7 +45,7 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
   const wallet = useWallet();
 
   const contract = React.useMemo(() => {
-    return new Web3Contract(undefined, tokenAddress, `ERC20_${tokenAddress}`);
+    return new Web3Contract(require('web3/abi/erc20.json'), tokenAddress, `ERC20_${tokenAddress}`);
   }, [tokenAddress]);
 
   const [state, setState] = useMergeState<Erc20ContractState>(InitialState);

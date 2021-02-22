@@ -22,7 +22,7 @@ export type GridProps = {
   width?: string | number;
 };
 
-const Grid: React.FunctionComponent<GridProps> = props => {
+const Grid: React.FC<GridProps> = props => {
   const {
     className,
     flow,

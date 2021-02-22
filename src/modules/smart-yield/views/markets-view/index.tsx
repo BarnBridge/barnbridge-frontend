@@ -1,7 +1,7 @@
 import React from 'react';
-import { NavLink, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import Card from 'components/antd/card';
-import { Paragraph, Small, Heading, Text } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import Button from 'components/antd/button';
@@ -9,9 +9,10 @@ import Icons from 'components/custom/icon';
 import Select from 'components/antd/select';
 import IconBubble from 'components/custom/icon-bubble';
 import TabCard from 'modules/smart-yield/components/tab-card';
-import s from './s.module.scss';
-import { formatBigValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { formatBigValue, formatUSDValue } from 'web3/utils';
 import { useWeb3Contracts } from 'web3/contracts';
+
+import s from './s.module.scss';
 
 const originatorOptionsMock = [
   { value: '', label: 'All originators' },
@@ -29,18 +30,18 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'originator',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Originator
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="col" gap={16} align="center">
           <IconBubble name="usdc-token" bubbleName="compound" />
           <Grid flow="row" gap={4} className="ml-auto">
-            <Paragraph type="p1" semiBold color="primary">
+            <Text type="p1" weight="semibold" color="primary">
               {value[0]}
-            </Paragraph>
-            <Small semiBold>{value[1]}</Small>
+            </Text>
+            <Text type="small" weight="semibold">{value[1]}</Text>
           </Grid>
         </Grid>
       ),
@@ -48,103 +49,103 @@ const OverviewView: React.FunctionComponent = () => {
     {
       dataIndex: 'seniorLiquidity',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Senior Liquidity
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {value[0]}
-          </Paragraph>
-          <Small semiBold>{value[1]}</Small>
+          </Text>
+          <Text type="small" weight="semibold">{value[1]}</Text>
         </Grid>
       ),
     },
     {
       dataIndex: 'seniorAPY',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Senior APY
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           {value}
-        </Paragraph>
+        </Text>
       ),
     },
     {
       dataIndex: 'juniorLiquidity',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Junior Liquidity
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {value[0]}
-          </Paragraph>
-          <Small semiBold>{value[1]}</Small>
+          </Text>
+          <Text type="small" weight="semibold">{value[1]}</Text>
         </Grid>
       ),
     },
     {
       dataIndex: 'juniorAPY',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Junior APY
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="purple">
+        <Text type="p1" weight="semibold" color="purple">
           {value}
-        </Paragraph>
+        </Text>
       ),
     },
     {
       dataIndex: 'originatorAPY',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Originator APY
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
-        <Paragraph type="p1" semiBold color="primary">
+        <Text type="p1" weight="semibold" color="primary">
           {value}
-        </Paragraph>
+        </Text>
       ),
     },
     {
       dataIndex: 'jTokenConversionRate',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           jToken conversion rate
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {value[0]}
-          </Paragraph>
-          <Small semiBold>{value[1]}</Small>
+          </Text>
+          <Text type="small" weight="semibold">{value[1]}</Text>
         </Grid>
       ),
     },
     {
       dataIndex: 'walletBalance',
       title: () => (
-        <Small semiBold>
+        <Text type="small" weight="semibold">
           Wallet balance
-        </Small>
+        </Text>
       ),
       render: (value: string) => (
         <Grid flow="row" gap={4}>
-          <Paragraph type="p1" semiBold color="primary">
+          <Text type="p1" weight="semibold" color="primary">
             {value[0]}
-          </Paragraph>
-          <Small semiBold>{value[1]}</Small>
+          </Text>
+          <Text type="small" weight="semibold">{value[1]}</Text>
         </Grid>
       ),
     },
@@ -218,17 +219,17 @@ const OverviewView: React.FunctionComponent = () => {
           } /* type="button" onClick={() => console.log('asd')} */
         />
       </Grid>
-      <Paragraph type="p1" semiBold color="secondary" className="mb-8">
+      <Text type="p1" weight="semibold" color="secondary" className="mb-8">
         Compound total liquidity
-      </Paragraph>
-      <Heading type="h2" color="primary" className="mb-40">
+      </Text>
+      <Text type="h2" color="primary" className="mb-40">
         {formatUSDValue(web3c.sy.underlyingTotal)}
-      </Heading>
+      </Text>
       <Card
         // title={
-        //   <Paragraph type="p1" semiBold color="primary">
+        //   <Text type="p1" weight="semibold" color="primary">
         //     Voter weights
-        //   </Paragraph>
+        //   </Text>
         // }
         noPaddingBody>
         <div className={s.tableCardHeader}>
