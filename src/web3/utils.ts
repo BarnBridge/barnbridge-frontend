@@ -192,3 +192,24 @@ export function fetchContractABI(address: string): any {
       return Promise.reject(result);
     });
 }
+
+type GasPriceResult = {
+  veryFast: number;
+  fast: number;
+  average: number;
+  safeLow: number;
+};
+
+export function fetchGasPrice(): Promise<GasPriceResult> {
+  return fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`)
+    .then(result => result.json())
+    .then(result => result.result)
+    .then(result => {
+      return {
+        veryFast: Number(result.FastGasPrice),
+        fast: Number(result.ProposeGasPrice),
+        average: Math.round((Number(result.ProposeGasPrice) + Number(result.SafeGasPrice)) / 2),
+        safeLow: Number(result.SafeGasPrice),
+      };
+    })
+}
