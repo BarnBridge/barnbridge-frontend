@@ -1,7 +1,5 @@
 import React from 'react';
 
-import Grid from 'components/custom/grid';
-
 import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from './components/activation-threshold';
 import VotersTable from './components/voters-table';
@@ -11,11 +9,11 @@ const OverviewView: React.FC = () => {
   const dao = useDAO();
 
   return (
-    <Grid flow="row" gap={32}>
-      {dao.isActive === false && <ActivationThreshold />}
-      <VotingStatList />
+    <>
+      {dao.isActive === false && <ActivationThreshold className="mb-32" />}
+      <VotingStatList className="mb-32" />
       <VotersTable />
-    </Grid>
+    </>
   );
 };
 

@@ -146,6 +146,9 @@ const VotersTable: React.FC<VotersTableProps> = props => {
           ),
           onChange: setPage,
         }}
+        scroll={{
+          x: true
+        }}
       />
     </Card>
   );

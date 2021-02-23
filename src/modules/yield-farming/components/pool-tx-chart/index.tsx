@@ -5,7 +5,7 @@ import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
+import Card, { CardProps } from 'components/antd/card';
 import Select, { SelectOption } from 'components/antd/select';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
@@ -38,7 +38,7 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const PoolTxChartInner: React.FC = () => {
+const PoolTxChartInner: React.FC = (props) => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
@@ -142,7 +142,7 @@ const PoolTxChartInner: React.FC = () => {
   );
 
   return (
-    <Card title={CardTitle}>
+    <Card title={CardTitle} style={{ overflowX: 'auto' }} {...props}>
       <Spin spinning={poolTxChart.loading}>
         {chartData.length ? (
           <ReCharts.ResponsiveContainer width="100%" height={350}>
@@ -190,9 +190,9 @@ const PoolTxChartInner: React.FC = () => {
   );
 };
 
-const PoolTxChart: React.FC = () => (
+const PoolTxChart: React.FC<CardProps> = (props) => (
   <PoolTxChartProvider>
-    <PoolTxChartInner />
+    <PoolTxChartInner {...props} />
   </PoolTxChartProvider>
 );
 

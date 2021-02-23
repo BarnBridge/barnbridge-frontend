@@ -1,4 +1,5 @@
 import React from 'react';
+import cn from 'classnames';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue, formatUSDValue } from 'web3/utils';
 
@@ -10,6 +11,7 @@ import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
 
 import { getFormattedDuration } from 'utils';
+import s from './s.module.scss';
 
 export type VotingStatListProps = {
   className?: string;
@@ -26,7 +28,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
   }, []);
 
   return (
-    <Grid className={className} gap={[32, 32]} justify="start" colsTemplate="repeat(auto-fit, minmax(392px, 1fr))">
+    <div className={cn(s.cards, className)}>
       <Card>
         <Grid flow="row" gap={48}>
           <Hint
@@ -193,7 +195,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </Grid>
         </Grid>
       </Card>
-    </Grid>
+    </div>
   );
 };
 

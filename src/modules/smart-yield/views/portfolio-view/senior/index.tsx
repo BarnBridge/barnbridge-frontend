@@ -10,6 +10,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
+import s from './s.module.scss';
 
 const originatorFilterOptions = [
   {
@@ -52,7 +53,7 @@ export default function PortfolioSenior() {
   const [transactionFilter, setTransactionFilter] = useState(transactionFilterOptions[0].value);
   return (
     <>
-      <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
+      <div className={s.portfolioContainer}>
         <PortfolioBalance />
         <PortfolioValue />
       </div>
@@ -121,7 +122,7 @@ export default function PortfolioSenior() {
           </Button>
         </Popover>
       </div>
-      <div className="grid flow-col gap-32">
+      <div className={s.cards}>
         <Card noPaddingBody>
           <div className="flex p-24">
             <IconBubble name="usdc-token" bubbleName="compound" className="mr-16" />

@@ -44,12 +44,12 @@ const YieldFarmingView: React.FC = () => {
   }, [isMobile]);
 
   return (
-    <Grid flow="row">
+    <>
       <LayoutHeader title="Yield Farming" />
       {!isMobile && wallet.isActive && <PoolRewards />}
 
-      <div className="grid flow-row row-gap-64 p-64 sm-pv-24 sm-ph-8">
-        <PoolStats />
+      <div className="content-container">
+        <PoolStats className="mb-64" />
         <Switch>
           <Route path="/yield-farming" exact component={PoolsOverviewView} />
           <Route
@@ -64,7 +64,7 @@ const YieldFarmingView: React.FC = () => {
           <Redirect to="/yield-farming" />
         </Switch>
       </div>
-    </Grid>
+    </>
   );
 };
 

@@ -15,7 +15,11 @@ import s from './styles.module.scss';
 
 const UNISWAP_EXCHANGE_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
-const PoolStats: React.FC = () => {
+type Props = {
+  className?: string;
+}
+
+const PoolStats: React.FC<Props> = ({ className }) => {
   const { aggregated, uniswap, staking } = useWeb3Contracts();
   const epochEnd = React.useMemo<number | undefined>(() => {
     const [, end] = staking.getEpochPeriod(staking.currentEpoch!) ?? [];
@@ -26,7 +30,7 @@ const PoolStats: React.FC = () => {
   const totalBondReward = formatBONDValue(aggregated.totalBondReward);
 
   return (
-    <div className={cx(s.component, 'grid gap-32 sm-gap-8 justify-start')}>
+    <div className={cx(s.component, className)}>
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
