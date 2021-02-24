@@ -11,6 +11,7 @@ import FadeBlock from 'components/custom/fade-block';
 import Grid from 'components/custom/grid';
 import Icons, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { useGeneral } from 'components/providers/general-provider';
 import { useTheme } from 'components/providers/theme-provider';
 
 import s from './styles.module.scss';
@@ -46,13 +47,14 @@ const MobileMenuLink: React.FC<MobileMenuLinkProps> = props => {
 
 const MobileMenu: React.FC = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
+  const { navOpen, setNavOpen } = useGeneral();
   const location = useLocation();
-  const [isOpen, setIsOpen] = React.useState<boolean>(false);
+  // const [isOpen, setIsOpen] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     const { classList } = document.body;
 
-    if (isOpen) {
+    if (navOpen) {
       if (!classList.contains('mobile-menu-open')) {
         classList.add('mobile-menu-open');
       }
@@ -61,14 +63,14 @@ const MobileMenu: React.FC = () => {
         classList.remove('mobile-menu-open');
       }
     }
-  }, [isOpen]);
+  }, [navOpen]);
 
   React.useEffect(() => {
-    setIsOpen(false);
+    setNavOpen(false);
   }, [location.pathname]);
 
   function handleMenuClick() {
-    setIsOpen(prevState => !prevState);
+    setNavOpen(prevState => !prevState);
   }
 
   function handleThemeToggle() {
@@ -76,10 +78,10 @@ const MobileMenu: React.FC = () => {
   }
 
   return (
-    <div className={cx(s.component, isOpen && s.isOpen)}>
+    <div className={cx(s.component, navOpen && s.isOpen)}>
       <Grid flow="col" gap={24} align="center" className={s.header}>
         <Button type="link" className={s.burger} onClick={handleMenuClick}>
-          <Burger isOpen={isOpen} />
+          <Burger isOpen={navOpen} />
         </Button>
         <Grid flow="col" gap={8}>
           <Icons name="bond-square-token" />
@@ -89,18 +91,18 @@ const MobileMenu: React.FC = () => {
       <div className={s.mask} />
       <Grid flow="row" align="start" justify="space-between" className={s.list}>
         <Grid flow="row" gap={24} align="start" width="100%">
-          <FadeBlock visible={isOpen}>
+          <FadeBlock visible={navOpen}>
             <MobileMenuLink path="/yield-farming" icon="savings-outlined" label="Pools" />
           </FadeBlock>
-          <FadeBlock visible={isOpen}>
+          <FadeBlock visible={navOpen}>
             <MobileMenuLink path="/governance" icon="bank-outlined" label="Voting" />
           </FadeBlock>
-          <FadeBlock visible={isOpen}>
+          <FadeBlock visible={navOpen}>
             <MobileMenuLink path="/smart-yield" icon="paper-bill-outlined" label="Bonds" />
           </FadeBlock>
         </Grid>
 
-        <FadeBlock visible={isOpen}>
+        <FadeBlock visible={navOpen}>
           <Button type="link" className={s.link} onClick={handleThemeToggle}>
             <Grid flow="col" gap={24}>
               <Icons name={isDarkTheme ? 'sun' : 'moon'} />

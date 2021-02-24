@@ -40,8 +40,6 @@ const SmartYieldView: React.FunctionComponent = () => {
 
   return (
     <>
-      <LayoutHeader title="Smart Yield" />
-
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"

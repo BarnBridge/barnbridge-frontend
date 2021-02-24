@@ -8,6 +8,7 @@ import Web3ContractsProvider from 'web3/contracts';
 import EthWeb3Provider from 'components/providers/eth-web3-provider';
 import ThemeProvider from 'components/providers/theme-provider';
 import WindowStateProvider from 'components/providers/window-state';
+import GeneralContextProvider from 'components/providers/general-provider';
 import LayoutView from 'layout';
 import Web3WalletProvider from 'wallets/wallet';
 
@@ -20,9 +21,11 @@ const App: React.FC = () => {
         <EthWeb3Provider>
           <Web3WalletProvider>
             <Web3ContractsProvider>
-              <Router>
-                <LayoutView />
-              </Router>
+              <GeneralContextProvider>
+                <Router>
+                  <LayoutView />
+                </Router>
+              </GeneralContextProvider>
             </Web3ContractsProvider>
           </Web3WalletProvider>
         </EthWeb3Provider>
