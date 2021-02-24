@@ -4,9 +4,9 @@ import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import { Text } from 'components/custom/typography';
 
-export default function PortfolioBalance(props: any) {
+const PortfolioBalance: React.FC = () => {
   return (
-    <Card noPaddingBody {...props}>
+    <Card noPaddingBody>
       <Text type="p1" weight="semibold" color="primary" className="p-24">
         Portfolio balance
       </Text>
@@ -50,4 +50,6 @@ export default function PortfolioBalance(props: any) {
       </div>
     </Card>
   );
-}
+};
+
+export default PortfolioBalance;

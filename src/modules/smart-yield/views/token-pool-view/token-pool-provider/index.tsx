@@ -1,12 +1,12 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { SYOriginator, useSYPools } from '../sy-pools-provider';
-import { SYContract } from '../sy-pools-provider/sy/contract';
-import SYPoolCTokenContract from '../sy-pools-provider/sy-pool-c-token/contract';
-import SYPoolUTokenContract from '../sy-pools-provider/sy-pool-u-token/contract';
-import SYControllerContract from '../sy-pools-provider/sy-controller/contract';
 import { useReload } from 'hooks/useReload';
+import { SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
+import SYControllerContract from 'modules/smart-yield/providers/sy-pools-provider/sy-controller/contract';
+import SYPoolCTokenContract from 'modules/smart-yield/providers/sy-pools-provider/sy-pool-c-token/contract';
+import SYPoolUTokenContract from 'modules/smart-yield/providers/sy-pools-provider/sy-pool-u-token/contract';
+import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
 
 type Actions = {
   enableToken: (enable: boolean) => Promise<void>;
@@ -110,7 +110,8 @@ const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
     }
   }, [sy]);
 
-  const enableToken = React.useCallback((enable: boolean) => {
+  const enableToken = React.useCallback(
+    (enable: boolean) => {
       if (enable) {
         return uToken?.approveMax() ?? Promise.reject();
       }
@@ -121,16 +122,12 @@ const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
   );
 
   const juniorDeposit = React.useCallback(
-    (
-      underlyingAmount: BigNumber,
-      minTokens: BigNumber,
-      deadline: number,
-      gasPrice: number,
-    ): Promise<void> => {
-      return sy?.buyTokensSend(underlyingAmount, minTokens, deadline, gasPrice)
-        .then(() => {
+    (underlyingAmount: BigNumber, minTokens: BigNumber, deadline: number, gasPrice: number): Promise<void> => {
+      return (
+        sy?.buyTokensSend(underlyingAmount, minTokens, deadline, gasPrice).then(() => {
           uToken?.reloadBalance();
-        }) ?? Promise.reject();
+        }) ?? Promise.reject()
+      );
     },
     [sy, uToken],
   );
@@ -143,46 +140,39 @@ const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
       forDays: number,
       gasPrice: number,
     ): Promise<void> => {
-      return sy?.buyBondSend(principalAmount, minGain, deadline, forDays, gasPrice)
-        .then(() => {
+      return (
+        sy?.buyBondSend(principalAmount, minGain, deadline, forDays, gasPrice).then(() => {
           uToken?.reloadBalance();
-        }) ?? Promise.reject();
+        }) ?? Promise.reject()
+      );
     },
     [sy, uToken],
   );
 
   const juniorRegularWithdraw = React.useCallback(
-    (
-      tokenAmount: BigNumber,
-      maxMaturesAt: number,
-      deadline: number,
-      gasPrice: number,
-    ): Promise<void> => {
-      return sy?.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasPrice)
-        .then(() => {
+    (tokenAmount: BigNumber, maxMaturesAt: number, deadline: number, gasPrice: number): Promise<void> => {
+      return (
+        sy?.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasPrice).then(() => {
           uToken?.reloadBalance();
-        }) ?? Promise.reject();
+        }) ?? Promise.reject()
+      );
     },
     [sy, uToken],
   );
 
   const juniorInstantWithdraw = React.useCallback(
-    (
-      tokenAmount: BigNumber,
-      minUnderlying: BigNumber,
-      deadline: number,
-      gasPrice: number,
-    ): Promise<void> => {
+    (tokenAmount: BigNumber, minUnderlying: BigNumber, deadline: number, gasPrice: number): Promise<void> => {
       console.log({
         tokenAmount,
         minUnderlying,
         deadline,
-        gasPrice
+        gasPrice,
       });
-      return sy?.sellTokensSend(tokenAmount, minUnderlying, deadline, gasPrice)
-        .then(() => {
+      return (
+        sy?.sellTokensSend(tokenAmount, minUnderlying, deadline, gasPrice).then(() => {
           uToken?.reloadBalance();
-        }) ?? Promise.reject();
+        }) ?? Promise.reject()
+      );
     },
     [sy, uToken],
   );
@@ -220,11 +210,7 @@ const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
     ],
   );
 
-  return (
-    <TokenPoolContext.Provider value={value}>
-      {children}
-    </TokenPoolContext.Provider>
-  );
+  return <TokenPoolContext.Provider value={value}>{children}</TokenPoolContext.Provider>;
 };
 
 export default TokenPoolProvider;

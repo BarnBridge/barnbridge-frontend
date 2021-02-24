@@ -1,14 +1,14 @@
 const ABI: any[] = [
   {
-    "name": "FEE_BUY_JUNIOR_TOKEN",
-    "type": "function",
-    "inputs": [],
-    "outputs": [
+    name: 'FEE_BUY_JUNIOR_TOKEN',
+    type: 'function',
+    inputs: [],
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-      }
-    ]
+        name: '',
+        type: 'uint256',
+      },
+    ],
   },
 ];
 

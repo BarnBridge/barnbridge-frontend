@@ -1,15 +1,14 @@
 import React from 'react';
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
 
-import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-import PortfolioJunior from './junior';
-import PortfolioSenior from './senior';
-import PortfolioStatistics from './statistics';
+import JuniorPortfolio from './junior';
+import PortfolioOverview from './overview';
+import SeniorPortfolio from './senior';
 
-const PortfolioView: React.FunctionComponent = () => {
+const PortfolioView: React.FC = () => {
   return (
     <>
       <div className="tab-cards mb-64 sm-mb-32">
@@ -48,9 +47,9 @@ const PortfolioView: React.FunctionComponent = () => {
         </NavLink>
       </div>
       <Switch>
-        <Route path="/smart-yield/portfolio" exact component={PortfolioStatistics} />
-        <Route path="/smart-yield/portfolio/senior" component={PortfolioSenior} />
-        <Route path="/smart-yield/portfolio/junior" component={PortfolioJunior} />
+        <Route path="/smart-yield/portfolio" exact component={PortfolioOverview} />
+        <Route path="/smart-yield/portfolio/senior" component={SeniorPortfolio} />
+        <Route path="/smart-yield/portfolio/junior" component={JuniorPortfolio} />
         <Redirect to="/smart-yield/portfolio" />
       </Switch>
     </>

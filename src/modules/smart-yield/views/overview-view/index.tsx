@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import cn from 'classnames';
+import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,9 +12,7 @@ import Grid from 'components/custom/grid';
 import Icons, { IconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-
 import { mergeState } from 'hooks/useMergeState';
-import { formatBigValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import { SYMarket, SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
 import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
 
@@ -158,20 +157,16 @@ const TableColumns: ColumnsType<TableEntity> = [
   {
     title: () => null,
     render: (_, entity) => (
-      <Button
-        type="primary"
-        onClick={() => entity.goDeposit()}>
+      <Button type="primary" onClick={() => entity.goDeposit()}>
         Deposit
       </Button>
     ),
   },
 ];
 
-const OriginatorOptions = [
-  { value: '', label: 'All originators' },
-];
+const OriginatorOptions = [{ value: '', label: 'All originators' }];
 
-const OverviewView: React.FunctionComponent = () => {
+const OverviewView: React.FC = () => {
   const history = useHistory();
   const syPools = useSYPools();
 
@@ -191,9 +186,11 @@ const OverviewView: React.FunctionComponent = () => {
 
   React.useEffect(() => {
     if (markets.length > 0) {
-      setState(mergeState<State>({
-        activeMarket: markets[0],
-      }));
+      setState(
+        mergeState<State>({
+          activeMarket: markets[0],
+        }),
+      );
     }
   }, [markets]);
 
@@ -205,9 +202,11 @@ const OverviewView: React.FunctionComponent = () => {
             key={market.name}
             className={cn('tab-card', state.activeMarket === market && 'active')}
             onClick={() => {
-              setState(mergeState<State>({
-                activeMarket: market,
-              }));
+              setState(
+                mergeState<State>({
+                  activeMarket: market,
+                }),
+              );
             }}>
             <Icons name={market.icon as IconNames} width={40} height={40} className="mr-16" />
             <div>
@@ -231,15 +230,7 @@ const OverviewView: React.FunctionComponent = () => {
           </Text>
         </>
       )}
-      <Card
-        title={
-          <Select
-            options={OriginatorOptions}
-            disabled={syPools.state.loading}
-            value=""
-          />
-        }
-        noPaddingBody>
+      <Card title={<Select options={OriginatorOptions} disabled={syPools.state.loading} value="" />} noPaddingBody>
         <Table<TableEntity>
           columns={TableColumns}
           dataSource={tableSource}

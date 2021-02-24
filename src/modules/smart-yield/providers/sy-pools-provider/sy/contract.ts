@@ -1,11 +1,11 @@
 import BigNumber from 'bignumber.js';
-
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
-import { getGasValue, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import SYPoolContract from '../sy-pool/contract';
-import SYJuniorBondContract from '../sy-junior-bond/contract';
-import SYSeniorBondContract from '../sy-senior-bond/contract';
+import { ZERO_BIG_NUMBER, getGasValue, getHumanValue } from 'web3/utils';
+
 import SYControllerContract from '../sy-controller/contract';
+import SYJuniorBondContract from '../sy-junior-bond/contract';
+import SYPoolContract from '../sy-pool/contract';
+import SYSeniorBondContract from '../sy-senior-bond/contract';
 import ABI from './abi';
 
 export type SYJuniorBondToken = {
@@ -25,8 +25,7 @@ export class SYContract extends Web3Contract {
     });
 
     this.on('changeAccount', () => {
-      this.loadBalance()
-        .catch(Error);
+      this.loadBalance().catch(Error);
 
       this.pool?.setAccount(this.account);
       this.juniorBond?.setAccount(this.account);
@@ -80,7 +79,7 @@ export class SYContract extends Web3Contract {
   };
 
   // promises
-  commonPromise: Promise<void> = new Promise((resolve) => {
+  commonPromise: Promise<void> = new Promise(resolve => {
     this.on('update:common', () => {
       resolve();
     });
@@ -118,24 +117,24 @@ export class SYContract extends Web3Contract {
         underlyingTotal,
         price,
       ] = await this.batch([
-        { method: 'name', },
-        { method: 'decimals', transform: value => Number(value), },
-        { method: 'totalSupply', transform: value => new BigNumber(value), },
-        { method: 'controller', },
-        { method: 'pool', },
-        { method: 'seniorBond', },
-        { method: 'juniorBond', },
-        { method: 'abondDebt', transform: value => new BigNumber(value), },
-        { method: 'abondGain', transform: value => new BigNumber(value), },
-        { method: 'abondPaid', transform: value => new BigNumber(value), },
-        { method: 'juniorBondId', transform: value => new BigNumber(value), },
-        { method: 'seniorBondId', transform: value => new BigNumber(value), },
-        { method: 'tokensInJuniorBonds', transform: value => new BigNumber(value), },
-        { method: 'underlyingJuniors', transform: value => new BigNumber(value), },
-        { method: 'underlyingLiquidatedJuniors', transform: value => new BigNumber(value), },
-        { method: 'underlyingLoanable', transform: value => new BigNumber(value), },
-        { method: 'underlyingTotal', transform: value => new BigNumber(value), },
-        { method: 'price', transform: value => new BigNumber(value), },
+        { method: 'name' },
+        { method: 'decimals', transform: value => Number(value) },
+        { method: 'totalSupply', transform: value => new BigNumber(value) },
+        { method: 'controller' },
+        { method: 'pool' },
+        { method: 'seniorBond' },
+        { method: 'juniorBond' },
+        { method: 'abondDebt', transform: value => new BigNumber(value) },
+        { method: 'abondGain', transform: value => new BigNumber(value) },
+        { method: 'abondPaid', transform: value => new BigNumber(value) },
+        { method: 'juniorBondId', transform: value => new BigNumber(value) },
+        { method: 'seniorBondId', transform: value => new BigNumber(value) },
+        { method: 'tokensInJuniorBonds', transform: value => new BigNumber(value) },
+        { method: 'underlyingJuniors', transform: value => new BigNumber(value) },
+        { method: 'underlyingLiquidatedJuniors', transform: value => new BigNumber(value) },
+        { method: 'underlyingLoanable', transform: value => new BigNumber(value) },
+        { method: 'underlyingTotal', transform: value => new BigNumber(value) },
+        { method: 'price', transform: value => new BigNumber(value) },
       ]);
 
       this.name = name;
@@ -216,9 +215,7 @@ export class SYContract extends Web3Contract {
 
     if (this.account && this.loaded) {
       try {
-        const [
-          balance,
-        ] = await this.batch([
+        const [balance] = await this.batch([
           {
             method: 'balanceOf',
             methodArgs: [this.account],
@@ -239,9 +236,7 @@ export class SYContract extends Web3Contract {
     this.abond = undefined;
 
     try {
-      const [
-        abond,
-      ] = await this.batch([
+      const [abond] = await this.batch([
         {
           method: 'abond',
         },
@@ -312,8 +307,7 @@ export class SYContract extends Web3Contract {
         this.pool.setProvider(this.currentProvider);
         this.pool.setAccount(this.account);
         await this.pool.init();
-      } catch {
-      }
+      } catch {}
     }
 
     if (this.seniorBondAddr) {
@@ -324,8 +318,7 @@ export class SYContract extends Web3Contract {
         });
         this.seniorBond.setProvider(this.currentProvider);
         this.seniorBond.setAccount(this.account);
-      } catch {
-      }
+      } catch {}
     }
 
     if (this.controllerAddr) {
@@ -337,8 +330,7 @@ export class SYContract extends Web3Contract {
         this.controller.setProvider(this.currentProvider);
         this.controller.setAccount(this.account);
         await this.controller.init();
-      } catch {
-      }
+      } catch {}
     }
   }
 
@@ -351,7 +343,13 @@ export class SYContract extends Web3Contract {
     });
   }
 
-  buyBondSend(principalAmount: BigNumber, minGain: BigNumber, deadline: number, forDays: number, gasPrice: number): Promise<void> {
+  buyBondSend(
+    principalAmount: BigNumber,
+    minGain: BigNumber,
+    deadline: number,
+    forDays: number,
+    gasPrice: number,
+  ): Promise<void> {
     return this.send('buyBond', [principalAmount, minGain, deadline, forDays], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
@@ -373,38 +371,42 @@ export class SYContract extends Web3Contract {
     return this.send('sellTokens', [tokenAmount, minUnderlying, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.reloadBalance();
-    }).catch(e => console.log(e));
+    })
+      .then(() => {
+        this.reloadBalance();
+      })
+      .catch(e => console.log(e));
   }
 
   redeemJuniorBondSend(jBondId: number, gasPrice: number): Promise<void> {
     return this.send('redeemJuniorBond', [jBondId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.reloadBalance();
-    }).catch(e => console.log(e));
+    })
+      .then(() => {
+        this.reloadBalance();
+      })
+      .catch(e => console.log(e));
   }
 
   redeemBondSend(sBondId: number, gasPrice: number): Promise<void> {
     return this.send('redeemBond', [sBondId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.reloadBalance();
-    }).catch(e => console.log(e));
+    })
+      .then(() => {
+        this.reloadBalance();
+      })
+      .catch(e => console.log(e));
   }
 
   bondGainCall(principalAmount: BigNumber, forDays: number): Promise<BigNumber> {
-    return this.call('bondGain', [principalAmount, forDays])
-      .then(value => {
-        return new BigNumber(value ?? ZERO_BIG_NUMBER);
-      });
+    return this.call('bondGain', [principalAmount, forDays]).then(value => {
+      return new BigNumber(value ?? ZERO_BIG_NUMBER);
+    });
   }
 
   reloadBalance() {
-    this.loadBalance()
-      .catch(Error);
+    this.loadBalance().catch(Error);
   }
 }

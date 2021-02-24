@@ -4,10 +4,10 @@ import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router
 import Tabs from 'components/antd/tabs';
 import Icons from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
-import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
 import SYPoolsProvider from 'modules/smart-yield/providers/sy-pools-provider';
+import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
 
-import OverviewView from './views/markets-view';
+import OverviewView from './views/overview-view';
 import PortfolioView from './views/portfolio-view';
 
 import { isValidAddress } from 'utils';
@@ -16,7 +16,7 @@ type SmartYieldViewParams = {
   vt: string;
 };
 
-const SmartYieldView: React.FunctionComponent = () => {
+const SmartYieldView: React.FC = () => {
   const history = useHistory();
   const {
     params: { vt = 'overview' },

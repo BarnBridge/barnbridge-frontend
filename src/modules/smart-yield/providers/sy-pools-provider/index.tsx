@@ -2,6 +2,7 @@ import React from 'react';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useWallet } from 'wallets/wallet';
+
 import { SYContract } from './sy/contract';
 
 export type SYMarket = {
@@ -63,31 +64,36 @@ const SYPoolsProvider: React.FC = props => {
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
-    setState(mergeState<State>({
-      loading: true,
-    }));
+    setState(
+      mergeState<State>({
+        loading: true,
+      }),
+    );
 
-    const contracts = new Map<string, SYContract>(state.originators.map(originator => {
-      originator.contract.setProvider(wallet.provider);
-      originator.contract.setAccount(wallet.account);
+    const contracts = new Map<string, SYContract>(
+      state.originators.map(originator => {
+        originator.contract.setProvider(wallet.provider);
+        originator.contract.setAccount(wallet.account);
 
-      return [originator.address, originator.contract];
-    }));
+        return [originator.address, originator.contract];
+      }),
+    );
 
-    setState(mergeState<State>({
-      contracts,
-    }));
+    setState(
+      mergeState<State>({
+        contracts,
+      }),
+    );
 
-    Promise.all(
-      Array.from(contracts.values())
-        .map(contract => contract.init())
-    )
+    Promise.all(Array.from(contracts.values()).map(contract => contract.init()))
       .catch(Error)
       .then(() => {
         console.log(contracts);
-        setState(mergeState<State>({
-          loading: false,
-        }));
+        setState(
+          mergeState<State>({
+            loading: false,
+          }),
+        );
       });
   }, [state.originators]);
 
@@ -110,11 +116,7 @@ const SYPoolsProvider: React.FC = props => {
     [state],
   );
 
-  return (
-    <Context.Provider value={value}>
-      {children}
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default SYPoolsProvider;

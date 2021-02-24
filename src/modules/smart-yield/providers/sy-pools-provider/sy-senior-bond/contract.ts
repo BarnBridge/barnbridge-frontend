@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
-
 import Web3Contract from 'web3/contract';
+
 import ABI from './abi';
 
 export default class SYSeniorBondContract extends Web3Contract {
@@ -8,8 +8,7 @@ export default class SYSeniorBondContract extends Web3Contract {
     super(ABI, address, address);
 
     this.on('changeAccount', () => {
-      this.loadAccountData()
-        .catch(Error);
+      this.loadAccountData().catch(Error);
     });
   }
 
@@ -21,9 +20,7 @@ export default class SYSeniorBondContract extends Web3Contract {
 
     if (this.account) {
       try {
-        const [
-          balance,
-        ] = await this.batch([
+        const [balance] = await this.batch([
           {
             method: 'balanceOf',
             methodArgs: [this.account],

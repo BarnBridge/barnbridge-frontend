@@ -28,13 +28,7 @@ export default class SYPoolContract extends Web3Contract {
 
   async init() {
     try {
-      const [
-        cTokenAddr,
-        uTokenAddr,
-      ] = await this.batch([
-        { method: 'cToken', },
-        { method: 'uToken', },
-      ]);
+      const [cTokenAddr, uTokenAddr] = await this.batch([{ method: 'cToken' }, { method: 'uToken' }]);
 
       this.cTokenAddr = cTokenAddr;
       this.uTokenAddr = uTokenAddr;
@@ -57,8 +51,7 @@ export default class SYPoolContract extends Web3Contract {
         this.cToken.setProvider(this.currentProvider);
         this.cToken.setAccount(this.account);
         await this.cToken.init();
-      } catch {
-      }
+      } catch {}
     }
 
     if (this.uTokenAddr) {
@@ -71,8 +64,7 @@ export default class SYPoolContract extends Web3Contract {
         this.uToken.setProvider(this.currentProvider);
         this.uToken.setAccount(this.account);
         await this.uToken.init();
-      } catch {
-      }
+      } catch {}
     }
   }
 }
