@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 
-import { SYOriginatorType, useSYPools } from '../sy-pools-provider';
+import { SYOriginator, useSYPools } from '../sy-pools-provider';
 import { SYContract } from '../sy-pools-provider/sy/contract';
 import SYPoolCTokenContract from '../sy-pools-provider/sy-pool-c-token/contract';
 import SYPoolUTokenContract from '../sy-pools-provider/sy-pool-u-token/contract';
@@ -43,7 +43,7 @@ type Actions = {
 
 export type TokenPoolContextType = {
   address?: string;
-  originator?: SYOriginatorType;
+  originator?: SYOriginator;
   sy?: SYContract;
   controller?: SYControllerContract;
   cToken?: SYPoolCTokenContract;
@@ -81,7 +81,7 @@ const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
   const syPools = useSYPools();
   const [reload, version] = useReload();
 
-  const originator = React.useMemo<SYOriginatorType | undefined>(() => {
+  const originator = React.useMemo<SYOriginator | undefined>(() => {
     return syPools.state.originators.find(originator => originator.address === tokenAddress);
   }, [syPools.state.originators, tokenAddress, version]);
 

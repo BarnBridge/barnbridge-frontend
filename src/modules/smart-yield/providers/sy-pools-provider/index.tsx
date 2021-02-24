@@ -4,52 +4,52 @@ import { mergeState } from 'hooks/useMergeState';
 import { useWallet } from 'wallets/wallet';
 import { SYContract } from './sy/contract';
 
-export type SYMarketType = {
+export type SYMarket = {
   name: string;
   icon: string;
 };
 
-export type SYOriginatorType = {
+export type SYOriginator = {
   address: string;
   name: string;
   icon: string;
-  market: SYMarketType;
+  market: SYMarket;
+  contract: SYContract;
 };
 
-const Originators: SYOriginatorType[] = require('./sy_originators.json');
+const Originators: SYOriginator[] = require('./sy_originators.json');
 
-const Markets: SYMarketType[] = Originators.reduce((list, originator) => {
+const Markets: SYMarket[] = Originators.reduce((list, originator) => {
   if (!list.some(item => item.name === originator.market.name)) {
     list.push(originator.market);
   }
 
   return list;
-}, [] as SYMarketType[]);
+}, [] as SYMarket[]);
 
 type State = {
   loading: boolean;
-  markets: SYMarketType[];
-  originators: SYOriginatorType[];
+  markets: SYMarket[];
+  originators: SYOriginator[];
   contracts: Map<string, SYContract>;
 };
 
 const InitialState: State = {
   loading: false,
   markets: Markets,
-  originators: Originators,
+  originators: Originators.map(originator => {
+    originator.contract = new SYContract(originator.address);
+    return originator;
+  }),
   contracts: new Map(),
 };
 
-type Actions = {};
-
 type ContextType = {
   state: State;
-  actions: Actions;
 };
 
 const Context = React.createContext<ContextType>({
   state: InitialState,
-  actions: {},
 });
 
 export function useSYPools(): ContextType {
@@ -68,11 +68,10 @@ const SYPoolsProvider: React.FC = props => {
     }));
 
     const contracts = new Map<string, SYContract>(state.originators.map(originator => {
-      const syContract = new SYContract(originator.address);
-      syContract.setProvider(wallet.provider);
-      syContract.setAccount(wallet.account);
+      originator.contract.setProvider(wallet.provider);
+      originator.contract.setAccount(wallet.account);
 
-      return [originator.address, syContract];
+      return [originator.address, originator.contract];
     }));
 
     setState(mergeState<State>({
@@ -107,7 +106,6 @@ const SYPoolsProvider: React.FC = props => {
   const value = React.useMemo(
     () => ({
       state,
-      actions: {},
     }),
     [state],
   );

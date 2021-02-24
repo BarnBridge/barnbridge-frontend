@@ -15,21 +15,21 @@ import TabCard from 'modules/smart-yield/components/tab-card';
 import { mergeState } from 'hooks/useMergeState';
 import { formatBigValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import {
-  SYMarketType,
-  SYOriginatorType,
+  SYMarket,
+  SYOriginator,
   useSYPools
 } from 'modules/smart-yield/providers/sy-pools-provider';
 import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
 
 type State = {
-  activeMarket?: SYMarketType;
+  activeMarket?: SYMarket;
 };
 
 const InitialState: State = {
   activeMarket: undefined,
 };
 
-type TableEntity = SYOriginatorType & {
+type TableEntity = SYOriginator & {
   contract?: SYContract;
   goDeposit: () => void;
 };
@@ -187,7 +187,6 @@ const OverviewView: React.FunctionComponent = () => {
       .filter(originator => originator.market === state.activeMarket)
       .map<TableEntity>(originator => ({
         ...originator,
-        contract: contracts.get(originator.address),
         goDeposit: () => {
           history.push(`/smart-yield/${originator.address}/deposit`);
         },

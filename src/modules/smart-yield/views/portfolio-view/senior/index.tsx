@@ -301,9 +301,9 @@ export default function PortfolioSenior() {
         </Card>
       </div>
 
-      {showRedeem && (
-        <ConfirmRedeemModal visible type="senior" redeemId={redeemId} contract={redeemContract} onCancel={() => setRedeem(false)} />
-      )}
+      {/*{showRedeem && (*/}
+      {/*  <ConfirmRedeemModal visible type="senior" redeemId={redeemId} contract={redeemContract} onCancel={() => setRedeem(false)} />*/}
+      {/*)}*/}
     </>
   );
 }

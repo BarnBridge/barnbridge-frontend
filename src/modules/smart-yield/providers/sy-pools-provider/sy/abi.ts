@@ -321,6 +321,8 @@ const ABI: any[] = [
     "outputs": [],
   },
   {
+    "name": "redeemJuniorBond",
+    "type": "function",
     "inputs": [
       {
         "internalType": "uint256",
@@ -328,21 +330,38 @@ const ABI: any[] = [
         "type": "uint256"
       }
     ],
-    "name": "redeemJuniorBond",
     "outputs": [],
-    "type": "function"
   },
   {
+    "name": "redeemBond",
+    "type": "function",
     "inputs": [
       {
-        "internalType": "uint256",
         "name": "bondId_",
         "type": "uint256"
       }
     ],
-    "name": "redeemBond",
     "outputs": [],
-    "type": "function"
+  },
+  {
+    "name": "juniorBonds",
+    "type": "function",
+    "inputs": [
+      {
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "outputs": [
+      {
+        "name": "tokens",
+        "type": "uint256"
+      },
+      {
+        "name": "maturesAt",
+        "type": "uint256"
+      }
+    ],
   },
 ];
 

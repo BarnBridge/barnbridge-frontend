@@ -1,6 +1,8 @@
 import React from 'react';
-import { shortenAddr, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useHistory } from 'react-router';
+import { ColumnsType } from 'antd/lib/table/interface';
 
+import { formatBigValue, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Table from 'components/antd/table';
@@ -10,18 +12,25 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
-import { SYOriginatorType, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
-import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
-import { ColumnsType } from 'antd/lib/table/interface';
-import { useHistory } from 'react-router';
-import ConfirmRedeemModal from 'modules/smart-yield/components/confirm-redeem-modal';
+import { SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
+import { SYJuniorBondToken } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
+import ConfirmRedeemModal, { ConfirmRedeemModalArgs } from 'modules/smart-yield/components/confirm-redeem-modal';
+import { doSequential, getFormattedDuration } from 'utils';
+import { UseLeftTime } from 'hooks/useLeftTime';
+import { useReload } from 'hooks/useReload';
+import BigNumber from 'bignumber.js';
+import { useWallet } from 'wallets/wallet';
 
-type LockedPositionsTableEntity = SYOriginatorType & {
-  contract?: SYContract;
-  redeem: (bondId: number) => void;
+type LockedToken = {
+  originator: SYOriginator;
+  token: SYJuniorBondToken;
 };
 
-const LockedPositions: ColumnsType<LockedPositionsTableEntity> = [
+type LockedTokenWithActions = LockedToken & {
+  redeem: () => void;
+};
+
+const LockedPositionsColumns: ColumnsType<LockedTokenWithActions> = [
   {
     title: () => (
       <Text type="small" weight="semibold">
@@ -30,23 +39,56 @@ const LockedPositions: ColumnsType<LockedPositionsTableEntity> = [
     ),
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.icon} bubbleName={entity.market.icon} />
+        <IconBubble name={entity.originator.icon} bubbleName={entity.originator.market.icon} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary">
-            {entity.name}
+            {entity.originator.name}
           </Text>
           <Text type="small" weight="semibold">
-            {entity.market.name}
+            {entity.originator.market.name}
           </Text>
         </Grid>
       </Grid>
     ),
   },
   {
+    title: () => (
+      <Text type="small" weight="semibold">
+        Redeemable balance
+      </Text>
+    ),
+    render: (_, entity) => (
+      <Text type="p1" weight="semibold" color="primary">
+        {formatBigValue(getHumanValue(entity.token.amount, entity.originator.contract.decimals), 4, '-', 4)}
+      </Text>
+    ),
+  },
+  {
+    title: () => (
+      <Text type="small" weight="semibold">
+        Time left
+      </Text>
+    ),
+    render: (_, entity) => (
+      <Text type="p1" weight="semibold" color="primary">
+        <UseLeftTime end={entity.token.maturesAt * 1_000} delay={1_000}>
+          {leftTime => (
+            <Text type="p1" weight="semibold" color="primary">
+              {leftTime > 0 ? getFormattedDuration(0, entity.token.maturesAt * 1_000) : 'Redeem now'}
+            </Text>
+          )}
+        </UseLeftTime>
+      </Text>
+    ),
+  },
+  {
     title: null,
     render: (_, entity) => (
       <Grid flow="col" gap={24}>
-        <Button type="ghost" onClick={() => entity.redeem(1)}>
+        <Button
+          type="ghost"
+          disabled={entity.token.maturesAt * 1_000 > Date.now()}
+          onClick={() => entity.redeem()}>
           Redeem
         </Button>
       </Grid>
@@ -54,13 +96,17 @@ const LockedPositions: ColumnsType<LockedPositionsTableEntity> = [
   },
 ];
 
-type ActivePositionsTableEntity = SYOriginatorType & {
-  contract?: SYContract;
+type ActiveToken = {
+  originator: SYOriginator;
+  balance?: BigNumber;
+};
+
+type ActiveTokenWithActions = ActiveToken & {
   goWithdraw: () => void;
   goSell: () => void;
 };
 
-const ActivePositions: ColumnsType<ActivePositionsTableEntity> = [
+const ActivePositionsColumns: ColumnsType<ActiveTokenWithActions> = [
   {
     title: () => (
       <Text type="small" weight="semibold">
@@ -69,80 +115,16 @@ const ActivePositions: ColumnsType<ActivePositionsTableEntity> = [
     ),
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.icon} bubbleName={entity.market.icon} />
+        <IconBubble name={entity.originator.icon} bubbleName={entity.originator.market.icon} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary">
-            {entity.name}
+            {entity.originator.name}
           </Text>
           <Text type="small" weight="semibold">
-            {entity.market.name}
+            {entity.originator.market.name}
           </Text>
         </Grid>
       </Grid>
-    ),
-  },
-  {
-    dataIndex: 'transactionHash',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Transaction Hash
-      </Text>
-    ),
-    render: (value: string) => (
-      <Grid flow="row" gap={4}>
-        <Text type="p1" weight="semibold" color="blue">
-          -
-        </Text>
-      </Grid>
-    ),
-  },
-  {
-    dataIndex: 'date',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Date
-      </Text>
-    ),
-    render: (value: Date) => (
-      <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          -
-        </Text>
-        <Text type="small" weight="semibold">
-          -
-        </Text>
-      </>
-    ),
-  },
-  {
-    dataIndex: 'amount',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Amount
-      </Text>
-    ),
-    render: (value: string) => (
-      <Grid flow="row" gap={4}>
-        <Text type="p1" weight="semibold" color="primary">
-          -
-        </Text>
-        <Text type="small" weight="semibold">
-          -
-        </Text>
-      </Grid>
-    ),
-  },
-  {
-    dataIndex: 'tranch',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Tranch
-      </Text>
-    ),
-    render: (value: string) => (
-      <Text type="p1" weight="semibold" color="primary">
-        -
-      </Text>
     ),
   },
   {
@@ -160,47 +142,93 @@ const ActivePositions: ColumnsType<ActivePositionsTableEntity> = [
   },
 ];
 
-export default function PortfolioJunior() {
+const PortfolioJunior: React.FC = () => {
   const history = useHistory();
   const syPools = useSYPools();
   const { originators, contracts, loading } = syPools.state;
 
-  const [showRedeem, setRedeem] = React.useState<boolean>(false);
-  const [redeemId, setRedeemId] = React.useState<number | undefined>();
-  const [redeemContract, setRedeemContract] = React.useState<any | undefined>();
+  const wallet = useWallet();
 
-  const lockedPositionsSource = React.useMemo(() => {
-    return originators
-      .map<LockedPositionsTableEntity>(originator => {
-        const contract = contracts.get(originator.address);
+  const [lockedTokens, setLockedTokens] = React.useState<LockedTokenWithActions[]>([]);
+  const [lockedTokensLoading, setLockedTokensLoading] = React.useState<boolean>(false);
+  const [reloadLockedTokens, lockedTokensVersion] = useReload();
+  const [redeemModal, setRedeemModal] = React.useState<LockedToken | undefined>();
 
-        return {
-          ...originator,
-          contract,
-          redeem: (bondId: number) => {
-            setRedeem(true);
-            setRedeemId(bondId);
-            setRedeemContract(contract);
-          },
-        };
-      })
-      .filter(originator => originator.contract?.balance?.isGreaterThan(ZERO_BIG_NUMBER))
-  }, [originators, contracts, loading]);
+  const [activeTokens, setActiveTokens] = React.useState<ActiveTokenWithActions[]>([]);
+  const [activeTokensLoading, setActiveTokensLoading] = React.useState<boolean>(false);
+  const [reloadActiveTokens, activeTokensVersion] = useReload();
 
-  const activePositionsSource = React.useMemo(() => {
-    return originators
-      .map<ActivePositionsTableEntity>(originator => ({
-        ...originator,
-        contract: contracts.get(originator.address),
-        goWithdraw: () => {
-          history.push(`/smart-yield/${originator.address}/withdraw`);
-        },
-        goSell: () => {
-          history.push(`/smart-yield/${originator.address}/withdraw`);
-        },
-      }))
-      .filter(originator => originator.contract?.balance?.isGreaterThan(ZERO_BIG_NUMBER))
-  }, [originators, contracts, loading]);
+  React.useEffect(() => {
+    setLockedTokensLoading(true);
+
+    (async () => {
+      const result = await doSequential<SYOriginator>(originators, async originator => {
+        return new Promise<any>(async resolve => {
+          await originator.contract.commonPromise;
+
+          const juniorBondTokens = await originator.contract.getJuniorBondTokens();
+          const jbTokens = juniorBondTokens?.map<LockedTokenWithActions>(jbToken => ({
+            originator,
+            token: jbToken,
+            redeem: () => {
+              setRedeemModal({
+                originator,
+                token: jbToken,
+              });
+            },
+          })) ?? [];
+
+          resolve(jbTokens);
+        });
+      });
+
+      setLockedTokens(result.flat().filter(Boolean));
+      setLockedTokensLoading(false);
+    })();
+  }, [originators, contracts, lockedTokensVersion]);
+
+  React.useEffect(() => {
+    setActiveTokensLoading(true);
+
+    (async () => {
+      const result = await doSequential<SYOriginator>(originators, async originator => {
+        return new Promise<any>(async resolve => {
+          const balance = await originator.contract.getBalance();
+
+          if (balance?.isGreaterThan(ZERO_BIG_NUMBER)) {
+            resolve({
+              originator,
+              balance,
+              goWithdraw: () => {
+                history.push(`/smart-yield/${originator.address}/withdraw`);
+              },
+              goSell: () => {
+                history.push(`/smart-yield/${originator.address}/withdraw`);
+              },
+            });
+          } else {
+            resolve(undefined);
+          }
+        });
+      });
+
+      setActiveTokens(result.flat().filter(Boolean));
+      setActiveTokensLoading(false);
+    })();
+  }, [wallet.account, originators, contracts, activeTokensVersion]);
+
+  function handleRedeemConfirm(args: ConfirmRedeemModalArgs): Promise<void> {
+    if (!redeemModal) {
+      return Promise.reject();
+    }
+
+    const { originator, token } = redeemModal;
+
+    return originator.contract.redeemJuniorBondSend(token.tokenId, args.gasFee)
+      .then(() => {
+        reloadLockedTokens();
+      });
+  }
 
   return (
     <>
@@ -209,6 +237,7 @@ export default function PortfolioJunior() {
         <PortfolioValue />
       </div>
       <Card
+        className="mb-32"
         noPaddingBody
         title={
           <Grid flow="col" colsTemplate="1fr max-content">
@@ -220,13 +249,12 @@ export default function PortfolioJunior() {
               Filter
             </Button>
           </Grid>
-        }
-        className="mb-32">
-        <Table
-          columns={LockedPositions}
-          dataSource={lockedPositionsSource}
-          rowKey="address"
-          loading={loading}
+        }>
+        <Table<LockedTokenWithActions>
+          columns={LockedPositionsColumns}
+          dataSource={lockedTokens}
+          rowKey={row => row.token.tokenId}
+          loading={lockedTokensLoading}
         />
       </Card>
       <Card
@@ -242,17 +270,22 @@ export default function PortfolioJunior() {
             </Button>
           </Grid>
         }>
-        <Table<ActivePositionsTableEntity>
-          columns={ActivePositions}
-          dataSource={activePositionsSource}
-          rowKey="address"
-          loading={loading}
+        <Table<ActiveTokenWithActions>
+          columns={ActivePositionsColumns}
+          dataSource={activeTokens}
+          rowKey={row => row.originator.address}
+          loading={activeTokensLoading}
         />
       </Card>
 
-      {showRedeem && (
-        <ConfirmRedeemModal visible  type="junior" redeemId={redeemId} contract={redeemContract} onCancel={() => setRedeem(false)} />
+      {redeemModal && (
+        <ConfirmRedeemModal
+          visible
+          onConfirm={handleRedeemConfirm}
+          onCancel={() => setRedeemModal(undefined)} />
       )}
     </>
   );
-}
+};
+
+export default PortfolioJunior;

@@ -1,12 +1,18 @@
 import BigNumber from 'bignumber.js';
 
-import Web3Contract from 'web3/contract';
+import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { getGasValue, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import SYPoolContract from '../sy-pool/contract';
 import SYJuniorBondContract from '../sy-junior-bond/contract';
 import SYSeniorBondContract from '../sy-senior-bond/contract';
 import SYControllerContract from '../sy-controller/contract';
 import ABI from './abi';
+
+export type SYJuniorBondToken = {
+  tokenId: number;
+  amount: BigNumber;
+  maturesAt: number;
+};
 
 export class SYContract extends Web3Contract {
   constructor(address: string) {
@@ -63,6 +69,8 @@ export class SYContract extends Web3Contract {
   seniorBond?: SYSeniorBondContract;
   controller?: SYControllerContract;
 
+  juniorBondTokens?: SYJuniorBondToken[];
+
   abond?: {
     principal: BigNumber;
     gain: BigNumber;
@@ -70,6 +78,13 @@ export class SYContract extends Web3Contract {
     maturesAt: number;
     liquidated: boolean;
   };
+
+  // promises
+  commonPromise: Promise<void> = new Promise((resolve) => {
+    this.on('update:common', () => {
+      resolve();
+    });
+  });
 
   async init() {
     try {
@@ -169,11 +184,31 @@ export class SYContract extends Web3Contract {
       }
 
       this.loaded = true;
-
       this.emit('update');
+      this.emit('update:common');
     } catch (e) {
       console.error('SYContract', e);
     }
+  }
+
+  async getBalance(): Promise<BigNumber | undefined> {
+    if (this.account) {
+      try {
+        const [balance] = await this.batch([
+          {
+            method: 'balanceOf',
+            methodArgs: [this.account],
+            transform: value => new BigNumber(value),
+          },
+        ]);
+
+        return balance;
+      } catch (e) {
+        console.error('SY:getBalance', e);
+      }
+    }
+
+    return Promise.resolve(undefined);
   }
 
   private async loadBalance() {
@@ -227,6 +262,46 @@ export class SYContract extends Web3Contract {
     this.emit('update');
   }
 
+  private connectJuniorBondContract() {
+    if (this.juniorBondAddr) {
+      if (!this.juniorBond || this.juniorBondAddr !== this.juniorBond.address) {
+        this.juniorBond = new SYJuniorBondContract(this.juniorBondAddr);
+        this.juniorBond.setProvider(this.currentProvider);
+        this.juniorBond.setAccount(this.account);
+      }
+    }
+  }
+
+  async getJuniorBondTokens(): Promise<SYJuniorBondToken[]> {
+    this.connectJuniorBondContract();
+
+    let juniorBondTokens: SYJuniorBondToken[] = [];
+
+    if (this.juniorBond) {
+      try {
+        const tokenIds = await this.juniorBond.getJuniorTokens();
+
+        if (tokenIds && tokenIds.length > 0) {
+          const methods = tokenIds.map<BatchContractMethod>(tokenId => ({
+            method: 'juniorBonds',
+            methodArgs: [tokenId],
+            transform: value => ({
+              tokenId,
+              amount: new BigNumber(value.tokens),
+              maturesAt: Number(value.maturesAt),
+            }),
+          }));
+
+          juniorBondTokens = await this.batch(methods);
+        }
+      } catch (e) {
+        console.error('SY:getJuniorBondTokens', e);
+      }
+    }
+
+    return juniorBondTokens;
+  }
+
   private async loadRelatedContracts() {
     if (this.poolAddr) {
       try {
@@ -237,18 +312,6 @@ export class SYContract extends Web3Contract {
         this.pool.setProvider(this.currentProvider);
         this.pool.setAccount(this.account);
         await this.pool.init();
-      } catch {
-      }
-    }
-
-    if (this.juniorBondAddr) {
-      try {
-        this.juniorBond = new SYJuniorBondContract(this.juniorBondAddr);
-        this.juniorBond.on('update', () => {
-          this.emit('update');
-        });
-        this.juniorBond.setProvider(this.currentProvider);
-        this.juniorBond.setAccount(this.account);
       } catch {
       }
     }
