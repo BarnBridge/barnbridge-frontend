@@ -1,19 +1,19 @@
 const ABI: any[] = [
   {
-    "name": "balanceOf",
-    "type": "function",
-    "inputs": [
+    name: 'balanceOf',
+    type: 'function',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-      }
+        name: '',
+        type: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-      }
-    ]
+        name: '',
+        type: 'uint256',
+      },
+    ],
   },
 ];
 

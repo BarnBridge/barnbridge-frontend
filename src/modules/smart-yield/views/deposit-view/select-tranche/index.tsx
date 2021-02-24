@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -7,16 +7,37 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import RadioCard from 'modules/smart-yield/components/radio-card';
+import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
-export default function SelectTranche() {
+const SENIOR_TRANCHE_KEY = 'senior';
+const JUNIOR_TRANCHE_KEY = 'junior';
+
+const SelectTranche: React.FC = () => {
   const history = useHistory();
-  const { id } = useParams<{ id: string }>();
-  const [tranche, setTranche] = useState<'senior' | 'junior' | undefined>();
+  const tokenPool = useTokenPool();
+
+  const [tranche, setTranche] = useState<string | undefined>();
+
+  function handleSeniorSelect() {
+    setTranche(SENIOR_TRANCHE_KEY);
+  }
+
+  function handleJuniorSelect() {
+    setTranche(JUNIOR_TRANCHE_KEY);
+  }
+
+  function handleCancel() {
+    history.push(`/smart-yield`);
+  }
+
+  function handleNextStep() {
+    history.push(`/smart-yield/${tokenPool.address}/deposit/${tranche}`);
+  }
 
   return (
     <>
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
-        <RadioCard selected={tranche === 'senior'} onClick={() => setTranche('senior')}>
+        <RadioCard selected={tranche === SENIOR_TRANCHE_KEY} onClick={handleSeniorSelect}>
           <Icon name="senior_tranche" width={64} height={64} className="mb-24" />
           <Text type="small" weight="semibold" className="mb-4">
             Senior tranche
@@ -25,10 +46,10 @@ export default function SelectTranche() {
             Fixed APY
           </Text>
           <Text type="p1" weight="bold" color="green">
-            6.42%
+            - %
           </Text>
         </RadioCard>
-        <RadioCard selected={tranche === 'junior'} onClick={() => setTranche('junior')}>
+        <RadioCard selected={tranche === JUNIOR_TRANCHE_KEY} onClick={handleJuniorSelect}>
           <Icon name="junior_tranche" width={64} height={64} className="mb-24" />
           <Text type="small" weight="semibold" className="mb-4">
             Junior tranche
@@ -37,7 +58,7 @@ export default function SelectTranche() {
             Variable APY
           </Text>
           <Text type="p1" weight="bold" color="purple">
-            21.33%
+            - %
           </Text>
         </RadioCard>
       </Grid>
@@ -49,17 +70,16 @@ export default function SelectTranche() {
         />
       )}
       <Grid flow="col" gap={64} align="center" justify="space-between">
-        <Button type="light" onClick={() => history.push(`/smart-yield/${id}/deposit`)}>
+        <Button type="light" onClick={handleCancel}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
-        <Button
-          type="primary"
-          onClick={() => history.push(`/smart-yield/${id}/deposit/${tranche}`)}
-          {...{ disabled: !tranche }}>
+        <Button type="primary" disabled={!tranche} onClick={handleNextStep}>
           Next Step
         </Button>
       </Grid>
     </>
   );
-}
+};
+
+export default SelectTranche;

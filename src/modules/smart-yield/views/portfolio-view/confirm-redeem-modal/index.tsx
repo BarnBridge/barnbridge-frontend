@@ -49,35 +49,23 @@ const ConfirmRedeemModal: React.FC<Props> = props => {
       });
 
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setSubmitting(false);
   }
 
   return (
-    <Modal
-      className={s.component}
-      width={560}
-      title="Confirm your redeem"
-      {...modalProps}>
+    <Modal className={s.component} width={560} title="Confirm your redeem" {...modalProps}>
       <Form
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={32} className={s.row}>
-          <Form.Item
-            name="gasPrice"
-            label="Gas Fee (Gwei)"
-            rules={[{ required: true, message: 'Required' }]}>
+          <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
             <GasFeeList disabled={submitting} />
           </Form.Item>
-          <Button
-            className={s.actionBtn}
-            type="primary"
-            htmlType="submit"
-            loading={submitting}>
+          <Button className={s.actionBtn} type="primary" htmlType="submit" loading={submitting}>
             Confirm redeem
           </Button>
         </Grid>

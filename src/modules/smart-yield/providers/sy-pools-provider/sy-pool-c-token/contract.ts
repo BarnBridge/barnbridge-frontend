@@ -4,7 +4,7 @@ import ABI from './abi';
 
 export default class SYPoolCTokenContract extends Web3Contract {
   constructor(address: string) {
-    super(ABI, address, address);
+    super(ABI, address, '');
   }
 
   decimals?: number;
@@ -12,14 +12,10 @@ export default class SYPoolCTokenContract extends Web3Contract {
 
   async init() {
     try {
-      const [
-        name,
-        decimals,
-        symbol,
-      ] = await this.batch([
-        { method: 'name', },
-        { method: 'decimals', transform: value => Number(value), },
-        { method: 'symbol', },
+      const [name, decimals, symbol] = await this.batch([
+        { method: 'name' },
+        { method: 'decimals', transform: value => Number(value) },
+        { method: 'symbol' },
       ]);
 
       this.name = name;
