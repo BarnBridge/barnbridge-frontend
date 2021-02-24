@@ -73,7 +73,7 @@ const ProposalsViewInner: React.FC = () => {
   const daoCtx = useDAO();
   const proposalsCtx = useProposals();
 
-  const [state, setState] = useMergeState(InitialState);
+  const [state, setState] = useMergeState<ProposalsViewState>(InitialState);
 
   function handleStateChange(stateFilter: string) {
     proposalsCtx.changeStateFilter(stateFilter);

@@ -74,18 +74,18 @@ export default function SeniorTranche() {
         saving: true,
       });
 
-      const amountScaled = getNonHumanValue(amount, tokenPool.erc20?.state.decimals);
+      const amountScaled = getNonHumanValue(amount, tokenPool.uToken?.decimals);
 
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
       const lockDays = differenceInDays(lockEndDate ?? startOfDay(new Date()), startOfDay(new Date()));
 
       try {
-        const minGain = (await web3c.sy.getBondGain(amountScaled, lockDays)) ?? ZERO_BIG_NUMBER;
+        const minGain = (await tokenPool.sy?.bondGainCall(amountScaled, lockDays)) ?? ZERO_BIG_NUMBER;
         const minGainMFee = new BigNumber(1)
           .minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
           .multipliedBy(minGain);
 
-        await tokenPool.actions.seniorDeposit(amountScaled, minGainMFee, deadlineTs, lockDays ?? 0, gasPrice.value);
+        await tokenPool.actions.seniorDeposit(amountScaled, amountScaled.multipliedBy(0.1), deadlineTs, lockDays ?? 0, gasPrice.value);
         form.resetFields();
       } catch {}
 
@@ -106,7 +106,7 @@ export default function SeniorTranche() {
       <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon="usdc-token"
-          max={tokenPool.erc20?.computed.maxAllowed ?? ZERO_BIG_NUMBER}
+          max={tokenPool.uToken?.maxAllowed ?? ZERO_BIG_NUMBER}
           maximumFractionDigits={4}
           displayDecimals={4}
           disabled={state.saving}
@@ -176,7 +176,7 @@ export default function SeniorTranche() {
         <Button
           type="light"
           disabled={state.saving}
-          onClick={() => history.push(`/smart-yield/${tokenPool.tokenAddress}/deposit`)}>
+          onClick={() => history.push(`/smart-yield/${tokenPool.address}/deposit`)}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
