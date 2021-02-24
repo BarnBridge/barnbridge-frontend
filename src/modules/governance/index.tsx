@@ -49,7 +49,6 @@ const GovernanceViewInternal: React.FC = () => {
 
   return (
     <Grid flow="row">
-      <LayoutHeader title="Governance" />
       {wallet.account && <VotingHeader />}
 
       <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>

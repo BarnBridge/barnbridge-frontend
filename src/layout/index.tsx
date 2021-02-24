@@ -1,5 +1,4 @@
 import React from 'react';
-import { isMobile } from 'react-device-detect';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import cn from 'classnames';
 import { BONDTokenMeta } from 'web3/contracts/bond';
@@ -10,6 +9,7 @@ import MobileMenu from 'components/custom/mobile-menu';
 import StayTuned from 'components/custom/stay-tuned';
 import { Text } from 'components/custom/typography';
 import WarningProvider from 'components/providers/warning-provider';
+import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
 import GovernanceView from 'modules/governance';
 import SmartYieldView from 'modules/smart-yield';
@@ -32,9 +32,10 @@ const LayoutView: React.FC = () => {
   return (
     <div className={s.layout}>
       <LayoutSideNav />
-      <MobileMenu />
+      {/* <MobileMenu /> */}
       <div style={{ flexGrow: 1 }}>
         <WarningProvider>
+          <LayoutHeader />
           <main className={s.main}>
             <Switch>
               <Route path="/yield-farming" component={YieldFarmingView} />

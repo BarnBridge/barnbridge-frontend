@@ -45,7 +45,6 @@ const YieldFarmingView: React.FC = () => {
 
   return (
     <>
-      <LayoutHeader title="Yield Farming" />
       {!isMobile && wallet.isActive && <PoolRewards />}
 
       <div className="content-container">
