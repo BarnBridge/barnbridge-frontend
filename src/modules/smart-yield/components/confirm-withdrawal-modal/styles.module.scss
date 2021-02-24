@@ -1,0 +1,13 @@
+.component {
+  :global(.ant-modal-body) {
+    padding: 0;
+  }
+
+  .row {
+    padding: 32px;
+  }
+
+  .actionBtn {
+    width: 100%;
+  }
+}

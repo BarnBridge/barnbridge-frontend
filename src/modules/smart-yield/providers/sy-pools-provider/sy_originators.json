@@ -1,0 +1,11 @@
+[
+  {
+    "address": "0xD165c8CAE4D824E75588282821C57fB3b74c7f33",
+    "name": "USDC",
+    "icon": "usdc-token",
+    "market": {
+      "name": "Compound",
+      "icon": "compound"
+    }
+  }
+]

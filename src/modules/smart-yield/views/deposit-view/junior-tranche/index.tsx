@@ -2,18 +2,18 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
-import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
 
+import { mergeState } from 'hooks/useMergeState';
 import Button from 'components/antd/button';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import GasFeeList from 'components/custom/gas-fee-list';
-import Icon from 'components/custom/icon';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
-import useMergeState from 'hooks/useMergeState';
+
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
+import { getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 
 type FormData = {
   amount?: BigNumber;
@@ -39,18 +39,21 @@ const InitialState: State = {
   saving: false,
 };
 
-export default function JuniorTranche() {
+const JuniorTranche: React.FC = () => {
   const history = useHistory();
   const [form] = Antd.Form.useForm<FormData>();
 
   const tokenPool = useTokenPool();
-  const web3c = useWeb3Contracts();
 
-  const [state, setState] = useMergeState<State>(InitialState);
+  const [state, setState] = React.useState<State>(InitialState);
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
   }, []);
+
+  function handleCancel() {
+    history.push(`/smart-yield/${tokenPool.address}/deposit`);
+  }
 
   const handleFinish = React.useCallback(
     async (values: FormData) => {
@@ -60,51 +63,51 @@ export default function JuniorTranche() {
         return;
       }
 
-      setState({
+      setState(mergeState<State>({
         saving: true,
-      });
+      }));
 
-      const rate = new BigNumber(1e18).minus(
-        (web3c.syController.juniorFee ?? ZERO_BIG_NUMBER).plus(
-          getNonHumanValue(slippageTolerance ?? ZERO_BIG_NUMBER, 18).dividedBy(100),
-        ),
-      );
-
-      const amountScaled = getNonHumanValue(amount, tokenPool.erc20?.state.decimals);
-
-      const minTokens = new BigNumber(
-        amountScaled
-          .multipliedBy(rate)
-          .dividedBy(web3c.sy.price ?? 1)
-          .toFixed(0),
-      );
-
+      const juniorFee = tokenPool.controller?.feeBuyJuniorToken ?? ZERO_BIG_NUMBER;
+      const slippage = new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100);
+      const minAmount = amount.multipliedBy(new BigNumber(1).minus(juniorFee).minus(slippage));
+      const jPrice = tokenPool.sy?.price?.toNumber() ?? 1;
+      const minTokens = minAmount.dividedBy(jPrice)
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
+      const gasFee = gasPrice.value;
 
       try {
-        await tokenPool.actions.juniorDeposit(amountScaled, minTokens, deadlineTs, gasPrice.value);
+        await tokenPool.actions.juniorDeposit(
+          getNonHumanValue(amount, tokenPool.uToken?.decimals),
+          getNonHumanValue(new BigNumber(minTokens.toFixed(0)), tokenPool.uToken?.decimals),
+          deadlineTs,
+          gasFee,
+        );
         form.resetFields();
-      } catch {}
+      } catch {
+      }
 
-      setState({
+      setState(mergeState<State>({
         saving: false,
-      });
+      }));
     },
-    [tokenPool.actions.juniorDeposit, form.resetFields, setState],
+    [tokenPool.actions.juniorDeposit, form.resetFields],
   );
 
   return (
     <Form
+      className="grid flow-row row-gap-32"
       form={form}
       initialValues={InitialFormValues}
       validateTrigger={['onSubmit']}
-      onFinish={handleFinish}
-      className="grid flow-row row-gap-32">
-      <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
+      onFinish={handleFinish}>
+      <Form.Item
+        name="amount"
+        label="Amount"
+        rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
-          tokenIcon="usdc-token"
-          max={tokenPool.erc20?.computed.maxAllowed ?? ZERO_BIG_NUMBER}
-          maximumFractionDigits={4}
+          tokenIcon={tokenPool.originator?.icon as TokenIconNames}
+          max={tokenPool.uToken?.maxAllowed}
+          maximumFractionDigits={tokenPool.uToken?.decimals}
           displayDecimals={4}
           disabled={state.saving}
           slider
@@ -140,14 +143,19 @@ export default function JuniorTranche() {
         <Button
           type="light"
           disabled={state.saving}
-          onClick={() => history.push(`/smart-yield/${tokenPool.tokenAddress}/deposit`)}>
+          onClick={handleCancel}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
-        <Button type="primary" htmlType="submit" loading={state.saving}>
+        <Button
+          type="primary"
+          htmlType="submit"
+          loading={state.saving}>
           Deposit
         </Button>
       </div>
     </Form>
   );
-}
+};
+
+export default JuniorTranche;

@@ -18,8 +18,9 @@ export type Web3ContractAbiItem = AbiItem;
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
   readonly address: string;
-  readonly name: string;
   readonly ethContract: Contract & Eth;
+  name: string;
+  account?: string;
 
   constructor(abi: Web3ContractAbiItem[], address: string, name: string) {
     super();
@@ -29,6 +30,10 @@ class Web3Contract extends EventEmitter {
     this.name = name;
 
     this.ethContract = new EthWeb3.eth.Contract(abi, address) as any;
+  }
+
+  get currentProvider(): any {
+    return this.ethContract.currentProvider;
   }
 
   get writeFunctions(): Web3ContractAbiItem[] {
@@ -45,9 +50,15 @@ class Web3Contract extends EventEmitter {
   }
 
   setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {
-    if (this.ethContract.currentProvider !== provider) {
+    // if (this.ethContract.currentProvider !== provider) {
       this.ethContract.setProvider(provider);
-    }
+      this.emit('changeProvider', provider);
+    // }
+  }
+
+  setAccount(account?: string): void {
+    this.account = account;
+    this.emit('changeAccount', account);
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
@@ -110,7 +121,8 @@ class Web3Contract extends EventEmitter {
 
     try {
       batch.execute();
-    } catch {}
+    } catch {
+    }
 
     return Promise.all(promises);
   }

@@ -5,6 +5,7 @@ import Tabs from 'components/antd/tabs';
 import Icons from 'components/custom/icon';
 import LayoutHeader from 'layout/components/layout-header';
 import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
+import SYPoolsProvider from 'modules/smart-yield/providers/sy-pools-provider';
 
 import OverviewView from './views/markets-view';
 import PortfolioView from './views/portfolio-view';
@@ -59,12 +60,14 @@ const SmartYieldView: React.FunctionComponent = () => {
         />
       </Tabs>
       <div className="content-container">
-        <Switch>
-          <Route path="/smart-yield/overview" exact component={OverviewView} />
-          <Route path="/smart-yield/portfolio" component={PortfolioView} />
-          <Route path="/smart-yield/:address" component={TokenPoolView} />
-          <Redirect to="/smart-yield/overview" />
-        </Switch>
+        <SYPoolsProvider>
+          <Switch>
+            <Route path="/smart-yield/overview" exact component={OverviewView} />
+            <Route path="/smart-yield/portfolio" component={PortfolioView} />
+            <Route path="/smart-yield/:address" component={TokenPoolView} />
+            <Redirect to="/smart-yield/overview" />
+          </Switch>
+        </SYPoolsProvider>
       </div>
     </>
   );

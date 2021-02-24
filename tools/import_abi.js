@@ -63,7 +63,7 @@ function PromiseSequence(tasks, cb) {
     // ['yield_farm_bond', process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR],
     // ['dao_governance', process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR],
     // ['dao_reward', process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR],
-    // ['sy', process.env.REACT_APP_CONTRACT_SY_ADDR],
+    // ['data', process.env.REACT_APP_CONTRACT_SY_ADDR],
     // ['sy_controller', process.env.REACT_APP_CONTRACT_SY_CONTROLLER_ADDR],
   ], ([name, address]) => {
     return loadABI(name, address).then(delay);
