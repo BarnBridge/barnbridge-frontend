@@ -1,12 +1,8 @@
 .tabs {
   > :global(.ant-tabs-nav) {
-    height: 74px;
-    padding: 0 64px;
     border-left: none;
     border-right: none;
+    height: 74px;
+    padding: 0 64px;
   }
-}
-
-.view {
-  padding: 64px;
 }

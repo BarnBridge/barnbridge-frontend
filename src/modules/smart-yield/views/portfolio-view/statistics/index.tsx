@@ -10,6 +10,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
+import s from './s.module.scss';
 
 const dataMock = [
   {
@@ -127,7 +128,7 @@ const columns = [
 export default function PortfolioStatistics() {
   return (
     <>
-      <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
+      <div className={s.portfolioContainer}>
         <PortfolioBalance />
         <PortfolioValue />
       </div>
@@ -149,6 +150,9 @@ export default function PortfolioStatistics() {
           dataSource={dataMock}
           rowKey="address"
           // loading={loading}
+          scroll={{
+            x: true,
+          }}
         />
       </Card>
     </>

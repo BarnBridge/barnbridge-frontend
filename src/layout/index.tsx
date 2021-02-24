@@ -1,7 +1,7 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import * as Antd from 'antd';
+import cn from 'classnames';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 
@@ -30,11 +30,12 @@ const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
 
 const LayoutView: React.FC = () => {
   return (
-    <Antd.Layout className={s.layout}>
-      {!isMobile ? <LayoutSideNav /> : <MobileMenu />}
-      <Antd.Layout className={s.layout}>
+    <div className={s.layout}>
+      <LayoutSideNav />
+      <MobileMenu />
+      <div style={{ flexGrow: 1 }}>
         <WarningProvider>
-          <Antd.Layout.Content>
+          <main className={s.main}>
             <Switch>
               <Route path="/yield-farming" component={YieldFarmingView} />
               <Route path="/governance/:vt(\w+)" component={GovernanceView} />
@@ -43,54 +44,52 @@ const LayoutView: React.FC = () => {
               <Route path="/smart-yield" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
-          </Antd.Layout.Content>
-          <Antd.Layout.Footer className={s.footer}>
-            <div className="flex wrap col-gap-24 row-gap-24 justify-end">
-              <ExternalLink href={WEBSITE_LINK}>
-                <Text type="p2" weight="semibold">
-                  Website
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={DISCORD_LINK}>
-                <Text type="p2" weight="semibold">
-                  Discord
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={TWITTER_LINK}>
-                <Text type="p2" weight="semibold">
-                  Twitter
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={WHITEPAPER_LINK}>
-                <Text type="p2" weight="semibold">
-                  Whitepaper
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={GITHUB_LINK}>
-                <Text type="p2" weight="semibold">
-                  Github
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={DOCS_LINK}>
-                <Text type="p2" weight="semibold">
-                  Docs
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={UNISWAP_LIQUIDITY_LINK}>
-                <Text type="p2" weight="semibold">
-                  Uniswap v2 USDC/BOND add liquidity
-                </Text>
-              </ExternalLink>
-              <ExternalLink href={UNISWAP_MARKET_LINK}>
-                <Text type="p2" weight="semibold">
-                  Uniswap v2 USDC/BOND market
-                </Text>
-              </ExternalLink>
-            </div>
-          </Antd.Layout.Footer>
+          </main>
+          <footer className={cn(s.footer, 'flex wrap col-gap-24 row-gap-24 justify-end')}>
+            <ExternalLink href={WEBSITE_LINK}>
+              <Text type="p2" weight="semibold">
+                Website
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={DISCORD_LINK}>
+              <Text type="p2" weight="semibold">
+                Discord
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={TWITTER_LINK}>
+              <Text type="p2" weight="semibold">
+                Twitter
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={WHITEPAPER_LINK}>
+              <Text type="p2" weight="semibold">
+                Whitepaper
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={GITHUB_LINK}>
+              <Text type="p2" weight="semibold">
+                Github
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={DOCS_LINK}>
+              <Text type="p2" weight="semibold">
+                Docs
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={UNISWAP_LIQUIDITY_LINK}>
+              <Text type="p2" weight="semibold">
+                Uniswap v2 USDC/BOND add liquidity
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={UNISWAP_MARKET_LINK}>
+              <Text type="p2" weight="semibold">
+                Uniswap v2 USDC/BOND market
+              </Text>
+            </ExternalLink>
+          </footer>
         </WarningProvider>
-      </Antd.Layout>
-    </Antd.Layout>
+      </div>
+    </div>
   );
 };
 

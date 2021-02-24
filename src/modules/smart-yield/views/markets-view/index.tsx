@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
+import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -10,15 +11,10 @@ import Grid from 'components/custom/grid';
 import Icons, { IconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import TabCard from 'modules/smart-yield/components/tab-card';
 
 import { mergeState } from 'hooks/useMergeState';
 import { formatBigValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import {
-  SYMarket,
-  SYOriginator,
-  useSYPools
-} from 'modules/smart-yield/providers/sy-pools-provider';
+import { SYMarket, SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
 import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
 
 type State = {
@@ -203,22 +199,28 @@ const OverviewView: React.FunctionComponent = () => {
 
   return (
     <>
-      <Grid flow="col" gap={24} className="mb-64">
+      <div className="tab-cards mb-64">
         {markets.map(market => (
-          <TabCard
+          <button
             key={market.name}
-            title={market.name}
-            subtitle="Markets"
-            icon={<Icons name={market.icon as IconNames} width={40} height={40} />}
-            active={state.activeMarket === market}
+            className={cn('tab-card', state.activeMarket === market && 'active')}
             onClick={() => {
               setState(mergeState<State>({
                 activeMarket: market,
               }));
-            }}
-          />
+            }}>
+            <Icons name={market.icon as IconNames} width={40} height={40} className="mr-16" />
+            <div>
+              <Text type="p1" weight="semibold" color="primary">
+                {market.name}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                Markets
+              </Text>
+            </div>
+          </button>
         ))}
-      </Grid>
+      </div>
       {state.activeMarket && (
         <>
           <Text type="p1" weight="semibold" color="secondary" className="mb-8">
@@ -243,6 +245,9 @@ const OverviewView: React.FunctionComponent = () => {
           dataSource={tableSource}
           rowKey="address"
           loading={syPools.state.loading}
+          scroll={{
+            x: true,
+          }}
         />
       </Card>
     </>

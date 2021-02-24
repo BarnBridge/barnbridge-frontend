@@ -7,26 +7,27 @@ import PoolTxChart from 'modules/yield-farming/components/pool-tx-chart';
 import PoolTxTable from 'modules/yield-farming/components/pool-tx-table';
 
 import { PoolTypes } from 'modules/yield-farming/utils';
+import s from './s.module.scss';
 
 const PoolsOverviewView: React.FC = () => {
   return (
-    <Grid flow="row" gap={32}>
-      <Grid flow="row" gap={16}>
-        <Text type="h1" weight="bold" color="primary">
+    <>
+      <Grid flow="row" gap={16} className="mb-32">
+      <Text type="h1" weight="bold" color="primary">
           Pools
         </Text>
         <Text type="p1" weight="semibold" color="secondary">
           Overview
         </Text>
       </Grid>
-      <Grid flow="col" gap={32} colsTemplate="repeat(auto-fit, minmax(392px, 1fr))">
+      <div className={s.poolCards}>
         <PoolCard pool={PoolTypes.STABLE} />
         <PoolCard pool={PoolTypes.UNILP} />
         <PoolCard pool={PoolTypes.BOND} />
-      </Grid>
-      <PoolTxChart />
+      </div>
+      <PoolTxChart className="mb-32" />
       <PoolTxTable label="Transactions" />
-    </Grid>
+    </>
   );
 };
 

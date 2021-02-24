@@ -13,6 +13,8 @@ import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import ConfirmRedeemModal from 'modules/smart-yield/components/confirm-redeem-modal';
 import { useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
 
+import s from './s.module.scss';
+
 const originatorFilterOptions = [
   {
     label: 'All originators',
@@ -67,7 +69,7 @@ export default function PortfolioSenior() {
 
   return (
     <>
-      <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
+      <div className={s.portfolioContainer}>
         <PortfolioBalance />
         <PortfolioValue />
       </div>
@@ -136,7 +138,7 @@ export default function PortfolioSenior() {
           </Button>
         </Popover>
       </div>
-      <div className="grid flow-col gap-32">
+      <div className={s.cards}>
         <Card noPaddingBody>
           <div className="flex p-24">
             <IconBubble name="usdc-token" bubbleName="compound" className="mr-16" />

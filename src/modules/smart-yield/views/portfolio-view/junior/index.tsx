@@ -21,6 +21,8 @@ import { useReload } from 'hooks/useReload';
 import BigNumber from 'bignumber.js';
 import { useWallet } from 'wallets/wallet';
 
+import s from './s.module.scss';
+
 type LockedToken = {
   originator: SYOriginator;
   token: SYJuniorBondToken;
@@ -232,7 +234,7 @@ const PortfolioJunior: React.FC = () => {
 
   return (
     <>
-      <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
+      <div className={s.portfolioContainer}>
         <PortfolioBalance />
         <PortfolioValue />
       </div>
@@ -255,6 +257,9 @@ const PortfolioJunior: React.FC = () => {
           dataSource={lockedTokens}
           rowKey={row => row.token.tokenId}
           loading={lockedTokensLoading}
+          scroll={{
+            x: true,
+          }}
         />
       </Card>
       <Card
@@ -275,6 +280,9 @@ const PortfolioJunior: React.FC = () => {
           dataSource={activeTokens}
           rowKey={row => row.originator.address}
           loading={activeTokensLoading}
+          scroll={{
+            x: true,
+          }}
         />
       </Card>
 

@@ -5,6 +5,11 @@
   padding: 24px 12px;
   background: var(--theme-card-color);
   border: 1px solid var(--theme-border-color);
+  grid-area: sidebar;
+
+  @media (max-width: 768px) {
+    display: none;
+  }
 
   :global(.ant-btn.ant-btn-link) {
     justify-content: flex-start;

@@ -23,8 +23,7 @@ export default function DepositView() {
   async function handleSwitchChange(checked: boolean) {
     try {
       await tokenPool.actions.enableToken(checked);
-    } catch {
-    }
+    } catch {}
   }
 
   return (
