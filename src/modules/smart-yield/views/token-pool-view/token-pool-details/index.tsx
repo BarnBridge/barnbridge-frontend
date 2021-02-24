@@ -5,7 +5,7 @@ import Divider from 'components/antd/divider';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 
-import s from 'modules/smart-yield/views/token-pool-view/token-pool-details/s.module.scss';
+import s from './s.module.scss';
 
 const TokenPoolDetails: React.FC = () => {
   return (

@@ -6,7 +6,7 @@ import Divider from 'components/antd/divider';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 
-import s from 'modules/smart-yield/views/portfolio-view/senior/active-positions-list/s.module.scss';
+import s from './s.module.scss';
 
 const ActivePositionsList: React.FC = () => {
   return (

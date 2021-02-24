@@ -3,7 +3,6 @@ import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router
 
 import Tabs from 'components/antd/tabs';
 import Icons from 'components/custom/icon';
-import LayoutHeader from 'layout/components/layout-header';
 import SYPoolsProvider from 'modules/smart-yield/providers/sy-pools-provider';
 import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
 
@@ -41,7 +40,6 @@ const SmartYieldView: React.FC = () => {
 
   return (
     <>
-      <LayoutHeader title="Smart Yield" />
       <Tabs activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"

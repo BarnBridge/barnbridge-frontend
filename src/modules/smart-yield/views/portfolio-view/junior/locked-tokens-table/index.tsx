@@ -11,9 +11,11 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
-import ConfirmRedeemModal, { ConfirmRedeemModalArgs } from 'modules/smart-yield/components/confirm-redeem-modal';
 import { SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
 import { SYJuniorBondToken } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
+import ConfirmRedeemModal, {
+  ConfirmRedeemModalArgs,
+} from 'modules/smart-yield/views/portfolio-view/confirm-redeem-modal';
 
 import { doSequential, getFormattedDuration } from 'utils';
 
