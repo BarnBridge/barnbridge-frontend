@@ -145,7 +145,6 @@ export default function PortfolioStatistics() {
           </Grid>
         }>
         <Table
-          bordered={false}
           columns={columns}
           dataSource={dataMock}
           rowKey="address"

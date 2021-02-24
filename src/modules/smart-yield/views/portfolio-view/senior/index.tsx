@@ -10,6 +10,8 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
+import ConfirmRedeemModal from 'modules/smart-yield/components/confirm-redeem-modal';
+import { useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
 
 const originatorFilterOptions = [
   {
@@ -50,6 +52,19 @@ export default function PortfolioSenior() {
   const [originatorFilter, setOriginatorFilter] = useState(originatorFilterOptions[0].value);
   const [tokenFilter, setTokenFilter] = useState(tokenFilterOptions[0].value);
   const [transactionFilter, setTransactionFilter] = useState(transactionFilterOptions[0].value);
+
+  const [showRedeem, setRedeem] = React.useState<boolean>(false);
+  const [redeemId, setRedeemId] = React.useState<number | undefined>();
+  const [redeemContract, setRedeemContract] = React.useState<any | undefined>();
+
+  const syPools = useSYPools();
+
+  function handleRedeem() {
+    setRedeem(true);
+    setRedeemId(1);
+    setRedeemContract(Array.from(syPools.state.contracts.values())[0]);
+  }
+
   return (
     <>
       <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
@@ -172,7 +187,7 @@ export default function PortfolioSenior() {
           </div>
           <Divider />
           <div className="grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
-            <Button type="primary">Redeem</Button>
+            <Button type="primary" onClick={handleRedeem}>Redeem</Button>
             <Button type="ghost">Sell</Button>
           </div>
         </Card>
@@ -285,6 +300,10 @@ export default function PortfolioSenior() {
           </div>
         </Card>
       </div>
+
+      {showRedeem && (
+        <ConfirmRedeemModal visible type="senior" redeemId={redeemId} contract={redeemContract} onCancel={() => setRedeem(false)} />
+      )}
     </>
   );
 }

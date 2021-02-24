@@ -129,7 +129,6 @@ const VotersTable: React.FC<VotersTableProps> = props => {
       noPaddingBody>
       <Table<APIVoterEntity>
         className={className}
-        bordered={false}
         columns={Columns}
         dataSource={voters}
         rowKey="address"

@@ -12,6 +12,7 @@ export type Props = {
   className?: string;
   tag?: 'button' | 'a';
   active?: boolean;
+  onClick?: () => void;
 };
 
 export default function TabCard({ title, subtitle, icon, className, tag = 'button', active = false, ...rest }: Props) {

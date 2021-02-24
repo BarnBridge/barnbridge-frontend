@@ -23,7 +23,8 @@ export default function DepositView() {
   async function handleSwitchChange(checked: boolean) {
     try {
       await tokenPool.actions.enableToken(checked);
-    } catch {}
+    } catch {
+    }
   }
 
   return (
@@ -35,16 +36,16 @@ export default function DepositView() {
             Wallet balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(tokenPool.erc20?.state.balance)}
+            {formatBigValue(tokenPool.uToken?.balance)}
           </Text>
         </div>
         <div>
-          <Tooltip title={formatBigValue(web3c.sy.balance, 18)}>
+          <Tooltip>
             <Text type="small" weight="semibold" className="mb-4">
               Portfolio balance
             </Text>
             <Text type="p1" weight="semibold" color="primary">
-              {formatBigValue(web3c.sy.balance)}
+              {formatBigValue(tokenPool.sy?.balance)}
             </Text>
           </Tooltip>
         </div>
@@ -54,8 +55,8 @@ export default function DepositView() {
           </Text>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
-            checked={tokenPool.erc20?.state.isAllowed}
-            loading={tokenPool.erc20?.state.isAllowed === undefined || tokenPool.erc20?.state.isApproving}
+            checked={tokenPool.uToken?.isAllowed}
+            loading={tokenPool.uToken?.isAllowed === undefined || tokenPool.uToken?.isApproving}
             onChange={handleSwitchChange}
           />
         </Grid>
@@ -67,7 +68,7 @@ export default function DepositView() {
                 Senior APY
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                6.42%
+                - %
               </Text>
             </div>
           </Route>
@@ -77,7 +78,7 @@ export default function DepositView() {
                 Junior APY
               </Text>
               <Text type="p1" weight="semibold" color="purple">
-                21.33%
+                - %
               </Text>
             </div>
           </Route>

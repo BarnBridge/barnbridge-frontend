@@ -1,5 +1,5 @@
 import React from 'react';
-import { shortenAddr } from 'web3/utils';
+import { shortenAddr, ZERO_BIG_NUMBER } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -10,36 +10,72 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
+import { SYOriginatorType, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
+import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
+import { ColumnsType } from 'antd/lib/table/interface';
+import { useHistory } from 'react-router';
+import ConfirmRedeemModal from 'modules/smart-yield/components/confirm-redeem-modal';
 
-const dataMock = [
-  {
-    address: 'asdqwe123',
-    token: ['USDC', 'Compound'],
-    transactionHash: '0x3633dfac138a54ada26b83f73b3acce40c657ba3',
-    date: new Date(),
-    amount: '25381.32',
-    tranch: 'Senior',
-    transactionType: 'Withdraw',
-  },
-];
+type LockedPositionsTableEntity = SYOriginatorType & {
+  contract?: SYContract;
+  redeem: (bondId: number) => void;
+};
 
-const columns = [
+const LockedPositions: ColumnsType<LockedPositionsTableEntity> = [
   {
-    dataIndex: 'token',
     title: () => (
       <Text type="small" weight="semibold">
         Token Name
       </Text>
     ),
-    render: (value: string) => (
+    render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name="usdc-token" bubbleName="compound" />
+        <IconBubble name={entity.icon} bubbleName={entity.market.icon} />
         <Grid flow="row" gap={4} className="ml-auto">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {value[0]}
+          <Text type="p1" weight="semibold" color="primary">
+            {entity.name}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {value[1]}
+          <Text type="small" weight="semibold">
+            {entity.market.name}
+          </Text>
+        </Grid>
+      </Grid>
+    ),
+  },
+  {
+    title: null,
+    render: (_, entity) => (
+      <Grid flow="col" gap={24}>
+        <Button type="ghost" onClick={() => entity.redeem(1)}>
+          Redeem
+        </Button>
+      </Grid>
+    ),
+  },
+];
+
+type ActivePositionsTableEntity = SYOriginatorType & {
+  contract?: SYContract;
+  goWithdraw: () => void;
+  goSell: () => void;
+};
+
+const ActivePositions: ColumnsType<ActivePositionsTableEntity> = [
+  {
+    title: () => (
+      <Text type="small" weight="semibold">
+        Token Name
+      </Text>
+    ),
+    render: (_, entity) => (
+      <Grid flow="col" gap={16} align="center">
+        <IconBubble name={entity.icon} bubbleName={entity.market.icon} />
+        <Grid flow="row" gap={4} className="ml-auto">
+          <Text type="p1" weight="semibold" color="primary">
+            {entity.name}
+          </Text>
+          <Text type="small" weight="semibold">
+            {entity.market.name}
           </Text>
         </Grid>
       </Grid>
@@ -55,7 +91,7 @@ const columns = [
     render: (value: string) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="blue">
-          {shortenAddr(value, 8, 8)}
+          -
         </Text>
       </Grid>
     ),
@@ -70,10 +106,10 @@ const columns = [
     render: (value: Date) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {value.toLocaleDateString()}
+          -
         </Text>
         <Text type="small" weight="semibold">
-          {value.toLocaleTimeString()}
+          -
         </Text>
       </>
     ),
@@ -88,10 +124,10 @@ const columns = [
     render: (value: string) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {value}
+          -
         </Text>
         <Text type="small" weight="semibold">
-          ${value}
+          -
         </Text>
       </Grid>
     ),
@@ -105,26 +141,67 @@ const columns = [
     ),
     render: (value: string) => (
       <Text type="p1" weight="semibold" color="primary">
-        {value}
+        -
       </Text>
     ),
   },
   {
-    dataIndex: 'transactionType',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Transaction type
-      </Text>
-    ),
-    render: (value: string) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {value}
-      </Text>
+    title: null,
+    render: (_, entity) => (
+      <Grid flow="col" gap={24}>
+        <Button type="primary" onClick={() => entity.goWithdraw()}>
+          Withdraw
+        </Button>
+        <Button type="ghost" onClick={() => entity.goSell()}>
+          Sell
+        </Button>
+      </Grid>
     ),
   },
 ];
 
 export default function PortfolioJunior() {
+  const history = useHistory();
+  const syPools = useSYPools();
+  const { originators, contracts, loading } = syPools.state;
+
+  const [showRedeem, setRedeem] = React.useState<boolean>(false);
+  const [redeemId, setRedeemId] = React.useState<number | undefined>();
+  const [redeemContract, setRedeemContract] = React.useState<any | undefined>();
+
+  const lockedPositionsSource = React.useMemo(() => {
+    return originators
+      .map<LockedPositionsTableEntity>(originator => {
+        const contract = contracts.get(originator.address);
+
+        return {
+          ...originator,
+          contract,
+          redeem: (bondId: number) => {
+            setRedeem(true);
+            setRedeemId(bondId);
+            setRedeemContract(contract);
+          },
+        };
+      })
+      .filter(originator => originator.contract?.balance?.isGreaterThan(ZERO_BIG_NUMBER))
+  }, [originators, contracts, loading]);
+
+  const activePositionsSource = React.useMemo(() => {
+    return originators
+      .map<ActivePositionsTableEntity>(originator => ({
+        ...originator,
+        contract: contracts.get(originator.address),
+        goWithdraw: () => {
+          history.push(`/smart-yield/${originator.address}/withdraw`);
+        },
+        goSell: () => {
+          history.push(`/smart-yield/${originator.address}/withdraw`);
+        },
+      }))
+      .filter(originator => originator.contract?.balance?.isGreaterThan(ZERO_BIG_NUMBER))
+  }, [originators, contracts, loading]);
+
   return (
     <>
       <div className="grid mb-32" style={{ gridTemplateColumns: '40% 1fr', columnGap: 32 }}>
@@ -146,11 +223,10 @@ export default function PortfolioJunior() {
         }
         className="mb-32">
         <Table
-          bordered={false}
-          columns={columns}
-          dataSource={dataMock}
+          columns={LockedPositions}
+          dataSource={lockedPositionsSource}
           rowKey="address"
-          // loading={loading}
+          loading={loading}
         />
       </Card>
       <Card
@@ -166,14 +242,17 @@ export default function PortfolioJunior() {
             </Button>
           </Grid>
         }>
-        <Table
-          bordered={false}
-          columns={columns}
-          dataSource={dataMock}
+        <Table<ActivePositionsTableEntity>
+          columns={ActivePositions}
+          dataSource={activePositionsSource}
           rowKey="address"
-          // loading={loading}
+          loading={loading}
         />
       </Card>
+
+      {showRedeem && (
+        <ConfirmRedeemModal visible  type="junior" redeemId={redeemId} contract={redeemContract} onCancel={() => setRedeem(false)} />
+      )}
     </>
   );
 }

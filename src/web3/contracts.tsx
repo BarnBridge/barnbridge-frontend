@@ -1,6 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+
 import UserRejectedModal from 'web3/components/user-rejected-modal';
 import Web3Contract from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
@@ -10,17 +11,13 @@ import { DAOGovernanceContract, useDAOGovernanceContract } from 'web3/contracts/
 import { DAORewardContract, useDAORewardContract } from 'web3/contracts/daoReward';
 import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
-import { SYContract, useSYContract } from 'web3/contracts/sy';
-import { SYControllerContract, useSYControllerContract } from 'web3/contracts/syController';
 import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
-import { YieldFarmContract, useYieldFarmContract } from 'web3/contracts/yieldFarm';
-import { YieldFarmBONDContract, useYieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
-import { YieldFarmLPContract, useYieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
+import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
+import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
-
 import { useWallet } from 'wallets/wallet';
-
 import { PoolTypes } from 'modules/yield-farming/utils';
 
 export type Web3ContractsData = {
@@ -36,8 +33,6 @@ export type Web3ContractsData = {
   daoBarn: DAOBarnContract;
   daoReward: DAORewardContract;
   daoGovernance: DAOGovernanceContract;
-  sy: SYContract;
-  syController: SYControllerContract;
   aggregated: {
     yfStakedValue?: BigNumber;
     yfEffectiveStakedValue?: BigNumber;
@@ -84,8 +79,6 @@ const Web3ContractsProvider: React.FC = props => {
   const daoBarnContract = useDAOBarnContract();
   const daoRewardContract = useDAORewardContract();
   const daoGovernanceContract = useDAOGovernanceContract();
-  const syContract = useSYContract();
-  const syControllerContract = useSYControllerContract();
 
   const [userRejectedVisible, setUserRejectedVisible] = React.useState<boolean>(false);
 
@@ -103,8 +96,6 @@ const Web3ContractsProvider: React.FC = props => {
       daoBarnContract.contract,
       daoRewardContract.contract,
       daoGovernanceContract.contract,
-      syContract.contract,
-      syControllerContract.contract,
     ];
 
     function handleError(err: Error & { code: number }, contract: Web3Contract, { method }: any) {
@@ -141,8 +132,6 @@ const Web3ContractsProvider: React.FC = props => {
     daoBarnContract.contract,
     daoRewardContract.contract,
     daoGovernanceContract.contract,
-    syContract.contract,
-    syControllerContract.contract,
   ]);
 
   React.useEffect(() => {
@@ -159,8 +148,6 @@ const Web3ContractsProvider: React.FC = props => {
       daoBarnContract.contract,
       daoRewardContract.contract,
       daoGovernanceContract.contract,
-      syContract.contract,
-      syControllerContract.contract,
     ];
 
     contracts.forEach(contract => {
@@ -437,8 +424,6 @@ const Web3ContractsProvider: React.FC = props => {
     daoBarn: daoBarnContract,
     daoReward: daoRewardContract,
     daoGovernance: daoGovernanceContract,
-    sy: syContract,
-    syController: syControllerContract,
     aggregated: {
       get yfStakedValue(): BigNumber | undefined {
         return yfStakedValue();

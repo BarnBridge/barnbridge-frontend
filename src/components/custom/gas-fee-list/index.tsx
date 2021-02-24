@@ -6,6 +6,7 @@ import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+import { fetchGasPrice } from 'web3/utils';
 
 type GasFeeOption = {
   key: string;
@@ -38,29 +39,28 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
       loading: true,
     });
 
-    fetch('https://ethgasstation.info/api/ethgasAPI.json')
-      .then(result => result.json())
+    fetchGasPrice()
       .then(result => {
         const options = [
           {
             key: 'fastest',
             name: 'Very fast',
-            value: Math.round(result.fastest / 10),
+            value: result.veryFast,
           },
           {
             key: 'fast',
             name: 'Fast',
-            value: Math.round(result.fast / 10),
+            value: result.fast,
           },
           {
             key: 'average',
             name: 'Standard',
-            value: Math.round(result.average / 10),
+            value: result.average,
           },
           {
             key: 'safeLow',
             name: 'Slow',
-            value: Math.round(result.safeLow / 10),
+            value: result.safeLow,
           },
         ];
 

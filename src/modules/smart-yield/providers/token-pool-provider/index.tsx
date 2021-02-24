@@ -1,24 +1,23 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
-import { UseErc20ContractType, useErc20Contract } from 'web3/useErc20Contract';
 
-import useMergeState from 'hooks/useMergeState';
+import { SYOriginatorType, useSYPools } from '../sy-pools-provider';
+import { SYContract } from '../sy-pools-provider/sy/contract';
+import SYPoolCTokenContract from '../sy-pools-provider/sy-pool-c-token/contract';
+import SYPoolUTokenContract from '../sy-pools-provider/sy-pool-u-token/contract';
+import SYControllerContract from '../sy-pools-provider/sy-controller/contract';
+import { useReload } from 'hooks/useReload';
 
-const COMPOUND_PROVIDER_ADDR = String(process.env.REACT_APP_CONTRACT_SY_COMPOUND_PROVIDER_ADDR);
-
-export type TokenPoolProviderState = {};
-
-const InitialState: TokenPoolProviderState = {};
-
-type TokenPoolProviderActions = {
+type Actions = {
   enableToken: (enable: boolean) => Promise<void>;
+
   juniorDeposit: (
     underlyingAmount: BigNumber,
     minTokens: BigNumber,
     deadline: number,
     gasPrice: number,
   ) => Promise<void>;
+
   seniorDeposit: (
     principalAmount: BigNumber,
     minGain: BigNumber,
@@ -26,23 +25,45 @@ type TokenPoolProviderActions = {
     forDays: number,
     gasPrice: number,
   ) => Promise<void>;
+
+  juniorRegularWithdraw: (
+    tokenAmount: BigNumber,
+    maxMaturesAt: number,
+    deadline: number,
+    gasPrice: number,
+  ) => Promise<void>;
+
+  juniorInstantWithdraw: (
+    tokenAmount: BigNumber,
+    minUnderlying: BigNumber,
+    deadline: number,
+    gasPrice: number,
+  ) => Promise<void>;
 };
 
 export type TokenPoolContextType = {
-  tokenAddress?: string;
-  state: TokenPoolProviderState;
-  erc20?: UseErc20ContractType;
-  actions: TokenPoolProviderActions;
+  address?: string;
+  originator?: SYOriginatorType;
+  sy?: SYContract;
+  controller?: SYControllerContract;
+  cToken?: SYPoolCTokenContract;
+  uToken?: SYPoolUTokenContract;
+  actions: Actions;
 };
 
 const TokenPoolContext = React.createContext<TokenPoolContextType>({
-  tokenAddress: undefined,
-  state: InitialState,
-  erc20: undefined,
+  address: undefined,
+  originator: undefined,
+  sy: undefined,
+  controller: undefined,
+  cToken: undefined,
+  uToken: undefined,
   actions: {
     enableToken: () => Promise.reject(),
     juniorDeposit: () => Promise.reject(),
     seniorDeposit: () => Promise.reject(),
+    juniorRegularWithdraw: () => Promise.reject(),
+    juniorInstantWithdraw: () => Promise.reject(),
   },
 });
 
@@ -57,38 +78,61 @@ type TokenPoolProviderProps = {
 const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
   const { tokenAddress, children } = props;
 
-  const web3c = useWeb3Contracts();
-  const erc20c = useErc20Contract(tokenAddress, COMPOUND_PROVIDER_ADDR);
+  const syPools = useSYPools();
+  const [reload, version] = useReload();
 
-  const [state, setState] = useMergeState<TokenPoolProviderState>(InitialState);
+  const originator = React.useMemo<SYOriginatorType | undefined>(() => {
+    return syPools.state.originators.find(originator => originator.address === tokenAddress);
+  }, [syPools.state.originators, tokenAddress, version]);
 
-  const enableToken = React.useCallback(
-    (enable: boolean) => {
+  const sy = React.useMemo<SYContract | undefined>(() => {
+    return syPools.state.contracts.get(tokenAddress);
+  }, [syPools.state.contracts, tokenAddress, version]);
+
+  const controller = React.useMemo<SYControllerContract | undefined>(() => {
+    return sy?.controller;
+  }, [sy, version]);
+
+  const cToken = React.useMemo<SYPoolCTokenContract | undefined>(() => {
+    return sy?.pool?.cToken;
+  }, [sy?.pool?.cToken]);
+
+  const uToken = React.useMemo<SYPoolUTokenContract | undefined>(() => {
+    return sy?.pool?.uToken;
+  }, [sy, version]);
+
+  React.useEffect(() => {
+    if (sy) {
+      sy.on('update', () => {
+        console.log(sy);
+        reload();
+      });
+    }
+  }, [sy]);
+
+  const enableToken = React.useCallback((enable: boolean) => {
       if (enable) {
-        return erc20c.actions.approveMax();
-      } else {
-        return erc20c.actions.approveMin();
+        return uToken?.approveMax() ?? Promise.reject();
       }
+
+      return uToken?.approveMin() ?? Promise.reject();
     },
-    [erc20c.actions.approveMax, erc20c.actions.approveMin],
+    [uToken],
   );
 
   const juniorDeposit = React.useCallback(
-    (underlyingAmount: BigNumber, minTokens: BigNumber, deadline: number, gasPrice: number): Promise<void> => {
-      return web3c.sy
-        .buyTokens(
-          underlyingAmount,
-          minTokens,
-          // getNonHumanValue(underlyingAmount, erc20c.state.decimals),
-          // getNonHumanValue(minTokens, erc20c.state.decimals),
-          deadline,
-          gasPrice,
-        )
+    (
+      underlyingAmount: BigNumber,
+      minTokens: BigNumber,
+      deadline: number,
+      gasPrice: number,
+    ): Promise<void> => {
+      return sy?.buyTokensSend(underlyingAmount, minTokens, deadline, gasPrice)
         .then(() => {
-          erc20c.actions.reloadBalance();
-        });
+          uToken?.reloadBalance();
+        }) ?? Promise.reject();
     },
-    [web3c.sy.buyTokens, erc20c.state.decimals],
+    [sy, uToken],
   );
 
   const seniorDeposit = React.useCallback(
@@ -99,38 +143,88 @@ const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
       forDays: number,
       gasPrice: number,
     ): Promise<void> => {
-      return web3c.sy
-        .buyBond(
-          principalAmount,
-          minGain,
-          // getNonHumanValue(principalAmount, erc20c.state.decimals),
-          // getNonHumanValue(minGain, erc20c.state.decimals),
-          deadline,
-          forDays,
-          gasPrice,
-        )
+      return sy?.buyBondSend(principalAmount, minGain, deadline, forDays, gasPrice)
         .then(() => {
-          erc20c.actions.reloadBalance();
-        });
+          uToken?.reloadBalance();
+        }) ?? Promise.reject();
     },
-    [web3c.sy.buyBond, erc20c.state.decimals],
+    [sy, uToken],
+  );
+
+  const juniorRegularWithdraw = React.useCallback(
+    (
+      tokenAmount: BigNumber,
+      maxMaturesAt: number,
+      deadline: number,
+      gasPrice: number,
+    ): Promise<void> => {
+      return sy?.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasPrice)
+        .then(() => {
+          uToken?.reloadBalance();
+        }) ?? Promise.reject();
+    },
+    [sy, uToken],
+  );
+
+  const juniorInstantWithdraw = React.useCallback(
+    (
+      tokenAmount: BigNumber,
+      minUnderlying: BigNumber,
+      deadline: number,
+      gasPrice: number,
+    ): Promise<void> => {
+      console.log({
+        tokenAmount,
+        minUnderlying,
+        deadline,
+        gasPrice
+      });
+      return sy?.sellTokensSend(tokenAmount, minUnderlying, deadline, gasPrice)
+        .then(() => {
+          uToken?.reloadBalance();
+        }) ?? Promise.reject();
+    },
+    [sy, uToken],
   );
 
   const value = React.useMemo(
     () => ({
-      tokenAddress,
-      state,
-      erc20: erc20c,
+      address: tokenAddress,
+      originator,
+      sy,
+      controller,
+      cToken,
+      uToken,
       actions: {
         enableToken,
         juniorDeposit,
         seniorDeposit,
+        juniorRegularWithdraw,
+        juniorInstantWithdraw,
       },
+      version,
     }),
-    [tokenAddress, state, erc20c, enableToken, juniorDeposit, seniorDeposit],
+    [
+      tokenAddress,
+      originator,
+      sy,
+      controller,
+      cToken,
+      uToken,
+      enableToken,
+      juniorDeposit,
+      seniorDeposit,
+      juniorRegularWithdraw,
+      juniorInstantWithdraw,
+      version,
+    ],
   );
 
-  return <TokenPoolContext.Provider value={value}>{children}</TokenPoolContext.Provider>;
+  return (
+    <TokenPoolContext.Provider value={value}>
+      {children}
+    </TokenPoolContext.Provider>
+  );
 };
 
 export default TokenPoolProvider;
