@@ -1,22 +1,15 @@
-import BigNumber from 'bignumber.js';
 import Web3Contract from 'web3/contract';
 
 import ABI from './abi';
+import { getGasValue } from 'web3/utils';
 
 export default class SYSeniorBondContract extends Web3Contract {
   constructor(address: string) {
     super(ABI, address, address);
-
-    this.on('changeAccount', () => {
-      this.loadAccountData().catch(Error);
-    });
   }
 
-  // account data
-  balance?: BigNumber;
-
-  async loadAccountData() {
-    this.balance = undefined;
+  async getSeniorTokens(): Promise<number[]> {
+    let tokenIds: number[] = [];
 
     if (this.account) {
       try {
@@ -24,16 +17,31 @@ export default class SYSeniorBondContract extends Web3Contract {
           {
             method: 'balanceOf',
             methodArgs: [this.account],
-            transform: value => new BigNumber(value),
+            transform: value => Number(value),
           },
         ]);
 
-        this.balance = balance;
+        if (balance > 0) {
+          const methods = Array.from(Array(balance)).map((_, index) => ({
+            method: 'tokenOfOwnerByIndex',
+            methodArgs: [this.account, index],
+            transform: (value: any) => Number(value),
+          }));
+
+          tokenIds = await this.batch(methods);
+        }
       } catch (e) {
         console.error('SYSeniorBondContract', e);
       }
     }
 
-    this.emit('update');
+    return tokenIds;
+  }
+
+  transferFromSend(from: string, to: string, tokenId: number, gasPrice: number): Promise<void> {
+    return this.send('transferFrom', [from, to, tokenId], {
+      from: this.account,
+      gasPrice: getGasValue(gasPrice),
+    }).catch(e => console.log(e));
   }
 }

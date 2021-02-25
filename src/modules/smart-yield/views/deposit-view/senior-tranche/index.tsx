@@ -83,7 +83,7 @@ const SeniorTranche: React.FC = () => {
           .minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
           .multipliedBy(minGain);
 
-        await tokenPool.actions.seniorDeposit(amountScaled, amountScaled, deadlineTs, lockDays ?? 0, gasPrice.value);
+        await tokenPool.actions.seniorDeposit(amountScaled, minGainMFee, deadlineTs, lockDays ?? 0, gasPrice.value);
         form.resetFields();
       } catch {}
 

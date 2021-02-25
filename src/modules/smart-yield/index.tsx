@@ -31,7 +31,7 @@ const SmartYieldView: React.FC = () => {
 
   React.useEffect(() => {
     if (isValidAddress(vt)) {
-      setActiveTab('overview');
+      setActiveTab('portfolio');
       return;
     }
 

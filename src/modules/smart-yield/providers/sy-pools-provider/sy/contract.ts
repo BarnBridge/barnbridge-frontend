@@ -8,6 +8,15 @@ import SYPoolContract from '../sy-pool/contract';
 import SYSeniorBondContract from '../sy-senior-bond/contract';
 import ABI from './abi';
 
+export type SYSeniorBondToken = {
+  tokenId: number;
+  principal: BigNumber;
+  gain: BigNumber;
+  issuedAt: number;
+  maturesAt: number;
+  liquidated: number;
+};
+
 export type SYJuniorBondToken = {
   tokenId: number;
   amount: BigNumber;
@@ -257,6 +266,49 @@ export class SYContract extends Web3Contract {
     this.emit('update');
   }
 
+  private connectSeniorBondContract() {
+    if (this.seniorBondAddr) {
+      if (!this.seniorBond || this.seniorBondAddr !== this.seniorBond.address) {
+        this.seniorBond = new SYSeniorBondContract(this.seniorBondAddr);
+        this.seniorBond.setProvider(this.currentProvider);
+        this.seniorBond.setAccount(this.account);
+      }
+    }
+  }
+
+  async getSeniorBondTokens(): Promise<SYSeniorBondToken[]> {
+    this.connectSeniorBondContract();
+
+    let seniorBondTokens: SYSeniorBondToken[] = [];
+
+    if (this.seniorBond) {
+      try {
+        const tokenIds = await this.seniorBond.getSeniorTokens();
+
+        if (tokenIds && tokenIds.length > 0) {
+          const methods = tokenIds.map<BatchContractMethod>(tokenId => ({
+            method: 'seniorBonds',
+            methodArgs: [tokenId],
+            transform: value => ({
+              tokenId,
+              ...value,
+              principal: new BigNumber(value.principal),
+              gain: new BigNumber(value.gain),
+              issuedAt: Number(value.issuedAt),
+              maturesAt: Number(value.maturesAt),
+            }),
+          }));
+
+          seniorBondTokens = await this.batch(methods);
+        }
+      } catch (e) {
+        console.error('SY:getSeniorBondTokens', e);
+      }
+    }
+
+    return seniorBondTokens;
+  }
+
   private connectJuniorBondContract() {
     if (this.juniorBondAddr) {
       if (!this.juniorBond || this.juniorBondAddr !== this.juniorBond.address) {
@@ -307,17 +359,6 @@ export class SYContract extends Web3Contract {
         this.pool.setProvider(this.currentProvider);
         this.pool.setAccount(this.account);
         await this.pool.init();
-      } catch {}
-    }
-
-    if (this.seniorBondAddr) {
-      try {
-        this.seniorBond = new SYSeniorBondContract(this.seniorBondAddr);
-        this.seniorBond.on('update', () => {
-          this.emit('update');
-        });
-        this.seniorBond.setProvider(this.currentProvider);
-        this.seniorBond.setAccount(this.account);
       } catch {}
     }
 
