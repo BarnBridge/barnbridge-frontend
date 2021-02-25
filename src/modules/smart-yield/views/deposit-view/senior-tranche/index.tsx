@@ -3,7 +3,6 @@ import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { addMonths, differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
-import { useWeb3Contracts } from 'web3/contracts';
 import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -17,7 +16,7 @@ import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
-import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
+import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
 import { DURATION_1_MONTH, DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_MONTH, getLockEndDate } from 'utils/date';
 
@@ -49,12 +48,11 @@ const InitialState: State = {
 
 const DURATION_OPTIONS = [DURATION_1_WEEK, DURATION_2_WEEK, DURATION_1_MONTH, DURATION_3_MONTH];
 
-export default function SeniorTranche() {
+const SeniorTranche: React.FC = () => {
   const history = useHistory();
   const [form] = Antd.Form.useForm<FormData>();
 
   const tokenPool = useTokenPool();
-  const web3c = useWeb3Contracts();
 
   const [state, setState] = useMergeState<State>(InitialState);
 
@@ -85,7 +83,7 @@ export default function SeniorTranche() {
           .minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
           .multipliedBy(minGain);
 
-        await tokenPool.actions.seniorDeposit(amountScaled, amountScaled.multipliedBy(0.1), deadlineTs, lockDays ?? 0, gasPrice.value);
+        await tokenPool.actions.seniorDeposit(amountScaled, amountScaled, deadlineTs, lockDays ?? 0, gasPrice.value);
         form.resetFields();
       } catch {}
 
@@ -186,4 +184,6 @@ export default function SeniorTranche() {
       </div>
     </Form>
   );
-}
+};
+
+export default SeniorTranche;

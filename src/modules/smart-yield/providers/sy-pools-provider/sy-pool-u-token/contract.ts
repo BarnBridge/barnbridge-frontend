@@ -1,18 +1,16 @@
 import BigNumber from 'bignumber.js';
-
 import Web3Contract from 'web3/contract';
-import { getHumanValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import { MAX_UINT_256, ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
+
 import ABI from './abi';
 
 export default class SYPoolUTokenContract extends Web3Contract {
   constructor(address: string) {
-    super(ABI, address, address);
+    super(ABI, address, '');
 
     this.on('changeAccount', () => {
-      this.loadAllowance()
-        .catch(Error);
-      this.loadBalance()
-        .catch(Error);
+      this.loadAllowance().catch(Error);
+      this.loadBalance().catch(Error);
     });
   }
 
@@ -32,11 +30,8 @@ export default class SYPoolUTokenContract extends Web3Contract {
   isAllowed?: boolean;
 
   get maxAllowed(): BigNumber | undefined {
-    return BigNumber.min(
-      this.allowance ?? ZERO_BIG_NUMBER,
-      this.balance ?? ZERO_BIG_NUMBER,
-    );
-  };
+    return BigNumber.min(this.allowance ?? ZERO_BIG_NUMBER, this.balance ?? ZERO_BIG_NUMBER);
+  }
 
   setPoolAddress(address?: string) {
     this.poolAddr = address;
@@ -44,14 +39,10 @@ export default class SYPoolUTokenContract extends Web3Contract {
 
   async init() {
     try {
-      const [
-        name,
-        decimals,
-        symbol,
-      ] = await this.batch([
-        { method: 'name', },
-        { method: 'decimals', transform: value => Number(value), },
-        { method: 'symbol', },
+      const [name, decimals, symbol] = await this.batch([
+        { method: 'name' },
+        { method: 'decimals', transform: value => Number(value) },
+        { method: 'symbol' },
       ]);
 
       this.name = name;
@@ -73,9 +64,7 @@ export default class SYPoolUTokenContract extends Web3Contract {
 
     if (this.account && this.loaded) {
       try {
-        const [
-          allowance,
-        ] = await this.batch([
+        const [allowance] = await this.batch([
           {
             method: 'allowance',
             methodArgs: [this.account, this.poolAddr],
@@ -98,9 +87,7 @@ export default class SYPoolUTokenContract extends Web3Contract {
 
     if (this.account && this.loaded) {
       try {
-        const [
-          balance,
-        ] = await this.batch([
+        const [balance] = await this.batch([
           {
             method: 'balanceOf',
             methodArgs: [this.account],
@@ -130,10 +117,8 @@ export default class SYPoolUTokenContract extends Web3Contract {
         from: this.account,
       });
 
-      this.loadAllowance()
-        .catch(Error);
-    } catch {
-    }
+      this.loadAllowance().catch(Error);
+    } catch {}
 
     this.isApproving = false;
     this.emit('update');
@@ -148,7 +133,6 @@ export default class SYPoolUTokenContract extends Web3Contract {
   }
 
   reloadBalance() {
-    this.loadBalance()
-      .catch(Error);
+    this.loadBalance().catch(Error);
   }
 }

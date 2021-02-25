@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
-
 import Web3Contract from 'web3/contract';
 import { getHumanValue } from 'web3/utils';
+
 import ABI from './abi';
 
 export default class SYControllerContract extends Web3Contract {
@@ -13,9 +13,7 @@ export default class SYControllerContract extends Web3Contract {
 
   async init() {
     try {
-      const [
-        feeBuyJuniorToken,
-      ] = await this.batch([
+      const [feeBuyJuniorToken] = await this.batch([
         {
           method: 'FEE_BUY_JUNIOR_TOKEN',
           transform: value => new BigNumber(value),

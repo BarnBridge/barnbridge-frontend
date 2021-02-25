@@ -2,18 +2,17 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
 
-import { mergeState } from 'hooks/useMergeState';
 import Button from 'components/antd/button';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
-
+import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
-import { useTokenPool } from 'modules/smart-yield/providers/token-pool-provider';
-import { getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
 type FormData = {
   amount?: BigNumber;
@@ -63,15 +62,17 @@ const JuniorTranche: React.FC = () => {
         return;
       }
 
-      setState(mergeState<State>({
-        saving: true,
-      }));
+      setState(
+        mergeState<State>({
+          saving: true,
+        }),
+      );
 
       const juniorFee = tokenPool.controller?.feeBuyJuniorToken ?? ZERO_BIG_NUMBER;
       const slippage = new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100);
       const minAmount = amount.multipliedBy(new BigNumber(1).minus(juniorFee).minus(slippage));
       const jPrice = tokenPool.sy?.price?.toNumber() ?? 1;
-      const minTokens = minAmount.dividedBy(jPrice)
+      const minTokens = minAmount.dividedBy(jPrice);
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
       const gasFee = gasPrice.value;
 
@@ -83,12 +84,13 @@ const JuniorTranche: React.FC = () => {
           gasFee,
         );
         form.resetFields();
-      } catch {
-      }
+      } catch {}
 
-      setState(mergeState<State>({
-        saving: false,
-      }));
+      setState(
+        mergeState<State>({
+          saving: false,
+        }),
+      );
     },
     [tokenPool.actions.juniorDeposit, form.resetFields],
   );
@@ -100,10 +102,7 @@ const JuniorTranche: React.FC = () => {
       initialValues={InitialFormValues}
       validateTrigger={['onSubmit']}
       onFinish={handleFinish}>
-      <Form.Item
-        name="amount"
-        label="Amount"
-        rules={[{ required: true, message: 'Required' }]}>
+      <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon={tokenPool.originator?.icon as TokenIconNames}
           max={tokenPool.uToken?.maxAllowed}
@@ -140,17 +139,11 @@ const JuniorTranche: React.FC = () => {
         }}
       </Form.Item>
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <Button
-          type="light"
-          disabled={state.saving}
-          onClick={handleCancel}>
+        <Button type="light" disabled={state.saving} onClick={handleCancel}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
-        <Button
-          type="primary"
-          htmlType="submit"
-          loading={state.saving}>
+        <Button type="primary" htmlType="submit" loading={state.saving}>
           Deposit
         </Button>
       </div>

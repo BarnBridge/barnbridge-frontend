@@ -1,4 +1,5 @@
 import React from 'react';
+import { ColumnsType } from 'antd/lib/table/interface';
 import { shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -8,9 +9,6 @@ import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
-import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
-import s from './s.module.scss';
 
 const dataMock = [
   {
@@ -24,7 +22,7 @@ const dataMock = [
   },
 ];
 
-const columns = [
+const Columns: ColumnsType<any> = [
   {
     dataIndex: 'token',
     title: () => (
@@ -125,36 +123,31 @@ const columns = [
   },
 ];
 
-export default function PortfolioStatistics() {
+const HistoryTable: React.FC = () => {
   return (
-    <>
-      <div className={s.portfolioContainer}>
-        <PortfolioBalance />
-        <PortfolioValue />
-      </div>
-      <Card
-        noPaddingBody
-        title={
-          <Grid flow="col" colsTemplate="1fr max-content">
-            <Text type="p1" weight="semibold" color="primary">
-              Transaction history
-            </Text>
-            <Button type="light" onClick={() => console.log('Le open filter modal')}>
-              <Icons name="filter" />
-              Filter
-            </Button>
-          </Grid>
-        }>
-        <Table
-          columns={columns}
-          dataSource={dataMock}
-          rowKey="address"
-          // loading={loading}
-          scroll={{
-            x: true,
-          }}
-        />
-      </Card>
-    </>
+    <Card
+      title={
+        <Grid flow="col" colsTemplate="1fr max-content">
+          <Text type="p1" weight="semibold" color="primary">
+            Transaction history
+          </Text>
+          <Button type="light">
+            <Icons name="filter" />
+            Filter
+          </Button>
+        </Grid>
+      }
+      noPaddingBody>
+      <Table
+        columns={Columns}
+        dataSource={dataMock}
+        rowKey="address"
+        scroll={{
+          x: true,
+        }}
+      />
+    </Card>
   );
-}
+};
+
+export default HistoryTable;

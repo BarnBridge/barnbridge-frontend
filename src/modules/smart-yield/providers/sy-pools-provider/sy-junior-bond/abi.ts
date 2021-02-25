@@ -1,38 +1,38 @@
 const ABI: any[] = [
   {
-    "name": "balanceOf",
-    "type": "function",
-    "inputs": [
+    name: 'balanceOf',
+    type: 'function',
+    inputs: [
       {
-        "name": "",
-        "type": "address",
-      }
+        name: '',
+        type: 'address',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256",
-      }
-    ]
+        name: '',
+        type: 'uint256',
+      },
+    ],
   },
   {
-    "name": "tokenOfOwnerByIndex",
-    "type": "function",
-    "inputs": [
+    name: 'tokenOfOwnerByIndex',
+    type: 'function',
+    inputs: [
       {
-        "name": "owner",
-        "type": "address"
+        name: 'owner',
+        type: 'address',
       },
       {
-        "name": "index",
-        "type": "uint256"
-      }
+        name: 'index',
+        type: 'uint256',
+      },
     ],
-    "outputs": [
+    outputs: [
       {
-        "name": "",
-        "type": "uint256"
-      }
+        name: '',
+        type: 'uint256',
+      },
     ],
   },
 ];

@@ -1,4 +1,5 @@
 import Web3Contract from 'web3/contract';
+
 import ABI from './abi';
 
 export default class SYJuniorBondContract extends Web3Contract {
@@ -20,14 +21,13 @@ export default class SYJuniorBondContract extends Web3Contract {
         ]);
 
         if (balance > 0) {
-          const methods = Array.from(Array(balance))
-            .map((_, index) => ({
-              method: 'tokenOfOwnerByIndex',
-              methodArgs: [this.account, index],
-              transform: (value: any) => Number(value),
-            }));
+          const methods = Array.from(Array(balance)).map((_, index) => ({
+            method: 'tokenOfOwnerByIndex',
+            methodArgs: [this.account, index],
+            transform: (value: any) => Number(value),
+          }));
 
-          tokenIds = await this.batch(methods)
+          tokenIds = await this.batch(methods);
         }
       } catch (e) {
         console.error('SYJuniorBondContract', e);

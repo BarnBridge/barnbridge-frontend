@@ -9,7 +9,7 @@ export type IconBubbleProps = {
   style?: Object;
 };
 
-const IconBubble: React.FunctionComponent<IconBubbleProps> = props => {
+const IconBubble: React.FC<IconBubbleProps> = props => {
   const { name, bubbleName, style = {}, ...rest } = props;
 
   return (

@@ -1,3 +1,5 @@
+import React from 'react';
+
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Grid from 'components/custom/grid';
@@ -5,7 +7,7 @@ import { Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
 
-export default function PoolDetails() {
+const TokenPoolDetails: React.FC = () => {
   return (
     <Card noPaddingBody>
       <div className={s.detailsRow}>
@@ -91,4 +93,6 @@ export default function PoolDetails() {
       </Grid>
     </Card>
   );
-}
+};
+
+export default TokenPoolDetails;
