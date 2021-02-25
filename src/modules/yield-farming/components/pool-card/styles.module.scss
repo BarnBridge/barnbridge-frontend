@@ -4,6 +4,19 @@
   }
 }
 
+.cardTitleContainer {
+  @media (max-width: 480px) {
+    display: block;
+  }
+}
+
+.cardTitleStacking {
+  @media (max-width: 480px) {
+    margin-top: 8px;
+    width: 100%;
+  }
+}
+
 .box {
   margin: 24px;
   padding: 16px;

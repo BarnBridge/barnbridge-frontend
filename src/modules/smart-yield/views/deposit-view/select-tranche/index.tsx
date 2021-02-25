@@ -8,6 +8,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+import s from './s.module.scss';
 
 const SENIOR_TRANCHE_KEY = 'senior';
 const JUNIOR_TRANCHE_KEY = 'junior';
@@ -36,7 +37,7 @@ const SelectTranche: React.FC = () => {
 
   return (
     <>
-      <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
+      <div className={s.cards}>
         <RadioCard selected={tranche === SENIOR_TRANCHE_KEY} onClick={handleSeniorSelect}>
           <Icon name="senior_tranche" width={64} height={64} className="mb-24" />
           <Text type="small" weight="semibold" className="mb-4">
@@ -61,7 +62,7 @@ const SelectTranche: React.FC = () => {
             - %
           </Text>
         </RadioCard>
-      </Grid>
+      </div>
       {tranche && (
         <Alert
           className="mb-32"

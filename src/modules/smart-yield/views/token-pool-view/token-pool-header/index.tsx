@@ -28,15 +28,20 @@ const TokenPoolHeader: React.FC = () => {
   }
 
   return (
-    <Grid flow="col" gap={64} align="center" className="mb-64">
+    <div className="flexbox-grid mb-64" style={{ '--gap': '64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       {tokenPool.originator && (
         <Grid flow="col" gap={16} align="center">
           <IconBubble name={tokenPool.originator.icon} bubbleName={tokenPool.originator.market.icon} />
-          <Grid flow="row" gap={4} className="ml-auto">
-            <div>
-              <Text type="p1" weight="semibold" color="primary">
+          <div className="ml-auto">
+            <div
+              className="mb-4"
+              style={{
+                display: 'flex',
+                whiteSpace: 'nowrap',
+              }}>
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {tokenPool.uToken?.name}
-              </Text>{' '}
+              </Text>
               <Text type="p1" weight="semibold">
                 ({tokenPool.uToken?.symbol})
               </Text>
@@ -44,7 +49,7 @@ const TokenPoolHeader: React.FC = () => {
             <Text type="small" weight="semibold">
               {tokenPool.originator.market.name}
             </Text>
-          </Grid>
+          </div>
         </Grid>
       )}
       <div>
@@ -88,8 +93,8 @@ const TokenPoolHeader: React.FC = () => {
         </div>
       )}
       {(isSeniorDeposit || isJuniorDeposit) && (
-        <Grid flow="row" gap={4}>
-          <Text type="small" weight="semibold" color="secondary">
+        <div>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Enable Token
           </Text>
           <Antd.Switch
@@ -98,9 +103,9 @@ const TokenPoolHeader: React.FC = () => {
             loading={tokenPool.uToken?.isAllowed === undefined || tokenPool.uToken?.isApproving}
             onChange={handleSwitchChange}
           />
-        </Grid>
+        </div>
       )}
-    </Grid>
+    </div>
   );
 };
 
