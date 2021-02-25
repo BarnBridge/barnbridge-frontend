@@ -5,7 +5,6 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 
 import ExternalLink from 'components/custom/externalLink';
-import StayTuned from 'components/custom/stay-tuned';
 import { Text } from 'components/custom/typography';
 import WarningProvider from 'components/providers/warning-provider';
 import LayoutHeader from 'layout/components/layout-header';
@@ -25,8 +24,6 @@ const DOCS_LINK = 'https://docs.barnbridge.com/';
 const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
 const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
-const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
-
 const LayoutView: React.FC = () => {
   return (
     <div className={s.layout}>
@@ -39,8 +36,8 @@ const LayoutView: React.FC = () => {
               <Route path="/yield-farming" component={YieldFarmingView} />
               <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
-              <Route path="/smart-yield/:vt(\w+)" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
-              <Route path="/smart-yield" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
+              <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
+              <Route path="/smart-yield" component={SmartYieldView} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
           </main>
