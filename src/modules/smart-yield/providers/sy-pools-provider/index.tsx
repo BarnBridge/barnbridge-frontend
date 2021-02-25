@@ -1,4 +1,5 @@
 import React from 'react';
+import QueryString from 'query-string';
 
 import { mergeState } from 'hooks/useMergeState';
 import { PaginatedResult } from 'modules/governance/api';
@@ -154,13 +155,47 @@ function fetchSYPoolAPY(syAddr: string): Promise<SYPoolAPY[]> {
     .then(result => result.data);
 }
 
+enum SYTxHistoryType {
+  JUNIOR_DEPOSIT = 'JUNIOR_DEPOSIT',
+  JUNIOR_INSTANT_WITHDRAW = 'JUNIOR_INSTANT_WITHDRAW',
+  JUNIOR_REGULAR_WITHDRAW = 'JUNIOR_REGULAR_WITHDRAW',
+  JUNIOR_REDEEM = 'JUNIOR_REDEEM',
+  SENIOR_DEPOSIT = 'SENIOR_DEPOSIT',
+  SENIOR_REDEEM = 'SENIOR_REDEEM',
+  JTOKEN_SEND = 'JTOKEN_SEND',
+  JTOKEN_RECEIVE = 'JTOKEN_RECEIVE',
+  JBOND_SEND = 'JBOND_SEND',
+  JBOND_RECEIVE = 'JBOND_RECEIVE',
+  SBOND_SEND = 'SBOND_SEND',
+  SBOND_RECEIVE = 'SBOND_RECEIVE',
+}
+
 export function fetchSYUserTxHistory(
   address: string,
   page: number = 1,
   limit: number = 10,
+  originator: string = 'all',
+  token: string = 'all',
+  transactionType: string = 'all'
 ): Promise<PaginatedResult<SYUserTxHistory>> {
-  const url = new URL(`/api/smartyield/users/${address}/history?page=${page}&limit=${limit}`, GOV_API_URL);
+  const query = QueryString.stringify(
+    {
+      page: String(page),
+      limit: String(limit),
+      originator,
+      token,
+      transactionType,
+    },
+    {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: true,
+    },
+  );
 
+  const url = new URL(`/api/smartyield/users/${address}/history?${query}`, GOV_API_URL);
+
+  // catch 400 status
   return fetch(url.toString())
     .then(result => result.json())
     .then(result => ({
