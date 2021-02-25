@@ -87,6 +87,11 @@ h3.heading {
     &.semiBold {
       @include font-lb1-semi-bold;
     }
+
+    :global(.ant-skeleton-content .ant-skeleton-title) {
+      margin: 5px 0;
+      height: var(--font-size-lb1);
+    }
   }
 
   &.lb2 {
@@ -98,6 +103,11 @@ h3.heading {
 
     &.semiBold {
       @include font-lb2-semi-bold;
+    }
+
+    :global(.ant-skeleton-content .ant-skeleton-title) {
+      margin: 2px 0;
+      height: var(--font-size-lb2);
     }
   }
 }
@@ -192,6 +202,10 @@ h3.heading {
 
 .blue-color {
   color: var(--theme-blue-color);
+}
+
+.purple-color {
+  color: var(--theme-purple-color);
 }
 
 div.hint {

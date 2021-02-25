@@ -1,20 +1,18 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import * as Antd from 'antd';
-import { isMobile } from 'react-device-detect';
-
-import LayoutSideNav from 'layout/components/layout-side-nav';
-import { Paragraph } from 'components/custom/typography';
-import MobileMenu from 'components/custom/mobile-menu';
-import ExternalLink from 'components/custom/externalLink';
-import StayTuned from 'components/custom/stay-tuned';
-import WarningProvider from 'components/providers/warning-provider';
-
-import YieldFarmingView from 'modules/yield-farming';
-import GovernanceView from 'modules/governance';
-
+import cn from 'classnames';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
+
+import ExternalLink from 'components/custom/externalLink';
+import StayTuned from 'components/custom/stay-tuned';
+import { Text } from 'components/custom/typography';
+import WarningProvider from 'components/providers/warning-provider';
+import LayoutHeader from 'layout/components/layout-header';
+import LayoutSideNav from 'layout/components/layout-side-nav';
+import GovernanceView from 'modules/governance';
+import SmartYieldView from 'modules/smart-yield';
+import YieldFarmingView from 'modules/yield-farming';
 
 import s from './styles.module.scss';
 
@@ -27,67 +25,70 @@ const DOCS_LINK = 'https://docs.barnbridge.com/';
 const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
 const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
-const LayoutView: React.FunctionComponent = () => {
+const IS_DEVELOPMENT = process.env.NODE_ENV === 'development';
+
+const LayoutView: React.FC = () => {
   return (
-    <Antd.Layout className={s.layout}>
-      {!isMobile ? <LayoutSideNav /> : <MobileMenu />}
-      <Antd.Layout className={s.layout}>
+    <div className={s.layout}>
+      <LayoutSideNav />
+      <div style={{ flexGrow: 1 }}>
         <WarningProvider>
-          <Antd.Layout.Content>
+          <LayoutHeader />
+          <main className={s.main}>
             <Switch>
               <Route path="/yield-farming" component={YieldFarmingView} />
+              <Route path="/governance/:vt(\w+)" component={GovernanceView} />
               <Route path="/governance" component={GovernanceView} />
-              <Route path="/bonds" render={() => <StayTuned />} />
+              <Route path="/smart-yield/:vt(\w+)" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
+              <Route path="/smart-yield" component={IS_DEVELOPMENT ? SmartYieldView : StayTuned} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
-          </Antd.Layout.Content>
-          <Antd.Layout.Footer className={s.footer}>
-            <div className="flex wrap col-gap-24 row-gap-24 justify-end">
-              <ExternalLink href={WEBSITE_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Website
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={DISCORD_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Discord
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={TWITTER_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Twitter
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={WHITEPAPER_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Whitepaper
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={GITHUB_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Github
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={DOCS_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Docs
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={UNISWAP_LIQUIDITY_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Uniswap v2 USDC/BOND add liquidity
-                </Paragraph>
-              </ExternalLink>
-              <ExternalLink href={UNISWAP_MARKET_LINK}>
-                <Paragraph type="p2" semiBold>
-                  Uniswap v2 USDC/BOND market
-                </Paragraph>
-              </ExternalLink>
-            </div>
-          </Antd.Layout.Footer>
+          </main>
+          <footer className={cn(s.footer, 'flex wrap col-gap-24 row-gap-24 justify-end')}>
+            <ExternalLink href={WEBSITE_LINK}>
+              <Text type="p2" weight="semibold">
+                Website
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={DISCORD_LINK}>
+              <Text type="p2" weight="semibold">
+                Discord
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={TWITTER_LINK}>
+              <Text type="p2" weight="semibold">
+                Twitter
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={WHITEPAPER_LINK}>
+              <Text type="p2" weight="semibold">
+                Whitepaper
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={GITHUB_LINK}>
+              <Text type="p2" weight="semibold">
+                Github
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={DOCS_LINK}>
+              <Text type="p2" weight="semibold">
+                Docs
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={UNISWAP_LIQUIDITY_LINK}>
+              <Text type="p2" weight="semibold">
+                Uniswap v2 USDC/BOND add liquidity
+              </Text>
+            </ExternalLink>
+            <ExternalLink href={UNISWAP_MARKET_LINK}>
+              <Text type="p2" weight="semibold">
+                Uniswap v2 USDC/BOND market
+              </Text>
+            </ExternalLink>
+          </footer>
         </WarningProvider>
-      </Antd.Layout>
-    </Antd.Layout>
+      </div>
+    </div>
   );
 };
 

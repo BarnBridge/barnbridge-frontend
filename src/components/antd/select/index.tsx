@@ -1,15 +1,15 @@
 import React from 'react';
 import * as Antd from 'antd';
 import {
+  OptionProps as AntdOptionProps,
   SelectProps as AntdSelectProps,
   SelectValue as AntdSelectValue,
-  OptionProps as AntdOptionProps,
 } from 'antd/lib/select';
 import cx from 'classnames';
 
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 
 import s from './styles.module.scss';
 
@@ -31,9 +31,7 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
     <Antd.Select<T>
       className={cx(s.component, className)}
       dropdownClassName={s.dropdown}
-      suffixIcon={loading
-        ? <Antd.Spin size="small" />
-        : <Icons name="dropdown-arrow" />}
+      suffixIcon={loading ? <Antd.Spin size="small" /> : <Icons name="dropdown-arrow" />}
       optionLabelProp="label"
       getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
       {...selectProps}>
@@ -44,11 +42,13 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
           label={
             <Grid flow="col" gap={12}>
               {label && (
-                <Paragraph type="p2">{label}</Paragraph>
+                <Text type="p2" color="secondary">
+                  {label}
+                </Text>
               )}
-              <Paragraph type="p2" semiBold>
+              <Text type="p2" weight="semibold" color="primary">
                 {option.label}
-              </Paragraph>
+              </Text>
             </Grid>
           }
           value={option.value}>

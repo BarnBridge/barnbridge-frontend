@@ -17,6 +17,8 @@ export function getNetworkName(chainId: number | undefined): string {
       return 'Mainnet';
     case 4:
       return 'Rinkeby';
+    case 42:
+      return 'Kovan';
     default:
       return '-';
   }
@@ -42,7 +44,7 @@ export function useEthWeb3(): EthWeb3ContextType {
   return React.useContext(EthWeb3Context);
 }
 
-const EthWeb3Provider: React.FunctionComponent = props => {
+const EthWeb3Provider: React.FC = props => {
   const { children } = props;
 
   const windowState = useWindowState();
@@ -53,7 +55,8 @@ const EthWeb3Provider: React.FunctionComponent = props => {
       return;
     }
 
-    EthWeb3.eth.getBlockNumber()
+    EthWeb3.eth
+      .getBlockNumber()
       .then(value => {
         if (value) {
           setBlockNumber(value);
@@ -81,10 +84,11 @@ const EthWeb3Provider: React.FunctionComponent = props => {
   }, [windowState.isVisible]);
 
   return (
-    <EthWeb3Context.Provider value={{
-      ...InitialContextValue,
-      blockNumber,
-    }}>
+    <EthWeb3Context.Provider
+      value={{
+        ...InitialContextValue,
+        blockNumber,
+      }}>
       {children}
     </EthWeb3Context.Provider>
   );

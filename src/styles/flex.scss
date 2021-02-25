@@ -4,8 +4,24 @@ $gaps: 4, 8, 12, 16, 24, 32, 48, 64;
   display: flex;
   flex-wrap: nowrap;
 
+  &.flow-row {
+    flex-direction: column;
+  }
+
+  &.flow-col {
+    flex-direction: row;
+  }
+
   &.wrap {
     flex-wrap: wrap;
+  }
+
+  > .flex-grow {
+    flex-grow: 1;
+  }
+
+  > .flex-shrink {
+    flex-shrink: 1;
   }
 
   &.align-start {

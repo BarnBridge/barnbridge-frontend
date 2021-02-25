@@ -1,0 +1,30 @@
+.container {
+  background-color: rgba(var(--theme-secondary-color-rgb), 0.04);
+  border: 1px solid rgba(var(--theme-secondary-color-rgb), 0.16);
+  border-radius: 4px;
+}
+
+.header {
+  border-bottom: 1px solid rgba(113, 121, 128, 0.16);
+  display: flex;
+  padding: 24px;
+}
+
+.body {
+  padding: 24px;
+}
+
+.deadlineInput {
+  :global(.ant-input) {
+    width: 75px;
+    text-align: right;
+  }
+}
+
+.settingsButton {
+  border: none;
+  background-color: transparent;
+  margin-left: auto;
+  display: flex;
+  padding: 0;
+}

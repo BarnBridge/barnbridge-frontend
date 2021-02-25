@@ -1,22 +1,23 @@
 import React from 'react';
 import * as Antd from 'antd';
 
-import Modal, { ModalProps } from 'components/antd/modal';
-import Form from 'components/antd/form';
 import Button from 'components/antd/button';
-import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
+import Divider from 'components/antd/divider';
+import Form from 'components/antd/form';
+import Modal, { ModalProps } from 'components/antd/modal';
 import GasFeeList from 'components/custom/gas-fee-list';
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
+import useMergeState from 'hooks/useMergeState';
+
 import { useDAO } from '../../../../components/dao-provider';
 import { useProposal } from '../../providers/ProposalProvider';
-
-import useMergeState from 'hooks/useMergeState';
 
 import s from './styles.module.scss';
 
 type FormState = {
   gasPrice?: {
-    value: number,
+    value: number;
   };
 };
 
@@ -34,7 +35,7 @@ const InitialState: QueueForExecutionModalState = {
   submitting: false,
 };
 
-const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProps> = props => {
+const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
   const { ...modalProps } = props;
 
   const [form] = Antd.Form.useForm<FormState>();
@@ -58,43 +59,31 @@ const QueueForExecutionModal: React.FunctionComponent<QueueForExecutionModalProp
 
       proposalCtx.reload();
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setState({ submitting: false });
   }
 
   return (
-    <Modal
-      className={s.component}
-      width={560}
-      title="Queue for execution"
-      {...modalProps}>
+    <Modal className={s.component} width={560} title="Queue for execution" {...modalProps}>
       <Form
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
-          <Paragraph type="p2" semiBold color="secondary">
-            Once a proposal is accepted, it will have to wait in the queue before it can be executed.
-            During this time it can only be cancelled by an abrogation proposal.
-          </Paragraph>
+          <Text type="p2" weight="semibold" color="secondary">
+            Once a proposal is accepted, it will have to wait in the queue before it can be executed. During this time
+            it can only be cancelled by an abrogation proposal.
+          </Text>
         </Grid>
-        <div className={s.delimiter} />
+        <Divider />
         <Grid flow="row" gap={32} className={s.row}>
-          <Form.Item
-            name="gasPrice"
-            label="Gas Fee (Gwei)"
-            rules={[{ required: true, message: 'Required' }]}>
+          <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
             <GasFeeList disabled={state.submitting} />
           </Form.Item>
 
-          <Button
-            htmlType="submit"
-            type="primary"
-            loading={state.submitting}
-            className={s.actionBtn}>
+          <Button htmlType="submit" type="primary" loading={state.submitting} className={s.actionBtn}>
             Queue proposal for execution
           </Button>
         </Grid>

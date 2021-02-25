@@ -1,19 +1,19 @@
 import React from 'react';
 import { Spin } from 'antd';
-import * as ReCharts from 'recharts';
 import BigNumber from 'bignumber.js';
+import * as ReCharts from 'recharts';
+import { useWeb3Contracts } from 'web3/contracts';
+import { formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
+import Card, { CardProps } from 'components/antd/card';
 import Select, { SelectOption } from 'components/antd/select';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
-import { Paragraph } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import PoolTxChartProvider, { usePoolTxChart } from 'modules/yield-farming/providers/pool-tx-chart-provider';
-import { getPoolIcons, getPoolNames, PoolTypes } from 'modules/yield-farming/utils';
-import { formatUSDValue } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
-
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
+
+import { PoolTypes, getPoolIcons, getPoolNames } from 'modules/yield-farming/utils';
 
 import s from './styles.module.scss';
 
@@ -38,15 +38,17 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const PoolTxChartInner: React.FunctionComponent = () => {
+const PoolTxChartInner: React.FC = (props) => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
   const PeriodFilters = React.useMemo<SelectOption[]>(() => {
-    const filters = [{
-      value: 'all',
-      label: 'All epochs',
-    }];
+    const filters = [
+      {
+        value: 'all',
+        label: 'All epochs',
+      },
+    ];
 
     let currentEpoch = 0;
     let startEpoch = 0;
@@ -78,13 +80,8 @@ const PoolTxChartInner: React.FunctionComponent = () => {
     }
 
     return poolTxChart.summaries.map(summary => {
-      const deposits = new BigNumber(summary.deposits)
-        .multipliedBy(price)
-        .toNumber();
-      const withdrawals = new BigNumber(summary.withdrawals)
-        .multipliedBy(price)
-        .multipliedBy(-1)
-        .toNumber();
+      const deposits = new BigNumber(summary.deposits).multipliedBy(price).toNumber();
+      const withdrawals = new BigNumber(summary.withdrawals).multipliedBy(price).multipliedBy(-1).toNumber();
 
       return {
         ...summary,
@@ -138,76 +135,64 @@ const PoolTxChartInner: React.FunctionComponent = () => {
   const ChartEmpty = (
     <Grid flow="row" gap={24} align="center" justify="center" padding={[54, 0]}>
       <EmptyChartSvg />
-      <Paragraph type="p1" color="secondary">
+      <Text type="p1" color="secondary">
         Not enough data to plot a graph
-      </Paragraph>
+      </Text>
     </Grid>
   );
 
   return (
-    <Card title={CardTitle}>
+    <Card title={CardTitle} style={{ overflowX: 'auto' }} {...props}>
       <Spin spinning={poolTxChart.loading}>
-        {chartData.length
-          ? (
-            <ReCharts.ResponsiveContainer width="100%" height={350}>
-              <ReCharts.BarChart
-                data={chartData}
-                stackOffset="sign"
-                margin={{
-                  top: 20,
-                  right: 0,
-                  left: 60,
-                  bottom: 12,
-                }}>
-                <ReCharts.CartesianGrid
-                  vertical={false}
-                  stroke="var(--theme-border-color)"
-                  strokeDasharray="3 3" />
-                <ReCharts.XAxis dataKey="timestamp" stroke="var(--theme-border-color)" />
-                <ReCharts.YAxis
-                  axisLine={false}
-                  tickLine={false}
-                  tickFormatter={(value: any) => formatUSDValue(value, 2, 0)} />
-                <ReCharts.Tooltip
-                  wrapperClassName={s.chart_tooltip}
-                  formatter={(value: any) => formatUSDValue(value)} />
-                <ReCharts.Legend
-                  align="right"
-                  verticalAlign="top"
-                  iconType="circle"
-                  wrapperStyle={{
-                    top: 0,
-                    right: 12,
-                    color: 'var(--theme-secondary-color)',
-                  }} />
-                <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
-                {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
-                  <ReCharts.Bar
-                    dataKey="deposits"
-                    name="Deposits"
-                    stackId="stack"
-                    fill="var(--theme-red-color)" />
-                )}
-                {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
-                  <ReCharts.Bar
-                    dataKey="withdrawals"
-                    name="Withdrawals"
-                    stackId="stack"
-                    fill="var(--theme-blue-color)" />
-                )}
-              </ReCharts.BarChart>
-            </ReCharts.ResponsiveContainer>
-          )
-          : (!poolTxChart.loading ? ChartEmpty : null)
-        }
+        {chartData.length ? (
+          <ReCharts.ResponsiveContainer width="100%" height={350}>
+            <ReCharts.BarChart
+              data={chartData}
+              stackOffset="sign"
+              margin={{
+                top: 20,
+                right: 0,
+                left: 60,
+                bottom: 12,
+              }}>
+              <ReCharts.CartesianGrid vertical={false} stroke="var(--theme-border-color)" strokeDasharray="3 3" />
+              <ReCharts.XAxis dataKey="timestamp" stroke="var(--theme-border-color)" />
+              <ReCharts.YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={(value: any) => formatUSDValue(value, 2, 0)}
+              />
+              <ReCharts.Tooltip wrapperClassName={s.chart_tooltip} formatter={(value: any) => formatUSDValue(value)} />
+              <ReCharts.Legend
+                align="right"
+                verticalAlign="top"
+                iconType="circle"
+                wrapperStyle={{
+                  top: 0,
+                  right: 12,
+                  color: 'var(--theme-secondary-color)',
+                }}
+              />
+              <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
+              {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
+                <ReCharts.Bar dataKey="deposits" name="Deposits" stackId="stack" fill="var(--theme-red-color)" />
+              )}
+              {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
+                <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" stackId="stack" fill="var(--theme-blue-color)" />
+              )}
+            </ReCharts.BarChart>
+          </ReCharts.ResponsiveContainer>
+        ) : !poolTxChart.loading ? (
+          ChartEmpty
+        ) : null}
       </Spin>
     </Card>
   );
 };
 
-const PoolTxChart: React.FunctionComponent = () => (
+const PoolTxChart: React.FC<CardProps> = (props) => (
   <PoolTxChartProvider>
-    <PoolTxChartInner />
+    <PoolTxChartInner {...props} />
   </PoolTxChartProvider>
 );
 

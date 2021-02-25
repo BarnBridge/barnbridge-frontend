@@ -10,27 +10,20 @@ export type ProgressProps = AntdProgressProps & {
   acceptance?: number;
 };
 
-const Progress: React.FunctionComponent<ProgressProps> = props => {
+const Progress: React.FC<ProgressProps> = props => {
   const { className, acceptance, ...progressProps } = props;
   const acceptanceMode = acceptance !== undefined;
   const acceptanceFulfilled = Number(acceptance) <= Number(props.percent);
 
   return (
     <Antd.Progress
-      className={cx(
-        s.component,
-        acceptanceMode && s.acceptance,
-        acceptanceFulfilled && s.fulfilled,
-        className,
-      )}
+      className={cx(s.component, acceptanceMode && s.acceptance, acceptanceFulfilled && s.fulfilled, className)}
       showInfo={false}
       success={
         acceptanceMode
           ? {
               percent: acceptance,
-              strokeColor: acceptanceFulfilled
-                ? String(props.strokeColor)
-                : props.trailColor,
+              strokeColor: acceptanceFulfilled ? String(props.strokeColor) : props.trailColor,
             }
           : undefined
       }

@@ -1,64 +1,35 @@
 import React from 'react';
 import { format, formatDistance } from 'date-fns';
+import { getEtherscanTxUrl } from 'web3/utils';
 
 import Card from 'components/antd/card';
-import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
-import { useProposal } from '../../providers/ProposalProvider';
-
-import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
-import { getEtherscanTxUrl } from 'web3/utils';
+import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
+
+import { useProposal } from '../../providers/ProposalProvider';
 
 function getEventIcon(index: number, name: string): React.ReactNode {
   if (
-    [
-      APIProposalState.EXPIRED,
-      APIProposalState.FAILED,
-      APIProposalState.CANCELED,
-      APIProposalState.ABROGATED,
-    ].includes(name as any)
+    [APIProposalState.EXPIRED, APIProposalState.FAILED, APIProposalState.CANCELED, APIProposalState.ABROGATED].includes(
+      name as any,
+    )
   ) {
-    return (<Icons
-      name="close-circle-outlined"
-      width={40}
-      height={40}
-      color="red"
-    />);
+    return <Icons name="close-circle-outlined" width={40} height={40} color="red" />;
   }
 
-  if (
-    [
-      APIProposalState.CREATED,
-      APIProposalState.ACCEPTED,
-      APIProposalState.EXECUTED,
-    ].includes(name as any)
-  ) {
-    return (<Icons
-      name="check-circle-outlined"
-      width={40}
-      height={40}
-      color="green"
-    />);
+  if ([APIProposalState.CREATED, APIProposalState.ACCEPTED, APIProposalState.EXECUTED].includes(name as any)) {
+    return <Icons name="check-circle-outlined" width={40} height={40} color="green" />;
   }
 
   if (index === 0) {
-    return (<Icons
-      name="history-circle-outlined"
-      width={40}
-      height={40}
-      color="blue"
-    />);
+    return <Icons name="history-circle-outlined" width={40} height={40} color="blue" />;
   }
 
-  return (<Icons
-    name="check-circle-outlined"
-    width={40}
-    height={40}
-    color="green"
-  />);
+  return <Icons name="check-circle-outlined" width={40} height={40} color="green" />;
 }
 
 function formatEventTime(name: string, start: number, end: number): string {
@@ -98,7 +69,7 @@ function formatEventTime(name: string, start: number, end: number): string {
   return `Started ${dist}`;
 }
 
-const ProposalStatusCard: React.FunctionComponent = () => {
+const ProposalStatusCard: React.FC = () => {
   const proposalCtx = useProposal();
 
   return (
@@ -110,30 +81,25 @@ const ProposalStatusCard: React.FunctionComponent = () => {
             <Grid flow="row" gap={4}>
               {event.txHash ? (
                 <Grid flow="col" gap={8} align="center">
-                  <Paragraph type="p1" semiBold color="primary">
+                  <Text type="p1" weight="semibold" color="primary">
                     {APIProposalStateMap.get(event.name as APIProposalState)}
-                  </Paragraph>
-                  <ExternalLink
-                    href={getEtherscanTxUrl(`0x${event.txHash}`)}
-                    style={{ height: '16px' }}>
+                  </Text>
+                  <ExternalLink href={getEtherscanTxUrl(`0x${event.txHash}`)} style={{ height: '16px' }}>
                     <Icons name="link-outlined" width={16} height={16} />
                   </ExternalLink>
                 </Grid>
               ) : (
-                <Paragraph type="p1" semiBold color="primary">
+                <Text type="p1" weight="semibold" color="primary">
                   {APIProposalStateMap.get(event.name as APIProposalState)}
-                </Paragraph>
+                </Text>
               )}
 
-              <UseLeftTime
-                end={(event.endTimestamp ?? 0) * 1_000}
-                delay={10_000}
-                onEnd={() => proposalCtx.reload()}>
-                {(() => (
-                  <Paragraph type="p2" semiBold color="secondary">
+              <UseLeftTime end={(event.endTimestamp ?? 0) * 1_000} delay={10_000} onEnd={() => proposalCtx.reload()}>
+                {() => (
+                  <Text type="p2" weight="semibold" color="secondary">
                     {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
-                  </Paragraph>
-                ))}
+                  </Text>
+                )}
               </UseLeftTime>
             </Grid>
           </Grid>

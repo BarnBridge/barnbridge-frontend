@@ -2,7 +2,7 @@ import React from 'react';
 
 export type ExternalLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement>;
 
-const ExternalLink: React.FunctionComponent<ExternalLinkProps> = props => {
+const ExternalLink: React.FC<ExternalLinkProps> = props => {
   const { children, ...rest } = props;
 
   return (

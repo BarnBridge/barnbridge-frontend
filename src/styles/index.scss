@@ -3,17 +3,17 @@
 @import 'grid';
 @import 'box';
 @import 'text';
+@import 'utils';
 
 body {
-  margin: 0;
-  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-  'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
-  'Helvetica Neue', sans-serif;
-  font-weight: normal;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   background: var(--theme-body-color);
   color: var(--theme-secondary-color);
+  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  font-weight: normal;
+  margin: 0;
 }
 
 * {
@@ -99,6 +99,8 @@ body.mobile-menu-open {
 
   --theme-yellow-color: #ffd160; // yellow500
   --theme-yellow-color-rgb: 255, 209, 96; // yellow500
+
+  --theme-purple-color: #a26ee3;
 }
 
 [data-theme='dark'] {

@@ -1,19 +1,34 @@
 import React from 'react';
 import * as Antd from 'antd';
-import * as ReCharts from 'recharts';
-import {
-  addDays, addHours, addMinutes, addMonths, addWeeks, addYears,
-  differenceInDays, differenceInHours, differenceInMinutes, differenceInMonths, differenceInWeeks,
-  format, formatDistanceToNow, startOfDay, startOfHour, startOfMinute, startOfMonth, startOfWeek,
-} from 'date-fns';
-import { flow } from 'lodash/fp'
 import BigNumber from 'bignumber.js';
-
-import { Hint, Paragraph, Small } from 'components/custom/typography';
-import ExternalLink from 'components/custom/externalLink';
-
-import { formatBigValue, formatBONDValue } from 'web3/utils';
+import {
+  addDays,
+  addHours,
+  addMinutes,
+  addMonths,
+  addWeeks,
+  addYears,
+  differenceInDays,
+  differenceInHours,
+  differenceInMinutes,
+  differenceInMonths,
+  differenceInWeeks,
+  format,
+  formatDistanceToNow,
+  startOfDay,
+  startOfHour,
+  startOfMinute,
+  startOfMonth,
+  startOfWeek,
+} from 'date-fns';
+import { flow } from 'lodash/fp';
+import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
+import { formatBONDValue, formatBigValue } from 'web3/utils';
+
+import ExternalLink from 'components/custom/externalLink';
+import { Hint, Text } from 'components/custom/typography';
+
 import { inRange } from 'utils';
 
 import s from './styles.module.scss';
@@ -70,7 +85,7 @@ function getPeriodRate(startDate: Date, endDate: Date, targetDate: Date): number
   const endDiff = endDate.valueOf() - startDate.valueOf();
   const targetDiff = targetDate.valueOf() - startDate.valueOf();
 
-  return 1.0 + ((endDiff - targetDiff) / endDiff);
+  return 1.0 + (endDiff - targetDiff) / endDiff;
 }
 
 function getGranularPeriods(granularity: GranularityType, endDate?: Date): GranularPeriod[] {
@@ -134,68 +149,63 @@ export type WalletLockChartProps = {
   lockEndDate: Date;
 };
 
-const WalletLockChart: React.FunctionComponent<WalletLockChartProps> = props => {
+const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   const { lockEndDate } = props;
 
   const web3c = useWeb3Contracts();
   const { balance: stakedBalance } = web3c.daoBarn;
 
-  const multiplier = React.useMemo<number>(() =>
-      getPeriodRate(addYears(new Date(), 1), new Date(), lockEndDate),
-    [lockEndDate]
-  );
+  const multiplier = React.useMemo<number>(() => getPeriodRate(addYears(new Date(), 1), new Date(), lockEndDate), [
+    lockEndDate,
+  ]);
 
-  const myBonus = React.useMemo<BigNumber | undefined>(() =>
-      stakedBalance?.multipliedBy((multiplier - 1)),
-    [stakedBalance, multiplier]
-  );
+  const myBonus = React.useMemo<BigNumber | undefined>(() => stakedBalance?.multipliedBy(multiplier - 1), [
+    stakedBalance,
+    multiplier,
+  ]);
 
-  const granularity = React.useMemo<GranularityType>(() =>
-      getGranularityType(lockEndDate),
-    [lockEndDate]
-  );
+  const granularity = React.useMemo<GranularityType>(() => getGranularityType(lockEndDate), [lockEndDate]);
 
-  const data = React.useMemo<GranularPeriod[]>(() =>
-      getGranularPeriods(granularity, lockEndDate),
-    [granularity, lockEndDate]
-  );
+  const data = React.useMemo<GranularPeriod[]>(() => getGranularPeriods(granularity, lockEndDate), [
+    granularity,
+    lockEndDate,
+  ]);
 
   return (
-    <Antd.Card className={s.card} title={(
-      <Hint text={(
-        <>
-          <Paragraph type="p2">
-            The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up
-            to 2x vBOND. The bonus is linear, as per the following example:
-          </Paragraph>
-          <ul>
-            <li>
-              <Paragraph type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Paragraph>
-            </li>
-            <li>
-              <Paragraph type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Paragraph>
-            </li>
-          </ul>
-          <ExternalLink href="#">Learn more</ExternalLink>
-        </>
-      )}>
-        <Small semiBold>
-          {formatBONDValue(myBonus)}<span> vBOND bonus - </span>
-          {inRange(multiplier, 1, 1.01) ? '>' : ''}
-          {formatBigValue(multiplier, 2)}x
-          <span> for </span>
-          {formatDistanceToNow(lockEndDate)}
-        </Small>
-      </Hint>
-    )}>
+    <Antd.Card
+      className={s.card}
+      title={
+        <Hint
+          text={
+            <>
+              <Text type="p2">
+                The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up to 2x
+                vBOND. The bonus is linear, as per the following example:
+              </Text>
+              <ul>
+                <li>
+                  <Text type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Text>
+                </li>
+                <li>
+                  <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
+                </li>
+              </ul>
+              <ExternalLink href="#">Learn more</ExternalLink>
+            </>
+          }>
+          <Text type="small" weight="semibold">
+            {formatBONDValue(myBonus)}
+            <span> vBOND bonus - </span>
+            {inRange(multiplier, 1, 1.01) ? '>' : ''}
+            {formatBigValue(multiplier, 2)}x<span> for </span>
+            {formatDistanceToNow(lockEndDate)}
+          </Text>
+        </Hint>
+      }>
       <ReCharts.ResponsiveContainer width="100%" height={154}>
-        <ReCharts.AreaChart
-          data={data}
-          margin={{ top: 0, right: 10, left: 0, bottom: 5 }}>
+        <ReCharts.AreaChart data={data} margin={{ top: 0, right: 10, left: 0, bottom: 5 }}>
           <defs>
-            <linearGradient
-              id="chart-gradient"
-              gradientTransform="rotate(180)">
+            <linearGradient id="chart-gradient" gradientTransform="rotate(180)">
               <stop offset="0%" stopColor="rgba(255, 67, 57, 0.08)" />
               <stop offset="100%" stopColor="rgba(255, 255, 255, 0)" />
             </linearGradient>
@@ -250,13 +260,7 @@ const WalletLockChart: React.FunctionComponent<WalletLockChartProps> = props => 
             }}
             formatter={(value: any) => `${formatBigValue(new BigNumber(value), 6, '-')}x`}
           />
-          <ReCharts.Area
-            dataKey="bonus"
-            name="Bonus"
-            fill="url(#chart-gradient)"
-            strokeWidth={2}
-            stroke="#ff4339"
-          />
+          <ReCharts.Area dataKey="bonus" name="Bonus" fill="url(#chart-gradient)" strokeWidth={2} stroke="#ff4339" />
         </ReCharts.AreaChart>
       </ReCharts.ResponsiveContainer>
     </Antd.Card>

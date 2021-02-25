@@ -1,33 +1,27 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import Tabs from 'components/antd/tabs';
 import Table from 'components/antd/table';
-import Grid from 'components/custom/grid';
+import Tabs from 'components/antd/tabs';
 import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
-import { Label, Paragraph, Small } from 'components/custom/typography';
-import AbrogationVotersProvider, {
-  useAbrogationVoters,
-} from '../../providers/AbrogationVotersProvider';
-
+import { Text } from 'components/custom/typography';
 import { APIVoteEntity } from 'modules/governance/api';
-import {
-  formatBigValue,
-  getEtherscanAddressUrl,
-  shortenAddr,
-} from 'web3/utils';
+
+import AbrogationVotersProvider, { useAbrogationVoters } from '../../providers/AbrogationVotersProvider';
 
 import s from './styles.module.scss';
 
 const Columns: ColumnsType<APIVoteEntity> = [
   {
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Address
-      </Small>
+      </Text>
     ),
     dataIndex: 'address',
     width: '35%',
@@ -35,52 +29,52 @@ const Columns: ColumnsType<APIVoteEntity> = [
       <Grid flow="col" gap={8} align="center">
         <Identicon address={address} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(address)}>
-          <Paragraph type="p1" semiBold color="blue">
+          <Text type="p1" weight="semibold" color="blue">
             {shortenAddr(address)}
-          </Paragraph>
+          </Text>
         </ExternalLink>
       </Grid>
     ),
   },
   {
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Votes
-      </Small>
+      </Text>
     ),
     dataIndex: 'power',
     width: '38%',
     align: 'right',
     render: (power: BigNumber) => (
-      <Paragraph type="p1" semiBold color="primary" className={s.powerCell}>
+      <Text type="p1" weight="semibold" color="primary" className={s.powerCell}>
         {formatBigValue(power, 0)}
-      </Paragraph>
+      </Text>
     ),
   },
   {
     title: () => (
-      <Small semiBold>
+      <Text type="small" weight="semibold">
         Vote type
-      </Small>
+      </Text>
     ),
     dataIndex: 'support',
     width: '27%',
     render: (support: boolean) =>
       support ? (
-        <Label type="lb2" semiBold className={s.forTag}>
+        <Text type="lb2" weight="semibold" className={s.forTag}>
           For
-        </Label>
+        </Text>
       ) : (
-        <Label type="lb2" semiBold className={s.againstTag}>
+        <Text type="lb2" weight="semibold" className={s.againstTag}>
           Against
-        </Label>
+        </Text>
       ),
   },
 ];
 
 export type AbrogationVotersModalProps = ModalProps;
 
-const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalProps> = props => {
+const AbrogationVotersModalInner: React.FC<AbrogationVotersModalProps> = props => {
   const { ...modalProps } = props;
 
   const abrogationVotesCtx = useAbrogationVoters();
@@ -101,10 +95,7 @@ const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalP
 
   return (
     <Modal className={s.component} width={620} {...modalProps}>
-      <Tabs
-        className={s.tabs}
-        defaultActiveKey="all"
-        onChange={handleStateChange}>
+      <Tabs className={s.tabs} defaultActiveKey="all" onChange={handleStateChange}>
         <Tabs.Tab key="all" tab="All Votes" />
         <Tabs.Tab key="for" tab="For" />
         <Tabs.Tab key="against" tab="Against" />
@@ -125,9 +116,9 @@ const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalP
           pageSize: abrogationVotesCtx.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Paragraph type="p2" semiBold color="secondary">
+            <Text type="p2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} votes
-            </Paragraph>
+            </Text>
           ),
           onChange: handlePaginationChange,
         }}
@@ -136,7 +127,7 @@ const AbrogationVotersModalInner: React.FunctionComponent<AbrogationVotersModalP
   );
 };
 
-const AbrogationVotersModal: React.FunctionComponent<AbrogationVotersModalProps> = props => (
+const AbrogationVotersModal: React.FC<AbrogationVotersModalProps> = props => (
   <AbrogationVotersProvider>
     <AbrogationVotersModalInner {...props} />
   </AbrogationVotersProvider>

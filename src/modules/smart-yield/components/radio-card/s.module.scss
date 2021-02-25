@@ -1,0 +1,31 @@
+.card {
+  background: var(--theme-card-color);
+  border: 1px solid #e3e4e6;
+  box-sizing: border-box;
+  border-radius: 4px;
+  text-align: left;
+  position: relative;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card::after {
+  content: '';
+  width: 24px;
+  height: 24px;
+  border: 2px solid #e3e4e6;
+  position: absolute;
+  top: 32px;
+  right: 32px;
+  border-radius: 50%;
+}
+
+.card.selected {
+  border-color: #ff4339;
+}
+
+.card.selected::after {
+  border: 8px solid #ff4339;
+}

@@ -8,7 +8,7 @@ const Axios = require('axios').default;
 const TARGET_FOLDER = 'src/web3/abi';
 
 const axios = Axios.create({
-  baseURL: 'http://api-rinkeby.etherscan.io',
+  baseURL: 'http://api-kovan.etherscan.io',
 });
 
 function loadABI(name, address) {
@@ -21,7 +21,7 @@ function loadABI(name, address) {
       format: 'raw',
       address,
     },
-  }).then(({ data }) => {
+  }).then(({data}) => {
     return fs.writeFile(`${TARGET_FOLDER}/${name}.json`, JSON.stringify(data), 'utf8');
   }).catch(error => {
     console.error(error);
@@ -47,22 +47,24 @@ function PromiseSequence(tasks, cb) {
       Promise.resolve()
     )
     .then(() => results);
-};
+}
 
 (async () => {
   PromiseSequence([
-    ['dai', process.env.REACT_APP_CONTRACT_DAI_ADDR],
-    ['usdc', process.env.REACT_APP_CONTRACT_USDC_ADDR],
-    ['susd', process.env.REACT_APP_CONTRACT_SUSD_ADDR],
-    ['bond', process.env.REACT_APP_CONTRACT_BOND_ADDR],
-    ['uniswap_v2', process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR],
-    ['staking', process.env.REACT_APP_CONTRACT_STAKING_ADDR],
-    ['community_vault', process.env.REACT_APP_CONTRACT_COMMUNITY_VAULT_ADDR],
-    ['yield_farm', process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR],
-    ['yield_farm_lp', process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR],
-    ['yield_farm_bond', process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR],
-    ['dao_governance', process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR],
-    ['dao_reward', process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR],
+    // ['dai', process.env.REACT_APP_CONTRACT_DAI_ADDR],
+    // ['usdc', process.env.REACT_APP_CONTRACT_USDC_ADDR],
+    // ['susd', process.env.REACT_APP_CONTRACT_SUSD_ADDR],
+    // ['bond', process.env.REACT_APP_CONTRACT_BOND_ADDR],
+    // ['uniswap_v2', process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR],
+    // ['staking', process.env.REACT_APP_CONTRACT_STAKING_ADDR],
+    // ['community_vault', process.env.REACT_APP_CONTRACT_COMMUNITY_VAULT_ADDR],
+    // ['yield_farm', process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR],
+    // ['yield_farm_lp', process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR],
+    // ['yield_farm_bond', process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR],
+    // ['dao_governance', process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR],
+    // ['dao_reward', process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR],
+    // ['data', process.env.REACT_APP_CONTRACT_SY_ADDR],
+    // ['sy_controller', process.env.REACT_APP_CONTRACT_SY_CONTROLLER_ADDR],
   ], ([name, address]) => {
     return loadABI(name, address).then(delay);
   });

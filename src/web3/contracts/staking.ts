@@ -1,22 +1,20 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-
-import { useReload } from 'hooks/useReload';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { useRefState } from 'hooks/useRefState';
-import { useWallet } from 'wallets/wallet';
-import { TokenMeta } from 'web3/types';
-import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { TokenMeta } from 'web3/types';
+import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
-export const CONTRACT_STAKING_ADDR = String(
-  process.env.REACT_APP_CONTRACT_STAKING_ADDR,
-);
+import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import { useRefState } from 'hooks/useRefState';
+import { useReload } from 'hooks/useReload';
+import { useWallet } from 'wallets/wallet';
+
+export const CONTRACT_STAKING_ADDR = String(process.env.REACT_APP_CONTRACT_STAKING_ADDR);
 
 type StakingTokenData = {
   epochPoolSize?: BigNumber;
@@ -41,16 +39,8 @@ type StakingContractData = {
 export type StakingContract = StakingContractData & {
   contract: Web3Contract;
   reload(): void;
-  depositSend: (
-    tokenMeta: TokenMeta,
-    amount: BigNumber,
-    gasPrice: number,
-  ) => void;
-  withdrawSend: (
-    tokenMeta: TokenMeta,
-    amount: BigNumber,
-    gasPrice: number,
-  ) => void;
+  depositSend: (tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => void;
+  withdrawSend: (tokenMeta: TokenMeta, amount: BigNumber, gasPrice: number) => void;
   getEpochAt: (timestamp: number) => number | undefined;
   getEpochPeriod: (epoch: number) => [number, number] | undefined;
 };
@@ -102,16 +92,10 @@ export function useStakingContract(): StakingContract {
   const wallet = useWallet();
 
   const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(
-      require('web3/abi/staking.json'),
-      CONTRACT_STAKING_ADDR,
-      'STAKING',
-    );
+    return new Web3Contract(require('web3/abi/staking.json'), CONTRACT_STAKING_ADDR, 'STAKING');
   }, []);
 
-  const [data, setData, dataRef] = useRefState<StakingContractData>(
-    InitialData,
-  );
+  const [data, setData, dataRef] = useRefState<StakingContractData>(InitialData);
 
   useAsyncEffect(async () => {
     const [currentEpoch, epoch1Start, epochDuration] = await contract.batch([
@@ -149,29 +133,24 @@ export function useStakingContract(): StakingContract {
       bondEpochPoolSize,
       bondNextEpochPoolSize,
     ] = await contract.batch([
-      ...[
-        USDCTokenMeta,
-        DAITokenMeta,
-        SUSDTokenMeta,
-        UNISWAPTokenMeta,
-        BONDTokenMeta,
-      ].reduce((ac: BatchContractMethod[], token) => {
-        return [
-          ...ac,
-          {
-            method: 'getEpochPoolSize',
-            methodArgs: [token.address, currentEpoch],
-            transform: (value: string) =>
-              getHumanValue(new BigNumber(value), token.decimals),
-          },
-          {
-            method: 'getEpochPoolSize',
-            methodArgs: [token.address, currentEpoch + 1],
-            transform: (value: string) =>
-              getHumanValue(new BigNumber(value), token.decimals),
-          },
-        ];
-      }, []),
+      ...[USDCTokenMeta, DAITokenMeta, SUSDTokenMeta, UNISWAPTokenMeta, BONDTokenMeta].reduce(
+        (ac: BatchContractMethod[], token) => {
+          return [
+            ...ac,
+            {
+              method: 'getEpochPoolSize',
+              methodArgs: [token.address, currentEpoch],
+              transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+            },
+            {
+              method: 'getEpochPoolSize',
+              methodArgs: [token.address, currentEpoch + 1],
+              transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
+            },
+          ];
+        },
+        [],
+      ),
     ]);
 
     setData(prevState => ({
@@ -241,32 +220,23 @@ export function useStakingContract(): StakingContract {
         bondEpochUserBalance,
         bondNextEpochUserBalance,
       ] = await contract.batch([
-        ...[
-          USDCTokenMeta,
-          DAITokenMeta,
-          SUSDTokenMeta,
-          UNISWAPTokenMeta,
-          BONDTokenMeta,
-        ].reduce(
+        ...[USDCTokenMeta, DAITokenMeta, SUSDTokenMeta, UNISWAPTokenMeta, BONDTokenMeta].reduce(
           (ac: BatchContractMethod[], token) => [
             ...ac,
             {
               method: 'balanceOf',
               methodArgs: [wallet.account, token.address],
-              transform: (value: string) =>
-                getHumanValue(new BigNumber(value), token.decimals),
+              transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
             },
             {
               method: 'getEpochUserBalance',
               methodArgs: [wallet.account, token.address, currentEpoch],
-              transform: (value: string) =>
-                getHumanValue(new BigNumber(value), token.decimals),
+              transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
             },
             {
               method: 'getEpochUserBalance',
               methodArgs: [wallet.account, token.address, currentEpoch + 1],
-              transform: (value: string) =>
-                getHumanValue(new BigNumber(value), token.decimals),
+              transform: (value: string) => getHumanValue(new BigNumber(value), token.decimals),
             },
           ],
           [],
@@ -316,14 +286,10 @@ export function useStakingContract(): StakingContract {
       }
 
       return contract
-        .send(
-          'deposit',
-          [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)],
-          {
-            from: wallet.account,
-            gasPrice: getGasValue(gasPrice),
-          },
-        )
+        .send('deposit', [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)], {
+          from: wallet.account,
+          gasPrice: getGasValue(gasPrice),
+        })
         .then(reload);
     },
     [reload, contract, wallet.account],
@@ -336,14 +302,10 @@ export function useStakingContract(): StakingContract {
       }
 
       return contract
-        .send(
-          'withdraw',
-          [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)],
-          {
-            from: wallet.account,
-            gasPrice: getGasValue(gasPrice),
-          },
-        )
+        .send('withdraw', [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)], {
+          from: wallet.account,
+          gasPrice: getGasValue(gasPrice),
+        })
         .then(reload);
     },
     [reload, contract, wallet.account],
@@ -388,14 +350,6 @@ export function useStakingContract(): StakingContract {
       getEpochAt,
       getEpochPeriod,
     }),
-    [
-      data,
-      contract,
-      reload,
-      depositSend,
-      withdrawSend,
-      getEpochAt,
-      getEpochPeriod,
-    ],
+    [data, contract, reload, depositSend, withdrawSend, getEpochAt, getEpochPeriod],
   );
 }

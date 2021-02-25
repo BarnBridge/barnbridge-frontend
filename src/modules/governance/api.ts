@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js';
 import QueryString from 'query-string';
-
-import { getHumanValue } from 'web3/utils';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import { getHumanValue } from 'web3/utils';
 
 const GOVERNANCE_API_URL = String(process.env.REACT_APP_GOV_API_URL);
 
@@ -30,10 +29,7 @@ export function fetchOverviewData(): Promise<APIOverviewData> {
     .then(result => result.json())
     .then(result => ({
       ...result.data,
-      totalDelegatedPower: getHumanValue(
-        new BigNumber(result.data.totalDelegatedPower),
-        18,
-      ),
+      totalDelegatedPower: getHumanValue(new BigNumber(result.data.totalDelegatedPower), 18),
       totalVbond: getHumanValue(new BigNumber(result.data.totalVbond), 18),
     }));
 }
@@ -49,14 +45,8 @@ export type APIVoterEntity = {
   hasActiveDelegation: boolean;
 };
 
-export function fetchVoters(
-  page: number = 1,
-  limit: number = 10,
-): Promise<PaginatedResult<APIVoterEntity>> {
-  const url = new URL(
-    `/api/governance/voters?page=${page}&limit=${limit}`,
-    GOVERNANCE_API_URL,
-  );
+export function fetchVoters(page: number = 1, limit: number = 10): Promise<PaginatedResult<APIVoterEntity>> {
+  const url = new URL(`/api/governance/voters?page=${page}&limit=${limit}`, GOVERNANCE_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -64,10 +54,7 @@ export function fetchVoters(
       ...result,
       data: (result.data ?? []).map((item: APIVoterEntity) => ({
         ...item,
-        bondStaked: getHumanValue(
-          new BigNumber(item.bondStaked),
-          BONDTokenMeta.decimals,
-        ),
+        bondStaked: getHumanValue(new BigNumber(item.bondStaked), BONDTokenMeta.decimals),
         delegatedPower: getHumanValue(new BigNumber(item.delegatedPower), 18),
         votingPower: getHumanValue(new BigNumber(item.votingPower), 18),
       })),
@@ -191,10 +178,7 @@ export type APIProposalEntity = APILiteProposalEntity & {
 };
 
 export function fetchProposal(proposalId: number): Promise<APIProposalEntity> {
-  const url = new URL(
-    `/api/governance/proposals/${proposalId}`,
-    GOVERNANCE_API_URL,
-  );
+  const url = new URL(`/api/governance/proposals/${proposalId}`, GOVERNANCE_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -238,10 +222,7 @@ export function fetchProposalVoters(
     },
   );
 
-  const url = new URL(
-    `/api/governance/proposals/${proposalId}/votes?${query}`,
-    GOVERNANCE_API_URL,
-  );
+  const url = new URL(`/api/governance/proposals/${proposalId}/votes?${query}`, GOVERNANCE_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -270,13 +251,8 @@ export type APIAbrogationEntity = {
   againstVotes: BigNumber;
 };
 
-export function fetchAbrogation(
-  proposalId: number,
-): Promise<APIAbrogationEntity> {
-  const url = new URL(
-    `/api/governance/abrogation-proposals/${proposalId}`,
-    GOVERNANCE_API_URL,
-  );
+export function fetchAbrogation(proposalId: number): Promise<APIAbrogationEntity> {
+  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}`, GOVERNANCE_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -320,10 +296,7 @@ export function fetchAbrogationVoters(
     },
   );
 
-  const url = new URL(
-    `/api/governance/abrogation-proposals/${proposalId}/votes?${query}`,
-    GOVERNANCE_API_URL,
-  );
+  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}/votes?${query}`, GOVERNANCE_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())

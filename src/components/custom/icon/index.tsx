@@ -6,13 +6,18 @@ import Sprite from 'resources/svg/icons-sprite.svg';
 import s from './styles.module.scss';
 
 export type LogoIconNames = 'barnbridge';
+
 export type TokenIconNames =
   | 'bond-token'
   | 'bond-square-token'
   | 'dai-token'
   | 'susd-token'
   | 'usdc-token'
-  | 'uniswap-token';
+  | 'uniswap-token'
+  | 'compound'
+  | 'aave'
+  | 'cream_finance'
+  | 'yearn_finance';
 export type NavIconNames =
   | 'paper-bill-outlined'
   | 'chats-outlined'
@@ -22,6 +27,7 @@ export type NavIconNames =
   | 'proposal-outlined'
   | 'bank-outlined'
   | 'wallet-outlined';
+
 export type ThemeIconNames = 'moon' | 'sun';
 
 export type IconNames =
@@ -57,7 +63,15 @@ export type IconNames =
   | 'handshake-outlined'
   | 'stamp-outlined'
   | 'circle-plus-outlined'
-  | 'circle-minus-outlined';
+  | 'circle-minus-outlined'
+  | 'senior_tranche'
+  | 'junior_tranche'
+  | 'senior_tranche_simplified'
+  | 'junior_tranche_simplified'
+  | 'withdrawal_regular'
+  | 'withdrawal_instant'
+  | 'statistics'
+  | 'filter';
 
 export type IconsProps = {
   name: IconNames;
@@ -69,17 +83,12 @@ export type IconsProps = {
   style?: CSSProperties;
 };
 
-const Icons: React.FunctionComponent<IconsProps> = props => {
+const Icons: React.FC<IconsProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style } = props;
 
   return (
     <svg
-      className={cx(
-        s.component,
-        className,
-        rotate && `rotate-${rotate}`,
-        color && s[`${color}-color`],
-      )}
+      className={cx(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
       style={style}>
