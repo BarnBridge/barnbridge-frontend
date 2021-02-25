@@ -344,6 +344,38 @@ const ABI: any[] = [
     outputs: [],
   },
   {
+    name: 'seniorBonds',
+    type: 'function',
+    inputs: [
+      {
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    outputs: [
+      {
+        name: 'principal',
+        type: 'uint256',
+      },
+      {
+        name: 'gain',
+        type: 'uint256',
+      },
+      {
+        name: 'issuedAt',
+        type: 'uint256',
+      },
+      {
+        name: 'maturesAt',
+        type: 'uint256',
+      },
+      {
+        name: 'liquidated',
+        type: 'bool',
+      },
+    ],
+  },
+  {
     name: 'juniorBonds',
     type: 'function',
     inputs: [

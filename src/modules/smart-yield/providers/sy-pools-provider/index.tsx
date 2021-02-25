@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { mergeState } from 'hooks/useMergeState';
+import { PaginatedResult } from 'modules/governance/api';
 import { useWallet } from 'wallets/wallet';
 
 import { SYContract } from './sy/contract';
@@ -57,11 +58,180 @@ export function useSYPools(): ContextType {
   return React.useContext(Context);
 }
 
+const GOV_API_URL = process.env.REACT_APP_GOV_API_URL;
+
+type SYPool = {
+  protocolId: string;
+  controllerAddress: string;
+  modelAddress: string;
+  providerAddress: string;
+  smartYieldAddress: string;
+  oracleAddress: string;
+  juniorBondAddress: string;
+  seniorBondAddress: string;
+  cTokenAddress: string;
+  underlyingAddress: string;
+  underlyingSymbol: string;
+  underlyingDecimals: number;
+  state: {
+    blockNumber: number;
+    blockTimestamp: string;
+    seniorLiquidity: number;
+    juniorLiquidity: number;
+    jTokenPrice: number;
+    seniorApy: number;
+    juniorApy: number;
+    originatorApy: number;
+    originatorNetApy: number;
+    avgSeniorMaturityDays: number;
+    numberOfSeniors: number;
+    numberOfJuniors: number;
+  };
+};
+
+type SYPoolAPY = {
+  point: Date;
+  seniorApy: number;
+  juniorApy: number;
+};
+
+type SYUserTxHistory = {
+  protocolId: string;
+  pool: string;
+  underlyingTokenAddress: string;
+  amount: number;
+  tranche: string;
+  transactionType: string;
+  transactionHash: string;
+  blockTimestamp: number;
+  blockNumber: number;
+};
+
+type SYSeniorRedeem = {
+  seniorBondAddress: string;
+  userAddress: string;
+  seniorBondId: number;
+  smartYieldAddress: string;
+  fee: number;
+  underlyingIn: number;
+  gain: number;
+  forDays: number;
+  blockTimestamp: number;
+};
+
+type SYJuniorRedeem = {
+  juniorBondAddress: string;
+  userAddress: string;
+  juniorBondId: number;
+  smartYieldAddress: string;
+  tokensIn: number;
+  maturesAt: number;
+  underlyingOut: number;
+  blockTimestamp: number;
+};
+
+function fetchSYPools(protocolID: string = 'all'): Promise<SYPool[]> {
+  const url = new URL(`/api/smartyield/pools?protocolID=${protocolID}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => result.data);
+}
+
+function fetchSYPool(syAddr: string): Promise<SYPool> {
+  const url = new URL(`/api/smartyield/pools/${syAddr}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => result.data);
+}
+
+function fetchSYPoolAPY(syAddr: string): Promise<SYPoolAPY[]> {
+  const url = new URL(`/api/smartyield/pools/${syAddr}/apy`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => result.data);
+}
+
+export function fetchSYUserTxHistory(
+  address: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<PaginatedResult<SYUserTxHistory>> {
+  const url = new URL(`/api/smartyield/users/${address}/history?page=${page}&limit=${limit}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result,
+      data: (result.data ?? []).map((item: SYUserTxHistory) => ({
+        ...item,
+        amount: Number(item.amount),
+      })),
+    }));
+}
+
+export function fetchSYSeniorRedeems(
+  address: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<PaginatedResult<SYSeniorRedeem>> {
+  const url = new URL(`/api/smartyield/users/${address}/redeems/senior?page=${page}&limit=${limit}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result,
+      data: (result.data ?? []).map((item: SYSeniorRedeem) => ({
+        ...item,
+      })),
+    }));
+}
+
+export function fetchSYJuniorRedeems(
+  address: string,
+  page: number = 1,
+  limit: number = 10,
+): Promise<PaginatedResult<SYJuniorRedeem>> {
+  const url = new URL(`/api/smartyield/users/${address}/redeems/junior?page=${page}&limit=${limit}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result,
+      data: (result.data ?? []).map((item: SYJuniorRedeem) => ({
+        ...item,
+      })),
+    }));
+}
+
 const SYPoolsProvider: React.FC = props => {
   const { children } = props;
 
   const wallet = useWallet();
   const [state, setState] = React.useState<State>(InitialState);
+
+  // React.useEffect(() => {
+  //   if (!wallet.account) {
+  //     return;
+  //   }
+  //
+  //   (async () => {
+  //     const pools = await fetchSYPools();
+  //     console.log({ pools });
+  //     const pool = await fetchSYPool(pools[0].smartYieldAddress);
+  //     console.log({ pool });
+  //     const apy = await fetchSYPoolAPY(pools[0].smartYieldAddress);
+  //     console.log({ apy });
+  //     const userTxHistory = await fetchSYUserTxHistory(wallet.account!);
+  //     console.log({ userTxHistory });
+  //     const juniorRedeems = await fetchSYJuniorRedeems(wallet.account!);
+  //     console.log({ juniorRedeems });
+  //     const seniorRedeems = await fetchSYSeniorRedeems(wallet.account!);
+  //     console.log({ seniorRedeems });
+  //   })();
+  // }, [wallet.account]);
 
   React.useEffect(() => {
     setState(
