@@ -25,9 +25,9 @@ function useMergeState<S>(
           ...(typeof updater === 'function' ? (updater as Function)(prev) : updater),
         };
 
-        if (typeof callback === 'function') {
-          callback(next);
-        }
+      if (typeof callback === 'function') {
+        callback(next);
+      }
 
         return next;
       });

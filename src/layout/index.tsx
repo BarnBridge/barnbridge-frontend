@@ -5,7 +5,6 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 
 import ExternalLink from 'components/custom/externalLink';
-import MobileMenu from 'components/custom/mobile-menu';
 import StayTuned from 'components/custom/stay-tuned';
 import { Text } from 'components/custom/typography';
 import WarningProvider from 'components/providers/warning-provider';
@@ -32,7 +31,6 @@ const LayoutView: React.FC = () => {
   return (
     <div className={s.layout}>
       <LayoutSideNav />
-      {/* <MobileMenu /> */}
       <div style={{ flexGrow: 1 }}>
         <WarningProvider>
           <LayoutHeader />

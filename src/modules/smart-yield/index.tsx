@@ -11,6 +11,8 @@ import PortfolioView from './views/portfolio-view';
 
 import { isValidAddress } from 'utils';
 
+import s from './s.module.scss';
+
 type SmartYieldViewParams = {
   vt: string;
 };
@@ -40,7 +42,7 @@ const SmartYieldView: React.FC = () => {
 
   return (
     <>
-      <Tabs activeKey={activeTab} onChange={handleTabChange}>
+      <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
           key="overview"
           tab={
