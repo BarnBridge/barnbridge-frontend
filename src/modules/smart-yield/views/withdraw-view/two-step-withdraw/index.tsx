@@ -11,9 +11,11 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import SmartYieldContract from 'modules/smart-yield/contracts/smartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import ConfirmWithdrawalModal from 'modules/smart-yield/views/withdraw-view/confirm-withdrawal-modal';
 import { WITHDRAW_TWO_STEP_KEY } from 'modules/smart-yield/views/withdraw-view/initiate-withdraw';
+import { useWallet } from 'wallets/wallet';
 
 type FormData = {
   to?: BigNumber;
@@ -25,36 +27,52 @@ const InitialFormValues: FormData = {
 
 const TwoStepWithdraw: React.FC = () => {
   const history = useHistory();
-  const tokenPool = useTokenPool();
+  const wallet = useWallet();
+  const poolCtx = useTokenPool();
   const [form] = Antd.Form.useForm<FormData>();
 
-  const [withdrawModal, setWithdrawModal] = React.useState<any>();
+  const [withdrawModal, setWithdrawModal] = React.useState<boolean>();
+
+  const { pool } = poolCtx;
 
   function handleCancel() {
-    history.push(`/smart-yield/${tokenPool.address}/withdraw`);
+    history.push(`/smart-yield/${pool?.smartYieldAddress}/withdraw`);
   }
 
-  function handleSubmit(values: FormData) {
-    setWithdrawModal(values);
+  function handleSubmit() {
+    setWithdrawModal(true);
   }
 
   function handleWithdrawCancel() {
-    setWithdrawModal(undefined);
+    setWithdrawModal(false);
   }
 
   async function handleWithdrawConfirm(gasFee: number) {
     const { to = ZERO_BIG_NUMBER } = form.getFieldsValue();
 
+    const { pool } = poolCtx;
+
+    if (!pool) {
+      return;
+    }
+
+    const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+    smartYieldContract.setProvider(wallet.provider);
+    smartYieldContract.setAccount(wallet.account);
+
     try {
-      await tokenPool.sy?.loadAbond();
-      const amount = getNonHumanValue(new BigNumber(to), tokenPool.sy?.decimals);
-      const maxMaturesAt = 1 + (tokenPool.sy?.abond?.maturesAt ?? 0);
+      const abond = await smartYieldContract.getAbond();
+      const decimals = pool.underlyingDecimals;
+      const tokenAmount = getNonHumanValue(new BigNumber(to), decimals);
+      const maxMaturesAt = 1 + (abond.maturesAt ?? 0);
       const deadline = Math.round(Date.now() / 1_000) + 1200;
 
-      await tokenPool.actions.juniorRegularWithdraw(amount, maxMaturesAt, deadline, gasFee);
-    } catch (e) {
-      console.error(e);
-    }
+      await smartYieldContract.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasFee);
+    } catch {}
+  }
+
+  if (!pool) {
+    return null;
   }
 
   return (
@@ -71,8 +89,8 @@ const TwoStepWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="to" label="To" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={tokenPool.uToken?.maxAllowed}
-            maximumFractionDigits={tokenPool.uToken?.decimals}
+            max={pool.underlyingContract?.maxAllowed}
+            maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={4}
             disabled={false}
           />

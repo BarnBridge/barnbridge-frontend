@@ -10,7 +10,7 @@ import { Text } from 'components/custom/typography';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
 const TokenPoolHeader: React.FC = () => {
-  const tokenPool = useTokenPool();
+  const pool = useTokenPool();
 
   const isRootDeposit = Boolean(
     useRouteMatch({
@@ -21,38 +21,42 @@ const TokenPoolHeader: React.FC = () => {
   const isSeniorDeposit = Boolean(useRouteMatch('/smart-yield/:address/deposit/senior'));
   const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/:address/deposit/junior'));
 
-  async function handleSwitchChange(checked: boolean) {
+  const [isApproving, setApproving] = React.useState<boolean>(false);
+
+  async function handleSwitchChange(enable: boolean) {
+    setApproving(true);
+
     try {
-      await tokenPool.actions.enableToken(checked);
+      await pool.actions.approveUnderlying(enable);
     } catch {}
+
+    setApproving(false);
   }
 
   return (
     <Grid flow="col" gap={64} align="center" className="mb-64">
-      {tokenPool.originator && (
-        <Grid flow="col" gap={16} align="center">
-          <IconBubble name={tokenPool.originator.icon} bubbleName={tokenPool.originator.market.icon} />
-          <Grid flow="row" gap={4} className="ml-auto">
-            <div>
-              <Text type="p1" weight="semibold" color="primary">
-                {tokenPool.uToken?.name}
-              </Text>{' '}
-              <Text type="p1" weight="semibold">
-                ({tokenPool.uToken?.symbol})
-              </Text>
-            </div>
-            <Text type="small" weight="semibold">
-              {tokenPool.originator.market.name}
+      <Grid flow="col" gap={16} align="center">
+        <IconBubble name={pool.pool?.meta?.icon!} bubbleName={pool.pool?.market?.icon!} />
+        <Grid flow="row" gap={4} className="ml-auto">
+          <div>
+            <Text type="p1" weight="semibold" color="primary">
+              {pool.pool?.meta?.name}
+            </Text>{' '}
+            <Text type="p1" weight="semibold">
+              ({pool.pool?.underlyingSymbol})
             </Text>
-          </Grid>
+          </div>
+          <Text type="small" weight="semibold">
+            {pool.pool?.market?.name}
+          </Text>
         </Grid>
-      )}
+      </Grid>
       <div>
         <Text type="small" weight="semibold" className="mb-4">
           Wallet balance
         </Text>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(tokenPool.uToken?.balance)} {tokenPool.uToken?.symbol}
+          {formatBigValue(pool.pool?.underlyingContract?.balance)} {pool.pool?.underlyingSymbol}
         </Text>
       </div>
       {!isSeniorDeposit && !isRootDeposit && (
@@ -62,7 +66,7 @@ const TokenPoolHeader: React.FC = () => {
               Portfolio balance
             </Text>
             <Text type="p1" weight="semibold" color="primary">
-              {formatBigValue(tokenPool.sy?.balance)} {tokenPool.cToken?.symbol}
+              -
             </Text>
           </Tooltip>
         </div>
@@ -73,7 +77,7 @@ const TokenPoolHeader: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            - %
+            {formatBigValue(pool.pool?.state.seniorApy)}%
           </Text>
         </div>
       )}
@@ -83,7 +87,7 @@ const TokenPoolHeader: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            - %
+            {formatBigValue(pool.pool?.state.juniorApy)}%
           </Text>
         </div>
       )}
@@ -94,8 +98,8 @@ const TokenPoolHeader: React.FC = () => {
           </Text>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
-            checked={tokenPool.uToken?.isAllowed}
-            loading={tokenPool.uToken?.isAllowed === undefined || tokenPool.uToken?.isApproving}
+            checked={pool.pool?.underlyingContract?.isAllowed}
+            loading={pool.pool?.underlyingContract?.isAllowed === undefined || isApproving}
             onChange={handleSwitchChange}
           />
         </Grid>

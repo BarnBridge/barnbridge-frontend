@@ -4,8 +4,8 @@ import { Route, Switch, useRouteMatch } from 'react-router-dom';
 import DepositView from 'modules/smart-yield/views/deposit-view';
 import WithdrawView from 'modules/smart-yield/views/withdraw-view';
 
-import TokenPoolHeader from './token-pool-header';
 import TokenPoolProvider from './token-pool-provider';
+import TokenPoolHeader from './token-pool-header';
 
 type TokenPoolViewParams = {
   address: string;
@@ -17,7 +17,7 @@ const TokenPoolView: React.FC = () => {
   } = useRouteMatch<TokenPoolViewParams>();
 
   return (
-    <TokenPoolProvider tokenAddress={address}>
+    <TokenPoolProvider poolAddress={address}>
       <TokenPoolHeader />
       <Switch>
         <Route path={`/smart-yield/${address}/deposit`} component={DepositView} />

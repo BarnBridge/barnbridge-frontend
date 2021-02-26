@@ -14,7 +14,9 @@ const JUNIOR_TRANCHE_KEY = 'junior';
 
 const SelectTranche: React.FC = () => {
   const history = useHistory();
-  const tokenPool = useTokenPool();
+  const poolCtx = useTokenPool();
+
+  const { pool } = poolCtx;
 
   const [tranche, setTranche] = useState<string | undefined>();
 
@@ -31,7 +33,7 @@ const SelectTranche: React.FC = () => {
   }
 
   function handleNextStep() {
-    history.push(`/smart-yield/${tokenPool.address}/deposit/${tranche}`);
+    history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit/${tranche}`);
   }
 
   return (

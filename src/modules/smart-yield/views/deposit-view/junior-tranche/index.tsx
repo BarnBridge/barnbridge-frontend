@@ -12,7 +12,10 @@ import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
+import ControllerContract from 'modules/smart-yield/contracts/controllerContract';
+import SmartYieldContract from 'modules/smart-yield/contracts/smartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+import { useWallet } from 'wallets/wallet';
 
 type FormData = {
   amount?: BigNumber;
@@ -40,9 +43,11 @@ const InitialState: State = {
 
 const JuniorTranche: React.FC = () => {
   const history = useHistory();
+  const wallet = useWallet();
+  const poolCtx = useTokenPool();
   const [form] = Antd.Form.useForm<FormData>();
 
-  const tokenPool = useTokenPool();
+  const { pool } = poolCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -51,49 +56,58 @@ const JuniorTranche: React.FC = () => {
   }, []);
 
   function handleCancel() {
-    history.push(`/smart-yield/${tokenPool.address}/deposit`);
+    history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit`);
   }
 
-  const handleFinish = React.useCallback(
-    async (values: FormData) => {
-      const { amount, gasPrice, slippageTolerance, deadline } = values;
+  async function handleFinish(values: FormData) {
+    if (!pool) {
+      return;
+    }
 
-      if (!amount || !gasPrice) {
-        return;
-      }
+    const { amount, gasPrice, slippageTolerance, deadline } = values;
 
-      setState(
-        mergeState<State>({
-          saving: true,
-        }),
+    if (!amount || !gasPrice) {
+      return;
+    }
+
+    setState(
+      mergeState<State>({
+        saving: true,
+      }),
+    );
+
+    const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+    smartYieldContract.setProvider(wallet.provider);
+    smartYieldContract.setAccount(wallet.account);
+
+    const controllerContract = new ControllerContract(pool.controllerAddress, '');
+    smartYieldContract.setProvider(wallet.provider);
+
+    const decimals = pool.underlyingDecimals;
+    const juniorFee = await controllerContract.getJuniorBuyFee();
+    const slippage = new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100);
+    const minAmount = amount.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)).minus(slippage));
+    const price = await smartYieldContract.getPrice();
+    const minTokens = minAmount.dividedBy(price);
+    const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
+    const gasFee = gasPrice.value;
+
+    try {
+      await smartYieldContract.buyTokensSend(
+        getNonHumanValue(amount, decimals),
+        getNonHumanValue(new BigNumber(minTokens.toFixed(0)), decimals),
+        deadlineTs,
+        gasFee,
       );
+      form.resetFields();
+    } catch {}
 
-      const juniorFee = tokenPool.controller?.feeBuyJuniorToken ?? ZERO_BIG_NUMBER;
-      const slippage = new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100);
-      const minAmount = amount.multipliedBy(new BigNumber(1).minus(juniorFee).minus(slippage));
-      const jPrice = tokenPool.sy?.price?.toNumber() ?? 1;
-      const minTokens = minAmount.dividedBy(jPrice);
-      const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
-      const gasFee = gasPrice.value;
-
-      try {
-        await tokenPool.actions.juniorDeposit(
-          getNonHumanValue(amount, tokenPool.uToken?.decimals),
-          getNonHumanValue(new BigNumber(minTokens.toFixed(0)), tokenPool.uToken?.decimals),
-          deadlineTs,
-          gasFee,
-        );
-        form.resetFields();
-      } catch {}
-
-      setState(
-        mergeState<State>({
-          saving: false,
-        }),
-      );
-    },
-    [tokenPool.actions.juniorDeposit, form.resetFields],
-  );
+    setState(
+      mergeState<State>({
+        saving: false,
+      }),
+    );
+  }
 
   return (
     <Form
@@ -104,9 +118,9 @@ const JuniorTranche: React.FC = () => {
       onFinish={handleFinish}>
       <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
-          tokenIcon={tokenPool.originator?.icon as TokenIconNames}
-          max={tokenPool.uToken?.maxAllowed}
-          maximumFractionDigits={tokenPool.uToken?.decimals}
+          tokenIcon={pool?.meta?.icon as TokenIconNames}
+          max={pool?.underlyingContract?.maxAllowed}
+          maximumFractionDigits={pool?.underlyingDecimals}
           displayDecimals={4}
           disabled={state.saving}
           slider

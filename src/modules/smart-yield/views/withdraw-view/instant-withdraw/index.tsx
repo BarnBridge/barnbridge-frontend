@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
+import { getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,9 +11,11 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import SmartYieldContract from 'modules/smart-yield/contracts/smartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import ConfirmWithdrawalModal from 'modules/smart-yield/views/withdraw-view/confirm-withdrawal-modal';
 import { WITHDRAW_INSTANT_KEY } from 'modules/smart-yield/views/withdraw-view/initiate-withdraw';
+import { useWallet } from 'wallets/wallet';
 
 type FormData = {
   from?: BigNumber;
@@ -27,46 +29,62 @@ const InitialFormValues: FormData = {
 
 const InstantWithdraw: React.FC = () => {
   const history = useHistory();
-  const tokenPool = useTokenPool();
+  const wallet = useWallet();
+  const poolCtx = useTokenPool();
   const [form] = Antd.Form.useForm<FormData>();
 
-  const [withdrawModal, setWithdrawModal] = React.useState<any>();
+  const [withdrawModal, setWithdrawModal] = React.useState<boolean>();
+
+  const { pool } = poolCtx;
 
   function handleCancel() {
-    history.push(`/smart-yield/${tokenPool.address}/withdraw`);
+    history.push(`/smart-yield/${pool?.smartYieldAddress}/withdraw`);
   }
 
-  function handleSubmit(values: FormData) {
-    setWithdrawModal(values);
+  function handleSubmit() {
+    setWithdrawModal(true);
   }
 
   function handleWithdrawCancel() {
-    setWithdrawModal(undefined);
+    setWithdrawModal(false);
   }
 
   async function handleWithdrawConfirm(gasFee: number) {
     const { from = ZERO_BIG_NUMBER, to = ZERO_BIG_NUMBER } = form.getFieldsValue();
+    const { pool } = poolCtx;
+
+    if (!pool) {
+      return;
+    }
+
+    const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+    smartYieldContract.setProvider(wallet.provider);
+    smartYieldContract.setAccount(wallet.account);
 
     try {
-      const amount = getNonHumanValue(new BigNumber(from), tokenPool.sy?.decimals);
-      const debtShare = amount.dividedBy(tokenPool.sy?.totalSupply ?? 1);
-      const forfeits = tokenPool.sy?.abondDebt?.multipliedBy(debtShare).dividedBy(1e18) ?? ZERO_BIG_NUMBER;
-      const toPay = amount
-        .multipliedBy(tokenPool.sy?.price ?? 1)
-        .dividedBy(1e18)
-        .minus(forfeits);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - 0.005).toFixed(0)); // slippage ?? rounding mode
-      const deadline = Math.round(Date.now() / 1_000) + 1200;
-
       // uint256 debtShare = tokenAmount_ * 1e18 / SY.totalSupply();
       // uint256 forfeits = (SY.abondDebt() * debtShare) / 1e18;
       // uint256 toPay = (tokenAmount_ * SY.price()) / 1e18 - forfeits;
       // minUnderlying => toPay - slippage
 
-      await tokenPool.actions.juniorInstantWithdraw(amount, minUnderlying, deadline, gasFee);
-    } catch (e) {
-      console.error(e);
+      const decimals = pool.underlyingDecimals;
+      const tokenAmount = getNonHumanValue(new BigNumber(from), decimals);
+      const totalSupply = await smartYieldContract.getTotalSupply();
+      const abondDebt = await smartYieldContract.getAbondDebt();
+      const price = await smartYieldContract.getPrice();
+      const debtShare = tokenAmount.dividedBy(totalSupply);
+      const forfeits = abondDebt.multipliedBy(debtShare).dividedBy(1e18);
+      const toPay = tokenAmount.multipliedBy(price).dividedBy(1e18).minus(forfeits);
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - 0.005).toFixed(0)); // slippage / rounding mode
+      const deadline = Math.round(Date.now() / 1_000) + 1200;
+
+      await smartYieldContract.sellTokensSend(tokenAmount, minUnderlying, deadline, gasFee);
+    } catch {
     }
+  }
+
+  if (!pool) {
+    return null;
   }
 
   return (
@@ -83,8 +101,8 @@ const InstantWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={tokenPool.uToken?.maxAllowed}
-            maximumFractionDigits={tokenPool.uToken?.decimals}
+            max={pool.underlyingContract?.maxAllowed}
+            maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={4}
             disabled={false}
           />
@@ -92,8 +110,8 @@ const InstantWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="to" label="To" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={tokenPool.uToken?.maxAllowed}
-            maximumFractionDigits={tokenPool.uToken?.decimals}
+            max={pool.underlyingContract?.maxAllowed}
+            maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={4}
             disabled={false}
           />

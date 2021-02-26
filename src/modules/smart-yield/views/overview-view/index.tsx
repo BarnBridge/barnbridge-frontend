@@ -1,8 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue } from 'web3/utils';
+import uniqBy from 'lodash/uniqBy';
+import { formatBigValue, formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,47 +13,47 @@ import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import Icons, { IconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import { Text } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { SYMarket, SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
-import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
+import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
+import PoolsProvider, { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
 
 type State = {
-  activeMarket?: SYMarket;
+  activeMarket?: SYMarketMeta;
 };
 
 const InitialState: State = {
-  activeMarket: undefined,
+  activeMarket: Array.from(Markets.values())[0],
 };
 
-type TableEntity = SYOriginator & {
-  contract?: SYContract;
+type PoolEntity = {
+  pool: PoolsSYPool;
   goDeposit: () => void;
 };
 
-const TableColumns: ColumnsType<TableEntity> = [
+const TableColumns: ColumnsType<PoolEntity> = [
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Originator
       </Text>
     ),
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.icon} bubbleName={entity.market.icon} />
+        <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary">
-            {entity.name}
+            {entity.pool.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold">
-            {entity.market.name}
+            {entity.pool.meta?.name}
           </Text>
         </Grid>
       </Grid>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Senior Liquidity
       </Text>
@@ -59,28 +61,28 @@ const TableColumns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.contract?.underlyingSeniors)}
+          {formatBigValue(entity.pool.state.seniorLiquidity)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSDValue(entity.contract?.underlyingSeniorsPrice)}
+          {formatUSDValue(ZERO_BIG_NUMBER)}
         </Text>
       </Grid>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Senior APY
       </Text>
     ),
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        -%
+        {formatBigValue(entity.pool.state.seniorApy)}%
       </Text>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Junior Liquidity
       </Text>
@@ -88,40 +90,40 @@ const TableColumns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.contract?.underlyingJuniors)}
+          {formatBigValue(entity.pool.state.juniorLiquidity)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSDValue(entity.contract?.underlyingJuniorsPrice)}
+          {formatUSDValue(ZERO_BIG_NUMBER)}
         </Text>
       </Grid>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Junior APY
       </Text>
     ),
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="purple">
-        -%
+        {formatBigValue(entity.pool.state.juniorApy)}%
       </Text>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Originator APY
       </Text>
     ),
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        -%
+        {formatBigValue(entity.pool.state.originatorApy)}%
       </Text>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         jToken conversion rate
       </Text>
@@ -129,16 +131,16 @@ const TableColumns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          1 {entity.contract?.pool?.uToken?.symbol}
+          1 {entity.pool.underlyingSymbol}
         </Text>
         <Text type="small" weight="semibold">
-          = ${formatBigValue(entity.contract?.price)} {entity.contract?.pool?.cToken?.symbol}
+          = ${formatBigValue(entity.pool.state.jTokenPrice)} j{entity.pool.underlyingSymbol}
         </Text>
       </Grid>
     ),
   },
   {
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Wallet balance
       </Text>
@@ -146,16 +148,16 @@ const TableColumns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.contract?.pool?.uToken?.balance)}
+          {formatBigValue(entity.pool.underlyingContract?.balance)}
         </Text>
         <Text type="small" weight="semibold">
-          $ -
+          {formatUSDValue(ZERO_BIG_NUMBER)}
         </Text>
       </Grid>
     ),
   },
   {
-    title: () => null,
+    title: null,
     render: (_, entity) => (
       <Button type="primary" onClick={() => entity.goDeposit()}>
         Deposit
@@ -164,40 +166,54 @@ const TableColumns: ColumnsType<TableEntity> = [
   },
 ];
 
-const OriginatorOptions = [{ value: '', label: 'All originators' }];
-
-const OverviewView: React.FC = () => {
+const OverviewViewInner: React.FC = () => {
   const history = useHistory();
-  const syPools = useSYPools();
+  const pools = usePools();
 
-  const { markets, originators, contracts } = syPools.state;
   const [state, setState] = React.useState<State>(InitialState);
 
-  const tableSource = React.useMemo<TableEntity[]>(() => {
-    return originators
-      .filter(originator => originator.market === state.activeMarket)
-      .map<TableEntity>(originator => ({
-        ...originator,
-        goDeposit: () => {
-          history.push(`/smart-yield/${originator.address}/deposit`);
-        },
-      }));
-  }, [originators, contracts, state.activeMarket]);
+  const entities = React.useMemo<PoolEntity[]>(() => {
+    return pools.pools
+      .filter(pool => !state.activeMarket || pool.protocolId === state.activeMarket.id)
+      .map(pool => {
+        if (state.activeMarket && pool.protocolId !== state.activeMarket.id) {
+          return undefined;
+        }
 
-  React.useEffect(() => {
-    if (markets.length > 0) {
-      setState(
-        mergeState<State>({
-          activeMarket: markets[0],
-        }),
-      );
-    }
-  }, [markets]);
+        return {
+          pool,
+          goDeposit: () => {
+            history.push(`/smart-yield/${pool.smartYieldAddress}/deposit`);
+          },
+        };
+      })
+      .filter(Boolean) as PoolEntity[];
+  }, [pools.pools, state.activeMarket]);
+
+  const totalLiquidity = React.useMemo<BigNumber>(() => {
+    return entities.reduce((sum, entity) => {
+      return sum.plus(entity.pool.state.seniorLiquidity).plus(entity.pool.state.juniorLiquidity);
+    }, ZERO_BIG_NUMBER);
+  }, [entities]);
+
+  const originatorsOpts = React.useMemo(() => {
+    return uniqBy(pools.pools, 'underlyingSymbol').reduce(
+      (list, pool) => {
+        list.push({
+          value: pool.underlyingSymbol,
+          label: pool.meta?.name!,
+        });
+
+        return list;
+      },
+      [{ value: '', label: 'All originators' }],
+    );
+  }, [pools]);
 
   return (
     <>
       <div className="tab-cards mb-64">
-        {markets.map(market => (
+        {Array.from(Markets.values()).map(market => (
           <button
             key={market.name}
             className={cn('tab-card', state.activeMarket === market && 'active')}
@@ -223,25 +239,33 @@ const OverviewView: React.FC = () => {
       {state.activeMarket && (
         <>
           <Text type="p1" weight="semibold" color="secondary" className="mb-8">
-            {state.activeMarket.name} total liquidity
+            <Hint text=" ">{state.activeMarket.name} total liquidity</Hint>
           </Text>
           <Text type="h2" color="primary" className="mb-40">
-            {formatUSDValue(ZERO_BIG_NUMBER)}
+            {formatUSDValue(totalLiquidity)}
           </Text>
         </>
       )}
-      <Card title={<Select options={OriginatorOptions} disabled={syPools.state.loading} value="" />} noPaddingBody>
-        <Table<TableEntity>
+      <Card title={<Select options={originatorsOpts} disabled={pools.loading} value="" />} noPaddingBody>
+        <Table<PoolEntity>
           columns={TableColumns}
-          dataSource={tableSource}
-          rowKey="address"
-          loading={syPools.state.loading}
+          dataSource={entities}
+          rowKey={entity => entity.pool.smartYieldAddress}
+          loading={pools.loading}
           scroll={{
             x: true,
           }}
         />
       </Card>
     </>
+  );
+};
+
+const OverviewView: React.FC = () => {
+  return (
+    <PoolsProvider>
+      <OverviewViewInner />
+    </PoolsProvider>
   );
 };
 

@@ -1,129 +1,196 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { shortenAddr } from 'web3/utils';
+import format from 'date-fns/format';
+import capitalize from 'lodash/capitalize';
+import { formatBigValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Table from 'components/antd/table';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { mergeState } from 'hooks/useMergeState';
+import { HistoryTypes, Markets, SYUserTxHistory, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { useWallet } from 'wallets/wallet';
 
-const dataMock = [
-  {
-    address: 'asdqwe123',
-    token: ['USDC', 'Compound'],
-    transactionHash: '0x3633dfac138a54ada26b83f73b3acce40c657ba3',
-    date: new Date(),
-    amount: '25381.32',
-    tranch: 'Senior',
-    transactionType: 'Withdraw',
-  },
-];
+type TableEntity = SYUserTxHistory;
 
-const Columns: ColumnsType<any> = [
+const Columns: ColumnsType<TableEntity> = [
   {
-    dataIndex: 'token',
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Token Name
       </Text>
     ),
-    render: (value: string) => (
+    render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name="usdc-token" bubbleName="compound" />
+        <IconBubble name="usdc-token" bubbleName={Markets.get(entity.protocolId)?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {value[0]}
+            -
           </Text>
           <Text type="small" weight="semibold" color="secondary">
-            {value[1]}
+            {Markets.get(entity.protocolId)?.name}
           </Text>
         </Grid>
       </Grid>
     ),
   },
   {
-    dataIndex: 'transactionHash',
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Transaction Hash
       </Text>
     ),
-    render: (value: string) => (
+    render: (_, entity) => (
       <Grid flow="row" gap={4}>
-        <Text type="p1" weight="semibold" color="blue">
-          {shortenAddr(value, 8, 8)}
-        </Text>
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.transactionHash)}
+          </Text>
+        </ExternalLink>
       </Grid>
     ),
   },
   {
-    dataIndex: 'date',
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Date
       </Text>
     ),
-    render: (value: Date) => (
+    render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {value.toLocaleDateString()}
+          {format(entity.blockTimestamp, 'MM.dd.yyyy')}
         </Text>
         <Text type="small" weight="semibold">
-          {value.toLocaleTimeString()}
+          {format(entity.blockTimestamp, 'HH:mm')}
         </Text>
       </>
     ),
   },
   {
-    dataIndex: 'amount',
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
         Amount
       </Text>
     ),
-    render: (value: string) => (
+    render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {value}
+          {formatBigValue(entity.amount)}
         </Text>
         <Text type="small" weight="semibold">
-          ${value}
+          $ -
         </Text>
       </Grid>
     ),
   },
   {
-    dataIndex: 'tranch',
-    title: () => (
+    title: (
       <Text type="small" weight="semibold">
-        Tranch
+        Tranche
       </Text>
     ),
-    render: (value: string) => (
+    render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {value}
+        {capitalize(entity.tranche)}
       </Text>
     ),
   },
   {
-    dataIndex: 'transactionType',
     title: () => (
       <Text type="small" weight="semibold">
         Transaction type
       </Text>
     ),
-    render: (value: string) => (
+    render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {value}
+        {HistoryTypes.get(entity.transactionType)}
       </Text>
     ),
   },
 ];
 
+type State = {
+  loading: boolean;
+  data: TableEntity[];
+  total: number;
+  pageSize: number;
+  page: number;
+  originatorFilter: string;
+  tokenFilter: string;
+  transactionTypeFilter: string;
+};
+
+const InitialState: State = {
+  loading: false,
+  data: [],
+  total: 0,
+  pageSize: 10,
+  page: 1,
+  originatorFilter: 'all',
+  tokenFilter: 'all',
+  transactionTypeFilter: 'all',
+};
+
 const HistoryTable: React.FC = () => {
+  const wallet = useWallet();
+
+  const [state, setState] = React.useState<State>(InitialState);
+
+  React.useEffect(() => {
+    (async () => {
+      if (!wallet.account) {
+        return;
+      }
+
+      setState(
+        mergeState<State>({
+          loading: true,
+        }),
+      );
+
+      try {
+        const history = await fetchSYUserTxHistory(
+          wallet.account,
+          state.page,
+          state.pageSize,
+          state.originatorFilter,
+          state.tokenFilter,
+          state.transactionTypeFilter,
+        );
+
+        setState(
+          mergeState<State>({
+            loading: false,
+            data: history.data,
+            total: history.meta.count,
+          }),
+        );
+      } catch {
+        setState(
+          mergeState<State>({
+            loading: false,
+            data: [],
+            total: 0,
+          }),
+        );
+      }
+    })();
+  }, [wallet.account, state.page]);
+
+  function handlePageChange(page: number) {
+    setState(
+      mergeState<State>({
+        page,
+      }),
+    );
+  }
+
   return (
     <Card
       title={
@@ -140,8 +207,21 @@ const HistoryTable: React.FC = () => {
       noPaddingBody>
       <Table
         columns={Columns}
-        dataSource={dataMock}
-        rowKey="address"
+        dataSource={state.data}
+        rowKey="transactionHash"
+        loading={state.loading}
+        pagination={{
+          total: state.total,
+          pageSize: state.pageSize,
+          current: state.page,
+          position: ['bottomRight'],
+          showTotal: (total: number, [from, to]: [number, number]) => (
+            <Text type="p2" weight="semibold" color="secondary">
+              Showing {from} to {to} out of {total} entries
+            </Text>
+          ),
+          onChange: handlePageChange,
+        }}
         scroll={{
           x: true,
         }}
