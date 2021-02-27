@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatUSDValue } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -132,10 +132,10 @@ const TableColumns: ColumnsType<PoolEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.underlyingBalance)}
+          {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSDValue(entity.underlyingBalance)}
+          {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
         </Text>
       </Grid>
     ),
