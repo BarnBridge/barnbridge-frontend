@@ -101,7 +101,7 @@ const TokenPoolDetails: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary">
             {getFormattedDuration(
               Date.now(),
-              Date.now() + (pool.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1000,
+              Date.now() + (pool.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1_000,
             )}
           </Text>
         </Grid>

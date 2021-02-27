@@ -75,10 +75,10 @@ const Columns: ColumnsType<TableEntity> = [
     width: '40%',
     align: 'right',
     render: (_, entity) => (
-      <UseLeftTime end={entity.jBond.maturesAt} delay={1_000}>
+      <UseLeftTime end={entity.jBond.maturesAt * 1_000} delay={1_000}>
         {leftTime => (
           <Text type="p1" weight="semibold" color="primary">
-            {leftTime > 0 ? getFormattedDuration(0, entity.jBond.maturesAt) : 'Redeem now'}
+            {leftTime > 0 ? getFormattedDuration(0, entity.jBond.maturesAt * 1_000) : 'Redeem now'}
           </Text>
         )}
       </UseLeftTime>
@@ -88,7 +88,11 @@ const Columns: ColumnsType<TableEntity> = [
     title: null,
     width: '20%',
     render: (_, entity) => (
-      <Button type="ghost" className="ml-auto" disabled={entity.jBond.maturesAt > Date.now()} onClick={entity.redeem}>
+      <Button
+        type="ghost"
+        className="ml-auto"
+        disabled={entity.jBond.maturesAt * 1_000 > Date.now()}
+        onClick={entity.redeem}>
         Redeem
       </Button>
     ),

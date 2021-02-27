@@ -324,7 +324,7 @@ class SYSmartYieldContract extends Web3Contract {
       transform: value => ({
         jBondId,
         tokens: new BigNumber(value.tokens),
-        maturesAt: Number(value.maturesAt) * 1_000,
+        maturesAt: Number(value.maturesAt),
       }),
     }));
 
@@ -343,8 +343,8 @@ class SYSmartYieldContract extends Web3Contract {
         sBondId,
         principal: new BigNumber(value.principal),
         gain: new BigNumber(value.gain),
-        issuedAt: Number(value.issuedAt) * 1_000,
-        maturesAt: Number(value.maturesAt) * 1_000,
+        issuedAt: Number(value.issuedAt),
+        maturesAt: Number(value.maturesAt),
       }),
     }));
 

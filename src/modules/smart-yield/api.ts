@@ -171,7 +171,6 @@ export function fetchSYUserTxHistory(
 
   const url = new URL(`/api/smartyield/users/${address}/history?${query}`, GOV_API_URL);
 
-  // catch 400 status
   return fetch(url.toString())
     .then(result => result.json())
     .then(result => ({
@@ -179,7 +178,6 @@ export function fetchSYUserTxHistory(
       data: (result.data ?? []).map((item: SYUserTxHistory) => ({
         ...item,
         amount: Number(item.amount),
-        blockTimestamp: item.blockTimestamp * 1_000,
       })),
     }));
 }
@@ -239,8 +237,8 @@ export function fetchSYJuniorRedeems(
         ...item,
         tokensIn: new BigNumber(item.tokensIn),
         underlyingOut: new BigNumber(item.underlyingOut),
-        maturesAt: Number(item.maturesAt) * 1_000,
-        blockTimestamp: Number(item.blockTimestamp) * 1_000,
+        maturesAt: Number(item.maturesAt),
+        blockTimestamp: Number(item.blockTimestamp),
       })),
     }));
 }

@@ -154,7 +154,7 @@ const ActivePositionsList: React.FC = () => {
                 </div>
 
                 <StatusTag
-                  text={entity.sBond.maturesAt > Date.now() ? 'ONGOING' : 'REDEEMABLE'}
+                  text={entity.sBond.maturesAt * 1_000 > Date.now() ? 'ONGOING' : 'REDEEMABLE'}
                   color="blue"
                   className="ml-auto"
                 />
@@ -184,14 +184,16 @@ const ActivePositionsList: React.FC = () => {
                 <Text type="small" weight="semibold" color="secondary">
                   Time left until maturity
                 </Text>
-                <UseLeftTime end={entity.sBond.maturesAt} delay={1_000}>
+                <UseLeftTime end={entity.sBond.maturesAt * 1_000} delay={1_000}>
                   {leftTime => (
                     <>
                       <Text type="p1" weight="semibold" color="primary">
-                        {leftTime > 0 ? getFormattedDuration(0, entity.sBond.maturesAt) : 'Redeem now'}
+                        {leftTime > 0 ? getFormattedDuration(0, entity.sBond.maturesAt * 1_000) : 'Redeem now'}
                       </Text>
                       <Progress
-                        percent={100 - (leftTime * 100) / (entity.sBond.maturesAt - entity.sBond.issuedAt)}
+                        percent={
+                          100 - (leftTime * 100) / (entity.sBond.maturesAt * 1_000 - entity.sBond.issuedAt * 1_000)
+                        }
                         trailColor="var(--color-border)"
                         strokeWidth={4}
                         strokeColor={{
@@ -223,7 +225,7 @@ const ActivePositionsList: React.FC = () => {
               <div className="grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
                 <Button
                   type="primary"
-                  disabled={entity.sBond.maturesAt > Date.now()}
+                  disabled={entity.sBond.maturesAt * 1_000 > Date.now()}
                   onClick={() => setRedeemModal(entity)}>
                   Redeem
                 </Button>

@@ -68,10 +68,10 @@ const Columns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.blockTimestamp, 'MM.dd.yyyy')}
+          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
         </Text>
         <Text type="small" weight="semibold">
-          {format(entity.blockTimestamp, 'HH:mm')}
+          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
         </Text>
       </>
     ),

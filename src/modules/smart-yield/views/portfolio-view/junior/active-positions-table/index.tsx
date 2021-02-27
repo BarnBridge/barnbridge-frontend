@@ -1,8 +1,8 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -17,11 +17,9 @@ import { useWallet } from 'wallets/wallet';
 
 import { doSequential, getFormattedDuration } from 'utils';
 
-type TableEntity = {
-  pool: PoolsSYPool;
-  balance: BigNumber;
-  abond: SYAbond;
-  goWithdraw: () => void;
+type TableEntity = PoolsSYPool & {
+  smartYieldBalance: BigNumber;
+  smartYieldAbond: SYAbond;
 };
 
 const Columns: ColumnsType<TableEntity> = [
@@ -33,13 +31,13 @@ const Columns: ColumnsType<TableEntity> = [
     ),
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
+        <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary">
-            {entity.pool.underlyingSymbol}
+            {entity.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold">
-            {entity.pool.market?.name}
+            {entity.market?.name}
           </Text>
         </Grid>
       </Grid>
@@ -56,10 +54,10 @@ const Columns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.balance)}
+          {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
         </Text>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.balance)}
+          {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
         </Text>
       </>
     ),
@@ -74,7 +72,7 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {formatBigValue(entity.pool.state.juniorApy * 100)}%
+        {formatBigValue(entity.state.juniorApy * 100)}%
       </Text>
     ),
   },
@@ -87,10 +85,10 @@ const Columns: ColumnsType<TableEntity> = [
     width: '20%',
     align: 'right',
     render: (_, entity) => (
-      <UseLeftTime end={entity.abond.maturesAt * 1_000} delay={1_000}>
+      <UseLeftTime end={entity.smartYieldAbond.maturesAt * 1_000} delay={1_000}>
         {leftTime => (
           <Text type="p1" weight="semibold" color="primary">
-            {leftTime > 0 ? getFormattedDuration(0, entity.abond.maturesAt * 1_000) : ''}
+            {leftTime > 0 ? getFormattedDuration(0, entity.smartYieldAbond.maturesAt * 1_000) : ''}
           </Text>
         )}
       </UseLeftTime>
@@ -100,9 +98,11 @@ const Columns: ColumnsType<TableEntity> = [
     title: null,
     width: '20%',
     render: (_, entity) => (
-      <Button type="primary" className="ml-auto" onClick={entity.goWithdraw}>
-        Withdraw
-      </Button>
+      <NavLink to={`/smart-yield/${entity.smartYieldAddress}/withdraw`}>
+        <Button type="primary" className="ml-auto">
+          Withdraw
+        </Button>
+      </NavLink>
     ),
   },
 ];
@@ -118,7 +118,6 @@ const InitialState: State = {
 };
 
 const ActivePositionsTable: React.FC = () => {
-  const history = useHistory();
   const wallet = useWallet();
   const poolsCtx = usePools();
 
@@ -144,17 +143,14 @@ const ActivePositionsTable: React.FC = () => {
           smartYieldContract.setProvider(wallet.provider);
           smartYieldContract.setAccount(wallet.account);
 
-          const balance = await smartYieldContract.getBalance();
-          const abond = await smartYieldContract.getAbond();
+          const smartYieldBalance = await smartYieldContract.getBalance();
+          const smartYieldAbond = await smartYieldContract.getAbond();
 
-          if (balance.isGreaterThan(ZERO_BIG_NUMBER)) {
+          if (smartYieldBalance.isGreaterThan(ZERO_BIG_NUMBER)) {
             resolve({
-              pool,
-              balance: getHumanValue(balance, pool.underlyingDecimals),
-              abond,
-              goWithdraw: () => {
-                history.push(`/smart-yield/${pool.smartYieldAddress}/withdraw`);
-              },
+              ...pool,
+              smartYieldBalance,
+              smartYieldAbond,
             });
           } else {
             resolve(undefined);
@@ -175,7 +171,7 @@ const ActivePositionsTable: React.FC = () => {
     <Table<TableEntity>
       columns={Columns}
       dataSource={state.data}
-      rowKey={row => `${row.pool.smartYieldAddress}`}
+      rowKey="smartYieldAddress"
       loading={state.loading}
       scroll={{
         x: true,

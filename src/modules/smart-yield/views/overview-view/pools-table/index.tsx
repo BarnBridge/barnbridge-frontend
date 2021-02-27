@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import { formatBigValue, formatUSDValue } from 'web3/utils';
@@ -10,12 +10,10 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { SYMarketMeta } from 'modules/smart-yield/api';
-import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
 
-type PoolEntity = {
-  pool: PoolsSYPool;
-  goDeposit: () => void;
-};
+import { PoolsSYPool, usePools } from '../pools-provider';
+
+type PoolEntity = PoolsSYPool;
 
 const TableColumns: ColumnsType<PoolEntity> = [
   {
@@ -26,13 +24,13 @@ const TableColumns: ColumnsType<PoolEntity> = [
     ),
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
+        <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary">
-            {entity.pool.underlyingSymbol}
+            {entity.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold">
-            {entity.pool.meta?.name}
+            {entity.meta?.name}
           </Text>
         </Grid>
       </Grid>
@@ -47,10 +45,10 @@ const TableColumns: ColumnsType<PoolEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.pool.state.seniorLiquidity)}
+          {formatBigValue(entity.state.seniorLiquidity)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSDValue(new BigNumber(entity.pool.state.seniorLiquidity))}
+          {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
         </Text>
       </Grid>
     ),
@@ -63,7 +61,7 @@ const TableColumns: ColumnsType<PoolEntity> = [
     ),
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {formatBigValue(entity.pool.state.seniorApy * 100)}%
+        {formatBigValue(entity.state.seniorApy * 100)}%
       </Text>
     ),
   },
@@ -76,10 +74,10 @@ const TableColumns: ColumnsType<PoolEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.pool.state.juniorLiquidity)}
+          {formatBigValue(entity.state.juniorLiquidity)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSDValue(new BigNumber(entity.pool.state.juniorLiquidity))}
+          {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
         </Text>
       </Grid>
     ),
@@ -92,7 +90,7 @@ const TableColumns: ColumnsType<PoolEntity> = [
     ),
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="purple">
-        {formatBigValue(entity.pool.state.juniorApy * 100)}%
+        {formatBigValue(entity.state.juniorApy * 100)}%
       </Text>
     ),
   },
@@ -104,7 +102,7 @@ const TableColumns: ColumnsType<PoolEntity> = [
     ),
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {formatBigValue(entity.pool.state.originatorApy * 100)}%
+        {formatBigValue(entity.state.originatorApy * 100)}%
       </Text>
     ),
   },
@@ -117,10 +115,10 @@ const TableColumns: ColumnsType<PoolEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          1 {entity.pool.underlyingSymbol}
+          1 {entity.underlyingSymbol}
         </Text>
         <Text type="small" weight="semibold">
-          = {formatBigValue(entity.pool.state.jTokenPrice)} j{entity.pool.underlyingSymbol}
+          = {formatBigValue(entity.state.jTokenPrice)} j{entity.underlyingSymbol}
         </Text>
       </Grid>
     ),
@@ -134,21 +132,23 @@ const TableColumns: ColumnsType<PoolEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.pool.underlyingBalance)}
+          {formatBigValue(entity.underlyingBalance)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSDValue(entity.pool.underlyingBalance)}
+          {formatUSDValue(entity.underlyingBalance)}
         </Text>
       </Grid>
     ),
   },
   {
     title: null,
-    render: (_, entity) => (
-      <Button type="primary" onClick={() => entity.goDeposit()}>
-        Deposit
-      </Button>
-    ),
+    render: function (_, entity) {
+      return (
+        <NavLink to={`/smart-yield/${entity.smartYieldAddress}/deposit`}>
+          <Button type="primary">Deposit</Button>
+        </NavLink>
+      );
+    },
   },
 ];
 
@@ -159,27 +159,19 @@ type Props = {
 const PoolsTable: React.FC<Props> = props => {
   const { activeMarket } = props;
 
-  const history = useHistory();
-  const pools = usePools();
+  const poolsCtx = usePools();
+  const { pools, loading } = poolsCtx;
 
   const entities = React.useMemo<PoolEntity[]>(() => {
-    return pools.pools
-      .filter(pool => !activeMarket || pool.protocolId === activeMarket.id)
-      .map(pool => ({
-        pool,
-        goDeposit: () => {
-          history.push(`/smart-yield/${pool.smartYieldAddress}/deposit`);
-        },
-      }))
-      .filter(Boolean) as PoolEntity[];
-  }, [pools.pools, activeMarket]);
+    return pools.filter(pool => !activeMarket || pool.protocolId === activeMarket.id);
+  }, [pools, activeMarket]);
 
   return (
     <Table<PoolEntity>
       columns={TableColumns}
       dataSource={entities}
-      rowKey={entity => entity.pool.smartYieldAddress}
-      loading={pools.loading}
+      rowKey={entity => entity.smartYieldAddress}
+      loading={loading}
       scroll={{
         x: true,
       }}
