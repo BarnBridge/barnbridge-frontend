@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import QueryString from 'query-string';
 
 const GOV_API_URL = process.env.REACT_APP_GOV_API_URL;
@@ -22,19 +23,25 @@ export type SYPoolMeta = {
 };
 
 export const Markets = new Map<string, SYMarketMeta>([
-  ['compound/v2', {
-    id: 'compound/v2',
-    name: 'Compound',
-    icon: 'compound',
-  }],
+  [
+    'compound/v2',
+    {
+      id: 'compound/v2',
+      name: 'Compound',
+      icon: 'compound',
+    },
+  ],
 ]);
 
 export const Pools = new Map<string, SYPoolMeta>([
-  ['USDC', {
-    id: 'USDC',
-    name: 'USD Coin',
-    icon: 'usdc-token',
-  }],
+  [
+    'USDC',
+    {
+      id: 'USDC',
+      name: 'USD Coin',
+      icon: 'usdc-token',
+    },
+  ],
 ]);
 
 export type SYPool = {
@@ -124,12 +131,13 @@ export const HistoryTypes = new Map<string, string>([
   [SYTxHistoryType.JBOND_RECEIVE, 'Receive'],
   [SYTxHistoryType.SBOND_SEND, 'Send'],
   [SYTxHistoryType.SBOND_RECEIVE, 'Receive'],
-])
+]);
 
 export type SYUserTxHistory = {
   protocolId: string;
   pool: string;
   underlyingTokenAddress: string;
+  underlyingTokenSymbol: string;
   amount: number;
   tranche: string;
   transactionType: string;
@@ -210,9 +218,9 @@ export type SYJuniorRedeem = {
   userAddress: string;
   juniorBondId: number;
   smartYieldAddress: string;
-  tokensIn: number;
+  tokensIn: BigNumber;
   maturesAt: number;
-  underlyingOut: number;
+  underlyingOut: BigNumber;
   blockTimestamp: number;
 };
 
@@ -229,10 +237,65 @@ export function fetchSYJuniorRedeems(
       ...result,
       data: (result.data ?? []).map((item: SYJuniorRedeem) => ({
         ...item,
-        tokensIn: Number(item.tokensIn),
-        underlyingOut: Number(item.underlyingOut),
+        tokensIn: new BigNumber(item.tokensIn),
+        underlyingOut: new BigNumber(item.underlyingOut),
         maturesAt: Number(item.maturesAt) * 1_000,
         blockTimestamp: Number(item.blockTimestamp) * 1_000,
       })),
     }));
+}
+
+export type SYPortfolioValue = {
+  timestamp: Date;
+  seniorValue: number;
+  juniorValue: number;
+};
+
+export function fetchSYPortfolioValues(address: string): Promise<SYPortfolioValue[]> {
+  const url = new URL(`/api/smartyield/users/${address}/portfolio-value`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result =>
+      (result.data ?? []).map((item: SYPortfolioValue) => ({
+        ...item,
+        timestamp: new Date(item.timestamp),
+      })),
+    );
+}
+
+export type SYSeniorPortfolioValue = {
+  timestamp: Date;
+  seniorValue: number;
+};
+
+export function fetchSYSeniorPortfolioValues(address: string): Promise<SYSeniorPortfolioValue[]> {
+  const url = new URL(`/api/smartyield/users/${address}/portfolio-value/senior`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result =>
+      (result.data ?? []).map((item: SYSeniorPortfolioValue) => ({
+        ...item,
+        timestamp: new Date(item.timestamp),
+      })),
+    );
+}
+
+export type SYJuniorPortfolioValue = {
+  timestamp: Date;
+  juniorValue: number;
+};
+
+export function fetchSYJuniorPortfolioValues(address: string): Promise<SYJuniorPortfolioValue[]> {
+  const url = new URL(`/api/smartyield/users/${address}/portfolio-value/junior`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result =>
+      (result.data ?? []).map((item: SYJuniorPortfolioValue) => ({
+        ...item,
+        timestamp: new Date(item.timestamp),
+      })),
+    );
 }

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { formatBigValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -36,6 +37,10 @@ const SelectTranche: React.FC = () => {
     history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit/${tranche}`);
   }
 
+  if (!pool) {
+    return null;
+  }
+
   return (
     <>
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
@@ -48,7 +53,7 @@ const SelectTranche: React.FC = () => {
             Fixed APY
           </Text>
           <Text type="p1" weight="bold" color="green">
-            - %
+            {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </RadioCard>
         <RadioCard selected={tranche === JUNIOR_TRANCHE_KEY} onClick={handleJuniorSelect}>
@@ -60,7 +65,7 @@ const SelectTranche: React.FC = () => {
             Variable APY
           </Text>
           <Text type="p1" weight="bold" color="purple">
-            - %
+            {formatBigValue(pool.state.juniorApy * 100)}%
           </Text>
         </RadioCard>
       </Grid>

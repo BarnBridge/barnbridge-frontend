@@ -1,15 +1,16 @@
 import React from 'react';
+import BigNumber from 'bignumber.js';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
-import UnderlyingContract from 'modules/smart-yield/contracts/underlyingContract';
+import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
 export type PoolsSYPool = SYPool & {
   meta?: SYPoolMeta;
   market?: SYMarketMeta;
-  underlyingContract?: UnderlyingContract;
+  underlyingBalance?: BigNumber;
 };
 
 type State = {
@@ -57,7 +58,6 @@ const PoolsProvider: React.FC = props => {
               ...pool,
               meta: Pools.get(pool.underlyingSymbol),
               market: Markets.get(pool.protocolId),
-              underlyingContract: new UnderlyingContract(pool.underlyingAddress, pool.underlyingSymbol),
             })),
           }),
         );
@@ -73,17 +73,17 @@ const PoolsProvider: React.FC = props => {
   }, []);
 
   React.useEffect(() => {
-    state.pools.forEach(pool => {
-      pool.underlyingContract?.setProvider(wallet.provider);
-    });
-  }, [state.pools, wallet.provider]);
+    if (!wallet.account) {
+      return;
+    }
 
-  React.useEffect(() => {
     state.pools.forEach(pool => {
-      if (pool.underlyingContract) {
-        pool.underlyingContract.setAccount(wallet.account);
-        pool.underlyingContract.loadBalance().then(reload);
-      }
+      const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
+      underlyingContract.setAccount(wallet.account);
+      underlyingContract.getBalance().then(balance => {
+        pool.underlyingBalance = balance;
+        reload();
+      });
     });
   }, [state.pools, wallet.account]);
 

@@ -10,7 +10,8 @@ import { Text } from 'components/custom/typography';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
 const TokenPoolHeader: React.FC = () => {
-  const pool = useTokenPool();
+  const poolCtx = useTokenPool();
+  const { pool } = poolCtx;
 
   const isRootDeposit = Boolean(
     useRouteMatch({
@@ -27,27 +28,31 @@ const TokenPoolHeader: React.FC = () => {
     setApproving(true);
 
     try {
-      await pool.actions.approveUnderlying(enable);
+      await poolCtx.actions.approveUnderlying(enable);
     } catch {}
 
     setApproving(false);
   }
 
+  if (!pool) {
+    return null;
+  }
+
   return (
     <Grid flow="col" gap={64} align="center" className="mb-64">
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={pool.pool?.meta?.icon!} bubbleName={pool.pool?.market?.icon!} />
+        <IconBubble name={pool.meta?.icon!} bubbleName={pool.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
           <div>
             <Text type="p1" weight="semibold" color="primary">
-              {pool.pool?.meta?.name}
+              {pool.meta?.name}
             </Text>{' '}
             <Text type="p1" weight="semibold">
-              ({pool.pool?.underlyingSymbol})
+              ({pool.underlyingSymbol})
             </Text>
           </div>
           <Text type="small" weight="semibold">
-            {pool.pool?.market?.name}
+            {pool.market?.name}
           </Text>
         </Grid>
       </Grid>
@@ -56,7 +61,7 @@ const TokenPoolHeader: React.FC = () => {
           Wallet balance
         </Text>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(pool.pool?.underlyingContract?.balance)} {pool.pool?.underlyingSymbol}
+          {formatBigValue(pool.underlyingBalance)} {pool.underlyingSymbol}
         </Text>
       </div>
       {!isSeniorDeposit && !isRootDeposit && (
@@ -66,7 +71,7 @@ const TokenPoolHeader: React.FC = () => {
               Portfolio balance
             </Text>
             <Text type="p1" weight="semibold" color="primary">
-              -
+              {formatBigValue(pool.smartYieldBalance)} j{pool.underlyingSymbol}
             </Text>
           </Tooltip>
         </div>
@@ -77,7 +82,7 @@ const TokenPoolHeader: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.pool?.state.seniorApy)}%
+            {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </div>
       )}
@@ -87,7 +92,7 @@ const TokenPoolHeader: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            {formatBigValue(pool.pool?.state.juniorApy)}%
+            {formatBigValue(pool.state.juniorApy * 100)}%
           </Text>
         </div>
       )}
@@ -98,8 +103,8 @@ const TokenPoolHeader: React.FC = () => {
           </Text>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
-            checked={pool.pool?.underlyingContract?.isAllowed}
-            loading={pool.pool?.underlyingContract?.isAllowed === undefined || isApproving}
+            checked={pool.underlyingIsAllowed}
+            loading={pool.underlyingIsAllowed === undefined || isApproving}
             onChange={handleSwitchChange}
           />
         </Grid>

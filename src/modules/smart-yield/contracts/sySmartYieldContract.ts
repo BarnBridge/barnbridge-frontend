@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
-import { getGasValue, getHumanValue } from 'web3/utils';
+import { getGasValue } from 'web3/utils';
 
 const ABI: any[] = [
   {
@@ -68,11 +68,11 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'principalAmount_',
+        name: 'principalAmount',
         type: 'uint256',
       },
       {
-        name: 'forDays_',
+        name: 'forDays',
         type: 'uint16',
       },
     ],
@@ -88,7 +88,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: '',
+        name: 'owner',
         type: 'address',
       },
     ],
@@ -104,7 +104,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: '',
+        name: 'jBondId',
         type: 'uint256',
       },
     ],
@@ -124,7 +124,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: '',
+        name: 'sBondId',
         type: 'uint256',
       },
     ],
@@ -156,15 +156,15 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'underlyingAmount_',
+        name: 'underlyingAmount',
         type: 'uint256',
       },
       {
-        name: 'minTokens_',
+        name: 'minTokens',
         type: 'uint256',
       },
       {
-        name: 'deadline_',
+        name: 'deadline',
         type: 'uint256',
       },
     ],
@@ -175,19 +175,19 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'principalAmount_',
+        name: 'principalAmount',
         type: 'uint256',
       },
       {
-        name: 'minGain_',
+        name: 'minGain',
         type: 'uint256',
       },
       {
-        name: 'deadline_',
+        name: 'deadline',
         type: 'uint256',
       },
       {
-        name: 'forDays_',
+        name: 'forDays',
         type: 'uint16',
       },
     ],
@@ -198,15 +198,15 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'tokenAmount_',
+        name: 'tokenAmount',
         type: 'uint256',
       },
       {
-        name: 'maxMaturesAt_',
+        name: 'maxMaturesAt',
         type: 'uint256',
       },
       {
-        name: 'deadline_',
+        name: 'deadline',
         type: 'uint256',
       },
     ],
@@ -217,15 +217,15 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'tokenAmount_',
+        name: 'tokenAmount',
         type: 'uint256',
       },
       {
-        name: 'minUnderlying_',
+        name: 'minUnderlying',
         type: 'uint256',
       },
       {
-        name: 'deadline_',
+        name: 'deadline',
         type: 'uint256',
       },
     ],
@@ -236,7 +236,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'jBondId_',
+        name: 'jBondId',
         type: 'uint256',
       },
     ],
@@ -247,7 +247,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: 'bondId_',
+        name: 'bondId',
         type: 'uint256',
       },
     ],
@@ -278,32 +278,13 @@ export type SYAbond = {
   liquidated: boolean;
 };
 
-class SmartYieldContract extends Web3Contract {
-  constructor(address: string, name: string) {
-    super(ABI, address, name);
+class SYSmartYieldContract extends Web3Contract {
+  constructor(address: string) {
+    super(ABI, address, '');
   }
 
-  decimals?: number;
-  balance?: BigNumber;
-
-  loadBalance() {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.batch([
-      {
-        method: 'decimals',
-      },
-      {
-        method: 'balanceOf',
-        methodArgs: [this.account],
-        transform: value => new BigNumber(value),
-      },
-    ]).then(([decimals, balance]) => {
-      this.decimals = decimals;
-      this.balance = getHumanValue(balance, this.decimals);
-    });
+  async getBalance(): Promise<BigNumber> {
+    return this.call('balanceOf', [this.account]).then(value => new BigNumber(value));
   }
 
   async getTotalSupply(): Promise<BigNumber> {
@@ -333,60 +314,48 @@ class SmartYieldContract extends Web3Contract {
   }
 
   async getJuniorBonds(jBondIds: number[]): Promise<SYJuniorBondToken[]> {
-    let juniorBondTokens: SYJuniorBondToken[] = [];
-
-    if (jBondIds.length > 0) {
-      try {
-        const methods = jBondIds.map<BatchContractMethod>(jBondId => ({
-          method: 'juniorBonds',
-          methodArgs: [jBondId],
-          transform: value => ({
-            jBondId,
-            tokens: new BigNumber(value.tokens),
-            maturesAt: Number(value.maturesAt) * 1_000,
-          }),
-        }));
-
-        juniorBondTokens = await this.batch(methods);
-      } catch (e) {
-        console.error('SmartYieldContract:getJuniorBonds', e);
-      }
+    if (jBondIds.length === 0) {
+      return Promise.resolve([]);
     }
 
-    return juniorBondTokens;
+    const methods = jBondIds.map<BatchContractMethod>(jBondId => ({
+      method: 'juniorBonds',
+      methodArgs: [jBondId],
+      transform: value => ({
+        jBondId,
+        tokens: new BigNumber(value.tokens),
+        maturesAt: Number(value.maturesAt) * 1_000,
+      }),
+    }));
+
+    return this.batch(methods);
   }
 
   async getSeniorBonds(sBondIds: number[]): Promise<SYSeniorBondToken[]> {
-    let seniorBondTokens: SYSeniorBondToken[] = [];
-
-    if (sBondIds.length > 0) {
-      try {
-        const methods = sBondIds.map<BatchContractMethod>(sBondId => ({
-          method: 'seniorBonds',
-          methodArgs: [sBondId],
-          transform: value => ({
-            sBondId,
-            principal: new BigNumber(value.principal),
-            gain: new BigNumber(value.gain),
-            issuedAt: Number(value.issuedAt) * 1_000,
-            maturesAt: Number(value.maturesAt) * 1_000,
-          }),
-        }));
-
-        seniorBondTokens = await this.batch(methods);
-      } catch (e) {
-        console.error('SmartYieldContract:getSeniorBonds', e);
-      }
+    if (sBondIds.length === 0) {
+      return Promise.resolve([]);
     }
 
-    return seniorBondTokens;
+    const methods = sBondIds.map<BatchContractMethod>(sBondId => ({
+      method: 'seniorBonds',
+      methodArgs: [sBondId],
+      transform: value => ({
+        sBondId,
+        principal: new BigNumber(value.principal),
+        gain: new BigNumber(value.gain),
+        issuedAt: Number(value.issuedAt) * 1_000,
+        maturesAt: Number(value.maturesAt) * 1_000,
+      }),
+    }));
+
+    return this.batch(methods);
   }
 
   buyTokensSend(underlyingAmount: BigNumber, minTokens: BigNumber, deadline: number, gasPrice: number): Promise<void> {
     return this.send('buyTokens', [underlyingAmount, minTokens, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SmartYieldContract:buyTokens', e));
+    });
   }
 
   buyBondSend(
@@ -399,36 +368,36 @@ class SmartYieldContract extends Web3Contract {
     return this.send('buyBond', [principalAmount, minGain, deadline, forDays], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SmartYieldContract:buyBond', e));
+    });
   }
 
   buyJuniorBondSend(tokenAmount: BigNumber, maxMaturesAt: number, deadline: number, gasPrice: number): Promise<void> {
     return this.send('buyJuniorBond', [tokenAmount, maxMaturesAt, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SmartYieldContract:buyJuniorBond', e));
+    });
   }
 
   sellTokensSend(tokenAmount: BigNumber, minUnderlying: BigNumber, deadline: number, gasPrice: number): Promise<void> {
     return this.send('sellTokens', [tokenAmount, minUnderlying, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SmartYieldContract:sellTokens', e));
+    });
   }
 
   redeemJuniorBondSend(jBondId: number, gasPrice: number): Promise<void> {
     return this.send('redeemJuniorBond', [jBondId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SmartYieldContract:redeemJuniorBond', e));
+    });
   }
 
   redeemBondSend(sBondId: number, gasPrice: number): Promise<void> {
     return this.send('redeemBond', [sBondId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SmartYieldContract:redeemBond', e));
+    });
   }
 }
 
-export default SmartYieldContract;
+export default SYSmartYieldContract;

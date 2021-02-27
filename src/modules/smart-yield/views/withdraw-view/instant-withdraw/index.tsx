@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,7 +11,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
-import SmartYieldContract from 'modules/smart-yield/contracts/smartYieldContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import ConfirmWithdrawalModal from 'modules/smart-yield/views/withdraw-view/confirm-withdrawal-modal';
 import { WITHDRAW_INSTANT_KEY } from 'modules/smart-yield/views/withdraw-view/initiate-withdraw';
@@ -57,7 +57,7 @@ const InstantWithdraw: React.FC = () => {
       return;
     }
 
-    const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
 
@@ -79,8 +79,7 @@ const InstantWithdraw: React.FC = () => {
       const deadline = Math.round(Date.now() / 1_000) + 1200;
 
       await smartYieldContract.sellTokensSend(tokenAmount, minUnderlying, deadline, gasFee);
-    } catch {
-    }
+    } catch {}
   }
 
   if (!pool) {
@@ -101,7 +100,7 @@ const InstantWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={pool.underlyingContract?.maxAllowed}
+            max={pool?.underlyingMaxAllowed}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={4}
             disabled={false}
@@ -110,7 +109,7 @@ const InstantWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="to" label="To" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={pool.underlyingContract?.maxAllowed}
+            max={pool?.underlyingMaxAllowed}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={4}
             disabled={false}

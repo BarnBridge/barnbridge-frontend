@@ -6,9 +6,9 @@ import Form from 'components/antd/form';
 import Modal, { ModalProps } from 'components/antd/modal';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
+import TokenInput from 'components/custom/token-input';
 
 import s from './styles.module.scss';
-import TokenInput from 'components/custom/token-input';
 
 type FormState = {
   address?: string;
@@ -67,10 +67,7 @@ const ConfirmTransferModal: React.FC<Props> = props => {
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={32} className={s.row}>
-          <Form.Item
-            name="address"
-            label="Address"
-            rules={[{ required: true, message: 'Required' }]}>
+          <Form.Item name="address" label="Address" rules={[{ required: true, message: 'Required' }]}>
             <TokenInput disabled={submitting} />
           </Form.Item>
           <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>

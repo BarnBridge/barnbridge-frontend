@@ -6,7 +6,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: '',
+        name: 'owner',
         type: 'address',
       },
     ],
@@ -39,34 +39,32 @@ const ABI: any[] = [
   },
 ];
 
-class JuniorBondContract extends Web3Contract {
-  constructor(address: string, name: string) {
-    super(ABI, address, name);
+class SYJuniorBondContract extends Web3Contract {
+  constructor(address: string) {
+    super(ABI, address, '');
   }
 
   async getJuniorBondIds(): Promise<number[]> {
-    let jBondIds: number[] = [];
+    if (!this.account) {
+      return Promise.reject();
+    }
 
-    if (this.account) {
-      try {
-        const balance = await this.call('balanceOf', [this.account]).then(value => Number(value));
-
-        if (balance > 0) {
-          const methods = Array.from(Array(balance)).map((_, index) => ({
+    return this.call('balanceOf', [this.account])
+      .then(value => Number(value))
+      .then(value => {
+        if (value > 0) {
+          const methods = Array.from(Array(value)).map((_, index) => ({
             method: 'tokenOfOwnerByIndex',
             methodArgs: [this.account, index],
             transform: (value: any) => Number(value),
           }));
 
-          jBondIds = await this.batch(methods);
+          return this.batch(methods);
         }
-      } catch (e) {
-        console.error('JuniorBondContract:getJuniorBondIds', e);
-      }
-    }
 
-    return jBondIds;
+        return [];
+      });
   }
 }
 
-export default JuniorBondContract;
+export default SYJuniorBondContract;

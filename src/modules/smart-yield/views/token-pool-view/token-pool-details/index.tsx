@@ -13,7 +13,12 @@ import { getFormattedDuration } from 'utils';
 import s from './s.module.scss';
 
 const TokenPoolDetails: React.FC = () => {
-  const pool = useTokenPool();
+  const poolCtx = useTokenPool();
+  const { pool } = poolCtx;
+
+  if (!pool) {
+    return null;
+  }
 
   return (
     <Card noPaddingBody>
@@ -29,7 +34,7 @@ const TokenPoolDetails: React.FC = () => {
             Junior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.pool?.state.juniorLiquidity)}
+            {formatBigValue(pool.state.juniorLiquidity)}
           </Text>
         </Grid>
         <Grid flow="row">
@@ -37,7 +42,7 @@ const TokenPoolDetails: React.FC = () => {
             Senior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.pool?.state.seniorLiquidity)}
+            {formatBigValue(pool.state.seniorLiquidity)}
           </Text>
         </Grid>
       </Grid>
@@ -48,7 +53,7 @@ const TokenPoolDetails: React.FC = () => {
             # of juniors
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.pool?.state.numberOfJuniors)}
+            {formatBigValue(pool.state.numberOfJuniors)}
           </Text>
         </Grid>
         <Grid flow="row">
@@ -56,7 +61,7 @@ const TokenPoolDetails: React.FC = () => {
             # of seniors
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.pool?.state.numberOfSeniors)}
+            {formatBigValue(pool.state.numberOfSeniors)}
           </Text>
         </Grid>
       </Grid>
@@ -67,7 +72,7 @@ const TokenPoolDetails: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            {formatBigValue(pool.pool?.state.juniorApy)}%
+            {formatBigValue(pool.state.juniorApy * 100)}%
           </Text>
         </Grid>
         <Grid flow="row">
@@ -75,7 +80,7 @@ const TokenPoolDetails: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="green">
-            {formatBigValue(pool.pool?.state.seniorApy)}%
+            {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </Grid>
       </Grid>
@@ -96,7 +101,7 @@ const TokenPoolDetails: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary">
             {getFormattedDuration(
               Date.now(),
-              Date.now() + (pool.pool?.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1000,
+              Date.now() + (pool.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1000,
             )}
           </Text>
         </Grid>

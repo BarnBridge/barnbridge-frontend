@@ -34,7 +34,7 @@ const InitiateWithdraw: React.FC = () => {
 
   function handleNextStep() {
     if (type) {
-      history.push(`/smart-yield/${pool?.seniorBondAddress}/withdraw/${type}`);
+      history.push(`/smart-yield/${pool?.smartYieldAddress}/withdraw/${type}`);
     }
   }
 

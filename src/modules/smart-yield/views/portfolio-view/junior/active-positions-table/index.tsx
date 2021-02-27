@@ -1,27 +1,26 @@
 import React from 'react';
 import { useHistory } from 'react-router';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatBigValue, getHumanValue } from 'web3/utils';
+import BigNumber from 'bignumber.js';
+import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { mergeState } from 'hooks/useMergeState';
-import JuniorBondContract from 'modules/smart-yield/contracts/juniorBondContract';
-import SmartYieldContract, { SYJuniorBondToken } from 'modules/smart-yield/contracts/smartYieldContract';
-import PoolsProvider, { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
+import SYSmartYieldContract, { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import { doSequential, getFormattedDuration } from 'utils';
 
 type TableEntity = {
   pool: PoolsSYPool;
-  jBond: SYJuniorBondToken;
+  balance: BigNumber;
+  abond: SYAbond;
   goWithdraw: () => void;
 };
 
@@ -37,7 +36,7 @@ const Columns: ColumnsType<TableEntity> = [
         <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary">
-            {entity.pool.meta?.name}
+            {entity.pool.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold">
             {entity.pool.market?.name}
@@ -52,10 +51,17 @@ const Columns: ColumnsType<TableEntity> = [
         Current balance
       </Text>
     ),
+    width: '20%',
+    align: 'right',
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
-      </Text>
+      <>
+        <Text type="p1" weight="semibold" color="primary">
+          {formatBigValue(entity.balance)}
+        </Text>
+        <Text type="small" weight="semibold" color="secondary">
+          {formatUSDValue(entity.balance)}
+        </Text>
+      </>
     ),
   },
   {
@@ -64,9 +70,11 @@ const Columns: ColumnsType<TableEntity> = [
         APY
       </Text>
     ),
+    width: '20%',
+    align: 'right',
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {formatBigValue(entity.pool.state.juniorApy)}%
+        {formatBigValue(entity.pool.state.juniorApy * 100)}%
       </Text>
     ),
   },
@@ -76,11 +84,13 @@ const Columns: ColumnsType<TableEntity> = [
         Withdraw wait time
       </Text>
     ),
+    width: '20%',
+    align: 'right',
     render: (_, entity) => (
-      <UseLeftTime end={entity.jBond.maturesAt} delay={1_000}>
+      <UseLeftTime end={entity.abond.maturesAt * 1_000} delay={1_000}>
         {leftTime => (
           <Text type="p1" weight="semibold" color="primary">
-            {leftTime > 0 ? getFormattedDuration(0, entity.jBond.maturesAt) : ''}
+            {leftTime > 0 ? getFormattedDuration(0, entity.abond.maturesAt * 1_000) : ''}
           </Text>
         )}
       </UseLeftTime>
@@ -88,9 +98,9 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: null,
-    width: 'min-content',
+    width: '20%',
     render: (_, entity) => (
-      <Button type="primary" onClick={entity.goWithdraw}>
+      <Button type="primary" className="ml-auto" onClick={entity.goWithdraw}>
         Withdraw
       </Button>
     ),
@@ -107,14 +117,20 @@ const InitialState: State = {
   data: [],
 };
 
-const ActiveTokensTableInner: React.FC = () => {
+const ActivePositionsTable: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
-  const pools = usePools();
+  const poolsCtx = usePools();
+
+  const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
+    if (!wallet.account) {
+      return;
+    }
+
     setState(
       mergeState<State>({
         loading: true,
@@ -122,81 +138,50 @@ const ActiveTokensTableInner: React.FC = () => {
     );
 
     (async () => {
-      const result = await doSequential<PoolsSYPool>(pools.pools, async pool => {
+      const result = await doSequential<PoolsSYPool>(pools, async pool => {
         return new Promise<any>(async resolve => {
-          const juniorBondContract = new JuniorBondContract(pool.juniorBondAddress, '');
-          juniorBondContract.setProvider(wallet.provider);
-          juniorBondContract.setAccount(wallet.account);
-
-          const jBondIds = await juniorBondContract.getJuniorBondIds();
-
-          if (jBondIds.length === 0) {
-            return resolve(undefined);
-          }
-
-          const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
           smartYieldContract.setProvider(wallet.provider);
+          smartYieldContract.setAccount(wallet.account);
 
-          const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
+          const balance = await smartYieldContract.getBalance();
+          const abond = await smartYieldContract.getAbond();
 
-          if (jBonds.length === 0) {
-            return resolve(undefined);
-          }
-
-          resolve(
-            jBonds.map(jBond => ({
+          if (balance.isGreaterThan(ZERO_BIG_NUMBER)) {
+            resolve({
               pool,
-              jBond,
+              balance: getHumanValue(balance, pool.underlyingDecimals),
+              abond,
               goWithdraw: () => {
                 history.push(`/smart-yield/${pool.smartYieldAddress}/withdraw`);
               },
-            })),
-          );
+            });
+          } else {
+            resolve(undefined);
+          }
         });
       });
 
       setState(
         mergeState<State>({
           loading: false,
-          data: result.flat().filter(Boolean),
+          data: result.filter(Boolean),
         }),
       );
     })();
   }, [wallet.account, pools]);
 
   return (
-    <Card
-      noPaddingBody
-      title={
-        <Grid flow="col" colsTemplate="1fr max-content">
-          <Text type="p1" weight="semibold" color="primary">
-            Active positions
-          </Text>
-          <Button type="light">
-            <Icons name="filter" />
-            Filter
-          </Button>
-        </Grid>
-      }>
-      <Table<TableEntity>
-        columns={Columns}
-        dataSource={state.data}
-        rowKey={row => `${row.pool.protocolId}:${row.jBond.jBondId}`}
-        loading={state.loading}
-        scroll={{
-          x: true,
-        }}
-      />
-    </Card>
+    <Table<TableEntity>
+      columns={Columns}
+      dataSource={state.data}
+      rowKey={row => `${row.pool.smartYieldAddress}`}
+      loading={state.loading}
+      scroll={{
+        x: true,
+      }}
+    />
   );
 };
 
-const ActiveTokensTable: React.FC = () => {
-  return (
-    <PoolsProvider>
-      <ActiveTokensTableInner />
-    </PoolsProvider>
-  );
-};
-
-export default ActiveTokensTable;
+export default ActivePositionsTable;

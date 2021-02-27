@@ -12,8 +12,8 @@ import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
-import ControllerContract from 'modules/smart-yield/contracts/controllerContract';
-import SmartYieldContract from 'modules/smart-yield/contracts/smartYieldContract';
+import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -76,11 +76,11 @@ const JuniorTranche: React.FC = () => {
       }),
     );
 
-    const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
 
-    const controllerContract = new ControllerContract(pool.controllerAddress, '');
+    const controllerContract = new SYControllerContract(pool.controllerAddress);
     smartYieldContract.setProvider(wallet.provider);
 
     const decimals = pool.underlyingDecimals;
@@ -119,7 +119,7 @@ const JuniorTranche: React.FC = () => {
       <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon={pool?.meta?.icon as TokenIconNames}
-          max={pool?.underlyingContract?.maxAllowed}
+          max={pool?.underlyingMaxAllowed}
           maximumFractionDigits={pool?.underlyingDecimals}
           displayDecimals={4}
           disabled={state.saving}

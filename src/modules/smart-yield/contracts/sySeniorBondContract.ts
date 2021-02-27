@@ -7,7 +7,7 @@ const ABI: any[] = [
     type: 'function',
     inputs: [
       {
-        name: '',
+        name: 'owner',
         type: 'address',
       },
     ],
@@ -39,61 +39,59 @@ const ABI: any[] = [
     ],
   },
   {
-    "name": "transferFrom",
-    "type": "function",
-    "inputs": [
+    name: 'transferFrom',
+    type: 'function',
+    inputs: [
       {
-        "name": "from",
-        "type": "address"
+        name: 'from',
+        type: 'address',
       },
       {
-        "name": "to",
-        "type": "address"
+        name: 'to',
+        type: 'address',
       },
       {
-        "name": "tokenId",
-        "type": "uint256"
-      }
+        name: 'tokenId',
+        type: 'uint256',
+      },
     ],
-    "outputs": [],
-  }
+    outputs: [],
+  },
 ];
 
-class SeniorBondContract extends Web3Contract {
-  constructor(address: string, name: string) {
-    super(ABI, address, name);
+class SYSeniorBondContract extends Web3Contract {
+  constructor(address: string) {
+    super(ABI, address, '');
   }
 
-  async getSeniorTokens(): Promise<number[]> {
-    let tokenIds: number[] = [];
+  async getSeniorBondIds(): Promise<number[]> {
+    if (!this.account) {
+      return Promise.reject();
+    }
 
-    if (this.account) {
-      try {
-        const balance = await this.call('balanceOf', [this.account]).then(value => Number(value));
-
-        if (balance > 0) {
-          const methods = Array.from(Array(balance)).map((_, index) => ({
+    return this.call('balanceOf', [this.account])
+      .then(value => Number(value))
+      .then(value => {
+        if (value > 0) {
+          const methods = Array.from(Array(value)).map((_, index) => ({
             method: 'tokenOfOwnerByIndex',
             methodArgs: [this.account, index],
             transform: (value: any) => Number(value),
           }));
 
-          tokenIds = await this.batch(methods);
+          return this.batch(methods);
         }
-      } catch (e) {
-        console.error('SeniorBondContract:getSeniorTokens', e);
-      }
-    }
 
-    return tokenIds;
+        return [];
+      });
   }
 
   transferFromSend(from: string, to: string, tokenId: number, gasPrice: number): Promise<void> {
     return this.send('transferFrom', [from, to, tokenId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
-    }).catch(e => console.error('SeniorBondContract:transferFrom', e));
+    });
   }
 }
 
-export default SeniorBondContract;
+export default SYSeniorBondContract;

@@ -1,8 +1,9 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
+import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatBigValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -13,7 +14,7 @@ import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { HistoryTypes, Markets, SYUserTxHistory, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { HistoryTypes, Markets, Pools, SYUserTxHistory, fetchSYUserTxHistory } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/wallet';
 
 type TableEntity = SYUserTxHistory;
@@ -27,10 +28,13 @@ const Columns: ColumnsType<TableEntity> = [
     ),
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name="usdc-token" bubbleName={Markets.get(entity.protocolId)?.icon!} />
+        <IconBubble
+          name={Pools.get(entity.underlyingTokenSymbol)?.icon!}
+          bubbleName={Markets.get(entity.protocolId)?.icon!}
+        />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            -
+            {entity.underlyingTokenSymbol}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
             {Markets.get(entity.protocolId)?.name}
@@ -84,7 +88,7 @@ const Columns: ColumnsType<TableEntity> = [
           {formatBigValue(entity.amount)}
         </Text>
         <Text type="small" weight="semibold">
-          $ -
+          {formatUSDValue(new BigNumber(entity.amount))}
         </Text>
       </Grid>
     ),

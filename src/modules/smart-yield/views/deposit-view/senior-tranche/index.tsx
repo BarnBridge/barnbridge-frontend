@@ -16,7 +16,7 @@ import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
-import SmartYieldContract from 'modules/smart-yield/contracts/smartYieldContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -83,7 +83,7 @@ const SeniorTranche: React.FC = () => {
       saving: true,
     });
 
-    const smartYieldContract = new SmartYieldContract(pool.smartYieldAddress, '');
+    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
 
@@ -118,7 +118,7 @@ const SeniorTranche: React.FC = () => {
       <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon="usdc-token"
-          max={pool?.underlyingContract?.maxAllowed}
+          max={pool?.underlyingMaxAllowed}
           maximumFractionDigits={pool?.underlyingDecimals}
           displayDecimals={4}
           disabled={state.saving}

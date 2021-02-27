@@ -1,20 +1,28 @@
 import React from 'react';
+import BigNumber from 'bignumber.js';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
-import UnderlyingContract from 'modules/smart-yield/contracts/underlyingContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
 export type SYTokenPool = SYPool & {
   meta?: SYPoolMeta;
   market?: SYMarketMeta;
-  underlyingContract?: UnderlyingContract;
 };
 
 type State = {
   loading: boolean;
-  pool?: SYTokenPool;
+  pool?: SYTokenPool & {
+    underlyingBalance?: BigNumber;
+    smartYieldBalance?: BigNumber;
+    underlyingAllowance?: BigNumber;
+    underlyingMaxAllowed?: BigNumber;
+    underlyingIsAllowed?: boolean;
+  };
 };
 
 const InitialState: State = {
@@ -68,7 +76,15 @@ const TokenPoolProvider: React.FC<Props> = props => {
               ...pool,
               meta: Pools.get(pool.underlyingSymbol),
               market: Markets.get(pool.protocolId),
-              underlyingContract: new UnderlyingContract(pool.underlyingAddress, pool.underlyingSymbol),
+              get underlyingMaxAllowed(): BigNumber {
+                return BigNumber.min(
+                  this.underlyingAllowance ?? ZERO_BIG_NUMBER,
+                  this.underlyingBalance ?? ZERO_BIG_NUMBER,
+                );
+              },
+              get underlyingIsAllowed(): boolean | undefined {
+                return this.underlyingAllowance?.gt(ZERO_BIG_NUMBER);
+              },
             },
           }),
         );
@@ -84,30 +100,42 @@ const TokenPoolProvider: React.FC<Props> = props => {
   }, [poolAddress]);
 
   React.useEffect(() => {
-    state.pool?.underlyingContract?.setProvider(wallet.provider);
-  }, [state.pool, wallet.provider]);
-
-  React.useEffect(() => {
     const { pool } = state;
 
     if (pool) {
-      const { underlyingContract } = pool;
+      const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
+      underlyingContract.setProvider(wallet.provider);
+      underlyingContract.setAccount(wallet.account);
+      underlyingContract.getBalance().then(balance => {
+        pool.underlyingBalance = balance;
+        reload();
+      });
+      underlyingContract.getAllowance(pool.smartYieldAddress).then(allowance => {
+        pool.underlyingAllowance = allowance;
+        reload();
+      });
 
-      if (underlyingContract) {
-        underlyingContract.setAccount(wallet.account);
-        underlyingContract.loadBalance().then(reload);
-        underlyingContract.loadAllowance(pool.smartYieldAddress).then(reload);
-      }
+      const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+      smartYieldContract.setAccount(wallet.account);
+      smartYieldContract.getBalance().then(balance => {
+        pool.smartYieldBalance = balance;
+        reload();
+      });
     }
   }, [state.pool, wallet.account]);
 
   const approveUnderlying = React.useCallback(
     (enable: boolean) => {
-      return (
-        state.pool?.underlyingContract?.approve(enable, state.pool?.smartYieldAddress).then(reload) ?? Promise.reject()
-      );
+      const { pool } = state;
+
+      if (!pool) {
+        return Promise.reject();
+      }
+
+      const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
+      return underlyingContract.approve(enable, pool.smartYieldAddress).then(reload);
     },
-    [state.pool?.underlyingContract, wallet.account],
+    [state.pool, wallet.account],
   );
 
   const value = React.useMemo<ContextType>(() => {
