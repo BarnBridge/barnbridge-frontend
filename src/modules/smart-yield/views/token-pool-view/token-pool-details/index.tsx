@@ -1,13 +1,25 @@
 import React from 'react';
+import { formatBigValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 
+import { useTokenPool } from '../token-pool-provider';
+
+import { getFormattedDuration } from 'utils';
+
 import s from './s.module.scss';
 
 const TokenPoolDetails: React.FC = () => {
+  const poolCtx = useTokenPool();
+  const { pool } = poolCtx;
+
+  if (!pool) {
+    return null;
+  }
+
   return (
     <Card noPaddingBody>
       <div className={s.detailsRow}>
@@ -22,7 +34,7 @@ const TokenPoolDetails: React.FC = () => {
             Junior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            812.33 M
+            {formatBigValue(pool.state.juniorLiquidity)}
           </Text>
         </Grid>
         <Grid flow="row">
@@ -30,7 +42,7 @@ const TokenPoolDetails: React.FC = () => {
             Senior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            1,322.16 M
+            {formatBigValue(pool.state.seniorLiquidity)}
           </Text>
         </Grid>
       </Grid>
@@ -41,7 +53,7 @@ const TokenPoolDetails: React.FC = () => {
             # of juniors
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            3,148
+            {formatBigValue(pool.state.numberOfJuniors)}
           </Text>
         </Grid>
         <Grid flow="row">
@@ -49,7 +61,7 @@ const TokenPoolDetails: React.FC = () => {
             # of seniors
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            5,731
+            {formatBigValue(pool.state.numberOfSeniors)}
           </Text>
         </Grid>
       </Grid>
@@ -60,7 +72,7 @@ const TokenPoolDetails: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            21.33%
+            {formatBigValue(pool.state.juniorApy * 100)}%
           </Text>
         </Grid>
         <Grid flow="row">
@@ -68,7 +80,7 @@ const TokenPoolDetails: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="green">
-            6.42%
+            {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </Grid>
       </Grid>
@@ -79,7 +91,7 @@ const TokenPoolDetails: React.FC = () => {
             Junior liquidity locked
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            131.42 M
+            -
           </Text>
         </Grid>
         <Grid flow="row">
@@ -87,7 +99,10 @@ const TokenPoolDetails: React.FC = () => {
             Average senior maturity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            2mnths 3d 4h
+            {getFormattedDuration(
+              Date.now(),
+              Date.now() + (pool.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1_000,
+            )}
           </Text>
         </Grid>
       </Grid>

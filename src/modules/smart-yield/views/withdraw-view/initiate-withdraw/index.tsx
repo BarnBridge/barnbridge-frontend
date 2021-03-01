@@ -14,7 +14,9 @@ export const WITHDRAW_INSTANT_KEY = 'instant';
 
 const InitiateWithdraw: React.FC = () => {
   const history = useHistory();
-  const tokenPool = useTokenPool();
+  const poolCtx = useTokenPool();
+
+  const { pool } = poolCtx;
 
   const [type, setType] = useState<string | undefined>();
 
@@ -32,7 +34,7 @@ const InitiateWithdraw: React.FC = () => {
 
   function handleNextStep() {
     if (type) {
-      history.push(`/smart-yield/${tokenPool.address}/withdraw/${type}`);
+      history.push(`/smart-yield/${pool?.smartYieldAddress}/withdraw/${type}`);
     }
   }
 

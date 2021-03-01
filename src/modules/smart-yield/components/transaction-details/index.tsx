@@ -3,11 +3,12 @@ import * as Antd from 'antd';
 import cn from 'classnames';
 
 import Button from 'components/antd/button';
+import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
 import Icons from 'components/custom/icon';
-import { Text } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
 
@@ -22,12 +23,14 @@ type TransactionCustomizationProps = {
   onChange?: (values: FormData) => void;
 };
 
+const SLIPPAGE_OPTIONS = [0.1, 0.3, 0.5];
+
 const TransactionCustomization: React.FC<TransactionCustomizationProps> = props => {
   const { slippageTolerance, deadline, onChange } = props;
 
   const [form] = Antd.Form.useForm<FormData>();
 
-  const handleValuesChange = React.useCallback((values: FormData, ...rest: any[]) => {
+  const handleValuesChange = React.useCallback((values: FormData) => {
     if (values.deadline) {
       const strValue = String(values.deadline);
 
@@ -58,45 +61,28 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
       onValuesChange={handleValuesChange}
       onFinish={handleFinish}>
       <div className="grid flow-row row-gap-32">
-        <Form.Item label="Minimum APY" noStyle>
+        <Form.Item label="Slippage tolerance">
           <div className="grid flow-col col-gap-16">
-            <Button
-              type="ghost"
-              style={{ width: 70 }}
-              onClick={() => {
-                form.setFieldsValue({
-                  slippageTolerance: 0.1,
-                });
-              }}>
-              0.1%
-            </Button>
-            <Button
-              type="ghost"
-              style={{ width: 70 }}
-              onClick={() => {
-                form.setFieldsValue({
-                  slippageTolerance: 0.3,
-                });
-              }}>
-              0.3%
-            </Button>
-            <Button
-              type="ghost"
-              style={{ width: 70 }}
-              onClick={() => {
-                form.setFieldsValue({
-                  slippageTolerance: 0.5,
-                });
-              }}>
-              0.5%
-            </Button>
+            {SLIPPAGE_OPTIONS.map(opt => (
+              <Button
+                type="ghost"
+                style={{ width: 70 }}
+                onClick={() => {
+                  form.setFieldsValue({
+                    slippageTolerance: opt,
+                  });
+                }}>
+                {opt}%
+              </Button>
+            ))}
             <Form.Item
               name="slippageTolerance"
               rules={[
                 { required: true, message: 'Required' },
-                // { min: 0, message: 'Required' },
-                // { max: 100, message: 'Enter a valid slippage percentage' },
-              ]}>
+                { min: 0, message: 'Required' },
+                { max: 100, message: 'Enter a valid slippage percentage' },
+              ]}
+              noStyle>
               <Input type="number" />
             </Form.Item>
           </div>
@@ -144,7 +130,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
 
   return (
     <section className={cn(s.container, className)}>
-      <header className={s.header}>
+      <header className="flex ph-24 pv-24">
         <Text type="p2" weight="semibold" color="secondary">
           Transaction details
         </Text>
@@ -160,24 +146,29 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
           }
           visible={visible}
           onVisibleChange={setVisible}>
-          <Button type="light" className={s.settingsButton}>
+          <Button type="light" className="ml-auto">
             <Icons name="gear" />
           </Button>
         </Popover>
       </header>
+      <Divider />
       <div className="p-24">
         <div className="flex mb-24">
-          <Text type="small" weight="semibold" color="secondary">
-            Slippage tolerance
-          </Text>
+          <Hint text=" ">
+            <Text type="small" weight="semibold" color="secondary">
+              Slippage tolerance
+            </Text>
+          </Hint>
           <Text type="small" weight="semibold" color="primary" className="ml-auto">
             {slippageTolerance}%
           </Text>
         </div>
         <div className="flex">
-          <Text type="small" weight="semibold" color="secondary">
-            Transaction deadline
-          </Text>
+          <Hint text=" ">
+            <Text type="small" weight="semibold" color="secondary">
+              Transaction deadline
+            </Text>
+          </Hint>
           <Text type="small" weight="semibold" color="primary" className="ml-auto">
             {deadline} minutes
           </Text>
