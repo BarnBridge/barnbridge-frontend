@@ -88,7 +88,7 @@ const PortfolioValue: React.FC = () => {
               separator=""
               labelFormatter={value => (
                 <Text type="p2" tag="span" weight="semibold" color="primary">
-                  {format(value, 'MM.dd.yyyy HH:mm')}
+                  {value instanceof Date ? format(value, 'MM.dd.yyyy HH:mm') : ''}
                 </Text>
               )}
               formatter={(value: number) => (

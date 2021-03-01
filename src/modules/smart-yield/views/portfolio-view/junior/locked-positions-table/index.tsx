@@ -1,9 +1,11 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
+import format from 'date-fns/format';
 import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
@@ -55,9 +57,15 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
-        </Text>
+        <Tooltip
+          title={formatBigValue(
+            getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals),
+            entity.pool.underlyingDecimals,
+          )}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
+          </Text>
+        </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
           {formatUSDValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
         </Text>
@@ -208,39 +216,29 @@ const LockedPositionsTable: React.FC = () => {
       {redeemModal && (
         <ConfirmTxModal
           visible
-          title="Redeem your senior bond"
+          title="Redeem your junior bond"
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
-                  Redeemable amount
+                  Redeemable balance
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  -
-                </Text>
+                <Tooltip
+                  title={formatBigValue(
+                    getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals),
+                    redeemModal.pool.underlyingDecimals,
+                  )}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals))}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
-                  Deposited amount
+                  Maturity date
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  -
-                </Text>
-              </div>
-              <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Maturity in
-                </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  -
-                </Text>
-              </div>
-              <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  APY
-                </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  -
+                  {format(redeemModal.jBond.maturesAt * 1_000, 'dd.MM.yyyy')}
                 </Text>
               </div>
             </div>

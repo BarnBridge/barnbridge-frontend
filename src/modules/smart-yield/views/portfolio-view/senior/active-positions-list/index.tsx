@@ -7,6 +7,7 @@ import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Progress from 'components/antd/progress';
+import Tooltip from 'components/antd/tooltip';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
@@ -22,6 +23,7 @@ import { useWallet } from 'wallets/wallet';
 import { doSequential, getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
+import format from 'date-fns/format';
 
 type ListEntity = {
   pool: PoolsSYPool;
@@ -128,18 +130,22 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <Text type="small" weight="semibold" color="secondary">
           Deposited
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(deposited)}
-        </Text>
+        <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(deposited)}
+          </Text>
+        </Tooltip>
       </div>
       <Divider />
       <div className="p-24">
         <Text type="small" weight="semibold" color="secondary">
           Redeemable
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(redeemable)}
-        </Text>
+        <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(redeemable)}
+          </Text>
+        </Tooltip>
       </div>
       <Divider />
       <div className="p-24">
@@ -194,25 +200,21 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(redeemable)} {pool.underlyingSymbol}
-                </Text>
+                <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(redeemable)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
                   Deposited amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(deposited)} {pool.underlyingSymbol}
-                </Text>
-              </div>
-              <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Maturity in
-                </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {getFormattedDuration(0, maturesAt)}
-                </Text>
+                <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(deposited)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
@@ -233,22 +235,35 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <ConfirmTxModal
           visible
           title="Transfer your bond"
+          width={680}
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(redeemable)} {pool.underlyingSymbol}
+                <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(redeemable)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Deposited amount
                 </Text>
+                <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(deposited)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
                   Maturity date
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {getFormattedDuration(0, maturesAt)} days
+                  {format(maturesAt, 'dd.MM.yyyy')}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">

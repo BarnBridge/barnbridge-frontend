@@ -8,7 +8,7 @@ import Card from 'components/antd/card';
 import StatusDot from 'components/custom/status-dot';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { SYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
+import { fetchSYPoolAPY, SYPoolAPY } from 'modules/smart-yield/api';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
 type ChartEntity = SYPoolAPY;
@@ -111,7 +111,7 @@ const TokenPoolTrend: React.FC = () => {
               separator=""
               labelFormatter={value => (
                 <Text type="p2" tag="span" weight="semibold" color="primary">
-                  {format(value, 'MM.dd.yyyy HH:mm')}
+                  {value instanceof Date ? format(value, 'MM.dd.yyyy HH:mm') : ''}
                 </Text>
               )}
               formatter={(value: number, _: any, { dataKey }: any) => (

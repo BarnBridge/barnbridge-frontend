@@ -88,9 +88,9 @@ const TwoStepWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="to" label="To" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={getHumanValue(pool.underlyingMaxAllowed, pool.underlyingDecimals)}
+            max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
-            displayDecimals={4}
+            displayDecimals={pool.underlyingDecimals}
             disabled={false}
           />
         </Form.Item>
