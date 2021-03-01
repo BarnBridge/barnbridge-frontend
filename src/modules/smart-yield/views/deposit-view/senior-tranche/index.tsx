@@ -133,7 +133,7 @@ const SeniorTranche: React.FC = () => {
       </Form.Item>
       <Form.Item label="Add lock duration" shouldUpdate>
         {() => (
-          <Grid flow="col" gap={16} colsTemplate={`repeat(${DURATION_OPTIONS.length}, 1fr)`}>
+          <div className="flexbox-list">
             {DURATION_OPTIONS.map(opt => (
               <Button
                 key={opt}
@@ -149,7 +149,7 @@ const SeniorTranche: React.FC = () => {
                 </Text>
               </Button>
             ))}
-          </Grid>
+          </div>
         )}
       </Form.Item>
       <Form.Item

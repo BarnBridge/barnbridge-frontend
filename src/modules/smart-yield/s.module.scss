@@ -4,5 +4,10 @@
     border-right: none;
     height: 74px;
     padding: 0 64px;
+
+    @media (max-width: 480px) {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
   }
 }

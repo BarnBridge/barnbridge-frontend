@@ -1,5 +1,6 @@
 import React from 'react';
 import { Spin } from 'antd';
+import cn from 'classnames';
 import BigNumber from 'bignumber.js';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
@@ -61,11 +62,11 @@ const VotingHeader: React.FC = () => {
   }
 
   return (
-    <Grid flow="row" gap={16} padding={[24, 64]} className={s.component}>
-      <Text type="lb2" weight="semibold" color="red">
+    <div className={cn(s.component, 'pv-24 ph-64 sm-ph-24')}>
+      <Text type="lb2" weight="semibold" color="red" className="mb-16">
         My Voting Power
       </Text>
-      <Grid flow="col" gap={24}>
+      <Grid flow="col" gap={24} className={s.items}>
         <Grid flow="row" gap={4}>
           <Text type="p2" color="secondary">
             Current reward
@@ -173,7 +174,7 @@ const VotingHeader: React.FC = () => {
           }}
         </UseLeftTime>
       </Grid>
-    </Grid>
+    </div>
   );
 };
 

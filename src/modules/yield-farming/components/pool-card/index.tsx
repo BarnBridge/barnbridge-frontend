@@ -229,20 +229,20 @@ const PoolCard: React.FC<PoolCardProps> = props => {
   }
 
   const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between">
+    <Grid flow="col" align="center" justify="space-between" className={s.cardTitleContainer}>
       <Grid flow="col" gap={16}>
         <IconsSet icons={getPoolIcons(pool)} />
-        <Grid flow="row">
+        <div>
           <Text type="p1" weight="semibold" color="primary">
             {getPoolNames(pool).join('/')}
           </Text>
           <Text type="lb2" weight="semibold" color="red">
             EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
           </Text>
-        </Grid>
+        </div>
       </Grid>
       {wallet.isActive && (
-        <Button type="primary" disabled={!state.enabled} onClick={handleStaking}>
+        <Button type="primary" disabled={!state.enabled} onClick={handleStaking} className={s.cardTitleStacking}>
           Staking
         </Button>
       )}
