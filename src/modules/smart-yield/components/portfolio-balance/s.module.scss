@@ -1,0 +1,25 @@
+.progress {
+  display: flex;
+  margin-top: 24px;
+  padding: 0 24px;
+
+  :global(.ant-progress-outer) {
+    display: flex;
+  }
+}
+
+.dataColumn {
+  padding-left: 16px;
+  position: relative;
+
+  &::before {
+    background-color: var(--color);
+    border-radius: 50%;
+    content: '';
+    height: 8px;
+    left: 0;
+    position: absolute;
+    top: 4px;
+    width: 8px;
+  }
+}

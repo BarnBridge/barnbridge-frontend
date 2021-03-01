@@ -22,7 +22,15 @@ const JuniorPortfolio: React.FC = () => {
   return (
     <>
       <div className={s.portfolioContainer}>
-        <PortfolioBalance />
+        <PortfolioBalance
+          total={103478.6708}
+          aggregated={20.44}
+          aggregatedColor="purple"
+          data={[
+            ['Active balance ',  95883.4489, 'var(--theme-purple700-color)'],
+            ['Locked blanace', 7595.2219, 'var(--theme-purple-color)'],
+          ]}
+        />
         <PortfolioValue />
       </div>
       <PoolsProvider>
