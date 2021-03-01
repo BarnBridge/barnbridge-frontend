@@ -2,10 +2,11 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
@@ -53,11 +54,17 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
-        </Text>
+        <Tooltip
+          title={formatBigValue(
+            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals),
+            entity.underlyingDecimals,
+          )}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
+          </Text>
+        </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
+          {formatUSDValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
         </Text>
       </>
     ),

@@ -8,6 +8,7 @@ import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from '
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
@@ -84,9 +85,11 @@ const Columns: ColumnsType<TableEntity> = [
     ),
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.amount)}
-        </Text>
+        <Tooltip title={formatBigValue(entity.amount, 18)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(entity.amount)}
+          </Text>
+        </Tooltip>
         <Text type="small" weight="semibold">
           {formatUSDValue(new BigNumber(entity.amount))}
         </Text>

@@ -8,6 +8,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+import { formatBigValue, getHumanValue } from 'web3/utils';
 
 export const WITHDRAW_TWO_STEP_KEY = 'two-step';
 export const WITHDRAW_INSTANT_KEY = 'instant';
@@ -59,13 +60,13 @@ const InitiateWithdraw: React.FC = () => {
             Wait time
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            - days
+            abond.maturesAt + 1 days
           </Text>
           <Text type="small" weight="semibold">
             Total withdrawable amount
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            - USDC
+            {formatBigValue(getHumanValue(pool?.smartYieldBalance?.multipliedBy(1), pool?.underlyingDecimals))} {pool?.underlyingSymbol}
           </Text>
         </RadioCard>
         <RadioCard selected={type === WITHDRAW_INSTANT_KEY} onClick={handleInstantType}>
@@ -84,7 +85,10 @@ const InitiateWithdraw: React.FC = () => {
             Total withdrawable amount
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            - USDC
+            {formatBigValue(getHumanValue(pool?.smartYieldBalance?.multipliedBy(1), pool?.underlyingDecimals))} {pool?.underlyingSymbol}
+          </Text>
+          <Text type="small" weight="semibold" color="red">
+            forfeits
           </Text>
         </RadioCard>
       </Grid>
