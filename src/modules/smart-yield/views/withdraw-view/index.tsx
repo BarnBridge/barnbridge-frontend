@@ -7,13 +7,18 @@ import InstantWithdraw from 'modules/smart-yield/views/withdraw-view/instant-wit
 import TwoStepWithdraw from 'modules/smart-yield/views/withdraw-view/two-step-withdraw';
 
 const WithdrawView: React.FC = () => {
-  const tokenPool = useTokenPool();
+  const poolCtx = useTokenPool();
+  const { pool } = poolCtx;
+
+  if (!pool) {
+    return null;
+  }
 
   return (
     <Switch>
-      <Route path={`/smart-yield/${tokenPool.address}/withdraw`} exact component={InitiateWithdraw} />
-      <Route path={`/smart-yield/${tokenPool.address}/withdraw/two-step`} exact component={TwoStepWithdraw} />
-      <Route path={`/smart-yield/${tokenPool.address}/withdraw/instant`} exact component={InstantWithdraw} />
+      <Route path={`/smart-yield/${pool.smartYieldAddress}/withdraw`} exact component={InitiateWithdraw} />
+      <Route path={`/smart-yield/${pool.smartYieldAddress}/withdraw/two-step`} exact component={TwoStepWithdraw} />
+      <Route path={`/smart-yield/${pool.smartYieldAddress}/withdraw/instant`} exact component={InstantWithdraw} />
     </Switch>
   );
 };

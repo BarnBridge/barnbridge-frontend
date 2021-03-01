@@ -4,3 +4,15 @@
   border: 1px solid var(--theme-border-color) !important;
   border-radius: 4px !important;
 }
+
+.chartTitleContainer {
+  @media (max-width: 480px) {
+    display: block;
+  }
+}
+
+.chartTitleFilters {
+  @media (max-width: 480px) {
+    margin-top: 8px;
+  }
+}

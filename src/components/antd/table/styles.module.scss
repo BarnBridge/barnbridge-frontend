@@ -77,6 +77,8 @@
       width: 100%;
       @include font-p2-semi-bold;
       color: var(--theme-secondary-color);
+      display: flex;
+      align-items: center;
     }
 
     :global(.ant-pagination-item-link) {

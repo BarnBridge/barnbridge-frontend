@@ -78,7 +78,7 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatUSDValue(value?: BigNumber, decimals: number = 2, minDecimals: number = decimals): string {
+export function formatUSDValue(value?: BigNumber | number, decimals: number = 2, minDecimals: number = decimals): string {
   if (value === undefined) {
     return '-';
   }

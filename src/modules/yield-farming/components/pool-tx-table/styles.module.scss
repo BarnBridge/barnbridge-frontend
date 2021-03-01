@@ -3,3 +3,23 @@
     padding: 12px 0;
   }
 }
+
+.chartTitleContainer {
+  @media (max-width: 480px) {
+    display: block;
+  }
+}
+
+.chartTitleFilters {
+  @media (max-width: 480px) {
+    display: block !important;
+    white-space: initial !important;
+  }
+}
+
+.chartTitleFilter {
+  @media (max-width: 480px) {
+    margin-top: 8px;
+    width: 100%;
+  }
+}

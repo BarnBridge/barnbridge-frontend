@@ -9,3 +9,9 @@
     grid-template-columns: 1fr;
   }
 }
+
+.tabs {
+  :global(.ant-tabs-nav) {
+    padding: 12px 24px 0 !important;
+  }
+}

@@ -191,11 +191,11 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
   }, [web3c, poolTxList.transactions]);
 
   const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between">
+    <Grid flow="col" align="center" justify="space-between" className={s.chartTitleContainer}>
       <Text type="p1" weight="semibold" color="primary">
         {label}
       </Text>
-      <Grid flow="col" gap={24}>
+      <Grid flow="col" gap={24} className={s.chartTitleFilters}>
         <Select
           label="Tokens"
           options={tokenFilterOptions}
@@ -204,6 +204,7 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
           onSelect={(value: string) => {
             poolTxList.changeTokenFilter(value !== 'all' ? value : undefined);
           }}
+          className={s.chartTitleFilter}
         />
         <Select
           label="Show"
@@ -213,6 +214,7 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
           onSelect={(value: string) => {
             poolTxList.changeTypeFilter(value !== 'all' ? value : undefined);
           }}
+          className={s.chartTitleFilter}
         />
       </Grid>
     </Grid>

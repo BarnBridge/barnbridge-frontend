@@ -98,7 +98,7 @@ const PoolTxChartInner: React.FC = (props) => {
   }, []);
 
   const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between">
+    <Grid flow="col" align="center" justify="space-between" className={s.chartTitleContainer}>
       <Grid flow="col" gap={8}>
         <IconsSet icons={getPoolIcons(poolTxChart.poolFilter as PoolTypes)} />
         <Select
@@ -109,7 +109,7 @@ const PoolTxChartInner: React.FC = (props) => {
           }}
         />
       </Grid>
-      <Grid flow="col" gap={8}>
+      <Grid flow="col" gap={8} className={s.chartTitleFilters}>
         <Select
           label="Period"
           options={PeriodFilters}

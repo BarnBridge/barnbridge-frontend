@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { formatBigValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -8,13 +9,16 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+import s from './s.module.scss';
 
 const SENIOR_TRANCHE_KEY = 'senior';
 const JUNIOR_TRANCHE_KEY = 'junior';
 
 const SelectTranche: React.FC = () => {
   const history = useHistory();
-  const tokenPool = useTokenPool();
+  const poolCtx = useTokenPool();
+
+  const { pool } = poolCtx;
 
   const [tranche, setTranche] = useState<string | undefined>();
 
@@ -31,12 +35,16 @@ const SelectTranche: React.FC = () => {
   }
 
   function handleNextStep() {
-    history.push(`/smart-yield/${tokenPool.address}/deposit/${tranche}`);
+    history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit/${tranche}`);
+  }
+
+  if (!pool) {
+    return null;
   }
 
   return (
     <>
-      <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
+      <div className={s.cards}>
         <RadioCard selected={tranche === SENIOR_TRANCHE_KEY} onClick={handleSeniorSelect}>
           <Icon name="senior_tranche" width={64} height={64} className="mb-24" />
           <Text type="small" weight="semibold" className="mb-4">
@@ -46,7 +54,7 @@ const SelectTranche: React.FC = () => {
             Fixed APY
           </Text>
           <Text type="p1" weight="bold" color="green">
-            - %
+            {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </RadioCard>
         <RadioCard selected={tranche === JUNIOR_TRANCHE_KEY} onClick={handleJuniorSelect}>
@@ -58,10 +66,10 @@ const SelectTranche: React.FC = () => {
             Variable APY
           </Text>
           <Text type="p1" weight="bold" color="purple">
-            - %
+            {formatBigValue(pool.state.juniorApy * 100)}%
           </Text>
         </RadioCard>
-      </Grid>
+      </div>
       {tranche && (
         <Alert
           className="mb-32"

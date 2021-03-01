@@ -1,0 +1,12 @@
+.container {
+  display: grid;
+  gap: 32px;
+  grid-auto-flow: column;
+  grid-template-columns: 1fr minmax(240px, 482px);
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    grid-auto-flow: row;
+    grid-template-columns: 1fr;
+  }
+}

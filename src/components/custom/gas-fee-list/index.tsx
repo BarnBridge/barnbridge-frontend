@@ -7,6 +7,7 @@ import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import { fetchGasPrice } from 'web3/utils';
+import s from './s.module.scss';
 
 type GasFeeOption = {
   key: string;
@@ -102,7 +103,7 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
       {state.loading ? (
         <Antd.Spin />
       ) : (
-        <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)">
+        <div className={s.list}>
           {state.options.map(option => (
             <RadioButton
               key={option.key}
@@ -124,7 +125,7 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
               value={option}
             />
           ))}
-        </Grid>
+        </div>
       )}
     </Antd.Radio.Group>
   );

@@ -17,7 +17,7 @@ const TokenPoolView: React.FC = () => {
   } = useRouteMatch<TokenPoolViewParams>();
 
   return (
-    <TokenPoolProvider tokenAddress={address}>
+    <TokenPoolProvider poolAddress={address}>
       <TokenPoolHeader />
       <Switch>
         <Route path={`/smart-yield/${address}/deposit`} component={DepositView} />

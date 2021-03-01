@@ -34,3 +34,81 @@
   border-color: var(--theme-red-color);
 }
 
+.css-grid {
+  --gap: 1rem;
+  --sm-gap: 0.5rem;
+  --min: 15ch;
+  --sm-min: 10ch;
+
+  display: grid;
+  grid-gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(var(--min), 1fr));
+
+  @media (max-width: 768px) {
+    grid-gap: var(--sm-gap);
+    grid-template-columns: repeat(auto-fit, minmax(var(--sm-min), 1fr));
+  }
+}
+
+.flexbox-grid {
+  --gap: 1rem;
+  --sm-gap: 0.5rem;
+  --min: 10ch;
+  --sm-min: 5ch;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+
+  @media (max-width: 768px) {
+    gap: var(--sm-gap);
+  }
+}
+
+.flexbox-grid > * {
+  flex: 1 1 var(--min);
+
+  @media (max-width: 768px) {
+    gap: var(--sm-min);
+  }
+}
+
+.flexbox-list {
+  --gap: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  margin: calc(var(--gap) / -2);
+
+  > * {
+    margin: calc(var(--gap) / 2);
+  }
+
+  @media (max-width: 768px) {
+    --gap: 8px;
+  }
+}
+
+.mobile-only {
+  content-visibility: hidden;
+
+  @media (max-width: 480px) {
+    content-visibility: initial;
+  }
+}
+
+.tablet-only {
+  content-visibility: hidden;
+
+  @media (min-width: 481px) and (max-width: 768px) {
+    content-visibility: initial;
+  }
+}
+
+
+.desktop-only {
+  content-visibility: initial;
+
+  @media (max-width: 768px) {
+    content-visibility: hidden;
+  }
+}

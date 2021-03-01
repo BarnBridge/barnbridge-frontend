@@ -19,7 +19,7 @@ const InstallMetaMaskModal: React.FC<ModalProps> = props => {
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
             You need to have{' '}
-            <Text tag="span" type="p1" weight="bold" color="primary">
+            <Text type="p1" tag="span" weight="bold" color="primary">
               MetaMask
             </Text>{' '}
             installed to continue.
