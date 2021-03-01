@@ -118,7 +118,7 @@ const TokenPoolProvider: React.FC<Props> = props => {
         pool.underlyingBalance = balance;
         reload();
       });
-      underlyingContract.getAllowance(pool.smartYieldAddress).then(allowance => {
+      underlyingContract.getAllowance(pool.providerAddress).then(allowance => {
         pool.underlyingAllowance = allowance;
         reload();
       });
@@ -144,9 +144,9 @@ const TokenPoolProvider: React.FC<Props> = props => {
       underlyingContract.setProvider(wallet.provider);
       underlyingContract.setAccount(wallet.account);
 
-      return underlyingContract.approve(enable, pool.smartYieldAddress)
+      return underlyingContract.approve(enable, pool.providerAddress)
         .then(() => {
-          return underlyingContract.getAllowance(pool.smartYieldAddress).then(allowance => {
+          return underlyingContract.getAllowance(pool.providerAddress).then(allowance => {
             pool.underlyingAllowance = allowance;
           });
         })
