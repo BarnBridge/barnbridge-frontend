@@ -1,6 +1,5 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
 import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -10,23 +9,18 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import { mergeState } from 'hooks/useMergeState';
-import { useReload } from 'hooks/useReload';
-import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
-import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
-import SYSmartYieldContract, { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
 
-import { doSequential, getFormattedDuration } from 'utils';
+import { getFormattedDuration } from 'utils';
 
-type TableEntity = {
+export type LockedPositionsTableEntity = {
   pool: PoolsSYPool;
   jBond: SYJuniorBondToken;
   redeem: () => void;
 };
 
-const Columns: ColumnsType<TableEntity> = [
+const Columns: ColumnsType<LockedPositionsTableEntity> = [
   {
     title: (
       <Text type="small" weight="semibold">
@@ -105,150 +99,24 @@ const Columns: ColumnsType<TableEntity> = [
   },
 ];
 
-type State = {
+type Props = {
   loading: boolean;
-  data: TableEntity[];
+  data: LockedPositionsTableEntity[];
 };
 
-const InitialState: State = {
-  loading: false,
-  data: [],
-};
-
-const LockedPositionsTable: React.FC = () => {
-  const wallet = useWallet();
-  const pools = usePools();
-  const [reload, version] = useReload();
-
-  const [state, setState] = React.useState<State>(InitialState);
-  const [redeemModal, setRedeemModal] = React.useState<TableEntity | undefined>();
-
-  function handleRedeemCancel() {
-    setRedeemModal(undefined);
-  }
-
-  function handleRedeemConfirm(args: ConfirmTxModalArgs): Promise<void> {
-    if (!redeemModal) {
-      return Promise.reject();
-    }
-
-    const { pool, jBond } = redeemModal;
-
-    const contract = new SYSmartYieldContract(pool.smartYieldAddress);
-    contract.setProvider(wallet.provider);
-    contract.setAccount(wallet.account);
-
-    return contract.redeemJuniorBondSend(jBond.jBondId, args.gasPrice).then(() => {
-      reload();
-    });
-  }
-
-  React.useEffect(() => {
-    if (!wallet.account) {
-      return;
-    }
-
-    setState(
-      mergeState<State>({
-        loading: true,
-      }),
-    );
-
-    (async () => {
-      const result = await doSequential<PoolsSYPool>(pools.pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const juniorBondContract = new SYJuniorBondContract(pool.juniorBondAddress);
-          juniorBondContract.setProvider(wallet.provider);
-          juniorBondContract.setAccount(wallet.account);
-
-          const jBondIds = await juniorBondContract.getJuniorBondIds();
-
-          if (jBondIds.length === 0) {
-            return resolve(undefined);
-          }
-
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
-
-          const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
-
-          if (jBonds.length === 0) {
-            return resolve(undefined);
-          }
-
-          const items = jBonds.map(jBond => {
-            const item = {
-              pool,
-              jBond,
-              redeem: () => {
-                setRedeemModal(item);
-              },
-            };
-
-            return item;
-          });
-
-          resolve(items);
-        });
-      });
-
-      setState(
-        mergeState<State>({
-          loading: false,
-          data: result.flat().filter(Boolean),
-        }),
-      );
-    })();
-  }, [wallet.account, pools, version]);
+const LockedPositionsTable: React.FC<Props> = props => {
+  const { loading, data } = props;
 
   return (
-    <>
-      <Table<TableEntity>
-        columns={Columns}
-        dataSource={state.data}
-        rowKey={row => `${row.pool.protocolId}:${row.jBond.jBondId}`}
-        loading={state.loading}
-        scroll={{
-          x: true,
-        }}
-      />
-
-      {redeemModal && (
-        <ConfirmTxModal
-          visible
-          title="Redeem your junior bond"
-          header={
-            <div className="grid flow-col col-gap-32">
-              <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Redeemable balance
-                </Text>
-                <Tooltip
-                  title={formatBigValue(
-                    getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals),
-                    redeemModal.pool.underlyingDecimals,
-                  )}>
-                  <Text type="p1" weight="semibold" color="primary">
-                    {formatBigValue(getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals))}
-                  </Text>
-                </Tooltip>
-              </div>
-              <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Maturity date
-                </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {format(redeemModal.jBond.maturesAt * 1_000, 'dd.MM.yyyy')}
-                </Text>
-              </div>
-            </div>
-          }
-          submitText="Redeem"
-          onCancel={handleRedeemCancel}
-          onConfirm={handleRedeemConfirm}
-        />
-      )}
-    </>
+    <Table<LockedPositionsTableEntity>
+      columns={Columns}
+      dataSource={data}
+      rowKey={row => `${row.pool.protocolId}:${row.jBond.jBondId}`}
+      loading={loading}
+      scroll={{
+        x: true,
+      }}
+    />
   );
 };
 

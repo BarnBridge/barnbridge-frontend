@@ -2,6 +2,8 @@ import { addDays, addMonths, addWeeks } from 'date-fns';
 
 export const DURATION_1_WEEK = '1w';
 export const DURATION_2_WEEK = '2w';
+export const DURATION_3_WEEK = '3w';
+export const DURATION_4_WEEK = '4w';
 export const DURATION_1_MONTH = '1mo';
 export const DURATION_3_MONTH = '3mo';
 export const DURATION_6_MONTH = '6mo';
@@ -21,6 +23,10 @@ export function getLockEndDate(startDate: Date, duration: string): Date | undefi
       return addWeeks(startDate, 1);
     case DURATION_2_WEEK:
       return addWeeks(startDate, 2);
+    case DURATION_3_WEEK:
+      return addWeeks(startDate, 3);
+    case DURATION_4_WEEK:
+      return addWeeks(startDate, 4);
     case DURATION_1_MONTH:
       return addMonths(startDate, 1);
     case DURATION_3_MONTH:

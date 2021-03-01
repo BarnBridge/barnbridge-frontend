@@ -1,29 +1,30 @@
 import React from 'react';
+import { formatBigValue, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
-import { Text, TextProps } from 'components/custom/typography';
 import Progress from 'components/antd/progress';
-import { formatUSDValue } from 'web3/utils';
+import { Text, TextProps } from 'components/custom/typography';
+
 import s from './s.module.scss';
 
 type Props = {
-  total: number;
-  aggregated: number;
+  total?: number;
+  aggregated?: number | null;
   aggregatedColor: TextProps['color'];
-  data: [[string, number, string], [string, number, string]];
+  data: [[string, number | undefined, string], [string, number | undefined, string]];
+};
 
-}
+const PortfolioBalance: React.FC<Props> = (props: Props) => {
+  const {
+    total,
+    aggregated,
+    aggregatedColor,
+    data: [[label1, value1, color1], [label2, value2, color2]],
+  } = props;
 
-const PortfolioBalance: React.FC<Props> = ({
-  total,
-  aggregated,
-  aggregatedColor,
-  data: [
-    [label1, value1, color1],
-    [label2, value2, color2],
-  ]
-}) => {
+  const progress = value1 && value2 ? value1 * 100 / (value1 + value2) : undefined;
+
   return (
     <Card noPaddingBody>
       <Text type="p1" weight="semibold" color="primary" className="p-24">
@@ -39,20 +40,22 @@ const PortfolioBalance: React.FC<Props> = ({
             {formatUSDValue(total)}
           </Text>
         </div>
-        <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Aggregated APY
-          </Text>
-          <Text type="p1" weight="semibold" color={aggregatedColor}>
-            {aggregated}%
-          </Text>
-        </div>
+        {aggregated !== null && (
+          <div>
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              Aggregated APY
+            </Text>
+            <Text type="p1" weight="semibold" color={aggregatedColor}>
+              {formatBigValue(aggregated)}%
+            </Text>
+          </div>
+        )}
       </div>
       <Divider />
       <Progress
         className={s.progress}
         strokeLinecap="square"
-        percent={40}
+        percent={progress}
         strokeWidth={8}
         trailColor={color2}
         strokeColor={color1}

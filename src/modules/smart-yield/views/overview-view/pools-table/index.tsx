@@ -135,7 +135,7 @@ const TableColumns: ColumnsType<PoolEntity> = [
           {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
         </Text>
         <Text type="small" weight="semibold">
-          {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+          {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
         </Text>
       </Grid>
     ),
