@@ -2,49 +2,76 @@ import React from 'react';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
-import { Text } from 'components/custom/typography';
+import { Text, TextProps } from 'components/custom/typography';
+import Progress from 'components/antd/progress';
+import { formatUSDValue } from 'web3/utils';
+import s from './s.module.scss';
 
-const PortfolioBalance: React.FC = () => {
+type Props = {
+  total: number;
+  aggregated: number;
+  aggregatedColor: TextProps['color'];
+  data: [[string, number, string], [string, number, string]];
+
+}
+
+const PortfolioBalance: React.FC<Props> = ({
+  total,
+  aggregated,
+  aggregatedColor,
+  data: [
+    [label1, value1, color1],
+    [label2, value2, color2],
+  ]
+}) => {
   return (
     <Card noPaddingBody>
       <Text type="p1" weight="semibold" color="primary" className="p-24">
         Portfolio balance
       </Text>
       <Divider />
-      <div className="p-24 grid flow-col">
+      <div className="p-24 grid flow-col gap-16">
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Total balance
           </Text>
           <Text type="h2" weight="bold" color="primary">
-            $ 103,478.6708
+            {formatUSDValue(total)}
           </Text>
         </div>
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Aggregated APY
           </Text>
-          <Text type="p1" weight="semibold" color="red">
-            12.37%
+          <Text type="p1" weight="semibold" color={aggregatedColor}>
+            {aggregated}%
           </Text>
         </div>
       </div>
       <Divider />
-      <div className="p-24 grid flow-col">
+      <Progress
+        className={s.progress}
+        strokeLinecap="square"
+        percent={40}
+        strokeWidth={8}
+        trailColor={color1}
+        strokeColor={color2}
+      />
+      <div className="p-24 grid flow-col gap-16">
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Senior balance
+            {label1}
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            $ 55,813.4487
+            {formatUSDValue(value1)}
           </Text>
         </div>
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Junior balance
+            {label2}
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            $ 103,478.6708
+            {formatUSDValue(value2)}
           </Text>
         </div>
       </div>
