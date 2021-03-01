@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import format from 'date-fns/format';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -13,32 +13,13 @@ import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import { mergeState } from 'hooks/useMergeState';
 import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
-import { doSequential, getFormattedDuration } from 'utils';
-
-import s from './s.module.scss';
-import format from 'date-fns/format';
-
-type ListEntity = {
-  pool: PoolsSYPool;
-  sBond: SYSeniorBondToken;
-};
-
-type State = {
-  loading: boolean;
-  data: ListEntity[];
-};
-
-const InitialState: State = {
-  loading: false,
-  data: [],
-};
+import { getFormattedDuration } from 'utils';
 
 type ActivePositionProps = {
   pool: PoolsSYPool;
@@ -290,74 +271,4 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   );
 };
 
-const ActivePositionsList: React.FC = () => {
-  const wallet = useWallet();
-  const pools = usePools();
-
-  const [state, setState] = React.useState<State>(InitialState);
-
-  React.useEffect(() => {
-    if (!wallet.account) {
-      return;
-    }
-
-    setState(
-      mergeState<State>({
-        loading: true,
-      }),
-    );
-
-    (async () => {
-      const result = await doSequential<PoolsSYPool>(pools.pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
-          seniorBondContract.setProvider(wallet.provider);
-          seniorBondContract.setAccount(wallet.account);
-
-          const sBondIds = await seniorBondContract.getSeniorBondIds();
-
-          if (sBondIds.length === 0) {
-            return resolve(undefined);
-          }
-
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
-
-          const sBonds = await smartYieldContract.getSeniorBonds(sBondIds);
-
-          if (sBonds.length === 0) {
-            return resolve(undefined);
-          }
-
-          resolve(
-            sBonds.map(sBond => ({
-              pool,
-              sBond,
-            })),
-          );
-        });
-      });
-
-      setState(
-        mergeState<State>({
-          loading: false,
-          data: result.flat().filter(Boolean),
-        }),
-      );
-    })();
-  }, [wallet.account, pools]);
-
-  return (
-    <>
-      <Antd.Spin spinning={state.loading}>
-        <div className={s.cards}>
-          {state.data.map(entity => (
-            <ActivePosition key={entity.sBond.sBondId} pool={entity.pool} sBond={entity.sBond} />
-          ))}
-        </div>
-      </Antd.Spin>
-    </>
-  );
-};
-
-export default ActivePositionsList;
+export default ActivePosition;
