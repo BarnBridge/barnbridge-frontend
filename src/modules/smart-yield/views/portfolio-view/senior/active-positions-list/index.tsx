@@ -109,7 +109,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const canTransfer = !sBond.liquidated;
 
   return (
-    <Card key={sBond.sBondId} noPaddingBody>
+    <Card noPaddingBody>
       <div className="flex p-24">
         <IconBubble name={pool.meta?.icon!} bubbleName={pool.market?.icon!} className="mr-16" />
         <div>
@@ -337,7 +337,7 @@ const ActivePositionsList: React.FC = () => {
       <Antd.Spin spinning={state.loading}>
         <div className={s.cards}>
           {state.data.map(entity => (
-            <ActivePosition pool={entity.pool} sBond={entity.sBond} />
+            <ActivePosition key={entity.sBond.sBondId} pool={entity.pool} sBond={entity.sBond} />
           ))}
         </div>
       </Antd.Spin>
