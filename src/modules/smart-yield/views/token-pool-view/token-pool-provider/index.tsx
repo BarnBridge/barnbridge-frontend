@@ -102,7 +102,15 @@ const TokenPoolProvider: React.FC<Props> = props => {
   React.useEffect(() => {
     const { pool } = state;
 
-    if (pool) {
+    if (!pool) {
+      return;
+    }
+
+    pool.underlyingBalance = undefined;
+    pool.underlyingAllowance = undefined;
+    pool.smartYieldBalance = undefined;
+
+    if (wallet.account) {
       const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
       underlyingContract.setProvider(wallet.provider);
       underlyingContract.setAccount(wallet.account);
@@ -128,11 +136,13 @@ const TokenPoolProvider: React.FC<Props> = props => {
     (enable: boolean) => {
       const { pool } = state;
 
-      if (!pool) {
+      if (!pool || !wallet.account) {
         return Promise.reject();
       }
 
       const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
+      underlyingContract.setProvider(wallet.provider);
+      underlyingContract.setAccount(wallet.account);
       return underlyingContract.approve(enable, pool.smartYieldAddress).then(reload);
     },
     [state.pool, wallet.account],
