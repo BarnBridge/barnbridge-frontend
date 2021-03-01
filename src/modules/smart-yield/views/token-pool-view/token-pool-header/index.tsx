@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import * as Antd from 'antd';
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
@@ -61,7 +61,7 @@ const TokenPoolHeader: React.FC = () => {
           Wallet balance
         </Text>
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(pool.underlyingBalance)} {pool.underlyingSymbol}
+          {formatBigValue(getHumanValue(pool.underlyingBalance, pool.underlyingDecimals))} {pool.underlyingSymbol}
         </Text>
       </div>
       {!isSeniorDeposit && !isRootDeposit && (
@@ -71,7 +71,7 @@ const TokenPoolHeader: React.FC = () => {
               Portfolio balance
             </Text>
             <Text type="p1" weight="semibold" color="primary">
-              {formatBigValue(pool.smartYieldBalance)} j{pool.underlyingSymbol}
+              {formatBigValue(getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals))} j{pool.underlyingSymbol}
             </Text>
           </Tooltip>
         </div>

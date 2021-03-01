@@ -2,15 +2,15 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
-import GasFeeList from 'components/custom/gas-fee-list';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
-import { mergeState } from 'hooks/useMergeState';
+import { Text } from 'components/custom/typography';
+import ConfirmTxModal from 'modules/smart-yield/components/confirm-tx-modal';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -33,14 +33,6 @@ const InitialFormValues: FormData = {
   deadline: 20,
 };
 
-type State = {
-  saving: boolean;
-};
-
-const InitialState: State = {
-  saving: false,
-};
-
 const JuniorTranche: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -49,7 +41,8 @@ const JuniorTranche: React.FC = () => {
 
   const { pool } = poolCtx;
 
-  const [state, setState] = React.useState<State>(InitialState);
+  const [isSaving, setSaving] = React.useState<boolean>(false);
+  const [depositModalVisible, showDepositModal] = React.useState<boolean>();
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
@@ -59,54 +52,53 @@ const JuniorTranche: React.FC = () => {
     history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit`);
   }
 
-  async function handleFinish(values: FormData) {
+  function handleSubmit() {
+    showDepositModal(true);
+  }
+
+  function handleDepositCancel() {
+    showDepositModal(false);
+  }
+
+  async function handleDepositConfirm({ gasPrice }: any) {
     if (!pool) {
       return;
     }
 
-    const { amount, gasPrice, slippageTolerance, deadline } = values;
+    const { amount, slippageTolerance, deadline } = form.getFieldsValue();
 
-    if (!amount || !gasPrice) {
+    if (!amount) {
       return;
     }
 
-    setState(
-      mergeState<State>({
-        saving: true,
-      }),
-    );
+    setSaving(true);
 
     const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
+    const price = await smartYieldContract.getPrice();
 
     const controllerContract = new SYControllerContract(pool.controllerAddress);
-    smartYieldContract.setProvider(wallet.provider);
+    controllerContract.setProvider(wallet.provider);
+    const juniorFee = await controllerContract.getJuniorBuyFee();
 
     const decimals = pool.underlyingDecimals;
-    const juniorFee = await controllerContract.getJuniorBuyFee();
     const slippage = new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100);
     const minAmount = amount.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)).minus(slippage));
-    const price = await smartYieldContract.getPrice();
     const minTokens = minAmount.dividedBy(price);
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
-    const gasFee = gasPrice.value;
 
     try {
       await smartYieldContract.buyTokensSend(
         getNonHumanValue(amount, decimals),
         getNonHumanValue(new BigNumber(minTokens.toFixed(0)), decimals),
         deadlineTs,
-        gasFee,
+        gasPrice,
       );
       form.resetFields();
     } catch {}
 
-    setState(
-      mergeState<State>({
-        saving: false,
-      }),
-    );
+    setSaving(false);
   }
 
   return (
@@ -115,23 +107,16 @@ const JuniorTranche: React.FC = () => {
       form={form}
       initialValues={InitialFormValues}
       validateTrigger={['onSubmit']}
-      onFinish={handleFinish}>
+      onFinish={handleSubmit}>
       <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
         <TokenAmount
           tokenIcon={pool?.meta?.icon as TokenIconNames}
-          max={pool?.underlyingMaxAllowed}
+          max={getHumanValue(pool?.underlyingMaxAllowed, pool?.underlyingDecimals)}
           maximumFractionDigits={pool?.underlyingDecimals}
           displayDecimals={4}
-          disabled={state.saving}
+          disabled={isSaving}
           slider
         />
-      </Form.Item>
-      <Form.Item
-        name="gasPrice"
-        label="Gas Fee (Gwei)"
-        hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-        rules={[{ required: true, message: 'Required' }]}>
-        <GasFeeList disabled={state.saving} />
       </Form.Item>
       <Form.Item name="slippageTolerance" noStyle hidden>
         <Input />
@@ -153,14 +138,44 @@ const JuniorTranche: React.FC = () => {
         }}
       </Form.Item>
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <Button type="light" disabled={state.saving} onClick={handleCancel}>
+        <Button type="light" disabled={isSaving} onClick={handleCancel}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
-        <Button type="primary" htmlType="submit" loading={state.saving}>
+        <Button type="primary" htmlType="submit" loading={isSaving}>
           Deposit
         </Button>
       </div>
+
+      {depositModalVisible && (
+        <ConfirmTxModal
+          visible
+          title="Confirm your deposit"
+          header={
+            <div className="grid flow-col col-gap-32">
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Minimum received
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  - j{pool?.underlyingSymbol}
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Deposited
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatBigValue(form.getFieldValue('amount'))} {pool?.underlyingSymbol}
+                </Text>
+              </div>
+            </div>
+          }
+          submitText="Confirm your deposit"
+          onCancel={handleDepositCancel}
+          onConfirm={handleDepositConfirm}
+        />
+      )}
     </Form>
   );
 };

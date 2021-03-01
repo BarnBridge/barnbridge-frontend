@@ -10,12 +10,10 @@ import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
+import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
 import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
 import SYSmartYieldContract, { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
-import ConfirmRedeemModal, {
-  ConfirmRedeemModalArgs,
-} from 'modules/smart-yield/views/portfolio-view/confirm-redeem-modal';
 import { useWallet } from 'wallets/wallet';
 
 import { doSequential, getFormattedDuration } from 'utils';
@@ -117,7 +115,11 @@ const LockedPositionsTable: React.FC = () => {
   const [state, setState] = React.useState<State>(InitialState);
   const [redeemModal, setRedeemModal] = React.useState<TableEntity | undefined>();
 
-  function handleRedeemConfirm(args: ConfirmRedeemModalArgs): Promise<void> {
+  function handleRedeemCancel() {
+    setRedeemModal(undefined);
+  }
+
+  function handleRedeemConfirm(args: ConfirmTxModalArgs): Promise<void> {
     if (!redeemModal) {
       return Promise.reject();
     }
@@ -128,13 +130,9 @@ const LockedPositionsTable: React.FC = () => {
     contract.setProvider(wallet.provider);
     contract.setAccount(wallet.account);
 
-    return contract.redeemJuniorBondSend(jBond.jBondId, args.gasFee).then(() => {
+    return contract.redeemJuniorBondSend(jBond.jBondId, args.gasPrice).then(() => {
       reload();
     });
-  }
-
-  function handleRedeemCancel() {
-    setRedeemModal(undefined);
   }
 
   React.useEffect(() => {
@@ -206,7 +204,52 @@ const LockedPositionsTable: React.FC = () => {
           x: true,
         }}
       />
-      {redeemModal && <ConfirmRedeemModal visible onConfirm={handleRedeemConfirm} onCancel={handleRedeemCancel} />}
+
+      {redeemModal && (
+        <ConfirmTxModal
+          visible
+          title="Redeem your senior bond"
+          header={
+            <div className="grid flow-col col-gap-32">
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Redeemable amount
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  -
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Deposited amount
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  -
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Maturity in
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  -
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  APY
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  -
+                </Text>
+              </div>
+            </div>
+          }
+          submitText="Redeem"
+          onCancel={handleRedeemCancel}
+          onConfirm={handleRedeemConfirm}
+        />
+      )}
     </>
   );
 };

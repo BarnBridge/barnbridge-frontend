@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getNonHumanValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,10 +11,9 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
-import ConfirmWithdrawalModal from 'modules/smart-yield/views/withdraw-view/confirm-withdrawal-modal';
-import { WITHDRAW_TWO_STEP_KEY } from 'modules/smart-yield/views/withdraw-view/initiate-withdraw';
 import { useWallet } from 'wallets/wallet';
 
 type FormData = {
@@ -31,7 +30,7 @@ const TwoStepWithdraw: React.FC = () => {
   const poolCtx = useTokenPool();
   const [form] = Antd.Form.useForm<FormData>();
 
-  const [withdrawModal, setWithdrawModal] = React.useState<boolean>();
+  const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
 
   const { pool } = poolCtx;
 
@@ -40,14 +39,14 @@ const TwoStepWithdraw: React.FC = () => {
   }
 
   function handleSubmit() {
-    setWithdrawModal(true);
+    showWithdrawModal(true);
   }
 
   function handleWithdrawCancel() {
-    setWithdrawModal(false);
+    showWithdrawModal(false);
   }
 
-  async function handleWithdrawConfirm(gasFee: number) {
+  async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
     const { to = ZERO_BIG_NUMBER } = form.getFieldsValue();
 
     const { pool } = poolCtx;
@@ -67,7 +66,7 @@ const TwoStepWithdraw: React.FC = () => {
       const maxMaturesAt = 1 + abond.maturesAt;
       const deadline = Math.round(Date.now() / 1_000) + 1200;
 
-      await smartYieldContract.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasFee);
+      await smartYieldContract.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, args.gasPrice);
     } catch {}
   }
 
@@ -89,7 +88,7 @@ const TwoStepWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="to" label="To" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon="usdc-token"
-            max={pool?.underlyingMaxAllowed}
+            max={getHumanValue(pool.underlyingMaxAllowed, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={4}
             disabled={false}
@@ -107,10 +106,39 @@ const TwoStepWithdraw: React.FC = () => {
         </Grid>
       </Form>
 
-      {withdrawModal && (
-        <ConfirmWithdrawalModal
+      {withdrawModalVisible && (
+        <ConfirmTxModal
           visible
-          type={WITHDRAW_TWO_STEP_KEY}
+          title="Confirm your withdrawal"
+          header={
+            <div className="grid flow-col col-gap-32">
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Minimum received
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  -
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Withdrawal type
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  2 step
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Wait time
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  -
+                </Text>
+              </div>
+            </div>
+          }
+          submitText="Confirm withdrawal initiation"
           onCancel={handleWithdrawCancel}
           onConfirm={handleWithdrawConfirm}
         />

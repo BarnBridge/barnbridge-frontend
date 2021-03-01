@@ -87,6 +87,10 @@ class SYSeniorBondContract extends Web3Contract {
   }
 
   transferFromSend(from: string, to: string, tokenId: number, gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('transferFrom', [from, to, tokenId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),

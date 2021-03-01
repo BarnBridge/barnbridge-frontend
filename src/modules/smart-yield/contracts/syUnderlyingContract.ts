@@ -67,14 +67,26 @@ class SYUnderlyingContract extends Web3Contract {
   }
 
   async getBalance(): Promise<BigNumber> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.call('balanceOf', [this.account]).then(value => new BigNumber(value));
   }
 
   async getAllowance(spenderAddress: string): Promise<BigNumber> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.call('allowance', [this.account, spenderAddress]).then(value => new BigNumber(value));
   }
 
   approve(enable: boolean, spenderAddress: string): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     const value = enable ? MAX_UINT_256 : ZERO_BIG_NUMBER;
 
     return this.send('approve', [spenderAddress, value], {

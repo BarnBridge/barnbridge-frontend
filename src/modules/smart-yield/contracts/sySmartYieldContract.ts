@@ -284,6 +284,10 @@ class SYSmartYieldContract extends Web3Contract {
   }
 
   async getBalance(): Promise<BigNumber> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.call('balanceOf', [this.account]).then(value => new BigNumber(value));
   }
 
@@ -352,6 +356,10 @@ class SYSmartYieldContract extends Web3Contract {
   }
 
   buyTokensSend(underlyingAmount: BigNumber, minTokens: BigNumber, deadline: number, gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('buyTokens', [underlyingAmount, minTokens, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
@@ -365,6 +373,10 @@ class SYSmartYieldContract extends Web3Contract {
     forDays: number,
     gasPrice: number,
   ): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('buyBond', [principalAmount, minGain, deadline, forDays], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
@@ -372,6 +384,10 @@ class SYSmartYieldContract extends Web3Contract {
   }
 
   buyJuniorBondSend(tokenAmount: BigNumber, maxMaturesAt: number, deadline: number, gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('buyJuniorBond', [tokenAmount, maxMaturesAt, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
@@ -379,6 +395,10 @@ class SYSmartYieldContract extends Web3Contract {
   }
 
   sellTokensSend(tokenAmount: BigNumber, minUnderlying: BigNumber, deadline: number, gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('sellTokens', [tokenAmount, minUnderlying, deadline], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
@@ -386,6 +406,10 @@ class SYSmartYieldContract extends Web3Contract {
   }
 
   redeemJuniorBondSend(jBondId: number, gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('redeemJuniorBond', [jBondId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
@@ -393,6 +417,10 @@ class SYSmartYieldContract extends Web3Contract {
   }
 
   redeemBondSend(sBondId: number, gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
     return this.send('redeemBond', [sBondId], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
