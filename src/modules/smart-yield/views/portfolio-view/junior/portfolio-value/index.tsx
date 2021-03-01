@@ -88,12 +88,12 @@ const PortfolioValue: React.FC = () => {
               separator=""
               labelFormatter={value => (
                 <Text type="p2" tag="span" weight="semibold" color="primary">
-                  {format(value, 'MM.dd.yyyy HH:mm')}
+                  {value && format(value, 'MM.dd.yyyy HH:mm')}
                 </Text>
               )}
               formatter={(value: number) => (
                 <Text type="p2" tag="span" weight="semibold" color="purple">
-                  {formatBigValue(value, 18)}
+                  {value && formatBigValue(value, 18)}
                 </Text>
               )}
             />

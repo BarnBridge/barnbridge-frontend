@@ -54,11 +54,11 @@ const PortfolioBalance: React.FC<Props> = ({
         strokeLinecap="square"
         percent={40}
         strokeWidth={8}
-        trailColor={color1}
-        strokeColor={color2}
+        trailColor={color2}
+        strokeColor={color1}
       />
       <div className="p-24 grid flow-col gap-16">
-        <div>
+        <div className={s.dataColumn} style={{ '--color': color1 } as React.CSSProperties}>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             {label1}
           </Text>
@@ -66,7 +66,7 @@ const PortfolioBalance: React.FC<Props> = ({
             {formatUSDValue(value1)}
           </Text>
         </div>
-        <div>
+        <div className={s.dataColumn} style={{ '--color': color2 } as React.CSSProperties}>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             {label2}
           </Text>
