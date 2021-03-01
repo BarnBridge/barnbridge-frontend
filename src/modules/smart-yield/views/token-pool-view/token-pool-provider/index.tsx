@@ -4,7 +4,7 @@ import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
+import { fetchSYPool, Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta } from 'modules/smart-yield/api';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
@@ -143,9 +143,16 @@ const TokenPoolProvider: React.FC<Props> = props => {
       const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
       underlyingContract.setProvider(wallet.provider);
       underlyingContract.setAccount(wallet.account);
-      return underlyingContract.approve(enable, pool.smartYieldAddress).then(reload);
+
+      return underlyingContract.approve(enable, pool.smartYieldAddress)
+        .then(() => {
+          return underlyingContract.getAllowance(pool.smartYieldAddress).then(allowance => {
+            pool.underlyingAllowance = allowance;
+          });
+        })
+        .then(reload)
     },
-    [state.pool, wallet.account],
+    [state.pool, wallet.provider, wallet.account],
   );
 
   const value = React.useMemo<ContextType>(() => {
