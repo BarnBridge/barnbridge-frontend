@@ -480,10 +480,10 @@
     <symbol id="icon__filter" viewBox="0 0 24 24" fill="none">
       <path
         d="M7.2 5.6h16M.8 5.6h1.6M.8 12h8.8M14.4 12h8.8M.8 18.4h16M21.6 18.4h1.6"
-        stroke="#AAAFB3" stroke-linecap="round" stroke-width="1.5"/>
+        stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
       <path
         d="M4.8 8a2.4 2.4 0 100-4.8 2.4 2.4 0 000 4.8zM12 14.4a2.4 2.4 0 100-4.8 2.4 2.4 0 000 4.8zM19.2 20.8a2.4 2.4 0 100-4.8 2.4 2.4 0 000 4.8z"
-        stroke="#AAAFB3" stroke-linecap="round" stroke-width="1.5"/>
+        stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
     </symbol>
     <!-- COMPOUND TOKEN -->
     <symbol id="icon__compound" viewBox="0 0 40 40" fill="none">

@@ -144,8 +144,8 @@ const TableColumns: ColumnsType<PoolEntity> = [
     title: null,
     render: function (_, entity) {
       return (
-        <NavLink to={`/smart-yield/${entity.smartYieldAddress}/deposit`}>
-          <Button type="ghost">Deposit</Button>
+        <NavLink to={`/smart-yield/${entity.smartYieldAddress}/deposit`} className="button-ghost">
+          Deposit
         </NavLink>
       );
     },

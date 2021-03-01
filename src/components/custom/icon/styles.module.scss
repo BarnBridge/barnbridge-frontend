@@ -32,4 +32,8 @@
   &.blue-color {
     color: var(--theme-blue-color);
   }
+
+  &.inherit-color {
+    color: inherit;
+  }
 }
