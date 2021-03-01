@@ -1,216 +1,153 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
+import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { SYOriginator, useSYPools } from 'modules/smart-yield/providers/sy-pools-provider';
-import SYControllerContract from 'modules/smart-yield/providers/sy-pools-provider/sy-controller/contract';
-import SYPoolCTokenContract from 'modules/smart-yield/providers/sy-pools-provider/sy-pool-c-token/contract';
-import SYPoolUTokenContract from 'modules/smart-yield/providers/sy-pools-provider/sy-pool-u-token/contract';
-import { SYContract } from 'modules/smart-yield/providers/sy-pools-provider/sy/contract';
+import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
+import { useWallet } from 'wallets/wallet';
 
-type Actions = {
-  enableToken: (enable: boolean) => Promise<void>;
-
-  juniorDeposit: (
-    underlyingAmount: BigNumber,
-    minTokens: BigNumber,
-    deadline: number,
-    gasPrice: number,
-  ) => Promise<void>;
-
-  seniorDeposit: (
-    principalAmount: BigNumber,
-    minGain: BigNumber,
-    deadline: number,
-    forDays: number,
-    gasPrice: number,
-  ) => Promise<void>;
-
-  juniorRegularWithdraw: (
-    tokenAmount: BigNumber,
-    maxMaturesAt: number,
-    deadline: number,
-    gasPrice: number,
-  ) => Promise<void>;
-
-  juniorInstantWithdraw: (
-    tokenAmount: BigNumber,
-    minUnderlying: BigNumber,
-    deadline: number,
-    gasPrice: number,
-  ) => Promise<void>;
+export type SYTokenPool = SYPool & {
+  meta?: SYPoolMeta;
+  market?: SYMarketMeta;
 };
 
-export type TokenPoolContextType = {
-  address?: string;
-  originator?: SYOriginator;
-  sy?: SYContract;
-  controller?: SYControllerContract;
-  cToken?: SYPoolCTokenContract;
-  uToken?: SYPoolUTokenContract;
-  actions: Actions;
+type State = {
+  loading: boolean;
+  pool?: SYTokenPool & {
+    underlyingBalance?: BigNumber;
+    smartYieldBalance?: BigNumber;
+    underlyingAllowance?: BigNumber;
+    underlyingMaxAllowed?: BigNumber;
+    underlyingIsAllowed?: boolean;
+  };
 };
 
-const TokenPoolContext = React.createContext<TokenPoolContextType>({
-  address: undefined,
-  originator: undefined,
-  sy: undefined,
-  controller: undefined,
-  cToken: undefined,
-  uToken: undefined,
+const InitialState: State = {
+  loading: false,
+  pool: undefined,
+};
+
+type ContextType = State & {
   actions: {
-    enableToken: () => Promise.reject(),
-    juniorDeposit: () => Promise.reject(),
-    seniorDeposit: () => Promise.reject(),
-    juniorRegularWithdraw: () => Promise.reject(),
-    juniorInstantWithdraw: () => Promise.reject(),
+    approveUnderlying: (enable: boolean) => Promise<void>;
+  };
+};
+
+const Context = React.createContext<ContextType>({
+  ...InitialState,
+  actions: {
+    approveUnderlying: () => Promise.reject(),
   },
 });
 
-export function useTokenPool(): TokenPoolContextType {
-  return React.useContext(TokenPoolContext);
+export function useTokenPool(): ContextType {
+  return React.useContext(Context);
 }
 
-type TokenPoolProviderProps = {
-  tokenAddress: string;
+type Props = {
+  poolAddress: string;
 };
 
-const TokenPoolProvider: React.FC<TokenPoolProviderProps> = props => {
-  const { tokenAddress, children } = props;
+const TokenPoolProvider: React.FC<Props> = props => {
+  const { poolAddress, children } = props;
 
-  const syPools = useSYPools();
+  const wallet = useWallet();
   const [reload, version] = useReload();
-
-  const originator = React.useMemo<SYOriginator | undefined>(() => {
-    return syPools.state.originators.find(originator => originator.address === tokenAddress);
-  }, [syPools.state.originators, tokenAddress, version]);
-
-  const sy = React.useMemo<SYContract | undefined>(() => {
-    return syPools.state.contracts.get(tokenAddress);
-  }, [syPools.state.contracts, tokenAddress, version]);
-
-  const controller = React.useMemo<SYControllerContract | undefined>(() => {
-    return sy?.controller;
-  }, [sy, version]);
-
-  const cToken = React.useMemo<SYPoolCTokenContract | undefined>(() => {
-    return sy?.pool?.cToken;
-  }, [sy?.pool?.cToken]);
-
-  const uToken = React.useMemo<SYPoolUTokenContract | undefined>(() => {
-    return sy?.pool?.uToken;
-  }, [sy, version]);
+  const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
-    if (sy) {
-      sy.on('update', () => {
-        console.log(sy);
+    setState(
+      mergeState<State>({
+        loading: true,
+      }),
+    );
+
+    (async () => {
+      try {
+        const pool = await fetchSYPool(poolAddress);
+
+        setState(
+          mergeState<State>({
+            loading: false,
+            pool: {
+              ...pool,
+              meta: Pools.get(pool.underlyingSymbol),
+              market: Markets.get(pool.protocolId),
+              get underlyingMaxAllowed(): BigNumber {
+                return BigNumber.min(
+                  this.underlyingAllowance ?? ZERO_BIG_NUMBER,
+                  this.underlyingBalance ?? ZERO_BIG_NUMBER,
+                );
+              },
+              get underlyingIsAllowed(): boolean | undefined {
+                return this.underlyingAllowance?.gt(ZERO_BIG_NUMBER);
+              },
+            },
+          }),
+        );
+      } catch {
+        setState(
+          mergeState<State>({
+            loading: false,
+            pool: undefined,
+          }),
+        );
+      }
+    })();
+  }, [poolAddress]);
+
+  React.useEffect(() => {
+    const { pool } = state;
+
+    if (pool) {
+      const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
+      underlyingContract.setProvider(wallet.provider);
+      underlyingContract.setAccount(wallet.account);
+      underlyingContract.getBalance().then(balance => {
+        pool.underlyingBalance = balance;
+        reload();
+      });
+      underlyingContract.getAllowance(pool.smartYieldAddress).then(allowance => {
+        pool.underlyingAllowance = allowance;
+        reload();
+      });
+
+      const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+      smartYieldContract.setAccount(wallet.account);
+      smartYieldContract.getBalance().then(balance => {
+        pool.smartYieldBalance = balance;
         reload();
       });
     }
-  }, [sy]);
+  }, [state.pool, wallet.account]);
 
-  const enableToken = React.useCallback(
+  const approveUnderlying = React.useCallback(
     (enable: boolean) => {
-      if (enable) {
-        return uToken?.approveMax() ?? Promise.reject();
+      const { pool } = state;
+
+      if (!pool) {
+        return Promise.reject();
       }
 
-      return uToken?.approveMin() ?? Promise.reject();
+      const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
+      return underlyingContract.approve(enable, pool.smartYieldAddress).then(reload);
     },
-    [uToken],
+    [state.pool, wallet.account],
   );
 
-  const juniorDeposit = React.useCallback(
-    (underlyingAmount: BigNumber, minTokens: BigNumber, deadline: number, gasPrice: number): Promise<void> => {
-      return (
-        sy?.buyTokensSend(underlyingAmount, minTokens, deadline, gasPrice).then(() => {
-          uToken?.reloadBalance();
-        }) ?? Promise.reject()
-      );
-    },
-    [sy, uToken],
-  );
-
-  const seniorDeposit = React.useCallback(
-    (
-      principalAmount: BigNumber,
-      minGain: BigNumber,
-      deadline: number,
-      forDays: number,
-      gasPrice: number,
-    ): Promise<void> => {
-      return (
-        sy?.buyBondSend(principalAmount, minGain, deadline, forDays, gasPrice).then(() => {
-          uToken?.reloadBalance();
-        }) ?? Promise.reject()
-      );
-    },
-    [sy, uToken],
-  );
-
-  const juniorRegularWithdraw = React.useCallback(
-    (tokenAmount: BigNumber, maxMaturesAt: number, deadline: number, gasPrice: number): Promise<void> => {
-      return (
-        sy?.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasPrice).then(() => {
-          uToken?.reloadBalance();
-        }) ?? Promise.reject()
-      );
-    },
-    [sy, uToken],
-  );
-
-  const juniorInstantWithdraw = React.useCallback(
-    (tokenAmount: BigNumber, minUnderlying: BigNumber, deadline: number, gasPrice: number): Promise<void> => {
-      console.log({
-        tokenAmount,
-        minUnderlying,
-        deadline,
-        gasPrice,
-      });
-      return (
-        sy?.sellTokensSend(tokenAmount, minUnderlying, deadline, gasPrice).then(() => {
-          uToken?.reloadBalance();
-        }) ?? Promise.reject()
-      );
-    },
-    [sy, uToken],
-  );
-
-  const value = React.useMemo(
-    () => ({
-      address: tokenAddress,
-      originator,
-      sy,
-      controller,
-      cToken,
-      uToken,
+  const value = React.useMemo<ContextType>(() => {
+    return {
+      ...state,
       actions: {
-        enableToken,
-        juniorDeposit,
-        seniorDeposit,
-        juniorRegularWithdraw,
-        juniorInstantWithdraw,
+        approveUnderlying,
       },
-      version,
-    }),
-    [
-      tokenAddress,
-      originator,
-      sy,
-      controller,
-      cToken,
-      uToken,
-      enableToken,
-      juniorDeposit,
-      seniorDeposit,
-      juniorRegularWithdraw,
-      juniorInstantWithdraw,
-      version,
-    ],
-  );
+    };
+  }, [state, approveUnderlying, version]);
 
-  return <TokenPoolContext.Provider value={value}>{children}</TokenPoolContext.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default TokenPoolProvider;

@@ -3,12 +3,17 @@ import Web3 from 'web3';
 
 import { useWindowState } from 'components/providers/window-state';
 
-export const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
+const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
 export const WEB3_RPC_WSS_URL = String(process.env.REACT_APP_WEB3_RPC_WSS_URL);
 export const WEB3_RPC_HTTPS_URL = String(process.env.REACT_APP_WEB3_RPC_HTTPS_URL);
 
-export const DEFAULT_CONTRACT_PROVIDER = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
-export const EthWeb3 = new Web3(DEFAULT_CONTRACT_PROVIDER);
+export const WEB3_WSS_PROVIDER = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
+export const WEB3_HTTPS_PROVIDER = new Web3.providers.HttpProvider(WEB3_RPC_HTTPS_URL);
+export const DEFAULT_CONTRACT_PROVIDER = WEB3_HTTPS_PROVIDER;
+
+export const HttpsWeb3 = new Web3(WEB3_HTTPS_PROVIDER);
+export const WssWeb3 = new Web3(WEB3_WSS_PROVIDER);
+export const EthWeb3 = HttpsWeb3;
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 
 export function getNetworkName(chainId: number | undefined): string {
@@ -33,7 +38,7 @@ export type EthWeb3ContextType = {
 
 const InitialContextValue = {
   chainId: CHAIN_ID,
-  web3: EthWeb3,
+  web3: HttpsWeb3,
   blockNumber: undefined,
   networkName: getNetworkName(CHAIN_ID),
 };
@@ -55,7 +60,7 @@ const EthWeb3Provider: React.FC = props => {
       return;
     }
 
-    EthWeb3.eth
+    WssWeb3.eth
       .getBlockNumber()
       .then(value => {
         if (value) {
@@ -64,7 +69,7 @@ const EthWeb3Provider: React.FC = props => {
       })
       .catch(Error);
 
-    const subscription = EthWeb3.eth.subscribe('newBlockHeaders');
+    const subscription = WssWeb3.eth.subscribe('newBlockHeaders');
 
     subscription
       .on('data', blockHeader => {
@@ -83,12 +88,13 @@ const EthWeb3Provider: React.FC = props => {
     };
   }, [windowState.isVisible]);
 
+  const value = React.useMemo(() => ({
+    ...InitialContextValue,
+    blockNumber,
+  }), [blockNumber]);
+
   return (
-    <EthWeb3Context.Provider
-      value={{
-        ...InitialContextValue,
-        blockNumber,
-      }}>
+    <EthWeb3Context.Provider value={value}>
       {children}
     </EthWeb3Context.Provider>
   );

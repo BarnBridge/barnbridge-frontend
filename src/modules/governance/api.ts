@@ -5,7 +5,7 @@ import { getHumanValue } from 'web3/utils';
 
 const GOVERNANCE_API_URL = String(process.env.REACT_APP_GOV_API_URL);
 
-export type PaginatedResult<T extends Record<string, any>> = {
+type PaginatedResult<T extends Record<string, any>> = {
   data: T[];
   meta: {
     count: number;
