@@ -186,6 +186,146 @@ const JuniorPortfolioInner: React.FC = () => {
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
 
+  const wallet = useWallet();
+  const poolsCtx = usePools();
+
+  const { pools } = poolsCtx;
+
+  const [state, setState] = React.useState<State>(InitialState);
+  const [redeemModal, setRedeemModal] = React.useState<LockedPositionsTableEntity | undefined>();
+
+  React.useEffect(() => {
+    if (!wallet.account) {
+      return;
+    }
+
+    setState(
+      mergeState<State>({
+        loadingActive: true,
+      }),
+    );
+
+    (async () => {
+      const result = await doSequential<PoolsSYPool>(pools, async pool => {
+        return new Promise<any>(async resolve => {
+          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+          smartYieldContract.setProvider(wallet.provider);
+          smartYieldContract.setAccount(wallet.account);
+
+          const smartYieldBalance = await smartYieldContract.getBalance();
+          const smartYieldAbond = await smartYieldContract.getAbond();
+
+          if (smartYieldBalance.isGreaterThan(ZERO_BIG_NUMBER)) {
+            resolve({
+              ...pool,
+              smartYieldBalance,
+              smartYieldAbond,
+            });
+          } else {
+            resolve(undefined);
+          }
+        });
+      });
+
+      setState(
+        mergeState<State>({
+          loadingActive: false,
+          dataActive: result.filter(Boolean),
+        }),
+      );
+    })();
+  }, [wallet.account, pools]);
+
+  React.useEffect(() => {
+    if (!wallet.account) {
+      return;
+    }
+
+    setState(
+      mergeState<State>({
+        loadingLocked: true,
+      }),
+    );
+
+    (async () => {
+      const result = await doSequential<PoolsSYPool>(pools, async pool => {
+        return new Promise<any>(async resolve => {
+          const juniorBondContract = new SYJuniorBondContract(pool.juniorBondAddress);
+          juniorBondContract.setProvider(wallet.provider);
+          juniorBondContract.setAccount(wallet.account);
+
+          const jBondIds = await juniorBondContract.getJuniorBondIds();
+
+          if (jBondIds.length === 0) {
+            return resolve(undefined);
+          }
+
+          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+          smartYieldContract.setProvider(wallet.provider);
+
+          const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
+
+          if (jBonds.length === 0) {
+            return resolve(undefined);
+          }
+
+          const items = jBonds.map(jBond => {
+            const item = {
+              pool,
+              jBond,
+              redeem: () => {
+                setRedeemModal(item);
+              },
+            };
+
+            return item;
+          });
+
+          resolve(items);
+        });
+      });
+
+      setState(
+        mergeState<State>({
+          loadingLocked: false,
+          dataLocked: result.flat().filter(Boolean),
+        }),
+      );
+    })();
+  }, [wallet.account, pools]);
+
+  function handleRedeemCancel() {
+    setRedeemModal(undefined);
+  }
+
+  function handleRedeemConfirm(args: ConfirmTxModalArgs): Promise<void> {
+    if (!redeemModal) {
+      return Promise.reject();
+    }
+
+    const { pool, jBond } = redeemModal;
+
+    const contract = new SYSmartYieldContract(pool.smartYieldAddress);
+    contract.setProvider(wallet.provider);
+    contract.setAccount(wallet.account);
+
+    return contract.redeemJuniorBondSend(jBond.jBondId, args.gasPrice).then(() => {
+      // reload();
+    });
+  }
+
+  const activeBalance = state.dataActive?.reduce((a, c) => {
+    return a.plus(getHumanValue(c.smartYieldBalance, c.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
+  }, ZERO_BIG_NUMBER);
+
+  const lockedBalance = state.dataLocked?.reduce((a, c) => {
+    return a.plus(getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
+  }, ZERO_BIG_NUMBER);
+
+  const apy = state.dataActive[0]?.state.juniorApy; /// calculate by formula
+
+  const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
+
   return (
     <>
       <div className={s.portfolioContainer}>
