@@ -156,8 +156,8 @@ const SeniorPortfolioInner: React.FC = () => {
             aggregated={null}
             aggregatedColor="green"
             data={[
-              ['Principal', principal?.toNumber(), 'var(--theme-green700-color)'],
-              ['Gain', gain?.toNumber(), 'var(--theme-green-color)'],
+              ['Principal', principal?.toNumber(), 'var(--theme-green-color)'],
+              ['Gain', gain?.toNumber(), 'var(--theme-green700-color)'],
             ]}
           />
         </Antd.Spin>
@@ -166,7 +166,7 @@ const SeniorPortfolioInner: React.FC = () => {
             title="Senior Portfolio balance"
             data={state.dataChart}
             color="var(--theme-green-color)"
-            gradientColor="var(--theme-green-color-rgb)"
+            gradientColor="var(--theme-green700-rgb)"
           />
         </Antd.Spin>
       </div>

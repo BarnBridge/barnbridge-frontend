@@ -82,8 +82,8 @@ const PortfolioOverview: React.FC = () => {
             aggregated={null}
             aggregatedColor="red"
             data={[
-              ['Senior balance', lastData?.seniorValue, 'var(--theme-purple-color)'],
-              ['Junior balance', lastData?.juniorValue, 'var(--theme-green-color)'],
+              ['Senior balance', lastData?.seniorValue, 'var(--theme-green-color)'],
+              ['Junior balance', lastData?.juniorValue, 'var(--theme-purple-color)'],
             ]}
           />
         </Antd.Spin>
@@ -91,8 +91,8 @@ const PortfolioOverview: React.FC = () => {
           <PortfolioValue
             title="Portfolio balance"
             data={state.data}
-            color="var(--theme-red-color)"
-            gradientColor="var(--theme-red-color-rgb)"
+            color="var(--theme-green-color)"
+            gradientColor="var(--theme-purple-rgb)"
           />
         </Antd.Spin>
       </div>

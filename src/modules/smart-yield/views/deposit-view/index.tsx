@@ -15,7 +15,7 @@ import s from './s.module.scss';
 const DepositView: React.FC = () => {
   return (
     <div className={s.container}>
-      <Card>
+      <Card style={{ flexGrow: 1 }}>
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
           Select your preferred tranche
         </Text>

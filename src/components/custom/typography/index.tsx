@@ -15,6 +15,7 @@ export type TextProps = {
   ellipsis?: boolean;
   wrap?: boolean;
   className?: string;
+  style?: Object;
 };
 
 export const Text: React.FC<TextProps> = React.memo(props => {

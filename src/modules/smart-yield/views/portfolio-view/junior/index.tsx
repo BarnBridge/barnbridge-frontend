@@ -2,11 +2,12 @@ import React from 'react';
 import format from 'date-fns/format';
 import { formatBigValue, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import * as Antd from 'antd';
-import Button from 'components/antd/button';
 import Card from 'components/antd/card';
+import Form from 'components/antd/form';
+import Popover from 'components/antd/popover';
+import Select from 'components/antd/select';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
-import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
@@ -42,6 +43,8 @@ const InitialState: State = {
 
 const JuniorPortfolioInner: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('locked');
+  const [filtersVisible, setFiltersVisible] = React.useState<boolean>(false);
+  const [filtersActiveVisible, setFiltersActiveVisible] = React.useState<boolean>(false);
 
   const wallet = useWallet();
   const poolsCtx = usePools();
@@ -192,8 +195,8 @@ const JuniorPortfolioInner: React.FC = () => {
             aggregated={apy * 100}
             aggregatedColor="purple"
             data={[
-              ['Active balance ', activeBalance?.toNumber(), 'var(--theme-purple700-color)'],
-              ['Locked balance', lockedBalance?.toNumber(), 'var(--theme-purple-color)'],
+              ['Active balance ', activeBalance?.toNumber(), 'var(--theme-purple-color)'],
+              ['Locked balance', lockedBalance?.toNumber(), 'var(--theme-purple700-color)'],
             ]}
           />
         </Antd.Spin>
@@ -206,10 +209,18 @@ const JuniorPortfolioInner: React.FC = () => {
           activeKey={activeTab}
           onChange={setActiveTab}
           tabBarExtraContent={
-            <Button type="light">
-              <Icons name="filter" />
-              Filter
-            </Button>
+            <Popover
+              title="Filters"
+              overlayStyle={{ width: 348 }}
+              content={<Filters />}
+              visible={filtersVisible}
+              onVisibleChange={setFiltersVisible}
+              placement="bottomRight">
+              <button type="button" className="button-ghost-monochrome ml-auto mb-12">
+                <Icons name="filter" className="mr-8" color="inherit" />
+                Filter
+              </button>
+            </Popover>
           }>
           <Tabs.Tab key="locked" tab="Locked positions">
             <LockedPositionsTable loading={state.loadingLocked} data={state.dataLocked} />
@@ -254,21 +265,26 @@ const JuniorPortfolioInner: React.FC = () => {
           </Tabs.Tab>
         </Tabs>
       </Card>
-      <Card
-        noPaddingBody
-        title={
-          <Grid flow="col" colsTemplate="1fr max-content">
-            <Text type="p1" weight="semibold" color="primary">
-              Active positions
-            </Text>
-            <Button type="light">
-              <Icons name="filter" />
+      <div className="card">
+        <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 24px' }}>
+          <Text type="p1" weight="semibold" color="primary">
+            Active positions
+          </Text>
+          <Popover
+            title="Filters"
+            overlayStyle={{ width: 348 }}
+            content={<Filters />}
+            visible={filtersActiveVisible}
+            onVisibleChange={setFiltersActiveVisible}
+            placement="bottomRight">
+            <button type="button" className="button-ghost-monochrome ml-auto">
+              <Icons name="filter" className="mr-8" color="inherit" />
               Filter
-            </Button>
-          </Grid>
-        }>
+            </button>
+          </Popover>
+        </div>
         <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
-      </Card>
+      </div>
     </>
   );
 };
@@ -282,3 +298,93 @@ const JuniorPortfolio: React.FC = () => {
 };
 
 export default JuniorPortfolio;
+
+const originatorFilterOptions = [
+  {
+    label: 'All originators',
+    value: 1,
+  },
+  {
+    label: 'All originators 2',
+    value: 2,
+  },
+];
+
+const tokenFilterOptions = [
+  {
+    label: 'All tokens',
+    value: 1,
+  },
+  {
+    label: 'All tokens 2',
+    value: 2,
+  },
+];
+
+const transactionFilterOptions = [
+  {
+    label: 'All transactions',
+    value: 1,
+  },
+  {
+    label: 'All transactions 2',
+    value: 2,
+  },
+];
+
+type FormValues = {
+  originator?: string;
+  token?: string;
+  transactionType?: string;
+};
+
+const Filters: React.FC = () => {
+  const [form] = Antd.Form.useForm<FormValues>();
+
+  const handleFinish = React.useCallback((values: FormData) => {
+    console.log(values);
+  }, []);
+
+  return (
+    <Form
+      form={form}
+      initialValues={{
+        originator: originatorFilterOptions[0].value,
+        token: tokenFilterOptions[0].value,
+        transactionType: transactionFilterOptions[0].value,
+      }}
+      validateTrigger={['onSubmit']}
+      onFinish={handleFinish}>
+      <Form.Item label="Originator" name="originator" className="mb-32">
+        <Select
+          loading={false}
+          disabled={false}
+          options={originatorFilterOptions}
+          fixScroll
+          style={{ width: '100%' }}
+        />
+      </Form.Item>
+      <Form.Item label="Token" name="token" className="mb-32">
+        <Select loading={false} disabled={false} options={tokenFilterOptions} fixScroll style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
+        <Select
+          loading={false}
+          disabled={false}
+          options={transactionFilterOptions}
+          fixScroll
+          style={{ width: '100%' }}
+        />
+      </Form.Item>
+
+      <div className="grid flow-col align-center justify-space-between">
+        <button type="button" onClick={() => form.resetFields()} className="button-text">
+          Reset filters
+        </button>
+        <button type="submit" className="button-primary">
+          Apply filters
+        </button>
+      </div>
+    </Form>
+  );
+};
