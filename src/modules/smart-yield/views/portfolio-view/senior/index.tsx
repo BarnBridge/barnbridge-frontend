@@ -22,8 +22,8 @@ const SeniorPortfolio: React.FC = () => {
           aggregated={6.37}
           aggregatedColor="green"
           data={[
-            ['Deposited ',  50883.4489, 'var(--theme-green700-color)'],
-            ['Redeemable', 55813.4487, 'var(--theme-green-color)'],
+            ['Deposited ',  50883.4489, 'var(--theme-green-color)'],
+            ['Redeemable', 55813.4487, 'var(--theme-green700-color)'],
           ]}
         />
         <PortfolioValue />

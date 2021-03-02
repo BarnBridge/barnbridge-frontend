@@ -32,8 +32,8 @@ const JuniorPortfolio: React.FC = () => {
           aggregated={20.44}
           aggregatedColor="purple"
           data={[
-            ['Active balance ', 95883.4489, 'var(--theme-purple700-color)'],
-            ['Locked blanace', 7595.2219, 'var(--theme-purple-color)'],
+            ['Active balance ', 95883.4489, 'var(--theme-purple-color)'],
+            ['Locked blanace', 7595.2219, 'var(--theme-purple700-color)'],
           ]}
         />
         <PortfolioValue />
