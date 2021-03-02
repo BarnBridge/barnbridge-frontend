@@ -3,12 +3,11 @@ import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router
 
 import Tabs from 'components/antd/tabs';
 import Icons from 'components/custom/icon';
-import TokenPoolView from 'modules/smart-yield/views/token-pool-view';
+import DepositView from 'modules/smart-yield/views/deposit-view';
+import WithdrawView from 'modules/smart-yield/views/withdraw-view';
 
 import OverviewView from './views/overview-view';
 import PortfolioView from './views/portfolio-view';
-
-import { isValidAddress } from 'utils';
 
 import s from './s.module.scss';
 
@@ -29,7 +28,10 @@ const SmartYieldView: React.FC = () => {
   }
 
   React.useEffect(() => {
-    if (isValidAddress(vt)) {
+    if (vt === 'deposit') {
+      setActiveTab('overview');
+      return;
+    } else if (vt === 'withdraw') {
       setActiveTab('portfolio');
       return;
     }
@@ -63,7 +65,8 @@ const SmartYieldView: React.FC = () => {
         <Switch>
           <Route path="/smart-yield/overview" exact component={OverviewView} />
           <Route path="/smart-yield/portfolio" component={PortfolioView} />
-          <Route path="/smart-yield/:address" component={TokenPoolView} />
+          <Route path="/smart-yield/deposit" component={DepositView} />
+          <Route path="/smart-yield/withdraw" component={WithdrawView} />
           <Redirect to="/smart-yield/overview" />
         </Switch>
       </div>

@@ -4,7 +4,7 @@ import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { fetchSYPool, Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta } from 'modules/smart-yield/api';
+import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
@@ -16,17 +16,23 @@ export type SYTokenPool = SYPool & {
 
 type State = {
   loading: boolean;
-  pool?: SYTokenPool & {
-    underlyingBalance?: BigNumber;
-    smartYieldBalance?: BigNumber;
-    underlyingAllowance?: BigNumber;
-    underlyingMaxAllowed?: BigNumber;
-    underlyingIsAllowed?: boolean;
-  };
+  marketId?: string;
+  tokenId?: string;
+  pool?:
+    | (SYTokenPool & {
+        underlyingBalance?: BigNumber;
+        smartYieldBalance?: BigNumber;
+        underlyingAllowance?: BigNumber;
+        underlyingMaxAllowed?: BigNumber;
+        underlyingIsAllowed?: boolean;
+      })
+    | null;
 };
 
 const InitialState: State = {
   loading: false,
+  marketId: undefined,
+  tokenId: undefined,
   pool: undefined,
 };
 
@@ -48,11 +54,12 @@ export function useTokenPool(): ContextType {
 }
 
 type Props = {
-  poolAddress: string;
+  market: string;
+  token: string;
 };
 
 const TokenPoolProvider: React.FC<Props> = props => {
-  const { poolAddress, children } = props;
+  const { market, token, children } = props;
 
   const wallet = useWallet();
   const [reload, version] = useReload();
@@ -61,13 +68,22 @@ const TokenPoolProvider: React.FC<Props> = props => {
   React.useEffect(() => {
     setState(
       mergeState<State>({
+        marketId: market,
+        tokenId: token,
         loading: true,
+        pool: undefined,
       }),
     );
 
     (async () => {
       try {
-        const pool = await fetchSYPool(poolAddress);
+        const pools = await fetchSYPools(market);
+        const pool = pools.find(pool => pool.underlyingSymbol === token);
+
+        if (!pool) {
+          await Promise.reject();
+          return;
+        }
 
         setState(
           mergeState<State>({
@@ -92,12 +108,12 @@ const TokenPoolProvider: React.FC<Props> = props => {
         setState(
           mergeState<State>({
             loading: false,
-            pool: undefined,
+            pool: null,
           }),
         );
       }
     })();
-  }, [poolAddress]);
+  }, [market, token]);
 
   React.useEffect(() => {
     const { pool } = state;
@@ -144,13 +160,14 @@ const TokenPoolProvider: React.FC<Props> = props => {
       underlyingContract.setProvider(wallet.provider);
       underlyingContract.setAccount(wallet.account);
 
-      return underlyingContract.approve(enable, pool.providerAddress)
+      return underlyingContract
+        .approve(enable, pool.providerAddress)
         .then(() => {
           return underlyingContract.getAllowance(pool.providerAddress).then(allowance => {
             pool.underlyingAllowance = allowance;
           });
         })
-        .then(reload)
+        .then(reload);
     },
     [state.pool, wallet.provider, wallet.account],
   );

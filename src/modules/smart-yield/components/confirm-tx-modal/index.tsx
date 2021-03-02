@@ -53,8 +53,7 @@ const ConfirmTxModal: React.FC<Props> = props => {
         gasPrice: gasPrice.value,
       });
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setSubmitting(false);
   }

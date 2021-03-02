@@ -144,7 +144,11 @@ const TableColumns: ColumnsType<PoolEntity> = [
     title: null,
     render: function (_, entity) {
       return (
-        <NavLink to={`/smart-yield/${entity.smartYieldAddress}/deposit`}>
+        <NavLink
+          to={{
+            pathname: `/smart-yield/deposit`,
+            search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
+          }}>
           <Button type="ghost">Deposit</Button>
         </NavLink>
       );

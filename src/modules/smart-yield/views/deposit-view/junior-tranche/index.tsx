@@ -39,7 +39,7 @@ const JuniorTranche: React.FC = () => {
   const poolCtx = useTokenPool();
   const [form] = Antd.Form.useForm<FormData>();
 
-  const { pool } = poolCtx;
+  const { pool, marketId, tokenId } = poolCtx;
 
   const [isSaving, setSaving] = React.useState<boolean>(false);
   const [depositModalVisible, showDepositModal] = React.useState<boolean>();
@@ -49,7 +49,10 @@ const JuniorTranche: React.FC = () => {
   }, []);
 
   function handleCancel() {
-    history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit`);
+    history.push({
+      pathname: `/smart-yield/deposit`,
+      search: `?m=${marketId}&t=${tokenId}`,
+    });
   }
 
   function handleSubmit() {

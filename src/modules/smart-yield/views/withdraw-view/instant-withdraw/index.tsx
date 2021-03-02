@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getNonHumanValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -34,10 +34,13 @@ const InstantWithdraw: React.FC = () => {
 
   const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
 
-  const { pool } = poolCtx;
+  const { pool, marketId, tokenId } = poolCtx;
 
   function handleCancel() {
-    history.push(`/smart-yield/${pool?.smartYieldAddress}/withdraw`);
+    history.push({
+      pathname: `/smart-yield/withdraw`,
+      search: `?m=${marketId}&t=${tokenId}`,
+    });
   }
 
   function handleSubmit() {

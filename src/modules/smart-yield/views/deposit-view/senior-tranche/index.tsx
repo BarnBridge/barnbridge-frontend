@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { addMonths, differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
+import { differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -10,7 +10,6 @@ import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import GasFeeList from 'components/custom/gas-fee-list';
-import Grid from 'components/custom/grid';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
@@ -20,14 +19,7 @@ import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldCont
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
-import {
-  DURATION_1_MONTH,
-  DURATION_1_WEEK,
-  DURATION_2_WEEK,
-  DURATION_3_MONTH,
-  DURATION_3_WEEK, DURATION_4_WEEK,
-  getLockEndDate
-} from 'utils/date';
+import { DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_WEEK, DURATION_4_WEEK, getLockEndDate } from 'utils/date';
 
 type FormData = {
   amount?: BigNumber;
@@ -55,7 +47,7 @@ const SeniorTranche: React.FC = () => {
   const poolCtx = useTokenPool();
   const [form] = Antd.Form.useForm<FormData>();
 
-  const { pool } = poolCtx;
+  const { pool, marketId, tokenId } = poolCtx;
 
   const [isSaving, setSaving] = React.useState<boolean>(false);
   const [depositModalVisible, showDepositModal] = React.useState<boolean>();
@@ -65,7 +57,10 @@ const SeniorTranche: React.FC = () => {
   }, []);
 
   function handleCancel() {
-    history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit`);
+    history.push({
+      pathname: `/smart-yield/deposit`,
+      search: `?m=${marketId}&t=${tokenId}`,
+    });
   }
 
   function handleSubmit() {
@@ -132,7 +127,9 @@ const SeniorTranche: React.FC = () => {
       <Form.Item name="lockEndDate" label="Lock end date" rules={[{ required: true, message: 'Required' }]}>
         <DatePicker
           showNow={false}
-          disabledDate={(date: Date) => isBefore(date, new Date()) || isAfter(date, getLockEndDate(new Date(), DURATION_4_WEEK)!)}
+          disabledDate={(date: Date) =>
+            isBefore(date, new Date()) || isAfter(date, getLockEndDate(new Date(), DURATION_4_WEEK)!)
+          }
           format="DD/MM/YYYY"
           size="large"
           disabled={isSaving}

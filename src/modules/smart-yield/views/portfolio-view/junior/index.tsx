@@ -1,7 +1,8 @@
 import React from 'react';
-import format from 'date-fns/format';
-import { formatBigValue, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import * as Antd from 'antd';
+import format from 'date-fns/format';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Tabs from 'components/antd/tabs';

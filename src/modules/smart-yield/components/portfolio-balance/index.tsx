@@ -23,7 +23,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     data: [[label1, value1, color1], [label2, value2, color2]],
   } = props;
 
-  const progress = value1 && value2 ? value1 * 100 / (value1 + value2) : undefined;
+  const progress = value1 && value2 ? (value1 * 100) / (value1 + value2) : undefined;
 
   return (
     <Card noPaddingBody>
