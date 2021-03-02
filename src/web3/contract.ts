@@ -50,15 +50,11 @@ class Web3Contract extends EventEmitter {
   }
 
   setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {
-    // if (this.ethContract.currentProvider !== provider) {
-      this.ethContract.setProvider(provider);
-      this.emit('changeProvider', provider);
-    // }
+    this.ethContract.setProvider(provider);
   }
 
   setAccount(account?: string): void {
     this.account = account;
-    this.emit('changeAccount', account);
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
@@ -128,47 +124,42 @@ class Web3Contract extends EventEmitter {
   }
 
   call(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
-    return this.execute('call', method, methodArgs, sendArgs);
+    const contractMethod = this.ethContract.methods[method];
+
+    return contractMethod?.(...methodArgs)?.call(sendArgs) ?? Promise.reject(undefined);
   }
 
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
-    return this.execute('send', method, methodArgs, sendArgs);
-  }
+    const contractMethod = this.ethContract.methods[method];
 
-  private execute(
-    type: 'call' | 'send',
-    method: string,
-    methodArgs: any[] = [],
-    sendArgs: Record<string, any> = {},
-  ): Promise<any> {
-    return new Promise((resolve, reject) => {
-      const contractMethod = this.ethContract.methods[method];
+    return (
+      contractMethod?.(...methodArgs)
+        ?.send(sendArgs, async (err: Error, transactionHash: string) => {
+          this.emit('tx:transactionHash', transactionHash, this, {
+            method,
+            methodArgs,
+            sendArgs,
+          });
+        })
+        .then((result: any) => {
+          this.emit('tx:complete', result, this, {
+            method,
+            methodArgs,
+            sendArgs,
+          });
 
-      if (!contractMethod) {
-        return resolve(undefined);
-      }
+          return result;
+        })
+        .catch((error: Error) => {
+          this.emit('tx:failure', error, this, {
+            method,
+            methodArgs,
+            sendArgs,
+          });
 
-      const onError = (err: Error) => {
-        this.emit('error', err, this, {
-          method,
-          methodArgs,
-          sendArgs,
-        });
-        reject(err);
-      };
-
-      let pr = contractMethod(...methodArgs)?.[type](sendArgs, async (err: Error) => {
-        if (err) {
-          reject(err);
-        }
-      });
-
-      pr.then(resolve);
-
-      if (type === 'send') {
-        pr.catch(onError);
-      }
-    });
+          return Promise.reject(error);
+        }) ?? Promise.reject(undefined)
+    );
   }
 }
 

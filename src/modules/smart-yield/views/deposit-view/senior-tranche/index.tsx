@@ -3,18 +3,19 @@ import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getEtherscanTxUrl, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
-import GasFeeList from 'components/custom/gas-fee-list';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
-import ConfirmTxModal from 'modules/smart-yield/components/confirm-tx-modal';
+import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
+import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
+import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import { useWallet } from 'wallets/wallet';
@@ -24,9 +25,6 @@ import { DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_WEEK, DURATION_4_WEEK, get
 type FormData = {
   amount?: BigNumber;
   lockEndDate?: Date;
-  gasPrice?: {
-    value: number;
-  };
   slippageTolerance?: number;
   deadline?: number;
 };
@@ -34,12 +32,27 @@ type FormData = {
 const InitialFormValues: FormData = {
   amount: undefined,
   lockEndDate: undefined,
-  gasPrice: undefined,
   slippageTolerance: 0.5,
   deadline: 20,
 };
 
 const DURATION_OPTIONS = [DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_WEEK, DURATION_4_WEEK];
+
+type State = {
+  isSaving: boolean;
+  depositModalVisible: boolean;
+  statusModalVisible: boolean;
+  txState: 'progress' | 'success' | 'failure';
+  txHash?: string;
+};
+
+const InitialState: State = {
+  isSaving: false,
+  depositModalVisible: false,
+  statusModalVisible: false,
+  txState: 'progress',
+  txHash: undefined,
+};
 
 const SeniorTranche: React.FC = () => {
   const history = useHistory();
@@ -49,8 +62,8 @@ const SeniorTranche: React.FC = () => {
 
   const { pool, marketId, tokenId } = poolCtx;
 
-  const [isSaving, setSaving] = React.useState<boolean>(false);
-  const [depositModalVisible, showDepositModal] = React.useState<boolean>();
+  const [state, setState] = React.useState<State>(InitialState);
+  const formDisabled = !pool?.underlyingIsAllowed;
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
@@ -64,11 +77,34 @@ const SeniorTranche: React.FC = () => {
   }
 
   function handleSubmit() {
-    showDepositModal(true);
+    setState(
+      mergeState<State>({
+        depositModalVisible: true,
+      }),
+    );
   }
 
   function handleDepositCancel() {
-    showDepositModal(false);
+    setState(
+      mergeState<State>({
+        depositModalVisible: false,
+      }),
+    );
+  }
+
+  function handleStatusModalCancel() {
+    setState(
+      mergeState<State>({
+        statusModalVisible: false,
+      }),
+    );
+  }
+
+  function handleTxSuccess() {
+    history.push({
+      pathname: `/smart-yield/portfolio/senior`,
+      search: `?m=${marketId}&t=${tokenId}`,
+    });
   }
 
   async function handleDepositConfirm({ gasPrice }: any) {
@@ -82,7 +118,11 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
-    setSaving(true);
+    setState(
+      mergeState<State>({
+        isSaving: true,
+      }),
+    );
 
     const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
@@ -100,11 +140,42 @@ const SeniorTranche: React.FC = () => {
         .multipliedBy(minGain);
       const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
 
-      await smartYieldContract.buyBondSend(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice.value);
+      smartYieldContract
+        .on('tx:transactionHash', (txHash: string) => {
+          setState(
+            mergeState<State>({
+              depositModalVisible: false,
+              statusModalVisible: true,
+              txState: 'progress',
+              txHash,
+            }),
+          );
+        })
+        .on('tx:complete', () => {
+          setState(
+            mergeState<State>({
+              txState: 'success',
+            }),
+          );
+        })
+        .on('tx:failure', () => {
+          setState(
+            mergeState<State>({
+              depositModalVisible: false,
+              txState: 'failure',
+            }),
+          );
+        });
+
+      await smartYieldContract.buyBondSend(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();
     } catch {}
 
-    setSaving(false);
+    setState(
+      mergeState<State>({
+        isSaving: false,
+      }),
+    );
   }
 
   return (
@@ -120,7 +191,7 @@ const SeniorTranche: React.FC = () => {
           max={getHumanValue(pool?.underlyingMaxAllowed, pool?.underlyingDecimals)}
           maximumFractionDigits={pool?.underlyingDecimals}
           displayDecimals={4}
-          disabled={isSaving}
+          disabled={formDisabled || state.isSaving}
           slider
         />
       </Form.Item>
@@ -132,7 +203,7 @@ const SeniorTranche: React.FC = () => {
           }
           format="DD/MM/YYYY"
           size="large"
-          disabled={isSaving}
+          disabled={formDisabled || state.isSaving}
         />
       </Form.Item>
       <Form.Item label="Add lock duration" shouldUpdate>
@@ -142,7 +213,7 @@ const SeniorTranche: React.FC = () => {
               <Button
                 key={opt}
                 type="select"
-                disabled={isSaving}
+                disabled={formDisabled || state.isSaving}
                 onClick={() => {
                   form.setFieldsValue({
                     lockEndDate: getLockEndDate(startOfDay(new Date()), opt),
@@ -155,13 +226,6 @@ const SeniorTranche: React.FC = () => {
             ))}
           </div>
         )}
-      </Form.Item>
-      <Form.Item
-        name="gasPrice"
-        label="Gas Fee (Gwei)"
-        hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-        rules={[{ required: true, message: 'Required' }]}>
-        <GasFeeList disabled={isSaving} />
       </Form.Item>
       <Form.Item name="slippageTolerance" noStyle hidden>
         <Input />
@@ -183,17 +247,17 @@ const SeniorTranche: React.FC = () => {
         }}
       </Form.Item>
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <Button type="light" disabled={isSaving} onClick={handleCancel}>
+        <Button type="light" disabled={formDisabled || state.isSaving} onClick={handleCancel}>
           <Icon name="left-arrow" width={9} height={8} />
           Cancel
         </Button>
-        <Button type="primary" htmlType="submit" loading={isSaving}>
+        <Button type="primary" htmlType="submit" disabled={formDisabled} loading={state.isSaving}>
           Deposit
         </Button>
       </div>
 
-      {depositModalVisible && (
-        <ConfirmTxModal
+      {state.depositModalVisible && (
+        <TxConfirmModal
           visible
           title="Confirm your deposit"
           header={
@@ -235,6 +299,16 @@ const SeniorTranche: React.FC = () => {
           submitText="Confirm your deposit"
           onCancel={handleDepositCancel}
           onConfirm={handleDepositConfirm}
+        />
+      )}
+
+      {state.statusModalVisible && (
+        <TxStatusModal
+          visible
+          state={state.txState}
+          txLink={state.txHash && getEtherscanTxUrl(state.txHash)}
+          onSuccessClick={handleTxSuccess}
+          onCancel={handleStatusModalCancel}
         />
       )}
     </Form>

@@ -71,7 +71,10 @@ export type IconNames =
   | 'withdrawal_regular'
   | 'withdrawal_instant'
   | 'statistics'
-  | 'filter';
+  | 'filter'
+  | 'tx-progress'
+  | 'tx-success'
+  | 'tx-failure';
 
 export type IconsProps = {
   name: IconNames;

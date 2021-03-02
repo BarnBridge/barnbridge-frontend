@@ -13,7 +13,7 @@ import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
+import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
@@ -172,7 +172,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       </div>
 
       {redeemModalVisible && (
-        <ConfirmTxModal
+        <TxConfirmModal
           visible
           title="Redeem your senior bond"
           header={
@@ -213,7 +213,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         />
       )}
       {transferModalVisible && (
-        <ConfirmTxModal
+        <TxConfirmModal
           visible
           title="Transfer your bond"
           width={680}
@@ -265,7 +265,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
               <TokenInput disabled={submitting} />
             </Form.Item>
           )}
-        </ConfirmTxModal>
+        </TxConfirmModal>
       )}
     </Card>
   );

@@ -32,7 +32,7 @@ type Props = ModalProps & {
   onConfirm: <A extends ConfirmTxModalArgs>(args: A) => Promise<void>;
 };
 
-const ConfirmTxModal: React.FC<Props> = props => {
+const TxConfirmModal: React.FC<Props> = props => {
   const { header, submitText, children, onConfirm, ...modalProps } = props;
 
   const [form] = Antd.Form.useForm<FormValues>();
@@ -83,4 +83,4 @@ const ConfirmTxModal: React.FC<Props> = props => {
   );
 };
 
-export default ConfirmTxModal;
+export default TxConfirmModal;
