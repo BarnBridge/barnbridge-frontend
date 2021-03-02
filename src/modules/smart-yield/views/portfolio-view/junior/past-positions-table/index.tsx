@@ -4,6 +4,7 @@ import format from 'date-fns/format';
 import { formatBigValue, formatUSDValue } from 'web3/utils';
 
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
@@ -59,9 +60,11 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.underlyingOut, 18)}
-        </Text>
+        <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(entity.underlyingOut)}
+          </Text>
+        </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
           {formatUSDValue(entity.underlyingOut)}
         </Text>

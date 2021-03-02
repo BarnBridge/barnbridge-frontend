@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import format from 'date-fns/format';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -7,36 +7,19 @@ import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Progress from 'components/antd/progress';
+import Tooltip from 'components/antd/tooltip';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import { mergeState } from 'hooks/useMergeState';
 import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
-import { doSequential, getFormattedDuration } from 'utils';
-
-import s from './s.module.scss';
-
-type ListEntity = {
-  pool: PoolsSYPool;
-  sBond: SYSeniorBondToken;
-};
-
-type State = {
-  loading: boolean;
-  data: ListEntity[];
-};
-
-const InitialState: State = {
-  loading: false,
-  data: [],
-};
+import { getFormattedDuration } from 'utils';
 
 type ActivePositionProps = {
   pool: PoolsSYPool;
@@ -128,18 +111,22 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <Text type="small" weight="semibold" color="secondary">
           Deposited
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(deposited)}
-        </Text>
+        <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(deposited)}
+          </Text>
+        </Tooltip>
       </div>
       <Divider />
       <div className="p-24">
         <Text type="small" weight="semibold" color="secondary">
           Redeemable
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(redeemable)}
-        </Text>
+        <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(redeemable)}
+          </Text>
+        </Tooltip>
       </div>
       <Divider />
       <div className="p-24">
@@ -194,25 +181,21 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(redeemable)} {pool.underlyingSymbol}
-                </Text>
+                <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(redeemable)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
                   Deposited amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(deposited)} {pool.underlyingSymbol}
-                </Text>
-              </div>
-              <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Maturity in
-                </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {getFormattedDuration(0, maturesAt)}
-                </Text>
+                <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(deposited)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
@@ -233,22 +216,35 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <ConfirmTxModal
           visible
           title="Transfer your bond"
+          width={680}
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(redeemable)} {pool.underlyingSymbol}
+                <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(redeemable)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Deposited amount
                 </Text>
+                <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatBigValue(deposited)} {pool.underlyingSymbol}
+                  </Text>
+                </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
                   Maturity date
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {getFormattedDuration(0, maturesAt)} days
+                  {format(maturesAt, 'dd.MM.yyyy')}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -275,74 +271,4 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   );
 };
 
-const ActivePositionsList: React.FC = () => {
-  const wallet = useWallet();
-  const pools = usePools();
-
-  const [state, setState] = React.useState<State>(InitialState);
-
-  React.useEffect(() => {
-    if (!wallet.account) {
-      return;
-    }
-
-    setState(
-      mergeState<State>({
-        loading: true,
-      }),
-    );
-
-    (async () => {
-      const result = await doSequential<PoolsSYPool>(pools.pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
-          seniorBondContract.setProvider(wallet.provider);
-          seniorBondContract.setAccount(wallet.account);
-
-          const sBondIds = await seniorBondContract.getSeniorBondIds();
-
-          if (sBondIds.length === 0) {
-            return resolve(undefined);
-          }
-
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
-
-          const sBonds = await smartYieldContract.getSeniorBonds(sBondIds);
-
-          if (sBonds.length === 0) {
-            return resolve(undefined);
-          }
-
-          resolve(
-            sBonds.map(sBond => ({
-              pool,
-              sBond,
-            })),
-          );
-        });
-      });
-
-      setState(
-        mergeState<State>({
-          loading: false,
-          data: result.flat().filter(Boolean),
-        }),
-      );
-    })();
-  }, [wallet.account, pools]);
-
-  return (
-    <>
-      <Antd.Spin spinning={state.loading}>
-        <div className={s.cards}>
-          {state.data.map(entity => (
-            <ActivePosition key={entity.sBond.sBondId} pool={entity.pool} sBond={entity.sBond} />
-          ))}
-        </div>
-      </Antd.Spin>
-    </>
-  );
-};
-
-export default ActivePositionsList;
+export default ActivePosition;

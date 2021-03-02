@@ -4,7 +4,7 @@ import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
+import { fetchSYPool, Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta } from 'modules/smart-yield/api';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
@@ -102,7 +102,15 @@ const TokenPoolProvider: React.FC<Props> = props => {
   React.useEffect(() => {
     const { pool } = state;
 
-    if (pool) {
+    if (!pool) {
+      return;
+    }
+
+    pool.underlyingBalance = undefined;
+    pool.underlyingAllowance = undefined;
+    pool.smartYieldBalance = undefined;
+
+    if (wallet.account) {
       const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
       underlyingContract.setProvider(wallet.provider);
       underlyingContract.setAccount(wallet.account);
@@ -128,14 +136,23 @@ const TokenPoolProvider: React.FC<Props> = props => {
     (enable: boolean) => {
       const { pool } = state;
 
-      if (!pool) {
+      if (!pool || !wallet.account) {
         return Promise.reject();
       }
 
       const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
-      return underlyingContract.approve(enable, pool.smartYieldAddress).then(reload);
+      underlyingContract.setProvider(wallet.provider);
+      underlyingContract.setAccount(wallet.account);
+
+      return underlyingContract.approve(enable, pool.smartYieldAddress)
+        .then(() => {
+          return underlyingContract.getAllowance(pool.smartYieldAddress).then(allowance => {
+            pool.underlyingAllowance = allowance;
+          });
+        })
+        .then(reload)
     },
-    [state.pool, wallet.account],
+    [state.pool, wallet.provider, wallet.account],
   );
 
   const value = React.useMemo<ContextType>(() => {

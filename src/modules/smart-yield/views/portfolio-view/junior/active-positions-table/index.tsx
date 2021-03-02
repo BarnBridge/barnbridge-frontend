@@ -2,27 +2,26 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import { mergeState } from 'hooks/useMergeState';
-import SYSmartYieldContract, { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
 
-import { doSequential, getFormattedDuration } from 'utils';
+import { getFormattedDuration } from 'utils';
 
-type TableEntity = PoolsSYPool & {
+export type ActivePositionsTableEntity = PoolsSYPool & {
   smartYieldBalance: BigNumber;
   smartYieldAbond: SYAbond;
 };
 
-const Columns: ColumnsType<TableEntity> = [
+const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
     title: (
       <Text type="small" weight="semibold">
@@ -53,11 +52,17 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
-        </Text>
+        <Tooltip
+          title={formatBigValue(
+            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals),
+            entity.underlyingDecimals,
+          )}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
+          </Text>
+        </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
+          {formatUSDValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
         </Text>
       </>
     ),
@@ -107,72 +112,20 @@ const Columns: ColumnsType<TableEntity> = [
   },
 ];
 
-type State = {
+type Props = {
   loading: boolean;
-  data: TableEntity[];
+  data: ActivePositionsTableEntity[];
 };
 
-const InitialState: State = {
-  loading: false,
-  data: [],
-};
-
-const ActivePositionsTable: React.FC = () => {
-  const wallet = useWallet();
-  const poolsCtx = usePools();
-
-  const { pools } = poolsCtx;
-
-  const [state, setState] = React.useState<State>(InitialState);
-
-  React.useEffect(() => {
-    if (!wallet.account) {
-      return;
-    }
-
-    setState(
-      mergeState<State>({
-        loading: true,
-      }),
-    );
-
-    (async () => {
-      const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
-          smartYieldContract.setAccount(wallet.account);
-
-          const smartYieldBalance = await smartYieldContract.getBalance();
-          const smartYieldAbond = await smartYieldContract.getAbond();
-
-          if (smartYieldBalance.isGreaterThan(ZERO_BIG_NUMBER)) {
-            resolve({
-              ...pool,
-              smartYieldBalance,
-              smartYieldAbond,
-            });
-          } else {
-            resolve(undefined);
-          }
-        });
-      });
-
-      setState(
-        mergeState<State>({
-          loading: false,
-          data: result.filter(Boolean),
-        }),
-      );
-    })();
-  }, [wallet.account, pools]);
+const ActivePositionsTable: React.FC<Props> = props => {
+  const { loading, data } = props;
 
   return (
-    <Table<TableEntity>
+    <Table<ActivePositionsTableEntity>
       columns={Columns}
-      dataSource={state.data}
+      dataSource={data}
       rowKey="smartYieldAddress"
-      loading={state.loading}
+      loading={loading}
       scroll={{
         x: true,
       }}

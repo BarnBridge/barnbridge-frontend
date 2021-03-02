@@ -24,7 +24,7 @@ import {
 import { flow } from 'lodash/fp';
 import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
-import { formatBONDValue, formatBigValue } from 'web3/utils';
+import { formatBigValue, formatBONDValue } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
@@ -243,6 +243,10 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           />
           <ReCharts.Tooltip
             labelFormatter={value => {
+              if (!(value instanceof Date)) {
+                return '-';
+              }
+
               switch (granularity) {
                 case GranularityType.MONTHS:
                   return format(value, 'yyyy-MM-dd');

@@ -20,7 +20,14 @@ import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldCont
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
-import { DURATION_1_MONTH, DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_MONTH, getLockEndDate } from 'utils/date';
+import {
+  DURATION_1_MONTH,
+  DURATION_1_WEEK,
+  DURATION_2_WEEK,
+  DURATION_3_MONTH,
+  DURATION_3_WEEK, DURATION_4_WEEK,
+  getLockEndDate
+} from 'utils/date';
 
 type FormData = {
   amount?: BigNumber;
@@ -40,7 +47,7 @@ const InitialFormValues: FormData = {
   deadline: 20,
 };
 
-const DURATION_OPTIONS = [DURATION_1_WEEK, DURATION_2_WEEK, DURATION_1_MONTH, DURATION_3_MONTH];
+const DURATION_OPTIONS = [DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_WEEK, DURATION_4_WEEK];
 
 const SeniorTranche: React.FC = () => {
   const history = useHistory();
@@ -125,7 +132,7 @@ const SeniorTranche: React.FC = () => {
       <Form.Item name="lockEndDate" label="Lock end date" rules={[{ required: true, message: 'Required' }]}>
         <DatePicker
           showNow={false}
-          disabledDate={(date: Date) => isBefore(date, new Date()) || isAfter(date, addMonths(new Date(), 3))}
+          disabledDate={(date: Date) => isBefore(date, new Date()) || isAfter(date, getLockEndDate(new Date(), DURATION_4_WEEK)!)}
           format="DD/MM/YYYY"
           size="large"
           disabled={isSaving}
