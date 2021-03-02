@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
 import { mergeState } from 'hooks/useMergeState';

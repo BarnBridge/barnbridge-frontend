@@ -15,12 +15,12 @@ const TokenPoolHeader: React.FC = () => {
 
   const isRootDeposit = Boolean(
     useRouteMatch({
-      path: '/smart-yield/:address/deposit',
+      path: '/smart-yield/deposit',
       exact: true,
     }),
   );
-  const isSeniorDeposit = Boolean(useRouteMatch('/smart-yield/:address/deposit/senior'));
-  const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/:address/deposit/junior'));
+  const isSeniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/senior'));
+  const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/junior'));
 
   const [isApproving, setApproving] = React.useState<boolean>(false);
 

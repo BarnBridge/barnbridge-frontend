@@ -48,7 +48,7 @@ const FormItem: React.FC<FormItemProps> = props => {
   );
 };
 
-export type FormProps = AntdFormProps & {};
+export type FormProps = AntdFormProps;
 
 const Form: React.FC<FormProps> = props => {
   const { className, children, ...formProps } = props;

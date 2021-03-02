@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getNonHumanValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,7 +11,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
-import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
+import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 import { useWallet } from 'wallets/wallet';
@@ -34,10 +34,13 @@ const InstantWithdraw: React.FC = () => {
 
   const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
 
-  const { pool } = poolCtx;
+  const { pool, marketId, tokenId } = poolCtx;
 
   function handleCancel() {
-    history.push(`/smart-yield/${pool?.smartYieldAddress}/withdraw`);
+    history.push({
+      pathname: `/smart-yield/withdraw`,
+      search: `?m=${marketId}&t=${tokenId}`,
+    });
   }
 
   function handleSubmit() {
@@ -127,7 +130,7 @@ const InstantWithdraw: React.FC = () => {
       </Form>
 
       {withdrawModalVisible && (
-        <ConfirmTxModal
+        <TxConfirmModal
           visible
           title="Confirm your withdrawal"
           header={

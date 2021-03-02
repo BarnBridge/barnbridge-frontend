@@ -8,7 +8,7 @@ import Card from 'components/antd/card';
 import StatusDot from 'components/custom/status-dot';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { fetchSYPoolAPY, SYPoolAPY } from 'modules/smart-yield/api';
+import { SYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
 
 type ChartEntity = SYPoolAPY;

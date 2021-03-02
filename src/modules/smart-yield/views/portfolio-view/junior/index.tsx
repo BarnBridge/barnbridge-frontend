@@ -1,7 +1,8 @@
 import React from 'react';
-import format from 'date-fns/format';
-import { formatBigValue, getHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 import * as Antd from 'antd';
+import format from 'date-fns/format';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
@@ -11,7 +12,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import ConfirmTxModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/confirm-tx-modal';
+import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -225,7 +226,7 @@ const JuniorPortfolioInner: React.FC = () => {
           <Tabs.Tab key="locked" tab="Locked positions">
             <LockedPositionsTable loading={state.loadingLocked} data={state.dataLocked} />
             {redeemModal && (
-              <ConfirmTxModal
+              <TxConfirmModal
                 visible
                 title="Redeem your junior bond"
                 header={

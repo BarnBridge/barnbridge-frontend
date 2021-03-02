@@ -103,7 +103,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     title: null,
     width: '20%',
     render: (_, entity) => (
-      <NavLink to={`/smart-yield/${entity.smartYieldAddress}/withdraw`}>
+      <NavLink
+        to={{
+          pathname: `/smart-yield/withdraw`,
+          search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
+        }}>
         <Button type="primary" className="ml-auto">
           Withdraw
         </Button>

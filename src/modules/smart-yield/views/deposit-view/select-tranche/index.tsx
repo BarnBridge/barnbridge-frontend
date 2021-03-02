@@ -9,6 +9,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+
 import s from './s.module.scss';
 
 const SENIOR_TRANCHE_KEY = 'senior';
@@ -18,7 +19,7 @@ const SelectTranche: React.FC = () => {
   const history = useHistory();
   const poolCtx = useTokenPool();
 
-  const { pool } = poolCtx;
+  const { pool, marketId, tokenId } = poolCtx;
 
   const [tranche, setTranche] = useState<string | undefined>();
 
@@ -35,7 +36,10 @@ const SelectTranche: React.FC = () => {
   }
 
   function handleNextStep() {
-    history.push(`/smart-yield/${pool?.smartYieldAddress}/deposit/${tranche}`);
+    history.push({
+      pathname: `/smart-yield/deposit/${tranche}`,
+      search: `?m=${marketId}&t=${tokenId}`,
+    });
   }
 
   if (!pool) {
