@@ -9,20 +9,20 @@
 $margins: 4, 8, 12, 16, 24, 32, 40, 48, 64;
 
 @each $margin in $margins {
-  .mr-#{$margin} {
+  .mr-#{$margin}.mr-#{$margin} {
     margin-right: #{$margin}px;
   }
-  .mb-#{$margin} {
+  .mb-#{$margin}.mb-#{$margin} {
     margin-bottom: #{$margin}px;
   }
 }
 
 @media (max-width: 768px) {
   @each $margin in $margins {
-    .sm-mr-#{$margin} {
+    .sm-mr-#{$margin}.sm-mr-#{$margin} {
       margin-right: #{$margin}px;
     }
-    .sm-mb-#{$margin} {
+    .sm-mb-#{$margin}.sm-mb-#{$margin} {
       margin-bottom: #{$margin}px;
     }
   }

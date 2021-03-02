@@ -31,7 +31,7 @@ const DepositViewInner: React.FC = () => {
     <>
       <TokenPoolHeader />
       <div className={s.container}>
-        <Card>
+        <Card style={{ flexGrow: 1 }}>
           <Text type="h3" weight="semibold" color="primary" className="mb-16">
             Select your preferred tranche
           </Text>

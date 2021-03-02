@@ -148,8 +148,9 @@ const TableColumns: ColumnsType<PoolEntity> = [
           to={{
             pathname: `/smart-yield/deposit`,
             search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
-          }}>
-          <Button type="ghost">Deposit</Button>
+          }}
+          className="button-ghost">
+          Deposit
         </NavLink>
       );
     },

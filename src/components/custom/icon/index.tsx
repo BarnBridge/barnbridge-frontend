@@ -80,7 +80,7 @@ export type IconsProps = {
   name: IconNames;
   width?: number | string;
   height?: number | string;
-  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue';
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'inherit';
   rotate?: 0 | 90 | 180 | 270;
   className?: string;
   style?: CSSProperties;

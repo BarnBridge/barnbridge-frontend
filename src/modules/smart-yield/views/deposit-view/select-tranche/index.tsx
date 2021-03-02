@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { formatBigValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
-import Button from 'components/antd/button';
+import button from 'components/antd/button';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
@@ -82,13 +82,13 @@ const SelectTranche: React.FC = () => {
         />
       )}
       <Grid flow="col" gap={64} align="center" justify="space-between">
-        <Button type="light" onClick={handleCancel}>
-          <Icon name="left-arrow" width={9} height={8} />
+        <button type="button" onClick={handleCancel} className="button-text">
+          <Icon name="left-arrow" width={9} height={8} className="mr-12" color="inherit" />
           Cancel
-        </Button>
-        <Button type="primary" disabled={!tranche} onClick={handleNextStep}>
+        </button>
+        <button type="button" disabled={!tranche} onClick={handleNextStep} className="button-primary">
           Next Step
-        </Button>
+        </button>
       </Grid>
     </>
   );

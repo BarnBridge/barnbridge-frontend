@@ -37,3 +37,13 @@ const App: React.FC = () => {
 ReactDOM.render(<App />, document.getElementById('root'));
 
 sw.unregister();
+
+document.body.addEventListener('mousedown', () => {
+  document.body.classList.add('using-mouse');
+});
+
+document.body.addEventListener('keydown', (event) => {
+  if (event.key === 'Tab') {
+    document.body.classList.remove('using-mouse');
+  }
+});
