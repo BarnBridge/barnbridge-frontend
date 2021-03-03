@@ -8,8 +8,8 @@ import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from '
 
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
-import Select from 'components/antd/select';
 import Popover from 'components/antd/popover';
+import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
@@ -18,10 +18,10 @@ import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { HistoryTypes, Markets, Pools, SYUserTxHistory, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { HistoryTypes, Markets, Pools, APISYUserTxHistory, fetchSYUserTxHistory } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/wallet';
 
-type TableEntity = SYUserTxHistory;
+type TableEntity = APISYUserTxHistory;
 
 const Columns: ColumnsType<TableEntity> = [
   {
@@ -69,6 +69,7 @@ const Columns: ColumnsType<TableEntity> = [
         Date
       </Text>
     ),
+    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -86,6 +87,7 @@ const Columns: ColumnsType<TableEntity> = [
         Amount
       </Text>
     ),
+    sorter: (a, b) => a.amount - b.amount,
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Tooltip title={formatBigValue(entity.amount, 18)}>
@@ -219,7 +221,7 @@ const HistoryTable: React.FC = () => {
             placement="bottomRight">
             <button type="button" className="button-ghost-monochrome ml-auto">
               <Icons name="filter" className="mr-8" color="inherit" />
-              Filter
+              Filters
             </button>
           </Popover>
         </Grid>
@@ -318,13 +320,7 @@ const Filters: React.FC = () => {
         />
       </Form.Item>
       <Form.Item label="Token" name="token" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={tokenFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
+        <Select loading={false} disabled={false} options={tokenFilterOptions} fixScroll style={{ width: '100%' }} />
       </Form.Item>
       <Form.Item label="Transaction type" name="transactionType" className="mb-32">
         <Select

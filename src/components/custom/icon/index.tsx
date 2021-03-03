@@ -37,6 +37,8 @@ export type IconNames =
   | ThemeIconNames
   | 'right-arrow-circle-outlined'
   | 'left-arrow'
+  | 'down-arrow-circle'
+  | 'refresh'
   | 'bell'
   | 'bell-outlined'
   | 'chevron-right'

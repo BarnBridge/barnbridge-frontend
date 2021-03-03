@@ -16,7 +16,7 @@ import { UseLeftTime } from 'hooks/useLeftTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import { getFormattedDuration } from 'utils';

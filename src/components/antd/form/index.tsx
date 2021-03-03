@@ -27,21 +27,26 @@ export type FormItemProps = AntdFormItemProps<any> & {
 };
 
 const FormItem: React.FC<FormItemProps> = props => {
-  const { className, label, hint, children, ...itemProps } = props;
+  const { className, label, hint, extra, children, ...itemProps } = props;
 
   return (
     <Antd.Form.Item
       className={cx(s.item, className)}
       {...itemProps}
       label={
-        <Grid flow="col" gap={4} align="center">
-          {label}
-          {hint && (
-            <Tooltip title={hint}>
-              <Icons name="info-outlined" width={15} height={15} />
-            </Tooltip>
-          )}
-        </Grid>
+        <>
+          <Grid flow="col" gap={4} align="center">
+            {label}
+            {hint && (
+              <Tooltip title={hint}>
+                <span>
+                  <Icons name="info-outlined" width={15} height={15} />
+                </span>
+              </Tooltip>
+            )}
+          </Grid>
+          {extra}
+        </>
       }>
       {children}
     </Antd.Form.Item>

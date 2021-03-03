@@ -65,6 +65,7 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
           <div className="grid flow-col col-gap-16">
             {SLIPPAGE_OPTIONS.map(opt => (
               <Button
+                key={opt}
                 type="ghost"
                 style={{ width: 70 }}
                 onClick={() => {
@@ -154,7 +155,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
       <Divider />
       <div className="p-24">
         <div className="flex mb-24">
-          <Hint text=" ">
+          <Hint text="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage.">
             <Text type="small" weight="semibold" color="secondary">
               Slippage tolerance
             </Text>
@@ -164,7 +165,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
           </Text>
         </div>
         <div className="flex">
-          <Hint text=" ">
+          <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
             <Text type="small" weight="semibold" color="secondary">
               Transaction deadline
             </Text>

@@ -7,10 +7,10 @@ import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
-const TokenPoolHeader: React.FC = () => {
-  const poolCtx = useTokenPool();
+const DepositHeader: React.FC = () => {
+  const poolCtx = useSYPool();
   const { pool } = poolCtx;
 
   const isRootDeposit = Boolean(
@@ -119,7 +119,7 @@ const TokenPoolHeader: React.FC = () => {
       {(isSeniorDeposit || isJuniorDeposit) && (
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Enable Token
+            Enable token
           </Text>
           <Antd.Switch
             style={{ justifySelf: 'flex-start' }}
@@ -133,4 +133,4 @@ const TokenPoolHeader: React.FC = () => {
   );
 };
 
-export default TokenPoolHeader;
+export default DepositHeader;

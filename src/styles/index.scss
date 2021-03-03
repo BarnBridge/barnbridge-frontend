@@ -10,7 +10,7 @@ body {
   background: var(--theme-body-color);
   color: var(--theme-secondary-color);
   font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-weight: normal;
@@ -101,8 +101,8 @@ body.mobile-menu-open {
   --theme-blue-color: #4f6ae6; // blue500
   --theme-blue-color-rgb: 79, 106, 230; // blue500
 
-  --theme-yellow-color: #ffd160; // yellow500
-  --theme-yellow-color-rgb: 255, 209, 96; // yellow500
+  --theme-yellow-color: #cca74d; // yellow600
+  --theme-yellow-color-rgb: 204, 167, 77; // yellow600
 
   --theme-purple-color: #a26ee3; // purple500
   --theme-purple-color-rgb: 162, 110, 227; // purple500

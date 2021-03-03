@@ -12,7 +12,7 @@ import ActivePosition from 'modules/smart-yield/views/portfolio-view/senior/acti
 import { useWallet } from 'wallets/wallet';
 
 import PortfolioBalance from '../../../components/portfolio-balance';
-import PoolsProvider, { PoolsSYPool, usePools } from '../../overview-view/pools-provider';
+import { PoolsSYPool, usePools } from '../../../providers/pools-provider';
 import FiltersPopup from './filters-popup';
 import PastPositionsList from './past-positions-list';
 
@@ -44,7 +44,7 @@ const InitialState: State = {
   dataChart: [],
 };
 
-const SeniorPortfolioInner: React.FC = () => {
+const SeniorPortfolio: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
 
@@ -147,13 +147,34 @@ const SeniorPortfolioInner: React.FC = () => {
 
   const total = principal?.plus(gain ?? ZERO_BIG_NUMBER);
 
+  const totalRedeemable =  state.data?.reduce((a, c) => {
+    return a.plus(getHumanValue(c.sBond.principal.plus(c.sBond.gain), c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
+  }, ZERO_BIG_NUMBER);
+
+  const aggregatedAPY = React.useMemo(() => {
+    return state.data.reduce((a, c) => {
+      const { gain, principal, maturesAt, issuedAt } = c.sBond;
+
+      const apy = gain
+        .dividedBy(principal)
+        .dividedBy(maturesAt - issuedAt)
+        .multipliedBy(365 * 24 * 60 * 60)
+        .multipliedBy(100)
+        .dividedBy(10 ** c.pool.underlyingDecimals);
+
+      return a.plus(principal.plus(gain).multipliedBy(apy));
+    }, ZERO_BIG_NUMBER).dividedBy(totalRedeemable);
+  }, [state.data, totalRedeemable]);
+
+  console.log(aggregatedAPY);
   return (
     <>
       <div className={s.portfolioContainer}>
         <Antd.Spin spinning={state.loading}>
           <PortfolioBalance
             total={total?.toNumber()}
-            aggregated={null}
+            aggregated={aggregatedAPY.toNumber()}
+            aggregatedText="This number is a weighted average across your active positions."
             aggregatedColor="green"
             data={[
               ['Principal', principal?.toNumber(), 'var(--theme-green-color)'],
@@ -163,10 +184,10 @@ const SeniorPortfolioInner: React.FC = () => {
         </Antd.Spin>
         <Antd.Spin spinning={state.loadingChart}>
           <PortfolioValue
-            title="Senior Portfolio balance"
+            title="Senior portfolio value"
             data={state.dataChart}
             color="var(--theme-green-color)"
-            gradientColor="var(--theme-green700-rgb)"
+            gradientColor="var(--theme-green-color-rgb)"
           />
         </Antd.Spin>
       </div>
@@ -185,14 +206,6 @@ const SeniorPortfolioInner: React.FC = () => {
         </Tabs.Tab>
       </Tabs>
     </>
-  );
-};
-
-const SeniorPortfolio: React.FC = () => {
-  return (
-    <PoolsProvider>
-      <SeniorPortfolioInner />
-    </PoolsProvider>
   );
 };
 

@@ -2,16 +2,16 @@ import React from 'react';
 import { Spin } from 'antd';
 import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
-import { formatBigValue } from 'web3/utils';
+import { formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { SYJuniorPortfolioValue, fetchSYJuniorPortfolioValues } from 'modules/smart-yield/api';
+import { APISYJuniorPortfolioValue, fetchSYJuniorPortfolioValues } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/wallet';
 
-type ChartEntity = SYJuniorPortfolioValue;
+type ChartEntity = APISYJuniorPortfolioValue;
 
 type State = {
   loading: boolean;
@@ -65,10 +65,10 @@ const PortfolioValue: React.FC = () => {
       title={
         <Grid flow="col" colsTemplate="1fr max-content" align="center">
           <Text type="p1" weight="semibold" color="primary">
-            Junior Portfolio value
+            Junior portfolio value
           </Text>
           <Text type="small" weight="semibold">
-            Last month
+            Last 7 days
           </Text>
         </Grid>
       }>
@@ -83,7 +83,11 @@ const PortfolioValue: React.FC = () => {
             </defs>
             <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
             <ReCharts.XAxis dataKey="timestamp" hide />
-            <ReCharts.YAxis axisLine={false} tickLine={false} />
+            <ReCharts.YAxis
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={(value: any) => formatUSDValue(value, 2, 0)}
+            />
             <ReCharts.Tooltip
               separator=""
               labelFormatter={value => (
@@ -93,7 +97,7 @@ const PortfolioValue: React.FC = () => {
               )}
               formatter={(value: number) => (
                 <Text type="p2" tag="span" weight="semibold" color="purple">
-                  {value && formatBigValue(value, 18)}
+                  {formatUSDValue(value)}
                 </Text>
               )}
             />
