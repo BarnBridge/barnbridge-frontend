@@ -91,8 +91,8 @@ const PortfolioOverview: React.FC = () => {
           <PortfolioValue
             title="Portfolio balance"
             data={state.data}
-            color="var(--theme-green-color)"
-            gradientColor="var(--theme-purple-rgb)"
+            color="var(--theme-red-color)"
+            gradientColor="var(--theme-red-color-rgb)"
           />
         </Antd.Spin>
       </div>
