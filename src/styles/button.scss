@@ -127,7 +127,7 @@
   font-weight: bold;
   font-size: 12px;
   line-height: 16px;
-  color: #717980;
+  color: var(--theme-secondary-color);
   border: none;
   background-color: transparent;
   padding: 0;
@@ -136,17 +136,17 @@
   align-items: center;
 
   &:hover {
-    color: #060a0d;
+    color: var(--theme-primary-color);
   }
 
   &:active {
-    color: #060a0d;
+    color: var(--theme-primary-color);
   }
 }
 
 .button-ghost-monochrome {
-  background: #FFFFFF;
-  border: 1px solid #E3E4E6;
+  background: transparent;
+  border: 1px solid var(--theme-border-color);
   border-radius: 4px;
   font-weight: 600;
   font-size: 14px;
@@ -154,14 +154,14 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  color: #717980;
+  color: var(--theme-secondary-color);
 
   &:hover {
-    color: #060A0D;
+    color: var(--theme-primary-color);
     border: 1px solid #FF4339;
   }
 
   &:active {
-    color: #060A0D;
+    color: var(--theme-primary-color);
   }
 }

@@ -45,7 +45,6 @@ h3.heading {
 .paragraph {
   display: block;
   width: auto;
-  color: var(--theme-default-color);
 
   &.p1 {
     @include font-p1-regular;
@@ -129,7 +128,6 @@ h3.heading {
 
 .text {
   font-weight: normal;
-  color: var(--theme-default-color);
 
   &.weight-semibold {
     font-weight: 600;

@@ -166,7 +166,7 @@ const SeniorPortfolioInner: React.FC = () => {
             title="Senior Portfolio balance"
             data={state.dataChart}
             color="var(--theme-green-color)"
-            gradientColor="var(--theme-green700-rgb)"
+            gradientColor="var(--theme-green-color-rgb)"
           />
         </Antd.Spin>
       </div>

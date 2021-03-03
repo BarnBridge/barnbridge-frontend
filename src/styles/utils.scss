@@ -75,12 +75,13 @@
   flex: 1 1 var(--min);
 
   @media (max-width: 768px) {
-    gap: var(--sm-min);
+    gap: var(--sm-min) !important;
   }
 }
 
 .flexbox-list {
   --gap: 16px;
+  --sm-gap: 8px;
   display: flex;
   flex-wrap: wrap;
   margin: calc(var(--gap) / -2);
@@ -90,7 +91,7 @@
   }
 
   @media (max-width: 768px) {
-    --gap: 8px;
+    --gap: var(--sm-gap) !important;
   }
 }
 
