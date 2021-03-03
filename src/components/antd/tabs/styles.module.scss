@@ -21,6 +21,14 @@
             align-items: center;
             @include font-p1-semi-bold;
             color: var(--theme-secondary-color);
+
+            &:hover {
+              color: var(--theme-primary-color);
+
+              svg {
+                color: var(--theme-red-color);
+              }
+            }
           }
 
           &:global(.ant-tabs-tab-active) {

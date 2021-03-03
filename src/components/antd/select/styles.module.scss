@@ -1,8 +1,8 @@
 @import 'src/styles/text';
 
 .component:global(.ant-select.ant-select-single) {
-  position: relative;
   height: 48px;
+  position: relative;
 
   &:global(.ant-select-sm) {
     height: 32px;
@@ -26,13 +26,17 @@
     :global(.ant-select-arrow) svg {
       transform: rotate(-180deg);
     }
+
+    :global(.ant-select-selector) {
+      background: var(--theme-body-color);
+    }
   }
 
   :global(.ant-select-selector) {
+    background: var(--theme-card-color);
+    border: 1px solid var(--theme-border-color);
     height: 48px;
     padding: 12px 32px 12px 16px;
-    background: var(--theme-body-color);
-    border: 1px solid var(--theme-border-color);
 
     :global(.ant-select-selection-item),
     :global(.ant-select-selection-placeholder) {
@@ -42,12 +46,12 @@
   }
 
   :global(.ant-select-arrow) {
-    top: 50%;
-    right: 16px;
-    width: 24px;
     height: 24px;
     margin: 0;
+    right: 16px;
+    top: 50%;
     transform: translateY(-50%);
+    width: 24px;
 
     :global(.ant-spin) {
       margin-top: 4px;
@@ -56,15 +60,15 @@
 }
 
 .dropdown:global(.ant-select-dropdown) {
-  padding: 4px;
   background: var(--theme-overlay-color);
   border: 1px solid var(--theme-border-color);
   border-radius: 4px;
+  padding: 4px;
 
   :global(.ant-select-item) {
+    border-radius: 4px;
     height: 48px;
     padding: 12px;
-    border-radius: 4px;
 
     :global(.ant-select-item-option-content) {
       @include font-p2-semi-bold;

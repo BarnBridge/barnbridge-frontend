@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import * as Antd from 'antd';
 
+import Form from 'components/antd/form';
 import Button from 'components/antd/button';
 import Popover from 'components/antd/popover';
 import Select from 'components/antd/select';
 import Icons from 'components/custom/icon';
-import { Text } from 'components/custom/typography';
 
 const originatorFilterOptions = [
   {
@@ -39,65 +40,74 @@ const transactionFilterOptions = [
   },
 ];
 
+type FormValues = {
+  originator?: string;
+  token?: string;
+  transactionType?: string;
+};
+
+
 const FiltersPopup: React.FC = () => {
   const [visible, setVisible] = useState(false);
+  const [form] = Antd.Form.useForm<FormValues>();
 
-  const [originatorFilter, setOriginatorFilter] = useState(originatorFilterOptions[0].value);
-  const [tokenFilter, setTokenFilter] = useState(tokenFilterOptions[0].value);
-  const [transactionFilter, setTransactionFilter] = useState(transactionFilterOptions[0].value);
+  const handleFinish = React.useCallback((values: FormData) => {
+    console.log(values);
+  }, []);
 
   return (
     <Popover
       title="Filters"
+      placement="bottomLeft"
       overlayStyle={{ width: 348 }}
       content={
         <>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            Originator
-          </Text>
-          <Select
-            loading={false}
-            disabled={false}
-            options={originatorFilterOptions}
-            fixScroll
-            className="mb-32"
-            value={originatorFilter}
-            onSelect={setOriginatorFilter}
-            style={{ width: '100%' }}
-          />
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            Token
-          </Text>
-          <Select
-            loading={false}
-            disabled={false}
-            options={tokenFilterOptions}
-            fixScroll
-            className="mb-32"
-            value={tokenFilter}
-            onSelect={setTokenFilter}
-            style={{ width: '100%' }}
-          />
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            Transaction type
-          </Text>
-          <Select
-            loading={false}
-            disabled={false}
-            options={transactionFilterOptions}
-            fixScroll
-            className="mb-32"
-            value={transactionFilter}
-            onSelect={setTransactionFilter}
-            style={{ width: '100%' }}
-          />
+        <Form
+          form={form}
+          initialValues={{
+            originator: originatorFilterOptions[0].value,
+            token: tokenFilterOptions[0].value,
+            transactionType: transactionFilterOptions[0].value,
+          }}
+          validateTrigger={['onSubmit']}
+          onFinish={handleFinish}>
+          <Form.Item label="Originator" name="originator" className="mb-32">
+            <Select
+              loading={false}
+              disabled={false}
+              options={originatorFilterOptions}
+              fixScroll
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item label="Token" name="token" className="mb-32">
+            <Select
+              loading={false}
+              disabled={false}
+              options={tokenFilterOptions}
+              fixScroll
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
+          <Form.Item label="Transaction type" name="transactionType" className="mb-32">
+            <Select
+              loading={false}
+              disabled={false}
+              options={transactionFilterOptions}
+              fixScroll
+              style={{ width: '100%' }}
+            />
+          </Form.Item>
 
-          <div className="flex">
-            <Button type="light">Reset filters</Button>
-            <Button type="primary" className="ml-auto">
+          <div className="grid flow-col align-center justify-space-between">
+            <button type="button" onClick={() => form.resetFields()} className="button-text">
+              Reset filters
+            </button>
+            <button type="submit" className="button-primary">
               Apply filters
-            </Button>
+            </button>
           </div>
+        </Form>
         </>
       }
       visible={visible}

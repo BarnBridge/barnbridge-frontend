@@ -175,7 +175,7 @@ const PoolTxChartInner: React.FC = (props) => {
               />
               <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
               {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
-                <ReCharts.Bar dataKey="deposits" name="Deposits" stackId="stack" fill="var(--theme-red-color)" />
+                <ReCharts.Bar dataKey="deposits" name="Deposits" stackId="stack" fill="var(--theme-red-color)" fontSize={23} />
               )}
               {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
                 <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" stackId="stack" fill="var(--theme-blue-color)" />
