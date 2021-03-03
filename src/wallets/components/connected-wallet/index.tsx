@@ -1,8 +1,9 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 import * as Antd from 'antd';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import cn from 'classnames';
 
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
@@ -98,8 +99,8 @@ const ConnectedWallet: React.FC = () => {
           </Grid>
         </Card>
       }>
-      <Antd.Badge dot count={0} showZero={false}>
-        <Icons name="bell-outlined" />
+      <Antd.Badge dot count={1} showZero={false}>
+        <Icons name="bell-outlined" width={26} height={26} />
       </Antd.Badge>
     </Popover>
   );
@@ -109,6 +110,7 @@ const ConnectedWallet: React.FC = () => {
       placement="bottomRight"
       trigger="click"
       noPadding
+      className={s.popover}
       content={
         <Card
           title={
@@ -160,10 +162,10 @@ const ConnectedWallet: React.FC = () => {
         </Card>
       }>
       <Button type="link" className={s.accountLink}>
-        <Grid flow="col" gap={8} align="center">
-          <Identicon address={wallet.account} width={24} height={24} />
-          <Text type="p1" weight="semibold" color="primary" className={s.walletAddress}>
-            {shortenAddr(wallet.account)}
+        <Grid flow="col" align="center">
+          <Identicon address={wallet.account} width={24} height={24} className="mr-8" />
+          <Text type="p1" color="primary" className={cn(s.walletAddress, 'mr-4')}>
+            {shortenAddr(wallet.account, 4, 3)}
           </Text>
           <Icons name="dropdown-arrow" className={s.dropdownArrow} />
         </Grid>

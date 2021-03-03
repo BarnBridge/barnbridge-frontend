@@ -10,11 +10,11 @@ export type PopoverProps = {
 };
 
 const Popover: React.FC<AntdPopoverProps & PopoverProps> = props => {
-  const { noPadding, children, ...popoverProps } = props;
+  const { noPadding, children, className, ...popoverProps } = props;
 
   return (
     <Antd.Popover
-      overlayClassName={cx(s.overlay, noPadding && s.noPadding)}
+      overlayClassName={cx(s.overlay, className, noPadding && s.noPadding)}
       trigger="click"
       placement="bottom"
       {...popoverProps}>
