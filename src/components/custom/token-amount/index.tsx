@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cx from 'classnames';
-import { formatBigValue } from 'web3/utils';
+import { MAX_UINT_256, formatBigValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Slider from 'components/antd/slider';
@@ -27,7 +27,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
   const {
     className,
     tokenIcon,
-    max = 100,
+    max,
     maximumFractionDigits = 4,
     value,
     disabled = false,
@@ -37,7 +37,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
   } = props;
 
   const step = 1 / 10 ** Math.min(displayDecimals, 6);
-  const bnMaxValue = new BigNumber(max);
+  const bnMaxValue = new BigNumber(max ?? MAX_UINT_256);
 
   const bnValue = value !== undefined ? BigNumber.min(new BigNumber(value), bnMaxValue) : undefined;
 
@@ -57,7 +57,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
     <Grid flow="row" gap={32}>
       <NumericInput
         className={cx(s.component, className)}
-        placeholder={`0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})`}
+        placeholder={max !== undefined ? `0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})` : ''}
         addonBefore={
           tokenIcon ? (
             <Grid flow="col" gap={4}>
@@ -66,9 +66,11 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
           ) : undefined
         }
         addonAfter={
-          <Button type="default" className={s.maxBtn} disabled={disabled} onClick={onMaxHandle}>
-            MAX
-          </Button>
+          max !== undefined ? (
+            <Button type="default" className={s.maxBtn} disabled={disabled} onClick={onMaxHandle}>
+              MAX
+            </Button>
+          ) : null
         }
         maximumFractionDigits={maximumFractionDigits}
         disabled={disabled}

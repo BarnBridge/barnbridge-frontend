@@ -4,16 +4,15 @@ import { formatBigValue } from 'web3/utils';
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Grid from 'components/custom/grid';
-import { Text } from 'components/custom/typography';
-
-import { useTokenPool } from '../token-pool-provider';
+import { Hint, Text } from 'components/custom/typography';
+import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';
 
-import s from './s.module.scss';
+import s from 'modules/smart-yield/views/deposit-view/pool-details/s.module.scss';
 
-const TokenPoolDetails: React.FC = () => {
-  const poolCtx = useTokenPool();
+const PoolDetails: React.FC = () => {
+  const poolCtx = useSYPool();
   const { pool } = poolCtx;
 
   if (!pool) {
@@ -95,9 +94,11 @@ const TokenPoolDetails: React.FC = () => {
           </Text>
         </Grid>
         <Grid flow="row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Average senior maturity
-          </Text>
+          <Hint text="The average maturity date of the current senior bonds in this pool.">
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              Average senior maturity
+            </Text>
+          </Hint>
           <Text type="p1" weight="semibold" color="primary">
             {getFormattedDuration(
               Date.now(),
@@ -110,4 +111,4 @@ const TokenPoolDetails: React.FC = () => {
   );
 };
 
-export default TokenPoolDetails;
+export default PoolDetails;

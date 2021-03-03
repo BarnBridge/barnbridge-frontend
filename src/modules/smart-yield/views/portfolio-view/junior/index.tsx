@@ -9,14 +9,16 @@ import Popover from 'components/antd/popover';
 import Select from 'components/antd/select';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
+import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
+import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import PoolsProvider, { PoolsSYPool, usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
@@ -42,7 +44,7 @@ const InitialState: State = {
   dataLocked: [],
 };
 
-const JuniorPortfolioInner: React.FC = () => {
+const JuniorPortfolio: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('locked');
   const [filtersVisible, setFiltersVisible] = React.useState<boolean>(false);
   const [filtersActiveVisible, setFiltersActiveVisible] = React.useState<boolean>(false);
@@ -195,6 +197,15 @@ const JuniorPortfolioInner: React.FC = () => {
             total={totalBalance?.toNumber()}
             aggregated={apy * 100}
             aggregatedColor="purple"
+            aggregatedText={
+              <Grid flow="row" gap={8} align="start">
+                <Text type="p2">
+                  The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
+                  positions might differ. This number shows a weighted average of these APYs for your active positions.
+                </Text>
+                <ExternalLink href="#">Learn more</ExternalLink>
+              </Grid>
+            }
             data={[
               ['Active balance ', activeBalance?.toNumber(), 'var(--theme-purple-color)'],
               ['Locked balance', lockedBalance?.toNumber(), 'var(--theme-purple700-color)'],
@@ -219,7 +230,7 @@ const JuniorPortfolioInner: React.FC = () => {
               placement="bottomRight">
               <button type="button" className="button-ghost-monochrome ml-auto mb-12">
                 <Icons name="filter" className="mr-8" color="inherit" />
-                Filter
+                Filters
               </button>
             </Popover>
           }>
@@ -280,21 +291,13 @@ const JuniorPortfolioInner: React.FC = () => {
             placement="bottomRight">
             <button type="button" className="button-ghost-monochrome ml-auto">
               <Icons name="filter" className="mr-8" color="inherit" />
-              Filter
+              Filters
             </button>
           </Popover>
         </div>
         <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
       </div>
     </>
-  );
-};
-
-const JuniorPortfolio: React.FC = () => {
-  return (
-    <PoolsProvider>
-      <JuniorPortfolioInner />
-    </PoolsProvider>
   );
 };
 

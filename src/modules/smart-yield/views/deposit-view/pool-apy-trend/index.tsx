@@ -8,10 +8,10 @@ import Card from 'components/antd/card';
 import StatusDot from 'components/custom/status-dot';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { SYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
-import { useTokenPool } from 'modules/smart-yield/views/token-pool-view/token-pool-provider';
+import { APISYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
+import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
-type ChartEntity = SYPoolAPY;
+type ChartEntity = APISYPoolAPY;
 
 type State = {
   loading: boolean;
@@ -23,8 +23,8 @@ const InitialState: State = {
   data: [],
 };
 
-const TokenPoolTrend: React.FC = () => {
-  const poolCtx = useTokenPool();
+const PoolAPYTrend: React.FC = () => {
+  const poolCtx = useSYPool();
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -143,4 +143,4 @@ const TokenPoolTrend: React.FC = () => {
   );
 };
 
-export default TokenPoolTrend;
+export default PoolAPYTrend;

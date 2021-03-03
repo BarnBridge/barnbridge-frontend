@@ -4,13 +4,14 @@ import { formatBigValue, formatUSDValue } from 'web3/utils';
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Progress from 'components/antd/progress';
-import { Text, TextProps } from 'components/custom/typography';
+import { Hint, Text, TextProps } from 'components/custom/typography';
 
 import s from './s.module.scss';
 
 type Props = {
   total?: number;
   aggregated?: number | null;
+  aggregatedText?: React.ReactNode | null;
   aggregatedColor: TextProps['color'];
   data: [[string, number | undefined, string], [string, number | undefined, string]];
 };
@@ -20,6 +21,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     total,
     aggregated,
     aggregatedColor,
+    aggregatedText,
     data: [[label1, value1, color1], [label2, value2, color2]],
   } = props;
 
@@ -31,7 +33,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
         Portfolio balance
       </Text>
       <Divider />
-      <div className="p-24 grid flow-col gap-16">
+      <div className="p-24 flexbox-grid flow-col gap-16">
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Total balance
@@ -42,9 +44,11 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
         </div>
         {aggregated !== null && (
           <div>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
-              Aggregated APY
-            </Text>
+            <Hint text={aggregatedText}>
+              <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                Aggregated APY
+              </Text>
+            </Hint>
             <Text type="p1" weight="semibold" color={aggregatedColor}>
               {formatBigValue(aggregated)}%
             </Text>
@@ -60,7 +64,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
         trailColor={color2}
         strokeColor={color1}
       />
-      <div className="p-24 grid flow-col gap-16">
+      <div className="p-24 flexbox-grid flow-col gap-16">
         <div className={s.dataColumn} style={{ '--color': color1 } as React.CSSProperties}>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             {label1}

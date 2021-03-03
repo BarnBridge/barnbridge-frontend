@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatBigValue, formatUSDValue } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanAddressUrl } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -13,17 +13,19 @@ import { useReload } from 'hooks/useReload';
 import {
   Markets,
   Pools,
-  SYJuniorRedeem,
+  APISYJuniorRedeem,
   SYMarketMeta,
-  SYPool,
+  APISYPool,
   SYPoolMeta,
   fetchSYJuniorRedeems,
 } from 'modules/smart-yield/api';
-import { usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
+import Icons from 'components/custom/icon';
+import ExternalLink from 'components/custom/externalLink';
 
-type TableEntity = SYJuniorRedeem & {
-  pool?: SYPool & {
+type TableEntity = APISYJuniorRedeem & {
+  pool?: APISYPool & {
     meta?: SYPoolMeta;
     market?: SYMarketMeta;
   };
@@ -40,9 +42,12 @@ const Columns: ColumnsType<TableEntity> = [
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.pool?.meta?.icon!} bubbleName={entity.pool?.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
-          <Text type="p1" weight="semibold" color="primary">
-            {entity.pool?.underlyingSymbol}
-          </Text>
+          <ExternalLink href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress!)} className="grid flow-col col-gap-4 align-start">
+            <Text type="p1" weight="semibold" color="blue">
+              {entity.pool?.underlyingSymbol}
+            </Text>
+            <Icons name="arrow-top-right" width={8} height={8} color="blue" />
+          </ExternalLink>
           <Text type="small" weight="semibold">
             {entity.pool?.market?.name}
           </Text>
@@ -58,6 +63,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
     width: '20%',
     align: 'right',
+    sorter: (a, b) => a.underlyingOut.toNumber() - b.underlyingOut.toNumber(),
     render: (_, entity) => (
       <>
         <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
@@ -79,6 +85,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
     width: '40%',
     align: 'right',
+    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}

@@ -14,18 +14,18 @@ import {
   Markets,
   Pools,
   SYMarketMeta,
-  SYPool,
+  APISYPool,
   SYPoolMeta,
-  SYSeniorRedeem,
+  APISYSeniorRedeem,
   fetchSYSeniorRedeems,
 } from 'modules/smart-yield/api';
-import { usePools } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-type ListEntity = SYSeniorRedeem & {
-  pool?: SYPool & {
+type ListEntity = APISYSeniorRedeem & {
+  pool?: APISYPool & {
     meta?: SYPoolMeta;
     market?: SYMarketMeta;
   };

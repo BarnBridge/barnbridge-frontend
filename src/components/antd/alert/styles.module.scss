@@ -43,7 +43,8 @@
   border: 1px solid rgba(var(--alert-bg-color), 0.32);
 
   > :global(.ant-alert-icon),
-  > :global(.ant-alert-content .ant-alert-message) {
+  > :global(.ant-alert-content .ant-alert-message),
+  > :global(.ant-alert-content .ant-alert-description) {
     color: var(--alert-text-color);
   }
 }

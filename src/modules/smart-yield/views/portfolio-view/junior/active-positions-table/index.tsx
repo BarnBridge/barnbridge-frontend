@@ -2,17 +2,19 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
+import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import { Text } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool } from 'modules/smart-yield/views/overview-view/pools-provider';
+import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
 
 import { getFormattedDuration } from 'utils';
 
@@ -32,9 +34,14 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
-          <Text type="p1" weight="semibold" color="primary">
-            {entity.underlyingSymbol}
-          </Text>
+          <ExternalLink
+            href={getEtherscanAddressUrl(entity.smartYieldAddress)}
+            className="grid flow-col col-gap-4 align-start">
+            <Text type="p1" weight="semibold" color="blue">
+              {entity.underlyingSymbol}
+            </Text>
+            <Icons name="arrow-top-right" width={8} height={8} color="blue" />
+          </ExternalLink>
           <Text type="small" weight="semibold">
             {entity.market?.name}
           </Text>
@@ -50,6 +57,9 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     ),
     width: '20%',
     align: 'right',
+    sorter: (a, b) =>
+      (getHumanValue(a.smartYieldBalance, a.underlyingDecimals)?.toNumber() ?? 0) -
+      (getHumanValue(b.smartYieldBalance, b.underlyingDecimals)?.toNumber() ?? 0),
     render: (_, entity) => (
       <>
         <Tooltip
@@ -69,12 +79,24 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
   },
   {
     title: (
-      <Text type="small" weight="semibold">
-        APY
-      </Text>
+      <Hint
+        text={
+          <Grid flow="row" gap={8} align="start">
+            <Text type="p2">
+              The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
+              positions might differ.
+            </Text>
+            <ExternalLink href="#">Learn more</ExternalLink>
+          </Grid>
+        }>
+        <Text type="small" weight="semibold">
+          APY
+        </Text>
+      </Hint>
     ),
     width: '20%',
     align: 'right',
+    sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {formatBigValue(entity.state.juniorApy * 100)}%
@@ -83,12 +105,24 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
   },
   {
     title: (
-      <Text type="small" weight="semibold">
-        Withdraw wait time
-      </Text>
+      <Hint
+        text={
+          <Grid flow="row" gap={8} align="start">
+            <Text type="p2">
+              This is the amount of time you would have to wait if you chose to go through the 2 step withdrawal
+              process.
+            </Text>
+            <ExternalLink href="#">Learn more</ExternalLink>
+          </Grid>
+        }>
+        <Text type="small" weight="semibold">
+          Withdraw wait time
+        </Text>
+      </Hint>
     ),
     width: '20%',
     align: 'right',
+    sorter: (a, b) => a.smartYieldAbond.maturesAt - b.smartYieldAbond.maturesAt,
     render: (_, entity) => (
       <UseLeftTime end={entity.smartYieldAbond.maturesAt * 1_000} delay={1_000}>
         {leftTime => (

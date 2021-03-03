@@ -4,12 +4,12 @@ import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { Markets, Pools, SYMarketMeta, SYPool, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
-export type SYTokenPool = SYPool & {
+export type SYPool = APISYPool & {
   meta?: SYPoolMeta;
   market?: SYMarketMeta;
 };
@@ -19,7 +19,7 @@ type State = {
   marketId?: string;
   tokenId?: string;
   pool?:
-    | (SYTokenPool & {
+    | (SYPool & {
         underlyingBalance?: BigNumber;
         smartYieldBalance?: BigNumber;
         underlyingAllowance?: BigNumber;
@@ -49,7 +49,7 @@ const Context = React.createContext<ContextType>({
   },
 });
 
-export function useTokenPool(): ContextType {
+export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
@@ -58,7 +58,7 @@ type Props = {
   token: string;
 };
 
-const TokenPoolProvider: React.FC<Props> = props => {
+const PoolProvider: React.FC<Props> = props => {
   const { market, token, children } = props;
 
   const wallet = useWallet();
@@ -184,4 +184,4 @@ const TokenPoolProvider: React.FC<Props> = props => {
   return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-export default TokenPoolProvider;
+export default PoolProvider;

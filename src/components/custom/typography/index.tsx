@@ -52,7 +52,9 @@ export const Hint: React.FC<HintProps> = props => {
     <div className={cn(s.hint, className)}>
       <span>{children}</span>
       <Tooltip title={text} className={s.tooltip}>
-        <Icons name="info-outlined" width={16} height={16} />
+        <span>
+          <Icons name="info-outlined" width={16} height={16} />
+        </span>
       </Tooltip>
     </div>
   ) : (
