@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { SkeletonProps as AntdSkeletonProps } from 'antd/lib/skeleton';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -15,7 +15,7 @@ const Skeleton: React.FC<SkeletonProps> = props => {
 
   return (
     <Antd.Skeleton
-      className={cx(s.skeleton, className)}
+      className={cn(s.skeleton, className)}
       title={{ width, style: { height } }}
       active
       loading={loading !== false}

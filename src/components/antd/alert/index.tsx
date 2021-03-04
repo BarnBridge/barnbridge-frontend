@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { AlertProps as AntdAlertProps } from 'antd/lib/alert';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Icons from 'components/custom/icon';
 
@@ -23,7 +23,7 @@ const Alert: React.FC<AlertProps> = props => {
     }
   }, [type]);
 
-  return <Antd.Alert className={cx(s.component, className)} type={type} showIcon icon={icon} {...alertProps} />;
+  return <Antd.Alert className={cn(s.component, className)} type={type} showIcon icon={icon} {...alertProps} />;
 };
 
 export default Alert;

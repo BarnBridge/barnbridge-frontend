@@ -5,7 +5,7 @@ import {
   SelectProps as AntdSelectProps,
   SelectValue as AntdSelectValue,
 } from 'antd/lib/select';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Grid from 'components/custom/grid';
 import Icons from 'components/custom/icon';
@@ -29,7 +29,7 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
 
   return (
     <Antd.Select<T>
-      className={cx(s.component, className)}
+      className={cn(s.component, className)}
       dropdownClassName={s.dropdown}
       suffixIcon={loading ? <Antd.Spin size="small" /> : <Icons name="dropdown-arrow" />}
       optionLabelProp="label"

@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import cx from 'classnames';
+import cn from 'classnames';
 import { addDays, addMonths, addSeconds, getUnixTime, isAfter, isBefore } from 'date-fns';
 import { useWeb3Contracts } from 'web3/contracts';
 import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
@@ -175,7 +175,7 @@ const WalletLockView: React.FC = () => {
                         <Button
                           key={opt}
                           type="select"
-                          className={cx(isActive && s.activeOption)}
+                          className={cn(isActive && s.activeOption)}
                           disabled={formDisabled || state.saving || targetDate > maxAllowedDate}
                           onClick={() => {
                             form.setFieldsValue({

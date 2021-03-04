@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -50,7 +50,7 @@ const Grid: React.FC<GridProps> = props => {
 
   return (
     <div
-      className={cx(
+      className={cn(
         s.grid,
         flow && s[flow],
         align && s[`align-${align}`],

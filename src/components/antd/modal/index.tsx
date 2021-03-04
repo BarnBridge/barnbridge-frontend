@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { ModalProps as AntdModalProps } from 'antd/lib/modal';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
@@ -32,7 +32,7 @@ const Modal: React.FC<ModalProps> = props => {
   return (
     <Antd.Modal
       zIndex={1}
-      className={cx(s.component, className)}
+      className={cn(s.component, className)}
       visible
       centered
       footer={null}

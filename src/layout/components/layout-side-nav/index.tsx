@@ -1,7 +1,7 @@
 import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import * as Antd from 'antd';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
@@ -33,7 +33,7 @@ const NavLink: React.FC<NavLinkProps> = props => {
 
   return (
     <Tooltip title={label} placement="right">
-      <Grid flow="col" className={cx(s.navLink, isActivePath && s.isActive)}>
+      <Grid flow="col" className={cn(s.navLink, isActivePath && s.isActive)}>
         <div className={s.activeTick} />
         <Button type="light" onClick={handleClick}>
           <Icons name={icon} />
@@ -68,15 +68,15 @@ const LayoutSideNav: React.FC = () => {
 
   return (
     <>
-      <div className={cx(s.mask, { [s.open]: navOpen })} />
+      <div className={cn(s.mask, { [s.open]: navOpen })} />
       <Antd.Layout.Sider
-        className={cx(s.component, (expanded || navOpen) && s.expanded, {
+        className={cn(s.component, (expanded || navOpen) && s.expanded, {
           [s.open]: navOpen,
         })}
         collapsed={!expanded && !navOpen}
         collapsedWidth={72}
         width={200}>
-        <Grid flow="col" gap={12} className={cx(s.headerLogo, 'mb-48')}>
+        <Grid flow="col" gap={12} className={cn(s.headerLogo, 'mb-48')}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
             <Icons name="close-circle-outlined" />
           </button>
