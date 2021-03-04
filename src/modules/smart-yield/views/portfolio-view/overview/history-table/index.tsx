@@ -25,11 +25,7 @@ type TableEntity = APISYUserTxHistory;
 
 const Columns: ColumnsType<TableEntity> = [
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Token Name
-      </Text>
-    ),
+    title: "Token Name",
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble
@@ -48,11 +44,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Transaction Hash
-      </Text>
-    ),
+    title: "Transaction Hash",
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
@@ -64,11 +56,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Date
-      </Text>
-    ),
+    title: "Date",
     sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
     render: (_, entity) => (
       <>
@@ -82,11 +70,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Amount
-      </Text>
-    ),
+    title: "Amount",
     sorter: (a, b) => a.amount - b.amount,
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
@@ -102,11 +86,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Tranche
-      </Text>
-    ),
+    title: "Tranche",
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {capitalize(entity.tranche)}
@@ -114,11 +94,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: () => (
-      <Text type="small" weight="semibold">
-        Transaction type
-      </Text>
-    ),
+    title: "Transaction type",
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {HistoryTypes.get(entity.transactionType)}

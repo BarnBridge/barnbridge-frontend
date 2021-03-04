@@ -48,7 +48,11 @@ export type HintProps = {
 export const Hint: React.FC<HintProps> = props => {
   const { text, className, children } = props;
 
-  return text ? (
+  if (!text) {
+    return <>{children}</>;
+  }
+
+  return (
     <div className={cn(s.hint, className)}>
       <span>{children}</span>
       <Tooltip title={text} className={s.tooltip}>
@@ -57,7 +61,5 @@ export const Hint: React.FC<HintProps> = props => {
         </span>
       </Tooltip>
     </div>
-  ) : (
-    <>{children}</>
   );
 };

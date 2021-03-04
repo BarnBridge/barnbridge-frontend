@@ -10,7 +10,7 @@ import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Hint, Text } from 'components/custom/typography';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
@@ -93,7 +93,7 @@ const TwoStepWithdraw: React.FC = () => {
       <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="to" label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
-            tokenIcon="usdc-token"
+            tokenIcon={pool.meta?.icon as TokenIconNames}
             max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}

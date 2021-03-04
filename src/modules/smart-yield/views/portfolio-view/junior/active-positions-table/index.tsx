@@ -25,11 +25,7 @@ export type ActivePositionsTableEntity = PoolsSYPool & {
 
 const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Token Name
-      </Text>
-    ),
+    title: "Token Name",
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
@@ -50,11 +46,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Current balance
-      </Text>
-    ),
+    title: "Current balance",
     width: '20%',
     align: 'right',
     sorter: (a, b) =>
@@ -89,9 +81,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             <ExternalLink href="#">Learn more</ExternalLink>
           </Grid>
         }>
-        <Text type="small" weight="semibold">
-          APY
-        </Text>
+        APY
       </Hint>
     ),
     width: '20%',
@@ -115,9 +105,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             <ExternalLink href="#">Learn more</ExternalLink>
           </Grid>
         }>
-        <Text type="small" weight="semibold">
-          Withdraw wait time
-        </Text>
+        Withdraw wait time
       </Hint>
     ),
     width: '20%',
@@ -134,7 +122,6 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     ),
   },
   {
-    title: null,
     width: '20%',
     render: (_, entity) => (
       <NavLink

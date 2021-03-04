@@ -83,9 +83,9 @@ const LayoutSideNav: React.FC = () => {
           {(expanded || navOpen) && <Icons name="barnbridge" width="113" color="primary" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={(expanded || navOpen)} />
-          <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={(expanded || navOpen)} />
-          <NavLink label="Bonds" icon="paper-bill-outlined" path="/smart-yield" expanded={(expanded || navOpen)} />
+          <NavLink label="Yield Farming" icon="savings-outlined" path="/yield-farming" expanded={(expanded || navOpen)} />
+          <NavLink label="Governance" icon="bank-outlined" path="/governance" expanded={(expanded || navOpen)} />
+          <NavLink label="Smart Yield" icon="paper-bill-outlined" path="/smart-yield" expanded={(expanded || navOpen)} />
         </Grid>
         <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
           <Button type="light" onClick={handleThemeToggle}>

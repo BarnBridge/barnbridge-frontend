@@ -1,4 +1,5 @@
 import React from 'react';
+import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
@@ -53,17 +54,21 @@ export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
-type Props = {
-  market: string;
-  token: string;
-};
+const PoolProvider: React.FC = props => {
+  const { children } = props;
 
-const PoolProvider: React.FC<Props> = props => {
-  const { market, token, children } = props;
-
+  const location = useLocation();
   const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
+
+  const [market, token] = React.useMemo<string[]>(() => {
+    const urlQuery = new URLSearchParams(location.search);
+    const market = decodeURIComponent(urlQuery.get('m') ?? '');
+    const token = decodeURIComponent(urlQuery.get('t') ?? '');
+
+    return [market, token];
+  }, [location.search]);
 
   React.useEffect(() => {
     setState(

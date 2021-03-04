@@ -114,7 +114,7 @@ const InstantWithdraw: React.FC = () => {
       <Form className="grid flow-row" form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
-            tokenIcon="usdc-token"
+            tokenIcon={pool.meta?.icon as TokenIconNames}
             max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}
