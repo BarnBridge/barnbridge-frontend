@@ -145,6 +145,10 @@
   @include text-wrap;
 }
 
+.text-nowrap {
+  white-space: nowrap;
+}
+
 $textAligns: left, center, right;
 
 @each $textAlign in $textAligns {

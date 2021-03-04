@@ -34,10 +34,10 @@
   :global(.ant-picker-input) {
     input {
       @include font-p1-semi-bold;
-      color: var(--theme-icon-color);
+      color: var(--theme-primary-color);
 
       &::placeholder {
-        color: var(--theme-icon-color);
+        color: var(--theme-default-color);
       }
     }
 

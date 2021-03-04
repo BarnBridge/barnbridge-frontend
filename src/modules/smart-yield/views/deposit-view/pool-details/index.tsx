@@ -3,13 +3,10 @@ import { formatBigValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
-import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';
-
-import s from 'modules/smart-yield/views/deposit-view/pool-details/s.module.scss';
 
 const PoolDetails: React.FC = () => {
   const poolCtx = useSYPool();
@@ -21,79 +18,79 @@ const PoolDetails: React.FC = () => {
 
   return (
     <Card noPaddingBody>
-      <div className={s.detailsRow}>
+      <div className="p-24">
         <Text type="p1" weight="semibold" color="primary">
           Pool details
         </Text>
       </div>
       <Divider />
-      <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
-        <Grid flow="row">
+      <div className="flexbox-grid p-24">
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Junior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(pool.state.juniorLiquidity)}
           </Text>
-        </Grid>
-        <Grid flow="row">
+        </div>
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Senior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(pool.state.seniorLiquidity)}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
       <Divider />
-      <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
-        <Grid flow="row">
+      <div className="flexbox-grid p-24">
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             # of juniors
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(pool.state.numberOfJuniors)}
           </Text>
-        </Grid>
-        <Grid flow="row">
+        </div>
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             # of seniors
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(pool.state.numberOfSeniors)}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
       <Divider />
-      <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
-        <Grid flow="row">
+      <div className="flexbox-grid p-24">
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
             {formatBigValue(pool.state.juniorApy * 100)}%
           </Text>
-        </Grid>
-        <Grid flow="row">
+        </div>
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="green">
             {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
       <Divider />
-      <Grid flow="col" gap={32} className={s.detailsRow} colsTemplate="1fr 1fr">
-        <Grid flow="row">
+      <div className="flexbox-grid p-24">
+        <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Junior liquidity locked
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             -
           </Text>
-        </Grid>
-        <Grid flow="row">
+        </div>
+        <div className="flex flow-row">
           <Hint text="The average maturity date of the current senior bonds in this pool.">
             <Text type="small" weight="semibold" color="secondary" className="mb-4">
               Average senior maturity
@@ -105,8 +102,8 @@ const PoolDetails: React.FC = () => {
               Date.now() + (pool.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1_000,
             )}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     </Card>
   );
 };

@@ -7,13 +7,14 @@ import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 type Props = ModalProps & {
-  state: 'progress' | 'success' | 'failure';
+  type?: 'deposit' | 'withdraw';
+  state?: 'progress' | 'success' | 'failure';
   txLink?: string;
   onSuccessClick?: () => void;
 };
 
 const TxStatusModal: React.FC<Props> = props => {
-  const { state, txLink, onSuccessClick, ...modalProps } = props;
+  const { type, state, txLink, onSuccessClick, ...modalProps } = props;
 
   return (
     <Modal width={560} title="Transaction status" {...modalProps}>
@@ -40,7 +41,8 @@ const TxStatusModal: React.FC<Props> = props => {
             <Text type="small" weight="semibold" color="secondary" className="mb-64 text-center">
               Your transaction was successful.
               <br />
-              You can see your new position in your portfolio
+              {type === 'deposit' && 'You can see your new position in your portfolio'}
+              {type === 'withdraw' && 'You can see your past position in your portfolio'}
             </Text>
             <Button htmlType="submit" type="primary" onClick={onSuccessClick}>
               See your portfolio

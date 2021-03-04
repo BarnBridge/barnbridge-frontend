@@ -141,7 +141,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
               </Text>
               <Progress
                 percent={completed}
-                trailColor="var(--color-border)"
+                trailColor="var(--theme-border-color)"
                 strokeWidth={4}
                 strokeColor={{
                   '0%': 'var(--theme-blue-color)',

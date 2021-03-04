@@ -17,6 +17,7 @@ import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/componen
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
+import IconBubble from 'components/custom/icon-bubble';
 
 type FormData = {
   to?: BigNumber;
@@ -60,6 +61,8 @@ const TwoStepWithdraw: React.FC = () => {
       return;
     }
 
+    showWithdrawModal(false);
+
     const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
@@ -71,7 +74,7 @@ const TwoStepWithdraw: React.FC = () => {
       const maxMaturesAt = 1 + abond.maturesAt;
       const deadline = Math.round(Date.now() / 1_000) + 1200;
 
-      await smartYieldContract.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, args.gasPrice);
+      await poolCtx.actions.twoStepWithdraw(tokenAmount, maxMaturesAt, deadline, args.gasPrice);
     } catch {}
   }
 
@@ -93,7 +96,15 @@ const TwoStepWithdraw: React.FC = () => {
       <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="to" label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
-            tokenIcon={pool.meta?.icon as TokenIconNames}
+            tokenIcon={
+              <IconBubble
+                name={pool?.meta?.icon!}
+                bubbleName="bond-circle-token"
+                secondBubbleName={pool?.market?.icon!}
+                width={36}
+                height={36}
+              />
+            }
             max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}

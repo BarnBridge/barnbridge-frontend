@@ -9,6 +9,7 @@ export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
   | 'bond-token'
+  | 'bond-circle-token'
   | 'bond-square-token'
   | 'dai-token'
   | 'susd-token'
@@ -26,7 +27,8 @@ export type NavIconNames =
   | 'savings-outlined'
   | 'proposal-outlined'
   | 'bank-outlined'
-  | 'wallet-outlined';
+  | 'wallet-outlined'
+  | 'docs-outlined';
 
 export type ThemeIconNames = 'moon' | 'sun';
 

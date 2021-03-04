@@ -45,7 +45,7 @@ const PortfolioValue: React.FC<Props> = props => {
           <ReCharts.YAxis
             axisLine={false}
             tickLine={false}
-            tickFormatter={(value: any) => formatUSDValue(value, 2, 0)}
+            tickFormatter={(value: any) => Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value)}
           />
           <ReCharts.Tooltip
             separator=""
@@ -55,13 +55,13 @@ const PortfolioValue: React.FC<Props> = props => {
               </Text>
             )}
             formatter={(value: number) => (
-              <Text type="p2" tag="span" weight="semibold" color="purple">
+              <Text type="p2" tag="span" weight="semibold" style={{ color }}>
                 {formatUSDValue(value)}
               </Text>
             )}
           />
           <ReCharts.Area
-            name="Value "
+            name="Value: "
             dataKey="value"
             type="monotone"
             fill="url(#chart-gradient)"

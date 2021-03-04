@@ -4,7 +4,8 @@ import Sprite from 'resources/svg/icons-sprite.svg';
 
 export type IconBubbleProps = {
   name: string;
-  bubbleName: string;
+  bubbleName?: string;
+  secondBubbleName?: string;
   width?: number;
   height?: number;
   className?: string;
@@ -14,19 +15,23 @@ export type IconBubbleProps = {
 let uuid = 0;
 
 const IconBubble: React.FC<IconBubbleProps> = props => {
-  const { name, bubbleName, width = 40, height, className, style } = props;
+  const { name, bubbleName, secondBubbleName, width = 40, height, className, style } = props;
   const id = `ib-${uuid++}`;
 
   return (
     <svg width={width} height={height ?? width} className={className} style={style}>
       <mask id={id}>
         <circle cx="50%" cy="50%" r="50%" fill="white" />
-        <circle cx="75%" cy="25%" r="30%" fill="black" />
+        {bubbleName && <circle cx="77.5%" cy="22.5%" r="25%" fill="black" />}
+        {secondBubbleName && <circle cx="77.5%" cy="77.5%" r="25%" fill="black" />}
       </mask>
       <g mask={`url(#${id})`}>
         <use xlinkHref={`${Sprite}#icon__${name}`} />
       </g>
-      <use xlinkHref={`${Sprite}#icon__${bubbleName}`} width="50%" height="50%" x="50%" y="0" />
+      {bubbleName && <use xlinkHref={`${Sprite}#icon__${bubbleName}`} width="45%" height="45%" x="55%" y="0" />}
+      {secondBubbleName && (
+        <use xlinkHref={`${Sprite}#icon__${secondBubbleName}`} width="45%" height="45%" x="55%" y="55%" />
+      )}
     </svg>
   );
 };

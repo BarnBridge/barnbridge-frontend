@@ -67,11 +67,6 @@ const LayoutView: React.FC = () => {
                 Github
               </Text>
             </ExternalLink>
-            <ExternalLink href={DOCS_LINK}>
-              <Text type="p2" weight="semibold">
-                Docs
-              </Text>
-            </ExternalLink>
             <ExternalLink href={UNISWAP_LIQUIDITY_LINK}>
               <Text type="p2" weight="semibold">
                 Uniswap v2 USDC/BOND add liquidity

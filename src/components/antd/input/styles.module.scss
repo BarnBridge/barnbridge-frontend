@@ -8,7 +8,8 @@
   --input-border-disabled: 1px solid #e3e4e6;
   --input-bg: #fff;
   --input-bg-disabled: #f8f8f9;
-  --input-text: #aaafb3;
+  --input-text: var(--theme-primary-color);
+  --input-placeholder: var(--theme-default-color);
   --input-text-active: #13202b;
   --input-text-disabled: #717980;
 }
@@ -18,7 +19,6 @@
   --input-border-disabled: none;
   --input-bg: #202529;
   --input-bg-disabled: #36393d;
-  --input-text: #606268;
   --input-text-active: #fff;
   --input-text-disabled: #939496;
 }
@@ -51,7 +51,7 @@
     }
 
     &::placeholder {
-      color: var(--input-text);
+      color: var(--input-placeholder);
     }
 
     &:global(.ant-input-disabled) {

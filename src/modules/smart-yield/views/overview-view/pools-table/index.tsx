@@ -27,7 +27,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             <Text type="p1" weight="semibold" color="primary">
               {entity.underlyingSymbol}
             </Text>
-            <Text type="small" weight="semibold">
+            <Text type="small" weight="semibold" wrap={false}>
               {entity.meta?.name}
             </Text>
           </Grid>
@@ -109,7 +109,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           <Text type="p1" weight="semibold" color="primary">
             1 {entity.underlyingSymbol}
           </Text>
-          <Text type="small" weight="semibold">
+          <Text type="small" weight="semibold" wrap={false}>
             = {formatBigValue(entity.state.jTokenPrice)} j{entity.underlyingSymbol}
           </Text>
         </Grid>
