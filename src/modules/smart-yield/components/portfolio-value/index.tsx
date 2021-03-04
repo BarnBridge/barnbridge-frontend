@@ -32,7 +32,7 @@ const PortfolioValue: React.FC<Props> = props => {
           </Text>
         </Grid>
       }>
-      <ReCharts.ResponsiveContainer width="100%" height={225}>
+      <ReCharts.ResponsiveContainer width="100%" height={178}>
         <ReCharts.AreaChart data={data}>
           <defs>
             <linearGradient id="chart-gradient" gradientTransform="rotate(180)">
