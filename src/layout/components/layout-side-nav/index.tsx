@@ -88,7 +88,7 @@ const LayoutSideNav: React.FC = () => {
           <NavLink label="Governance" icon="bank-outlined" path="/governance" expanded={(expanded || navOpen)} />
           <NavLink label="Smart Yield" icon="paper-bill-outlined" path="/smart-yield" expanded={(expanded || navOpen)} />
         </Grid>
-        <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
+        <Grid flow="row" gap={24} className={s.footerWrap} colsTemplate="48px">
           <ExternalLink href="https://docs.barnbridge.com/">
             <Button type="light">
               <Icons name="docs-outlined" />

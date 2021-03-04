@@ -92,8 +92,8 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const canTransfer = !sBond.liquidated;
 
   return (
-    <Card noPaddingBody>
-      <div className="flex p-24">
+    <div className="card">
+      <div className="p-24" style={{ display: 'flex', flexWrap: 'wrap' }}>
         <IconBubble name={pool.meta?.icon!} bubbleName={pool.market?.icon!} className="mr-16" />
         <div>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -162,7 +162,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         </Text>
       </div>
       <Divider />
-      <div className="grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
+      <div className="flexbox-grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
         <Button type="primary" disabled={!canRedeem} onClick={handleRedeemShow}>
           Redeem
         </Button>
@@ -267,7 +267,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           )}
         </TxConfirmModal>
       )}
-    </Card>
+    </div>
   );
 };
 
