@@ -101,7 +101,7 @@ const DepositHeader: React.FC = () => {
           <Text type="small" weight="semibold" className="mb-4">
             Senior APY
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" weight="semibold" color="green">
             {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </div>

@@ -27,31 +27,23 @@ const PoolDetails: React.FC = () => {
       <div className="flexbox-grid p-24">
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Junior Liquidity
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.state.juniorLiquidity)}
-          </Text>
-        </div>
-        <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Senior Liquidity
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(pool.state.seniorLiquidity)}
           </Text>
         </div>
+        <div className="flex flow-row">
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Junior Liquidity
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(pool.state.juniorLiquidity)}
+          </Text>
+        </div>
       </div>
       <Divider />
       <div className="flexbox-grid p-24">
-        <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            # of juniors
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.state.numberOfJuniors)}
-          </Text>
-        </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             # of seniors
@@ -60,17 +52,17 @@ const PoolDetails: React.FC = () => {
             {formatBigValue(pool.state.numberOfSeniors)}
           </Text>
         </div>
+        <div className="flex flow-row">
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            # of juniors
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(pool.state.numberOfJuniors)}
+          </Text>
+        </div>
       </div>
       <Divider />
       <div className="flexbox-grid p-24">
-        <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Junior APY
-          </Text>
-          <Text type="p1" weight="semibold" color="purple">
-            {formatBigValue(pool.state.juniorApy * 100)}%
-          </Text>
-        </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Senior APY
@@ -79,17 +71,17 @@ const PoolDetails: React.FC = () => {
             {formatBigValue(pool.state.seniorApy * 100)}%
           </Text>
         </div>
+        <div className="flex flow-row">
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Junior APY
+          </Text>
+          <Text type="p1" weight="semibold" color="purple">
+            {formatBigValue(pool.state.juniorApy * 100)}%
+          </Text>
+        </div>
       </div>
       <Divider />
       <div className="flexbox-grid p-24">
-        <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Junior liquidity locked
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            -
-          </Text>
-        </div>
         <div className="flex flow-row">
           <Hint text="The average maturity date of the current senior bonds in this pool.">
             <Text type="small" weight="semibold" color="secondary" className="mb-4">
@@ -101,6 +93,14 @@ const PoolDetails: React.FC = () => {
               Date.now(),
               Date.now() + (pool.state.avgSeniorMaturityDays ?? 0) * 24 * 60 * 60 * 1_000,
             )}
+          </Text>
+        </div>
+        <div className="flex flow-row">
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Junior liquidity locked
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(pool.state.juniorLiquidityLocked)}
           </Text>
         </div>
       </div>
