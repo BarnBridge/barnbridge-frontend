@@ -21,7 +21,15 @@ import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldCont
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
-import { DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_WEEK, DURATION_4_WEEK, getLockEndDate } from 'utils/date';
+import {
+  DURATION_1_DAY,
+  DURATION_1_WEEK,
+  DURATION_2_WEEKS,
+  DURATION_30_DAYS,
+  DURATION_3_WEEKS,
+  DURATION_4_WEEKS,
+  getDurationDate,
+} from 'utils/date';
 
 type FormData = {
   amount?: BigNumber;
@@ -37,22 +45,16 @@ const InitialFormValues: FormData = {
   deadline: 20,
 };
 
-const DURATION_OPTIONS = [DURATION_1_WEEK, DURATION_2_WEEK, DURATION_3_WEEK, DURATION_4_WEEK];
+const DURATION_OPTIONS = [DURATION_1_DAY, DURATION_1_WEEK, DURATION_2_WEEKS, DURATION_3_WEEKS, DURATION_30_DAYS];
 
 type State = {
   isSaving: boolean;
   depositModalVisible: boolean;
-  statusModalVisible: boolean;
-  txState: 'progress' | 'success' | 'failure';
-  txHash?: string;
 };
 
 const InitialState: State = {
   isSaving: false,
   depositModalVisible: false,
-  statusModalVisible: false,
-  txState: 'progress',
-  txHash: undefined,
 };
 
 const SeniorTranche: React.FC = () => {
@@ -93,21 +95,6 @@ const SeniorTranche: React.FC = () => {
     );
   }
 
-  function handleStatusModalCancel() {
-    setState(
-      mergeState<State>({
-        statusModalVisible: false,
-      }),
-    );
-  }
-
-  function handleTxSuccess() {
-    history.push({
-      pathname: `/smart-yield/portfolio/senior`,
-      search: `?m=${marketId}&t=${tokenId}`,
-    });
-  }
-
   async function handleDepositConfirm({ gasPrice }: any) {
     if (!pool) {
       return;
@@ -140,33 +127,6 @@ const SeniorTranche: React.FC = () => {
         .minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
         .multipliedBy(minGain);
       const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
-
-      smartYieldContract
-        .on('tx:transactionHash', (txHash: string) => {
-          setState(
-            mergeState<State>({
-              depositModalVisible: false,
-              statusModalVisible: true,
-              txState: 'progress',
-              txHash,
-            }),
-          );
-        })
-        .on('tx:complete', () => {
-          setState(
-            mergeState<State>({
-              txState: 'success',
-            }),
-          );
-        })
-        .on('tx:failure', () => {
-          setState(
-            mergeState<State>({
-              depositModalVisible: false,
-              txState: 'failure',
-            }),
-          );
-        });
 
       await smartYieldContract.buyBondSend(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();
@@ -212,7 +172,7 @@ const SeniorTranche: React.FC = () => {
           <DatePicker
             showNow={false}
             disabledDate={(date: Date) =>
-              isBefore(date, new Date()) || isAfter(date, getLockEndDate(new Date(), DURATION_4_WEEK)!)
+              isBefore(date, new Date()) || isAfter(date, getDurationDate(new Date(), DURATION_30_DAYS)!)
             }
             format="DD/MM/YYYY"
             size="large"
@@ -221,21 +181,21 @@ const SeniorTranche: React.FC = () => {
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
           {() => (
-            <div className="flexbox-list">
+            <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
               {DURATION_OPTIONS.map(opt => (
-                <Button
+                <button
                   key={opt}
-                  type="select"
+                  className="button-ghost-monochrome ph-24"
                   disabled={formDisabled || state.isSaving}
                   onClick={() => {
                     form.setFieldsValue({
-                      maturityDate: getLockEndDate(startOfDay(new Date()), opt),
+                      maturityDate: getDurationDate(startOfDay(new Date()), opt),
                     });
                   }}>
                   <Text type="p1" weight="semibold" color="primary">
                     {opt}
                   </Text>
-                </Button>
+                </button>
               ))}
             </div>
           )}
@@ -314,16 +274,6 @@ const SeniorTranche: React.FC = () => {
           submitText="Confirm your deposit"
           onCancel={handleDepositCancel}
           onConfirm={handleDepositConfirm}
-        />
-      )}
-
-      {state.statusModalVisible && (
-        <TxStatusModal
-          visible
-          state={state.txState}
-          txLink={state.txHash && getEtherscanTxUrl(state.txHash)}
-          onSuccessClick={handleTxSuccess}
-          onCancel={handleStatusModalCancel}
         />
       )}
     </>

@@ -12,6 +12,7 @@ import { useTheme } from 'components/providers/theme-provider';
 import { useGeneral } from 'components/providers/general-provider';
 
 import s from './styles.module.scss';
+import ExternalLink from 'components/custom/externalLink';
 
 export type NavLinkProps = {
   icon: NavIconNames;
@@ -83,11 +84,21 @@ const LayoutSideNav: React.FC = () => {
           {(expanded || navOpen) && <Icons name="barnbridge" width="113" color="primary" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink label="Pools" icon="savings-outlined" path="/yield-farming" expanded={(expanded || navOpen)} />
-          <NavLink label="Voting" icon="bank-outlined" path="/governance" expanded={(expanded || navOpen)} />
-          <NavLink label="Bonds" icon="paper-bill-outlined" path="/smart-yield" expanded={(expanded || navOpen)} />
+          <NavLink label="Yield Farming" icon="savings-outlined" path="/yield-farming" expanded={(expanded || navOpen)} />
+          <NavLink label="Governance" icon="bank-outlined" path="/governance" expanded={(expanded || navOpen)} />
+          <NavLink label="Smart Yield" icon="paper-bill-outlined" path="/smart-yield" expanded={(expanded || navOpen)} />
         </Grid>
         <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
+          <ExternalLink href="https://docs.barnbridge.com/">
+            <Button type="light">
+              <Icons name="docs-outlined" />
+              {(expanded || navOpen) && (
+                <Text type="p2" weight="semibold" className={s.linkLabel}>
+                  Docs
+                </Text>
+              )}
+            </Button>
+          </ExternalLink>
           <Button type="light" onClick={handleThemeToggle}>
             <Icons name={isDarkTheme ? 'sun' : 'moon'} />
             {(expanded || navOpen) && (

@@ -20,6 +20,7 @@ import Icons from 'components/custom/icon';
 import Divider from 'components/antd/divider';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import Input from 'components/antd/input';
+import IconBubble from 'components/custom/icon-bubble';
 
 type FormData = {
   from?: BigNumber;
@@ -72,6 +73,8 @@ const InstantWithdraw: React.FC = () => {
       return;
     }
 
+    showWithdrawModal(false);
+
     const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
@@ -93,7 +96,7 @@ const InstantWithdraw: React.FC = () => {
       const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0 / 100)).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
-      await smartYieldContract.sellTokensSend(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
+      await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
     } catch {}
   }
 
@@ -114,7 +117,15 @@ const InstantWithdraw: React.FC = () => {
       <Form className="grid flow-row" form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
-            tokenIcon="usdc-token"
+            tokenIcon={
+              <IconBubble
+                name={pool?.meta?.icon!}
+                bubbleName="bond-circle-token"
+                secondBubbleName={pool?.market?.icon!}
+                width={36}
+                height={36}
+              />
+            }
             max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}

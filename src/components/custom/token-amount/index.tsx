@@ -13,7 +13,7 @@ import s from './styles.module.scss';
 
 export type TokenAmountProps = {
   className?: string;
-  tokenIcon?: TokenIconNames;
+  tokenIcon?: TokenIconNames | React.ReactNode;
   max?: number | BigNumber;
   maximumFractionDigits?: number;
   value?: number | BigNumber;
@@ -59,11 +59,10 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
         className={cx(s.component, className)}
         placeholder={max !== undefined ? `0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})` : ''}
         addonBefore={
-          tokenIcon ? (
-            <Grid flow="col" gap={4}>
-              <Icons name={tokenIcon} width={24} height={24} />
-            </Grid>
-          ) : undefined
+          <>
+            {typeof tokenIcon === 'string' && <Icons name={tokenIcon as TokenIconNames} width={36} height={36} />}
+            {typeof tokenIcon === 'object' && tokenIcon}
+          </>
         }
         addonAfter={
           max !== undefined ? (

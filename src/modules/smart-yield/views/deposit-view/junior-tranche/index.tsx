@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getEtherscanTxUrl, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -10,12 +10,12 @@ import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Icon from 'components/custom/icon';
 import Icons, { TokenIconNames } from 'components/custom/icon';
+import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
-import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -38,17 +38,11 @@ const InitialFormValues: FormData = {
 type State = {
   isSaving: boolean;
   depositModalVisible: boolean;
-  statusModalVisible: boolean;
-  txState: 'progress' | 'success' | 'failure';
-  txHash?: string;
 };
 
 const InitialState: State = {
   isSaving: false,
   depositModalVisible: false,
-  statusModalVisible: false,
-  txState: 'progress',
-  txHash: undefined,
 };
 
 const JuniorTranche: React.FC = () => {
@@ -89,21 +83,6 @@ const JuniorTranche: React.FC = () => {
     );
   }
 
-  function handleStatusModalCancel() {
-    setState(
-      mergeState<State>({
-        statusModalVisible: false,
-      }),
-    );
-  }
-
-  function handleTxSuccess() {
-    history.push({
-      pathname: `/smart-yield/portfolio/junior`,
-      search: `?m=${marketId}&t=${tokenId}`,
-    });
-  }
-
   async function handleDepositConfirm({ gasPrice }: any) {
     if (!pool) {
       return;
@@ -136,35 +115,8 @@ const JuniorTranche: React.FC = () => {
     const minTokens = minAmount.dividedBy(price);
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
-    smartYieldContract
-      .on('tx:transactionHash', (txHash: string) => {
-        setState(
-          mergeState<State>({
-            depositModalVisible: false,
-            statusModalVisible: true,
-            txState: 'progress',
-            txHash,
-          }),
-        );
-      })
-      .on('tx:complete', () => {
-        setState(
-          mergeState<State>({
-            txState: 'success',
-          }),
-        );
-      })
-      .on('tx:failure', () => {
-        setState(
-          mergeState<State>({
-            depositModalVisible: false,
-            txState: 'failure',
-          }),
-        );
-      });
-
     try {
-      await smartYieldContract.buyTokensSend(
+      await poolCtx.actions.juniorDeposit(
         getNonHumanValue(from, decimals),
         getNonHumanValue(new BigNumber(minTokens.toFixed(0)), decimals),
         deadlineTs,
@@ -223,7 +175,15 @@ const JuniorTranche: React.FC = () => {
 
             return (
               <TokenAmount
-                tokenIcon={pool?.meta?.icon as TokenIconNames}
+                tokenIcon={
+                  <IconBubble
+                    name={pool?.meta?.icon!}
+                    bubbleName="bond-circle-token"
+                    secondBubbleName={pool?.market?.icon!}
+                    width={36}
+                    height={36}
+                  />
+                }
                 maximumFractionDigits={pool?.underlyingDecimals}
                 displayDecimals={4}
                 value={to}
@@ -316,16 +276,6 @@ const JuniorTranche: React.FC = () => {
           submitText="Confirm your deposit"
           onCancel={handleDepositCancel}
           onConfirm={handleDepositConfirm}
-        />
-      )}
-
-      {state.statusModalVisible && (
-        <TxStatusModal
-          visible
-          state={state.txState}
-          txLink={state.txHash && getEtherscanTxUrl(state.txHash)}
-          onSuccessClick={handleTxSuccess}
-          onCancel={handleStatusModalCancel}
         />
       )}
     </>

@@ -47,7 +47,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         <Grid gap={12} colsTemplate="auto 24px" width="100%">
           <Progress
             percent={dao.activationRate}
-            trailColor="var(--color-border)"
+            trailColor="var(--theme-border-color)"
             strokeWidth={24}
             strokeColor={{
               '0%': 'var(--theme-blue-color)',

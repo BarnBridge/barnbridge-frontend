@@ -33,11 +33,7 @@ type TableEntity = APISYJuniorRedeem & {
 
 const Columns: ColumnsType<TableEntity> = [
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Token Name
-      </Text>
-    ),
+    title: "Token Name",
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.pool?.meta?.icon!} bubbleName={entity.pool?.market?.icon!} />
@@ -56,11 +52,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Redeemed balance
-      </Text>
-    ),
+    title: "Redeemed balance",
     width: '20%',
     align: 'right',
     sorter: (a, b) => a.underlyingOut.toNumber() - b.underlyingOut.toNumber(),
@@ -78,11 +70,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Redeemed at
-      </Text>
-    ),
+    title: "Redeemed at",
     width: '40%',
     align: 'right',
     sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,

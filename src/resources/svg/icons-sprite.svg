@@ -40,6 +40,16 @@
         d="m8.0527 9.3252v21.925l6.7783-5.0742v-5.7937l-1.2497-0.9845 5.7938-4.3547 5.7558 4.3547-1.2497 0.9845v5.7937l6.8162 5.0742v-21.925h-22.645z"
         fill="#fff"/>
     </symbol>
+    <!-- BOND CIRCLE TOKEN -->
+    <svg id="icon__bond-circle-token" viewBox="0 0 20 20" fill="none">
+      <rect x="1" y="1" width="18" height="18" rx="9" fill="#FF4339"/>
+      <path
+        d="M10.0292 9.19238H9.97153C9.19268 9.19238 8.58691 9.827 8.58691 10.6347V12.1924L10.0004 11.1251L11.4138 12.1924V10.6347C11.4138 9.85584 10.7792 9.22123 10.0292 9.19238Z"
+        fill="white"/>
+      <path
+        d="M4 4V15.5962L7.60577 12.9135V9.85577L6.94231 9.33654L10 7.02885L13.0577 9.33654L12.3942 9.85577V12.9135L16 15.5962V4H4Z"
+        fill="white"/>
+    </svg>
     <!-- BOND SQUARE TOKEN -->
     <symbol id="icon__bond-square-token" viewBox="0 0 37 37" fill="none">
       <path
@@ -148,14 +158,22 @@
     <!-- DOWN ARROW CIRCLE -->
     <symbol id="icon__down-arrow-circle" viewBox="0 0 32 32" fill="none">
       <circle cx="16" cy="16" r="16" fill="#F8F8F9"/>
-      <path d="M22.5303 17.5303C22.8232 17.2374 22.8232 16.7626 22.5303 16.4697C22.2374 16.1768 21.7626 16.1768 21.4697 16.4697L22.5303 17.5303ZM16.7071 22.2929L16.1768 21.7626L16.7071 22.2929ZM15.2929 22.2929L15.8232 21.7626L15.2929 22.2929ZM10.5303 16.4697C10.2374 16.1768 9.76256 16.1768 9.46967 16.4697C9.17678 16.7626 9.17678 17.2374 9.46967 17.5303L10.5303 16.4697ZM15.25 22C15.25 22.4142 15.5858 22.75 16 22.75C16.4142 22.75 16.75 22.4142 16.75 22L15.25 22ZM16.75 9C16.75 8.58579 16.4142 8.25 16 8.25C15.5858 8.25 15.25 8.58579 15.25 9L16.75 9ZM21.4697 16.4697L16.1768 21.7626L17.2374 22.8232L22.5303 17.5303L21.4697 16.4697ZM15.8232 21.7626L10.5303 16.4697L9.46967 17.5303L14.7626 22.8232L15.8232 21.7626ZM16.1768 21.7626C16.0791 21.8602 15.9209 21.8602 15.8232 21.7626L14.7626 22.8232C15.446 23.5066 16.554 23.5066 17.2374 22.8232L16.1768 21.7626ZM16.75 22L16.75 9L15.25 9L15.25 22L16.75 22Z" fill="currentColor"/>
+      <path
+        d="M22.5303 17.5303C22.8232 17.2374 22.8232 16.7626 22.5303 16.4697C22.2374 16.1768 21.7626 16.1768 21.4697 16.4697L22.5303 17.5303ZM16.7071 22.2929L16.1768 21.7626L16.7071 22.2929ZM15.2929 22.2929L15.8232 21.7626L15.2929 22.2929ZM10.5303 16.4697C10.2374 16.1768 9.76256 16.1768 9.46967 16.4697C9.17678 16.7626 9.17678 17.2374 9.46967 17.5303L10.5303 16.4697ZM15.25 22C15.25 22.4142 15.5858 22.75 16 22.75C16.4142 22.75 16.75 22.4142 16.75 22L15.25 22ZM16.75 9C16.75 8.58579 16.4142 8.25 16 8.25C15.5858 8.25 15.25 8.58579 15.25 9L16.75 9ZM21.4697 16.4697L16.1768 21.7626L17.2374 22.8232L22.5303 17.5303L21.4697 16.4697ZM15.8232 21.7626L10.5303 16.4697L9.46967 17.5303L14.7626 22.8232L15.8232 21.7626ZM16.1768 21.7626C16.0791 21.8602 15.9209 21.8602 15.8232 21.7626L14.7626 22.8232C15.446 23.5066 16.554 23.5066 17.2374 22.8232L16.1768 21.7626ZM16.75 22L16.75 9L15.25 9L15.25 22L16.75 22Z"
+        fill="currentColor"/>
     </symbol>
     <!-- REFRESH -->
     <symbol id="icon__refresh" viewBox="0 0 18 16" fill="none">
-      <path d="M13.2668 7.46582L14.8668 8.79915L16.4668 7.46582" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      <path d="M14.8663 7.99948C14.8663 4.75941 12.2397 2.13281 8.99967 2.13281C7.28317 2.13281 5.73884 2.86999 4.66602 4.04503" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      <path d="M4.7332 8.5332L3.1332 7.19987L1.5332 8.5332" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
-      <path d="M3.13302 7.99954C3.13302 11.2396 5.75962 13.8662 8.99969 13.8662C10.716 13.8662 12.2602 13.1292 13.333 11.9544" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M13.2668 7.46582L14.8668 8.79915L16.4668 7.46582" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round"/>
+      <path
+        d="M14.8663 7.99948C14.8663 4.75941 12.2397 2.13281 8.99967 2.13281C7.28317 2.13281 5.73884 2.86999 4.66602 4.04503"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M4.7332 8.5332L3.1332 7.19987L1.5332 8.5332" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round"/>
+      <path
+        d="M3.13302 7.99954C3.13302 11.2396 5.75962 13.8662 8.99969 13.8662C10.716 13.8662 12.2602 13.1292 13.333 11.9544"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </symbol>
     <!-- BELL -->
     <symbol id="icon__bell" viewBox="0 0 24 24" fill="none">
@@ -166,8 +184,11 @@
     <!-- BELL OUTLINED -->
     <symbol id="icon__bell-outlined" fill="none" viewBox="0 0 26 26">
       <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9 21a3 3 0 106 0"/>
-      <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M11.912 6a7.051 7.051 0 00-7.048 6.817l-.094 2.837a4.438 4.438 0 01-.755 2.332l-1.632 2.421a.364.364 0 00.3.57h18.584a.39.39 0 00.322-.61l-1.626-2.415a4.658 4.658 0 01-.782-2.255l-.238-3.172A7.051 7.051 0 0011.911 6v0z" clip-rule="evenodd"/>
-      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V5 4v2z" clip-rule="evenodd"/>
+      <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
+            d="M11.912 6a7.051 7.051 0 00-7.048 6.817l-.094 2.837a4.438 4.438 0 01-.755 2.332l-1.632 2.421a.364.364 0 00.3.57h18.584a.39.39 0 00.322-.61l-1.626-2.415a4.658 4.658 0 01-.782-2.255l-.238-3.172A7.051 7.051 0 0011.911 6v0z"
+            clip-rule="evenodd"/>
+      <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V5 4v2z"
+            clip-rule="evenodd"/>
     </symbol>
     <!-- CHEVRON RIGHT -->
     <symbol id="icon__chevron-right" viewBox="0 0 16 14" fill="none">
@@ -331,6 +352,16 @@
         d="m15.999 14.4c0.4418 0 0.8-0.3581 0.8-0.8 0-0.4418-0.3582-0.8-0.8-0.8s-0.8 0.3582-0.8 0.8c0 0.4419 0.3582 0.8 0.8 0.8z"
         fill="currentColor"/>
       <path d="m2.3994 4.8h20" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
+    </symbol>
+    <!-- DOCS OUTLINED -->
+    <symbol id="icon__docs-outlined" viewBox="0 0 24 24" fill="none">
+      <path
+        d="M10.4002 0.799805H17.8002C19.457 0.799805 20.8002 2.14295 20.8002 3.7998V20.1998C20.8002 21.8567 19.457 23.1998 17.8002 23.1998H6.2002C4.54334 23.1998 3.2002 21.8567 3.2002 20.1998L3.2002 7.9998L10.4002 0.799805Z"
+        stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M3.2002 7.9998H8.40019C9.50476 7.9998 10.4002 7.10437 10.4002 5.9998V0.799805" stroke="currentColor"
+            stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M8.7998 12.8H15.1998" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+      <path d="M8.7998 15.1998H15.1998" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
     </symbol>
     <!-- NETWORK -->
     <symbol id="icon__network" viewBox="0 0 26 24" fill="none">

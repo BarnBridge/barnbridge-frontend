@@ -10,7 +10,7 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
 import { SYMarketMeta } from 'modules/smart-yield/api';
-import { useWallet, Wallet } from 'wallets/wallet';
+import { Wallet, useWallet } from 'wallets/wallet';
 
 import { PoolsSYPool, usePools } from '../../../providers/pools-provider';
 
@@ -19,11 +19,7 @@ type PoolEntity = PoolsSYPool;
 function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
   return [
     {
-      title: (
-        <Text type="small" weight="semibold">
-          Token Name
-        </Text>
-      ),
+      title: 'Token Name',
       render: (_, entity) => (
         <Grid flow="col" gap={16} align="center">
           <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
@@ -31,7 +27,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             <Text type="p1" weight="semibold" color="primary">
               {entity.underlyingSymbol}
             </Text>
-            <Text type="small" weight="semibold">
+            <Text type="small" weight="semibold" wrap={false}>
               {entity.meta?.name}
             </Text>
           </Grid>
@@ -39,11 +35,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: (
-        <Text type="small" weight="semibold">
-          Senior Liquidity
-        </Text>
-      ),
+      title: 'Senior Liquidity',
       sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
       render: (_, entity) => (
         <Grid flow="row" gap={4}>
@@ -57,11 +49,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: (
-        <Text type="small" weight="semibold">
-          Senior APY
-        </Text>
-      ),
+      title: 'Senior APY',
       sorter: (a, b) => a.state.seniorApy - b.state.seniorApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="primary">
@@ -70,11 +58,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: (
-        <Text type="small" weight="semibold">
-          Junior Liquidity
-        </Text>
-      ),
+      title: 'Junior Liquidity',
       sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
       render: (_, entity) => (
         <Grid flow="row" gap={4}>
@@ -99,9 +83,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
               <ExternalLink href="#">Learn more</ExternalLink>
             </Grid>
           }>
-          <Text type="small" weight="semibold">
-            Junior APY
-          </Text>
+          Junior APY
         </Hint>
       ),
       sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
@@ -112,11 +94,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: (
-        <Text type="small" weight="semibold">
-          Originator APY
-        </Text>
-      ),
+      title: 'Originator APY',
       sorter: (a, b) => a.state.originatorApy - b.state.originatorApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="primary">
@@ -125,42 +103,37 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: (
-        <Text type="small" weight="semibold">
-          jToken conversion rate
-        </Text>
-      ),
+      title: 'jToken conversion rate',
       render: (_, entity) => (
         <Grid flow="row" gap={4}>
           <Text type="p1" weight="semibold" color="primary">
             1 {entity.underlyingSymbol}
           </Text>
-          <Text type="small" weight="semibold">
+          <Text type="small" weight="semibold" wrap={false}>
             = {formatBigValue(entity.state.jTokenPrice)} j{entity.underlyingSymbol}
           </Text>
         </Grid>
       ),
     },
-    ...wallet.isActive ? [{
-      title: (
-        <Text type="small" weight="semibold">
-          Wallet balance
-        </Text>
-      ),
-      sorter: (a, b) => (a.underlyingBalance?.toNumber() ?? 0) - (b.underlyingBalance?.toNumber() ?? 0),
-      render: (_, entity) => (
-        <Grid flow="row" gap={4}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
-          </Text>
-          <Text type="small" weight="semibold">
-            {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
-          </Text>
-        </Grid>
-      ),
-    }] as ColumnsType<PoolEntity> : [],
+    ...(wallet.isActive
+      ? ([
+          {
+            title: 'Wallet balance',
+            sorter: (a, b) => (a.underlyingBalance?.toNumber() ?? 0) - (b.underlyingBalance?.toNumber() ?? 0),
+            render: (_, entity) => (
+              <Grid flow="row" gap={4}>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+                </Text>
+                <Text type="small" weight="semibold">
+                  {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+                </Text>
+              </Grid>
+            ),
+          },
+        ] as ColumnsType<PoolEntity>)
+      : []),
     {
-      title: null,
       render: function (_, entity) {
         return (
           <NavLink

@@ -24,11 +24,7 @@ export type LockedPositionsTableEntity = {
 
 const Columns: ColumnsType<LockedPositionsTableEntity> = [
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Token Name
-      </Text>
-    ),
+    title: "Token Name",
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
@@ -58,9 +54,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
             <ExternalLink href="#">Learn more</ExternalLink>
           </Grid>
         }>
-        <Text type="small" weight="semibold">
-          Redeemable balance
-        </Text>
+        Redeemable balance
       </Hint>
     ),
     width: '20%',
@@ -84,11 +78,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     ),
   },
   {
-    title: (
-      <Text type="small" weight="semibold">
-        Time left
-      </Text>
-    ),
+    title: "Time left",
     width: '40%',
     align: 'right',
     sorter: (a, b) => a.jBond.maturesAt - b.jBond.maturesAt,
@@ -103,7 +93,6 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     ),
   },
   {
-    title: null,
     width: '20%',
     render: (_, entity) => (
       <Button
