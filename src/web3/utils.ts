@@ -78,7 +78,11 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatUSDValue(value?: BigNumber | number, decimals: number = 2, minDecimals: number = decimals): string {
+export function formatUSDValue(
+  value?: BigNumber | number,
+  decimals: number = 2,
+  minDecimals: number = decimals,
+): string {
   if (value === undefined) {
     return '-';
   }
@@ -150,5 +154,5 @@ export function fetchGasPrice(): Promise<GasPriceResult> {
         average: Math.round((Number(result.ProposeGasPrice) + Number(result.SafeGasPrice)) / 2),
         safeLow: Number(result.SafeGasPrice),
       };
-    })
+    });
 }
