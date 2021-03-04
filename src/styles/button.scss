@@ -28,7 +28,8 @@
     box-shadow: 0px 4px 8px rgba(204, 54, 46, 0.16);
   }
 
-  &:disabled {
+  &:disabled,
+  &[disabled] {
     background: #C6C9CC;
     box-shadow: none;
     cursor: not-allowed;
@@ -64,7 +65,8 @@
     color: #CC362E;
   }
 
-  &:disabled {
+  &:disabled,
+  &[disabled] {
     background: rgba(170, 175, 179, 0.08);
     color: #AAAFB3;
     cursor: not-allowed;
@@ -103,7 +105,8 @@
     color: #CC362E;
   }
 
-  &:disabled {
+  &:disabled,
+  &[disabled] {
     background: rgba(170, 175, 179, 0.08);
     border: 1px solid #E3E4E6;
     color: #AAAFB3;

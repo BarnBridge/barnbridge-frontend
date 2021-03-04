@@ -148,7 +148,7 @@ a {
   background-color: transparent;
   outline: none;
   cursor: pointer;
-  transition: color 0.3s;
+  transition: color 0.1s;
   -webkit-text-decoration-skip: objects;
 }
 a:hover {
