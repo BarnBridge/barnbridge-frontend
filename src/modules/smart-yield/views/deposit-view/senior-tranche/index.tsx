@@ -1,9 +1,10 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import useDebounce from '@rooks/use-debounce';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
-import { ZERO_BIG_NUMBER, formatBigValue, getEtherscanTxUrl, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
@@ -16,9 +17,8 @@ import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TransactionSummary from 'modules/smart-yield/components/transaction-summary';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
-import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
+import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
 import {
@@ -27,7 +27,6 @@ import {
   DURATION_2_WEEKS,
   DURATION_30_DAYS,
   DURATION_3_WEEKS,
-  DURATION_4_WEEKS,
   getDurationDate,
 } from 'utils/date';
 
@@ -66,6 +65,10 @@ const SeniorTranche: React.FC = () => {
   const { pool, marketId, tokenId } = poolCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
+  const [bondGain, setBondGain] = React.useState<BigNumber | undefined>();
+
+  const [formState, setFormState] = React.useState<FormData>(InitialFormValues);
+
   const formDisabled = !pool?.underlyingIsAllowed;
 
   const handleTxDetailsChange = React.useCallback(values => {
@@ -128,7 +131,7 @@ const SeniorTranche: React.FC = () => {
         .multipliedBy(minGain);
       const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
 
-      await smartYieldContract.buyBondSend(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
+      await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();
     } catch {}
 
@@ -139,6 +142,56 @@ const SeniorTranche: React.FC = () => {
     );
   }
 
+  function handleValuesChange(changedValues: Partial<FormData>, allValues: FormData) {
+    setFormState(allValues);
+  }
+
+  const getBondGain = useDebounce((pool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
+    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+    smartYieldContract.setProvider(wallet.provider);
+    smartYieldContract.setAccount(wallet.account);
+
+    const decimals = pool.underlyingDecimals;
+    const amount = pAmount?.multipliedBy(10 ** decimals) ?? ZERO_BIG_NUMBER;
+    const today = startOfDay(new Date());
+    const days = differenceInDays(pMaturityDate ?? today, today);
+
+    smartYieldContract.getBondGain(amount, days).then(setBondGain);
+  }, 400);
+
+  React.useEffect(() => {
+    if (!pool) {
+      return;
+    }
+
+    getBondGain(pool, formState.amount, formState.maturityDate);
+  }, [pool, formState.amount, formState.maturityDate]);
+
+  const maturityDays = React.useMemo(() => {
+    const today = startOfDay(new Date());
+    return differenceInDays(formState.maturityDate ?? today, today);
+  }, [formState.maturityDate]);
+
+  const apy = React.useMemo(() => {
+    if (maturityDays <= 0) {
+      return ZERO_BIG_NUMBER;
+    }
+
+    // return (formState.amount ?? ZERO_BIG_NUMBER)
+    //   .plus() ?? ZERO_BIG_NUMBER)
+    //   .dividedBy(maturityDays)
+    //   .dividedBy(365);
+    return bondGain
+      ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
+      .dividedBy(formState.amount ?? 1)
+      .dividedBy(maturityDays)
+      .multipliedBy(365)
+      .multipliedBy(100) ?? ZERO_BIG_NUMBER;
+  }, [pool, bondGain, maturityDays]);
+
+  const reward = formState.amount?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))?.plus(bondGain ?? ZERO_BIG_NUMBER);
+
+  console.log(apy.toNumber());
   return (
     <>
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
@@ -153,6 +206,7 @@ const SeniorTranche: React.FC = () => {
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
+        onValuesChange={handleValuesChange}
         onFinish={handleSubmit}>
         <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
@@ -185,12 +239,18 @@ const SeniorTranche: React.FC = () => {
               {DURATION_OPTIONS.map(opt => (
                 <button
                   key={opt}
+                  type="button"
                   className="button-ghost-monochrome ph-24"
                   disabled={formDisabled || state.isSaving}
                   onClick={() => {
                     form.setFieldsValue({
                       maturityDate: getDurationDate(startOfDay(new Date()), opt),
                     });
+                    setFormState(
+                      mergeState<FormData>({
+                        maturityDate: getDurationDate(startOfDay(new Date()), opt),
+                      }),
+                    );
                   }}>
                   <Text type="p1" weight="semibold" color="primary">
                     {opt}
@@ -206,7 +266,11 @@ const SeniorTranche: React.FC = () => {
         <Form.Item name="deadline" noStyle hidden>
           <Input />
         </Form.Item>
-        <TransactionSummary apy={0} reward={100} symbol={pool?.underlyingSymbol} />
+        <TransactionSummary
+          apy={apy}
+          reward={getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER}
+          symbol={pool?.underlyingSymbol}
+        />
         <Form.Item shouldUpdate noStyle>
           {() => {
             const { slippageTolerance, deadline } = form.getFieldsValue();
@@ -242,7 +306,7 @@ const SeniorTranche: React.FC = () => {
                   Redeemable amount
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  - {pool?.underlyingSymbol}
+                  {formatBigValue(getHumanValue(reward, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -258,7 +322,7 @@ const SeniorTranche: React.FC = () => {
                   Maturity in
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  - days
+                  {maturityDays} days
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -266,7 +330,7 @@ const SeniorTranche: React.FC = () => {
                   APY
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  - %
+                  {apy.toFixed(2)}%
                 </Text>
               </div>
             </div>

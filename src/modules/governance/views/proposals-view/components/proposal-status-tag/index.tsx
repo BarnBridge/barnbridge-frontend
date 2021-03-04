@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import { Text } from 'components/custom/typography';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
@@ -15,7 +15,7 @@ const ProposalStatusTag: React.FC<ProposalStatusTagProps> = props => {
   const { state, className } = props;
 
   return (
-    <div className={cx(s.component, className, s[state])}>
+    <div className={cn(s.component, className, s[state])}>
       <Text type="lb2" weight="bold">
         {APIProposalStateMap.get(state)}
       </Text>

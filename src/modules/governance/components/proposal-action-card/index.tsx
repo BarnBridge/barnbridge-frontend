@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import cx from 'classnames';
+import cn from 'classnames';
 import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
@@ -155,7 +155,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
         </ExternalLink>
         {signature && (
           <Antd.Typography.Paragraph
-            className={cx(s.paragraph, expanded && s.expanded)}
+            className={cn(s.paragraph, expanded && s.expanded)}
             style={{ maxWidth: '514px' }}
             ellipsis={{
               rows: expanded ? 9999 : 2,

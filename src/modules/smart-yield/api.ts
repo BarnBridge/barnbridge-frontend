@@ -70,6 +70,7 @@ export type APISYPool = {
     avgSeniorMaturityDays: number;
     numberOfSeniors: number;
     numberOfJuniors: number;
+    juniorLiquidityLocked: number;
   };
 };
 

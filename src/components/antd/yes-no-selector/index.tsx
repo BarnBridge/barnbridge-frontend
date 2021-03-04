@@ -2,7 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
 import { RadioGroupProps as AntdRadioGroupProps } from 'antd/lib/radio';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -24,7 +24,7 @@ const YesNoSelector: React.FC<YesNoSelectorProps> = props => {
 
   return (
     <Antd.Radio.Group
-      className={cx(s.component, className)}
+      className={cn(s.component, className)}
       options={YesNoOptions}
       optionType="button"
       buttonStyle="outline"

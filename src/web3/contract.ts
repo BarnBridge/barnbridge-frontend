@@ -117,8 +117,7 @@ class Web3Contract extends EventEmitter {
 
     try {
       batch.execute();
-    } catch {
-    }
+    } catch {}
 
     return Promise.all(promises);
   }

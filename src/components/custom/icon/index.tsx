@@ -1,5 +1,5 @@
 import React, { CSSProperties } from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Sprite from 'resources/svg/icons-sprite.svg';
 
@@ -95,7 +95,7 @@ const Icons: React.FC<IconsProps> = props => {
 
   return (
     <svg
-      className={cx(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
+      className={cn(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
       style={style}>

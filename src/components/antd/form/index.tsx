@@ -5,7 +5,7 @@ import {
   FormListProps as AntdFormListProps,
   FormProps as AntdFormProps,
 } from 'antd/lib/form';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Icons from 'components/custom/icon';
 
@@ -31,7 +31,7 @@ const FormItem: React.FC<FormItemProps> = props => {
 
   return (
     <Antd.Form.Item
-      className={cx(s.item, className)}
+      className={cn(s.item, className)}
       {...itemProps}
       label={
         <>
@@ -59,7 +59,7 @@ const Form: React.FC<FormProps> = props => {
   const { className, children, ...formProps } = props;
 
   return (
-    <Antd.Form className={cx(s.form, className)} layout="vertical" requiredMark={false} {...formProps}>
+    <Antd.Form className={cn(s.form, className)} layout="vertical" requiredMark={false} {...formProps}>
       {children}
     </Antd.Form>
   );

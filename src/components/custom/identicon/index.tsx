@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 import IdenticonJS from 'identicon.js';
 
 import s from './styles.module.scss';
@@ -25,7 +25,7 @@ const Identicon: React.FC<IdenticonProps> = props => {
 
   return (
     <img
-      className={cx(s.component, className)}
+      className={cn(s.component, className)}
       src={`data:image/svg+xml;base64,${icon}`}
       alt={alt ?? address}
       width={width}

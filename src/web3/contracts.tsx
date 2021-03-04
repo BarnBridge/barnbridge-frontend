@@ -1,7 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-
 import UserRejectedModal from 'web3/components/user-rejected-modal';
 import Web3Contract from 'web3/contract';
 import { BONDContract, BONDTokenMeta, useBONDContract } from 'web3/contracts/bond';
@@ -13,11 +12,13 @@ import { StakingContract, useStakingContract } from 'web3/contracts/staking';
 import { SUSDContract, SUSDTokenMeta, useSUSDContract } from 'web3/contracts/susd';
 import { UNISWAPContract, UNISWAPTokenMeta, useUNISWAPContract } from 'web3/contracts/uniswap';
 import { USDCContract, USDCTokenMeta, useUSDCContract } from 'web3/contracts/usdc';
-import { useYieldFarmContract, YieldFarmContract } from 'web3/contracts/yieldFarm';
-import { useYieldFarmBONDContract, YieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
-import { useYieldFarmLPContract, YieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
+import { YieldFarmContract, useYieldFarmContract } from 'web3/contracts/yieldFarm';
+import { YieldFarmBONDContract, useYieldFarmBONDContract } from 'web3/contracts/yieldFarmBOND';
+import { YieldFarmLPContract, useYieldFarmLPContract } from 'web3/contracts/yieldFarmLP';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
+
 import { useWallet } from 'wallets/wallet';
+
 import { PoolTypes } from 'modules/yield-farming/utils';
 
 export type Web3ContractsData = {

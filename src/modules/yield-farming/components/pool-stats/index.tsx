@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -30,7 +30,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
   const totalBondReward = formatBONDValue(aggregated.totalBondReward);
 
   return (
-    <div className={cx(s.component, className)}>
+    <div className={cn(s.component, className)}>
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">

@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -11,7 +11,7 @@ export type StatusTagProps = {
 const StatusDot: React.FC<StatusTagProps> = props => {
   const { color, className } = props;
 
-  return <div className={cx(s.statusDot, s[color], className)} />;
+  return <div className={cn(s.statusDot, s[color], className)} />;
 };
 
 export default StatusDot;

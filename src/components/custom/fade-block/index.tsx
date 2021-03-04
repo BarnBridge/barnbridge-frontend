@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -11,7 +11,7 @@ export type FadeBlockProps = {
 const FadeBlock: React.FC<FadeBlockProps> = props => {
   return (
     <div
-      className={cx(s.component, props.className, {
+      className={cn(s.component, props.className, {
         [s.visible]: props.visible,
       })}>
       {props.children}

@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -58,7 +58,51 @@ const JuniorTranche: React.FC = () => {
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
+    setState(prevState => ({
+      ...prevState,
+    }));
   }, []);
+
+  const [juniorFee, setJuniorFee] = React.useState<BigNumber | undefined>();
+  const [price, setPrice] = React.useState<BigNumber | undefined>();
+
+  React.useEffect(() => {
+    if (!pool) {
+      return;
+    }
+
+    const controllerContract = new SYControllerContract(pool.controllerAddress);
+    controllerContract.setProvider(wallet.provider);
+    controllerContract.getJuniorBuyFee().then(setJuniorFee);
+  }, [pool?.controllerAddress]);
+
+  React.useEffect(() => {
+    if (!pool) {
+      return;
+    }
+
+    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+    smartYieldContract.setProvider(wallet.provider);
+    smartYieldContract.setAccount(wallet.account);
+
+    smartYieldContract.getPrice().then(setPrice);
+  }, [pool?.smartYieldAddress]);
+
+  function getMinAmount() {
+    if (!pool || !juniorFee || !price) {
+      return;
+    }
+
+    const { from, slippageTolerance } = form.getFieldsValue();
+
+    if (!from) {
+      return;
+    }
+
+    const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
+
+    return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippageTolerance ?? 0) / 100);
+  }
 
   function handleCancel() {
     history.push({
@@ -84,11 +128,11 @@ const JuniorTranche: React.FC = () => {
   }
 
   async function handleDepositConfirm({ gasPrice }: any) {
-    if (!pool) {
+    if (!pool || !juniorFee) {
       return;
     }
 
-    const { from, slippageTolerance, deadline } = form.getFieldsValue();
+    const { from, deadline } = form.getFieldsValue();
 
     if (!from) {
       return;
@@ -103,25 +147,20 @@ const JuniorTranche: React.FC = () => {
     const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
-    const price = await smartYieldContract.getPrice();
-
-    const controllerContract = new SYControllerContract(pool.controllerAddress);
-    controllerContract.setProvider(wallet.provider);
-    const juniorFee = await controllerContract.getJuniorBuyFee();
 
     const decimals = pool.underlyingDecimals;
-    const slippage = new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100);
-    const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)).minus(slippage));
-    const minTokens = minAmount.dividedBy(price);
+    const amount = from.multipliedBy(10 ** decimals);
+    const minTokens = new BigNumber((getMinAmount() ?? ZERO_BIG_NUMBER).multipliedBy(10 ** decimals).toFixed(0));
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
+    setState(
+      mergeState<State>({
+        depositModalVisible: false,
+      }),
+    );
+
     try {
-      await poolCtx.actions.juniorDeposit(
-        getNonHumanValue(from, decimals),
-        getNonHumanValue(new BigNumber(minTokens.toFixed(0)), decimals),
-        deadlineTs,
-        gasPrice,
-      );
+      await poolCtx.actions.juniorDeposit(amount, minTokens, deadlineTs, gasPrice);
       form.resetFields();
     } catch {}
 
@@ -164,33 +203,29 @@ const JuniorTranche: React.FC = () => {
             <div className="grid flow-col col-gap-8 justify-center">
               <Icons name="refresh" width={16} height={16} />
               <Text type="small" weight="semibold" color="secondary">
-                {formatBigValue(pool?.state.jTokenPrice)} j{pool?.underlyingSymbol} per {pool?.underlyingSymbol}
+                {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} j{pool?.underlyingSymbol} per{' '}
+                {pool?.underlyingSymbol}
               </Text>
             </div>
           }
-          dependencies={['from']}>
-          {() => {
-            const { from } = form.getFieldsValue();
-            const to = from && pool ? new BigNumber(from.multipliedBy(pool.state.jTokenPrice).toFixed(4)) : undefined;
-
-            return (
-              <TokenAmount
-                tokenIcon={
-                  <IconBubble
-                    name={pool?.meta?.icon!}
-                    bubbleName="bond-circle-token"
-                    secondBubbleName={pool?.market?.icon!}
-                    width={36}
-                    height={36}
-                  />
-                }
-                maximumFractionDigits={pool?.underlyingDecimals}
-                displayDecimals={4}
-                value={to}
-                disabled
-              />
-            );
-          }}
+          dependencies={['from', 'slippageTolerance']}>
+          {() => (
+            <TokenAmount
+              tokenIcon={
+                <IconBubble
+                  name={pool?.meta?.icon!}
+                  bubbleName="bond-circle-token"
+                  secondBubbleName={pool?.market?.icon!}
+                  width={36}
+                  height={36}
+                />
+              }
+              maximumFractionDigits={pool?.underlyingDecimals}
+              displayDecimals={pool?.underlyingDecimals}
+              value={new BigNumber(getMinAmount()?.toFixed(pool?.underlyingDecimals ?? 0) ?? ZERO_BIG_NUMBER)}
+              disabled
+            />
+          )}
         </Form.Item>
         <div className="card mb-32">
           <div className="pv-24 ph-24">
@@ -205,16 +240,31 @@ const JuniorTranche: React.FC = () => {
                 Transaction fees
               </Text>
               <Text type="p2" weight="semibold" color="primary">
-                -
+                <Form.Item dependencies={['from']} noStyle>
+                  {() => (
+                    <>
+                      {formatBigValue(
+                        new BigNumber(form.getFieldValue('from') ?? ZERO_BIG_NUMBER)
+                          .multipliedBy(juniorFee ?? 0)
+                          .dividedBy(1e18),
+                      )}{' '}
+                    </>
+                  )}
+                </Form.Item>
+                {pool?.underlyingSymbol} ({juniorFee?.dividedBy(1e18).multipliedBy(100)?.toFixed(2)}%)
               </Text>
             </div>
             <div className="grid flow-col justify-space-between">
               <Text type="small" weight="semibold" color="secondary">
                 You will get
               </Text>
-              <Text type="p2" weight="semibold" color="primary">
-                -
-              </Text>
+              <Form.Item dependencies={['from', 'slippageTolerance']} noStyle>
+                {() => (
+                  <Text type="p2" weight="semibold" color="primary">
+                    {formatBigValue(getMinAmount() ?? ZERO_BIG_NUMBER)} j{pool?.underlyingSymbol}
+                  </Text>
+                )}
+              </Form.Item>
             </div>
           </div>
         </div>
@@ -260,7 +310,7 @@ const JuniorTranche: React.FC = () => {
                   Minimum received
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  - j{pool?.underlyingSymbol}
+                  {formatBigValue(getMinAmount())} j{pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -269,6 +319,19 @@ const JuniorTranche: React.FC = () => {
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
                   {formatBigValue(form.getFieldValue('from'))} {pool?.underlyingSymbol}
+                </Text>
+              </div>
+              <div className="grid flow-row row-gap-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Transaction fees
+                </Text>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatBigValue(
+                    new BigNumber(form.getFieldValue('from') ?? ZERO_BIG_NUMBER)
+                      .multipliedBy(juniorFee ?? 0)
+                      .dividedBy(1e18),
+                  )}{' '}
+                  {pool?.underlyingSymbol} ({juniorFee?.dividedBy(1e18).multipliedBy(100)?.toFixed(2)}%)
                 </Text>
               </div>
             </div>
