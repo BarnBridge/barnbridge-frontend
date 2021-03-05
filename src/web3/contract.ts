@@ -17,9 +17,13 @@ export type Web3ContractAbiItem = AbiItem;
 
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
+
   readonly address: string;
+
   readonly ethContract: Contract & Eth;
+
   name: string;
+
   account?: string;
 
   constructor(abi: Web3ContractAbiItem[], address: string, name: string) {
@@ -94,10 +98,9 @@ class Web3Contract extends EventEmitter {
             if (err) {
               if (onError instanceof Function) {
                 return resolve(onError(err));
-              } else {
-                console.error(`${this.name}:${methodName}.call`, err);
-                return resolve(undefined);
               }
+              console.error(`${this.name}:${methodName}.call`, err);
+              return resolve(undefined);
             }
 
             if (+value === WEB3_ERROR_VALUE) {

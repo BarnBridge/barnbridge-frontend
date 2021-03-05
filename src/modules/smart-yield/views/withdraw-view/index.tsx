@@ -16,7 +16,7 @@ const WithdrawView: React.FC = () => {
   }
 
   if (poolCtx.pool === null) {
-    return <Redirect to={'/smart-yield/portfolio/junior'} />;
+    return <Redirect to="/smart-yield/portfolio/junior" />;
   }
 
   return (

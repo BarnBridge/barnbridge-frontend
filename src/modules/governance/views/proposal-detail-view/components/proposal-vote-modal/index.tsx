@@ -173,7 +173,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                         For
                       </Text>
                     }
-                    value={true}
+                    value
                   />
                   <RadioButton
                     label={

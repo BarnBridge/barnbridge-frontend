@@ -196,7 +196,7 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function yfEffectiveStakedValue() {
-    const poolSize = yfContract.poolSize;
+    const { poolSize } = yfContract;
     const price = uniswapContract.stablePrice;
 
     if (poolSize === undefined || price === undefined) {
@@ -229,7 +229,7 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function yfLPEffectiveStakedValue() {
-    const poolSize = yfLPContract.poolSize;
+    const { poolSize } = yfLPContract;
     const price = uniswapContract.unilpPrice;
 
     if (poolSize === undefined || price === undefined) {
@@ -240,7 +240,7 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function myLPEffectiveStakedValue() {
-    const epochStake = yfLPContract.epochStake;
+    const { epochStake } = yfLPContract;
     const price = uniswapContract.unilpPrice;
 
     if (epochStake === undefined || price === undefined) {
@@ -273,7 +273,7 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function yfBONDEffectiveStakedValue() {
-    const poolSize = yfBONDContract.poolSize;
+    const { poolSize } = yfBONDContract;
     const price = uniswapContract.bondPrice;
 
     if (poolSize === undefined || price === undefined) {
@@ -284,7 +284,7 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function myBondEffectiveStakedValue() {
-    const epochStake = yfBONDContract.epochStake;
+    const { epochStake } = yfBONDContract;
     const price = uniswapContract.bondPrice;
 
     if (epochStake === undefined || price === undefined) {
@@ -295,7 +295,7 @@ const Web3ContractsProvider: React.FC = props => {
   }
 
   function bondLockedPrice() {
-    const bondStaked = daoBarnContract.bondStaked;
+    const { bondStaked } = daoBarnContract;
     const price = uniswapContract.bondPrice;
 
     if (bondStaked === undefined || price === undefined) {

@@ -106,8 +106,8 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
     const { proposalId, forVotes, againstVotes, createTime, warmUpDuration } = state.proposal;
     const total = forVotes.plus(againstVotes);
 
-    let forRate: number = 0;
-    let againstRate: number = 0;
+    let forRate = 0;
+    let againstRate = 0;
 
     if (total.gt(ZERO_BIG_NUMBER)) {
       forRate = forVotes.multipliedBy(100).div(total).toNumber();

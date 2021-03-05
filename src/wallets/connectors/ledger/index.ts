@@ -25,7 +25,7 @@ export const LedgerWalletConfig: WalletConnector = {
     }
 
     return new LedgerConnector({
-      chainId: chainId,
+      chainId,
       url: WEB3_RPC_HTTPS_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       baseDerivationPath,

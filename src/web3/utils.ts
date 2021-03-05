@@ -11,10 +11,7 @@ export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
 const ETHERSCAN_API_KEY = String(process.env.REACT_APP_ETHERSCAN_API_KEY);
 
-export function getEtherscanTxUrl(
-  txHash: string,
-  chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string {
+export function getEtherscanTxUrl(txHash: string, chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
   switch (chainId) {
     case 1:
       return `https://etherscan.io/tx/${txHash}`;
@@ -27,10 +24,7 @@ export function getEtherscanTxUrl(
   }
 }
 
-export function getEtherscanAddressUrl(
-  address: string,
-  chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string {
+export function getEtherscanAddressUrl(address: string, chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
   switch (chainId) {
     case 1:
       return `https://etherscan.io/address/${address}`;
@@ -43,15 +37,15 @@ export function getEtherscanAddressUrl(
   }
 }
 
-export function getExponentValue(decimals: number = 0): BigNumber {
+export function getExponentValue(decimals = 0): BigNumber {
   return new BigNumber(10).pow(decimals);
 }
 
-export function getHumanValue(value?: BigNumber, decimals: number = 0): BigNumber | undefined {
+export function getHumanValue(value?: BigNumber, decimals = 0): BigNumber | undefined {
   return value?.div(getExponentValue(decimals));
 }
 
-export function getNonHumanValue(value: BigNumber | number, decimals: number = 0): BigNumber {
+export function getNonHumanValue(value: BigNumber | number, decimals = 0): BigNumber {
   return new BigNumber(value).multipliedBy(getExponentValue(decimals));
 }
 
@@ -61,8 +55,8 @@ export function getGasValue(price: number): number {
 
 export function formatBigValue(
   value?: BigNumber | number,
-  decimals: number = 4,
-  defaultValue: string = '-',
+  decimals = 4,
+  defaultValue = '-',
   minDecimals: number | undefined = undefined,
 ): string {
   if (value === undefined) {
@@ -78,11 +72,7 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatUSDValue(
-  value?: BigNumber | number,
-  decimals: number = 2,
-  minDecimals: number = decimals,
-): string {
+export function formatUSDValue(value?: BigNumber | number, decimals = 2, minDecimals: number = decimals): string {
   if (value === undefined) {
     return '-';
   }
@@ -101,7 +91,7 @@ export function isSmallBONDValue(value?: BigNumber): boolean {
   return !!value && value.gt(ZERO_BIG_NUMBER) && value.lt(0.0001);
 }
 
-export function shortenAddr(addr: string | undefined, first: number = 6, last: number = 4): string | undefined {
+export function shortenAddr(addr: string | undefined, first = 6, last = 4): string | undefined {
   return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
 }
 

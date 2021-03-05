@@ -84,7 +84,6 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
       case BONDTokenMeta:
         return 'bond-token';
       default:
-        return;
     }
   }, [token]);
 

@@ -22,7 +22,7 @@ const DepositView: React.FC = () => {
   }
 
   if (poolCtx.pool === null) {
-    return <Redirect to={'/smart-yield'} />;
+    return <Redirect to="/smart-yield" />;
   }
 
   return (

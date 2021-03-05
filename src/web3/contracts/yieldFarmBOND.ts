@@ -147,7 +147,7 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
   }, [version, setState]);
 
   React.useEffect(() => {
-    const nextCurrentEpoch = state.nextCurrentEpoch;
+    const { nextCurrentEpoch } = state;
     const actions: BatchContractMethod[] = [];
 
     if (nextCurrentEpoch !== undefined) {
@@ -171,7 +171,7 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
   }, [version, state.nextCurrentEpoch, setState]);
 
   React.useEffect(() => {
-    const nextCurrentEpoch = state.nextCurrentEpoch;
+    const { nextCurrentEpoch } = state;
     const actions: BatchContractMethod[] = [];
 
     if (wallet.account && nextCurrentEpoch !== undefined) {
@@ -201,9 +201,9 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
   }, [version, wallet.account, state.nextCurrentEpoch, setState]);
 
   React.useEffect(() => {
-    const epochStake = state.epochStake;
-    const poolSize = state.poolSize;
-    const epochReward = state.epochReward;
+    const { epochStake } = state;
+    const { poolSize } = state;
+    const { epochReward } = state;
 
     let potentialReward: BigNumber | undefined;
 

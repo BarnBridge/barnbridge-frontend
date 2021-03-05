@@ -35,7 +35,8 @@ const SmartYieldView: React.FC = () => {
     if (vt === 'deposit') {
       setActiveTab('overview');
       return;
-    } else if (vt === 'withdraw') {
+    }
+    if (vt === 'withdraw') {
       setActiveTab('portfolio');
       return;
     }

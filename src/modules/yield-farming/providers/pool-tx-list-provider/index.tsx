@@ -59,7 +59,7 @@ export function usePoolTxList(): PoolTxListType {
 async function fetchPoolTransactions(
   timestamp?: number,
   direction: 'asc' | 'desc' = 'desc',
-  limit: number = 10,
+  limit = 10,
   userFilter?: string,
   tokenFilter?: string,
   typeFilter?: string,

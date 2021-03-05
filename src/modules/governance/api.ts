@@ -45,7 +45,7 @@ export type APIVoterEntity = {
   hasActiveDelegation: boolean;
 };
 
-export function fetchVoters(page: number = 1, limit: number = 10): Promise<PaginatedResult<APIVoterEntity>> {
+export function fetchVoters(page = 1, limit = 10): Promise<PaginatedResult<APIVoterEntity>> {
   const url = new URL(`/api/governance/voters?page=${page}&limit=${limit}`, GOVERNANCE_API_URL);
 
   return fetch(url.toString())
@@ -115,8 +115,8 @@ export type APILiteProposalEntity = {
 };
 
 export function fetchProposals(
-  page: number = 1,
-  limit: number = 10,
+  page = 1,
+  limit = 10,
   state?: string,
   search?: string,
 ): Promise<PaginatedResult<APILiteProposalEntity>> {
@@ -205,8 +205,8 @@ export type APIVoteEntity = {
 
 export function fetchProposalVoters(
   proposalId: number,
-  page: number = 1,
-  limit: number = 10,
+  page = 1,
+  limit = 10,
   support?: boolean,
 ): Promise<PaginatedResult<APIVoteEntity>> {
   const query = QueryString.stringify(
@@ -279,8 +279,8 @@ export type APIAbrogationVoteEntity = {
 
 export function fetchAbrogationVoters(
   proposalId: number,
-  page: number = 1,
-  limit: number = 10,
+  page = 1,
+  limit = 10,
   support?: boolean,
 ): Promise<PaginatedResult<APIAbrogationVoteEntity>> {
   const query = QueryString.stringify(

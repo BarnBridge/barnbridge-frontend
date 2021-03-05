@@ -17,7 +17,7 @@ export const PortisWalletConfig: WalletConnector = {
       networks: [chainId],
     });
   },
-  onError(error: Error | String): Error | undefined {
+  onError(error: Error | string): Error | undefined {
     if (typeof error === 'string') {
       if (error === 'User denied login.') {
         return;

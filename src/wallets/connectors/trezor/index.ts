@@ -16,7 +16,7 @@ export const TrezorWalletConfig: WalletConnector = {
   name: 'Trezor',
   factory(chainId: number): AbstractConnector {
     return new TrezorConnector({
-      chainId: chainId,
+      chainId,
       url: WEB3_RPC_HTTPS_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       manifestEmail: WEB3_TREZOR_EMAIL,
@@ -29,7 +29,8 @@ export const TrezorWalletConfig: WalletConnector = {
   onError(error: Error): Error | undefined {
     if (error.message === 'Cancelled') {
       return;
-    } else if (error.message === 'Popup closed') {
+    }
+    if (error.message === 'Popup closed') {
       return;
     }
 

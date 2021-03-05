@@ -83,7 +83,6 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
       case BONDTokenMeta:
         return 'bond-token';
       default:
-        return;
     }
   }, [token]);
 

@@ -197,7 +197,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                         For
                       </Text>
                     }
-                    value={true}
+                    value
                   />
                   <RadioButton
                     label={

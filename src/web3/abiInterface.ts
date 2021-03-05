@@ -65,7 +65,8 @@ export class AbiInterface {
     try {
       if (Array.isArray(param)) {
         return JSON.stringify(param, null, 2);
-      } else if (typeof param?.toString === 'function') {
+      }
+      if (typeof param?.toString === 'function') {
         return param.toString();
       }
 

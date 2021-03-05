@@ -134,7 +134,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         ] as ColumnsType<PoolEntity>)
       : []),
     {
-      render: function (_, entity) {
+      render(_, entity) {
         return (
           <NavLink
             to={{
