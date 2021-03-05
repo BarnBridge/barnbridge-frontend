@@ -28,7 +28,7 @@ const PortfolioValue: React.FC<Props> = props => {
             {title}
           </Text>
           <Text type="small" weight="semibold">
-            Last 7 days
+            Last 30 days
           </Text>
         </Grid>
       }>

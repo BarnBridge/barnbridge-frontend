@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { CardProps as AntdCardProps } from 'antd/lib/card';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Icons from 'components/custom/icon';
@@ -25,7 +25,7 @@ const Card: React.FC<CardProps> = props => {
 
   return (
     <Antd.Card
-      className={cx(s.component, className, noPaddingBody && s.noPaddingBody)}
+      className={cn(s.component, className, noPaddingBody && s.noPaddingBody)}
       bordered={false}
       extra={
         showExpandButton ? (

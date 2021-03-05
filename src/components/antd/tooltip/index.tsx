@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { TooltipPropsWithTitle as AntdTooltipPropsWithTitle } from 'antd/lib/tooltip';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -11,7 +11,7 @@ const Tooltip: React.FC<TooltipProps> = props => {
   const { overlayClassName, children, ...tooltipProps } = props;
 
   return (
-    <Antd.Tooltip title="" placement="bottom" overlayClassName={cx(s.overlay, overlayClassName)} {...tooltipProps}>
+    <Antd.Tooltip title="" placement="bottom" overlayClassName={cn(s.overlay, overlayClassName)} {...tooltipProps}>
       {children}
     </Antd.Tooltip>
   );

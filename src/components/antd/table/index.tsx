@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { TableProps as AntdTableProps } from 'antd/lib/table';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -12,7 +12,7 @@ const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
 
   return (
     <Antd.Table<T>
-      className={cx(s.component, className)}
+      className={cn(s.component, className)}
       bordered={false}
       showSorterTooltip={false}
       pagination={

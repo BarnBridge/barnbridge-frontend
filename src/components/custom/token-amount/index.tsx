@@ -1,6 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import cx from 'classnames';
+import cn from 'classnames';
 import { MAX_UINT_256, formatBigValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -56,7 +56,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
   return (
     <Grid flow="row" gap={32}>
       <NumericInput
-        className={cx(s.component, className)}
+        className={cn(s.component, className)}
         placeholder={max !== undefined ? `0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})` : ''}
         addonBefore={
           <>

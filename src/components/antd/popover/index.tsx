@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { PopoverProps as AntdPopoverProps } from 'antd/lib/popover';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -14,7 +14,7 @@ const Popover: React.FC<AntdPopoverProps & PopoverProps> = props => {
 
   return (
     <Antd.Popover
-      overlayClassName={cx(s.overlay, className, noPadding && s.noPadding)}
+      overlayClassName={cn(s.overlay, className, noPadding && s.noPadding)}
       trigger="click"
       placement="bottom"
       {...popoverProps}>

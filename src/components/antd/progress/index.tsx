@@ -1,7 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { ProgressProps as AntdProgressProps } from 'antd/lib/progress';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -17,7 +17,7 @@ const Progress: React.FC<ProgressProps> = props => {
 
   return (
     <Antd.Progress
-      className={cx(s.component, acceptanceMode && s.acceptance, acceptanceFulfilled && s.fulfilled, className)}
+      className={cn(s.component, acceptanceMode && s.acceptance, acceptanceFulfilled && s.fulfilled, className)}
       showInfo={false}
       success={
         acceptanceMode

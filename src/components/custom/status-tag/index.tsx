@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import { Text } from 'components/custom/typography';
 
@@ -15,7 +15,7 @@ const StatusTag: React.FC<StatusTagProps> = props => {
   const { text, color, className } = props;
 
   return (
-    <div className={cx(s.statusTag, className, s[color])}>
+    <div className={cn(s.statusTag, className, s[color])}>
       <Text type="lb2" tag="label" weight="bold">
         {text}
       </Text>

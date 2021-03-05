@@ -6,7 +6,7 @@
   padding: 12px 32px;
 
   border: none;
-  background: #FF4339;
+  background: #ff4339;
   box-shadow: 0px 8px 16px rgba(255, 67, 57, 0.16);
   border-radius: 4px;
 
@@ -16,21 +16,21 @@
 
   text-align: center;
 
-  color: #FFFFFF;
+  color: #ffffff;
 
   &:hover {
-    background: #FF6961;
+    background: #ff6961;
     box-shadow: 0px 8px 16px rgba(255, 105, 97, 0.24);
   }
 
   &:active {
-    background: #CC362E;
+    background: #cc362e;
     box-shadow: 0px 4px 8px rgba(204, 54, 46, 0.16);
   }
 
   &:disabled,
   &[disabled] {
-    background: #C6C9CC;
+    background: #c6c9cc;
     box-shadow: none;
     cursor: not-allowed;
   }
@@ -53,22 +53,22 @@
 
   text-align: center;
 
-  color: #FF4339;
+  color: #ff4339;
 
   &:hover {
     background: rgba(255, 105, 97, 0.1);
-    color: #FF6961;
+    color: #ff6961;
   }
 
   &:active {
     background: rgba(204, 54, 46, 0.08);
-    color: #CC362E;
+    color: #cc362e;
   }
 
   &:disabled,
   &[disabled] {
     background: rgba(170, 175, 179, 0.08);
-    color: #AAAFB3;
+    color: #aaafb3;
     cursor: not-allowed;
   }
 }
@@ -80,7 +80,7 @@
   justify-content: center;
   padding: 12px 32px;
 
-  border: 1px solid #FF4339;
+  border: 1px solid #ff4339;
   background-color: transparent;
   box-sizing: border-box;
   border-radius: 4px;
@@ -91,25 +91,25 @@
 
   text-align: center;
 
-  color: #FF4339;
+  color: #ff4339;
 
   &:hover {
     background: rgba(255, 105, 97, 0.1);
-    border: 1px solid #FF8E88;
-    color: #FF6961;
+    border: 1px solid #ff8e88;
+    color: #ff6961;
   }
 
   &:active {
     background: rgba(204, 54, 46, 0.04);
-    border: 1px solid #CC362E;
-    color: #CC362E;
+    border: 1px solid #cc362e;
+    color: #cc362e;
   }
 
   &:disabled,
   &[disabled] {
     background: rgba(170, 175, 179, 0.08);
-    border: 1px solid #E3E4E6;
-    color: #AAAFB3;
+    border: 1px solid #e3e4e6;
+    color: #aaafb3;
     cursor: not-allowed;
   }
 }
@@ -161,7 +161,7 @@
 
   &:hover {
     color: var(--theme-primary-color);
-    border: 1px solid #FF4339;
+    border: 1px solid #ff4339;
   }
 
   &:active {

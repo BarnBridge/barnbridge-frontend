@@ -6,11 +6,13 @@ import Divider from 'components/antd/divider';
 import { Hint, Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
+import BigNumber from 'bignumber.js';
+import Tooltip from 'components/antd/tooltip';
 
 type TransactionSummaryProps = {
   className?: string;
-  apy?: number;
-  reward?: number;
+  apy?: BigNumber;
+  reward?: BigNumber;
   symbol?: string;
 };
 
@@ -27,7 +29,8 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
       <Divider />
       <div className="p-24">
         <div className="flex mb-24">
-          <Hint text="This number shows the APY you get based on the deposited amount and maturity date. This is the annualized percentage.">
+          <Hint
+            text="This number shows the APY you get based on the deposited amount and maturity date. This is the annualized percentage.">
             <Text type="small" weight="semibold" color="secondary">
               Guaranteed APY
             </Text>
@@ -43,7 +46,9 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
             </Text>
           </Hint>
           <Text type="p1" weight="bold" color="primary" className="ml-auto">
-            {formatBigValue(reward)} {symbol}
+            <Tooltip title={formatBigValue(reward, 18)}>
+              {formatBigValue(reward)} {symbol}
+            </Tooltip>
           </Text>
         </div>
       </div>

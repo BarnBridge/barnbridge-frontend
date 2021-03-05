@@ -1,5 +1,5 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import s from './styles.module.scss';
 
@@ -9,7 +9,7 @@ export type IconsSetProps = {
 };
 
 const IconsSet: React.FC<IconsSetProps> = props => {
-  return <div className={cx(s.component, props.className)}>{props.icons}</div>;
+  return <div className={cn(s.component, props.className)}>{props.icons}</div>;
 };
 
 export default IconsSet;

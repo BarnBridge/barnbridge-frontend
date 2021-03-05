@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocalStorage } from 'react-use-storage';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
@@ -50,7 +50,7 @@ const Warn: React.FC<WarnProps> = props => {
 
   return (
     <div
-      className={cx(
+      className={cn(
         s.warning,
         'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24',
       )}>

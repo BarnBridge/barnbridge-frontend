@@ -68,7 +68,7 @@ const PortfolioValue: React.FC = () => {
             Junior portfolio value
           </Text>
           <Text type="small" weight="semibold">
-            Last 7 days
+            Last 30 days
           </Text>
         </Grid>
       }>

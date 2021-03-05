@@ -166,7 +166,6 @@ const SeniorPortfolio: React.FC = () => {
     }, ZERO_BIG_NUMBER).dividedBy(totalRedeemable);
   }, [state.data, totalRedeemable]);
 
-  console.log(aggregatedAPY);
   return (
     <>
       <div className={s.portfolioContainer}>
