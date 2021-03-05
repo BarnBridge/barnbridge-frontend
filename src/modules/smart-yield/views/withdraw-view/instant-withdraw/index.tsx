@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
@@ -43,11 +43,29 @@ const InstantWithdraw: React.FC = () => {
   const [form] = Antd.Form.useForm<FormData>();
 
   const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
+  const [forfeits, setForfeits] = useState<BigNumber | undefined>();
+  const [formValues, setFormValues] = useState(InitialFormValues);
 
   const { pool, marketId, tokenId } = poolCtx;
 
+  function handleFormValuesChange(_: any, formValues: FormData) {
+    setFormValues(formValues);
+  }
+
+  React.useEffect(() => {
+    if (!pool || !formValues.from) {
+      return;
+    }
+
+    poolCtx.actions.getForfeitsFor(formValues.from).then(setForfeits);
+  }, [formValues.from]);
+
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
+    setFormValues(prevState => ({
+      ...prevState,
+      ...values,
+    }));
   }, []);
 
   function handleCancel() {
@@ -87,18 +105,32 @@ const InstantWithdraw: React.FC = () => {
 
       const decimals = pool.underlyingDecimals;
       const tokenAmount = getNonHumanValue(new BigNumber(from), decimals);
-      const totalSupply = await smartYieldContract.getTotalSupply();
-      const abondDebt = await smartYieldContract.getAbondDebt();
+      const forfeits = await poolCtx.actions.getForfeitsFor(tokenAmount);
       const price = await smartYieldContract.getPrice();
-      const debtShare = tokenAmount.dividedBy(totalSupply);
-      const forfeits = abondDebt.multipliedBy(debtShare).dividedBy(1e18);
-      const toPay = tokenAmount.multipliedBy(price).dividedBy(1e18).minus(forfeits);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0 / 100)).toFixed(0)); // slippage / rounding mode
+      const toPay = tokenAmount.multipliedBy(price).div(1e18).minus(forfeits ?? ZERO_BIG_NUMBER);
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - ((slippageTolerance ?? 0) / 100)).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
+      console.log({
+        tokenAmount: tokenAmount.toNumber(),
+        forfeits: forfeits?.toNumber(),
+        toPay: toPay.toNumber(),
+        minUnderlying: minUnderlying.toNumber(),
+        deadlineTs,
+      });
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
+      form.resetFields();
     } catch {}
   }
+
+  const totalWithdrawable = React.useMemo(() => {
+    if (!pool || !forfeits) {
+      return undefined;
+    }
+
+    return formValues.from?.multipliedBy(pool.state.jTokenPrice).minus(forfeits)
+      .multipliedBy(1 - ((formValues.slippageTolerance ?? 0) / 100));
+  }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippageTolerance]);
 
   if (!pool) {
     return null;
@@ -114,7 +146,7 @@ const InstantWithdraw: React.FC = () => {
         <ExternalLink href="#">Learn more</ExternalLink>
       </Text>
 
-      <Form className="grid flow-row" form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
+      <Form className="grid flow-row" form={form} initialValues={formValues} onValuesChange={handleFormValuesChange} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={
@@ -140,7 +172,7 @@ const InstantWithdraw: React.FC = () => {
             <div className="grid flow-col col-gap-8 justify-center">
               <Icons name="refresh" width={16} height={16} />
               <Text type="small" weight="semibold" color="secondary">
-                {formatBigValue(pool?.state.jTokenPrice)} j{pool?.underlyingSymbol} per {pool?.underlyingSymbol}
+                {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
               </Text>
             </div>
           }
@@ -160,41 +192,6 @@ const InstantWithdraw: React.FC = () => {
             );
           }}
         </Form.Item>
-
-        <div className="card mb-32">
-          <div className="pv-24 ph-24">
-            <Text type="p2" weight="semibold" color="secondary">
-              Transaction summary
-            </Text>
-          </div>
-          <Divider />
-          <div className="pv-24 ph-24">
-            <div className="grid flow-col justify-space-between mb-16">
-              <Text type="small" weight="semibold" color="secondary">
-                Forfeited balance
-              </Text>
-              <Text type="p2" weight="semibold" color="primary">
-                -
-              </Text>
-            </div>
-            <div className="grid flow-col justify-space-between mb-16">
-              <Text type="small" weight="semibold" color="secondary">
-                Transaction fees
-              </Text>
-              <Text type="p2" weight="semibold" color="primary">
-                -
-              </Text>
-            </div>
-            <div className="grid flow-col justify-space-between">
-              <Text type="small" weight="semibold" color="secondary">
-                Total withdrawable amount
-              </Text>
-              <Text type="p2" weight="semibold" color="primary">
-                -
-              </Text>
-            </div>
-          </div>
-        </div>
 
         <Form.Item name="slippageTolerance" noStyle hidden>
           <Input />
@@ -216,6 +213,41 @@ const InstantWithdraw: React.FC = () => {
             );
           }}
         </Form.Item>
+
+        <div className="card mb-32">
+          <div className="pv-24 ph-24">
+            <Text type="p2" weight="semibold" color="secondary">
+              Transaction summary
+            </Text>
+          </div>
+          <Divider />
+          <div className="pv-24 ph-24">
+            <div className="grid flow-col justify-space-between mb-16">
+              <Text type="small" weight="semibold" color="secondary">
+                Forfeited balance
+              </Text>
+              <Text type="p2" weight="semibold" color="red">
+                {formatBigValue(forfeits ?? ZERO_BIG_NUMBER, pool?.underlyingDecimals)} {pool.underlyingSymbol}
+              </Text>
+            </div>
+            <div className="grid flow-col justify-space-between mb-16">
+              <Text type="small" weight="semibold" color="secondary">
+                Transaction fees
+              </Text>
+              <Text type="p2" weight="semibold" color="primary">
+                0 {pool.underlyingSymbol} (0%)
+              </Text>
+            </div>
+            <div className="grid flow-col justify-space-between">
+              <Text type="small" weight="semibold" color="secondary">
+                Total withdrawable amount
+              </Text>
+              <Text type="p2" weight="semibold" color="primary">
+                {formatBigValue(totalWithdrawable ?? ZERO_BIG_NUMBER)} {pool?.underlyingSymbol}
+              </Text>
+            </div>
+          </div>
+        </div>
 
         <Grid flow="col" gap={64} align="center" justify="space-between">
           <Button type="light" onClick={handleCancel}>

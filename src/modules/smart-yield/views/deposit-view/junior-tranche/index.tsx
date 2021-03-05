@@ -28,19 +28,19 @@ type FormData = {
   deadline?: number;
 };
 
-const InitialFormValues: FormData = {
-  from: undefined,
-  to: undefined,
-  slippageTolerance: 0.5,
-  deadline: 20,
-};
-
 type State = {
+  formValues: FormData;
   isSaving: boolean;
   depositModalVisible: boolean;
 };
 
 const InitialState: State = {
+  formValues: {
+    from: undefined,
+    to: undefined,
+    slippageTolerance: 0.5,
+    deadline: 20,
+  },
   isSaving: false,
   depositModalVisible: false,
 };
@@ -102,6 +102,14 @@ const JuniorTranche: React.FC = () => {
     const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
 
     return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippageTolerance ?? 0) / 100);
+  }
+
+  function handleFormValuesChange(_: any, values: FormData) {
+    setState(
+      mergeState<State>({
+        formValues: values,
+      }),
+    );
   }
 
   function handleCancel() {
@@ -182,7 +190,8 @@ const JuniorTranche: React.FC = () => {
       <Form
         className="grid flow-row"
         form={form}
-        initialValues={InitialFormValues}
+        initialValues={state.formValues}
+        onValuesChange={handleFormValuesChange}
         validateTrigger={['onSubmit']}
         onFinish={handleSubmit}>
         <Form.Item name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
