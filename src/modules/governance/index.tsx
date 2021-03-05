@@ -86,7 +86,7 @@ const GovernanceViewInternal: React.FC = () => {
                 <Text type="p1" weight="semibold">
                   Signal
                 </Text>
-                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start', color: 'inherit' }} />
               </Grid>
             </ExternalLink>
           }
@@ -100,7 +100,7 @@ const GovernanceViewInternal: React.FC = () => {
                 <Text type="p1" weight="semibold">
                   Forum
                 </Text>
-                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start', color: 'inherit' }} />
               </Grid>
             </ExternalLink>
           }

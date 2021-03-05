@@ -4,9 +4,12 @@
   width: 100%;
   min-height: 64px;
   padding: 20px 24px;
-  background: var(--theme-body-color);
+  background: transparent;
   border: 1px solid var(--theme-border-color);
   border-radius: 4px;
   @include font-p1-semi-bold;
-  color: var(--theme-icon-color);
+
+  &::placeholder {
+    color: var(--theme-icon-color);
+  }
 }

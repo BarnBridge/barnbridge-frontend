@@ -15,30 +15,8 @@
     display: none;
     margin-right: 16px;
 
-    :global(.burger.burger-squeeze) {
-      height: 24px;
-      width: 24px;
-    }
-
-
-
-    :global(.burger-lines),
-    :global(.burger-lines)::before,
-    :global(.burger-lines)::after {
-      background: var(--theme-icon-color);
-      left: 0 !important;
-    }
-
-    :global(.burger-lines)::before {
-      top: 0.6em;
-    }
-
-    :global(.burger-lines)::after {
-      top: -0.6em;
-    }
-
     @media (max-width: 768px) {
-      display: block;
+      display: flex;
     }
   }
 }
