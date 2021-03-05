@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -11,13 +11,16 @@ import Form from 'components/antd/form';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon, { TokenIconNames } from 'components/custom/icon';
+import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Hint, Text } from 'components/custom/typography';
+import { UseLeftTime } from 'hooks/useLeftTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
-import IconBubble from 'components/custom/icon-bubble';
+
+import { getFormattedDuration } from 'utils';
 
 type FormData = {
   to?: BigNumber;
@@ -75,6 +78,7 @@ const TwoStepWithdraw: React.FC = () => {
       const deadline = Math.round(Date.now() / 1_000) + 1200;
 
       await poolCtx.actions.twoStepWithdraw(tokenAmount, maxMaturesAt, deadline, args.gasPrice);
+      form.resetFields();
     } catch {}
   }
 
@@ -98,9 +102,9 @@ const TwoStepWithdraw: React.FC = () => {
           <TokenAmount
             tokenIcon={
               <IconBubble
-                name={pool?.meta?.icon!}
+                name={pool.meta?.icon!}
                 bubbleName="bond-circle-token"
-                secondBubbleName={pool?.market?.icon!}
+                secondBubbleName={pool.market?.icon!}
                 width={36}
                 height={36}
               />
@@ -124,16 +128,20 @@ const TwoStepWithdraw: React.FC = () => {
               <Text type="small" weight="semibold" color="secondary">
                 Wait time
               </Text>
-              <Text type="p2" weight="semibold" color="primary">
-                -
-              </Text>
+              <UseLeftTime end={(pool.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
+                {leftTime => (
+                  <Text type="p2" weight="semibold" color="primary">
+                    {leftTime > 0 ? getFormattedDuration(0, (pool.abond?.maturesAt ?? 0) * 1_000) : '0s'}
+                  </Text>
+                )}
+              </UseLeftTime>
             </div>
             <div className="grid flow-col justify-space-between">
               <Text type="small" weight="semibold" color="secondary">
                 Transaction fees
               </Text>
               <Text type="p2" weight="semibold" color="primary">
-                -
+                0 {pool.underlyingSymbol} (0%)
               </Text>
             </div>
           </div>
@@ -148,7 +156,7 @@ const TwoStepWithdraw: React.FC = () => {
                 </Text>
               </Hint>
               <Text type="p2" weight="semibold" color="primary">
-                -
+                20 minutes
               </Text>
             </div>
           </div>
@@ -173,10 +181,10 @@ const TwoStepWithdraw: React.FC = () => {
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
-                  Minimum received
+                  Token amount
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  -
+                  {formatBigValue(form.getFieldsValue().to)} j{pool.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -192,7 +200,7 @@ const TwoStepWithdraw: React.FC = () => {
                   Wait time
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  -
+                  {getFormattedDuration(0, (pool.abond?.maturesAt ?? 0) * 1_000)}
                 </Text>
               </div>
             </div>

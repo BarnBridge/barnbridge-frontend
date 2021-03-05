@@ -1,15 +1,23 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
+import BigNumber from 'bignumber.js';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
+import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
-import { Hint, Text } from 'components/custom/typography';
+import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
+import { UseLeftTime } from 'hooks/useLeftTime';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
+
+import { getFormattedDuration } from 'utils';
+
+import s from 'modules/smart-yield/views/deposit-view/select-tranche/s.module.scss';
 
 export const WITHDRAW_TWO_STEP_KEY = 'two-step';
 export const WITHDRAW_INSTANT_KEY = 'instant';
@@ -21,6 +29,7 @@ const InitiateWithdraw: React.FC = () => {
   const { pool, marketId, tokenId } = poolCtx;
 
   const [type, setType] = useState<string | undefined>();
+  const [forfeits, setForfeits] = useState<BigNumber | undefined>();
 
   function handleTwoStepType() {
     setType(WITHDRAW_TWO_STEP_KEY);
@@ -43,6 +52,26 @@ const InitiateWithdraw: React.FC = () => {
     }
   }
 
+  React.useEffect(() => {
+    if (!pool || !pool.smartYieldBalance) {
+      return;
+    }
+
+    poolCtx.actions.getForfeitsFor(pool.smartYieldBalance).then(setForfeits);
+  }, [pool?.smartYieldBalance]);
+
+  const totalWithdrawable = React.useMemo(() => {
+    return pool?.smartYieldBalance?.dividedBy(pool?.state.jTokenPrice);
+  }, [pool?.smartYieldBalance, pool?.state.jTokenPrice]);
+
+  const totalInstantWithdrawable = React.useMemo(() => {
+    if (!forfeits) {
+      return undefined;
+    }
+
+    return totalWithdrawable?.minus(forfeits);
+  }, [totalWithdrawable, forfeits]);
+
   return (
     <Card>
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
@@ -57,67 +86,31 @@ const InitiateWithdraw: React.FC = () => {
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
         <RadioCard selected={type === WITHDRAW_TWO_STEP_KEY} onClick={handleTwoStepType}>
           <Icon name="withdrawal_regular" width={64} height={64} className="mb-16" />
-          <Hint
-            text={
-              <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
-                  The 2-step process allows a user to first signal the intention of exiting the pool. In return they
-                  receive an NFT that can be redeemed after the current seniors reach their maturity dates.
-                </Text>
-                <ExternalLink href="#">Learn more</ExternalLink>
-              </Grid>
-            }>
-            <Text type="p1" weight="semibold" color="primary" className="mb-16">
-              2 step withdraw
-            </Text>
-          </Hint>
+          <Text type="p1" weight="semibold" color="primary" className="mb-16">
+            2 step withdraw
+          </Text>
           <Text type="small" weight="semibold" className="mb-4">
             Wait time
           </Text>
-          <Text type="p1" weight="semibold" color="primary" className="mb-16">
-            abond.maturesAt + 1 days
+          <UseLeftTime end={(pool?.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
+            {leftTime => (
+              <Text type="p1" weight="semibold" color="primary" className="mb-16">
+                {leftTime > 0 ? getFormattedDuration(0, (pool?.abond?.maturesAt ?? 0) * 1_000) : '0s'}
+              </Text>
+            )}
+          </UseLeftTime>
+          <Text type="small" weight="semibold" className="mb-4">
+            Total withdrawable amount
           </Text>
-          <Hint
-            text={
-              <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
-                  This value is based on current junior token prices. At the actual maturity date of the junior bond,
-                  the price may differ and be higher or lower.
-                </Text>
-                <ExternalLink href="#">Learn more</ExternalLink>
-              </Grid>
-            }>
-            <Text type="small" weight="semibold" className="mb-4">
-              Total withdrawable amount
-            </Text>
-          </Hint>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(pool?.smartYieldBalance?.multipliedBy(1), pool?.underlyingDecimals))}{' '}
-            {pool?.underlyingSymbol}
+            {formatBigValue(getHumanValue(totalWithdrawable, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
           </Text>
         </RadioCard>
         <RadioCard selected={type === WITHDRAW_INSTANT_KEY} onClick={handleInstantType}>
           <Icon name="withdrawal_instant" width={64} height={64} className="mb-16" />
-          <Hint
-            text={
-              <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
-                  The instant withdrawal allows juniors to instantly withdraw their underlying tokens.
-                  <br />
-                  <br />
-                  However, in order to ensure the guaranteed gains for the current senior bonds, a locked part of each
-                  junior position is burnt in favor of the existing junior token holders, increasing the price.
-                  <br />
-                  <br />
-                  Using this function, you forfeit your locked underlying.
-                </Text>
-                <ExternalLink href="#">Learn more</ExternalLink>
-              </Grid>
-            }>
-            <Text type="p1" weight="semibold" color="primary" className="mb-16">
-              Instant withdraw
-            </Text>
-          </Hint>
+          <Text type="p1" weight="semibold" color="primary" className="mb-16">
+            Instant withdraw
+          </Text>
           <Text type="small" weight="semibold" className="mb-4">
             Wait time
           </Text>
@@ -128,14 +121,59 @@ const InitiateWithdraw: React.FC = () => {
             Total withdrawable amount
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(pool?.smartYieldBalance?.multipliedBy(1), pool?.underlyingDecimals))}{' '}
-            {pool?.underlyingSymbol}
+            {formatBigValue(getHumanValue(totalInstantWithdrawable, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold" color="red">
-            forfeits
+            Forfeits: {formatBigValue(getHumanValue(forfeits, pool?.underlyingDecimals), pool?.underlyingDecimals)}{' '}
+            {pool?.underlyingSymbol} <Icons name="arrow-top-right" width={9} height={8} rotate={90} color="red" />
           </Text>
         </RadioCard>
       </Grid>
+
+      {type === WITHDRAW_TWO_STEP_KEY && (
+        <Alert
+          className="mb-32"
+          type="warning"
+          message="Warning!"
+          description={
+            <>
+              <div className="mb-8">
+                The 2-step process allows a user to first signal the intention of exiting the pool. In return they
+                receive an NFT that can be redeemed after the current seniors reach their maturity dates.
+              </div>
+              <ExternalLink href="#" className={s.alertLink}>
+                Learn more
+              </ExternalLink>
+            </>
+          }
+        />
+      )}
+
+      {type === WITHDRAW_INSTANT_KEY && (
+        <Alert
+          className="mb-32"
+          type="warning"
+          message="Warning!"
+          description={
+            <>
+              <div className="mb-8">
+                The instant withdrawal allows juniors to instantly withdraw their underlying tokens.
+                <br />
+                <br />
+                However, in order to ensure the guaranteed gains for the current senior bonds, a locked part of each
+                junior position is burnt in favor of the existing junior token holders, increasing the price.
+                <br />
+                <br />
+                Using this function, you forfeit your locked underlying.
+              </div>
+              <ExternalLink href="#" className={s.alertLink}>
+                Learn more
+              </ExternalLink>
+            </>
+          }
+        />
+      )}
+
       <Grid flow="col" gap={64} align="center" justify="space-between">
         <Button type="light" onClick={handleCancel}>
           <Icon name="left-arrow" width={9} height={8} />

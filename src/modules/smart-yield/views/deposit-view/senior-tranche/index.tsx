@@ -126,9 +126,7 @@ const SeniorTranche: React.FC = () => {
       const lockDays = differenceInDays(maturityDate ?? startOfDay(new Date()), startOfDay(new Date()));
 
       const minGain = await smartYieldContract.getBondGain(amountScaled, lockDays);
-      const minGainMFee = new BigNumber(1)
-        .minus(new BigNumber(slippageTolerance ?? ZERO_BIG_NUMBER).dividedBy(100))
-        .multipliedBy(minGain);
+      const minGainMFee = minGain.multipliedBy(1 - ((slippageTolerance ?? 0) / 100));
       const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
