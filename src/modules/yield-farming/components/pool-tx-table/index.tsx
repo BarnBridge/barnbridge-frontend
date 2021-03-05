@@ -249,7 +249,7 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
         }}
         footer={() => !poolTxList.isEnd && poolTxList.transactions.length > 0 && CardFooter}
         scroll={{
-          x: true
+          x: true,
         }}
       />
     </Card>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Spin } from 'antd';
-import cn from 'classnames';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { formatBONDValue, formatBigValue, isSmallBONDValue } from 'web3/utils';

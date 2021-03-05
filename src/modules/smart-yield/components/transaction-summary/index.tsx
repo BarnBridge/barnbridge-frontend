@@ -1,13 +1,13 @@
 import React from 'react';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { formatBigValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
+import Tooltip from 'components/antd/tooltip';
 import { Hint, Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
-import BigNumber from 'bignumber.js';
-import Tooltip from 'components/antd/tooltip';
 
 type TransactionSummaryProps = {
   className?: string;
@@ -29,8 +29,7 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
       <Divider />
       <div className="p-24">
         <div className="flex mb-24">
-          <Hint
-            text="This number shows the APY you get based on the deposited amount and maturity date. This is the annualized percentage.">
+          <Hint text="This number shows the APY you get based on the deposited amount and maturity date. This is the annualized percentage.">
             <Text type="small" weight="semibold" color="secondary">
               Guaranteed APY
             </Text>

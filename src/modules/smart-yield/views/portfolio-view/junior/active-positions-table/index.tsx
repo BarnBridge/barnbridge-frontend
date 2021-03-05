@@ -25,7 +25,7 @@ export type ActivePositionsTableEntity = PoolsSYPool & {
 
 const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
-    title: "Token Name",
+    title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
@@ -46,7 +46,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     ),
   },
   {
-    title: "Current balance",
+    title: 'Current balance',
     width: '20%',
     align: 'right',
     sorter: (a, b) =>

@@ -38,7 +38,7 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const PoolTxChartInner: React.FC = (props) => {
+const PoolTxChartInner: React.FC = props => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
@@ -175,7 +175,13 @@ const PoolTxChartInner: React.FC = (props) => {
               />
               <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
               {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
-                <ReCharts.Bar dataKey="deposits" name="Deposits" stackId="stack" fill="var(--theme-red-color)" fontSize={23} />
+                <ReCharts.Bar
+                  dataKey="deposits"
+                  name="Deposits"
+                  stackId="stack"
+                  fill="var(--theme-red-color)"
+                  fontSize={23}
+                />
               )}
               {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
                 <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" stackId="stack" fill="var(--theme-blue-color)" />
@@ -190,7 +196,7 @@ const PoolTxChartInner: React.FC = (props) => {
   );
 };
 
-const PoolTxChart: React.FC<CardProps> = (props) => (
+const PoolTxChart: React.FC<CardProps> = props => (
   <PoolTxChartProvider>
     <PoolTxChartInner {...props} />
   </PoolTxChartProvider>

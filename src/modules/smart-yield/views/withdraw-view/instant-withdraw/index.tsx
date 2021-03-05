@@ -2,25 +2,25 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getHumanValue, getNonHumanValue, formatBigValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
+import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
+import Input from 'components/antd/input';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon, { TokenIconNames } from 'components/custom/icon';
+import Icons from 'components/custom/icon';
+import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
-import ExternalLink from 'components/custom/externalLink';
-import Icons from 'components/custom/icon';
-import Divider from 'components/antd/divider';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
-import Input from 'components/antd/input';
-import IconBubble from 'components/custom/icon-bubble';
 
 type FormData = {
   from?: BigNumber;
@@ -107,8 +107,11 @@ const InstantWithdraw: React.FC = () => {
       const tokenAmount = getNonHumanValue(new BigNumber(from), decimals);
       const forfeits = await poolCtx.actions.getForfeitsFor(tokenAmount);
       const price = await smartYieldContract.getPrice();
-      const toPay = tokenAmount.multipliedBy(price).div(1e18).minus(forfeits ?? ZERO_BIG_NUMBER);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - ((slippageTolerance ?? 0) / 100)).toFixed(0)); // slippage / rounding mode
+      const toPay = tokenAmount
+        .multipliedBy(price)
+        .div(1e18)
+        .minus(forfeits ?? ZERO_BIG_NUMBER);
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
       console.log({
@@ -128,8 +131,10 @@ const InstantWithdraw: React.FC = () => {
       return undefined;
     }
 
-    return formValues.from?.multipliedBy(pool.state.jTokenPrice).minus(forfeits)
-      .multipliedBy(1 - ((formValues.slippageTolerance ?? 0) / 100));
+    return formValues.from
+      ?.multipliedBy(pool.state.jTokenPrice)
+      .minus(forfeits)
+      .multipliedBy(1 - (formValues.slippageTolerance ?? 0) / 100);
   }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippageTolerance]);
 
   if (!pool) {
@@ -142,11 +147,18 @@ const InstantWithdraw: React.FC = () => {
         Instant withdraw
       </Text>
       <Text type="p2" weight="semibold" className="mb-32">
-        Choose the amount of junior tokens you want to redeem. Make sure you double check the amounts, including the amount you forfeit. &nbsp;
+        Choose the amount of junior tokens you want to redeem. Make sure you double check the amounts, including the
+        amount you forfeit. &nbsp;
         <ExternalLink href="#">Learn more</ExternalLink>
       </Text>
 
-      <Form className="grid flow-row" form={form} initialValues={formValues} onValuesChange={handleFormValuesChange} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
+      <Form
+        className="grid flow-row"
+        form={form}
+        initialValues={formValues}
+        onValuesChange={handleFormValuesChange}
+        validateTrigger={['onSubmit']}
+        onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={

@@ -5,14 +5,14 @@ import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icons, { NavIconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useTheme } from 'components/providers/theme-provider';
 import { useGeneral } from 'components/providers/general-provider';
+import { useTheme } from 'components/providers/theme-provider';
 
 import s from './styles.module.scss';
-import ExternalLink from 'components/custom/externalLink';
 
 export type NavLinkProps = {
   icon: NavIconNames;
@@ -84,9 +84,9 @@ const LayoutSideNav: React.FC = () => {
           {(expanded || navOpen) && <Icons name="barnbridge" width="113" color="primary" />}
         </Grid>
         <Grid flow="row" gap={24}>
-          <NavLink label="Yield Farming" icon="savings-outlined" path="/yield-farming" expanded={(expanded || navOpen)} />
-          <NavLink label="Governance" icon="bank-outlined" path="/governance" expanded={(expanded || navOpen)} />
-          <NavLink label="Smart Yield" icon="paper-bill-outlined" path="/smart-yield" expanded={(expanded || navOpen)} />
+          <NavLink label="Yield Farming" icon="savings-outlined" path="/yield-farming" expanded={expanded || navOpen} />
+          <NavLink label="Governance" icon="bank-outlined" path="/governance" expanded={expanded || navOpen} />
+          <NavLink label="Smart Yield" icon="paper-bill-outlined" path="/smart-yield" expanded={expanded || navOpen} />
         </Grid>
         <Grid flow="row" gap={24} className={s.footerWrap} colsTemplate="48px">
           <ExternalLink href="https://docs.barnbridge.com/">
@@ -107,14 +107,16 @@ const LayoutSideNav: React.FC = () => {
               </Text>
             )}
           </Button>
-          {!navOpen && <Button type="light" className={s.hideLink} onClick={handleExpand}>
-            <Icons name="right-arrow-circle-outlined" />
-            {expanded && (
-              <Text type="p2" weight="semibold" className={s.linkLabel}>
-                Hide menu
-              </Text>
-            )}
-          </Button>}
+          {!navOpen && (
+            <Button type="light" className={s.hideLink} onClick={handleExpand}>
+              <Icons name="right-arrow-circle-outlined" />
+              {expanded && (
+                <Text type="p2" weight="semibold" className={s.linkLabel}>
+                  Hide menu
+                </Text>
+              )}
+            </Button>
+          )}
         </Grid>
       </Antd.Layout.Sider>
     </>

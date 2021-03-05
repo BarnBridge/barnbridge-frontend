@@ -1,8 +1,8 @@
-import { createContext, useState, useContext } from 'react';
+import { createContext, useContext, useState } from 'react';
 
 export type GeneralContextType = {
   navOpen: boolean;
-  setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 const GeneralContext = createContext<GeneralContextType>({} as any);

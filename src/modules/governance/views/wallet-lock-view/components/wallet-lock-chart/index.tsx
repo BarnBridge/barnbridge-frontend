@@ -24,7 +24,7 @@ import {
 import { flow } from 'lodash/fp';
 import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
-import { formatBigValue, formatBONDValue } from 'web3/utils';
+import { formatBONDValue, formatBigValue } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';

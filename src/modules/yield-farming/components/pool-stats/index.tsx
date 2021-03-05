@@ -17,7 +17,7 @@ const UNISWAP_EXCHANGE_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BO
 
 type Props = {
   className?: string;
-}
+};
 
 const PoolStats: React.FC<Props> = ({ className }) => {
   const { aggregated, uniswap, staking } = useWeb3Contracts();

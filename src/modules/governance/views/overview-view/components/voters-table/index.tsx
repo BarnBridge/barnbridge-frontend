@@ -140,18 +140,18 @@ const VotersTable: React.FC<VotersTableProps> = props => {
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
             <>
-            <Text type="p2" weight="semibold" color="secondary" className="tablet-only desktop-only">
-              Showing {from} to {to} out of {total} stakers
-            </Text>
-            <Text type="p2" weight="semibold" color="secondary" className="mobile-only">
-              {from}..{to} of {total}
-            </Text>
+              <Text type="p2" weight="semibold" color="secondary" className="tablet-only desktop-only">
+                Showing {from} to {to} out of {total} stakers
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary" className="mobile-only">
+                {from}..{to} of {total}
+              </Text>
             </>
           ),
           onChange: setPage,
         }}
         scroll={{
-          x: true
+          x: true,
         }}
       />
     </Card>

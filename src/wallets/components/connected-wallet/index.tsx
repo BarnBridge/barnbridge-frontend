@@ -2,8 +2,8 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 import * as Antd from 'antd';
 import cn from 'classnames';
-
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';

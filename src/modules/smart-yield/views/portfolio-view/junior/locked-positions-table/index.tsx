@@ -24,12 +24,14 @@ export type LockedPositionsTableEntity = {
 
 const Columns: ColumnsType<LockedPositionsTableEntity> = [
   {
-    title: "Token Name",
+    title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
         <Grid flow="row" gap={4} className="ml-auto">
-          <ExternalLink href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)} className="grid flow-col col-gap-4 align-start">
+          <ExternalLink
+            href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)}
+            className="grid flow-col col-gap-4 align-start">
             <Text type="p1" weight="semibold" color="blue">
               {entity.pool.underlyingSymbol}
             </Text>
@@ -78,7 +80,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     ),
   },
   {
-    title: "Time left",
+    title: 'Time left',
     width: '40%',
     align: 'right',
     sorter: (a, b) => a.jBond.maturesAt - b.jBond.maturesAt,

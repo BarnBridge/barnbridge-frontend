@@ -11,6 +11,7 @@ import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
 
 import { getFormattedDuration } from 'utils';
+
 import s from './s.module.scss';
 
 export type VotingStatListProps = {

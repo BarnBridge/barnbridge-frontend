@@ -147,23 +147,25 @@ const SeniorPortfolio: React.FC = () => {
 
   const total = principal?.plus(gain ?? ZERO_BIG_NUMBER);
 
-  const totalRedeemable =  state.data?.reduce((a, c) => {
+  const totalRedeemable = state.data?.reduce((a, c) => {
     return a.plus(getHumanValue(c.sBond.principal.plus(c.sBond.gain), c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
   const aggregatedAPY = React.useMemo(() => {
-    return state.data.reduce((a, c) => {
-      const { gain, principal, maturesAt, issuedAt } = c.sBond;
+    return state.data
+      .reduce((a, c) => {
+        const { gain, principal, maturesAt, issuedAt } = c.sBond;
 
-      const apy = gain
-        .dividedBy(principal)
-        .dividedBy(maturesAt - issuedAt)
-        .multipliedBy(365 * 24 * 60 * 60)
-        .multipliedBy(100)
-        .dividedBy(10 ** c.pool.underlyingDecimals);
+        const apy = gain
+          .dividedBy(principal)
+          .dividedBy(maturesAt - issuedAt)
+          .multipliedBy(365 * 24 * 60 * 60)
+          .multipliedBy(100)
+          .dividedBy(10 ** c.pool.underlyingDecimals);
 
-      return a.plus(principal.plus(gain).multipliedBy(apy));
-    }, ZERO_BIG_NUMBER).dividedBy(totalRedeemable);
+        return a.plus(principal.plus(gain).multipliedBy(apy));
+      }, ZERO_BIG_NUMBER)
+      .dividedBy(totalRedeemable);
   }, [state.data, totalRedeemable]);
 
   return (

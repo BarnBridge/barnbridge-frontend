@@ -1,12 +1,13 @@
 import React from 'react';
 import * as Antd from 'antd';
 import { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
+import { fetchGasPrice } from 'web3/utils';
 
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
-import { fetchGasPrice } from 'web3/utils';
+
 import s from './s.module.scss';
 
 type GasFeeOption = {

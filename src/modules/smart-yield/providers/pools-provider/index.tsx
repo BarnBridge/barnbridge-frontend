@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { Markets, Pools, SYMarketMeta, APISYPool, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 

@@ -1,16 +1,18 @@
-import { Route, Switch } from 'react-router-dom';
-import { Text } from 'components/custom/typography';
-import Icons from 'components/custom/icon';
-import Button from 'components/antd/button';
-import ConnectedWallet from 'wallets/components/connected-wallet';
-import Burger from '@animated-burgers/burger-squeeze';
 import '@animated-burgers/burger-squeeze/dist/styles.css';
 
-import s from './styles.module.scss';
+import { Route, Switch } from 'react-router-dom';
+import Burger from '@animated-burgers/burger-squeeze';
+
+import Button from 'components/antd/button';
+import Icons from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
+import ConnectedWallet from 'wallets/components/connected-wallet';
+
+import s from './styles.module.scss';
 
 const LayoutHeader: React.FC = () => {
-  const { navOpen, setNavOpen } = useGeneral()
+  const { navOpen, setNavOpen } = useGeneral();
 
   return (
     <div className={s.component}>

@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatUSDValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Icons, { IconNames } from 'components/custom/icon';
@@ -59,8 +59,7 @@ const OverviewView: React.FC = () => {
       </div>
       {state.activeMarket && (
         <>
-          <Hint
-            text="This number shows the total liquidity provided to the market by the junior and senior tranche holders.">
+          <Hint text="This number shows the total liquidity provided to the market by the junior and senior tranche holders.">
             <Text type="p1" weight="semibold" color="secondary" className="mb-8">
               {state.activeMarket.name} total liquidity
             </Text>

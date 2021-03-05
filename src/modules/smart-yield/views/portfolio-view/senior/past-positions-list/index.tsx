@@ -11,12 +11,12 @@ import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import {
+  APISYPool,
+  APISYSeniorRedeem,
   Markets,
   Pools,
   SYMarketMeta,
-  APISYPool,
   SYPoolMeta,
-  APISYSeniorRedeem,
   fetchSYSeniorRedeems,
 } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';

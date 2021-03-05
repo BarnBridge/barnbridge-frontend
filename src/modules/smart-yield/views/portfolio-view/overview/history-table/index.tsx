@@ -18,14 +18,14 @@ import Icons from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { HistoryTypes, Markets, Pools, APISYUserTxHistory, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { APISYUserTxHistory, HistoryTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/wallet';
 
 type TableEntity = APISYUserTxHistory;
 
 const Columns: ColumnsType<TableEntity> = [
   {
-    title: "Token Name",
+    title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
         <IconBubble
@@ -44,7 +44,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: "Transaction Hash",
+    title: 'Transaction Hash',
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
@@ -56,7 +56,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: "Date",
+    title: 'Date',
     sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
     render: (_, entity) => (
       <>
@@ -70,7 +70,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: "Amount",
+    title: 'Amount',
     sorter: (a, b) => a.amount - b.amount,
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
@@ -86,7 +86,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: "Tranche",
+    title: 'Tranche',
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {capitalize(entity.tranche)}
@@ -94,7 +94,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: "Transaction type",
+    title: 'Transaction type',
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {HistoryTypes.get(entity.transactionType)}
