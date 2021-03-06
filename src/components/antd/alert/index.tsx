@@ -16,9 +16,7 @@ const Alert: React.FC<AlertProps> = props => {
     switch (type) {
       case 'info':
         return <Icons name="info-outlined" />;
-      case 'success':
-      case 'warning':
-      case 'error':
+      default:
         return undefined;
     }
   }, [type]);

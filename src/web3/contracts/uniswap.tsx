@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import UNISWAP_ABI from 'web3/abi/uniswap_v2.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
@@ -13,6 +14,8 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
+
+const Contract = new Web3Contract(UNISWAP_ABI as Web3ContractAbiItem[], CONTRACT_UNISWAP_ADDR, 'UNISWAP');
 
 export const UNISWAPTokenMeta: TokenMeta = {
   icon: <Icons key="uniswap" name="uniswap-token" />,
@@ -53,14 +56,10 @@ export function useUNISWAPContract(): UNISWAPContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
-  const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(require('web3/abi/uniswap_v2.json'), CONTRACT_UNISWAP_ADDR, 'UNISWAP');
-  }, []);
-
   const [data, setData] = React.useState<UNISWAPContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    const [totalSupply, reserves, token0, token1] = await contract.batch([
+    const [totalSupply, reserves, token0, token1] = await Contract.batch([
       {
         method: 'totalSupply',
         transform: (value: string) => getHumanValue(new BigNumber(value), UNISWAPTokenMeta.decimals),
@@ -109,7 +108,7 @@ export function useUNISWAPContract(): UNISWAPContract {
     let allowance: BigNumber | undefined;
 
     if (wallet.account) {
-      [balance, allowance] = await contract.batch([
+      [balance, allowance] = await Contract.batch([
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
@@ -136,22 +135,20 @@ export function useUNISWAPContract(): UNISWAPContract {
         return Promise.reject();
       }
 
-      return contract
-        .send('approve', [CONTRACT_STAKING_ADDR, value], {
-          from: wallet.account,
-        })
-        .then(reload);
+      return Contract.send('approve', [CONTRACT_STAKING_ADDR, value], {
+        from: wallet.account,
+      }).then(reload);
     },
-    [reload, contract, wallet.account],
+    [reload, Contract, wallet.account],
   );
 
   return React.useMemo<UNISWAPContract>(
     () => ({
       ...data,
-      contract,
+      contract: Contract,
       reload,
       approveSend,
     }),
-    [data, contract, reload, approveSend],
+    [data, Contract, reload, approveSend],
   );
 }

@@ -1,5 +1,6 @@
 import React from 'react';
-import Web3Contract from 'web3/contract';
+import DAO_GOVERNANCE_ABI from 'web3/abi/dao_governance.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { Web3EventType } from 'web3/types';
 import { getGasValue } from 'web3/utils';
 
@@ -10,7 +11,7 @@ import { useWallet } from 'wallets/wallet';
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
 const Contract = new Web3Contract(
-  require('web3/abi/dao_governance.json'),
+  DAO_GOVERNANCE_ABI as Web3ContractAbiItem[],
   CONTRACT_DAO_GOVERNANCE_ADDR,
   'DAO Governance',
 );

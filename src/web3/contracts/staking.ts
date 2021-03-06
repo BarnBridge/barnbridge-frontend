@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract, { BatchContractMethod } from 'web3/contract';
+import STAKING_ABI from 'web3/abi/staking.json';
+import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
@@ -15,6 +16,8 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_STAKING_ADDR = String(process.env.REACT_APP_CONTRACT_STAKING_ADDR);
+
+const Contract = new Web3Contract(STAKING_ABI as Web3ContractAbiItem[], CONTRACT_STAKING_ADDR, 'STAKING');
 
 type StakingTokenData = {
   epochPoolSize?: BigNumber;
@@ -91,14 +94,10 @@ export function useStakingContract(): StakingContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
-  const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(require('web3/abi/staking.json'), CONTRACT_STAKING_ADDR, 'STAKING');
-  }, []);
-
   const [data, setData, dataRef] = useRefState<StakingContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    const [currentEpoch, epoch1Start, epochDuration] = await contract.batch([
+    const [currentEpoch, epoch1Start, epochDuration] = await Contract.batch([
       {
         method: 'getCurrentEpoch',
         transform: (value: string) => Number(value),
@@ -132,7 +131,7 @@ export function useStakingContract(): StakingContract {
       uniNextEpochPoolSize,
       bondEpochPoolSize,
       bondNextEpochPoolSize,
-    ] = await contract.batch([
+    ] = await Contract.batch([
       ...[USDCTokenMeta, DAITokenMeta, SUSDTokenMeta, UNISWAPTokenMeta, BONDTokenMeta].reduce(
         (ac: BatchContractMethod[], token) => {
           return [
@@ -219,7 +218,7 @@ export function useStakingContract(): StakingContract {
         bondBalance,
         bondEpochUserBalance,
         bondNextEpochUserBalance,
-      ] = await contract.batch([
+      ] = await Contract.batch([
         ...[USDCTokenMeta, DAITokenMeta, SUSDTokenMeta, UNISWAPTokenMeta, BONDTokenMeta].reduce(
           (ac: BatchContractMethod[], token) => [
             ...ac,
@@ -285,14 +284,12 @@ export function useStakingContract(): StakingContract {
         return Promise.reject();
       }
 
-      return contract
-        .send('deposit', [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)], {
-          from: wallet.account,
-          gasPrice: getGasValue(gasPrice),
-        })
-        .then(reload);
+      return Contract.send('deposit', [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)], {
+        from: wallet.account,
+        gasPrice: getGasValue(gasPrice),
+      }).then(reload);
     },
-    [reload, contract, wallet.account],
+    [reload, Contract, wallet.account],
   );
 
   const withdrawSend = React.useCallback(
@@ -301,14 +298,12 @@ export function useStakingContract(): StakingContract {
         return Promise.reject();
       }
 
-      return contract
-        .send('withdraw', [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)], {
-          from: wallet.account,
-          gasPrice: getGasValue(gasPrice),
-        })
-        .then(reload);
+      return Contract.send('withdraw', [tokenMeta.address, getNonHumanValue(amount, tokenMeta.decimals)], {
+        from: wallet.account,
+        gasPrice: getGasValue(gasPrice),
+      }).then(reload);
     },
-    [reload, contract, wallet.account],
+    [reload, Contract, wallet.account],
   );
 
   const getEpochAt = React.useCallback(
@@ -343,13 +338,13 @@ export function useStakingContract(): StakingContract {
   return React.useMemo<StakingContract>(
     () => ({
       ...data,
-      contract,
+      contract: Contract,
       reload,
       depositSend,
       withdrawSend,
       getEpochAt,
       getEpochPeriod,
     }),
-    [data, contract, reload, depositSend, withdrawSend, getEpochAt, getEpochPeriod],
+    [data, Contract, reload, depositSend, withdrawSend, getEpochAt, getEpochPeriod],
   );
 }

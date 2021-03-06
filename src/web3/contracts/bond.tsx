@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import BOND_ABI from 'web3/abi/bond.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { TokenMeta } from 'web3/types';
@@ -13,7 +14,7 @@ import { useWallet } from 'wallets/wallet';
 
 const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
 
-const Contract = new Web3Contract(require('web3/abi/bond.json'), CONTRACT_BOND_ADDR, 'BOND');
+const Contract = new Web3Contract(BOND_ABI as Web3ContractAbiItem[], CONTRACT_BOND_ADDR, 'BOND');
 
 export const BONDTokenMeta: TokenMeta = {
   icon: <Icons key="bond" name="bond-token" />,

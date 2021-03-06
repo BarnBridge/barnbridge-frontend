@@ -114,13 +114,6 @@ const InstantWithdraw: React.FC = () => {
       const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
-      console.log({
-        tokenAmount: tokenAmount.toNumber(),
-        forfeits: forfeits?.toNumber(),
-        toPay: toPay.toNumber(),
-        minUnderlying: minUnderlying.toNumber(),
-        deadlineTs,
-      });
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
       form.resetFields();
     } catch {}

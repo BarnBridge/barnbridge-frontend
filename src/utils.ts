@@ -46,6 +46,7 @@ export function getFormattedDuration(value?: number, endValue?: number): string 
           case 'xSeconds':
             v = (duration.months ?? 0) + (duration.days ?? 0) + (duration.hours ?? 0) + (duration.minutes ?? 0);
             return value > 0 || v > 0 ? `${value}s` : '';
+          default:
         }
       },
     },

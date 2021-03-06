@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import YF_LP_ABI from 'web3/abi/yield_farm_lp.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
@@ -9,6 +10,8 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_YIELD_FARM_LP_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR);
+
+const Contract = new Web3Contract(YF_LP_ABI as Web3ContractAbiItem[], CONTRACT_YIELD_FARM_LP_ADDR, 'YIELD_FARM_LP');
 
 type YieldFarmLPContractData = {
   isEnded?: boolean;
@@ -54,14 +57,10 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
-  const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(require('web3/abi/yield_farm_lp.json'), CONTRACT_YIELD_FARM_LP_ADDR, 'YIELD_FARM_LP');
-  }, []);
-
   const [data, setData] = React.useState<YieldFarmLPContractData>(InitialData);
 
   useAsyncEffect(async () => {
-    let [totalEpochs, totalReward, currentEpoch] = await contract.batch([
+    let [totalEpochs, totalReward, currentEpoch] = await Contract.batch([
       {
         method: 'NR_OF_EPOCHS',
         transform: (value: string) => Number(value),
@@ -102,7 +101,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       bondReward,
     }));
 
-    const [poolSize, nextPoolSize] = await contract.batch([
+    const [poolSize, nextPoolSize] = await Contract.batch([
       {
         method: 'getPoolSize',
         methodArgs: [nextCurrentEpoch],
@@ -130,7 +129,7 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
     let currentReward: BigNumber | undefined;
 
     if (wallet.account && nextCurrentEpoch !== undefined) {
-      [epochStake, nextEpochStake, currentReward] = await contract.batch([
+      [epochStake, nextEpochStake, currentReward] = await Contract.batch([
         {
           method: 'getEpochStake',
           methodArgs: [wallet.account, nextCurrentEpoch],
@@ -180,20 +179,18 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
       return Promise.reject();
     }
 
-    return contract
-      .send('massHarvest', [], {
-        from: wallet.account,
-      })
-      .then(reload);
-  }, [reload, contract, wallet.account]);
+    return Contract.send('massHarvest', [], {
+      from: wallet.account,
+    }).then(reload);
+  }, [reload, Contract, wallet.account]);
 
   return React.useMemo<YieldFarmLPContract>(
     () => ({
       ...data,
-      contract,
+      contract: Contract,
       reload,
       massHarvestSend,
     }),
-    [data, contract, reload, massHarvestSend],
+    [data, Contract, reload, massHarvestSend],
   );
 }

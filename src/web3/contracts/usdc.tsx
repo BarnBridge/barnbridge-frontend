@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import USDC_ABI from 'web3/abi/usdc.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
@@ -11,6 +12,8 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
+
+const Contract = new Web3Contract(USDC_ABI as Web3ContractAbiItem[], CONTRACT_USDC_ADDR, 'USDC');
 
 export const USDCTokenMeta: TokenMeta = {
   icon: <Icons key="usdc" name="usdc-token" />,
@@ -39,10 +42,6 @@ export function useUSDCContract(): USDCContract {
   const [reload] = useReload();
   const wallet = useWallet();
 
-  const contract = React.useMemo<Web3Contract>(() => {
-    return new Web3Contract(require('web3/abi/usdc.json'), CONTRACT_USDC_ADDR, 'USDC');
-  }, []);
-
   const [data, setData] = React.useState<USDCContractData>(InitialData);
 
   useAsyncEffect(async () => {
@@ -50,7 +49,7 @@ export function useUSDCContract(): USDCContract {
     let allowance: BigNumber | undefined;
 
     if (wallet.account) {
-      [balance, allowance] = await contract.batch([
+      [balance, allowance] = await Contract.batch([
         {
           method: 'balanceOf',
           methodArgs: [wallet.account],
@@ -77,22 +76,20 @@ export function useUSDCContract(): USDCContract {
         return Promise.reject();
       }
 
-      return contract
-        .send('approve', [CONTRACT_STAKING_ADDR, value], {
-          from: wallet.account,
-        })
-        .then(reload);
+      return Contract.send('approve', [CONTRACT_STAKING_ADDR, value], {
+        from: wallet.account,
+      }).then(reload);
     },
-    [reload, contract, wallet.account],
+    [reload, Contract, wallet.account],
   );
 
   return React.useMemo<USDCContract>(
     () => ({
       ...data,
-      contract,
+      contract: Contract,
       reload,
       approveSend,
     }),
-    [data, contract, reload, approveSend],
+    [data, Contract, reload, approveSend],
   );
 }

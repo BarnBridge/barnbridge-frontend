@@ -128,6 +128,7 @@ function getGranularPeriods(granularity: GranularityType, endDate?: Date): Granu
         step = Math.max(1, Math.round(ticks / 12));
         dateFlow = flow(addMinutes, startOfMinute);
         break;
+      default:
     }
 
     for (let i = 1; i <= ticks; i += step) {

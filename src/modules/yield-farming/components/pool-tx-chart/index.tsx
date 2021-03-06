@@ -62,7 +62,7 @@ const PoolTxChartInner: React.FC = props => {
       currentEpoch = web3c.yfBOND.currentEpoch ?? 0;
     }
 
-    for (let i = startEpoch; i <= currentEpoch; i++) {
+    for (let i = startEpoch; i <= currentEpoch; i += 1) {
       filters.push({
         value: String(i),
         label: `Epoch ${i}`,
@@ -188,9 +188,9 @@ const PoolTxChartInner: React.FC = props => {
               )}
             </ReCharts.BarChart>
           </ReCharts.ResponsiveContainer>
-        ) : !poolTxChart.loading ? (
-          ChartEmpty
-        ) : null}
+        ) : (
+          !poolTxChart.loading && ChartEmpty
+        )}
       </Spin>
     </Card>
   );

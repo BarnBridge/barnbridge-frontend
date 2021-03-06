@@ -176,6 +176,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
           web3c.bond.reload();
           web3c.yfBOND.reload();
           break;
+        default:
       }
     } catch (e) {}
 

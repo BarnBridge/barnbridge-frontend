@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract, { BatchContractMethod } from 'web3/contract';
+import YF_BOND_ABI from 'web3/abi/yield_farm_bond.json';
+import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
@@ -9,6 +10,12 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_YIELD_FARM_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR);
+
+const Contract = new Web3Contract(
+  YF_BOND_ABI as Web3ContractAbiItem[],
+  CONTRACT_YIELD_FARM_BOND_ADDR,
+  'YIELD_FARM_BOND',
+);
 
 type State = {
   isEnded?: boolean;
@@ -47,12 +54,6 @@ export type YieldFarmBONDContract = State & {
   massHarvestSend: () => void;
   reload: () => void;
 };
-
-const contract = new Web3Contract(
-  require('web3/abi/yield_farm_bond.json'),
-  CONTRACT_YIELD_FARM_BOND_ADDR,
-  'YIELD_FARM_BOND',
-);
 
 function nrOfEpochsAction(): BatchContractMethod {
   return {
@@ -108,8 +109,7 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
   React.useEffect(() => {
     const actions: BatchContractMethod[] = [nrOfEpochsAction(), totalDistributedAmountAction(), getCurrentEpoch()];
 
-    contract
-      .batch(actions)
+    Contract.batch(actions)
       .then(([totalEpochs, totalReward, currentEpoch]) => {
         let epochReward: BigNumber | undefined;
 
@@ -154,8 +154,7 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       actions.push(getPoolSizeAction(nextCurrentEpoch), getPoolSizeAction(nextCurrentEpoch + 1));
     }
 
-    contract
-      .batch(actions)
+    Contract.batch(actions)
       .then(([poolSize, nextPoolSize]) => {
         setState({
           poolSize,
@@ -182,8 +181,7 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       );
     }
 
-    contract
-      .batch(actions)
+    Contract.batch(actions)
       .then(([epochStake, nextEpochStake, currentReward]) => {
         setState({
           epochStake,
@@ -225,17 +223,15 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
       return Promise.reject();
     }
 
-    return contract
-      .send('massHarvest', [], {
-        from: wallet.account,
-      })
-      .then(reload);
+    return Contract.send('massHarvest', [], {
+      from: wallet.account,
+    }).then(reload);
   }, [reload, wallet.account]);
 
   return React.useMemo<YieldFarmBONDContract>(
     () => ({
       ...state,
-      contract,
+      contract: Contract,
       massHarvestSend,
       reload,
     }),

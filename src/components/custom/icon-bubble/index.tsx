@@ -15,8 +15,10 @@ export type IconBubbleProps = {
 let uuid = 0;
 
 const IconBubble: React.FC<IconBubbleProps> = props => {
+  uuid += 1;
+
   const { name, bubbleName, secondBubbleName, width = 40, height, className, style } = props;
-  const id = `ib-${uuid++}`;
+  const id = `ib-${uuid}`;
 
   return (
     <svg width={width} height={height ?? width} className={className} style={style}>

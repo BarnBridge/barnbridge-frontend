@@ -193,7 +193,6 @@ const SeniorTranche: React.FC = () => {
     ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
     ?.plus(bondGain ?? ZERO_BIG_NUMBER);
 
-  console.log(apy.toNumber());
   return (
     <>
       <Text type="h3" weight="semibold" color="primary" className="mb-16">

@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import DAO_REWARD_ABI from 'web3/abi/dao_reward.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
@@ -11,7 +12,7 @@ import { BONDTokenMeta } from './bond';
 
 const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
 
-const Contract = new Web3Contract(require('web3/abi/dao_reward.json'), CONTRACT_DAO_REWARD_ADDR, 'DAO Reward');
+const Contract = new Web3Contract(DAO_REWARD_ABI as Web3ContractAbiItem[], CONTRACT_DAO_REWARD_ADDR, 'DAO Reward');
 
 export type DaoRewardPullFeature = {
   source: string;

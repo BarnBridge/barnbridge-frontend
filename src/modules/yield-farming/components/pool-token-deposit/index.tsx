@@ -213,6 +213,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
           web3c.bond.reload();
           web3c.yfBOND.reload();
           break;
+        default:
       }
     } catch (e) {}
 

@@ -221,6 +221,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
       case PoolTypes.BOND:
         history.push('/yield-farming/bond');
         break;
+      default:
     }
   }
 

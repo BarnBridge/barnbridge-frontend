@@ -31,7 +31,7 @@ const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
 
     const val = Number(value);
 
-    if (!isNaN(val)) {
+    if (!Number.isNaN(val)) {
       onAdd?.(val);
     }
 

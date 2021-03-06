@@ -43,6 +43,7 @@ export function useWeekCountdown(endDate?: number): string[] {
                   return `${String(value).padStart(2, '0')}h`;
                 case 'xMinutes':
                   return `${String(value).padStart(2, '0')}m`;
+                default:
               }
             },
           },
