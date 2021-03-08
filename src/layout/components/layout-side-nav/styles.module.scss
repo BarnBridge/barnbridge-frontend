@@ -1,104 +1,133 @@
-@import 'src/styles/text';
+.aside {
+  background-color: var(--theme-card-color);
+  border-right: 1px solid var(--theme-border-color);
+  display: grid;
+  flex-shrink: 0;
+  grid-template-rows: min-content;
+  height: 100vh;
+  overflow: hidden;
+  overflow-y: auto;
+  padding: 12px;
+  position: sticky;
+  top: 0;
+  transition: all 0.2s linear;
+  width: 72px;
 
-.component {
-  background: var(--theme-card-color);
-  border: 1px solid var(--theme-border-color);
-  grid-area: sidebar;
-  padding: 24px 12px;
-  position: relative;
+  &.expanded {
+    width: 200px;
+
+    .logoLabel {
+      display: block;
+    }
+
+    .buttonLabel {
+      display: block;
+    }
+  }
+
 
   @media (max-width: 768px) {
-    flex-basis: 275px !important;
-    height: 100%;
     left: -100%;
-    min-width: 275px !important;
-    position: fixed;
+    position: absolute;
     width: 275px !important;
-    z-index: 2;
+    z-index: 10;
 
     &.open {
       left: 0;
+
+      .logoLabel {
+        display: block;
+      }
+
+      .buttonLabel {
+        display: block;
+      }
+    }
+  }
+}
+
+.logoContainer {
+  display: flex;
+  margin-bottom: 40px;
+  overflow: hidden;
+  padding: 12px;
+  transition: width 0.3s linear;
+}
+
+.logo {
+  flex-shrink: 0;
+}
+
+.logoLabel {
+  display: none;
+  flex-shrink: 0;
+  margin-left: 12px;
+  overflow: hidden;
+}
+
+.button {
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  border-radius: 4px;
+  color: var(--theme-secondary-color);
+  display: flex;
+  padding: 12px;
+  position: relative;
+  text-align: left;
+  width: 100%;
+
+  &:hover,
+  &:active {
+    background: rgba(var(--theme-red-color-rgb), 0.08);
+    color: var(--theme-primary-color);
+
+    svg {
+      color: var(--theme-red-color);
     }
   }
 
-  :global(.ant-btn.ant-btn-link) {
-    @include font-p2-regular;
-    border-radius: 4px;
-    color: var(--theme-icon-color);
-    height: 48px;
-    justify-content: flex-start;
-    overflow: hidden;
-    padding: 12px;
-    width: 48px;
+  &.active {
+    color: var(--theme-primary-color);
 
-    &:hover {
-      background: rgba(var(--theme-red-color-rgb), 0.08);
-      color: var(--theme-red-color);
-
-      .linkLabel {
-        color: var(--theme-primary-color);
-      }
-
-      svg {
-        color: var(--theme-red-color);
-      }
+    &::before {
+      background: var(--theme-red-color);
+      border-radius: 0 4px 4px 0;
+      content: '';
+      height: 48px;
+      left: -12px;
+      position: absolute;
+      width: 4px;
     }
 
     svg {
-      min-height: 24px;
-      min-width: 24px;
-    }
-  }
-
-  &.expanded {
-    :global(.ant-btn.ant-btn-link) {
-      width: 176px;
-    }
-
-    .hideLink svg {
-      transform: rotate(-180deg);
-    }
-  }
-
-  .navLink {
-    position: relative;
-  }
-
-  .isActive {
-    .activeTick {
-      visibility: visible;
-    }
-
-    .linkLabel {
-      color: var(--theme-primary-color);
-    }
-
-    :global(.ant-btn.ant-btn-link) svg {
       color: var(--theme-red-color);
     }
   }
 
-  .activeTick {
-    background: var(--theme-red-color);
-    border-radius: 0 4px 4px 0;
-    height: 48px;
-    left: -13px;
-    position: absolute;
-    visibility: hidden;
-    width: 4px;
+  svg {
+    flex-shrink: 0;
   }
+}
 
-  .linkLabel {
-    color: var(--theme-secondary-color);
+.buttonLabel {
+  display: none;
+  margin-left: 16px;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.top {
+  .button {
+    margin-bottom: 24px;
   }
+}
 
-  .headerLogo {
-    padding: 0 12px;
-  }
+.bottom {
+  margin-top: auto;
 
-  .footerWrap {
-    bottom: 24px;
-    position: fixed;
+  .button {
+    margin-top: 24px;
   }
 }
 
@@ -125,7 +154,7 @@
   border: none;
   display: none;
   height: 24px;
-  margin-right: 8px;
+  margin-right: 12px;
   padding: 0;
   width: 24px;
 

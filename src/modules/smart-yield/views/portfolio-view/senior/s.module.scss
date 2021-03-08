@@ -17,10 +17,13 @@
   margin-bottom: 32px;
   margin-top: 32px;
 
-  @media (max-width: 768px) {
-    gap: 8px;
+  @media (max-width: 1200px) {
     grid-template-columns: 1fr 1fr;
   }
+  // @media (max-width: 768px) {
+  //   gap: 8px;
+  //   grid-template-columns: 1fr 1fr;
+  // }
 
   @media (max-width: 480px) {
     grid-template-columns: 1fr;

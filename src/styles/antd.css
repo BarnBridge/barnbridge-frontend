@@ -13890,7 +13890,7 @@ textarea.ant-input-affix-wrapper {
   align-items: center;
 }
 .ant-input-prefix {
-  margin-right: 4px;
+  margin-right: 12px;
 }
 .ant-input-suffix {
   margin-left: 4px;

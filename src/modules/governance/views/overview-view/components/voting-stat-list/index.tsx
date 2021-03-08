@@ -66,7 +66,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                   This number shows the amount of vBOND currently minted. This number may differ from the amount of
                   $BOND staked because of the multiplier mechanic
                 </Text>
-                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power" className="link-blue" style={{ fontWeight: 600 }}>
                   Learn more
                 </ExternalLink>
               </Grid>
@@ -92,7 +92,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                   This counter shows the average amount of time $BOND stakers locked their deposits in order to take
                   advantage of the voting power bonus.
                 </Text>
-                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power" className="link-blue" style={{ fontWeight: 600 }}>
                   Learn more
                 </ExternalLink>
               </Grid>
@@ -147,7 +147,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             text={
               <Grid flow="row" gap={8} align="start">
                 <Text type="p2">This number shows the amount of vBOND that is delegated to other addresses.</Text>
-                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users">
+                <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users" className="link-blue" style={{ fontWeight: 600 }}>
                   Learn more
                 </ExternalLink>
               </Grid>

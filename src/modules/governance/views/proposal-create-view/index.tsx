@@ -279,7 +279,7 @@ const ProposalCreateView: React.FC = () => {
                       {fields.length < 10 && (
                         <Button
                           type="ghost"
-                          icon={<Icons name="plus-circle-outlined" />}
+                          icon={<Icons name="plus-circle-outlined" color="inherit" />}
                           disabled={state.submitting}
                           className={s.addActionBtn}
                           onClick={() => setState({ showCreateActionModal: true })}>

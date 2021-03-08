@@ -38,15 +38,15 @@
 
   &.lb1 {
     font-size: var(--font-size-lb1);
-    line-height: calc(var(--font-size-lb1) + 10px);
     letter-spacing: 0.04em;
+    line-height: calc(var(--font-size-lb1) + 10px);
     text-transform: uppercase;
   }
 
   &.lb2 {
     font-size: var(--font-size-lb2);
-    line-height: calc(var(--font-size-lb2) + 4px);
     letter-spacing: 0.04em;
+    line-height: calc(var(--font-size-lb2) + 4px);
     text-transform: uppercase;
   }
 
@@ -81,15 +81,25 @@
 }
 
 div.hint {
+  align-items: center;
+  column-gap: 8px;
   display: inline-grid;
   grid-auto-flow: column;
   grid-template-columns: max-content 16px;
-  column-gap: 8px;
-  align-items: center;
   width: auto;
 
   .tooltip {
     align-self: start;
     cursor: pointer;
+  }
+
+  .icon {
+    &:hover {
+      color: var(--theme-grey900-color);
+
+      [data-theme='dark'] & {
+        color: var(--theme-white-color);
+      }
+    }
   }
 }

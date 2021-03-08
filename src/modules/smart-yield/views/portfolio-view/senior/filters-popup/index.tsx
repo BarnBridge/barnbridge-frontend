@@ -112,10 +112,10 @@ const FiltersPopup: React.FC = () => {
       }
       visible={visible}
       onVisibleChange={setVisible}>
-      <Button type="select" className="ml-auto">
-        <Icons name="filter" />
+      <button type="button" className="button-ghost-monochrome ml-auto" style={{ backgroundColor: 'var(--theme-card-color)' }}>
+        <Icons name="filter" className="mr-8" color="inherit" />
         Filters
-      </Button>
+      </button>
     </Popover>
   );
 };

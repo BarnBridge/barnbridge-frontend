@@ -15,7 +15,8 @@ const LayoutHeader: React.FC = () => {
   return (
     <div className={s.component}>
       <Button type="link" className={s.burger} onClick={() => setNavOpen(prevState => !prevState)}>
-        <Burger isOpen={navOpen} />
+        <Icons name="burger" />
+        {/* <Burger isOpen={navOpen} /> */}
       </Button>
       <Icons name="bond-square-token" className={s.logo} />
       <Text type="h3" weight="semibold" color="primary" className={s.title}>
