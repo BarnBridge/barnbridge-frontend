@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import * as Antd from 'antd';
+import AntdSpin from 'antd/lib/spin';
 
 import Card from 'components/antd/card';
 
@@ -18,7 +18,7 @@ const DepositView: React.FC = () => {
   const poolCtx = useSYPool();
 
   if (poolCtx.loading) {
-    return <Antd.Spin />;
+    return <AntdSpin />;
   }
 
   if (poolCtx.pool === null) {

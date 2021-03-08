@@ -7,7 +7,7 @@ import { Text } from 'components/custom/typography';
 import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import { useWallet } from 'wallets/wallet';
 
-export type UnsupportedChainModalProps = ModalProps & {};
+export type UnsupportedChainModalProps = ModalProps;
 
 const UnsupportedChainModal: React.FC<UnsupportedChainModalProps> = props => {
   const { ...modalProps } = props;

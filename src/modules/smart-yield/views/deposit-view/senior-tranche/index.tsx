@@ -144,12 +144,12 @@ const SeniorTranche: React.FC = () => {
     setFormState(allValues);
   }
 
-  const getBondGain = useDebounce((pool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+  const getBondGain = useDebounce((pPool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
+    const smartYieldContract = new SYSmartYieldContract(pPool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
 
-    const decimals = pool.underlyingDecimals;
+    const decimals = pPool.underlyingDecimals;
     const amount = pAmount?.multipliedBy(10 ** decimals) ?? ZERO_BIG_NUMBER;
     const today = startOfDay(new Date());
     const days = differenceInDays(pMaturityDate ?? today, today);

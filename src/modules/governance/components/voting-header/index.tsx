@@ -12,7 +12,7 @@ import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
@@ -21,7 +21,7 @@ import VotingDetailedModal from '../voting-detailed-modal';
 
 import { getFormattedDuration, inRange } from 'utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type VotingHeaderState = {
   claiming: boolean;
@@ -80,7 +80,7 @@ const VotingHeader: React.FC = () => {
                 </Text>
               </Skeleton>
             </Tooltip>
-            <Icons name="bond-square-token" />
+            <Icon name="bond-square-token" />
             <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -97,7 +97,7 @@ const VotingHeader: React.FC = () => {
                 {formatBONDValue(bondBalance)}
               </Text>
             </Skeleton>
-            <Icons name="bond-square-token" />
+            <Icon name="bond-square-token" />
           </Grid>
         </Grid>
         <Divider type="vertical" />

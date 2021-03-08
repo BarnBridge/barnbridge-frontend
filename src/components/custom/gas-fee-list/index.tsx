@@ -1,6 +1,6 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
+import AntdRadio, { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
+import AntdSpin from 'antd/lib/spin';
 import { fetchGasPrice } from 'web3/utils';
 
 import RadioButton from 'components/antd/radio-button';
@@ -95,14 +95,14 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
   }, [value]);
 
   return (
-    <Antd.Radio.Group
+    <AntdRadio.Group
       className={className}
       style={{ width: '100%' }}
       {...groupProps}
       value={state.selected}
       onChange={handleChange}>
       {state.loading ? (
-        <Antd.Spin />
+        <AntdSpin />
       ) : (
         <div className={s.list}>
           {state.options.map(option => (
@@ -128,7 +128,7 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
           ))}
         </div>
       )}
-    </Antd.Radio.Group>
+    </AntdRadio.Group>
   );
 };
 

@@ -142,10 +142,10 @@ const PoolTxListProvider: React.FC = props => {
     });
 
     fetchPoolTransactions(lastTimestamp, 'asc', 100, userFilter, tokenFilter, typeFilter)
-      .then(transactions => {
+      .then(items => {
         setState(prevState => ({
           loading: false,
-          transactions: [...transactions, ...prevState.transactions],
+          transactions: [...items, ...prevState.transactions],
         }));
       })
       .catch(() => {
@@ -166,11 +166,11 @@ const PoolTxListProvider: React.FC = props => {
       });
 
       fetchPoolTransactions(blockTimestamp, 'desc', limit, userFilter, tokenFilter, typeFilter)
-        .then(transactions => {
+        .then(items => {
           setState(prevState => ({
             loading: false,
-            isEnd: transactions.length < limit,
-            transactions: [...prevState.transactions, ...transactions],
+            isEnd: items.length < limit,
+            transactions: [...prevState.transactions, ...items],
           }));
         })
         .catch(() => {

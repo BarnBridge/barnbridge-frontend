@@ -12,7 +12,7 @@ import { useProposal } from '../../providers/ProposalProvider';
 import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
 import ProposalVotersModal from '../proposal-voters-modal';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type ProposalVotesCardState = {
   showVotersModal: boolean;

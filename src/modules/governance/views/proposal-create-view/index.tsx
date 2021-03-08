@@ -1,7 +1,7 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect } from 'react-router-dom';
-import * as Antd from 'antd';
+import { Redirect, useHistory } from 'react-router-dom';
+import AntdForm from 'antd/lib/form';
+import { waitUntil } from 'async-wait-until';
 import { StoreValue } from 'rc-field-form/lib/interface';
 import { useWeb3Contracts } from 'web3/contracts';
 
@@ -12,10 +12,9 @@ import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Textarea from 'components/antd/textarea';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
-import { useWhile } from 'hooks/useWhile';
 import { useWallet } from 'wallets/wallet';
 
 import { fetchProposal } from '../../api';
@@ -24,7 +23,7 @@ import { useDAO } from '../../components/dao-provider';
 import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
 import ProposalActionCard from '../../components/proposal-action-card';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type NewProposalForm = {
   title: string;
@@ -60,15 +59,8 @@ const ProposalCreateView: React.FC = () => {
   const wallet = useWallet();
   const dao = useDAO();
 
-  const [form] = Antd.Form.useForm<NewProposalForm>();
+  const [form] = AntdForm.useForm<NewProposalForm>();
   const [state, setState] = useMergeState<ProposalCreateViewState>(InitialState);
-
-  const checkProposalWhile = useWhile({
-    callback: async (proposalId: number) => {
-      await fetchProposal(proposalId);
-    },
-    delay: 3000,
-  });
 
   function handleBackClick() {
     history.push('/governance/proposals');
@@ -148,8 +140,7 @@ const ProposalCreateView: React.FC = () => {
       const proposal = await web3c.daoGovernance.actions.createProposal(payload);
       const { proposalId } = proposal.returnValues;
 
-      checkProposalWhile.start(proposalId);
-      await checkProposalWhile.promise;
+      await waitUntil(() => fetchProposal(proposalId), { intervalBetweenAttempts: 3_000, timeout: Infinity });
 
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposalId}`);
@@ -187,7 +178,7 @@ const ProposalCreateView: React.FC = () => {
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col">
-        <Button type="link" icon={<Icons name="left-arrow" />} onClick={handleBackClick}>
+        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Proposals
         </Button>
       </Grid>
@@ -279,7 +270,7 @@ const ProposalCreateView: React.FC = () => {
                       {fields.length < 10 && (
                         <Button
                           type="ghost"
-                          icon={<Icons name="plus-circle-outlined" />}
+                          icon={<Icon name="plus-circle-outlined" />}
                           disabled={state.submitting}
                           className={s.addActionBtn}
                           onClick={() => setState({ showCreateActionModal: true })}>
@@ -289,7 +280,7 @@ const ProposalCreateView: React.FC = () => {
 
                       {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
 
-                      <Antd.Form.ErrorList errors={errors} />
+                      <AntdForm.ErrorList errors={errors} />
                     </Grid>
                   )}
                 </Form.List>

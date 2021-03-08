@@ -57,7 +57,7 @@ const EthWeb3Provider: React.FC = props => {
 
   React.useEffect(() => {
     if (!windowState.isVisible) {
-      return;
+      return undefined;
     }
 
     WssWeb3.eth

@@ -1,17 +1,17 @@
 import React from 'react';
-import * as Antd from 'antd';
-import {
+import AntdSelect, {
   OptionProps as AntdOptionProps,
   SelectProps as AntdSelectProps,
   SelectValue as AntdSelectValue,
 } from 'antd/lib/select';
+import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
 
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type SelectOption = Partial<AntdOptionProps> & {
   label: React.ReactNode;
@@ -24,19 +24,21 @@ export type SelectProps<T> = AntdSelectProps<T> & {
   fixScroll?: boolean;
 };
 
-const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
+const Select: React.FC<SelectProps<AntdSelectValue>> = <T extends AntdSelectValue>(
+  props: React.PropsWithChildren<SelectProps<T>>,
+) => {
   const { className, label, loading, options, fixScroll, ...selectProps } = props;
 
   return (
-    <Antd.Select<T>
+    <AntdSelect<T>
       className={cn(s.component, className)}
       dropdownClassName={s.dropdown}
-      suffixIcon={loading ? <Antd.Spin size="small" /> : <Icons name="dropdown-arrow" />}
+      suffixIcon={loading ? <AntdSpin size="small" /> : <Icon name="dropdown-arrow" />}
       optionLabelProp="label"
       getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
       {...selectProps}>
       {options.map(option => (
-        <Antd.Select.Option
+        <AntdSelect.Option
           {...option}
           key={option.value}
           label={
@@ -53,9 +55,9 @@ const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
           }
           value={option.value}>
           {option.label}
-        </Antd.Select.Option>
+        </AntdSelect.Option>
       ))}
-    </Antd.Select>
+    </AntdSelect>
   );
 };
 

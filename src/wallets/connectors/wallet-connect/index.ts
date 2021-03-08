@@ -9,7 +9,7 @@ import { WalletConnector } from 'wallets/types';
 const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
 const WEB3_WALLET_CONNECT_BRIDGE = String(process.env.REACT_APP_WEB3_WALLET_CONNECT_BRIDGE);
 
-export const WalletConnectConfig: WalletConnector = {
+const WalletConnectConfig: WalletConnector = {
   id: 'walletconnect',
   logo: WalletConnectLogo,
   name: 'WalletConnect',
@@ -30,3 +30,5 @@ export const WalletConnectConfig: WalletConnector = {
     return error;
   },
 };
+
+export default WalletConnectConfig;

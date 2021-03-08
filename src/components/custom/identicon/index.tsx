@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 import IdenticonJS from 'identicon.js';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type IdenticonProps = {
   className?: string;

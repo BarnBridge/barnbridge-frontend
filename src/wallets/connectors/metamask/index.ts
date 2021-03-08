@@ -9,7 +9,7 @@ type MetaMaskError = Error & {
   code: number;
 };
 
-export const MetaMaskWalletConfig: WalletConnector = {
+const MetaMaskWalletConfig: WalletConnector = {
   id: 'metamask',
   logo: MetaMaskLogo,
   name: 'MetaMask',
@@ -22,5 +22,9 @@ export const MetaMaskWalletConfig: WalletConnector = {
     if (error.code === -32002) {
       return new Error('MetaMask is already processing. Please verify MetaMask extension.');
     }
+
+    return undefined;
   },
 };
+
+export default MetaMaskWalletConfig;

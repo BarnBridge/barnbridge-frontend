@@ -79,12 +79,12 @@ const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
       });
   }, [state.page, state.stateFilter, state.searchFilter]);
 
-  function changeStateFilter(stateFilter: string) {
-    setState({ stateFilter });
+  function changeStateFilter(value: string) {
+    setState({ stateFilter: value });
   }
 
-  function changeSearchFilter(searchFilter: string) {
-    setState({ searchFilter });
+  function changeSearchFilter(value: string) {
+    setState({ searchFilter: value });
   }
 
   function changePage(page: number) {

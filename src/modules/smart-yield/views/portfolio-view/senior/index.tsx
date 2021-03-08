@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdSpin from 'antd/lib/spin';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
@@ -99,32 +99,34 @@ const SeniorPortfolio: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(poolsCtx.pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
-          seniorBondContract.setProvider(wallet.provider);
-          seniorBondContract.setAccount(wallet.account);
+        const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
+        seniorBondContract.setProvider(wallet.provider);
+        seniorBondContract.setAccount(wallet.account);
 
-          const sBondIds = await seniorBondContract.getSeniorBondIds();
+        return new Promise<any>(resolve => {
+          (async () => {
+            const sBondIds = await seniorBondContract.getSeniorBondIds();
 
-          if (sBondIds.length === 0) {
-            return resolve(undefined);
-          }
+            if (sBondIds.length === 0) {
+              return resolve(undefined);
+            }
 
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
+            const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+            smartYieldContract.setProvider(wallet.provider);
 
-          const sBonds = await smartYieldContract.getSeniorBonds(sBondIds);
+            const sBonds = await smartYieldContract.getSeniorBonds(sBondIds);
 
-          if (sBonds.length === 0) {
-            return resolve(undefined);
-          }
+            if (sBonds.length === 0) {
+              return resolve(undefined);
+            }
 
-          resolve(
-            sBonds.map(sBond => ({
-              pool,
-              sBond,
-            })),
-          );
+            return resolve(
+              sBonds.map(sBond => ({
+                pool,
+                sBond,
+              })),
+            );
+          })();
         });
       });
 
@@ -137,15 +139,15 @@ const SeniorPortfolio: React.FC = () => {
     })();
   }, [wallet.account, poolsCtx]);
 
-  const principal = state.data?.reduce((a, c) => {
+  const totalPrincipal = state.data?.reduce((a, c) => {
     return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
-  const gain = state.data?.reduce((a, c) => {
+  const totalGain = state.data?.reduce((a, c) => {
     return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
-  const total = principal?.plus(gain ?? ZERO_BIG_NUMBER);
+  const total = totalPrincipal?.plus(totalGain ?? ZERO_BIG_NUMBER);
 
   const totalRedeemable = state.data?.reduce((a, c) => {
     return a.plus(getHumanValue(c.sBond.principal.plus(c.sBond.gain), c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
@@ -171,36 +173,36 @@ const SeniorPortfolio: React.FC = () => {
   return (
     <>
       <div className={s.portfolioContainer}>
-        <Antd.Spin spinning={state.loading}>
+        <AntdSpin spinning={state.loading}>
           <PortfolioBalance
             total={total?.toNumber()}
             aggregated={aggregatedAPY.toNumber()}
             aggregatedText="This number is a weighted average across your active positions."
             aggregatedColor="green"
             data={[
-              ['Principal', principal?.toNumber(), 'var(--theme-green-color)'],
-              ['Gain', gain?.toNumber(), 'var(--theme-green700-color)'],
+              ['Principal', totalPrincipal?.toNumber(), 'var(--theme-green-color)'],
+              ['Gain', totalGain?.toNumber(), 'var(--theme-green700-color)'],
             ]}
           />
-        </Antd.Spin>
-        <Antd.Spin spinning={state.loadingChart}>
+        </AntdSpin>
+        <AntdSpin spinning={state.loadingChart}>
           <PortfolioValue
             title="Senior portfolio value"
             data={state.dataChart}
             color="var(--theme-green-color)"
             gradientColor="var(--theme-green-color-rgb)"
           />
-        </Antd.Spin>
+        </AntdSpin>
       </div>
       <Tabs simple activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={<FiltersPopup />}>
         <Tabs.Tab key="active" tab="Active positions">
-          <Antd.Spin spinning={state.loading}>
+          <AntdSpin spinning={state.loading}>
             <div className={s.cards}>
               {state.data.map(entity => (
                 <ActivePosition key={entity.sBond.sBondId} pool={entity.pool} sBond={entity.sBond} />
               ))}
             </div>
-          </Antd.Spin>
+          </AntdSpin>
         </Tabs.Tab>
         <Tabs.Tab key="past" tab="Past positions">
           <PastPositionsList />

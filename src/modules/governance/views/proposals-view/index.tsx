@@ -1,8 +1,8 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
-import * as Antd from 'antd';
 import { CardTabListType } from 'antd/lib/card';
+import AntdSpin from 'antd/lib/spin';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -10,7 +10,7 @@ import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
@@ -20,7 +20,7 @@ import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';
 import ProposalsTable from './components/proposals-table';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const TABS: CardTabListType[] = [
   {
@@ -156,7 +156,7 @@ const ProposalsViewInner: React.FC = () => {
         tabBarExtraContent={
           <Input
             className={s.search}
-            prefix={<Icons name="search-outlined" />}
+            prefix={<Icon name="search-outlined" />}
             placeholder="Search proposal"
             onChange={ev => handleSearchChange(ev)}
           />
@@ -168,7 +168,7 @@ const ProposalsViewInner: React.FC = () => {
   );
 };
 
-const ProposalsView = () => {
+const ProposalsView: React.FC = () => {
   const history = useHistory();
   const dao = useDAO();
 
@@ -177,13 +177,13 @@ const ProposalsView = () => {
   }
 
   if (dao.isActive === undefined) {
-    return <Antd.Spin />;
+    return <AntdSpin />;
   }
 
   if (!dao.isActive) {
     return (
       <Grid flow="row" gap={24} align="start">
-        <Button type="link" icon={<Icons name="left-arrow" />} onClick={handleBackClick}>
+        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Overview
         </Button>
         <ActivationThreshold className={s.activationThreshold} />

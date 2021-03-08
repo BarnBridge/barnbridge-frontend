@@ -1,25 +1,24 @@
 import React from 'react';
-import * as Antd from 'antd';
-import {
+import AntdForm, {
   FormItemProps as AntdFormItemProps,
   FormListProps as AntdFormListProps,
   FormProps as AntdFormProps,
 } from 'antd/lib/form';
 import cn from 'classnames';
 
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 
 import Grid from '../../custom/grid';
 import Tooltip from '../tooltip';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
-export type FormListProps = AntdFormListProps & {};
+export type FormListProps = AntdFormListProps;
 
 const FormList: React.FC<FormListProps> = props => {
   const { children, ...listProps } = props;
 
-  return <Antd.Form.List children={children} {...listProps} />;
+  return <AntdForm.List {...listProps}>{children}</AntdForm.List>;
 };
 
 export type FormItemProps = AntdFormItemProps<any> & {
@@ -30,7 +29,7 @@ const FormItem: React.FC<FormItemProps> = props => {
   const { className, label, hint, extra, children, ...itemProps } = props;
 
   return (
-    <Antd.Form.Item
+    <AntdForm.Item
       className={cn(s.item, className)}
       {...itemProps}
       label={
@@ -40,7 +39,7 @@ const FormItem: React.FC<FormItemProps> = props => {
             {hint && (
               <Tooltip title={hint}>
                 <span>
-                  <Icons name="info-outlined" width={15} height={15} />
+                  <Icon name="info-outlined" width={15} height={15} />
                 </span>
               </Tooltip>
             )}
@@ -49,7 +48,7 @@ const FormItem: React.FC<FormItemProps> = props => {
         </>
       }>
       {children}
-    </Antd.Form.Item>
+    </AntdForm.Item>
   );
 };
 
@@ -59,9 +58,9 @@ const Form: React.FC<FormProps> = props => {
   const { className, children, ...formProps } = props;
 
   return (
-    <Antd.Form className={cn(s.form, className)} layout="vertical" requiredMark={false} {...formProps}>
+    <AntdForm className={cn(s.form, className)} layout="vertical" requiredMark={false} {...formProps}>
       {children}
-    </Antd.Form>
+    </AntdForm>
   );
 };
 

@@ -1,6 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';

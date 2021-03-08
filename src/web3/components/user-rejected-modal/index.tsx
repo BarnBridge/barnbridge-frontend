@@ -3,7 +3,7 @@ import React from 'react';
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 const UserRejectedModal: React.FC<ModalProps> = props => {
@@ -13,7 +13,7 @@ const UserRejectedModal: React.FC<ModalProps> = props => {
     <Modal width={315} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16} align="center">
-          <Icons name="warning-outlined" width={40} height={40} color="red" />
+          <Icon name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8} align="center">
             <Text type="h3" weight="semibold" color="primary">
               Error

@@ -13,7 +13,7 @@ import { useAbrogation } from '../../providers/AbrogationProvider';
 import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
 import AbrogationVotersModal from '../abrogation-voters-modal';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type AbrogationVotesCardState = {
   showVotersModal: boolean;

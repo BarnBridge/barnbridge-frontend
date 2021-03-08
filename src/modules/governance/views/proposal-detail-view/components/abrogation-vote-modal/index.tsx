@@ -1,5 +1,6 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdForm from 'antd/lib/form';
+import AntdRadio from 'antd/lib/radio';
 import { formatBigValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -16,7 +17,7 @@ import useMergeState from 'hooks/useMergeState';
 import { useAbrogation } from '../../providers/AbrogationProvider';
 import { useProposal } from '../../providers/ProposalProvider';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export enum VoteAbrogationState {
   None,
@@ -60,31 +61,34 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
   const abrogationCtx = useAbrogation();
 
   const [state, setState] = useMergeState<AbrogationVoteModalState>(InitialState);
-  const [form] = Antd.Form.useForm<FormState>();
+  const [form] = AntdForm.useForm<FormState>();
 
   async function handleSubmit(values: FormState) {
     if (!abrogationCtx.abrogation && voteState !== VoteAbrogationState.VoteInitiate) {
       return;
     }
 
-    setState({ submitting: true });
-
     const { gasPrice } = values;
-    const gasFee = gasPrice?.value!;
+
+    if (!gasPrice) {
+      return;
+    }
+
+    setState({ submitting: true });
 
     try {
       await form.validateFields();
 
       if (voteState === VoteAbrogationState.VoteInitiate) {
-        await proposalCtx.startAbrogationProposal(values.description!, gasFee);
+        await proposalCtx.startAbrogationProposal(values.description ?? '', gasPrice.value);
       } else if (voteState === VoteAbrogationState.VoteFor) {
-        await abrogationCtx.abrogationProposalCastVote(true, gasFee);
+        await abrogationCtx.abrogationProposalCastVote(true, gasPrice.value);
       } else if (voteState === VoteAbrogationState.VoteAgainst) {
-        await abrogationCtx.abrogationProposalCastVote(false, gasFee);
+        await abrogationCtx.abrogationProposalCastVote(false, gasPrice.value);
       } else if (voteState === VoteAbrogationState.VoteChange) {
-        await abrogationCtx.abrogationProposalCastVote(values.changeOption === true, gasFee);
+        await abrogationCtx.abrogationProposalCastVote(values.changeOption === true, gasPrice.value);
       } else if (voteState === VoteAbrogationState.VoteCancel) {
-        await abrogationCtx.abrogationProposalCancelVote(gasFee);
+        await abrogationCtx.abrogationProposalCancelVote(gasPrice.value);
       }
 
       abrogationCtx.reload();
@@ -145,7 +149,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                   proposal for
                 </Text>
                 <Text type="p2" weight="semibold" color="secondary">
-                  "{proposalCtx.proposal?.title}"
+                  &ldquo;{proposalCtx.proposal?.title}&rdquo;
                 </Text>
                 <Text type="p2" color="secondary">
                   You can change your vote later.
@@ -158,7 +162,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                   You are about to change your vote on the abrogation proposal for
                 </Text>
                 <Text type="p2" weight="semibold" color="secondary">
-                  "{proposalCtx.proposal?.title}"
+                  &ldquo;{proposalCtx.proposal?.title}&rdquo;
                 </Text>
                 <Text type="p2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
@@ -171,7 +175,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                   You are about to cancel your vote on the abrogation proposal for
                 </Text>
                 <Text type="p2" weight="semibold" color="secondary">
-                  "{proposalCtx.proposal?.title}"
+                  &ldquo;{proposalCtx.proposal?.title}&dquo;
                 </Text>
                 <Text type="p2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
@@ -189,7 +193,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
           )}
           {voteState === VoteAbrogationState.VoteChange && (
             <Form.Item name="changeOption" label="Vote" rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group className={s.changeGroup} disabled={state.submitting}>
+              <AntdRadio.Group className={s.changeGroup} disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
@@ -208,7 +212,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                     value={false}
                   />
                 </Grid>
-              </Antd.Radio.Group>
+              </AntdRadio.Group>
             </Form.Item>
           )}
           <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>

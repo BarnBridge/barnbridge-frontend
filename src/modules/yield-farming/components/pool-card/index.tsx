@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
@@ -21,7 +21,7 @@ import PoolStakeShareBar, { PoolTokenShare } from '../pool-stake-share-bar';
 
 import { PoolTypes, getPoolIcons, getPoolNames } from '../../utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type PoolCardProps = {
   pool: PoolTypes;

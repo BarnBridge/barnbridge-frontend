@@ -7,7 +7,7 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -27,7 +27,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.pool.meta?.icon!} bubbleName={entity.pool.market?.icon!} />
+        <IconBubble name={entity.pool.meta?.icon} bubbleName={entity.pool.market?.icon} />
         <Grid flow="row" gap={4} className="ml-auto">
           <ExternalLink
             href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)}
@@ -35,7 +35,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
             <Text type="p1" weight="semibold" color="blue">
               {entity.pool.underlyingSymbol}
             </Text>
-            <Icons name="arrow-top-right" width={8} height={8} color="blue" />
+            <Icon name="arrow-top-right" width={8} height={8} color="blue" />
           </ExternalLink>
           <Text type="small" weight="semibold">
             {entity.pool.market?.name}

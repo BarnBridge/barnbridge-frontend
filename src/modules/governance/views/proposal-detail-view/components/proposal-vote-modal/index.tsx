@@ -1,5 +1,6 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdForm from 'antd/lib/form';
+import AntdRadio from 'antd/lib/radio';
 import { formatBigValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -14,7 +15,7 @@ import useMergeState from 'hooks/useMergeState';
 
 import { useProposal } from '../../providers/ProposalProvider';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export enum VoteState {
   None,
@@ -51,32 +52,31 @@ const InitialState: ProposalVoteModalState = {
 const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
-  const [form] = Antd.Form.useForm<FormState>();
+  const [form] = AntdForm.useForm<FormState>();
   const proposalCtx = useProposal();
 
   const [state, setState] = useMergeState<ProposalVoteModalState>(InitialState);
 
   async function handleSubmit(values: FormState) {
-    if (!proposalCtx.proposal) {
+    const { gasPrice } = values;
+
+    if (!proposalCtx.proposal || !gasPrice) {
       return;
     }
 
     setState({ submitting: true });
 
-    const { gasPrice } = values;
-    const gasFee = gasPrice?.value!;
-
     try {
       await form.validateFields();
 
       if (voteState === VoteState.VoteFor) {
-        await proposalCtx.proposalCastVote(true, gasFee);
+        await proposalCtx.proposalCastVote(true, gasPrice.value);
       } else if (voteState === VoteState.VoteAgainst) {
-        await proposalCtx.proposalCastVote(false, gasFee);
+        await proposalCtx.proposalCastVote(false, gasPrice.value);
       } else if (voteState === VoteState.VoteChange) {
-        await proposalCtx.proposalCastVote(values.changeOption === true, gasFee);
+        await proposalCtx.proposalCastVote(values.changeOption === true, gasPrice.value);
       } else if (voteState === VoteState.VoteCancel) {
-        await proposalCtx.proposalCancelVote(gasFee);
+        await proposalCtx.proposalCancelVote(gasPrice.value);
       }
 
       proposalCtx.reload();
@@ -127,7 +127,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                 You are about to vote on proposal
               </Text>
               <Text type="p2" weight="semibold" color="secondary">
-                "{proposalCtx.proposal?.title}"
+                &ldquo;{proposalCtx.proposal?.title}&rdquo;
               </Text>
               <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote later.
@@ -140,7 +140,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                 You are about to change your vote on proposal
               </Text>
               <Text type="p2" weight="semibold" color="secondary">
-                "{proposalCtx.proposal?.title}"
+                &ldquo;{proposalCtx.proposal?.title}&rdquo;
               </Text>
               <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
@@ -153,7 +153,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                 You are about to cancel your vote on proposal
               </Text>
               <Text type="p2" weight="semibold" color="secondary">
-                "{proposalCtx.proposal?.title}"
+                &ldquo;{proposalCtx.proposal?.title}&rdquo;
               </Text>
               <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
@@ -165,7 +165,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
         <Grid flow="row" gap={32} className={s.row}>
           {voteState === VoteState.VoteChange && (
             <Form.Item name="changeOption" label="Vote" rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group className={s.changeGroup} disabled={state.submitting}>
+              <AntdRadio.Group className={s.changeGroup} disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
@@ -184,7 +184,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                     value={false}
                   />
                 </Grid>
-              </Antd.Radio.Group>
+              </AntdRadio.Group>
             </Form.Item>
           )}
           <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { useWallet } from 'wallets/wallet';
 
 import PoolProvider from './providers/pool-provider';
@@ -53,7 +53,7 @@ const SmartYieldView: React.FC = () => {
           key="overview"
           tab={
             <>
-              <Icons name="bar-charts-outlined" /> Overview
+              <Icon name="bar-charts-outlined" /> Overview
             </>
           }
         />
@@ -62,7 +62,7 @@ const SmartYieldView: React.FC = () => {
           disabled={!wallet.account}
           tab={
             <>
-              <Icons name="wallet-outlined" /> Portfolio
+              <Icon name="wallet-outlined" /> Portfolio
             </>
           }
         />

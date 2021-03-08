@@ -6,10 +6,10 @@ import { MAX_UINT_256, formatBigValue } from 'web3/utils';
 import Button from 'components/antd/button';
 import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
-import Icons, { TokenIconNames } from 'components/custom/icon';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import NumericInput from 'components/custom/numeric-input';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type TokenAmountProps = {
   className?: string;
@@ -45,12 +45,12 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
     onChange?.(bnMaxValue);
   }
 
-  function handleInputChange(value: BigNumber) {
-    onChange?.(value ? BigNumber.min(value, bnMaxValue) : undefined);
+  function handleInputChange(inputValue?: BigNumber) {
+    onChange?.(inputValue ? BigNumber.min(inputValue, bnMaxValue) : undefined);
   }
 
-  function onSliderChange(value: number) {
-    onChange?.(new BigNumber(value));
+  function onSliderChange(sliderValue: number) {
+    onChange?.(new BigNumber(sliderValue));
   }
 
   return (
@@ -60,7 +60,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
         placeholder={max !== undefined ? `0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})` : ''}
         addonBefore={
           <>
-            {typeof tokenIcon === 'string' && <Icons name={tokenIcon as TokenIconNames} width={36} height={36} />}
+            {typeof tokenIcon === 'string' && <Icon name={tokenIcon as TokenIconNames} width={36} height={36} />}
             {typeof tokenIcon === 'object' && tokenIcon}
           </>
         }
@@ -82,7 +82,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
           max={bnMaxValue.toNumber()}
           step={step}
           tooltipPlacement="bottom"
-          tipFormatter={value => (value ? formatBigValue(new BigNumber(value), displayDecimals) : 0)}
+          tipFormatter={sliderValue => (sliderValue ? formatBigValue(new BigNumber(sliderValue), displayDecimals) : 0)}
           disabled={disabled}
           value={bnValue?.toNumber()}
           onChange={onSliderChange}

@@ -6,17 +6,15 @@ import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import * as Antd from 'antd';
 
 import { getNetworkName } from 'components/providers/eth-web3-provider';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
-import { useRefState } from 'hooks/useRefState';
 import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
 import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
 import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
-import { CoinbaseWalletConfig } from 'wallets/connectors/coinbase';
-import { LedgerWalletConfig } from 'wallets/connectors/ledger';
-import { MetaMaskWalletConfig } from 'wallets/connectors/metamask';
-import { PortisWalletConfig } from 'wallets/connectors/portis';
-import { TrezorWalletConfig } from 'wallets/connectors/trezor';
-import { WalletConnectConfig } from 'wallets/connectors/wallet-connect';
+import CoinbaseWalletConfig from 'wallets/connectors/coinbase';
+import LedgerWalletConfig from 'wallets/connectors/ledger';
+import MetaMaskWalletConfig from 'wallets/connectors/metamask';
+import PortisWalletConfig from 'wallets/connectors/portis';
+import TrezorWalletConfig from 'wallets/connectors/trezor';
+import WalletConnectConfig from 'wallets/connectors/wallet-connect';
 
 import { WalletConnector } from 'wallets/types';
 
@@ -75,7 +73,9 @@ const WalletProvider: React.FC = props => {
   );
 
   const [initialized, setInitialized] = React.useState<boolean>(false);
-  const [connecting, setConnecting, connectingRef] = useRefState<WalletConnector | undefined>(undefined);
+  const [connecting, setConnecting] = React.useState<WalletConnector | undefined>(undefined);
+  const connectingRef = React.useRef<WalletConnector | undefined>(connecting);
+  connectingRef.current = connecting;
   const [activeConnector, setActiveConnector] = React.useState<WalletConnector | undefined>();
   const [activeProvider, setActiveProvider] = React.useState<any | undefined>();
 
@@ -142,16 +142,18 @@ const WalletProvider: React.FC = props => {
     [web3React, connectingRef, setConnecting, setSessionProvider, disconnect],
   );
 
-  useAsyncEffect(async () => {
-    if (sessionProvider) {
-      const walletConnector = WalletConnectors.find(c => c.id === sessionProvider);
+  React.useEffect(() => {
+    (async () => {
+      if (sessionProvider) {
+        const walletConnector = WalletConnectors.find(c => c.id === sessionProvider);
 
-      if (walletConnector) {
-        await connect(walletConnector);
+        if (walletConnector) {
+          await connect(walletConnector);
+        }
       }
-    }
 
-    setInitialized(true);
+      setInitialized(true);
+    })();
   }, []);
 
   const value = React.useMemo<Wallet>(

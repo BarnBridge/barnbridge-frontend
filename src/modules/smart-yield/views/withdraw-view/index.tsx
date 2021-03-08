@@ -1,6 +1,6 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import * as Antd from 'antd';
+import AntdSpin from 'antd/lib/spin';
 
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import InitiateWithdraw from 'modules/smart-yield/views/withdraw-view/initiate-withdraw';
@@ -12,7 +12,7 @@ const WithdrawView: React.FC = () => {
   const poolCtx = useSYPool();
 
   if (poolCtx.loading) {
-    return <Antd.Spin />;
+    return <AntdSpin />;
   }
 
   if (poolCtx.pool === null) {

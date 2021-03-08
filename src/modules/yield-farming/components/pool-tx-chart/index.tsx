@@ -15,7 +15,7 @@ import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import { PoolTypes, getPoolIcons, getPoolNames } from 'modules/yield-farming/utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const PoolFilters: SelectOption[] = [
   {
@@ -104,8 +104,8 @@ const PoolTxChartInner: React.FC = props => {
         <Select
           options={PoolFilters}
           value={poolTxChart.poolFilter}
-          onSelect={(value: string) => {
-            poolTxChart.changePoolFilter(value);
+          onSelect={value => {
+            poolTxChart.changePoolFilter(value as string);
           }}
         />
       </Grid>
@@ -115,8 +115,8 @@ const PoolTxChartInner: React.FC = props => {
           options={PeriodFilters}
           value={poolTxChart.periodFilter ?? 'all'}
           disabled={poolTxChart.loading}
-          onSelect={(value: string) => {
-            poolTxChart.changePeriodFilter(value !== 'all' ? value : undefined);
+          onSelect={value => {
+            poolTxChart.changePeriodFilter(value !== 'all' ? (value as string) : undefined);
           }}
         />
         <Select
@@ -124,8 +124,8 @@ const PoolTxChartInner: React.FC = props => {
           options={TypeFilters}
           value={poolTxChart.typeFilter ?? 'all'}
           disabled={poolTxChart.loading}
-          onSelect={(value: string) => {
-            poolTxChart.changeTypeFilter(value !== 'all' ? value : undefined);
+          onSelect={value => {
+            poolTxChart.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
           }}
         />
       </Grid>

@@ -7,7 +7,7 @@ import { WalletConnector } from 'wallets/types';
 
 const WEB3_PORTIS_APP_ID = String(process.env.REACT_APP_WEB3_PORTIS_APP_ID);
 
-export const PortisWalletConfig: WalletConnector = {
+const PortisWalletConfig: WalletConnector = {
   id: 'portis',
   logo: PortisLogo,
   name: 'Portis',
@@ -20,10 +20,12 @@ export const PortisWalletConfig: WalletConnector = {
   onError(error: Error | string): Error | undefined {
     if (typeof error === 'string') {
       if (error === 'User denied login.') {
-        return;
+        return undefined;
       }
     }
 
     return error as Error;
   },
 };
+
+export default PortisWalletConfig;

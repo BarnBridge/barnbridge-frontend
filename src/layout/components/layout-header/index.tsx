@@ -1,15 +1,16 @@
 import '@animated-burgers/burger-squeeze/dist/styles.css';
 
+import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import Burger from '@animated-burgers/burger-squeeze';
 
 import Button from 'components/antd/button';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
 import ConnectedWallet from 'wallets/components/connected-wallet';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const LayoutHeader: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
@@ -19,7 +20,7 @@ const LayoutHeader: React.FC = () => {
       <Button type="link" className={s.burger} onClick={() => setNavOpen(prevState => !prevState)}>
         <Burger isOpen={navOpen} />
       </Button>
-      <Icons name="bond-square-token" className={s.logo} />
+      <Icon name="bond-square-token" className={s.logo} />
       <Text type="h3" weight="semibold" color="primary" className={s.title}>
         <Switch>
           <Route path="/yield-farming">Yield Farming</Route>

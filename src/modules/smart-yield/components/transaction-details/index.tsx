@@ -7,7 +7,7 @@ import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
@@ -148,7 +148,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
           visible={visible}
           onVisibleChange={setVisible}>
           <Button type="light" className="ml-auto">
-            <Icons name="gear" />
+            <Icon name="gear" />
           </Button>
         </Popover>
       </header>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import * as Antd from 'antd';
+import AntdSwitch from 'antd/lib/switch';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
@@ -43,7 +43,7 @@ const DepositHeader: React.FC = () => {
       className="flexbox-list mb-64"
       style={{ '--gap': '64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={pool.meta?.icon!} bubbleName={pool.market?.icon!} />
+        <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} />
         <div className="ml-auto">
           <div
             className="mb-4"
@@ -121,7 +121,7 @@ const DepositHeader: React.FC = () => {
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Enable token
           </Text>
-          <Antd.Switch
+          <AntdSwitch
             style={{ justifySelf: 'flex-start' }}
             checked={pool.underlyingIsAllowed}
             loading={pool.underlyingIsAllowed === undefined || isApproving}

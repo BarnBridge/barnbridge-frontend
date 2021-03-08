@@ -5,14 +5,14 @@ import { formatBONDValue } from 'web3/utils';
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import { useWallet } from 'wallets/wallet';
 
 import PoolHarvestModal from '../../modals/pool-harvest-modal';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type PoolRewardsState = {
   showHarvestModal: boolean;
@@ -43,7 +43,7 @@ const PoolRewards: React.FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(web3c.aggregated.totalCurrentReward)}
             </Text>
-            <Icons name="bond-square-token" />
+            <Icon name="bond-square-token" />
             {wallet.isActive && (
               <Button
                 type="light"
@@ -63,7 +63,7 @@ const PoolRewards: React.FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(web3c.bond.balance)}
             </Text>
-            <Icons name="bond-square-token" />
+            <Icon name="bond-square-token" />
           </Grid>
         </Grid>
         <Divider type="vertical" />
@@ -79,7 +79,7 @@ const PoolRewards: React.FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatBONDValue(web3c.aggregated.totalPotentialReward)}
             </Text>
-            <Icons name="bond-square-token" />
+            <Icon name="bond-square-token" />
           </Grid>
         </Grid>
       </Grid>

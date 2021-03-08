@@ -5,7 +5,7 @@ import Button from 'components/antd/button';
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select from 'components/antd/select';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 
 const originatorFilterOptions = [
   {
@@ -112,7 +112,7 @@ const FiltersPopup: React.FC = () => {
       visible={visible}
       onVisibleChange={setVisible}>
       <Button type="select" className="ml-auto">
-        <Icons name="filter" />
+        <Icon name="filter" />
         Filters
       </Button>
     </Popover>

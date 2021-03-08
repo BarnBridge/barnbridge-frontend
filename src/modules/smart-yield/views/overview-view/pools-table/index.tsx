@@ -22,7 +22,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       title: 'Token Name',
       render: (_, entity) => (
         <Grid flow="col" gap={16} align="center">
-          <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
+          <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
           <Grid flow="row" gap={4} className="ml-auto">
             <Text type="p1" weight="semibold" color="primary">
               {entity.underlyingSymbol}

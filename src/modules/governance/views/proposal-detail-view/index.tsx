@@ -1,10 +1,9 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { useRouteMatch } from 'react-router-dom';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import { APIProposalState } from 'modules/governance/api';
@@ -63,7 +62,7 @@ const ProposalDetailViewInner: React.FC = () => {
   return (
     <Grid flow="row" gap={32} align="center">
       <Grid flow="col" width={1070}>
-        <Button type="link" icon={<Icons name="left-arrow" />} onClick={handleBackClick}>
+        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Proposals
         </Button>
       </Grid>
@@ -94,7 +93,7 @@ const ProposalDetailViewInner: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0px, 428px)" width={1070}>
+      <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0, 428px)" width={1070}>
         <Grid flow="row" gap={32}>
           {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState as any) && (
             <ProposalVoteResultsCard />
@@ -121,7 +120,7 @@ const ProposalDetailViewInner: React.FC = () => {
   );
 };
 
-const ProposalDetailView = () => {
+const ProposalDetailView: React.FC = () => {
   const { params } = useRouteMatch<{ id: string }>();
 
   return (

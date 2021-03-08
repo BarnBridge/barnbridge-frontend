@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { Text } from 'components/custom/typography';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type ProposalStatusTagProps = {
   className?: string;

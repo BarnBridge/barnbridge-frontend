@@ -1,18 +1,18 @@
 import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
-import * as Antd from 'antd';
+import AntdLayout from 'antd/lib/layout';
 import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons, { NavIconNames } from 'components/custom/icon';
+import Icon, { NavIconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
 import { useTheme } from 'components/providers/theme-provider';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type NavLinkProps = {
   icon: NavIconNames;
@@ -36,7 +36,7 @@ const NavLink: React.FC<NavLinkProps> = props => {
       <Grid flow="col" className={cn(s.navLink, isActivePath && s.isActive)}>
         <div className={s.activeTick} />
         <Button type="light" onClick={handleClick}>
-          <Icons name={icon} />
+          <Icon name={icon} />
           {expanded && (
             <Text type="p2" weight="semibold" className={s.linkLabel}>
               {label}
@@ -69,7 +69,7 @@ const LayoutSideNav: React.FC = () => {
   return (
     <>
       <div className={cn(s.mask, { [s.open]: navOpen })} />
-      <Antd.Layout.Sider
+      <AntdLayout.Sider
         className={cn(s.component, (expanded || navOpen) && s.expanded, {
           [s.open]: navOpen,
         })}
@@ -78,10 +78,10 @@ const LayoutSideNav: React.FC = () => {
         width={200}>
         <Grid flow="col" gap={12} className={cn(s.headerLogo, 'mb-48')}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
-            <Icons name="close-circle-outlined" />
+            <Icon name="close-circle-outlined" />
           </button>
-          <Icons name="bond-square-token" />
-          {(expanded || navOpen) && <Icons name="barnbridge" width="113" color="primary" />}
+          <Icon name="bond-square-token" />
+          {(expanded || navOpen) && <Icon name="barnbridge" width="113" color="primary" />}
         </Grid>
         <Grid flow="row" gap={24}>
           <NavLink label="Yield Farming" icon="savings-outlined" path="/yield-farming" expanded={expanded || navOpen} />
@@ -91,7 +91,7 @@ const LayoutSideNav: React.FC = () => {
         <Grid flow="row" gap={24} className={s.footerWrap} colsTemplate="48px">
           <ExternalLink href="https://docs.barnbridge.com/">
             <Button type="light">
-              <Icons name="docs-outlined" />
+              <Icon name="docs-outlined" />
               {(expanded || navOpen) && (
                 <Text type="p2" weight="semibold" className={s.linkLabel}>
                   Docs
@@ -100,7 +100,7 @@ const LayoutSideNav: React.FC = () => {
             </Button>
           </ExternalLink>
           <Button type="light" onClick={handleThemeToggle}>
-            <Icons name={isDarkTheme ? 'sun' : 'moon'} />
+            <Icon name={isDarkTheme ? 'sun' : 'moon'} />
             {(expanded || navOpen) && (
               <Text type="p2" weight="semibold" className={s.linkLabel}>
                 {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
@@ -109,7 +109,7 @@ const LayoutSideNav: React.FC = () => {
           </Button>
           {!navOpen && (
             <Button type="light" className={s.hideLink} onClick={handleExpand}>
-              <Icons name="right-arrow-circle-outlined" />
+              <Icon name="right-arrow-circle-outlined" />
               {expanded && (
                 <Text type="p2" weight="semibold" className={s.linkLabel}>
                   Hide menu
@@ -118,7 +118,7 @@ const LayoutSideNav: React.FC = () => {
             </Button>
           )}
         </Grid>
-      </Antd.Layout.Sider>
+      </AntdLayout.Sider>
     </>
   );
 };

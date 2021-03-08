@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { ZERO_BIG_NUMBER, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
-import Icons, { IconNames } from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
@@ -37,6 +37,7 @@ const OverviewView: React.FC = () => {
         {Array.from(Markets.values()).map(market => (
           <button
             key={market.name}
+            type="button"
             className={cn('tab-card', state.activeMarket === market && 'active')}
             onClick={() => {
               setState(
@@ -45,7 +46,7 @@ const OverviewView: React.FC = () => {
                 }),
               );
             }}>
-            <Icons name={market.icon as IconNames} width={40} height={40} className="mr-16" />
+            <Icon name={market.icon as IconNames} width={40} height={40} className="mr-16" />
             <div>
               <Text type="p1" weight="semibold" color="primary">
                 {market.name}

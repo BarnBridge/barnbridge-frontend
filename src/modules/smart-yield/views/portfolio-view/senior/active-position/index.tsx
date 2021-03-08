@@ -3,7 +3,6 @@ import format from 'date-fns/format';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Progress from 'components/antd/progress';
@@ -94,7 +93,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   return (
     <div className="card">
       <div className="p-24" style={{ display: 'flex', flexWrap: 'wrap' }}>
-        <IconBubble name={pool.meta?.icon!} bubbleName={pool.market?.icon!} className="mr-16" />
+        <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} className="mr-16" />
         <div>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {pool.underlyingSymbol}

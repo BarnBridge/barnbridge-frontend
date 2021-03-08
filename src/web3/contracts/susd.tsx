@@ -6,8 +6,7 @@ import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
-import Icons from 'components/custom/icon';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import Icon from 'components/custom/icon';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
@@ -16,7 +15,7 @@ const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLo
 const Contract = new Web3Contract(SUSD_ABI as Web3ContractAbiItem[], CONTRACT_SUSD_ADDR, 'SUSD');
 
 export const SUSDTokenMeta: TokenMeta = {
-  icon: <Icons key="susd" name="susd-token" />,
+  icon: <Icon key="susd" name="susd-token" />,
   name: 'sUSD',
   address: CONTRACT_SUSD_ADDR,
   decimals: 18,
@@ -44,30 +43,32 @@ export function useSUSDContract(): SUSDContract {
 
   const [data, setData] = React.useState<SUSDContractData>(InitialData);
 
-  useAsyncEffect(async () => {
-    let balance: BigNumber | undefined;
-    let allowance: BigNumber | undefined;
+  React.useEffect(() => {
+    (async () => {
+      let balance: BigNumber | undefined;
+      let allowance: BigNumber | undefined;
 
-    if (wallet.account) {
-      [balance, allowance] = await Contract.batch([
-        {
-          method: 'balanceOf',
-          methodArgs: [wallet.account],
-          transform: (value: string) => getHumanValue(new BigNumber(value), SUSDTokenMeta.decimals),
-        },
-        {
-          method: 'allowance',
-          methodArgs: [wallet.account, CONTRACT_STAKING_ADDR],
-          transform: (value: string) => new BigNumber(value),
-        },
-      ]);
-    }
+      if (wallet.account) {
+        [balance, allowance] = await Contract.batch([
+          {
+            method: 'balanceOf',
+            methodArgs: [wallet.account],
+            transform: (value: string) => getHumanValue(new BigNumber(value), SUSDTokenMeta.decimals),
+          },
+          {
+            method: 'allowance',
+            methodArgs: [wallet.account, CONTRACT_STAKING_ADDR],
+            transform: (value: string) => new BigNumber(value),
+          },
+        ]);
+      }
 
-    setData(prevState => ({
-      ...prevState,
-      balance,
-      allowance,
-    }));
+      setData(prevState => ({
+        ...prevState,
+        balance,
+        allowance,
+      }));
+    })();
   }, [reload, wallet.account]);
 
   const approveSend = React.useCallback(

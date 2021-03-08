@@ -2,7 +2,7 @@ import React from 'react';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 import { APIProposalState } from '../../../../api';
@@ -13,7 +13,7 @@ import AbrogationDetailsCard from '../abrogation-details-card';
 import AbrogationVoteResultsCard from '../abrogation-vote-results-card';
 import AbrogationVotesCard from '../abrogation-votes-card';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type AbrogationProposalModalProps = ModalProps;
 
@@ -24,7 +24,7 @@ const AbrogationProposalModalInner: React.FC<AbrogationProposalModalProps> = pro
     <Modal className={s.component} {...props}>
       <Grid flow="row" gap={16} align="center">
         <Grid flow="col" gap={8} align="start" width={1070}>
-          <Icons name="warning-outlined" />
+          <Icon name="warning-outlined" />
           <Text type="p1" weight="semibold" color="red">
             Abrogation proposal
           </Text>
@@ -37,7 +37,7 @@ const AbrogationProposalModalInner: React.FC<AbrogationProposalModalProps> = pro
             </Text>
           </Grid>
 
-          <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0px, 428px)" width={1070}>
+          <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0, 428px)" width={1070}>
             <Grid flow="row" gap={32}>
               {proposalCtx.proposal?.state !== APIProposalState.QUEUED && <AbrogationVoteResultsCard />}
               <AbrogationDetailsCard />

@@ -1,4 +1,4 @@
-import { FunctionFragment, Interface, Result, defaultAbiCoder } from '@ethersproject/abi';
+import { Fragment, FunctionFragment, Interface, JsonFragment, Result, defaultAbiCoder } from '@ethersproject/abi';
 
 export type AbiInterfaceType = Interface;
 export type AbiFragmentType = FunctionFragment;
@@ -24,8 +24,8 @@ function parseValues(values: Array<any>): Array<any> {
 export class AbiInterface {
   abi: AbiInterfaceType;
 
-  constructor(abi: any) {
-    this.abi = new Interface(abi);
+  constructor(fragments: string | Array<Fragment | JsonFragment | string>) {
+    this.abi = new Interface(fragments);
   }
 
   get writableFunctions(): AbiFragmentType[] {
@@ -40,6 +40,8 @@ export class AbiInterface {
     } catch (e) {
       console.error('AbiInterface::encodeFunctionData', e.message);
     }
+
+    return undefined;
   }
 
   static decodeFunctionData(functionFragment: AbiFunctionFragment | string, data: string): AbiDecodeResult | undefined {
@@ -51,6 +53,8 @@ export class AbiInterface {
     } catch (e) {
       console.error('AbiInterface::decodeFunctionData', e.message);
     }
+
+    return undefined;
   }
 
   static getFunctionFragmentFrom(signature: string): AbiFunctionFragment | undefined {
@@ -59,6 +63,8 @@ export class AbiInterface {
     } catch (e) {
       console.error('AbiInterface::getFunctionFragmentFrom', e.message);
     }
+
+    return undefined;
   }
 
   static stringifyParamValue(param: Record<string, any>): string | undefined {
@@ -74,6 +80,8 @@ export class AbiInterface {
     } catch (e) {
       console.error('AbiInterface::stringifyParamValue', e.message);
     }
+
+    return undefined;
   }
 
   encodeFunctionData(functionFragment: AbiFunctionFragment | string, values?: Array<any>): string {

@@ -1,13 +1,11 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import LayoutHeader from 'layout/components/layout-header';
 import { useWallet } from 'wallets/wallet';
 
 import DAOProvider from './components/dao-provider';
@@ -18,7 +16,7 @@ import ProposalDetailView from './views/proposal-detail-view';
 import ProposalsView from './views/proposals-view';
 import WalletView from './views/wallets-view';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type GovernanceViewParams = {
   vt: string;
@@ -56,7 +54,7 @@ const GovernanceViewInternal: React.FC = () => {
           key="overview"
           tab={
             <>
-              <Icons name="bar-charts-outlined" /> Overview
+              <Icon name="bar-charts-outlined" /> Overview
             </>
           }
         />
@@ -65,7 +63,7 @@ const GovernanceViewInternal: React.FC = () => {
           disabled={!wallet.account}
           tab={
             <>
-              <Icons name="wallet-outlined" /> Wallet
+              <Icon name="wallet-outlined" /> Wallet
             </>
           }
         />
@@ -73,7 +71,7 @@ const GovernanceViewInternal: React.FC = () => {
           key="proposals"
           tab={
             <>
-              <Icons name="proposal-outlined" /> Proposals
+              <Icon name="proposal-outlined" /> Proposals
             </>
           }
         />
@@ -82,11 +80,11 @@ const GovernanceViewInternal: React.FC = () => {
           tab={
             <ExternalLink href="https://signal.barnbridge.com/" style={{ color: 'inherit' }}>
               <Grid flow="col" gap={8} align="center">
-                <Icons name="chats-outlined" />
+                <Icon name="chats-outlined" />
                 <Text type="p1" weight="semibold">
                   Signal
                 </Text>
-                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+                <Icon name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
               </Grid>
             </ExternalLink>
           }
@@ -96,11 +94,11 @@ const GovernanceViewInternal: React.FC = () => {
           tab={
             <ExternalLink href="https://forum.barnbridge.com/" style={{ color: 'inherit' }}>
               <Grid flow="col" gap={8} align="center">
-                <Icons name="forum-outlined" />
+                <Icon name="forum-outlined" />
                 <Text type="p1" weight="semibold">
                   Forum
                 </Text>
-                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+                <Icon name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
               </Grid>
             </ExternalLink>
           }

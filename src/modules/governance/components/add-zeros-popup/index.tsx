@@ -4,7 +4,7 @@ import Button from 'components/antd/button';
 import Input from 'components/antd/input';
 import Popover, { PopoverProps } from 'components/antd/popover';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 export type AddZerosPopupProps = {
@@ -80,7 +80,7 @@ const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
       visible={visible}
       onVisibleChange={setVisible}
       {...popoverProps}>
-      <Button type="link" icon={<Icons name="plus-square-outlined" width={16} height={16} />} />
+      <Button type="link" icon={<Icon name="plus-square-outlined" width={16} height={16} />} />
     </Popover>
   );
 };

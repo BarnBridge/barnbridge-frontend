@@ -28,7 +28,7 @@ import { useWallet } from 'wallets/wallet';
 
 import { PoolActions, PoolTypes } from 'modules/yield-farming/utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const TypeFilters: SelectOption[] = [
   { value: 'all', label: 'All transactions' },
@@ -201,8 +201,8 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
           options={tokenFilterOptions}
           value={poolTxList.tokenFilter ?? 'all'}
           disabled={poolTxList.loading}
-          onSelect={(value: string) => {
-            poolTxList.changeTokenFilter(value !== 'all' ? value : undefined);
+          onSelect={value => {
+            poolTxList.changeTokenFilter(value !== 'all' ? (value as string) : undefined);
           }}
           className={s.chartTitleFilter}
         />
@@ -211,8 +211,8 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
           options={TypeFilters}
           value={poolTxList.typeFilter ?? 'all'}
           disabled={poolTxList.loading}
-          onSelect={(value: string) => {
-            poolTxList.changeTypeFilter(value !== 'all' ? value : undefined);
+          onSelect={value => {
+            poolTxList.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
           }}
           className={s.chartTitleFilter}
         />

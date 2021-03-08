@@ -12,9 +12,9 @@ import useMergeState from 'hooks/useMergeState';
 
 import { PoolTypes, getPoolIcons, getPoolNames } from 'modules/yield-farming/utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
-export type PoolHarvestModalProps = ModalProps & {};
+export type PoolHarvestModalProps = ModalProps;
 
 type PoolHarvestSelectProps = {
   icons: React.ReactNode[];

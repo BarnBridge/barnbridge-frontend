@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdSpin from 'antd/lib/spin';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
@@ -46,7 +46,7 @@ const ProposalAbrogationCard: React.FC = () => {
         }>
         {proposalCtx.isCanceled === undefined && (
           <Grid flow="col" justify="center">
-            <Antd.Spin spinning />
+            <AntdSpin spinning />
           </Grid>
         )}
         {proposalCtx.isCanceled === false && (

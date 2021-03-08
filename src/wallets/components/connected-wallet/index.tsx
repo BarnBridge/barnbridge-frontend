@@ -1,6 +1,6 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-import * as Antd from 'antd';
+import AntdBadge from 'antd/lib/badge';
 import cn from 'classnames';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
@@ -10,7 +10,7 @@ import Divider from 'components/antd/divider';
 import Popover from 'components/antd/popover';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { useTheme } from 'components/providers/theme-provider';
@@ -18,7 +18,7 @@ import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-n
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { useWallet } from 'wallets/wallet';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const ConnectedWallet: React.FC = () => {
   const { isDarkTheme } = useTheme();
@@ -33,7 +33,7 @@ const ConnectedWallet: React.FC = () => {
           <Card noPaddingBody>
             <Grid flow="row" gap={32} padding={[32, 24]}>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
-                <Icons name="node-status" />
+                <Icon name="node-status" />
                 <Text type="p1" color="secondary">
                   Status
                 </Text>
@@ -42,7 +42,7 @@ const ConnectedWallet: React.FC = () => {
                 </Text>
               </Grid>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
-                <Icons name="wallet-outlined" />
+                <Icon name="wallet-outlined" />
                 <Text type="p1" color="secondary">
                   Wallet
                 </Text>
@@ -99,9 +99,9 @@ const ConnectedWallet: React.FC = () => {
           </Grid>
         </Card>
       }>
-      <Antd.Badge dot count={1} showZero={false}>
-        <Icons name="bell-outlined" width={26} height={26} />
-      </Antd.Badge>
+      <AntdBadge dot count={1} showZero={false}>
+        <Icon name="bell-outlined" width={26} height={26} />
+      </AntdBadge>
     </Popover>
   );
 
@@ -126,7 +126,7 @@ const ConnectedWallet: React.FC = () => {
           noPaddingBody>
           <Grid flow="row" gap={32} padding={[32, 24]}>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
-              <Icons name="node-status" />
+              <Icon name="node-status" />
               <Text type="p1" color="secondary">
                 Status
               </Text>
@@ -135,7 +135,7 @@ const ConnectedWallet: React.FC = () => {
               </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
-              <Icons name="wallet-outlined" />
+              <Icon name="wallet-outlined" />
               <Text type="p1" color="secondary">
                 Wallet
               </Text>
@@ -144,7 +144,7 @@ const ConnectedWallet: React.FC = () => {
               </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
-              <Icons name="network" />
+              <Icon name="network" />
               <Text type="p1" color="secondary">
                 Network
               </Text>
@@ -167,7 +167,7 @@ const ConnectedWallet: React.FC = () => {
           <Text type="p1" color="primary" className={cn(s.walletAddress, 'mr-4')}>
             {shortenAddr(wallet.account, 4, 3)}
           </Text>
-          <Icons name="dropdown-arrow" className={s.dropdownArrow} />
+          <Icon name="dropdown-arrow" className={s.dropdownArrow} />
         </Grid>
       </Button>
     </Popover>

@@ -6,8 +6,7 @@ import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
-import Icons from 'components/custom/icon';
-import { useAsyncEffect } from 'hooks/useAsyncEffect';
+import Icon from 'components/custom/icon';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
@@ -16,7 +15,7 @@ const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowe
 const Contract = new Web3Contract(DAI_ABI as Web3ContractAbiItem[], CONTRACT_DAI_ADDR, 'DAI');
 
 export const DAITokenMeta: TokenMeta = {
-  icon: <Icons key="dai" name="dai-token" />,
+  icon: <Icon key="dai" name="dai-token" />,
   name: 'DAI',
   address: CONTRACT_DAI_ADDR,
   decimals: 18,
@@ -44,30 +43,32 @@ export function useDAIContract(): DAIContract {
 
   const [data, setData] = React.useState<DAIContractData>(InitialData);
 
-  useAsyncEffect(async () => {
-    let balance: BigNumber | undefined;
-    let allowance: BigNumber | undefined;
+  React.useEffect(() => {
+    (async () => {
+      let balance: BigNumber | undefined;
+      let allowance: BigNumber | undefined;
 
-    if (wallet.account) {
-      [balance, allowance] = await Contract.batch([
-        {
-          method: 'balanceOf',
-          methodArgs: [wallet.account],
-          transform: (value: string) => getHumanValue(new BigNumber(value), DAITokenMeta.decimals),
-        },
-        {
-          method: 'allowance',
-          methodArgs: [wallet.account, CONTRACT_STAKING_ADDR],
-          transform: (value: string) => new BigNumber(value),
-        },
-      ]);
-    }
+      if (wallet.account) {
+        [balance, allowance] = await Contract.batch([
+          {
+            method: 'balanceOf',
+            methodArgs: [wallet.account],
+            transform: (value: string) => getHumanValue(new BigNumber(value), DAITokenMeta.decimals),
+          },
+          {
+            method: 'allowance',
+            methodArgs: [wallet.account, CONTRACT_STAKING_ADDR],
+            transform: (value: string) => new BigNumber(value),
+          },
+        ]);
+      }
 
-    setData(prevState => ({
-      ...prevState,
-      balance,
-      allowance,
-    }));
+      setData(prevState => ({
+        ...prevState,
+        balance,
+        allowance,
+      }));
+    })();
   }, [reload, wallet.account]);
 
   const approveSend = React.useCallback(

@@ -11,30 +11,42 @@ export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
 const ETHERSCAN_API_KEY = String(process.env.REACT_APP_ETHERSCAN_API_KEY);
 
-export function getEtherscanTxUrl(txHash: string, chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
-  switch (chainId) {
-    case 1:
-      return `https://etherscan.io/tx/${txHash}`;
-    case 4:
-      return `https://rinkeby.etherscan.io/tx/${txHash}`;
-    case 42:
-      return `https://kovan.etherscan.io/tx/${txHash}`;
-    default:
-      throw new Error(`Not supported chainId=${chainId}.`);
+export function getEtherscanTxUrl(
+  txHash?: string,
+  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string | undefined {
+  if (txHash) {
+    switch (chainId) {
+      case 1:
+        return `https://etherscan.io/tx/${txHash}`;
+      case 4:
+        return `https://rinkeby.etherscan.io/tx/${txHash}`;
+      case 42:
+        return `https://kovan.etherscan.io/tx/${txHash}`;
+      default:
+    }
   }
+
+  return undefined;
 }
 
-export function getEtherscanAddressUrl(address: string, chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID)): string {
-  switch (chainId) {
-    case 1:
-      return `https://etherscan.io/address/${address}`;
-    case 4:
-      return `https://rinkeby.etherscan.io/address/${address}`;
-    case 42:
-      return `https://kovan.etherscan.io/address/${address}`;
-    default:
-      throw new Error(`Not supported chainId=${chainId}.`);
+export function getEtherscanAddressUrl(
+  address?: string,
+  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string | undefined {
+  if (address) {
+    switch (chainId) {
+      case 1:
+        return `https://etherscan.io/address/${address}`;
+      case 4:
+        return `https://rinkeby.etherscan.io/address/${address}`;
+      case 42:
+        return `https://kovan.etherscan.io/address/${address}`;
+      default:
+    }
   }
+
+  return undefined;
 }
 
 export function getExponentValue(decimals = 0): BigNumber {

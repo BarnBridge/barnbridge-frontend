@@ -5,16 +5,16 @@ import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 
 import { isValidAddress } from 'utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
-export type VotingDetailedModalProps = ModalProps & {};
+export type VotingDetailedModalProps = ModalProps;
 
 type VotingDetailedModalState = {
   leftBonus?: BigNumber;
@@ -74,7 +74,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
         <Grid flow="row" padding={[16, 0]}>
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
-              <Icons name="wallet-outlined" width={20} height={20} />
+              <Icon name="wallet-outlined" width={20} height={20} />
               <Text type="p1" weight="semibold" color="secondary">
                 My staked balance
               </Text>
@@ -82,14 +82,14 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             <Grid flow="col" gap={16}>
               <Text type="p1" weight="semibold" color="primary">
                 {formatBONDValue(myBondBalance)}
-                <Icons name="circle-plus-outlined" width={18} height={18} color="green" />
+                <Icon name="circle-plus-outlined" width={18} height={18} color="green" />
               </Text>
             </Grid>
           </Grid>
 
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
-              <Icons name="wallet-outlined" width={20} height={20} />
+              <Icon name="wallet-outlined" width={20} height={20} />
               <Text type="p1" weight="semibold" color="secondary">
                 Delegated by me
               </Text>
@@ -97,14 +97,14 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             <Grid flow="col" gap={16}>
               <Text type="p1" weight="semibold" color="primary">
                 {isDelegated ? formatBONDValue(myBondBalance) : 0}
-                <Icons name="circle-minus-outlined" width={18} height={18} color="red" />
+                <Icon name="circle-minus-outlined" width={18} height={18} color="red" />
               </Text>
             </Grid>
           </Grid>
 
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
-              <Icons name="rate-outlined" width={20} height={20} />
+              <Icon name="rate-outlined" width={20} height={20} />
               <Text type="p1" weight="semibold" color="secondary">
                 Locked balance bonus
               </Text>
@@ -113,14 +113,14 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
               <Text type="p1" weight="semibold" color="primary">
                 {state.leftBonus?.gt(ZERO_BIG_NUMBER) ? '> ' : ''}
                 {formatBONDValue(state.leftBonus)}
-                <Icons name="circle-plus-outlined" width={18} height={18} color="green" />
+                <Icon name="circle-plus-outlined" width={18} height={18} color="green" />
               </Text>
             </Grid>
           </Grid>
 
           <Grid flow="col" justify="space-between" padding={[16, 32]}>
             <Grid flow="col" gap={16}>
-              <Icons name="handshake-outlined" width={20} height={20} />
+              <Icon name="handshake-outlined" width={20} height={20} />
               <Text type="p1" weight="semibold" color="secondary">
                 Delegated to me
               </Text>
@@ -128,7 +128,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             <Grid flow="col" gap={16}>
               <Text type="p1" weight="semibold" color="primary">
                 {formatBONDValue(delegatedPower)}
-                <Icons name="circle-plus-outlined" width={18} height={18} color="green" />
+                <Icon name="circle-plus-outlined" width={18} height={18} color="green" />
               </Text>
             </Grid>
           </Grid>
@@ -136,7 +136,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
         <div className={s.separator} />
         <Grid flow="col" justify="space-between" padding={[32]}>
           <Grid flow="col" gap={16}>
-            <Icons name="stamp-outlined" width={20} height={20} />
+            <Icon name="stamp-outlined" width={20} height={20} />
             <Text type="p1" weight="semibold" color="secondary">
               My total voting power
             </Text>

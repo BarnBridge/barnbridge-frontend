@@ -10,7 +10,7 @@ const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL
 const WEB3_TREZOR_EMAIL = String(process.env.REACT_APP_WEB3_TREZOR_EMAIL);
 const WEB3_TREZOR_APP_URL = String(process.env.REACT_APP_WEB3_TREZOR_APP_URL);
 
-export const TrezorWalletConfig: WalletConnector = {
+const TrezorWalletConfig: WalletConnector = {
   id: 'trezor',
   logo: TrezorLogo,
   name: 'Trezor',
@@ -28,12 +28,14 @@ export const TrezorWalletConfig: WalletConnector = {
   },
   onError(error: Error): Error | undefined {
     if (error.message === 'Cancelled') {
-      return;
+      return undefined;
     }
     if (error.message === 'Popup closed') {
-      return;
+      return undefined;
     }
 
     return error;
   },
 };
+
+export default TrezorWalletConfig;
