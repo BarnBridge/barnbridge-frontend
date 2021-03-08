@@ -229,24 +229,31 @@ const PoolCard: React.FC<PoolCardProps> = props => {
   }
 
   const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between" className={s.cardTitleContainer}>
-      <Grid flow="col" gap={16}>
-        <IconsSet icons={getPoolIcons(pool)} />
-        <div>
-          <Text type="p1" weight="semibold" color="primary">
-            {getPoolNames(pool).join('/')}
-          </Text>
-          <Text type="lb2" weight="semibold" color="red">
-            EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
-          </Text>
-        </div>
-      </Grid>
+    <div className={s.cardTitleContainer}>
+      <IconsSet icons={getPoolIcons(pool)} />
+      <div className={s.cardTitleTexts}>
+        <Text type="p1" weight="semibold" color="primary" className={'truncate'} title={getPoolNames(pool).join('/')}>
+          {getPoolNames(pool).join('/')}
+        </Text>
+        <Text
+          type="lb2"
+          weight="semibold"
+          color="red"
+          className={'truncate'}
+          title={`EPOCH ${state.currentEpoch ?? '-'}/${state.totalEpochs ?? '-'}`}>
+          EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
+        </Text>
+      </div>
       {wallet.isActive && (
-        <Button type="primary" disabled={!state.enabled} onClick={handleStaking} className={s.cardTitleStacking}>
+        <button
+          type="button"
+          disabled={!state.enabled}
+          onClick={handleStaking}
+          className="button-primary">
           Staking
-        </Button>
+        </button>
       )}
-    </Grid>
+    </div>
   );
 
   return (

@@ -5,16 +5,21 @@
 }
 
 .cardTitleContainer {
+  display: grid;
+  grid-template-columns: min-content auto min-content;
+  gap: 16px;
+
   @media (max-width: 480px) {
-    display: block;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
 }
 
-.cardTitleStacking {
-  @media (max-width: 480px) {
-    margin-top: 8px;
-    width: 100%;
-  }
+.cardTitleTexts {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .box {
