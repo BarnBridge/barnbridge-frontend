@@ -1,5 +1,4 @@
 import React from 'react';
-import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import {
   addDays,
@@ -24,14 +23,15 @@ import {
 import { flow } from 'lodash/fp';
 import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
-import { formatBigValue, formatBONDValue } from 'web3/utils';
+import { formatBONDValue, formatBigValue } from 'web3/utils';
 
+import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
 
 import { inRange } from 'utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 enum GranularityType {
   NONE,
@@ -95,7 +95,7 @@ function getGranularPeriods(granularity: GranularityType, endDate?: Date): Granu
   if (endDate && endDate > now) {
     let ticks = 0;
     let step = 1;
-    let dateFlow: Function | undefined;
+    let dateFlow = flow();
 
     periods.push({
       date: now,
@@ -128,10 +128,11 @@ function getGranularPeriods(granularity: GranularityType, endDate?: Date): Granu
         step = Math.max(1, Math.round(ticks / 12));
         dateFlow = flow(addMinutes, startOfMinute);
         break;
+      default:
     }
 
     for (let i = 1; i <= ticks; i += step) {
-      const date = dateFlow?.(now, i);
+      const date = dateFlow(now, i);
       const bonus = getPeriodRate(now, endDate, date);
       periods.push({ date, bonus });
     }
@@ -172,7 +173,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   ]);
 
   return (
-    <Antd.Card
+    <Card
       className={s.card}
       title={
         <Hint
@@ -267,7 +268,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           <ReCharts.Area dataKey="bonus" name="Bonus" fill="url(#chart-gradient)" strokeWidth={2} stroke="#ff4339" />
         </ReCharts.AreaChart>
       </ReCharts.ResponsiveContainer>
-    </Antd.Card>
+    </Card>
   );
 };
 

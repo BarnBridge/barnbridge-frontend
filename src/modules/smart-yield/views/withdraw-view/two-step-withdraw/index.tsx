@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
@@ -10,7 +10,7 @@ import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon, { TokenIconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Hint, Text } from 'components/custom/typography';
@@ -58,8 +58,6 @@ const TwoStepWithdraw: React.FC = () => {
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
     const { to = ZERO_BIG_NUMBER } = form.getFieldsValue();
 
-    const { pool } = poolCtx;
-
     if (!pool) {
       return;
     }
@@ -102,9 +100,9 @@ const TwoStepWithdraw: React.FC = () => {
           <TokenAmount
             tokenIcon={
               <IconBubble
-                name={pool.meta?.icon!}
+                name={pool.meta?.icon}
                 bubbleName="bond-circle-token"
-                secondBubbleName={pool.market?.icon!}
+                secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}
               />

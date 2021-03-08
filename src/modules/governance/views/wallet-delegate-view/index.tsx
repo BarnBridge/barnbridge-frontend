@@ -9,7 +9,7 @@ import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
@@ -55,16 +55,19 @@ const WalletDelegateView: React.FC = () => {
   }, [userDelegatedTo]);
 
   async function handleSubmit(values: DelegateFormData) {
-    setState({ saving: true });
-
     const { delegateAddress, gasPrice } = values;
-    const gasFee = gasPrice?.value!;
+
+    if (!delegateAddress || !gasPrice) {
+      return;
+    }
+
+    setState({ saving: true });
 
     try {
       if (delegateAddress !== userDelegatedTo) {
-        await web3c.daoBarn.actions.delegate(delegateAddress!, gasFee);
+        await web3c.daoBarn.actions.delegate(delegateAddress, gasPrice.value);
       } else {
-        await web3c.daoBarn.actions.stopDelegate(gasFee);
+        await web3c.daoBarn.actions.stopDelegate(gasPrice.value);
       }
 
       form.setFieldsValue(InitialFormValues);
@@ -77,7 +80,7 @@ const WalletDelegateView: React.FC = () => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
-        <Icons name="bond-token" width={40} height={40} />
+        <Icon name="bond-token" width={40} height={40} />
         <Text type="p1" weight="semibold" color="primary">
           BOND
         </Text>

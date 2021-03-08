@@ -7,7 +7,7 @@ import Divider from 'components/antd/divider';
 import Skeleton from 'components/antd/skeleton';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Hint, Text } from 'components/custom/typography';
 import { APIProposalState } from 'modules/governance/api';
@@ -74,7 +74,7 @@ const ProposalDetailsCard: React.FC = () => {
             </Text>
             <Grid flow="col" gap={8}>
               <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
-              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer!)}`}>
+              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
                 <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(proposalCtx.proposal?.proposer)}
                 </Text>
@@ -91,7 +91,7 @@ const ProposalDetailsCard: React.FC = () => {
             <Grid flow="col" gap={8}>
               {proposalCtx.thresholdRate !== undefined && (
                 <>
-                  <Icons
+                  <Icon
                     name={
                       proposalCtx.thresholdRate > proposalCtx.minThreshold
                         ? 'check-circle-outlined'

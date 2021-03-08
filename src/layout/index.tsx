@@ -13,14 +13,13 @@ import GovernanceView from 'modules/governance';
 import SmartYieldView from 'modules/smart-yield';
 import YieldFarmingView from 'modules/yield-farming';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const WEBSITE_LINK = 'http://www.barnbridge.com/';
 const DISCORD_LINK = 'https://discord.com/invite/FfEhsVk';
 const TWITTER_LINK = 'https://twitter.com/barn_bridge';
 const WHITEPAPER_LINK = 'https://github.com/BarnBridge/BarnBridge-Whitepaper';
 const GITHUB_LINK = 'https://github.com/BarnBridge/';
-const DOCS_LINK = 'https://docs.barnbridge.com/';
 const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
 const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 

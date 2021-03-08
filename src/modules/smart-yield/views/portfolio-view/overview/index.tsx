@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdSpin from 'antd/lib/spin';
 import last from 'lodash/last';
 
 import { mergeState } from 'hooks/useMergeState';
@@ -76,7 +76,7 @@ const PortfolioOverview: React.FC = () => {
   return (
     <>
       <div className={s.portfolioContainer}>
-        <Antd.Spin spinning={state.loading}>
+        <AntdSpin spinning={state.loading}>
           <PortfolioBalance
             total={lastData?.value}
             aggregated={null}
@@ -86,15 +86,15 @@ const PortfolioOverview: React.FC = () => {
               ['Junior balance', lastData?.juniorValue, 'var(--theme-purple-color)'],
             ]}
           />
-        </Antd.Spin>
-        <Antd.Spin spinning={state.loading}>
+        </AntdSpin>
+        <AntdSpin spinning={state.loading}>
           <PortfolioValue
             title="Portfolio value"
             data={state.data}
             color="var(--theme-red-color)"
             gradientColor="var(--theme-red-color-rgb)"
           />
-        </Antd.Spin>
+        </AntdSpin>
       </div>
       <HistoryTable />
     </>

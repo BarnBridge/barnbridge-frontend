@@ -15,7 +15,7 @@ import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import { PoolTypes, getPoolIcons, getPoolNames } from 'modules/yield-farming/utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const PoolFilters: SelectOption[] = [
   {
@@ -38,7 +38,7 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const PoolTxChartInner: React.FC = (props) => {
+const PoolTxChartInner: React.FC = props => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
@@ -62,7 +62,7 @@ const PoolTxChartInner: React.FC = (props) => {
       currentEpoch = web3c.yfBOND.currentEpoch ?? 0;
     }
 
-    for (let i = startEpoch; i <= currentEpoch; i++) {
+    for (let i = startEpoch; i <= currentEpoch; i += 1) {
       filters.push({
         value: String(i),
         label: `Epoch ${i}`,
@@ -104,8 +104,8 @@ const PoolTxChartInner: React.FC = (props) => {
         <Select
           options={PoolFilters}
           value={poolTxChart.poolFilter}
-          onSelect={(value: string) => {
-            poolTxChart.changePoolFilter(value);
+          onSelect={value => {
+            poolTxChart.changePoolFilter(value as string);
           }}
         />
       </Grid>
@@ -115,8 +115,8 @@ const PoolTxChartInner: React.FC = (props) => {
           options={PeriodFilters}
           value={poolTxChart.periodFilter ?? 'all'}
           disabled={poolTxChart.loading}
-          onSelect={(value: string) => {
-            poolTxChart.changePeriodFilter(value !== 'all' ? value : undefined);
+          onSelect={value => {
+            poolTxChart.changePeriodFilter(value !== 'all' ? (value as string) : undefined);
           }}
         />
         <Select
@@ -124,8 +124,8 @@ const PoolTxChartInner: React.FC = (props) => {
           options={TypeFilters}
           value={poolTxChart.typeFilter ?? 'all'}
           disabled={poolTxChart.loading}
-          onSelect={(value: string) => {
-            poolTxChart.changeTypeFilter(value !== 'all' ? value : undefined);
+          onSelect={value => {
+            poolTxChart.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
           }}
         />
       </Grid>
@@ -175,22 +175,28 @@ const PoolTxChartInner: React.FC = (props) => {
               />
               <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
               {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
-                <ReCharts.Bar dataKey="deposits" name="Deposits" stackId="stack" fill="var(--theme-red-color)" fontSize={23} />
+                <ReCharts.Bar
+                  dataKey="deposits"
+                  name="Deposits"
+                  stackId="stack"
+                  fill="var(--theme-red-color)"
+                  fontSize={23}
+                />
               )}
               {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
                 <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" stackId="stack" fill="var(--theme-blue-color)" />
               )}
             </ReCharts.BarChart>
           </ReCharts.ResponsiveContainer>
-        ) : !poolTxChart.loading ? (
-          ChartEmpty
-        ) : null}
+        ) : (
+          !poolTxChart.loading && ChartEmpty
+        )}
       </Spin>
     </Card>
   );
 };
 
-const PoolTxChart: React.FC<CardProps> = (props) => (
+const PoolTxChart: React.FC<CardProps> = props => (
   <PoolTxChartProvider>
     <PoolTxChartInner {...props} />
   </PoolTxChartProvider>

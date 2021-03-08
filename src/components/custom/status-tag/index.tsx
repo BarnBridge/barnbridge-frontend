@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type StatusTagProps = {
   text: React.ReactNode;

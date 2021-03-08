@@ -101,7 +101,7 @@ const VotersTable: React.FC<VotersTableProps> = props => {
 
   const [loading, setLoading] = React.useState<boolean>(false);
   const [voters, setVoters] = React.useState<APIVoterEntity[]>([]);
-  const [total, setTotal] = React.useState<number>(0);
+  const [totalVoters, setTotal] = React.useState<number>(0);
   const [page, setPage] = React.useState<number>(1);
   const pageSize = 10;
 
@@ -134,24 +134,24 @@ const VotersTable: React.FC<VotersTableProps> = props => {
         rowKey="address"
         loading={loading}
         pagination={{
-          total,
+          total: totalVoters,
           pageSize,
           current: page,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
             <>
-            <Text type="p2" weight="semibold" color="secondary" className="hidden-mobile">
-              Showing {from} to {to} out of {total} stakers
-            </Text>
-            <Text type="p2" weight="semibold" color="secondary" className="hidden-tablet hidden-desktop">
-              {from}..{to} of {total}
-            </Text>
+              <Text type="p2" weight="semibold" color="secondary" className="hidden-mobile">
+                Showing {from} to {to} out of {total} stakers
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary" className="hidden-tablet hidden-desktop">
+                {from}..{to} of {total}
+              </Text>
             </>
           ),
           onChange: setPage,
         }}
         scroll={{
-          x: true
+          x: true,
         }}
       />
     </Card>

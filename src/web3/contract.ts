@@ -17,9 +17,13 @@ export type Web3ContractAbiItem = AbiItem;
 
 class Web3Contract extends EventEmitter {
   readonly abi: Web3ContractAbiItem[];
+
   readonly address: string;
+
   readonly ethContract: Contract & Eth;
+
   name: string;
+
   account?: string;
 
   constructor(abi: Web3ContractAbiItem[], address: string, name: string) {
@@ -94,10 +98,9 @@ class Web3Contract extends EventEmitter {
             if (err) {
               if (onError instanceof Function) {
                 return resolve(onError(err));
-              } else {
-                console.error(`${this.name}:${methodName}.call`, err);
-                return resolve(undefined);
               }
+              console.error(`${this.name}:${methodName}.call`, err);
+              return resolve(undefined);
             }
 
             if (+value === WEB3_ERROR_VALUE) {
@@ -105,10 +108,10 @@ class Web3Contract extends EventEmitter {
               return resolve(undefined);
             }
 
-            resolve(transform(value));
+            return resolve(transform(value));
           });
 
-          batch.add(request);
+          return batch.add(request);
         } catch (e) {
           return resolve(undefined);
         }
@@ -125,40 +128,46 @@ class Web3Contract extends EventEmitter {
   call(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     const contractMethod = this.ethContract.methods[method];
 
-    return contractMethod?.(...methodArgs)?.call(sendArgs) ?? Promise.reject(undefined);
+    if (!contractMethod) {
+      return Promise.reject(new Error(`Unknown method "${method}" in contract.`));
+    }
+
+    return contractMethod(...methodArgs).call(sendArgs);
   }
 
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
     const contractMethod = this.ethContract.methods[method];
 
-    return (
-      contractMethod?.(...methodArgs)
-        ?.send(sendArgs, async (err: Error, transactionHash: string) => {
-          this.emit('tx:transactionHash', transactionHash, this, {
-            method,
-            methodArgs,
-            sendArgs,
-          });
-        })
-        .then((result: any) => {
-          this.emit('tx:complete', result, this, {
-            method,
-            methodArgs,
-            sendArgs,
-          });
+    if (!contractMethod) {
+      return Promise.reject(new Error(`Unknown method "${method}" in contract.`));
+    }
 
-          return result;
-        })
-        .catch((error: Error) => {
-          this.emit('tx:failure', error, this, {
-            method,
-            methodArgs,
-            sendArgs,
-          });
+    return contractMethod(...methodArgs)
+      .send(sendArgs, async (err: Error, transactionHash: string) => {
+        this.emit('tx:transactionHash', transactionHash, this, {
+          method,
+          methodArgs,
+          sendArgs,
+        });
+      })
+      .then((result: any) => {
+        this.emit('tx:complete', result, this, {
+          method,
+          methodArgs,
+          sendArgs,
+        });
 
-          return Promise.reject(error);
-        }) ?? Promise.reject(undefined)
-    );
+        return result;
+      })
+      .catch((error: Error) => {
+        this.emit('tx:failure', error, this, {
+          method,
+          methodArgs,
+          sendArgs,
+        });
+
+        return Promise.reject(error);
+      });
   }
 }
 

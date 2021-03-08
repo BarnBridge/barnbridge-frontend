@@ -2,9 +2,7 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
-import Grid from 'components/custom/grid';
 import { useWarning } from 'components/providers/warning-provider';
-import LayoutHeader from 'layout/components/layout-header';
 import { useWallet } from 'wallets/wallet';
 
 import PoolRewards from './components/pool-rewards';
@@ -22,7 +20,7 @@ const YieldFarmingView: React.FC = () => {
   const warning = useWarning();
 
   React.useEffect(() => {
-    let warningDestructor: Function;
+    let warningDestructor: () => void;
 
     if (isMobile) {
       warningDestructor = warning.addWarn({

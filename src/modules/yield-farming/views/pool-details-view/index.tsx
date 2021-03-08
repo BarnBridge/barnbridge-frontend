@@ -1,6 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
@@ -10,7 +9,7 @@ import { USDCTokenMeta } from 'web3/contracts/usdc';
 import Button from 'components/antd/button';
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import PoolTokenDeposit from 'modules/yield-farming/components/pool-token-deposit';
 import PoolTokenWithdraw from 'modules/yield-farming/components/pool-token-withdraw';
@@ -63,7 +62,7 @@ const PoolDetailsView: React.FC = () => {
     <Grid flow="row" gap={32} align="start">
       <Button type="link" onClick={handleBackClick}>
         <Grid flow="col" gap={16} align="center">
-          <Icons name="left-arrow" />
+          <Icon name="left-arrow" />
           <Text type="h1" weight="bold" color="primary">
             {getPoolNames(pool).join('/')}
           </Text>

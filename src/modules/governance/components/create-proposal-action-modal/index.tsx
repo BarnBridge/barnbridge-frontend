@@ -1,6 +1,7 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { FormInstance } from 'antd/lib/form';
+import AntdForm, { FormInstance } from 'antd/lib/form';
+import AntdNotification from 'antd/lib/notification';
+import AntdSwitch from 'antd/lib/switch';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
 import Web3Contract from 'web3/contract';
 import { fetchContractABI } from 'web3/utils';
@@ -20,7 +21,7 @@ import useMergeState from 'hooks/useMergeState';
 import AddZerosPopup from '../add-zeros-popup';
 import SimulatedProposalActionModal from '../simulated-proposal-action-modal';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type CreateProposalActionForm = {
   targetAddress: string;
@@ -63,8 +64,8 @@ export type CreateProposalActionModalProps = ModalProps & {
 type CreateProposalActionModalState = {
   showSimulatedActionModal: boolean;
   simulatedAction?: CreateProposalActionForm;
-  simulationResolve?: Function;
-  simulationReject?: Function;
+  simulationResolve?: () => void;
+  simulationReject?: () => void;
   formDirty: boolean;
   submitting: boolean;
 };
@@ -81,7 +82,7 @@ const InitialState: CreateProposalActionModalState = {
 const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = props => {
   const { edit = false, initialValues = InitialFormValues } = props;
 
-  const [form] = Antd.Form.useForm<CreateProposalActionForm>();
+  const [form] = AntdForm.useForm<CreateProposalActionForm>();
   const [state, setState] = useMergeState<CreateProposalActionModalState>(InitialState);
 
   function loadAbiInterface(address: string) {
@@ -243,10 +244,9 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       form.resetFields();
       cancel = true;
     } catch (e) {
-      e &&
-        Antd.notification.error({
-          message: e.message,
-        });
+      AntdNotification.error({
+        message: e?.message,
+      });
     }
 
     setState({ submitting: false });
@@ -257,7 +257,12 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
   }
 
   function handleSimulatedAction(answer: boolean) {
-    answer ? state.simulationResolve?.() : state.simulationReject?.();
+    if (answer) {
+      state.simulationResolve?.();
+    } else {
+      state.simulationReject?.();
+    }
+
     setState({
       showSimulatedActionModal: false,
       simulationResolve: undefined,
@@ -305,7 +310,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
               </Text>
             </Hint>
             <Form.Item name="isProxyAddress">
-              <Antd.Switch disabled={state.submitting} />
+              <AntdSwitch disabled={state.submitting} />
             </Form.Item>
           </Grid>
 
@@ -514,7 +519,9 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
 
         {state.showSimulatedActionModal && state.simulatedAction && (
           <SimulatedProposalActionModal
-            proposalAction={state.simulatedAction}
+            targetAddress={state.simulatedAction.targetAddress}
+            functionSignature={state.simulatedAction.functionSignature}
+            functionEncodedParams={state.simulatedAction.functionEncodedParams}
             onOk={() => handleSimulatedAction(true)}
             onCancel={() => handleSimulatedAction(false)}
           />

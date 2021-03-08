@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
@@ -9,7 +9,6 @@ import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
-import Icons from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import RadioCard from 'modules/smart-yield/components/radio-card';
@@ -17,7 +16,7 @@ import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';
 
-import s from 'modules/smart-yield/views/deposit-view/select-tranche/s.module.scss';
+import s from './s.module.scss';
 
 export const WITHDRAW_TWO_STEP_KEY = 'two-step';
 export const WITHDRAW_INSTANT_KEY = 'instant';
@@ -125,7 +124,7 @@ const InitiateWithdraw: React.FC = () => {
           </Text>
           <Text type="small" weight="semibold" color="red">
             Forfeits: {formatBigValue(getHumanValue(forfeits, pool?.underlyingDecimals), pool?.underlyingDecimals)}{' '}
-            {pool?.underlyingSymbol} <Icons name="arrow-top-right" width={9} height={8} rotate={90} color="red" />
+            {pool?.underlyingSymbol} <Icon name="arrow-top-right" width={9} height={8} rotate={90} color="red" />
           </Text>
         </RadioCard>
       </Grid>

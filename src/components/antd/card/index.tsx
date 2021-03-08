@@ -1,12 +1,11 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { CardProps as AntdCardProps } from 'antd/lib/card';
+import AntdCard, { CardProps as AntdCardProps } from 'antd/lib/card';
 import cn from 'classnames';
 
 import Button from 'components/antd/button';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type CardProps = AntdCardProps & {
   showExpandButton?: boolean;
@@ -24,7 +23,7 @@ const Card: React.FC<CardProps> = props => {
   }, [expanded]);
 
   return (
-    <Antd.Card
+    <AntdCard
       className={cn(s.component, className, noPaddingBody && s.noPaddingBody)}
       bordered={false}
       extra={
@@ -32,14 +31,14 @@ const Card: React.FC<CardProps> = props => {
           <Button
             type="link"
             className={s.arrow}
-            icon={<Icons name="chevron-right" rotate={expandedState ? 270 : 0} />}
+            icon={<Icon name="chevron-right" rotate={expandedState ? 270 : 0} />}
             onClick={() => setExpanded(prevState => !prevState)}
           />
         ) : undefined
       }
       {...cardProps}>
       {expandedState && children}
-    </Antd.Card>
+    </AntdCard>
   );
 };
 

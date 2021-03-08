@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -103,11 +103,11 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       return;
     }
 
-    const { proposalId, forVotes, againstVotes, createTime, warmUpDuration } = state.proposal;
+    const { forVotes, againstVotes, createTime, warmUpDuration } = state.proposal;
     const total = forVotes.plus(againstVotes);
 
-    let forRate: number = 0;
-    let againstRate: number = 0;
+    let forRate = 0;
+    let againstRate = 0;
 
     if (total.gt(ZERO_BIG_NUMBER)) {
       forRate = forVotes.multipliedBy(100).div(total).toNumber();
@@ -129,7 +129,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       setState({ quorum });
     });
 
-    web3c.daoGovernance.actions.abrogationProposal(proposalId).then(result => {
+    web3c.daoGovernance.actions.abrogationProposal(state.proposal.proposalId).then(result => {
       if (result) {
         setState({ isCanceled: result.createTime > 0 });
       }
@@ -167,9 +167,9 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       return;
     }
 
-    const { proposalId, createTime, warmUpDuration } = state.proposal;
+    const { createTime, warmUpDuration } = state.proposal;
 
-    web3c.daoGovernance.actions.getProposalReceipt(proposalId).then(receipt => {
+    web3c.daoGovernance.actions.getProposalReceipt(state.proposal.proposalId).then(receipt => {
       setState({ receipt });
     });
 

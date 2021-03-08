@@ -1,14 +1,13 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps as AntdModalProps } from 'antd/lib/modal';
+import AntdModal, { ModalProps as AntdModalProps } from 'antd/lib/modal';
 import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type ModalProps = AntdModalProps & {
   confirmClose?: boolean;
@@ -30,19 +29,19 @@ const Modal: React.FC<ModalProps> = props => {
   }
 
   return (
-    <Antd.Modal
+    <AntdModal
       zIndex={1}
       className={cn(s.component, className)}
       visible
       centered
       footer={null}
-      closeIcon={<Icons name="close-circle-outlined" />}
+      closeIcon={<Icon name="close-circle-outlined" />}
       onCancel={handleCancel}
       {...modalProps}>
       {children}
 
       {confirmVisible && (
-        <Antd.Modal
+        <AntdModal
           zIndex={2}
           className={s.component}
           visible
@@ -63,9 +62,9 @@ const Modal: React.FC<ModalProps> = props => {
               </Button>
             </Grid>
           </Grid>
-        </Antd.Modal>
+        </AntdModal>
       )}
-    </Antd.Modal>
+    </AntdModal>
   );
 };
 

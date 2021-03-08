@@ -1,14 +1,14 @@
-import { createContext, useState, useContext } from 'react';
+import React from 'react';
 
 export type GeneralContextType = {
   navOpen: boolean;
-  setNavOpen: React.Dispatch<React.SetStateAction<boolean>>,
+  setNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const GeneralContext = createContext<GeneralContextType>({} as any);
+const GeneralContext = React.createContext<GeneralContextType>({} as any);
 
 const GeneralContextProvider: React.FC = props => {
-  const [navOpen, setNavOpen] = useState<boolean>(false);
+  const [navOpen, setNavOpen] = React.useState<boolean>(false);
 
   return (
     <GeneralContext.Provider
@@ -24,5 +24,5 @@ const GeneralContextProvider: React.FC = props => {
 export default GeneralContextProvider;
 
 export function useGeneral(): GeneralContextType {
-  return useContext<GeneralContextType>(GeneralContext);
+  return React.useContext<GeneralContextType>(GeneralContext);
 }

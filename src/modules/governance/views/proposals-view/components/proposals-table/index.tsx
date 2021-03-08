@@ -14,7 +14,7 @@ import ProposalStatusTag from '../proposal-status-tag';
 
 import { getFormattedDuration } from 'utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const Columns: ColumnsType<APILiteProposalEntity> = [
   {

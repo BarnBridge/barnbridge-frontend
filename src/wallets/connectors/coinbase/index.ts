@@ -12,7 +12,7 @@ export type CoinbaseWalletArgs = {
   darkMode?: boolean;
 };
 
-export const CoinbaseWalletConfig: WalletConnector = {
+const CoinbaseWalletConfig: WalletConnector = {
   id: 'coinbase',
   logo: CoinbaseWalletLogo,
   name: 'Coinbase Wallet',
@@ -34,9 +34,11 @@ export const CoinbaseWalletConfig: WalletConnector = {
 
     if (code === 4001) {
       // USER_DENIED_REQUEST_ACCOUNTS
-      return;
+      return undefined;
     }
 
     return error;
   },
 };
+
+export default CoinbaseWalletConfig;

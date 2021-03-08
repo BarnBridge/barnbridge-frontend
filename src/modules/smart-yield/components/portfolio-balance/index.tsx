@@ -10,8 +10,8 @@ import s from './s.module.scss';
 
 type Props = {
   total?: number;
-  aggregated?: number | null;
-  aggregatedText?: React.ReactNode | null;
+  aggregated: number | null;
+  aggregatedText?: React.ReactNode;
   aggregatedColor: TextProps['color'];
   data: [[string, number | undefined, string], [string, number | undefined, string]];
 };

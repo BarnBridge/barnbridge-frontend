@@ -57,7 +57,7 @@ const EthWeb3Provider: React.FC = props => {
 
   React.useEffect(() => {
     if (!windowState.isVisible) {
-      return;
+      return undefined;
     }
 
     WssWeb3.eth
@@ -88,16 +88,15 @@ const EthWeb3Provider: React.FC = props => {
     };
   }, [windowState.isVisible]);
 
-  const value = React.useMemo(() => ({
-    ...InitialContextValue,
-    blockNumber,
-  }), [blockNumber]);
-
-  return (
-    <EthWeb3Context.Provider value={value}>
-      {children}
-    </EthWeb3Context.Provider>
+  const value = React.useMemo(
+    () => ({
+      ...InitialContextValue,
+      blockNumber,
+    }),
+    [blockNumber],
   );
+
+  return <EthWeb3Context.Provider value={value}>{children}</EthWeb3Context.Provider>;
 };
 
 export default EthWeb3Provider;

@@ -2,9 +2,9 @@ import React from 'react';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type TextProps = {
   tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label' | 'p' | 'div' | 'span' | 'small';
@@ -15,7 +15,7 @@ export type TextProps = {
   ellipsis?: boolean;
   wrap?: boolean;
   className?: string;
-  style?: Object;
+  style?: Partial<CSSStyleDeclaration>;
 };
 
 export const Text: React.FC<TextProps> = React.memo(props => {
@@ -58,7 +58,7 @@ export const Hint: React.FC<HintProps> = props => {
       <span>{children}</span>
       <Tooltip title={text} className={s.tooltip}>
         <span>
-          <Icons name="info-outlined" width={16} height={16} className={s.icon} />
+          <Icon name="info-outlined" width={16} height={16} className={s.icon} />
         </span>
       </Tooltip>
     </div>

@@ -3,10 +3,10 @@ import React from 'react';
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-export type DeleteProposalActionModalProps = ModalProps & {};
+export type DeleteProposalActionModalProps = ModalProps;
 
 const DeleteProposalActionModal: React.FC<DeleteProposalActionModalProps> = props => {
   const { ...modalProps } = props;
@@ -15,7 +15,7 @@ const DeleteProposalActionModal: React.FC<DeleteProposalActionModalProps> = prop
     <Modal width={560} {...modalProps}>
       <Grid flow="row" gap={32}>
         <Grid flow="row" gap={16}>
-          <Icons name="warning-outlined" width={40} height={40} color="red" />
+          <Icon name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8}>
             <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to delete the action?

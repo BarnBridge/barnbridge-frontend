@@ -14,7 +14,7 @@ import { APIVoteEntity } from 'modules/governance/api';
 
 import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const Columns: ColumnsType<APIVoteEntity> = [
   {

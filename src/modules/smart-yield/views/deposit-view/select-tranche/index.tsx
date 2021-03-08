@@ -117,7 +117,9 @@ const SelectTranche: React.FC = () => {
                 your deposits will be locked in the bond until this maturity date is reached. Make sure you read the
                 docs thoroughly.
               </div>
-              <ExternalLink href="#" className={s.alertLink}>Learn more</ExternalLink>
+              <ExternalLink href="#" className={s.alertLink}>
+                Learn more
+              </ExternalLink>
             </>
           }
         />
@@ -133,7 +135,9 @@ const SelectTranche: React.FC = () => {
                 When purchasing junior tokens you will get a variable rate. However, depending on the state of the pool
                 and the originator APY - your actual interest rate may be lower. Make sure you read the docs thoroughly.
               </div>
-              <ExternalLink href="#" className={s.alertLink}>Learn more</ExternalLink>
+              <ExternalLink href="#" className={s.alertLink}>
+                Learn more
+              </ExternalLink>
             </>
           }
         />

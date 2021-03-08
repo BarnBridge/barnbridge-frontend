@@ -10,10 +10,9 @@ import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
-import { useDAO } from '../../../../components/dao-provider';
 import { useProposal } from '../../providers/ProposalProvider';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 type FormState = {
   gasPrice?: {
@@ -39,23 +38,22 @@ const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
   const { ...modalProps } = props;
 
   const [form] = Antd.Form.useForm<FormState>();
-  const daoCtx = useDAO();
   const proposalCtx = useProposal();
 
   const [state, setState] = useMergeState<QueueForExecutionModalState>(InitialState);
 
   async function handleSubmit(values: FormState) {
-    if (!proposalCtx.proposal) {
+    const { gasPrice } = values;
+
+    if (!proposalCtx.proposal || !gasPrice) {
       return;
     }
 
     setState({ submitting: true });
 
-    const { gasPrice } = values;
-
     try {
       await form.validateFields();
-      await proposalCtx.queueProposalForExecution(gasPrice?.value!);
+      await proposalCtx.queueProposalForExecution(gasPrice.value);
 
       proposalCtx.reload();
       props.onCancel?.();

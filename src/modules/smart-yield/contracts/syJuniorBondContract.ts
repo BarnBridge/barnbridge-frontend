@@ -51,9 +51,9 @@ class SYJuniorBondContract extends Web3Contract {
 
     return this.call('balanceOf', [this.account])
       .then(value => Number(value))
-      .then(value => {
-        if (value > 0) {
-          const methods = Array.from(Array(value)).map((_, index) => ({
+      .then(balance => {
+        if (balance > 0) {
+          const methods = Array.from(Array(balance)).map((_, index) => ({
             method: 'tokenOfOwnerByIndex',
             methodArgs: [this.account, index],
             transform: (value: any) => Number(value),

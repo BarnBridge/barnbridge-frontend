@@ -1,26 +1,25 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getHumanValue, getNonHumanValue, formatBigValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
+import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
+import Input from 'components/antd/input';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon, { TokenIconNames } from 'components/custom/icon';
+import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
-import ExternalLink from 'components/custom/externalLink';
-import Icons from 'components/custom/icon';
-import Divider from 'components/antd/divider';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
-import Input from 'components/antd/input';
-import IconBubble from 'components/custom/icon-bubble';
 
 type FormData = {
   from?: BigNumber;
@@ -48,8 +47,8 @@ const InstantWithdraw: React.FC = () => {
 
   const { pool, marketId, tokenId } = poolCtx;
 
-  function handleFormValuesChange(_: any, formValues: FormData) {
-    setFormValues(formValues);
+  function handleFormValuesChange(_: any, values: FormData) {
+    setFormValues(values);
   }
 
   React.useEffect(() => {
@@ -85,7 +84,6 @@ const InstantWithdraw: React.FC = () => {
 
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
     const { from = ZERO_BIG_NUMBER, slippageTolerance, deadline } = form.getFieldsValue();
-    const { pool } = poolCtx;
 
     if (!pool) {
       return;
@@ -105,19 +103,15 @@ const InstantWithdraw: React.FC = () => {
 
       const decimals = pool.underlyingDecimals;
       const tokenAmount = getNonHumanValue(new BigNumber(from), decimals);
-      const forfeits = await poolCtx.actions.getForfeitsFor(tokenAmount);
+      const forfeitsValue = await poolCtx.actions.getForfeitsFor(tokenAmount);
       const price = await smartYieldContract.getPrice();
-      const toPay = tokenAmount.multipliedBy(price).div(1e18).minus(forfeits ?? ZERO_BIG_NUMBER);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - ((slippageTolerance ?? 0) / 100)).toFixed(0)); // slippage / rounding mode
+      const toPay = tokenAmount
+        .multipliedBy(price)
+        .div(1e18)
+        .minus(forfeitsValue ?? ZERO_BIG_NUMBER);
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
-      console.log({
-        tokenAmount: tokenAmount.toNumber(),
-        forfeits: forfeits?.toNumber(),
-        toPay: toPay.toNumber(),
-        minUnderlying: minUnderlying.toNumber(),
-        deadlineTs,
-      });
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
       form.resetFields();
     } catch {}
@@ -128,8 +122,10 @@ const InstantWithdraw: React.FC = () => {
       return undefined;
     }
 
-    return formValues.from?.multipliedBy(pool.state.jTokenPrice).minus(forfeits)
-      .multipliedBy(1 - ((formValues.slippageTolerance ?? 0) / 100));
+    return formValues.from
+      ?.multipliedBy(pool.state.jTokenPrice)
+      .minus(forfeits)
+      .multipliedBy(1 - (formValues.slippageTolerance ?? 0) / 100);
   }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippageTolerance]);
 
   if (!pool) {
@@ -142,18 +138,25 @@ const InstantWithdraw: React.FC = () => {
         Instant withdraw
       </Text>
       <Text type="p2" weight="semibold" className="mb-32">
-        Choose the amount of junior tokens you want to redeem. Make sure you double check the amounts, including the amount you forfeit. &nbsp;
+        Choose the amount of junior tokens you want to redeem. Make sure you double check the amounts, including the
+        amount you forfeit. &nbsp;
         <ExternalLink href="#">Learn more</ExternalLink>
       </Text>
 
-      <Form className="grid flow-row" form={form} initialValues={formValues} onValuesChange={handleFormValuesChange} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
+      <Form
+        className="grid flow-row"
+        form={form}
+        initialValues={formValues}
+        onValuesChange={handleFormValuesChange}
+        validateTrigger={['onSubmit']}
+        onFinish={handleSubmit}>
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={
               <IconBubble
-                name={pool?.meta?.icon!}
+                name={pool?.meta?.icon}
                 bubbleName="bond-circle-token"
-                secondBubbleName={pool?.market?.icon!}
+                secondBubbleName={pool?.market?.icon}
                 width={36}
                 height={36}
               />
@@ -164,13 +167,13 @@ const InstantWithdraw: React.FC = () => {
             disabled={false}
           />
         </Form.Item>
-        <Icons name="down-arrow-circle" width={32} height={32} className="mh-auto" />
+        <Icon name="down-arrow-circle" width={32} height={32} className="mh-auto" />
         <Form.Item
           className="mb-32"
           label="To"
           extra={
             <div className="grid flow-col col-gap-8 justify-center">
-              <Icons name="refresh" width={16} height={16} />
+              <Icon name="refresh" width={16} height={16} />
               <Text type="small" weight="semibold" color="secondary">
                 {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
               </Text>

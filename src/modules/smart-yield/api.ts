@@ -74,7 +74,7 @@ export type APISYPool = {
   };
 };
 
-export function fetchSYPools(protocolID: string = 'all'): Promise<APISYPool[]> {
+export function fetchSYPools(protocolID = 'all'): Promise<APISYPool[]> {
   const url = new URL(`/api/smartyield/pools?protocolID=${protocolID}`, GOV_API_URL);
 
   return fetch(url.toString())
@@ -149,11 +149,11 @@ export type APISYUserTxHistory = {
 
 export function fetchSYUserTxHistory(
   address: string,
-  page: number = 1,
-  limit: number = 10,
-  originator: string = 'all',
-  token: string = 'all',
-  transactionType: string = 'all',
+  page = 1,
+  limit = 10,
+  originator = 'all',
+  token = 'all',
+  transactionType = 'all',
 ): Promise<PaginatedResult<APISYUserTxHistory>> {
   const query = QueryString.stringify(
     {
@@ -197,8 +197,8 @@ export type APISYSeniorRedeem = {
 
 export function fetchSYSeniorRedeems(
   address: string,
-  page: number = 1,
-  limit: number = 10,
+  page = 1,
+  limit = 10,
 ): Promise<PaginatedResult<APISYSeniorRedeem>> {
   const url = new URL(`/api/smartyield/users/${address}/redeems/senior?page=${page}&limit=${limit}`, GOV_API_URL);
 
@@ -225,8 +225,8 @@ export type APISYJuniorRedeem = {
 
 export function fetchSYJuniorRedeems(
   address: string,
-  page: number = 1,
-  limit: number = 10,
+  page = 1,
+  limit = 10,
 ): Promise<PaginatedResult<APISYJuniorRedeem>> {
   const url = new URL(`/api/smartyield/users/${address}/redeems/junior?page=${page}&limit=${limit}`, GOV_API_URL);
 
