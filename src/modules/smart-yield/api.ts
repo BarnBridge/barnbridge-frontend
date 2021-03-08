@@ -244,6 +244,38 @@ export function fetchSYJuniorRedeems(
     }));
 }
 
+export type APISYJuniorInstantWithdrawals = {
+  smartYieldAddress: string;
+  tokensIn: BigNumber;
+  underlyingOut: BigNumber;
+  forfeits: BigNumber;
+  blockTimestamp: number;
+  transactionHash: string;
+  underlyingTokenAddress: string;
+  protocolId: string;
+};
+
+export function fetchSYJuniorInstantWithdrawals(
+  address: string,
+  page = 1,
+  limit = 10,
+): Promise<PaginatedResult<APISYJuniorInstantWithdrawals>> {
+  const url = new URL(`/api/smartyield/users/${address}/instant-withdrawals?page=${page}&limit=${limit}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result,
+      data: (result.data ?? []).map((item: APISYJuniorInstantWithdrawals) => ({
+        ...item,
+        tokensIn: new BigNumber(item.tokensIn),
+        underlyingOut: new BigNumber(item.underlyingOut),
+        forfeits: new BigNumber(item.forfeits),
+        blockTimestamp: Number(item.blockTimestamp),
+      })),
+    }));
+}
+
 export type APISYPortfolioValue = {
   timestamp: Date;
   seniorValue: number;

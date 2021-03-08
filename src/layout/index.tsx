@@ -10,6 +10,7 @@ import WarningProvider from 'components/providers/warning-provider';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
 import GovernanceView from 'modules/governance';
+import SmartAlphaView from 'modules/smart-alpha';
 import SmartYieldView from 'modules/smart-yield';
 import YieldFarmingView from 'modules/yield-farming';
 
@@ -37,6 +38,7 @@ const LayoutView: React.FC = () => {
               <Route path="/governance" component={GovernanceView} />
               <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
               <Route path="/smart-yield" component={SmartYieldView} />
+              <Route path="/smart-alpha" component={SmartAlphaView} />
               <Redirect from="/" to="/yield-farming" />
             </Switch>
           </main>

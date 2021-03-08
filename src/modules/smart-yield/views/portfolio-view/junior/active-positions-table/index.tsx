@@ -88,7 +88,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     align: 'right',
     sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
+      <Text type="p1" weight="semibold" color="purple">
         {formatBigValue(entity.state.juniorApy * 100)}%
       </Text>
     ),

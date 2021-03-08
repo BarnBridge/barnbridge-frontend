@@ -8,7 +8,7 @@ import { useWallet } from 'wallets/wallet';
 import PoolProvider from './providers/pool-provider';
 import PoolsProvider from './providers/pools-provider';
 import DepositView from './views/deposit-view';
-import OverviewView from './views/overview-view';
+import MarketsView from './views/markets-view';
 import PortfolioView from './views/portfolio-view';
 import WithdrawView from './views/withdraw-view';
 
@@ -21,7 +21,7 @@ type SmartYieldViewParams = {
 const SmartYieldView: React.FC = () => {
   const history = useHistory();
   const {
-    params: { vt = 'overview' },
+    params: { vt = 'markets' },
   } = useRouteMatch<SmartYieldViewParams>();
   const wallet = useWallet();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
@@ -33,7 +33,7 @@ const SmartYieldView: React.FC = () => {
 
   React.useEffect(() => {
     if (vt === 'deposit') {
-      setActiveTab('overview');
+      setActiveTab('markets');
       return;
     }
     if (vt === 'withdraw') {
@@ -50,10 +50,10 @@ const SmartYieldView: React.FC = () => {
     <>
       <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
         <Tabs.Tab
-          key="overview"
+          key="markets"
           tab={
             <>
-              <Icon name="bar-charts-outlined" /> Overview
+              <Icon name="bar-charts-outlined" /> Markets
             </>
           }
         />
@@ -70,16 +70,16 @@ const SmartYieldView: React.FC = () => {
       <div className="content-container">
         <Switch>
           <Route
-            path="/smart-yield/:path(overview|portfolio)"
+            path="/smart-yield/:path(markets|portfolio)"
             render={() => (
               <PoolsProvider>
-                <Route path="/smart-yield/overview" exact component={OverviewView} />
+                <Route path="/smart-yield/markets" exact component={MarketsView} />
                 {wallet.initialized && (
                   <>
                     {wallet.isActive ? (
                       <Route path="/smart-yield/portfolio" component={PortfolioView} />
                     ) : (
-                      <Redirect to="/smart-yield/overview" />
+                      <Redirect to="/smart-yield/markets" />
                     )}
                   </>
                 )}
@@ -97,13 +97,13 @@ const SmartYieldView: React.FC = () => {
                       <Route path="/smart-yield/withdraw" component={WithdrawView} />
                     </PoolProvider>
                   ) : (
-                    <Redirect to="/smart-yield/overview" />
+                    <Redirect to="/smart-yield/markets" />
                   )}
                 </>
               )
             }
           />
-          <Redirect to="/smart-yield/overview" />
+          <Redirect to="/smart-yield/markets" />
         </Switch>
       </div>
     </>

@@ -44,6 +44,7 @@ const InstantWithdraw: React.FC = () => {
   const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
   const [forfeits, setForfeits] = useState<BigNumber | undefined>();
   const [formValues, setFormValues] = useState(InitialFormValues);
+  const [priceReversible, setPriceReversible] = useState(false);
 
   const { pool, marketId, tokenId } = poolCtx;
 
@@ -58,6 +59,10 @@ const InstantWithdraw: React.FC = () => {
 
     poolCtx.actions.getForfeitsFor(formValues.from).then(setForfeits);
   }, [formValues.from]);
+
+  function handlePriceReverse() {
+    setPriceReversible(prevState => !prevState);
+  }
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
@@ -117,7 +122,7 @@ const InstantWithdraw: React.FC = () => {
     } catch {}
   }
 
-  const totalWithdrawable = React.useMemo(() => {
+  const minimumReceived = React.useMemo(() => {
     if (!pool || !forfeits) {
       return undefined;
     }
@@ -173,10 +178,18 @@ const InstantWithdraw: React.FC = () => {
           label="To"
           extra={
             <div className="grid flow-col col-gap-8 justify-center">
-              <Icon name="refresh" width={16} height={16} />
-              <Text type="small" weight="semibold" color="secondary">
-                {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
-              </Text>
+              {priceReversible ? (
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatBigValue(1 / pool?.state.jTokenPrice)} j{pool?.underlyingSymbol} per {pool?.underlyingSymbol}
+                </Text>
+              ) : (
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
+                </Text>
+              )}
+              <button type="button" className="button-text" onClick={handlePriceReverse}>
+                <Icon name="refresh" width={16} height={16} />
+              </button>
             </div>
           }
           dependencies={['from']}>
@@ -243,10 +256,10 @@ const InstantWithdraw: React.FC = () => {
             </div>
             <div className="grid flow-col justify-space-between">
               <Text type="small" weight="semibold" color="secondary">
-                Total withdrawable amount
+                Minimum received
               </Text>
               <Text type="p2" weight="semibold" color="primary">
-                {formatBigValue(totalWithdrawable ?? ZERO_BIG_NUMBER)} {pool?.underlyingSymbol}
+                {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool?.underlyingSymbol}
               </Text>
             </div>
           </div>
@@ -274,7 +287,7 @@ const InstantWithdraw: React.FC = () => {
                   Minimum received
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  -
+                  {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -290,7 +303,7 @@ const InstantWithdraw: React.FC = () => {
                   Wait time
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  -
+                  None
                 </Text>
               </div>
             </div>
