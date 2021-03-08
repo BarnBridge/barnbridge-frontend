@@ -5,7 +5,7 @@ import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 
 import { useDAO } from '../../../../components/dao-provider';
@@ -54,10 +54,10 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
               '100%': 'var(--theme-green-color)',
             }}
           />
-          <Icons name="ribbon-outlined" />
+          <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icons name="bond-square-token" />
+          <Icon name="bond-square-token" />
           <Text type="p1" weight="bold" color="primary">
             {formatBONDValue(dao.bondStaked)}
           </Text>

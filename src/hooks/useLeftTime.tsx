@@ -1,7 +1,7 @@
 import React from 'react';
 import useInterval from '@rooks/use-interval';
 
-export type useLeftTimeOptions = {
+export type UseLeftTimeOptions = {
   end: number | Date;
   delay?: number;
   onStart?: (left: number) => void;
@@ -10,7 +10,7 @@ export type useLeftTimeOptions = {
   onEnd?: () => void;
 };
 
-export function useLeftTime(options: useLeftTimeOptions): [Function, Function] {
+export function useLeftTime(options: UseLeftTimeOptions): [() => void, () => void] {
   function getLeftTime() {
     return Math.max(options.end.valueOf() - Date.now(), 0);
   }
@@ -57,7 +57,7 @@ export function useLeftTime(options: useLeftTimeOptions): [Function, Function] {
   return [startFn, stopFn];
 }
 
-export type UseLeftTimeProps = useLeftTimeOptions & {
+export type UseLeftTimeProps = UseLeftTimeOptions & {
   children: (leftTime: number) => React.ReactNode;
 };
 
@@ -69,17 +69,17 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
   useLeftTime({
     end: props.end,
     delay: props.delay,
-    onStart: leftTime => {
-      setLeftTime(leftTime);
-      props.onStart?.(leftTime);
+    onStart: value => {
+      setLeftTime(value);
+      props.onStart?.(value);
     },
-    onStop: leftTime => {
-      setLeftTime(leftTime);
-      props.onStop?.(leftTime);
+    onStop: value => {
+      setLeftTime(value);
+      props.onStop?.(value);
     },
-    onTick: leftTime => {
-      setLeftTime(leftTime);
-      props.onTick?.(leftTime);
+    onTick: value => {
+      setLeftTime(value);
+      props.onTick?.(value);
     },
     onEnd: props.onEnd,
   });

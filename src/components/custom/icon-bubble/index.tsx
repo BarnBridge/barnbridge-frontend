@@ -3,7 +3,7 @@ import React, { CSSProperties } from 'react';
 import Sprite from 'resources/svg/icons-sprite.svg';
 
 export type IconBubbleProps = {
-  name: string;
+  name?: string;
   bubbleName?: string;
   secondBubbleName?: string;
   width?: number;
@@ -15,8 +15,14 @@ export type IconBubbleProps = {
 let uuid = 0;
 
 const IconBubble: React.FC<IconBubbleProps> = props => {
+  uuid += 1;
+
   const { name, bubbleName, secondBubbleName, width = 40, height, className, style } = props;
-  const id = `ib-${uuid++}`;
+  const id = `ib-${uuid}`;
+
+  if (!name) {
+    return null;
+  }
 
   return (
     <svg width={width} height={height ?? width} className={className} style={style}>

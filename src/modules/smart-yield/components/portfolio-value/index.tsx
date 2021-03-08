@@ -45,7 +45,9 @@ const PortfolioValue: React.FC<Props> = props => {
           <ReCharts.YAxis
             axisLine={false}
             tickLine={false}
-            tickFormatter={(value: any) => Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value)}
+            tickFormatter={(value: any) =>
+              Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value)
+            }
           />
           <ReCharts.Tooltip
             separator=""

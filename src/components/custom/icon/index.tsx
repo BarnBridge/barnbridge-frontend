@@ -3,7 +3,7 @@ import cn from 'classnames';
 
 import Sprite from 'resources/svg/icons-sprite.svg';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type LogoIconNames = 'barnbridge';
 
@@ -81,7 +81,7 @@ export type IconNames =
   | 'tx-failure'
   | 'burger';
 
-export type IconsProps = {
+export type IconProps = {
   name: IconNames;
   width?: number | string;
   height?: number | string;
@@ -91,7 +91,7 @@ export type IconsProps = {
   style?: CSSProperties;
 };
 
-const Icons: React.FC<IconsProps> = props => {
+const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style } = props;
 
   return (
@@ -105,4 +105,4 @@ const Icons: React.FC<IconsProps> = props => {
   );
 };
 
-export default Icons;
+export default Icon;

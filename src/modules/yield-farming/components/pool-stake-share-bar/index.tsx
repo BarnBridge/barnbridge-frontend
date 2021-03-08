@@ -4,7 +4,7 @@ import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type PoolTokenShare = {
   icon: React.ReactNode;

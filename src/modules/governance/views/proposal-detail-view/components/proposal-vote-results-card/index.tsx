@@ -9,7 +9,7 @@ import { Hint, Text } from 'components/custom/typography';
 import { useProposal } from '../../providers/ProposalProvider';
 import ProposalVotersModal from '../proposal-voters-modal';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const ProposalVoteResultsCard: React.FC = () => {
   const proposalCtx = useProposal();

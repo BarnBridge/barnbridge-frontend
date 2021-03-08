@@ -13,7 +13,7 @@ export type LedgerWalletArgs = {
   baseDerivationPath?: string;
 };
 
-export const LedgerWalletConfig: WalletConnector = {
+const LedgerWalletConfig: WalletConnector = {
   id: 'ledger',
   logo: LedgerLogo,
   name: 'Ledger',
@@ -25,7 +25,7 @@ export const LedgerWalletConfig: WalletConnector = {
     }
 
     return new LedgerConnector({
-      chainId: chainId,
+      chainId,
       url: WEB3_RPC_HTTPS_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       baseDerivationPath,
@@ -46,3 +46,5 @@ export const LedgerWalletConfig: WalletConnector = {
     return error;
   },
 };
+
+export default LedgerWalletConfig;

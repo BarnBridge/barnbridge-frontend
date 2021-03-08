@@ -4,7 +4,7 @@ import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Select, { SelectOption } from 'components/antd/select';
 import Grid from 'components/custom/grid';
-import { LedgerWalletConfig } from 'wallets/connectors/ledger';
+import LedgerWalletConfig from 'wallets/connectors/ledger';
 import { useWallet } from 'wallets/wallet';
 
 const WEB3_LEDGER_DERIVATION_PATHS: SelectOption[] = [
@@ -25,8 +25,8 @@ const LedgerDerivationPathModal: React.FC<ModalProps> = props => {
 
   const [derivationPath, setDerivationPath] = React.useState<string>(String(WEB3_LEDGER_DERIVATION_PATHS[0].value));
 
-  function handleSelect(value: string | number) {
-    setDerivationPath(String(value));
+  function handleSelect(value: any) {
+    setDerivationPath(value as string);
   }
 
   function handleConnect() {

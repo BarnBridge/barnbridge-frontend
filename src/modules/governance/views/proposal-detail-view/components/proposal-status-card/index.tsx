@@ -5,7 +5,7 @@ import { getEtherscanTxUrl } from 'web3/utils';
 import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
@@ -18,18 +18,18 @@ function getEventIcon(index: number, name: string): React.ReactNode {
       name as any,
     )
   ) {
-    return <Icons name="close-circle-outlined" width={40} height={40} color="red" />;
+    return <Icon name="close-circle-outlined" width={40} height={40} color="red" />;
   }
 
   if ([APIProposalState.CREATED, APIProposalState.ACCEPTED, APIProposalState.EXECUTED].includes(name as any)) {
-    return <Icons name="check-circle-outlined" width={40} height={40} color="green" />;
+    return <Icon name="check-circle-outlined" width={40} height={40} color="green" />;
   }
 
   if (index === 0) {
-    return <Icons name="history-circle-outlined" width={40} height={40} color="blue" />;
+    return <Icon name="history-circle-outlined" width={40} height={40} color="blue" />;
   }
 
-  return <Icons name="check-circle-outlined" width={40} height={40} color="green" />;
+  return <Icon name="check-circle-outlined" width={40} height={40} color="green" />;
 }
 
 function formatEventTime(name: string, start: number, end: number): string {
@@ -85,7 +85,7 @@ const ProposalStatusCard: React.FC = () => {
                     {APIProposalStateMap.get(event.name as APIProposalState)}
                   </Text>
                   <ExternalLink href={getEtherscanTxUrl(`0x${event.txHash}`)} style={{ height: '16px' }}>
-                    <Icons name="link-outlined" width={16} height={16} />
+                    <Icon name="link-outlined" width={16} height={16} />
                   </ExternalLink>
                 </Grid>
               ) : (

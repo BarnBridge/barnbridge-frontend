@@ -1,5 +1,6 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdForm from 'antd/lib/form';
+import AntdSwitch from 'antd/lib/switch';
 import BigNumber from 'bignumber.js';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
@@ -17,12 +18,12 @@ import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
-import Icons, { TokenIconNames } from 'components/custom/icon';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Hint, Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type PoolTokenDepositProps = {
   token: TokenMeta;
@@ -65,7 +66,7 @@ const InitialFormValues: FormData = {
 
 const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
   const web3c = useWeb3Contracts();
-  const [form] = Antd.Form.useForm<FormData>();
+  const [form] = AntdForm.useForm<FormData>();
 
   const { token, expanded = false } = props;
 
@@ -84,7 +85,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
       case BONDTokenMeta:
         return 'bond-token';
       default:
-        return;
+        return undefined;
     }
   }, [token]);
 
@@ -214,6 +215,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
           web3c.bond.reload();
           web3c.yfBOND.reload();
           break;
+        default:
       }
     } catch (e) {}
 
@@ -223,7 +225,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
       <Grid flow="col" gap={12} align="center">
-        {icon && <Icons name={icon} width={40} height={40} />}
+        {icon && <Icon name={icon} width={40} height={40} />}
         <Text type="p1" weight="semibold" color="primary">
           {token.name}
         </Text>
@@ -243,7 +245,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
           <Text type="small" weight="semibold" color="secondary">
             Enable Token
           </Text>
-          <Antd.Switch
+          <AntdSwitch
             style={{ justifySelf: 'flex-start' }}
             checked={state.enabled}
             loading={state.enabled === undefined || state.enabling}
@@ -288,7 +290,7 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
                 rules={[
                   { required: true, message: 'Required' },
                   {
-                    validator: (rule: any, value: BigNumber | undefined, cb: Function) => {
+                    validator: (rule: any, value: BigNumber | undefined, cb: (err?: string) => void) => {
                       if (value?.isEqualTo(ZERO_BIG_NUMBER)) {
                         cb('Should be greater than zero');
                       } else if (value?.isGreaterThan(maxAmount)) {

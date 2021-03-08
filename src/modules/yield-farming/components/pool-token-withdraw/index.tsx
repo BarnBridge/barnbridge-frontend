@@ -16,12 +16,12 @@ import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
-import Icons, { TokenIconNames } from 'components/custom/icon';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Hint, Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type PoolTokenWithdrawProps = {
   token: TokenMeta;
@@ -83,7 +83,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
       case BONDTokenMeta:
         return 'bond-token';
       default:
-        return;
+        return undefined;
     }
   }, [token]);
 
@@ -177,6 +177,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
           web3c.bond.reload();
           web3c.yfBOND.reload();
           break;
+        default:
       }
     } catch (e) {}
 
@@ -186,7 +187,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="1fr 1fr 1fr" align="center">
       <Grid flow="col" gap={12} align="center">
-        {icon && <Icons name={icon} width={40} height={40} />}
+        {icon && <Icon name={icon} width={40} height={40} />}
         <Text type="p1" weight="semibold" color="primary">
           {token.name}
         </Text>
@@ -237,7 +238,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
                 rules={[
                   { required: true, message: 'Required' },
                   {
-                    validator: (rule: any, value: BigNumber | undefined, cb: Function) => {
+                    validator: (rule: any, value: BigNumber | undefined, cb: (err?: string) => void) => {
                       if (value?.isEqualTo(ZERO_BIG_NUMBER)) {
                         cb('Should be greater than zero');
                       } else if (value?.isGreaterThan(maxAmount)) {

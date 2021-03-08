@@ -126,7 +126,7 @@ const SeniorTranche: React.FC = () => {
       const lockDays = differenceInDays(maturityDate ?? startOfDay(new Date()), startOfDay(new Date()));
 
       const minGain = await smartYieldContract.getBondGain(amountScaled, lockDays);
-      const minGainMFee = minGain.multipliedBy(1 - ((slippageTolerance ?? 0) / 100));
+      const minGainMFee = minGain.multipliedBy(1 - (slippageTolerance ?? 0) / 100);
       const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
@@ -144,12 +144,12 @@ const SeniorTranche: React.FC = () => {
     setFormState(allValues);
   }
 
-  const getBondGain = useDebounce((pool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+  const getBondGain = useDebounce((pPool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
+    const smartYieldContract = new SYSmartYieldContract(pPool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
 
-    const decimals = pool.underlyingDecimals;
+    const decimals = pPool.underlyingDecimals;
     const amount = pAmount?.multipliedBy(10 ** decimals) ?? ZERO_BIG_NUMBER;
     const today = startOfDay(new Date());
     const days = differenceInDays(pMaturityDate ?? today, today);
@@ -179,17 +179,20 @@ const SeniorTranche: React.FC = () => {
     //   .plus() ?? ZERO_BIG_NUMBER)
     //   .dividedBy(maturityDays)
     //   .dividedBy(365);
-    return bondGain
-      ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
-      .dividedBy(formState.amount ?? 1)
-      .dividedBy(maturityDays)
-      .multipliedBy(365)
-      .multipliedBy(100) ?? ZERO_BIG_NUMBER;
+    return (
+      bondGain
+        ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
+        .dividedBy(formState.amount ?? 1)
+        .dividedBy(maturityDays)
+        .multipliedBy(365)
+        .multipliedBy(100) ?? ZERO_BIG_NUMBER
+    );
   }, [pool, bondGain, maturityDays]);
 
-  const reward = formState.amount?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))?.plus(bondGain ?? ZERO_BIG_NUMBER);
+  const reward = formState.amount
+    ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
+    ?.plus(bondGain ?? ZERO_BIG_NUMBER);
 
-  console.log(apy.toNumber());
   return (
     <>
       <Text type="h3" weight="semibold" color="primary" className="mb-16">

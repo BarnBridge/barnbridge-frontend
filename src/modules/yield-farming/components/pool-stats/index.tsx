@@ -9,9 +9,11 @@ import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
-import { useWeekCountdown } from 'hooks/useCountdown';
+import { UseLeftTime } from 'hooks/useLeftTime';
 
-import s from './styles.module.scss';
+import { getFormattedDuration } from 'utils';
+
+import s from './s.module.scss';
 
 const UNISWAP_EXCHANGE_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
@@ -25,7 +27,6 @@ const PoolStats: React.FC<Props> = ({ className }) => {
     const [, end] = staking.getEpochPeriod(staking.currentEpoch!) ?? [];
     return end;
   }, [staking]);
-  const [untilNextEpoch] = useWeekCountdown(epochEnd);
 
   const totalBondReward = formatBONDValue(aggregated.totalBondReward);
 
@@ -127,9 +128,13 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Hint>
           </Grid>
           <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary">
-              {untilNextEpoch}
-            </Text>
+            <UseLeftTime end={epochEnd ?? 0} delay={1_000}>
+              {leftTime => (
+                <Text type="h2" weight="bold" color="primary">
+                  {leftTime > 0 ? getFormattedDuration(0, epochEnd) : '0s'}
+                </Text>
+              )}
+            </UseLeftTime>
             <Text type="p1" color="secondary">
               until next epoch
             </Text>

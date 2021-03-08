@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import { formatBigValue } from 'web3/utils';
 
@@ -11,12 +11,12 @@ import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import {
+  APISYPool,
+  APISYSeniorRedeem,
   Markets,
   Pools,
   SYMarketMeta,
-  APISYPool,
   SYPoolMeta,
-  APISYSeniorRedeem,
   fetchSYSeniorRedeems,
 } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -91,31 +91,37 @@ const PastPositionsList: React.FC = () => {
   }, [wallet.account, state.page]);
 
   React.useEffect(() => {
-    state.data.map(item => {
-      const pool = pools.find(pool => pool.smartYieldAddress === item.smartYieldAddress);
+    const data = state.data.map(item => {
+      const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.smartYieldAddress);
 
-      item.pool = undefined;
-
-      if (pool) {
-        item.pool = {
-          ...pool,
-          meta: Pools.get(pool.underlyingSymbol),
-          market: Markets.get(pool.protocolId),
-        };
-      }
+      return {
+        ...item,
+        pool: pool
+          ? {
+              ...pool,
+              meta: Pools.get(pool.underlyingSymbol),
+              market: Markets.get(pool.protocolId),
+            }
+          : undefined,
+      };
     });
+
+    setState(prevState => ({
+      ...prevState,
+      data,
+    }));
 
     reload();
   }, [pools, state.data]);
 
   return (
     <>
-      <Antd.Spin spinning={state.loading}>
+      <AntdSpin spinning={state.loading}>
         <div className={s.cards}>
           {state.data.map(entity => (
             <Card key={entity.seniorBondId} noPaddingBody>
               <div className="flex p-24">
-                <IconBubble name={entity.pool?.meta?.icon!} bubbleName={entity.pool?.market?.icon!} className="mr-16" />
+                <IconBubble name={entity.pool?.meta?.icon} bubbleName={entity.pool?.market?.icon} className="mr-16" />
                 <div>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
                     {entity.pool?.underlyingSymbol}
@@ -164,7 +170,7 @@ const PastPositionsList: React.FC = () => {
             </Card>
           ))}
         </div>
-      </Antd.Spin>
+      </AntdSpin>
     </>
   );
 };

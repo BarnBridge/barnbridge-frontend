@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import ERC20_ABI from 'web3/abi/erc20.json';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { MAX_UINT_256, ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
@@ -45,7 +46,7 @@ export function useErc20Contract(tokenAddress: string, targetAddress: string): U
   const wallet = useWallet();
 
   const contract = React.useMemo(() => {
-    return new Web3Contract(require('web3/abi/erc20.json'), tokenAddress, `ERC20_${tokenAddress}`);
+    return new Web3Contract(ERC20_ABI as Web3ContractAbiItem[], tokenAddress, `ERC20_${tokenAddress}`);
   }, [tokenAddress]);
 
   const [state, setState] = useMergeState<Erc20ContractState>(InitialState);

@@ -9,7 +9,7 @@ import { Hint, Text } from 'components/custom/typography';
 import { useAbrogation } from '../../providers/AbrogationProvider';
 import AbrogationVotersModal from '../abrogation-voters-modal';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 const AbrogationVoteResultsCard: React.FC = () => {
   const abrogationCtx = useAbrogation();

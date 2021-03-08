@@ -2,7 +2,7 @@ import React from 'react';
 
 export type MergeStateUpdate<S> = Partial<S> | ((prevState: S) => Partial<S>);
 
-export function mergeState<S>(state: Partial<S>): ((prevState: S) => S) {
+export function mergeState<S>(state: Partial<S>): (prevState: S) => S {
   return (prevState: S): S => {
     return {
       ...prevState,
@@ -22,12 +22,12 @@ function useMergeState<S>(
       set(prev => {
         const next = {
           ...prev,
-          ...(typeof updater === 'function' ? (updater as Function)(prev) : updater),
+          ...(typeof updater === 'function' ? (updater as (value: S) => S)(prev) : updater),
         };
 
-      if (typeof callback === 'function') {
-        callback(next);
-      }
+        if (typeof callback === 'function') {
+          callback(next);
+        }
 
         return next;
       });

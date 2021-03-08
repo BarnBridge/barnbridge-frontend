@@ -8,8 +8,7 @@ import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
-import Icon from 'components/custom/icon';
-import Icons, { TokenIconNames } from 'components/custom/icon';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
@@ -90,13 +89,13 @@ const JuniorTranche: React.FC = () => {
 
   function getMinAmount() {
     if (!pool || !juniorFee || !price) {
-      return;
+      return undefined;
     }
 
     const { from, slippageTolerance } = form.getFieldsValue();
 
     if (!from) {
-      return;
+      return undefined;
     }
 
     const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
@@ -204,13 +203,13 @@ const JuniorTranche: React.FC = () => {
             slider
           />
         </Form.Item>
-        <Icons name="down-arrow-circle" width={32} height={32} className="mh-auto" />
+        <Icon name="down-arrow-circle" width={32} height={32} className="mh-auto" />
         <Form.Item
           className="mb-32"
           label="To"
           extra={
             <div className="grid flow-col col-gap-8 justify-center">
-              <Icons name="refresh" width={16} height={16} />
+              <Icon name="refresh" width={16} height={16} />
               <Text type="small" weight="semibold" color="secondary">
                 {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} j{pool?.underlyingSymbol} per{' '}
                 {pool?.underlyingSymbol}
@@ -222,9 +221,9 @@ const JuniorTranche: React.FC = () => {
             <TokenAmount
               tokenIcon={
                 <IconBubble
-                  name={pool?.meta?.icon!}
+                  name={pool?.meta?.icon}
                   bubbleName="bond-circle-token"
-                  secondBubbleName={pool?.market?.icon!}
+                  secondBubbleName={pool?.market?.icon}
                   width={36}
                   height={36}
                 />

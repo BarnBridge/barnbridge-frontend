@@ -9,7 +9,7 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -25,10 +25,10 @@ export type ActivePositionsTableEntity = PoolsSYPool & {
 
 const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
-    title: "Token Name",
+    title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.meta?.icon!} bubbleName={entity.market?.icon!} />
+        <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
         <Grid flow="row" gap={4} className="ml-auto">
           <ExternalLink
             href={getEtherscanAddressUrl(entity.smartYieldAddress)}
@@ -36,7 +36,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             <Text type="p1" weight="semibold" color="blue">
               {entity.underlyingSymbol}
             </Text>
-            <Icons name="arrow-top-right" width={8} height={8} color="blue" />
+            <Icon name="arrow-top-right" width={8} height={8} color="blue" />
           </ExternalLink>
           <Text type="small" weight="semibold">
             {entity.market?.name}
@@ -46,7 +46,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     ),
   },
   {
-    title: "Current balance",
+    title: 'Current balance',
     width: '20%',
     align: 'right',
     sorter: (a, b) =>

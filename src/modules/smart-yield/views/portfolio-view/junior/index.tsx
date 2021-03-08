@@ -1,5 +1,6 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdForm from 'antd/lib/form';
+import AntdSpin from 'antd/lib/spin';
 import format from 'date-fns/format';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
@@ -11,7 +12,7 @@ import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
@@ -29,6 +30,96 @@ import PortfolioValue from './portfolio-value';
 import { doSequential } from 'utils';
 
 import s from './s.module.scss';
+
+const originatorFilterOptions = [
+  {
+    label: 'All originators',
+    value: 1,
+  },
+  {
+    label: 'All originators 2',
+    value: 2,
+  },
+];
+
+const tokenFilterOptions = [
+  {
+    label: 'All tokens',
+    value: 1,
+  },
+  {
+    label: 'All tokens 2',
+    value: 2,
+  },
+];
+
+const transactionFilterOptions = [
+  {
+    label: 'All transactions',
+    value: 1,
+  },
+  {
+    label: 'All transactions 2',
+    value: 2,
+  },
+];
+
+type FormValues = {
+  originator?: string;
+  token?: string;
+  transactionType?: string;
+};
+
+const Filters: React.FC = () => {
+  const [form] = AntdForm.useForm<FormValues>();
+
+  const handleFinish = React.useCallback((values: FormData) => {
+    console.log(values);
+  }, []);
+
+  return (
+    <Form
+      form={form}
+      initialValues={{
+        originator: originatorFilterOptions[0].value,
+        token: tokenFilterOptions[0].value,
+        transactionType: transactionFilterOptions[0].value,
+      }}
+      validateTrigger={['onSubmit']}
+      onFinish={handleFinish}>
+      <Form.Item label="Originator" name="originator" className="mb-32">
+        <Select
+          loading={false}
+          disabled={false}
+          options={originatorFilterOptions}
+          fixScroll
+          style={{ width: '100%' }}
+        />
+      </Form.Item>
+      <Form.Item label="Token" name="token" className="mb-32">
+        <Select loading={false} disabled={false} options={tokenFilterOptions} fixScroll style={{ width: '100%' }} />
+      </Form.Item>
+      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
+        <Select
+          loading={false}
+          disabled={false}
+          options={transactionFilterOptions}
+          fixScroll
+          style={{ width: '100%' }}
+        />
+      </Form.Item>
+
+      <div className="grid flow-col align-center justify-space-between">
+        <button type="button" onClick={() => form.resetFields()} className="button-text">
+          Reset filters
+        </button>
+        <button type="submit" className="button-primary">
+          Apply filters
+        </button>
+      </div>
+    </Form>
+  );
+};
 
 type State = {
   loadingActive: boolean;
@@ -70,23 +161,25 @@ const JuniorPortfolio: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
-          smartYieldContract.setAccount(wallet.account);
+        const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+        smartYieldContract.setProvider(wallet.provider);
+        smartYieldContract.setAccount(wallet.account);
 
-          const smartYieldBalance = await smartYieldContract.getBalance();
-          const smartYieldAbond = await smartYieldContract.getAbond();
+        return new Promise<any>(resolve => {
+          (async () => {
+            const smartYieldBalance = await smartYieldContract.getBalance();
+            const smartYieldAbond = await smartYieldContract.getAbond();
 
-          if (smartYieldBalance.isGreaterThan(ZERO_BIG_NUMBER)) {
-            resolve({
-              ...pool,
-              smartYieldBalance,
-              smartYieldAbond,
-            });
-          } else {
-            resolve(undefined);
-          }
+            if (smartYieldBalance.isGreaterThan(ZERO_BIG_NUMBER)) {
+              resolve({
+                ...pool,
+                smartYieldBalance,
+                smartYieldAbond,
+              });
+            } else {
+              resolve(undefined);
+            }
+          })();
         });
       });
 
@@ -112,39 +205,41 @@ const JuniorPortfolio: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        return new Promise<any>(async resolve => {
-          const juniorBondContract = new SYJuniorBondContract(pool.juniorBondAddress);
-          juniorBondContract.setProvider(wallet.provider);
-          juniorBondContract.setAccount(wallet.account);
+        const juniorBondContract = new SYJuniorBondContract(pool.juniorBondAddress);
+        juniorBondContract.setProvider(wallet.provider);
+        juniorBondContract.setAccount(wallet.account);
 
-          const jBondIds = await juniorBondContract.getJuniorBondIds();
+        return new Promise<any>(resolve => {
+          (async () => {
+            const jBondIds = await juniorBondContract.getJuniorBondIds();
 
-          if (jBondIds.length === 0) {
-            return resolve(undefined);
-          }
+            if (jBondIds.length === 0) {
+              return resolve(undefined);
+            }
 
-          const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-          smartYieldContract.setProvider(wallet.provider);
+            const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
+            smartYieldContract.setProvider(wallet.provider);
 
-          const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
+            const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
 
-          if (jBonds.length === 0) {
-            return resolve(undefined);
-          }
+            if (jBonds.length === 0) {
+              return resolve(undefined);
+            }
 
-          const items = jBonds.map(jBond => {
-            const item = {
-              pool,
-              jBond,
-              redeem: () => {
-                setRedeemModal(item);
-              },
-            };
+            const items = jBonds.map(jBond => {
+              const item = {
+                pool,
+                jBond,
+                redeem: () => {
+                  setRedeemModal(item);
+                },
+              };
 
-            return item;
-          });
+              return item;
+            });
 
-          resolve(items);
+            return resolve(items);
+          })();
         });
       });
 
@@ -192,7 +287,7 @@ const JuniorPortfolio: React.FC = () => {
   return (
     <>
       <div className={s.portfolioContainer}>
-        <Antd.Spin spinning={state.loadingActive || state.loadingLocked}>
+        <AntdSpin spinning={state.loadingActive || state.loadingLocked}>
           <PortfolioBalance
             total={totalBalance?.toNumber()}
             aggregated={apy * 100}
@@ -211,7 +306,7 @@ const JuniorPortfolio: React.FC = () => {
               ['Locked balance', lockedBalance?.toNumber(), 'var(--theme-purple700-color)'],
             ]}
           />
-        </Antd.Spin>
+        </AntdSpin>
         <PortfolioValue />
       </div>
       <Card className="mb-32" noPaddingBody>
@@ -229,7 +324,7 @@ const JuniorPortfolio: React.FC = () => {
               onVisibleChange={setFiltersVisible}
               placement="bottomRight">
               <button type="button" className="button-ghost-monochrome ml-auto mb-12">
-                <Icons name="filter" className="mr-8" color="inherit" />
+                <Icon name="filter" className="mr-8" color="inherit" />
                 Filters
               </button>
             </Popover>
@@ -290,7 +385,7 @@ const JuniorPortfolio: React.FC = () => {
             onVisibleChange={setFiltersActiveVisible}
             placement="bottomRight">
             <button type="button" className="button-ghost-monochrome ml-auto">
-              <Icons name="filter" className="mr-8" color="inherit" />
+              <Icon name="filter" className="mr-8" color="inherit" />
               Filters
             </button>
           </Popover>
@@ -302,93 +397,3 @@ const JuniorPortfolio: React.FC = () => {
 };
 
 export default JuniorPortfolio;
-
-const originatorFilterOptions = [
-  {
-    label: 'All originators',
-    value: 1,
-  },
-  {
-    label: 'All originators 2',
-    value: 2,
-  },
-];
-
-const tokenFilterOptions = [
-  {
-    label: 'All tokens',
-    value: 1,
-  },
-  {
-    label: 'All tokens 2',
-    value: 2,
-  },
-];
-
-const transactionFilterOptions = [
-  {
-    label: 'All transactions',
-    value: 1,
-  },
-  {
-    label: 'All transactions 2',
-    value: 2,
-  },
-];
-
-type FormValues = {
-  originator?: string;
-  token?: string;
-  transactionType?: string;
-};
-
-const Filters: React.FC = () => {
-  const [form] = Antd.Form.useForm<FormValues>();
-
-  const handleFinish = React.useCallback((values: FormData) => {
-    console.log(values);
-  }, []);
-
-  return (
-    <Form
-      form={form}
-      initialValues={{
-        originator: originatorFilterOptions[0].value,
-        token: tokenFilterOptions[0].value,
-        transactionType: transactionFilterOptions[0].value,
-      }}
-      validateTrigger={['onSubmit']}
-      onFinish={handleFinish}>
-      <Form.Item label="Originator" name="originator" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={originatorFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-      <Form.Item label="Token" name="token" className="mb-32">
-        <Select loading={false} disabled={false} options={tokenFilterOptions} fixScroll style={{ width: '100%' }} />
-      </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={transactionFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-
-      <div className="grid flow-col align-center justify-space-between">
-        <button type="button" onClick={() => form.resetFields()} className="button-text">
-          Reset filters
-        </button>
-        <button type="submit" className="button-primary">
-          Apply filters
-        </button>
-      </div>
-    </Form>
-  );
-};

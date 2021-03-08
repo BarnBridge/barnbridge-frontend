@@ -1,5 +1,5 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdTypography from 'antd/lib/typography';
 import cn from 'classnames';
 import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
@@ -9,10 +9,10 @@ import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
 import ExpandableCard, { ExpandableCardProps } from 'components/custom/expandable-card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type ProposalActionCardProps = ExpandableCardProps & {
   title: React.ReactNode;
@@ -20,8 +20,8 @@ export type ProposalActionCardProps = ExpandableCardProps & {
   signature: string;
   callData: string;
   showSettings?: boolean;
-  onDeleteAction?: Function;
-  onEditAction?: Function;
+  onDeleteAction?: () => void;
+  onEditAction?: () => void;
 };
 
 const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
@@ -66,7 +66,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
   const ActionMenuItems: PopoverMenuItem[] = [
     {
       key: 'sig',
-      icon: <Icons name="chevron-right" />,
+      icon: <Icon name="chevron-right" />,
       title: (
         <Text type="p1" weight="semibold">
           {isSignature ? 'Show transaction' : 'Show function signature'}
@@ -75,12 +75,12 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
     },
     {
       key: 'edit',
-      icon: <Icons name="pencil-outlined" />,
+      icon: <Icon name="pencil-outlined" />,
       title: 'Edit action',
     },
     {
       key: 'delete',
-      icon: <Icons name="bin-outlined" color="red" />,
+      icon: <Icon name="bin-outlined" color="red" />,
       title: (
         <Text type="p1" weight="semibold" color="red">
           Delete action
@@ -125,7 +125,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
       extra={
         showSettings ? (
           <PopoverMenu items={ActionMenuItems} placement="bottomLeft" onClick={key => handleActionMenu(String(key))}>
-            <Button type="link" icon={<Icons name="gear" />} />
+            <Button type="link" icon={<Icon name="gear" />} />
           </PopoverMenu>
         ) : (
           <Button type="link" onClick={handleShowSignature}>
@@ -154,7 +154,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
           </Text>
         </ExternalLink>
         {signature && (
-          <Antd.Typography.Paragraph
+          <AntdTypography.Paragraph
             className={cn(s.paragraph, expanded && s.expanded)}
             style={{ maxWidth: '514px' }}
             ellipsis={{
@@ -163,7 +163,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
               onEllipsis: handleEllipsis,
             }}>
             .{isSignature ? signature : `${functionFragment?.name}(${stringParams})`}
-          </Antd.Typography.Paragraph>
+          </AntdTypography.Paragraph>
         )}
       </div>
     </ExpandableCard>

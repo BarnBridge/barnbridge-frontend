@@ -2,10 +2,9 @@ import React, { useState } from 'react';
 import * as Antd from 'antd';
 
 import Form from 'components/antd/form';
-import Button from 'components/antd/button';
 import Popover from 'components/antd/popover';
 import Select from 'components/antd/select';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 
 const originatorFilterOptions = [
   {
@@ -46,7 +45,6 @@ type FormValues = {
   transactionType?: string;
 };
 
-
 const FiltersPopup: React.FC = () => {
   const [visible, setVisible] = useState(false);
   const [form] = Antd.Form.useForm<FormValues>();
@@ -62,58 +60,61 @@ const FiltersPopup: React.FC = () => {
       overlayStyle={{ width: 348 }}
       content={
         <>
-        <Form
-          form={form}
-          initialValues={{
-            originator: originatorFilterOptions[0].value,
-            token: tokenFilterOptions[0].value,
-            transactionType: transactionFilterOptions[0].value,
-          }}
-          validateTrigger={['onSubmit']}
-          onFinish={handleFinish}>
-          <Form.Item label="Originator" name="originator" className="mb-32">
-            <Select
-              loading={false}
-              disabled={false}
-              options={originatorFilterOptions}
-              fixScroll
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-          <Form.Item label="Token" name="token" className="mb-32">
-            <Select
-              loading={false}
-              disabled={false}
-              options={tokenFilterOptions}
-              fixScroll
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
-          <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-            <Select
-              loading={false}
-              disabled={false}
-              options={transactionFilterOptions}
-              fixScroll
-              style={{ width: '100%' }}
-            />
-          </Form.Item>
+          <Form
+            form={form}
+            initialValues={{
+              originator: originatorFilterOptions[0].value,
+              token: tokenFilterOptions[0].value,
+              transactionType: transactionFilterOptions[0].value,
+            }}
+            validateTrigger={['onSubmit']}
+            onFinish={handleFinish}>
+            <Form.Item label="Originator" name="originator" className="mb-32">
+              <Select
+                loading={false}
+                disabled={false}
+                options={originatorFilterOptions}
+                fixScroll
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item label="Token" name="token" className="mb-32">
+              <Select
+                loading={false}
+                disabled={false}
+                options={tokenFilterOptions}
+                fixScroll
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
+            <Form.Item label="Transaction type" name="transactionType" className="mb-32">
+              <Select
+                loading={false}
+                disabled={false}
+                options={transactionFilterOptions}
+                fixScroll
+                style={{ width: '100%' }}
+              />
+            </Form.Item>
 
-          <div className="grid flow-col align-center justify-space-between">
-            <button type="button" onClick={() => form.resetFields()} className="button-text">
-              Reset filters
-            </button>
-            <button type="submit" className="button-primary">
-              Apply filters
-            </button>
-          </div>
-        </Form>
+            <div className="grid flow-col align-center justify-space-between">
+              <button type="button" onClick={() => form.resetFields()} className="button-text">
+                Reset filters
+              </button>
+              <button type="submit" className="button-primary">
+                Apply filters
+              </button>
+            </div>
+          </Form>
         </>
       }
       visible={visible}
       onVisibleChange={setVisible}>
-      <button type="button" className="button-ghost-monochrome ml-auto" style={{ backgroundColor: 'var(--theme-card-color)' }}>
-        <Icons name="filter" className="mr-8" color="inherit" />
+      <button
+        type="button"
+        className="button-ghost-monochrome ml-auto"
+        style={{ backgroundColor: 'var(--theme-card-color)' }}>
+        <Icon name="filter" className="mr-8" color="inherit" />
         Filters
       </button>
     </Popover>

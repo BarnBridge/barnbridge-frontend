@@ -4,13 +4,13 @@ import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type WarningContextType = {
-  addWarn: (opts: WarnType) => Function;
+  addWarn: (opts: WarnType) => () => void;
 };
 
 const WarningContext = React.createContext<WarningContextType>({
@@ -55,14 +55,14 @@ const Warn: React.FC<WarnProps> = props => {
         'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24',
       )}>
       <Grid flow="col" gap={16} align="center">
-        <Icons name="warning-outlined" color="red" />
+        <Icon name="warning-outlined" color="red" />
         <Text type="p2" weight="semibold" className={s.text}>
           {text}
         </Text>
       </Grid>
       {closable && (
         <Button type="link" onClick={handleClose}>
-          <Icons name="close" className={s.closeIcon} />
+          <Icon name="close" className={s.closeIcon} />
         </Button>
       )}
     </div>
@@ -72,16 +72,16 @@ const Warn: React.FC<WarnProps> = props => {
 const WarningProvider: React.FC = props => {
   const [warns, setWarns] = React.useState<WarnType[]>([]);
 
+  function removeWarm(warn: WarnType) {
+    setWarns(prevState => prevState.filter(w => w !== warn));
+  }
+
   function addWarn(warn: WarnType) {
     setWarns(prevState => [...prevState, warn]);
 
     return () => {
       removeWarm(warn);
     };
-  }
-
-  function removeWarm(warn: WarnType) {
-    setWarns(prevState => prevState.filter(w => w !== warn));
   }
 
   return (

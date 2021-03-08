@@ -3,9 +3,9 @@ import generatePicker, { PickerProps as AntdPickerProps } from 'antd/lib/date-pi
 import cn from 'classnames';
 import dateFnsGenerateConfig from 'rc-picker/lib/generate/dateFns';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
-export type DatePickerProps = AntdPickerProps<Date> & {};
+export type DatePickerProps = AntdPickerProps<Date>;
 
 const DateFNSPicker = generatePicker<Date>(dateFnsGenerateConfig);
 

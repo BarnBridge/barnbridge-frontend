@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type SupportedFlow = 'row' | 'col';
 export type SupportedAlign = 'start' | 'center' | 'end';

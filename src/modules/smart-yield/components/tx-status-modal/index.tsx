@@ -3,7 +3,7 @@ import React from 'react';
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import ExternalLink from 'components/custom/externalLink';
-import Icons from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 type Props = ModalProps & {
@@ -21,7 +21,7 @@ const TxStatusModal: React.FC<Props> = props => {
       <div className="grid flow-row pv-8 ph-8">
         {state === 'progress' && (
           <>
-            <Icons name="tx-progress" width={180} height={160} className="mb-32 mh-auto" />
+            <Icon name="tx-progress" width={180} height={160} className="mb-32 mh-auto" />
             <Text type="h3" weight="semibold" color="primary" className="mb-64 text-center">
               Your transaction is being processed ...
             </Text>
@@ -34,7 +34,7 @@ const TxStatusModal: React.FC<Props> = props => {
         )}
         {state === 'success' && (
           <>
-            <Icons name="tx-success" width={180} height={160} className="mb-32 mh-auto" />
+            <Icon name="tx-success" width={180} height={160} className="mb-32 mh-auto" />
             <Text type="h3" weight="semibold" color="primary" className="mb-16 text-center">
               Congratulations!
             </Text>
@@ -51,7 +51,7 @@ const TxStatusModal: React.FC<Props> = props => {
         )}
         {state === 'failure' && (
           <>
-            <Icons name="tx-failure" width={180} height={160} className="mb-32 mh-auto" />
+            <Icon name="tx-failure" width={180} height={160} className="mb-32 mh-auto" />
             <Text type="h3" weight="semibold" color="primary" className="mb-16 text-center">
               Failed!
             </Text>

@@ -10,7 +10,7 @@ import { WalletConnectors, useWallet } from 'wallets/wallet';
 
 import { WalletConnector } from 'wallets/types';
 
-export type ConnectWalletModalProps = ModalProps & {};
+export type ConnectWalletModalProps = ModalProps;
 
 type ConnectWalletModalState = {
   showLedgerModal: boolean;

@@ -7,7 +7,7 @@ import Input from 'components/antd/input';
 export type NumericInputProps = Omit<InputProps, 'value' | 'onChange'> & {
   value?: BigNumber | number;
   maximumFractionDigits?: number;
-  onChange?: (value: BigNumber) => void;
+  onChange?: (value: BigNumber | undefined) => void;
 };
 
 function removeComma(value: string): string {
@@ -17,9 +17,9 @@ function removeComma(value: string): string {
 const NumericInput: React.FC<NumericInputProps> = props => {
   const { maximumFractionDigits, ...inputProps } = props;
 
-  const [, forceRender] = React.useState<{}>({});
+  const [, forceRender] = React.useState({});
   const valueRef = React.useRef<string>('');
-  const onChangeRef = React.useRef<Function | undefined>();
+  const onChangeRef = React.useRef<(value: BigNumber | undefined) => void | undefined>();
   onChangeRef.current = props.onChange;
 
   const stateVal = valueRef.current;

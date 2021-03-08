@@ -69,7 +69,7 @@ async function fetchPoolTransactions(
         return summaries;
       }
 
-      Object.entries(stakingActions).forEach(([k, v]) => {
+      Object.entries(stakingActions).forEach(([, v]) => {
         summaries.push({
           deposits: Number(v.sumDeposits),
           withdrawals: Number(v.sumWithdrawals),
