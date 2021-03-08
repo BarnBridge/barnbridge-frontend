@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import * as Antd from 'antd';
 
-import Button from 'components/antd/button';
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select from 'components/antd/select';
@@ -111,10 +110,13 @@ const FiltersPopup: React.FC = () => {
       }
       visible={visible}
       onVisibleChange={setVisible}>
-      <Button type="select" className="ml-auto">
-        <Icon name="filter" />
+      <button
+        type="button"
+        className="button-ghost-monochrome ml-auto"
+        style={{ backgroundColor: 'var(--theme-card-color)' }}>
+        <Icon name="filter" className="mr-8" color="inherit" />
         Filters
-      </Button>
+      </button>
     </Popover>
   );
 };

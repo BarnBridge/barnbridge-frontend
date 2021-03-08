@@ -37,7 +37,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
           <Grid flow="col" align="center" justify="space-between">
             <Hint
               text={
-                <span>
+                <Text type="p2">
                   This number shows the Total Value Locked across the staking pool(s), and the effective Total Value
                   Locked.
                   <br />
@@ -46,7 +46,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
                   proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked
                   balance and effective staked balance will be the equal, therefore TVL and effective TVL will differ in
                   most cases.
-                </span>
+                </Text>
               }>
               <Text type="lb2" weight="semibold" color="red">
                 Total Value Locked
@@ -68,7 +68,12 @@ const PoolStats: React.FC<Props> = ({ className }) => {
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
             <Hint
-              text={`This number shows the $BOND token rewards distributed so far out of the total of ${totalBondReward} that are going to be available for Yield Farming.`}>
+              text={
+                <Text type="p2">
+                  This number shows the $BOND token rewards distributed so far out of the total of ${totalBondReward}{' '}
+                  that are going to be available for Yield Farming.
+                </Text>
+              }>
               <Text type="lb2" weight="semibold" color="red">
                 Bond Rewards
               </Text>
@@ -108,7 +113,15 @@ const PoolStats: React.FC<Props> = ({ className }) => {
       <Card>
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
-            <Hint text="This counter shows the time left in the current epoch. The pool(s) below are synchronized and have epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive rewards proportional to the time they are staked, but the funds must stay staked until the clock runs out and the epoch ends in order to be able to harvest the rewards.">
+            <Hint
+              text={
+                <Text type="p2">
+                  This counter shows the time left in the current epoch. The pool(s) below are synchronized and have
+                  epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive
+                  rewards proportional to the time they are staked, but the funds must stay staked until the clock runs
+                  out and the epoch ends in order to be able to harvest the rewards.
+                </Text>
+              }>
               <Text type="lb2" weight="semibold" color="red">
                 Time Left
               </Text>

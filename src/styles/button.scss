@@ -168,3 +168,24 @@
     color: var(--theme-primary-color);
   }
 }
+
+.link-blue {
+  color: var(--theme-blue-color);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 24px;
+
+  &:hover,
+  &:active {
+    color: var(--theme-blue400-color);
+  }
+
+  [data-theme='dark'] & {
+    color: var(--theme-blue400-color);
+
+    &:hover,
+    &:active {
+      color: var(--theme-blue-color);
+    }
+  }
+}

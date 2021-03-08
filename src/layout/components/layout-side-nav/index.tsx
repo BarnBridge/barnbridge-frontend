@@ -1,52 +1,15 @@
 import React from 'react';
-import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
-import AntdLayout from 'antd/lib/layout';
+import { isMobile } from 'react-device-detect';
+import { NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
-import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
-import Grid from 'components/custom/grid';
-import Icon, { NavIconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
 import { useTheme } from 'components/providers/theme-provider';
 
 import s from './s.module.scss';
-
-export type NavLinkProps = {
-  icon: NavIconNames;
-  label: string;
-  path: string;
-  expanded: boolean;
-};
-
-const NavLink: React.FC<NavLinkProps> = props => {
-  const { icon, label, path, expanded } = props;
-
-  const history = useHistory();
-  const isActivePath = Boolean(useRouteMatch({ path, exact: path === '/' }));
-
-  function handleClick() {
-    history.push(path);
-  }
-
-  return (
-    <Tooltip title={label} placement="right">
-      <Grid flow="col" className={cn(s.navLink, isActivePath && s.isActive)}>
-        <div className={s.activeTick} />
-        <Button type="light" onClick={handleClick}>
-          <Icon name={icon} />
-          {expanded && (
-            <Text type="p2" weight="semibold" className={s.linkLabel}>
-              {label}
-            </Text>
-          )}
-        </Button>
-      </Grid>
-    </Tooltip>
-  );
-};
 
 const LayoutSideNav: React.FC = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
@@ -58,6 +21,14 @@ const LayoutSideNav: React.FC = () => {
     setNavOpen(false);
   }, [location.pathname]);
 
+  React.useEffect(() => {
+    if (navOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [navOpen]);
+
   function handleExpand() {
     setExpanded(prevState => !prevState);
   }
@@ -66,59 +37,72 @@ const LayoutSideNav: React.FC = () => {
     toggleDarkTheme();
   }
 
+  const displayTooltip = !isMobile && !expanded;
+
   return (
     <>
       <div className={cn(s.mask, { [s.open]: navOpen })} />
-      <AntdLayout.Sider
-        className={cn(s.component, (expanded || navOpen) && s.expanded, {
-          [s.open]: navOpen,
-        })}
-        collapsed={!expanded && !navOpen}
-        collapsedWidth={72}
-        width={200}>
-        <Grid flow="col" gap={12} className={cn(s.headerLogo, 'mb-48')}>
+      <aside className={cn(s.aside, { [s.expanded]: expanded, [s.open]: navOpen })}>
+        <div className={s.logoContainer}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
             <Icon name="close-circle-outlined" />
           </button>
-          <Icon name="bond-square-token" />
-          {(expanded || navOpen) && <Icon name="barnbridge" width="113" color="primary" />}
-        </Grid>
-        <Grid flow="row" gap={24}>
-          <NavLink label="Yield Farming" icon="savings-outlined" path="/yield-farming" expanded={expanded || navOpen} />
-          <NavLink label="Governance" icon="bank-outlined" path="/governance" expanded={expanded || navOpen} />
-          <NavLink label="Smart Yield" icon="paper-bill-outlined" path="/smart-yield" expanded={expanded || navOpen} />
-        </Grid>
-        <Grid flow="row" gap={24} className={s.footerWrap} colsTemplate="48px">
-          <ExternalLink href="https://docs.barnbridge.com/">
-            <Button type="light">
+          <Icon name="bond-square-token" className={s.logo} />
+          <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+        </div>
+        <nav className={s.top}>
+          <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
+            <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
+              <Icon name="savings-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Yield Farming
+              </Text>
+            </NavLink>
+          </Tooltip>
+          <Tooltip title={displayTooltip && 'Governance'} placement="right">
+            <NavLink to="/governance" className={s.button} activeClassName={s.active}>
+              <Icon name="bank-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Governance
+              </Text>
+            </NavLink>
+          </Tooltip>
+          <Tooltip title={displayTooltip && 'Smart Yield'} placement="right">
+            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+              <Icon name="paper-bill-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Smart Yield
+              </Text>
+            </NavLink>
+          </Tooltip>
+        </nav>
+        <div className={s.bottom}>
+          <Tooltip title={displayTooltip && 'Docs'} placement="right">
+            <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
               <Icon name="docs-outlined" />
-              {(expanded || navOpen) && (
-                <Text type="p2" weight="semibold" className={s.linkLabel}>
-                  Docs
-                </Text>
-              )}
-            </Button>
-          </ExternalLink>
-          <Button type="light" onClick={handleThemeToggle}>
-            <Icon name={isDarkTheme ? 'sun' : 'moon'} />
-            {(expanded || navOpen) && (
-              <Text type="p2" weight="semibold" className={s.linkLabel}>
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Docs
+              </Text>
+            </a>
+          </Tooltip>
+          <Tooltip title={displayTooltip && (isDarkTheme ? 'Light Theme' : 'Dark Theme')} placement="right">
+            <button type="button" onClick={handleThemeToggle} className={s.button}>
+              <Icon name={isDarkTheme ? 'sun' : 'moon'} />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
                 {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
               </Text>
-            )}
-          </Button>
-          {!navOpen && (
-            <Button type="light" className={s.hideLink} onClick={handleExpand}>
-              <Icon name="right-arrow-circle-outlined" />
-              {expanded && (
-                <Text type="p2" weight="semibold" className={s.linkLabel}>
-                  Hide menu
-                </Text>
-              )}
-            </Button>
-          )}
-        </Grid>
-      </AntdLayout.Sider>
+            </button>
+          </Tooltip>
+          <Tooltip title={displayTooltip && (expanded ? 'Hide menu' : 'Show menu')} placement="right">
+            <button type="button" onClick={handleExpand} className={cn(s.button, 'hidden-mobile hidden-tablet')}>
+              <Icon name="right-arrow-circle-outlined" style={{ transform: expanded ? 'rotate(-180deg)' : 'none' }} />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Hide menu
+              </Text>
+            </button>
+          </Tooltip>
+        </div>
+      </aside>
     </>
   );
 };

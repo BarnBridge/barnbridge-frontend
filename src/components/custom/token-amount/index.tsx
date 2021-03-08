@@ -3,7 +3,6 @@ import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { MAX_UINT_256, formatBigValue } from 'web3/utils';
 
-import Button from 'components/antd/button';
 import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
 import Icon, { TokenIconNames } from 'components/custom/icon';
@@ -66,9 +65,9 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
         }
         addonAfter={
           max !== undefined ? (
-            <Button type="default" className={s.maxBtn} disabled={disabled} onClick={onMaxHandle}>
+            <button type="button" className="button-ghost" disabled={disabled} onClick={onMaxHandle}>
               MAX
-            </Button>
+            </button>
           ) : null
         }
         maximumFractionDigits={maximumFractionDigits}

@@ -78,7 +78,8 @@ export type IconNames =
   | 'filter'
   | 'tx-progress'
   | 'tx-success'
-  | 'tx-failure';
+  | 'tx-failure'
+  | 'burger';
 
 export type IconProps = {
   name: IconNames;

@@ -58,7 +58,7 @@ export const Hint: React.FC<HintProps> = props => {
       <span>{children}</span>
       <Tooltip title={text} className={s.tooltip}>
         <span>
-          <Icon name="info-outlined" width={16} height={16} />
+          <Icon name="info-outlined" width={16} height={16} className={s.icon} />
         </span>
       </Tooltip>
     </div>

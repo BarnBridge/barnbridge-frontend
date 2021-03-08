@@ -22,8 +22,8 @@ const Columns: ColumnsType<APIVoterEntity> = [
     render: (value: string) => (
       <Grid flow="col" gap={16} align="center">
         <Identicon address={value} width={32} height={32} />
-        <ExternalLink href={getEtherscanAddressUrl(value)}>
-          <Text type="p1" weight="semibold" color="blue" ellipsis>
+        <ExternalLink href={getEtherscanAddressUrl(value)} className="link-blue">
+          <Text type="p1" weight="semibold" ellipsis>
             {value}
           </Text>
         </ExternalLink>
@@ -140,10 +140,10 @@ const VotersTable: React.FC<VotersTableProps> = props => {
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
             <>
-              <Text type="p2" weight="semibold" color="secondary" className="tablet-only desktop-only">
+              <Text type="p2" weight="semibold" color="secondary" className="hidden-mobile">
                 Showing {from} to {to} out of {total} stakers
               </Text>
-              <Text type="p2" weight="semibold" color="secondary" className="mobile-only">
+              <Text type="p2" weight="semibold" color="secondary" className="hidden-tablet hidden-desktop">
                 {from}..{to} of {total}
               </Text>
             </>

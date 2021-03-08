@@ -1137,5 +1137,10 @@
       <path d="M80.7958 95.394L101.025 75.1934" stroke="#717980" stroke-width="2" stroke-miterlimit="10"
             stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+
+    <symbol id="icon__burger" fill="none" viewBox="0 0 24 25">
+      <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.2 6.012h17.6M3.2 12.015h17.6M3.2 18.418h17.6"/>
+    </symbol>
+
   </defs>
 </svg>

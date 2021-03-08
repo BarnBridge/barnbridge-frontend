@@ -94,26 +94,20 @@
   }
 }
 
-.mobile-only {
-  content-visibility: hidden;
-
+.hidden-mobile {
   @media (max-width: 480px) {
-    content-visibility: initial;
+    display: none !important;
   }
 }
 
-.tablet-only {
-  content-visibility: hidden;
-
-  @media (min-width: 481px) and (max-width: 768px) {
-    content-visibility: initial;
+.hidden-tablet {
+  @media (min-width: 481px) and (max-width: 767px) {
+    display: none !important;
   }
 }
 
-.desktop-only {
-  content-visibility: initial;
-
-  @media (max-width: 768px) {
-    content-visibility: hidden;
+.hidden-desktop {
+  @media (min-width: 768px) {
+    display: none !important;
   }
 }

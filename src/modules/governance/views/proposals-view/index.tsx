@@ -156,7 +156,7 @@ const ProposalsViewInner: React.FC = () => {
         tabBarExtraContent={
           <Input
             className={s.search}
-            prefix={<Icon name="search-outlined" />}
+            prefix={<Icon name="search-outlined" width={16} height={16} />}
             placeholder="Search proposal"
             onChange={ev => handleSearchChange(ev)}
           />
