@@ -69,6 +69,7 @@
       "import/no-named-as-default-member": "off",
       "consistent-return": "off",
       "prefer-const": "off",
+      "no-debugger": "off",
       "no-console": "off",
       "no-param-reassign": "off",
       "no-empty": [

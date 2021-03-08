@@ -111,6 +111,7 @@ const SeniorTranche: React.FC = () => {
 
     setState(
       mergeState<State>({
+        depositModalVisible: false,
         isSaving: true,
       }),
     );
@@ -171,7 +172,7 @@ const SeniorTranche: React.FC = () => {
   }, [formState.maturityDate]);
 
   const apy = React.useMemo(() => {
-    if (maturityDays <= 0) {
+    if (maturityDays <= 0 || !formState.amount || formState.amount?.isEqualTo(ZERO_BIG_NUMBER)) {
       return ZERO_BIG_NUMBER;
     }
 
@@ -330,7 +331,7 @@ const SeniorTranche: React.FC = () => {
                 <Text type="small" weight="semibold" color="secondary">
                   APY
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="p1" weight="semibold" color="green">
                   {apy.toFixed(2)}%
                 </Text>
               </div>

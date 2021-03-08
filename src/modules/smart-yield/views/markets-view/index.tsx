@@ -9,7 +9,7 @@ import { Hint, Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
-import PoolsTable from 'modules/smart-yield/views/overview-view/pools-table';
+import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
 
 type State = {
   activeMarket?: SYMarketMeta;
@@ -19,7 +19,7 @@ const InitialState: State = {
   activeMarket: Array.from(Markets.values())[0],
 };
 
-const OverviewView: React.FC = () => {
+const MarketsView: React.FC = () => {
   const poolsCtx = usePools();
   const { pools, loading } = poolsCtx;
 
@@ -77,4 +77,4 @@ const OverviewView: React.FC = () => {
   );
 };
 
-export default OverviewView;
+export default MarketsView;

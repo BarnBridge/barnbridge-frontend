@@ -5,6 +5,7 @@ import BigNumber from 'bignumber.js';
 import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
@@ -37,14 +38,29 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'Senior Liquidity',
       sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
+      align: 'center',
       render: (_, entity) => (
         <Grid flow="row" gap={4}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.state.seniorLiquidity)}
-          </Text>
-          <Text type="small" weight="semibold">
-            {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
-          </Text>
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatBigValue(entity.state.seniorLiquidity)}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
+                </Text>
+              </>
+            }>
+            <Text type="p1" weight="semibold" color="primary">
+              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
+            </Text>
+            <Text type="small" weight="semibold">
+              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+                entity.state.seniorLiquidity,
+              )}
+            </Text>
+          </Tooltip>
         </Grid>
       ),
     },
@@ -52,7 +68,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       title: 'Senior APY',
       sorter: (a, b) => a.state.seniorApy - b.state.seniorApy,
       render: (_, entity) => (
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="p1" weight="semibold" color="green">
           {formatBigValue(entity.state.seniorApy * 100)}%
         </Text>
       ),
@@ -60,14 +76,29 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'Junior Liquidity',
       sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
+      align: 'center',
       render: (_, entity) => (
         <Grid flow="row" gap={4}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.state.juniorLiquidity)}
-          </Text>
-          <Text type="small" weight="semibold">
-            {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
-          </Text>
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatBigValue(entity.state.juniorLiquidity)}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
+                </Text>
+              </>
+            }>
+            <Text type="p1" weight="semibold" color="primary">
+              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
+            </Text>
+            <Text type="small" weight="semibold">
+              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+                entity.state.juniorLiquidity,
+              )}
+            </Text>
+          </Tooltip>
         </Grid>
       ),
     },

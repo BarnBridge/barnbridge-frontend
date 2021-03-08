@@ -4,6 +4,7 @@ import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
 import { mergeState } from 'hooks/useMergeState';
+import { useReload } from 'hooks/useReload';
 import { fetchSYSeniorPortfolioValues } from 'modules/smart-yield/api';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
@@ -47,6 +48,9 @@ const InitialState: State = {
 const SeniorPortfolio: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
+  const [reload, version] = useReload();
+
+  const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
   const [activeTab, setActiveTab] = React.useState<string>('active');
@@ -84,7 +88,7 @@ const SeniorPortfolio: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account]);
+  }, [wallet.account, version]);
 
   React.useEffect(() => {
     if (!wallet.account) {
@@ -98,7 +102,7 @@ const SeniorPortfolio: React.FC = () => {
     );
 
     (async () => {
-      const result = await doSequential<PoolsSYPool>(poolsCtx.pools, async pool => {
+      const result = await doSequential<PoolsSYPool>(pools, async pool => {
         const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
         seniorBondContract.setProvider(wallet.provider);
         seniorBondContract.setAccount(wallet.account);
@@ -137,7 +141,11 @@ const SeniorPortfolio: React.FC = () => {
         }),
       );
     })();
-  }, [wallet.account, poolsCtx]);
+  }, [wallet.account, pools, version]);
+
+  function handleActivePositionRefresh() {
+    reload();
+  }
 
   const totalPrincipal = state.data?.reduce((a, c) => {
     return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
@@ -199,7 +207,12 @@ const SeniorPortfolio: React.FC = () => {
           <AntdSpin spinning={state.loading}>
             <div className={s.cards}>
               {state.data.map(entity => (
-                <ActivePosition key={entity.sBond.sBondId} pool={entity.pool} sBond={entity.sBond} />
+                <ActivePosition
+                  key={entity.sBond.sBondId}
+                  pool={entity.pool}
+                  sBond={entity.sBond}
+                  onRefresh={handleActivePositionRefresh}
+                />
               ))}
             </div>
           </AntdSpin>

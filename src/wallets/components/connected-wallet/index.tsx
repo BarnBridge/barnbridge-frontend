@@ -99,7 +99,7 @@ const ConnectedWallet: React.FC = () => {
           </Grid>
         </Card>
       }>
-      <AntdBadge dot count={1} showZero={false}>
+      <AntdBadge dot count={0} showZero={false}>
         <Icon name="bell-outlined" width={26} height={26} />
       </AntdBadge>
     </Popover>

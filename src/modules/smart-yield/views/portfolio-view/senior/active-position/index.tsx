@@ -23,6 +23,7 @@ import { getFormattedDuration } from 'utils';
 type ActivePositionProps = {
   pool: PoolsSYPool;
   sBond: SYSeniorBondToken;
+  onRefresh: () => void;
 };
 
 type TransferConfirmArgs = ConfirmTxModalArgs & {
@@ -30,11 +31,12 @@ type TransferConfirmArgs = ConfirmTxModalArgs & {
 };
 
 const ActivePosition: React.FC<ActivePositionProps> = props => {
-  const { pool, sBond } = props;
+  const { pool, sBond, onRefresh } = props;
 
   const wallet = useWallet();
-  const [redeemModalVisible, showRedeemModal] = React.useState<boolean>();
-  const [transferModalVisible, showTransferModal] = React.useState<boolean>();
+  const [redeemModalVisible, showRedeemModal] = React.useState<boolean>(false);
+  const [transferModalVisible, showTransferModal] = React.useState<boolean>(false);
+  const [saving, setSaving] = React.useState<boolean>(false);
 
   function handleRedeemShow() {
     showRedeemModal(true);
@@ -49,11 +51,16 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       return Promise.reject();
     }
 
+    setSaving(true);
+
     const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
     smartYieldContract.setProvider(wallet.provider);
     smartYieldContract.setAccount(wallet.account);
 
-    return smartYieldContract.redeemBondSend(sBond.sBondId, args.gasPrice);
+    return smartYieldContract.redeemBondSend(sBond.sBondId, args.gasPrice).then(() => {
+      onRefresh();
+      setSaving(false);
+    });
   }
 
   function handleTransferShow() {
@@ -69,11 +76,16 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       return Promise.reject();
     }
 
+    setSaving(true);
+
     const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
     seniorBondContract.setProvider(wallet.provider);
     seniorBondContract.setAccount(wallet.account);
 
-    return seniorBondContract.transferFromSend(wallet.account, args.address, sBond.sBondId, args.gasPrice);
+    return seniorBondContract.transferFromSend(wallet.account, args.address, sBond.sBondId, args.gasPrice).then(() => {
+      onRefresh();
+      setSaving(false);
+    });
   }
 
   const maturesAt = sBond.maturesAt * 1_000;
@@ -111,7 +123,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           Deposited
         </Text>
         <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" tag="span" weight="semibold" color="primary">
             {formatBigValue(deposited)}
           </Text>
         </Tooltip>
@@ -122,7 +134,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           Redeemable
         </Text>
         <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" tag="span" weight="semibold" color="primary">
             {formatBigValue(redeemable)}
           </Text>
         </Tooltip>
@@ -156,16 +168,16 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <Text type="small" weight="semibold" color="secondary">
           APY
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="p1" weight="semibold" color="green">
           {formatBigValue(apy)}%
         </Text>
       </div>
       <Divider />
       <div className="flexbox-grid flow-col gap-24 p-24" style={{ gridTemplateColumns: '1fr 1fr' }}>
-        <Button type="primary" disabled={!canRedeem} onClick={handleRedeemShow}>
+        <Button type="primary" disabled={!canRedeem || saving} onClick={handleRedeemShow}>
           Redeem
         </Button>
-        <Button type="ghost" disabled={!canTransfer} onClick={handleTransferShow}>
+        <Button type="ghost" disabled={!canTransfer || saving} onClick={handleTransferShow}>
           Transfer
         </Button>
       </div>
@@ -200,7 +212,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   APY
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="p1" weight="semibold" color="green">
                   {formatBigValue(apy)}%
                 </Text>
               </div>
@@ -250,7 +262,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   APY
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="p1" weight="semibold" color="green">
                   {formatBigValue(apy)}%
                 </Text>
               </div>

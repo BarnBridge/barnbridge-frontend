@@ -70,7 +70,7 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
                 style={{ width: 70 }}
                 onClick={() => {
                   form.setFieldsValue({
-                    slippageTolerance: opt,
+                    slippageTolerance: Number(opt),
                   });
                 }}>
                 {opt}%
@@ -80,8 +80,12 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
               name="slippageTolerance"
               rules={[
                 { required: true, message: 'Required' },
-                { min: 0, message: 'Required' },
-                { max: 100, message: 'Enter a valid slippage percentage' },
+                {
+                  validator: (_: any, value: number) => {
+                    return value > 0 && value <= 100 ? Promise.resolve() : Promise.reject();
+                  },
+                  message: 'Enter a valid slippage percentage',
+                },
               ]}
               noStyle>
               <Input type="number" />

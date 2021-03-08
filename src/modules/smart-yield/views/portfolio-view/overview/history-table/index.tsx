@@ -21,6 +21,8 @@ import { mergeState } from 'hooks/useMergeState';
 import { APISYUserTxHistory, HistoryTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/wallet';
 
+import s from './s.module.scss';
+
 const originatorFilterOptions = [
   {
     label: 'All originators',
@@ -161,7 +163,19 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Amount',
-    sorter: (a, b) => a.amount - b.amount,
+    sorter: (a, b) => {
+      const diff = a.amount - b.amount;
+
+      if (diff < 0) {
+        return -1;
+      }
+
+      if (diff > 0) {
+        return 1;
+      }
+
+      return 0;
+    },
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <Tooltip title={formatBigValue(entity.amount, 18)}>
@@ -272,8 +286,9 @@ const HistoryTable: React.FC = () => {
 
   return (
     <Card
+      className={s.card}
       title={
-        <Grid flow="col" colsTemplate="1fr max-content">
+        <Grid flow="col" colsTemplate="1fr max-content" align="center">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
