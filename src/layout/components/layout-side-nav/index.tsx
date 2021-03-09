@@ -75,6 +75,14 @@ const LayoutSideNav: React.FC = () => {
               </Text>
             </NavLink>
           </Tooltip>
+          <Tooltip title={displayTooltip && 'Smart Alpha'} placement="right">
+            <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
+              <Icon name="paper-alpha-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Smart Alpha
+              </Text>
+            </NavLink>
+          </Tooltip>
         </nav>
         <div className={s.bottom}>
           <Tooltip title={displayTooltip && 'Docs'} placement="right">

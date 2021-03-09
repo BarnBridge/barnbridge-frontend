@@ -1,4 +1,5 @@
 import React from 'react';
+import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import { formatBigValue } from 'web3/utils';
@@ -9,7 +10,6 @@ import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { useReload } from 'hooks/useReload';
 import {
   APISYPool,
   APISYSeniorRedeem,
@@ -50,13 +50,16 @@ const InitialState: State = {
 const PastPositionsList: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
-  const [reload] = useReload();
 
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
+    if (!pools || pools.length === 0) {
+      return;
+    }
+
     (async () => {
       if (!wallet.account) {
         return;
@@ -71,10 +74,25 @@ const PastPositionsList: React.FC = () => {
       try {
         const redeems = await fetchSYSeniorRedeems(wallet.account, state.page, state.pageSize);
 
+        const data = redeems.data.map(item => {
+          const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.smartYieldAddress);
+
+          return {
+            ...item,
+            pool: pool
+              ? {
+                  ...pool,
+                  meta: Pools.get(pool.underlyingSymbol),
+                  market: Markets.get(pool.protocolId),
+                }
+              : undefined,
+          };
+        });
+
         setState(
           mergeState<State>({
             loading: false,
-            data: redeems.data,
+            data,
             total: redeems.meta.count,
           }),
         );
@@ -88,35 +106,12 @@ const PastPositionsList: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.page]);
-
-  React.useEffect(() => {
-    const data = state.data.map(item => {
-      const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.smartYieldAddress);
-
-      return {
-        ...item,
-        pool: pool
-          ? {
-              ...pool,
-              meta: Pools.get(pool.underlyingSymbol),
-              market: Markets.get(pool.protocolId),
-            }
-          : undefined,
-      };
-    });
-
-    setState(prevState => ({
-      ...prevState,
-      data,
-    }));
-
-    reload();
-  }, [pools, state.data]);
+  }, [wallet.account, state.page, pools]);
 
   return (
     <>
       <AntdSpin spinning={state.loading}>
+        {state.data.length === 0 && !state.loading && <AntdEmpty image={AntdEmpty.PRESENTED_IMAGE_SIMPLE} />}
         <div className={s.cards}>
           {state.data.map(entity => (
             <Card key={entity.seniorBondId} noPaddingBody>
@@ -156,7 +151,7 @@ const PastPositionsList: React.FC = () => {
                 <Text type="small" weight="semibold" color="secondary">
                   APY
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="p1" weight="semibold" color="green">
                   {formatBigValue(
                     new BigNumber(entity.gain)
                       .dividedBy(entity.underlyingIn)

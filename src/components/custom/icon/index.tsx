@@ -21,6 +21,7 @@ export type TokenIconNames =
   | 'yearn_finance';
 export type NavIconNames =
   | 'paper-bill-outlined'
+  | 'paper-alpha-outlined'
   | 'chats-outlined'
   | 'forum-outlined'
   | 'bar-charts-outlined'

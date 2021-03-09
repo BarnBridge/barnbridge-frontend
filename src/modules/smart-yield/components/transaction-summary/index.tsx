@@ -34,7 +34,7 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
               Guaranteed APY
             </Text>
           </Hint>
-          <Text type="small" weight="semibold" color="primary" className="ml-auto">
+          <Text type="small" weight="semibold" color="green" className="ml-auto">
             {apy?.toFixed(2)}%
           </Text>
         </div>

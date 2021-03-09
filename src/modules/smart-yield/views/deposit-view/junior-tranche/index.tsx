@@ -147,6 +147,7 @@ const JuniorTranche: React.FC = () => {
 
     setState(
       mergeState<State>({
+        depositModalVisible: false,
         isSaving: true,
       }),
     );
@@ -159,12 +160,6 @@ const JuniorTranche: React.FC = () => {
     const amount = from.multipliedBy(10 ** decimals);
     const minTokens = new BigNumber((getMinAmount() ?? ZERO_BIG_NUMBER).multipliedBy(10 ** decimals).toFixed(0));
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
-
-    setState(
-      mergeState<State>({
-        depositModalVisible: false,
-      }),
-    );
 
     try {
       await poolCtx.actions.juniorDeposit(amount, minTokens, deadlineTs, gasPrice);

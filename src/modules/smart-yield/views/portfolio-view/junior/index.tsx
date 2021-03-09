@@ -138,7 +138,6 @@ const InitialState: State = {
 const JuniorPortfolio: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('locked');
   const [filtersVisible, setFiltersVisible] = React.useState<boolean>(false);
-  const [filtersActiveVisible, setFiltersActiveVisible] = React.useState<boolean>(false);
 
   const wallet = useWallet();
   const poolsCtx = usePools();
@@ -309,6 +308,10 @@ const JuniorPortfolio: React.FC = () => {
         </AntdSpin>
         <PortfolioValue />
       </div>
+      <Text type="h1" weight="bold" color="primary" className="mb-32">
+        Positions
+      </Text>
+
       <Card className="mb-32" noPaddingBody>
         <Tabs
           simple
@@ -329,7 +332,10 @@ const JuniorPortfolio: React.FC = () => {
               </button>
             </Popover>
           }>
-          <Tabs.Tab key="locked" tab="Locked positions">
+          <Tabs.Tab key="active" tab="Active">
+            <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
+          </Tabs.Tab>
+          <Tabs.Tab key="locked" tab="Locked">
             <LockedPositionsTable loading={state.loadingLocked} data={state.dataLocked} />
             {redeemModal && (
               <TxConfirmModal
@@ -367,31 +373,11 @@ const JuniorPortfolio: React.FC = () => {
               />
             )}
           </Tabs.Tab>
-          <Tabs.Tab key="past" tab="Past positions">
+          <Tabs.Tab key="past" tab="Past">
             <PastPositionsTable />
           </Tabs.Tab>
         </Tabs>
       </Card>
-      <div className="card">
-        <div style={{ display: 'flex', alignItems: 'center', padding: '12px 12px 12px 24px' }}>
-          <Text type="p1" weight="semibold" color="primary">
-            Active positions
-          </Text>
-          <Popover
-            title="Filters"
-            overlayStyle={{ width: 348 }}
-            content={<Filters />}
-            visible={filtersActiveVisible}
-            onVisibleChange={setFiltersActiveVisible}
-            placement="bottomRight">
-            <button type="button" className="button-ghost-monochrome ml-auto">
-              <Icon name="filter" className="mr-8" color="inherit" />
-              Filters
-            </button>
-          </Popover>
-        </div>
-        <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
-      </div>
     </>
   );
 };
