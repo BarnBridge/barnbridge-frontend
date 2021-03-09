@@ -90,13 +90,18 @@
     :global(.ant-pagination-item) {
       background: none;
       border: none;
+      font-weight: 600;
 
       &:global(.ant-pagination-item-active) > a {
         color: var(--theme-red-color);
       }
 
       > a {
-        color: var(--theme-primary-color);
+        color: #717980;
+
+        [data-theme='dark'] & {
+          color: #606268;
+        }
       }
     }
   }

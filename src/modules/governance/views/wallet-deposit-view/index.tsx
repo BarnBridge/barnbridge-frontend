@@ -176,7 +176,7 @@ const WalletDepositView: React.FC = () => {
               </Form.Item>
             </Grid>
           </Grid>
-          <Button type="primary" htmlType="submit" size="large" loading={state.saving} style={{ justifySelf: 'start' }}>
+          <Button type="primary" htmlType="submit" loading={state.saving} style={{ justifySelf: 'start' }}>
             Deposit
           </Button>
         </Grid>

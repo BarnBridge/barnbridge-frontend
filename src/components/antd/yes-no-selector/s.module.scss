@@ -13,11 +13,11 @@
     align-items: center;
     justify-content: center;
     height: auto;
-    background: #fff;
-    border: 1px solid #e3e4e6;
+    background: var(--theme-card-color);
+    border: 1px solid var(--theme-border-color);
     border-radius: 4px;
     @include font-p1-semi-bold;
-    color: #060a0d;
+    color: var(--theme-primary-color);
 
     &:before {
       display: none;

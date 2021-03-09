@@ -284,7 +284,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       confirmText="Are you sure you want to close this form?"
       {...props}>
       <div className={s.wrap}>
-        <Text type="h2" weight="semibold" className={s.headerLabel}>
+        <Text type="h2" weight="semibold" className={s.headerLabel} color="primary">
           {edit ? 'Edit action' : 'Add new action'}
         </Text>
 
@@ -314,7 +314,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
             </Form.Item>
           </Grid>
 
-          <Form.Item dependencies={['isProxyAddress']}>
+          <Form.Item dependencies={['isProxyAddress']} noStyle>
             {({ getFieldsValue }) => {
               const { isProxyAddress } = getFieldsValue();
 
@@ -340,7 +340,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
             <YesNoSelector disabled={state.submitting} />
           </Form.Item>
 
-          <Form.Item shouldUpdate={prevValue => prevValue.addValueAttribute === true}>
+          <Form.Item shouldUpdate={prevValue => prevValue.addValueAttribute === true} noStyle>
             {({ getFieldsValue }) => {
               const { addValueAttribute, actionValue } = getFieldsValue();
               const max = 78 - (actionValue?.length ?? 0);
@@ -386,13 +386,15 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
             <YesNoSelector disabled={state.submitting} />
           </Form.Item>
 
-          <Form.Item name="abiLoading" preserve={false} hidden />
-          <Form.Item name="abiInterface" preserve={false} hidden />
-          <Form.Item name="functionMeta" preserve={false} hidden />
-          <Form.Item name="functionStrParams" preserve={false} hidden />
-          <Form.Item name="functionEncodedParams" preserve={false} hidden />
+          <Form.Item name="abiLoading" preserve={false} hidden noStyle />
+          <Form.Item name="abiInterface" preserve={false} hidden noStyle />
+          <Form.Item name="functionMeta" preserve={false} hidden noStyle />
+          <Form.Item name="functionStrParams" preserve={false} hidden noStyle />
+          <Form.Item name="functionEncodedParams" preserve={false} hidden noStyle />
 
-          <Form.Item shouldUpdate={(prevValues: CreateProposalActionForm) => prevValues.addFunctionCall === true}>
+          <Form.Item
+            shouldUpdate={(prevValues: CreateProposalActionForm) => prevValues.addFunctionCall === true}
+            noStyle>
             {({ getFieldsValue }: FormInstance<CreateProposalActionForm>) => {
               const {
                 targetAddress,
@@ -491,7 +493,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
             }}
           </Form.Item>
 
-          <Form.Item dependencies={['addValueAttribute', 'addFunctionCall']}>
+          <Form.Item dependencies={['addValueAttribute', 'addFunctionCall']} noStyle>
             {({ getFieldsValue }) => {
               const { addValueAttribute, addFunctionCall } = getFieldsValue();
 
@@ -508,9 +510,13 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
           </Form.Item>
 
           <div className={s.actions}>
-            <Button type="default" disabled={state.submitting} onClick={props.onCancel}>
+            <button
+              type="button"
+              disabled={state.submitting}
+              onClick={props.onCancel}
+              className="button-ghost-monochrome">
               {edit ? 'Cancel Changes' : 'Cancel'}
-            </Button>
+            </button>
             <Button type="primary" htmlType="submit" loading={state.submitting}>
               {edit ? 'Save Changes' : 'Add Action'}
             </Button>

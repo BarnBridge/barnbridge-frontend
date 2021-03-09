@@ -178,9 +178,10 @@ const ProposalCreateView: React.FC = () => {
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col">
-        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
+        <button type="button" onClick={handleBackClick} className="button-text">
+          <Icon name="left-arrow" width={14} height={12} className="mr-12" color="inherit" />
           Proposals
-        </Button>
+        </button>
       </Grid>
 
       <Grid flow="row" gap={16}>
@@ -193,7 +194,7 @@ const ProposalCreateView: React.FC = () => {
           validateTrigger={['onSubmit', 'onChange']}
           onFinish={handleSubmit}>
           <Grid flow="row" gap={32}>
-            <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 1fr))" align="start">
+            <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 464px))" align="start">
               <Card
                 title={
                   <Text type="p1" weight="semibold" color="primary">

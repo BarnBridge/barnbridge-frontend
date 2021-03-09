@@ -80,8 +80,8 @@ const PoolDetailsView: React.FC = () => {
             path={`/yield-farming/${pool}/${PoolActions.DEPOSIT}`}
             exact
             render={() => (
-              <Grid flow="row" gap={64}>
-                <Grid flow="row" gap={16}>
+              <div>
+                <div className="grid flow-row row-gap-16 mb-64">
                   {pool === PoolTypes.STABLE && (
                     <>
                       <PoolTokenDeposit token={USDCTokenMeta} />
@@ -91,15 +91,15 @@ const PoolDetailsView: React.FC = () => {
                   )}
                   {pool === PoolTypes.UNILP && <PoolTokenDeposit token={UNISWAPTokenMeta} expanded />}
                   {pool === PoolTypes.BOND && <PoolTokenDeposit token={BONDTokenMeta} expanded />}
-                </Grid>
+                </div>
 
-                <Grid flow="row" gap={24}>
-                  <Text type="p1" weight="semibold" color="primary">
+                <div>
+                  <Text type="p1" weight="semibold" color="primary" className="mb-24">
                     Transactions
                   </Text>
                   <PoolTxTable label="My Transactions" ownTransactions pool={pool} action={PoolActions.DEPOSIT} />
-                </Grid>
-              </Grid>
+                </div>
+              </div>
             )}
           />
           <Route
