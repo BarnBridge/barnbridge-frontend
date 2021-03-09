@@ -12,3 +12,19 @@
     gap: 8px;
   }
 }
+
+.content {
+  max-width: 640px;
+
+  @media (max-width: 1024px) {
+    max-width: none;
+  }
+}
+
+.sidebar {
+  max-width: 480px;
+
+  @media (max-width: 1024px) {
+    max-width: none;
+  }
+}

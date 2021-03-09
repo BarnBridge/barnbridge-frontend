@@ -1,8 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
-
-import Card from 'components/antd/card';
+import cn from 'classnames';
 
 import { useSYPool } from '../../providers/pool-provider';
 import DepositHeader from './deposit-header';
@@ -29,14 +28,14 @@ const DepositView: React.FC = () => {
     <div className="mh-auto">
       <DepositHeader />
       <div className={s.container}>
-        <Card style={{ maxWidth: '640px', width: '640px' }}>
+        <div className={cn('card p-32', s.content)}>
           <Switch>
             <Route path="/smart-yield/deposit" exact component={SelectTranche} />
             <Route path="/smart-yield/deposit/senior" exact component={SeniorTranche} />
             <Route path="/smart-yield/deposit/junior" exact component={JuniorTranche} />
           </Switch>
-        </Card>
-        <div className="grid flow-row row-gap-32" style={{ maxWidth: '480px', width: '480px' }}>
+        </div>
+        <div className={cn('grid flow-row row-gap-32', s.sidebar)}>
           <PoolDetails />
           <PoolAPYTrend />
         </div>

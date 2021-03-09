@@ -10,8 +10,13 @@
   gap: 16px;
 
   @media (max-width: 480px) {
-    grid-template-columns: 1fr;
-    gap: 8px;
+    gap: 24px 8px;
+    display: flex;
+    flex-wrap: wrap;
+
+    button {
+      width: 100%;
+    }
   }
 }
 

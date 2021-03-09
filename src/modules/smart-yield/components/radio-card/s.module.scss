@@ -1,25 +1,25 @@
 .card {
   background: var(--theme-card-color);
-  border: 1px solid #e3e4e6;
-  box-sizing: border-box;
+  border: 1px solid var(--theme-border-color);
   border-radius: 4px;
-  text-align: left;
-  position: relative;
-  padding: 32px;
+  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
+  padding: 32px;
+  position: relative;
+  text-align: left;
 }
 
 .card::after {
-  content: '';
-  width: 24px;
-  height: 24px;
-  border: 2px solid #e3e4e6;
-  position: absolute;
-  top: 32px;
-  right: 32px;
+  border: 2px solid var(--theme-border-color);
   border-radius: 50%;
+  content: '';
+  height: 24px;
+  position: absolute;
+  right: 32px;
+  top: 32px;
+  width: 24px;
 }
 
 .card.selected {

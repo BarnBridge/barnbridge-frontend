@@ -52,7 +52,7 @@ const SelectTranche: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Select your preferred tranche
       </Text>
-      <Text type="p2" weight="semibold" className="mb-32">
+      <Text type="p2" weight="semibold" color="secondary" className="mb-32">
         You can choose between fixed, or variable interest.
         <br />
         Be aware of the risk involved and read the warnings before going further
@@ -70,7 +70,7 @@ const SelectTranche: React.FC = () => {
                 <ExternalLink href="#">Learn more</ExternalLink>
               </Grid>
             }>
-            <Text type="small" weight="semibold" className="mb-4">
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
               Senior tranche
             </Text>
           </Hint>
@@ -93,7 +93,7 @@ const SelectTranche: React.FC = () => {
                 <ExternalLink href="#">Learn more</ExternalLink>
               </Grid>
             }>
-            <Text type="small" weight="semibold" className="mb-4">
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
               Junior tranche
             </Text>
           </Hint>
