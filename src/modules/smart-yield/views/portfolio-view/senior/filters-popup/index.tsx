@@ -70,31 +70,13 @@ const FiltersPopup: React.FC = () => {
             validateTrigger={['onSubmit']}
             onFinish={handleFinish}>
             <Form.Item label="Originator" name="originator" className="mb-32">
-              <Select
-                loading={false}
-                disabled={false}
-                options={originatorFilterOptions}
-                fixScroll
-                style={{ width: '100%' }}
-              />
+              <Select loading={false} disabled={false} options={originatorFilterOptions} style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item label="Token" name="token" className="mb-32">
-              <Select
-                loading={false}
-                disabled={false}
-                options={tokenFilterOptions}
-                fixScroll
-                style={{ width: '100%' }}
-              />
+              <Select loading={false} disabled={false} options={tokenFilterOptions} style={{ width: '100%' }} />
             </Form.Item>
             <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-              <Select
-                loading={false}
-                disabled={false}
-                options={transactionFilterOptions}
-                fixScroll
-                style={{ width: '100%' }}
-              />
+              <Select loading={false} disabled={false} options={transactionFilterOptions} style={{ width: '100%' }} />
             </Form.Item>
 
             <div className="grid flow-col align-center justify-space-between">

@@ -27,13 +27,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
     title: 'Token Name',
     render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
-        <Grid flow="row" gap={4} className="ml-auto">
-          <ExternalLink
-            href={getEtherscanAddressUrl(entity.smartYieldAddress)}
-            className="grid flow-col col-gap-4 align-start">
-            <Text type="p1" weight="semibold" color="blue">
+      <div className="flex flow-col align-center">
+        <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} className="mr-16" />
+        <div className="flex flow-row">
+          <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
+            <Text type="p1" weight="semibold" color="blue" className="mr-4">
               {entity.underlyingSymbol}
             </Text>
             <Icon name="arrow-top-right" width={8} height={8} color="blue" />
@@ -41,8 +39,8 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
           <Text type="small" weight="semibold">
             {entity.market?.name}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     ),
   },
   {
@@ -61,10 +59,13 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
           )}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
+            {` j${entity.underlyingSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
+          {formatUSDValue(
+            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals)?.multipliedBy(entity.state.jTokenPrice),
+          )}
         </Text>
       </>
     ),

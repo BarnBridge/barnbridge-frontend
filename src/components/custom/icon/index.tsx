@@ -16,7 +16,7 @@ export type TokenIconNames =
   | 'usdc-token'
   | 'uniswap-token'
   | 'compound'
-  | 'aave'
+  | 'static/aave'
   | 'cream_finance'
   | 'yearn_finance';
 export type NavIconNames =
@@ -28,6 +28,7 @@ export type NavIconNames =
   | 'savings-outlined'
   | 'proposal-outlined'
   | 'bank-outlined'
+  | 'tractor-outlined'
   | 'wallet-outlined'
   | 'docs-outlined';
 
@@ -95,13 +96,15 @@ export type IconProps = {
 const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style } = props;
 
+  const isStatic = name.indexOf('static/') === 0;
+
   return (
     <svg
       className={cn(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
       style={style}>
-      <use xlinkHref={`${Sprite}#icon__${name}`} />
+      {!isStatic ? <use xlinkHref={`${Sprite}#icon__${name}`} /> : <use xlinkHref={`#icon__${name}`} />}
     </svg>
   );
 };

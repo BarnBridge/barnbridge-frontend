@@ -116,6 +116,21 @@ const TwoStepWithdraw: React.FC = () => {
 
         <div className="card mb-32">
           <div className="pv-24 ph-24">
+            <div className="grid flow-col justify-space-between">
+              <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
+                <Text type="small" weight="semibold" color="secondary">
+                  Transaction deadline
+                </Text>
+              </Hint>
+              <Text type="p2" weight="semibold" color="primary">
+                20 minutes
+              </Text>
+            </div>
+          </div>
+        </div>
+
+        <div className="card mb-32">
+          <div className="pv-24 ph-24">
             <Text type="p2" weight="semibold" color="secondary">
               Transaction summary
             </Text>
@@ -140,21 +155,6 @@ const TwoStepWithdraw: React.FC = () => {
               </Text>
               <Text type="p2" weight="semibold" color="primary">
                 0 {pool.underlyingSymbol} (0%)
-              </Text>
-            </div>
-          </div>
-        </div>
-
-        <div className="card mb-32">
-          <div className="pv-24 ph-24">
-            <div className="grid flow-col justify-space-between">
-              <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
-                <Text type="small" weight="semibold" color="secondary">
-                  Transaction deadline
-                </Text>
-              </Hint>
-              <Text type="p2" weight="semibold" color="primary">
-                20 minutes
               </Text>
             </div>
           </div>

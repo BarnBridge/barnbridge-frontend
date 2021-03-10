@@ -230,6 +230,26 @@ const JuniorTranche: React.FC = () => {
             />
           )}
         </Form.Item>
+        <Form.Item name="slippageTolerance" noStyle hidden>
+          <Input />
+        </Form.Item>
+        <Form.Item name="deadline" noStyle hidden>
+          <Input />
+        </Form.Item>
+        <Form.Item shouldUpdate noStyle>
+          {() => {
+            const { slippageTolerance, deadline } = form.getFieldsValue();
+
+            return (
+              <TransactionDetails
+                className="mb-32"
+                slippageTolerance={slippageTolerance}
+                deadline={deadline}
+                onChange={handleTxDetailsChange}
+              />
+            );
+          }}
+        </Form.Item>
         <div className="card mb-32">
           <div className="pv-24 ph-24">
             <Text type="p2" weight="semibold" color="secondary">
@@ -271,26 +291,6 @@ const JuniorTranche: React.FC = () => {
             </div>
           </div>
         </div>
-        <Form.Item name="slippageTolerance" noStyle hidden>
-          <Input />
-        </Form.Item>
-        <Form.Item name="deadline" noStyle hidden>
-          <Input />
-        </Form.Item>
-        <Form.Item shouldUpdate noStyle>
-          {() => {
-            const { slippageTolerance, deadline } = form.getFieldsValue();
-
-            return (
-              <TransactionDetails
-                className="mb-32"
-                slippageTolerance={slippageTolerance}
-                deadline={deadline}
-                onChange={handleTxDetailsChange}
-              />
-            );
-          }}
-        </Form.Item>
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
           <button type="button" className="button-text" disabled={state.isSaving} onClick={handleCancel}>
             <Icon name="left-arrow" width={9} height={8} className="mr-12" color="inherit" />

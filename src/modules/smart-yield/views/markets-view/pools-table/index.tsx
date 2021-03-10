@@ -7,7 +7,6 @@ import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
 import { SYMarketMeta } from 'modules/smart-yield/api';
@@ -21,39 +20,45 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
   return [
     {
       title: 'Token Name',
+      fixed: 'left',
       render: (_, entity) => (
-        <div className="flex col-gap-16">
+        <div className="flex flow-col col-gap-16 align-center">
           <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
-          <Grid flow="row" gap={4} className="ml-auto">
-            <Text type="p1" weight="semibold" color="primary">
+          <div>
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
               {entity.underlyingSymbol}
             </Text>
             <Text type="small" weight="semibold" wrap={false}>
               {entity.meta?.name}
             </Text>
-          </Grid>
+          </div>
         </div>
       ),
     },
     {
       title: 'Senior Liquidity',
       sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
-      align: 'center',
       render: (_, entity) => (
         <Tooltip
           title={
             <>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 {formatBigValue(entity.state.seniorLiquidity)}
+                {` ${entity.underlyingSymbol}`}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
                 {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
               </Text>
             </>
           }>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
-          </Text>
+          <div className="flex flow-col col-gap-8">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {entity.underlyingSymbol}
+            </Text>
+          </div>
           <Text type="small" weight="semibold">
             {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
               entity.state.seniorLiquidity,
@@ -74,22 +79,27 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'Junior Liquidity',
       sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
-      align: 'center',
       render: (_, entity) => (
         <Tooltip
           title={
             <>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 {formatBigValue(entity.state.juniorLiquidity)}
+                {` ${entity.underlyingSymbol}`}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
                 {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
               </Text>
             </>
           }>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
-          </Text>
+          <div className="flex flow-col col-gap-8">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {entity.underlyingSymbol}
+            </Text>
+          </div>
           <Text type="small" weight="semibold">
             {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
               entity.state.juniorLiquidity,
@@ -102,13 +112,13 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       title: (
         <Hint
           text={
-            <Grid flow="row" gap={8} align="start">
-              <Text type="p2">
+            <>
+              <Text type="p2" className="mb-8">
                 The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
                 positions might differ.
               </Text>
               <ExternalLink href="#">Learn more</ExternalLink>
-            </Grid>
+            </>
           }>
           Junior APY
         </Hint>
@@ -149,9 +159,15 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             sorter: (a, b) => (a.underlyingBalance?.toNumber() ?? 0) - (b.underlyingBalance?.toNumber() ?? 0),
             render: (_, entity) => (
               <>
-                <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                  {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
-                </Text>
+                <div className="flex flow-col col-gap-8">
+                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+                  </Text>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {entity.underlyingSymbol}
+                  </Text>
+                </div>
+
                 <Text type="small" weight="semibold">
                   {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
                 </Text>
@@ -161,6 +177,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         ] as ColumnsType<PoolEntity>)
       : []),
     {
+      fixed: 'right',
       render(_, entity) {
         return (
           <NavLink

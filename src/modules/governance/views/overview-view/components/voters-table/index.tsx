@@ -13,12 +13,8 @@ import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
+    title: 'Address',
     dataIndex: 'address',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Address
-      </Text>
-    ),
     render: (value: string) => (
       <Grid flow="col" gap={16} align="center">
         <Identicon address={value} width={32} height={32} />
@@ -31,12 +27,8 @@ const Columns: ColumnsType<APIVoterEntity> = [
     ),
   },
   {
+    title: 'Staked Balance',
     dataIndex: 'bondStaked',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Staked Balance
-      </Text>
-    ),
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
@@ -46,12 +38,8 @@ const Columns: ColumnsType<APIVoterEntity> = [
     ),
   },
   {
+    title: 'Voting Power',
     dataIndex: 'votingPower',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Voting Power
-      </Text>
-    ),
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
@@ -61,12 +49,8 @@ const Columns: ColumnsType<APIVoterEntity> = [
     ),
   },
   {
+    title: 'Votes',
     dataIndex: 'votes',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Votes
-      </Text>
-    ),
     width: 150,
     align: 'right',
     render: (value: number) => (
@@ -76,12 +60,8 @@ const Columns: ColumnsType<APIVoterEntity> = [
     ),
   },
   {
+    title: 'Proposals',
     dataIndex: 'proposals',
-    title: () => (
-      <Text type="small" weight="semibold">
-        Proposals
-      </Text>
-    ),
     width: 150,
     align: 'right',
     render: (value: number) => (

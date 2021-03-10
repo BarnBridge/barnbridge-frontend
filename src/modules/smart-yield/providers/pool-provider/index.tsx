@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 
@@ -102,6 +102,10 @@ const PoolProvider: React.FC = props => {
   const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState(InitialState);
+
+  const isSeniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/senior'));
+  const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/junior'));
+  const isJuniorWithdraw = Boolean(useRouteMatch('/smart-yield/withdraw'));
 
   const [market, token] = React.useMemo(() => {
     const urlQuery = new URLSearchParams(location.search);
@@ -307,10 +311,17 @@ const PoolProvider: React.FC = props => {
   }
 
   function handleTxSuccess() {
-    history.push({
-      pathname: `/smart-yield/portfolio/junior`,
-      search: `?m=${market}&t=${token}`,
-    });
+    if (isSeniorDeposit) {
+      history.push({
+        pathname: `/smart-yield/portfolio/senior`,
+        search: `?m=${market}&t=${token}`,
+      });
+    } else if (isJuniorDeposit || isJuniorWithdraw) {
+      history.push({
+        pathname: `/smart-yield/portfolio/junior`,
+        search: `?m=${market}&t=${token}`,
+      });
+    }
   }
 
   const approveUnderlying = React.useCallback(

@@ -87,14 +87,7 @@ const PortfolioOverview: React.FC = () => {
             ]}
           />
         </AntdSpin>
-        <AntdSpin spinning={state.loading}>
-          <PortfolioValue
-            title="Portfolio value"
-            data={state.data}
-            color="var(--theme-red-color)"
-            gradientColor="var(--theme-red-color-rgb)"
-          />
-        </AntdSpin>
+        <PortfolioValue type="general" />
       </div>
       <HistoryTable />
     </>

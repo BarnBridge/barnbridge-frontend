@@ -1,6 +1,6 @@
 import React from 'react';
 import format from 'date-fns/format';
-import { formatBigValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -125,8 +125,12 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
           <Text type="p1" tag="span" weight="semibold" color="primary">
             {formatBigValue(deposited)}
+            {` ${pool.underlyingSymbol}`}
           </Text>
         </Tooltip>
+        <Text type="p2" weight="semibold" color="secondary">
+          {formatUSDValue(deposited)}
+        </Text>
       </div>
       <Divider />
       <div className="p-24">
@@ -136,8 +140,12 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
         <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
           <Text type="p1" tag="span" weight="semibold" color="primary">
             {formatBigValue(redeemable)}
+            {` ${pool.underlyingSymbol}`}
           </Text>
         </Tooltip>
+        <Text type="p2" weight="semibold" color="secondary">
+          {formatUSDValue(redeemable)}
+        </Text>
       </div>
       <Divider />
       <div className="p-24">
