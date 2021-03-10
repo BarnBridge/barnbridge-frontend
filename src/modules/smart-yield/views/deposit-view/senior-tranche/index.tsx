@@ -242,7 +242,7 @@ const SeniorTranche: React.FC = () => {
                 <button
                   key={opt}
                   type="button"
-                  className="button-ghost-monochrome ph-24 pv-16"
+                  className="button-ghost-monochrome ph-24"
                   disabled={formDisabled || state.isSaving}
                   onClick={() => {
                     form.setFieldsValue({
@@ -287,10 +287,10 @@ const SeniorTranche: React.FC = () => {
           }}
         </Form.Item>
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
-          <Button type="light" disabled={state.isSaving} onClick={handleCancel}>
-            <Icon name="left-arrow" width={9} height={8} />
+          <button type="button" className="button-text" disabled={state.isSaving} onClick={handleCancel}>
+            <Icon name="left-arrow" width={9} height={8} className="mr-12" color="inherit" />
             Cancel
-          </Button>
+          </button>
           <Button type="primary" htmlType="submit" disabled={formDisabled} loading={state.isSaving}>
             Deposit
           </Button>

@@ -22,7 +22,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'Token Name',
       render: (_, entity) => (
-        <Grid flow="col" gap={16} align="center">
+        <div className="flex col-gap-16">
           <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
           <Grid flow="row" gap={4} className="ml-auto">
             <Text type="p1" weight="semibold" color="primary">
@@ -32,7 +32,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
               {entity.meta?.name}
             </Text>
           </Grid>
-        </Grid>
+        </div>
       ),
     },
     {
@@ -40,28 +40,26 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
       align: 'center',
       render: (_, entity) => (
-        <Grid flow="row" gap={4}>
-          <Tooltip
-            title={
-              <>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(entity.state.seniorLiquidity)}
-                </Text>
-                <Text type="small" weight="semibold" color="secondary">
-                  {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
-                </Text>
-              </>
-            }>
-            <Text type="p1" weight="semibold" color="primary">
-              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
-            </Text>
-            <Text type="small" weight="semibold">
-              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                entity.state.seniorLiquidity,
-              )}
-            </Text>
-          </Tooltip>
-        </Grid>
+        <Tooltip
+          title={
+            <>
+              <Text type="p1" weight="semibold" color="primary">
+                {formatBigValue(entity.state.seniorLiquidity)}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
+              </Text>
+            </>
+          }>
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
+          </Text>
+          <Text type="small" weight="semibold">
+            {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+              entity.state.seniorLiquidity,
+            )}
+          </Text>
+        </Tooltip>
       ),
     },
     {
@@ -78,28 +76,26 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
       align: 'center',
       render: (_, entity) => (
-        <Grid flow="row" gap={4}>
-          <Tooltip
-            title={
-              <>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(entity.state.juniorLiquidity)}
-                </Text>
-                <Text type="small" weight="semibold" color="secondary">
-                  {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
-                </Text>
-              </>
-            }>
-            <Text type="p1" weight="semibold" color="primary">
-              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
-            </Text>
-            <Text type="small" weight="semibold">
-              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                entity.state.juniorLiquidity,
-              )}
-            </Text>
-          </Tooltip>
-        </Grid>
+        <Tooltip
+          title={
+            <>
+              <Text type="p1" weight="semibold" color="primary">
+                {formatBigValue(entity.state.juniorLiquidity)}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
+              </Text>
+            </>
+          }>
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
+          </Text>
+          <Text type="small" weight="semibold">
+            {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+              entity.state.juniorLiquidity,
+            )}
+          </Text>
+        </Tooltip>
       ),
     },
     {
@@ -136,14 +132,14 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'jToken conversion rate',
       render: (_, entity) => (
-        <Grid flow="row" gap={4}>
-          <Text type="p1" weight="semibold" color="primary">
+        <>
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
             1 {entity.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold" wrap={false}>
             = {formatBigValue(entity.state.jTokenPrice)} j{entity.underlyingSymbol}
           </Text>
-        </Grid>
+        </>
       ),
     },
     ...(wallet.isActive
@@ -152,14 +148,14 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             title: 'Wallet balance',
             sorter: (a, b) => (a.underlyingBalance?.toNumber() ?? 0) - (b.underlyingBalance?.toNumber() ?? 0),
             render: (_, entity) => (
-              <Grid flow="row" gap={4}>
-                <Text type="p1" weight="semibold" color="primary">
+              <>
+                <Text type="p1" weight="semibold" color="primary" className="mb-4">
                   {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
                 </Text>
                 <Text type="small" weight="semibold">
                   {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
                 </Text>
-              </Grid>
+              </>
             ),
           },
         ] as ColumnsType<PoolEntity>)

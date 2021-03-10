@@ -21,20 +21,20 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
 
   return (
     <section className={cn(s.container, className)}>
-      <header className="flex ph-24 pv-24">
+      <header className="flex ph-24 pv-16">
         <Text type="p2" weight="semibold" color="secondary">
           Transaction summary
         </Text>
       </header>
       <Divider />
-      <div className="p-24">
+      <div className="ph-24 pv-16">
         <div className="flex mb-24">
           <Hint text="This number shows the APY you get based on the deposited amount and maturity date. This is the annualized percentage.">
             <Text type="small" weight="semibold" color="secondary">
               Guaranteed APY
             </Text>
           </Hint>
-          <Text type="small" weight="semibold" color="green" className="ml-auto">
+          <Text type="p1" weight="bold" color="green" className="ml-auto">
             {apy?.toFixed(2)}%
           </Text>
         </div>
