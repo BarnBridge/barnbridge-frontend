@@ -5,9 +5,7 @@ import { useWeb3Contracts } from 'web3/contracts';
 import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
-import { Text } from 'components/custom/typography';
 import { useLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 
