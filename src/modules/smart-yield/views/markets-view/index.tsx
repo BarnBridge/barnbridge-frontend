@@ -39,6 +39,7 @@ const MarketsView: React.FC = () => {
             key={market.name}
             type="button"
             className={cn('tab-card', state.activeMarket === market && 'active')}
+            disabled={!market.active}
             onClick={() => {
               setState(
                 mergeState<State>({

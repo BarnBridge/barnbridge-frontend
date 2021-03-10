@@ -167,6 +167,10 @@
   &:active {
     color: var(--theme-primary-color);
   }
+
+  &.selected {
+    border-color: var(--theme-red-color);
+  }
 }
 
 .link-blue {

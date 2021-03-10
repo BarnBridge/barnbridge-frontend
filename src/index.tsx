@@ -10,27 +10,31 @@ import GeneralContextProvider from 'components/providers/general-provider';
 import ThemeProvider from 'components/providers/theme-provider';
 import WindowStateProvider from 'components/providers/window-state';
 import LayoutView from 'layout';
+import { ReactComponent as StaticSprite } from 'resources/svg/static-sprite.svg';
 import Web3WalletProvider from 'wallets/wallet';
 
 import * as sw from './serviceWorker';
 
 const App: React.FC = () => {
   return (
-    <WindowStateProvider>
-      <ThemeProvider>
-        <EthWeb3Provider>
-          <Web3WalletProvider>
-            <Web3ContractsProvider>
-              <GeneralContextProvider>
-                <Router>
-                  <LayoutView />
-                </Router>
-              </GeneralContextProvider>
-            </Web3ContractsProvider>
-          </Web3WalletProvider>
-        </EthWeb3Provider>
-      </ThemeProvider>
-    </WindowStateProvider>
+    <>
+      <StaticSprite />
+      <WindowStateProvider>
+        <ThemeProvider>
+          <EthWeb3Provider>
+            <Web3WalletProvider>
+              <Web3ContractsProvider>
+                <GeneralContextProvider>
+                  <Router>
+                    <LayoutView />
+                  </Router>
+                </GeneralContextProvider>
+              </Web3ContractsProvider>
+            </Web3WalletProvider>
+          </EthWeb3Provider>
+        </ThemeProvider>
+      </WindowStateProvider>
+    </>
   );
 };
 

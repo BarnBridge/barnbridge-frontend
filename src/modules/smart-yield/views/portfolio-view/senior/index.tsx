@@ -5,7 +5,6 @@ import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 import Tabs from 'components/antd/tabs';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { fetchSYSeniorPortfolioValues } from 'modules/smart-yield/api';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -26,23 +25,14 @@ type ListEntity = {
   sBond: SYSeniorBondToken;
 };
 
-type ChartEntity = {
-  timestamp: Date;
-  value: number;
-};
-
 type State = {
   loading: boolean;
   data: ListEntity[];
-  loadingChart: boolean;
-  dataChart: ChartEntity[];
 };
 
 const InitialState: State = {
   loading: false,
   data: [],
-  loadingChart: false,
-  dataChart: [],
 };
 
 const SeniorPortfolio: React.FC = () => {
@@ -54,41 +44,6 @@ const SeniorPortfolio: React.FC = () => {
 
   const [state, setState] = React.useState<State>(InitialState);
   const [activeTab, setActiveTab] = React.useState<string>('active');
-
-  React.useEffect(() => {
-    (async () => {
-      if (!wallet.account) {
-        return;
-      }
-
-      setState(
-        mergeState<State>({
-          loadingChart: true,
-        }),
-      );
-
-      try {
-        const portfolioValues = await fetchSYSeniorPortfolioValues(wallet.account);
-
-        setState(
-          mergeState<State>({
-            loadingChart: false,
-            dataChart: portfolioValues.map(item => ({
-              timestamp: item.timestamp,
-              value: item.seniorValue,
-            })),
-          }),
-        );
-      } catch {
-        setState(
-          mergeState<State>({
-            loadingChart: false,
-            dataChart: [],
-          }),
-        );
-      }
-    })();
-  }, [wallet.account, version]);
 
   React.useEffect(() => {
     if (!wallet.account) {
@@ -193,14 +148,7 @@ const SeniorPortfolio: React.FC = () => {
             ]}
           />
         </AntdSpin>
-        <AntdSpin spinning={state.loadingChart}>
-          <PortfolioValue
-            title="Senior portfolio value"
-            data={state.dataChart}
-            color="var(--theme-green-color)"
-            gradientColor="var(--theme-green-color-rgb)"
-          />
-        </AntdSpin>
+        <PortfolioValue type="senior" />
       </div>
       <Tabs simple activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={<FiltersPopup />}>
         <Tabs.Tab key="active" tab="Active positions">

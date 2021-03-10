@@ -18,11 +18,7 @@ import s from './s.module.scss';
 
 const Columns: ColumnsType<APIVoteEntity> = [
   {
-    title: () => (
-      <Text type="small" weight="semibold">
-        Address
-      </Text>
-    ),
+    title: 'Address',
     dataIndex: 'address',
     width: '35%',
     render: (address: string) => (
@@ -37,11 +33,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
     ),
   },
   {
-    title: () => (
-      <Text type="small" weight="semibold">
-        Votes
-      </Text>
-    ),
+    title: 'Votes',
     dataIndex: 'power',
     width: '38%',
     align: 'right',
@@ -52,11 +44,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
     ),
   },
   {
-    title: () => (
-      <Text type="small" weight="semibold">
-        Vote type
-      </Text>
-    ),
+    title: 'Vote type',
     dataIndex: 'support',
     width: '27%',
     render: (support: boolean) =>

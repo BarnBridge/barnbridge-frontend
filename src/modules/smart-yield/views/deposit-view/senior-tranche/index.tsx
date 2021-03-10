@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
 import { differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
@@ -236,31 +237,41 @@ const SeniorTranche: React.FC = () => {
           />
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
-          {() => (
-            <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
-              {DURATION_OPTIONS.map(opt => (
-                <button
-                  key={opt}
-                  type="button"
-                  className="button-ghost-monochrome ph-24"
-                  disabled={formDisabled || state.isSaving}
-                  onClick={() => {
-                    form.setFieldsValue({
-                      maturityDate: getDurationDate(startOfDay(new Date()), opt),
-                    });
-                    setFormState(
-                      mergeState<FormData>({
-                        maturityDate: getDurationDate(startOfDay(new Date()), opt),
-                      }),
-                    );
-                  }}>
-                  <Text type="p1" weight="semibold" color="primary">
-                    {opt}
-                  </Text>
-                </button>
-              ))}
-            </div>
-          )}
+          {() => {
+            return (
+              <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
+                {DURATION_OPTIONS.map(opt => {
+                  const today = startOfDay(new Date());
+                  const date = getDurationDate(today, opt);
+                  const { maturityDate } = form.getFieldsValue();
+
+                  return (
+                    <button
+                      key={opt}
+                      type="button"
+                      className={cn('button-ghost-monochrome ph-24', {
+                        selected: date?.valueOf() === maturityDate?.valueOf(),
+                      })}
+                      disabled={formDisabled || state.isSaving}
+                      onClick={() => {
+                        form.setFieldsValue({
+                          maturityDate: date,
+                        });
+                        setFormState(
+                          mergeState<FormData>({
+                            maturityDate: date,
+                          }),
+                        );
+                      }}>
+                      <Text type="p1" weight="semibold" color="primary">
+                        {opt}
+                      </Text>
+                    </button>
+                  );
+                })}
+              </div>
+            );
+          }}
         </Form.Item>
         <Form.Item name="slippageTolerance" noStyle hidden>
           <Input />

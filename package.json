@@ -54,6 +54,7 @@
       "project": "./tsconfig.json"
     },
     "rules": {
+      "prettier/prettier": "warn",
       "react-hooks/exhaustive-deps": "off",
       "react/destructuring-assignment": "off",
       "react/jsx-props-no-spreading": "off",
@@ -125,7 +126,7 @@
     "@web3-react/trezor-connector": "6.1.9",
     "@web3-react/walletconnect-connector": "6.1.9",
     "@web3-react/walletlink-connector": "6.1.9",
-    "antd": "4.13.1",
+    "antd": "4.12.3",
     "async-wait-until": "2.0.3",
     "bignumber.js": "9.0.1",
     "classnames": "2.2.6",
