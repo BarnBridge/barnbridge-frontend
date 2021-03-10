@@ -60,7 +60,7 @@ const InitiateWithdraw: React.FC = () => {
   }, [pool?.smartYieldBalance]);
 
   const totalWithdrawable = React.useMemo(() => {
-    return pool?.smartYieldBalance?.dividedBy(pool?.state.jTokenPrice);
+    return pool?.smartYieldBalance?.multipliedBy(pool?.state.jTokenPrice);
   }, [pool?.smartYieldBalance, pool?.state.jTokenPrice]);
 
   const totalInstantWithdrawable = React.useMemo(() => {

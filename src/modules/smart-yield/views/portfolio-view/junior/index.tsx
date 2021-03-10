@@ -16,6 +16,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
+import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -25,7 +26,6 @@ import { useWallet } from 'wallets/wallet';
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';
 import PastPositionsTable from './past-positions-table';
-import PortfolioValue from './portfolio-value';
 
 import { doSequential } from 'utils';
 
@@ -88,25 +88,13 @@ const Filters: React.FC = () => {
       validateTrigger={['onSubmit']}
       onFinish={handleFinish}>
       <Form.Item label="Originator" name="originator" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={originatorFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
+        <Select loading={false} disabled={false} options={originatorFilterOptions} style={{ width: '100%' }} />
       </Form.Item>
       <Form.Item label="Token" name="token" className="mb-32">
-        <Select loading={false} disabled={false} options={tokenFilterOptions} fixScroll style={{ width: '100%' }} />
+        <Select loading={false} disabled={false} options={tokenFilterOptions} style={{ width: '100%' }} />
       </Form.Item>
       <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={transactionFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
+        <Select loading={false} disabled={false} options={transactionFilterOptions} style={{ width: '100%' }} />
       </Form.Item>
 
       <div className="grid flow-col align-center justify-space-between">
@@ -136,7 +124,7 @@ const InitialState: State = {
 };
 
 const JuniorPortfolio: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState<string>('locked');
+  const [activeTab, setActiveTab] = React.useState<string>('active');
   const [filtersVisible, setFiltersVisible] = React.useState<boolean>(false);
 
   const wallet = useWallet();
@@ -306,7 +294,7 @@ const JuniorPortfolio: React.FC = () => {
             ]}
           />
         </AntdSpin>
-        <PortfolioValue />
+        <PortfolioValue type="junior" />
       </div>
       <Text type="h1" weight="bold" color="primary" className="mb-32">
         Positions

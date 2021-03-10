@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import * as Antd from 'antd';
+import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
@@ -7,111 +6,21 @@ import capitalize from 'lodash/capitalize';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
-import Form from 'components/antd/form';
-import Popover from 'components/antd/popover';
-import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYUserTxHistory, HistoryTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { usePools } from 'modules/smart-yield/providers/pools-provider';
+import HistoryTableFilter, {
+  HistoryTableFilterValues,
+} from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
-
-const originatorFilterOptions = [
-  {
-    label: 'All originators',
-    value: 1,
-  },
-  {
-    label: 'All originators 2',
-    value: 2,
-  },
-];
-
-const tokenFilterOptions = [
-  {
-    label: 'All tokens',
-    value: 1,
-  },
-  {
-    label: 'All tokens 2',
-    value: 2,
-  },
-];
-
-const transactionFilterOptions = [
-  {
-    label: 'All transactions',
-    value: 1,
-  },
-  {
-    label: 'All transactions 2',
-    value: 2,
-  },
-];
-
-type FormValues = {
-  originator?: string;
-  token?: string;
-  transactionType?: string;
-};
-
-const Filters: React.FC = () => {
-  const [form] = Antd.Form.useForm<FormValues>();
-
-  const handleFinish = React.useCallback((values: FormData) => {
-    console.log(values);
-  }, []);
-
-  return (
-    <Form
-      form={form}
-      initialValues={{
-        originator: originatorFilterOptions[0].value,
-        token: tokenFilterOptions[0].value,
-        transactionType: transactionFilterOptions[0].value,
-      }}
-      validateTrigger={['onSubmit']}
-      onFinish={handleFinish}>
-      <Form.Item label="Originator" name="originator" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={originatorFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-      <Form.Item label="Token" name="token" className="mb-32">
-        <Select loading={false} disabled={false} options={tokenFilterOptions} fixScroll style={{ width: '100%' }} />
-      </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select
-          loading={false}
-          disabled={false}
-          options={transactionFilterOptions}
-          fixScroll
-          style={{ width: '100%' }}
-        />
-      </Form.Item>
-
-      <div className="grid flow-col align-center justify-space-between">
-        <button type="button" onClick={() => form.resetFields()} className="button-text">
-          Reset filters
-        </button>
-        <button type="submit" className="button-primary">
-          Apply filters
-        </button>
-      </div>
-    </Form>
-  );
-};
 
 type TableEntity = APISYUserTxHistory;
 
@@ -181,6 +90,7 @@ const Columns: ColumnsType<TableEntity> = [
         <Tooltip title={formatBigValue(entity.amount, 18)}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(entity.amount)}
+            {` ${entity.underlyingTokenSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold">
@@ -231,7 +141,9 @@ const InitialState: State = {
 
 const HistoryTable: React.FC = () => {
   const wallet = useWallet();
-  const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
+  const poolsCtx = usePools();
+
+  const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -274,7 +186,17 @@ const HistoryTable: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.page]);
+  }, [wallet.account, state.originatorFilter, state.tokenFilter, state.transactionTypeFilter, state.page]);
+
+  function handleFiltersApply(filters: HistoryTableFilterValues) {
+    setState(prevState => ({
+      ...prevState,
+      page: 1,
+      originatorFilter: filters.originator,
+      tokenFilter: filters.token,
+      transactionTypeFilter: filters.transactionType,
+    }));
+  }
 
   function handlePageChange(page: number) {
     setState(
@@ -287,27 +209,15 @@ const HistoryTable: React.FC = () => {
   return (
     <Card
       className={s.card}
+      noPaddingBody
       title={
         <Grid flow="col" colsTemplate="1fr max-content" align="center">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-
-          <Popover
-            title="Filters"
-            overlayStyle={{ width: 348 }}
-            content={<Filters />}
-            visible={filtersVisible}
-            onVisibleChange={setFiltersVisible}
-            placement="bottomRight">
-            <button type="button" className="button-ghost-monochrome ml-auto pv-16">
-              <Icon name="filter" className="mr-8" color="inherit" />
-              Filters
-            </button>
-          </Popover>
+          <HistoryTableFilter originators={pools} onFiltersApply={handleFiltersApply} />
         </Grid>
-      }
-      noPaddingBody>
+      }>
       <Table
         columns={Columns}
         dataSource={state.data}

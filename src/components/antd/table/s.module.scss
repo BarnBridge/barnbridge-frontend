@@ -25,6 +25,10 @@
       border-radius: 0;
       @include font-sm-semi-bold;
       color: var(--theme-default-color);
+
+      :global(.ant-table-column-sorters) {
+        padding: 0;
+      }
     }
   }
 

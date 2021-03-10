@@ -18,11 +18,7 @@ import s from './s.module.scss';
 
 const Columns: ColumnsType<APILiteProposalEntity> = [
   {
-    title: () => (
-      <Text type="small" weight="semibold">
-        Proposal
-      </Text>
-    ),
+    title: 'Proposal',
     width: '70%',
     render: (_, data: APILiteProposalEntity) => (
       <Grid flow="row" gap={8}>
@@ -41,11 +37,7 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
     ),
   },
   {
-    title: () => (
-      <Text type="small" weight="semibold">
-        Votes
-      </Text>
-    ),
+    title: 'Votes',
     width: '30%',
     render: (_, data: APILiteProposalEntity) => {
       const total = data.forVotes.plus(data.againstVotes);

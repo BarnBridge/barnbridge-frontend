@@ -26,13 +26,11 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
   {
     title: 'Token Name',
     render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.pool.meta?.icon} bubbleName={entity.pool.market?.icon} />
-        <Grid flow="row" gap={4} className="ml-auto">
-          <ExternalLink
-            href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)}
-            className="grid flow-col col-gap-4 align-start">
-            <Text type="p1" weight="semibold" color="blue">
+      <div className="flex flow-col align-center">
+        <IconBubble name={entity.pool.meta?.icon} bubbleName={entity.pool.market?.icon} className="mr-16" />
+        <div className="flex flow-row">
+          <ExternalLink href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)} className="flex flow-col mb-4">
+            <Text type="p1" weight="semibold" color="blue" className="mr-4">
               {entity.pool.underlyingSymbol}
             </Text>
             <Icon name="arrow-top-right" width={8} height={8} color="blue" />
@@ -40,8 +38,8 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
           <Text type="small" weight="semibold">
             {entity.pool.market?.name}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     ),
   },
   {
@@ -71,10 +69,15 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
           )}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
+            {` j${entity.pool.underlyingSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
+          {formatUSDValue(
+            getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals)?.multipliedBy(
+              entity.pool.state.jTokenPrice,
+            ),
+          )}
         </Text>
       </>
     ),
