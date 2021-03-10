@@ -314,7 +314,7 @@ const JuniorPortfolio: React.FC = () => {
               visible={filtersVisible}
               onVisibleChange={setFiltersVisible}
               placement="bottomRight">
-              <button type="button" className="button-ghost-monochrome ml-auto mb-12">
+              <button type="button" className="button-ghost-monochrome ml-auto mb-12 pv-16">
                 <Icon name="filter" className="mr-8" color="inherit" />
                 Filters
               </button>

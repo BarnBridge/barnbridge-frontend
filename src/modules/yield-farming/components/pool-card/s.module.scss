@@ -5,16 +5,26 @@
 }
 
 .cardTitleContainer {
+  display: grid;
+  grid-template-columns: min-content auto min-content;
+  gap: 16px;
+
   @media (max-width: 480px) {
-    display: block;
+    gap: 24px 8px;
+    display: flex;
+    flex-wrap: wrap;
+
+    button {
+      width: 100%;
+    }
   }
 }
 
-.cardTitleStacking {
-  @media (max-width: 480px) {
-    margin-top: 8px;
-    width: 100%;
-  }
+.cardTitleTexts {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  overflow: hidden;
 }
 
 .box {

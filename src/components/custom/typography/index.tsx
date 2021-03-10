@@ -16,6 +16,7 @@ export type TextProps = {
   wrap?: boolean;
   className?: string;
   style?: Partial<CSSStyleDeclaration>;
+  title?: string;
 };
 
 export const Text: React.FC<TextProps> = React.memo(props => {

@@ -105,7 +105,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
       visible={filtersVisible}
       onVisibleChange={setFiltersVisible}
       placement="bottomRight">
-      <button type="button" className="button-ghost-monochrome ml-auto">
+      <button type="button" className="button-ghost-monochrome pv-16 ml-auto">
         <Icon name="filter" className="mr-8" color="inherit" />
         Filters
       </button>

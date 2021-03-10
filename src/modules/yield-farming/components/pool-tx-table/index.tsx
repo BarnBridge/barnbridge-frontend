@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
 import { formatDistance } from 'date-fns';
 import capitalize from 'lodash/capitalize';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -12,7 +13,6 @@ import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -191,7 +191,7 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
   }, [web3c, poolTxList.transactions]);
 
   const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between" className={s.chartTitleContainer}>
+    <Grid flow="col" align="center" justify="space-between" className={cn(s.chartTitleContainer, 'pv-12 ph-24')}>
       <Text type="p1" weight="semibold" color="primary">
         {label}
       </Text>
@@ -238,7 +238,8 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
   );
 
   return (
-    <Card title={CardTitle} noPaddingBody className={s.table}>
+    <div className={cn(s.table, 'card')}>
+      {CardTitle}
       <Table<PoolTxListItem>
         columns={Columns}
         rowKey="txHash"
@@ -248,11 +249,11 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
           emptyText: CardEmptyText,
         }}
         footer={() => !poolTxList.isEnd && poolTxList.transactions.length > 0 && CardFooter}
-        scroll={{
-          x: true,
-        }}
+        // scroll={{
+        //   x: true,
+        // }}
       />
-    </Card>
+    </div>
   );
 };
 

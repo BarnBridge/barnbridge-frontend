@@ -249,7 +249,7 @@ const SeniorTranche: React.FC = () => {
                     <button
                       key={opt}
                       type="button"
-                      className={cn('button-ghost-monochrome ph-24', {
+                      className={cn('button-ghost-monochrome ph-24 pv-16', {
                         selected: date?.valueOf() === maturityDate?.valueOf(),
                       })}
                       disabled={formDisabled || state.isSaving}
