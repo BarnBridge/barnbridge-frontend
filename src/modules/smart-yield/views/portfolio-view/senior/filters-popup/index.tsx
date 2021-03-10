@@ -94,7 +94,7 @@ const FiltersPopup: React.FC = () => {
       onVisibleChange={setVisible}>
       <button
         type="button"
-        className="button-ghost-monochrome pv-16 ml-auto"
+        className="button-ghost-monochrome ph-16 ml-auto"
         style={{ backgroundColor: 'var(--theme-card-color)' }}>
         <Icon name="filter" className="mr-8" color="inherit" />
         Filters

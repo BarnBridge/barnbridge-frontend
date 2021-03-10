@@ -17,7 +17,7 @@ const WithdrawHeader: React.FC = () => {
 
   return (
     <div
-      className="flexbox-grid mb-64"
+      className="flexbox-list mb-64"
       style={{ '--gap': '64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} />
