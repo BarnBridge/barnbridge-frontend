@@ -233,7 +233,6 @@ const WalletLockView: React.FC = () => {
           <Button
             type="primary"
             htmlType="submit"
-            size="large"
             loading={state.saving}
             disabled={formDisabled}
             style={{ justifySelf: 'start' }}>

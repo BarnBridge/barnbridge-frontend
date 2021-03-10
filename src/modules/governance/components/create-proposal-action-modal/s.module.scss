@@ -12,10 +12,8 @@
 
   :global(.ant-modal-body) {
     padding: 106px 32px 32px;
-  }
-
-  .headerLabel {
-    color: #060a0d;
+    height: 100%;
+    background: var(--theme-body-color);
   }
 
   .wrap {

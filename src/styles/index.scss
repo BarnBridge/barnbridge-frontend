@@ -91,6 +91,9 @@ body.mobile-menu-open {
   --theme-modal-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 16px 32px rgba(19, 32, 43, 0.4);
   --theme-overlay-shadow: 0 0 0.5px rgba(0, 0, 0, 0.4), 0 32px 64px rgba(113, 121, 128, 0.32);
 
+  --theme-input-background: #fff;
+  --theme-input-placeholder: #aaafb3;
+
   --theme-red-color: #ff4339; // red500
   --theme-red-color-rgb: 255, 67, 57; // red500
 
@@ -130,6 +133,9 @@ body.mobile-menu-open {
   --theme-card-shadow: 0 0 0.5px #fff, 0 8px 16px rgba(0, 0, 0, 0.08);
   --theme-modal-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
   --theme-overlay-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
+
+  --theme-input-background: #202529;
+  --theme-input-placeholder: #606268;
 }
 
 :focus:not(:focus-visible) {

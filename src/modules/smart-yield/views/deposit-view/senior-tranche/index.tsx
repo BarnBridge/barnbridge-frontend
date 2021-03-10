@@ -242,7 +242,7 @@ const SeniorTranche: React.FC = () => {
                 <button
                   key={opt}
                   type="button"
-                  className="button-ghost-monochrome ph-24"
+                  className="button-ghost-monochrome ph-24 pv-16"
                   disabled={formDisabled || state.isSaving}
                   onClick={() => {
                     form.setFieldsValue({
