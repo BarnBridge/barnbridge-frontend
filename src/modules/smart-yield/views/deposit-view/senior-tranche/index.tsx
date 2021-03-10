@@ -279,11 +279,6 @@ const SeniorTranche: React.FC = () => {
         <Form.Item name="deadline" noStyle hidden>
           <Input />
         </Form.Item>
-        <TransactionSummary
-          apy={apy}
-          reward={getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER}
-          symbol={pool?.underlyingSymbol}
-        />
         <Form.Item shouldUpdate noStyle>
           {() => {
             const { slippageTolerance, deadline } = form.getFieldsValue();
@@ -297,6 +292,11 @@ const SeniorTranche: React.FC = () => {
             );
           }}
         </Form.Item>
+        <TransactionSummary
+          apy={apy}
+          reward={getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER}
+          symbol={pool?.underlyingSymbol}
+        />
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
           <Button type="light" disabled={state.isSaving} onClick={handleCancel}>
             <Icon name="left-arrow" width={9} height={8} />

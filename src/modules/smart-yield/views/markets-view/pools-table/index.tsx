@@ -38,22 +38,27 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'Senior Liquidity',
       sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
-      align: 'center',
       render: (_, entity) => (
         <Tooltip
           title={
             <>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 {formatBigValue(entity.state.seniorLiquidity)}
+                {` ${entity.underlyingSymbol}`}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
                 {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
               </Text>
             </>
           }>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
-          </Text>
+          <div className="flex flow-col col-gap-8">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {entity.underlyingSymbol}
+            </Text>
+          </div>
           <Text type="small" weight="semibold">
             {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
               entity.state.seniorLiquidity,
@@ -74,22 +79,27 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     {
       title: 'Junior Liquidity',
       sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
-      align: 'center',
       render: (_, entity) => (
         <Tooltip
           title={
             <>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 {formatBigValue(entity.state.juniorLiquidity)}
+                {` ${entity.underlyingSymbol}`}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
                 {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
               </Text>
             </>
           }>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
-          </Text>
+          <div className="flex flow-col col-gap-8">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {entity.underlyingSymbol}
+            </Text>
+          </div>
           <Text type="small" weight="semibold">
             {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
               entity.state.juniorLiquidity,
@@ -149,9 +159,15 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             sorter: (a, b) => (a.underlyingBalance?.toNumber() ?? 0) - (b.underlyingBalance?.toNumber() ?? 0),
             render: (_, entity) => (
               <>
-                <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                  {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
-                </Text>
+                <div className="flex flow-col col-gap-8">
+                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+                  </Text>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {entity.underlyingSymbol}
+                  </Text>
+                </div>
+
                 <Text type="small" weight="semibold">
                   {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
                 </Text>

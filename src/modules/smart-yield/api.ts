@@ -250,6 +250,7 @@ export type APISYJuniorRedeem = {
   maturesAt: number;
   underlyingOut: BigNumber;
   blockTimestamp: number;
+  transactionHash: string;
 };
 
 export function fetchSYJuniorRedeems(

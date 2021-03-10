@@ -1,12 +1,19 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
+import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { formatBigValue, formatUSDValue, getEtherscanAddressUrl } from 'web3/utils';
+import {
+  ZERO_BIG_NUMBER,
+  formatBigValue,
+  formatUSDValue,
+  getEtherscanAddressUrl,
+  getEtherscanTxUrl,
+  shortenAddr,
+} from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
@@ -30,19 +37,18 @@ type TableEntity = APISYJuniorRedeem & {
     meta?: SYPoolMeta;
     market?: SYMarketMeta;
   };
+  forfeits?: BigNumber;
 };
 
 const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
     render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.pool?.meta?.icon} bubbleName={entity.pool?.market?.icon} />
-        <Grid flow="row" gap={4} className="ml-auto">
-          <ExternalLink
-            href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress)}
-            className="grid flow-col col-gap-4 align-start">
-            <Text type="p1" weight="semibold" color="blue">
+      <div className="flex flow-col align-center">
+        <IconBubble name={entity.pool?.meta?.icon} bubbleName={entity.pool?.market?.icon} className="mr-16" />
+        <div className="flex flow-row">
+          <ExternalLink href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress)} className="flex flow-col mb-4">
+            <Text type="p1" weight="semibold" color="blue" className="mr-4">
               {entity.pool?.underlyingSymbol}
             </Text>
             <Icon name="arrow-top-right" width={8} height={8} color="blue" />
@@ -50,13 +56,43 @@ const Columns: ColumnsType<TableEntity> = [
           <Text type="small" weight="semibold">
             {entity.pool?.market?.name}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     ),
   },
   {
-    title: 'Redeemed balance',
-    width: '20%',
+    title: 'Transaction hash/timestamp',
+    render: (_, entity) => (
+      <>
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+          {shortenAddr(entity.transactionHash)}
+        </ExternalLink>
+        <Text type="small" weight="semibold" color="secondary">
+          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+        </Text>
+      </>
+    ),
+  },
+  {
+    title: 'Tokens in',
+    align: 'right',
+    sorter: (a, b) => a.tokensIn.toNumber() - b.tokensIn.toNumber(),
+    render: (_, entity) => (
+      <>
+        <Tooltip title={formatBigValue(entity.tokensIn, entity.pool?.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(entity.tokensIn)}
+            {` j${entity.pool?.underlyingSymbol}`}
+          </Text>
+        </Tooltip>
+        <Text type="small" weight="semibold" color="secondary">
+          {formatUSDValue(entity.tokensIn.multipliedBy(entity.pool?.state.jTokenPrice ?? ZERO_BIG_NUMBER))}
+        </Text>
+      </>
+    ),
+  },
+  {
+    title: 'Underlying out',
     align: 'right',
     sorter: (a, b) => a.underlyingOut.toNumber() - b.underlyingOut.toNumber(),
     render: (_, entity) => (
@@ -64,6 +100,7 @@ const Columns: ColumnsType<TableEntity> = [
         <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(entity.underlyingOut)}
+            {` ${entity.pool?.underlyingSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
@@ -73,21 +110,26 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: 'Redeemed at',
-    width: '40%',
+    title: 'Forfeits',
     align: 'right',
-    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
+    sorter: (a, b) => a.forfeits?.toNumber() ?? 0 - b.underlyingOut?.toNumber() ?? 0,
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-      </Text>
+      <>
+        <Tooltip title={formatBigValue(entity.forfeits ?? ZERO_BIG_NUMBER, entity.pool?.underlyingDecimals)}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBigValue(entity.forfeits ?? ZERO_BIG_NUMBER)}
+            {` ${entity.pool?.underlyingSymbol}`}
+          </Text>
+        </Tooltip>
+        <Text type="small" weight="semibold" color="secondary">
+          {formatUSDValue(entity.forfeits ?? ZERO_BIG_NUMBER)}
+        </Text>
+      </>
     ),
   },
   {
     title: 'Withdraw type',
-    width: '40%',
     align: 'right',
-    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
         {entity.juniorBondAddress ? '2 step' : 'Instant'}
@@ -95,7 +137,7 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    width: '20%',
+    width: '15%',
     render: () => <StatusTag text="Redeemed" color="green" />,
   },
 ];
@@ -150,6 +192,8 @@ const PastPositionsTable: React.FC = () => {
             maturesAt: 0,
             underlyingOut: item.underlyingOut,
             blockTimestamp: item.blockTimestamp,
+            transactionHash: item.transactionHash,
+            forfeits: item.forfeits,
           } as APISYJuniorRedeem;
         });
 
@@ -199,7 +243,7 @@ const PastPositionsTable: React.FC = () => {
     <Table<TableEntity>
       columns={Columns}
       dataSource={state.data}
-      rowKey="juniorBondId"
+      rowKey="transactionHash"
       loading={state.loading}
       pagination={{
         total: state.total,

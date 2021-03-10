@@ -1,8 +1,10 @@
 import React from 'react';
-import { formatBigValue } from 'web3/utils';
+import BigNumber from 'bignumber.js';
+import { formatBigValue, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
+import Tooltip from 'components/antd/tooltip';
 import { Hint, Text } from 'components/custom/typography';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
@@ -29,17 +31,64 @@ const PoolDetails: React.FC = () => {
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Senior Liquidity
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.state.seniorLiquidity)}
-          </Text>
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  {formatBigValue(pool.state.seniorLiquidity)}
+                  {` ${pool.underlyingSymbol}`}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSDValue(new BigNumber(pool.state.seniorLiquidity))}
+                </Text>
+              </>
+            }>
+            <div className="flex flow-col col-gap-8">
+              <Text type="p1" weight="semibold" color="primary">
+                {Intl.NumberFormat('en', { notation: 'compact' }).format(pool.state.seniorLiquidity)}
+              </Text>
+              <Text type="p1" weight="semibold" color="primary">
+                {pool.underlyingSymbol}
+              </Text>
+            </div>
+
+            <Text type="small" weight="semibold">
+              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+                pool.state.seniorLiquidity,
+              )}
+            </Text>
+          </Tooltip>
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Junior Liquidity
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.state.juniorLiquidity)}
-          </Text>
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  {formatBigValue(pool.state.juniorLiquidity)}
+                  {` ${pool.underlyingSymbol}`}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSDValue(new BigNumber(pool.state.juniorLiquidity))}
+                </Text>
+              </>
+            }>
+            <div className="flex flow-col col-gap-8">
+              <Text type="p1" weight="semibold" color="primary">
+                {Intl.NumberFormat('en', { notation: 'compact' }).format(pool.state.juniorLiquidity)}
+              </Text>
+              <Text type="p1" weight="semibold" color="primary">
+                {pool.underlyingSymbol}
+              </Text>
+            </div>
+            <Text type="small" weight="semibold">
+              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+                pool.state.juniorLiquidity,
+              )}
+            </Text>
+          </Tooltip>
         </div>
       </div>
       <Divider />
@@ -99,9 +148,32 @@ const PoolDetails: React.FC = () => {
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Junior liquidity locked
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(pool.state.juniorLiquidityLocked)}
-          </Text>
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  {formatBigValue(pool.state.juniorLiquidityLocked)}
+                  {` ${pool.underlyingSymbol}`}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSDValue(new BigNumber(pool.state.juniorLiquidityLocked))}
+                </Text>
+              </>
+            }>
+            <div className="flex flow-col col-gap-8">
+              <Text type="p1" weight="semibold" color="primary">
+                {Intl.NumberFormat('en', { notation: 'compact' }).format(pool.state.juniorLiquidityLocked)}
+              </Text>
+              <Text type="p1" weight="semibold" color="primary">
+                {pool.underlyingSymbol}
+              </Text>
+            </div>
+            <Text type="small" weight="semibold">
+              {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
+                pool.state.juniorLiquidityLocked,
+              )}
+            </Text>
+          </Tooltip>
         </div>
       </div>
     </Card>

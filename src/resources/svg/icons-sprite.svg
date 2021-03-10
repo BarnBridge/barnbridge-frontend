@@ -351,6 +351,18 @@
     <path d="m19.2 7.8v11.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
     <path d="m4.8 7.8v11.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.5"/>
   </symbol>
+  <!-- TRACTOR OUTLINED -->
+  <symbol id="icon__tractor-outlined" viewBox="0 0 25 24" fill="none">
+    <circle cx="5.36941" cy="16.6311" r="4.36941" stroke="currentColor" stroke-width="1.5"/>
+    <circle cx="5.36942" cy="16.6302" r="1.31082" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M12.3603 16.6307C12.3603 12.7697 9.23033 9.63965 5.36928 9.63965C4.00465 9.63965 2.73135 10.0306 1.65527 10.7067" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="18.915" cy="17.9414" r="3.05859" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M8.86523 10.5137H19.2644C21.9672 10.5137 24.1582 12.7047 24.1582 15.4074V15.4074C24.1582 16.0831 23.6104 16.6309 22.9347 16.6309H21.755" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M16.2928 16.6299H12.3604" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M3.40332 1L12.3606 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M4.1582 1V9.35913M10.3199 1L12.5793 10.4737" stroke="currentColor" stroke-width="1.5"/>
+    <path d="M18.04 10.5131V8.01758C18.04 7.46529 18.4878 7.01758 19.04 7.01758H20.2247" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+  </symbol>
   <!-- WALLET OUTLINED -->
   <symbol id="icon__wallet-outlined" viewBox="0 0 24 24" fill="none">
     <path

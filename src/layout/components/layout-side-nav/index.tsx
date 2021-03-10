@@ -53,7 +53,7 @@ const LayoutSideNav: React.FC = () => {
         <nav className={s.top}>
           <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
             <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
-              <Icon name="savings-outlined" />
+              <Icon name="tractor-outlined" />
               <Text type="p2" weight="semibold" className={s.buttonLabel}>
                 Yield Farming
               </Text>

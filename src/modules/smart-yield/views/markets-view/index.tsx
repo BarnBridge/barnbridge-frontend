@@ -53,7 +53,7 @@ const MarketsView: React.FC = () => {
                 {market.name}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                Markets
+                {market.active ? 'Markets' : 'Coming soon'}
               </Text>
             </div>
           </button>

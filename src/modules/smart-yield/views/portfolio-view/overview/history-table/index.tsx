@@ -90,6 +90,7 @@ const Columns: ColumnsType<TableEntity> = [
         <Tooltip title={formatBigValue(entity.amount, 18)}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(entity.amount)}
+            {` ${entity.underlyingTokenSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold">
@@ -190,6 +191,7 @@ const HistoryTable: React.FC = () => {
   function handleFiltersApply(filters: HistoryTableFilterValues) {
     setState(prevState => ({
       ...prevState,
+      page: 1,
       originatorFilter: filters.originator,
       tokenFilter: filters.token,
       transactionTypeFilter: filters.transactionType,
