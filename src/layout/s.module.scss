@@ -12,19 +12,3 @@
   grid-area: content;
   flex-grow: 1;
 }
-
-.footer {
-  background: var(--theme-body-color);
-  grid-area: footer;
-  margin-top: auto;
-  padding: 64px;
-
-  a {
-    color: var(--theme-default-color);
-
-    &:hover,
-    &:active {
-      color: var(--theme-primary-color);
-    }
-  }
-}

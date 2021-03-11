@@ -135,7 +135,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
 
   return (
     <section className={cn(s.container, className)}>
-      <header className="flex ph-24 pv-24">
+      <header className="flex ph-24 pv-16">
         <Text type="p2" weight="semibold" color="secondary">
           Transaction details
         </Text>
@@ -157,7 +157,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
         </Popover>
       </header>
       <Divider />
-      <div className="p-24">
+      <div className="ph-24 pv-16">
         <div className="flex mb-24">
           <Hint text="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage.">
             <Text type="small" weight="semibold" color="secondary">

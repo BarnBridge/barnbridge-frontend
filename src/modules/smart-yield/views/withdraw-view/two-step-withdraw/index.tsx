@@ -161,10 +161,10 @@ const TwoStepWithdraw: React.FC = () => {
         </div>
 
         <Grid flow="col" gap={64} align="center" justify="space-between">
-          <Button type="light" onClick={handleCancel}>
-            <Icon name="left-arrow" width={9} height={8} />
+          <button type="button" className="button-text" onClick={handleCancel}>
+            <Icon name="left-arrow" width={9} height={8} className="mr-12" color="inherit" />
             Cancel
-          </Button>
+          </button>
           <Button type="primary" htmlType="submit">
             Initiate withdraw
           </Button>
