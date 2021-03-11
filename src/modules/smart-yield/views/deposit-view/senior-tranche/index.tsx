@@ -4,7 +4,10 @@ import useDebounce from '@rooks/use-debounce';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { differenceInDays, isAfter, isBefore, startOfDay } from 'date-fns';
+import differenceInDays from 'date-fns/differenceInDays';
+import isAfter from 'date-fns/isAfter';
+import isBefore from 'date-fns/isBefore';
+import startOfDay from 'date-fns/startOfDay';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';

@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYSmartYieldContract, { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
@@ -154,8 +154,7 @@ const PoolProvider: React.FC = props => {
 
     (async () => {
       try {
-        const pools = await fetchSYPools(market);
-        const pool = pools.find(poolItem => poolItem.underlyingSymbol === token);
+        const pool = await fetchSYPool(market, token);
 
         if (!pool) {
           return await Promise.reject();

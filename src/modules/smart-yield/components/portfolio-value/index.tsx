@@ -1,6 +1,8 @@
 import React from 'react';
 import AntdSpin from 'antd/lib/spin';
+import addDays from 'date-fns/addDays';
 import format from 'date-fns/format';
+import startOfDay from 'date-fns/startOfDay';
 import * as ReCharts from 'recharts';
 import { formatUSDValue } from 'web3/utils';
 
@@ -54,7 +56,7 @@ const PortfolioValue: React.FC<Props> = props => {
 
   const [state, setState] = React.useState<State>(InitialState);
 
-  const [daysFilter, setDaysFilter] = React.useState<number>(Number(DAYS_FILTER[0].value));
+  const [daysFilter, setDaysFilter] = React.useState<number>(30);
 
   const [title, color, gradientColor] = React.useMemo(() => {
     switch (type) {
@@ -115,6 +117,11 @@ const PortfolioValue: React.FC<Props> = props => {
     })();
   }, [wallet.account]);
 
+  const chartData = React.useMemo(() => {
+    const lastDays = addDays(startOfDay(new Date()), -daysFilter);
+    return state.data.filter(item => item.timestamp > lastDays);
+  }, [state.data, daysFilter]);
+
   return (
     <AntdSpin spinning={state.loading}>
       <div className="card">
@@ -126,7 +133,7 @@ const PortfolioValue: React.FC<Props> = props => {
         </div>
         <div className="p-24">
           <ReCharts.ResponsiveContainer width="100%" height={178}>
-            <ReCharts.AreaChart data={state.data}>
+            <ReCharts.AreaChart data={chartData}>
               <defs>
                 <linearGradient id="chart-gradient" gradientTransform="rotate(180)">
                   <stop offset="0%" stopColor={`rgba(${gradientColor}, 0.08)`} />

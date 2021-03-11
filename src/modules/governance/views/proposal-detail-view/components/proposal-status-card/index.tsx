@@ -1,5 +1,6 @@
 import React from 'react';
-import { format, formatDistance } from 'date-fns';
+import format from 'date-fns/format';
+import formatDistance from 'date-fns/formatDistance';
 import { getEtherscanTxUrl } from 'web3/utils';
 
 import Card from 'components/antd/card';

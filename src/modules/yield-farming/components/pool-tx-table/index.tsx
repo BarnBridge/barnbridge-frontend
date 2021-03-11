@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatDistance } from 'date-fns';
+import formatDistance from 'date-fns/formatDistance';
 import capitalize from 'lodash/capitalize';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';

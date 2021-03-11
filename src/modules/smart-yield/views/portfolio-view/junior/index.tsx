@@ -1,18 +1,12 @@
 import React from 'react';
-import AntdForm from 'antd/lib/form';
 import AntdSpin from 'antd/lib/spin';
 import format from 'date-fns/format';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
-import Form from 'components/antd/form';
-import Popover from 'components/antd/popover';
-import Select from 'components/antd/select';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
@@ -26,88 +20,11 @@ import { useWallet } from 'wallets/wallet';
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';
 import PastPositionsTable from './past-positions-table';
+import PositionsTableFilter from './positions-table-filter';
 
 import { doSequential } from 'utils';
 
 import s from './s.module.scss';
-
-const originatorFilterOptions = [
-  {
-    label: 'All originators',
-    value: 1,
-  },
-  {
-    label: 'All originators 2',
-    value: 2,
-  },
-];
-
-const tokenFilterOptions = [
-  {
-    label: 'All tokens',
-    value: 1,
-  },
-  {
-    label: 'All tokens 2',
-    value: 2,
-  },
-];
-
-const transactionFilterOptions = [
-  {
-    label: 'All transactions',
-    value: 1,
-  },
-  {
-    label: 'All transactions 2',
-    value: 2,
-  },
-];
-
-type FormValues = {
-  originator?: string;
-  token?: string;
-  transactionType?: string;
-};
-
-const Filters: React.FC = () => {
-  const [form] = AntdForm.useForm<FormValues>();
-
-  const handleFinish = React.useCallback((values: FormData) => {
-    console.log(values);
-  }, []);
-
-  return (
-    <Form
-      form={form}
-      initialValues={{
-        originator: originatorFilterOptions[0].value,
-        token: tokenFilterOptions[0].value,
-        transactionType: transactionFilterOptions[0].value,
-      }}
-      validateTrigger={['onSubmit']}
-      onFinish={handleFinish}>
-      <Form.Item label="Originator" name="originator" className="mb-32">
-        <Select loading={false} disabled={false} options={originatorFilterOptions} style={{ width: '100%' }} />
-      </Form.Item>
-      <Form.Item label="Token" name="token" className="mb-32">
-        <Select loading={false} disabled={false} options={tokenFilterOptions} style={{ width: '100%' }} />
-      </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select loading={false} disabled={false} options={transactionFilterOptions} style={{ width: '100%' }} />
-      </Form.Item>
-
-      <div className="grid flow-col align-center justify-space-between">
-        <button type="button" onClick={() => form.resetFields()} className="button-text">
-          Reset filters
-        </button>
-        <button type="submit" className="button-primary">
-          Apply filters
-        </button>
-      </div>
-    </Form>
-  );
-};
 
 type State = {
   loadingActive: boolean;
@@ -125,7 +42,6 @@ const InitialState: State = {
 
 const JuniorPortfolio: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('active');
-  const [filtersVisible, setFiltersVisible] = React.useState<boolean>(false);
 
   const wallet = useWallet();
   const poolsCtx = usePools();
@@ -300,26 +216,13 @@ const JuniorPortfolio: React.FC = () => {
         Positions
       </Text>
 
-      <Card className="mb-32" noPaddingBody>
+      <div className="card mb-32">
         <Tabs
           simple
           className={s.tabs}
           activeKey={activeTab}
           onChange={setActiveTab}
-          tabBarExtraContent={
-            <Popover
-              title="Filters"
-              overlayStyle={{ width: 348 }}
-              content={<Filters />}
-              visible={filtersVisible}
-              onVisibleChange={setFiltersVisible}
-              placement="bottomRight">
-              <button type="button" className="button-ghost-monochrome ml-auto mb-12 pv-16">
-                <Icon name="filter" className="mr-8" color="inherit" />
-                Filters
-              </button>
-            </Popover>
-          }>
+          tabBarExtraContent={<PositionsTableFilter originators={pools} onFiltersApply={() => null} />}>
           <Tabs.Tab key="active" tab="Active">
             <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
           </Tabs.Tab>
@@ -365,7 +268,7 @@ const JuniorPortfolio: React.FC = () => {
             <PastPositionsTable />
           </Tabs.Tab>
         </Tabs>
-      </Card>
+      </div>
     </>
   );
 };

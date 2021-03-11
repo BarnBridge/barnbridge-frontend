@@ -1,4 +1,6 @@
-import { add, formatDuration, intervalToDuration } from 'date-fns';
+import add from 'date-fns/add';
+import formatDuration from 'date-fns/formatDuration';
+import intervalToDuration from 'date-fns/intervalToDuration';
 import { isAddress } from 'web3-utils';
 import { DEFAULT_ADDRESS } from 'web3/utils';
 

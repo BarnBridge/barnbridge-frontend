@@ -1,7 +1,12 @@
 import React from 'react';
 import * as Antd from 'antd';
 import cn from 'classnames';
-import { addDays, addMonths, addSeconds, getUnixTime, isAfter, isBefore } from 'date-fns';
+import addDays from 'date-fns/addDays';
+import addMonths from 'date-fns/addMonths';
+import addSeconds from 'date-fns/addSeconds';
+import getUnixTime from 'date-fns/getUnixTime';
+import isAfter from 'date-fns/isAfter';
+import isBefore from 'date-fns/isBefore';
 import { useWeb3Contracts } from 'web3/contracts';
 import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 

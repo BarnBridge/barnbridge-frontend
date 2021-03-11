@@ -1,26 +1,24 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import {
-  addDays,
-  addHours,
-  addMinutes,
-  addMonths,
-  addWeeks,
-  addYears,
-  differenceInDays,
-  differenceInHours,
-  differenceInMinutes,
-  differenceInMonths,
-  differenceInWeeks,
-  format,
-  formatDistanceToNow,
-  startOfDay,
-  startOfHour,
-  startOfMinute,
-  startOfMonth,
-  startOfWeek,
-} from 'date-fns';
-import { flow } from 'lodash/fp';
+import addDays from 'date-fns/addDays';
+import addHours from 'date-fns/addHours';
+import addMinutes from 'date-fns/addMinutes';
+import addMonths from 'date-fns/addMonths';
+import addWeeks from 'date-fns/addWeeks';
+import addYears from 'date-fns/addYears';
+import differenceInDays from 'date-fns/differenceInDays';
+import differenceInHours from 'date-fns/differenceInHours';
+import differenceInMinutes from 'date-fns/differenceInMinutes';
+import differenceInMonths from 'date-fns/differenceInMonths';
+import differenceInWeeks from 'date-fns/differenceInWeeks';
+import format from 'date-fns/format';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
+import startOfDay from 'date-fns/startOfDay';
+import startOfHour from 'date-fns/startOfHour';
+import startOfMinute from 'date-fns/startOfMinute';
+import startOfMonth from 'date-fns/startOfMonth';
+import startOfWeek from 'date-fns/startOfWeek';
+import flow from 'lodash/fp/flow';
 import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue, formatBigValue } from 'web3/utils';

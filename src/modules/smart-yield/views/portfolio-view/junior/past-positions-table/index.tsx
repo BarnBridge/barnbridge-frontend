@@ -20,19 +20,19 @@ import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import {
-  APISYJuniorRedeem,
+  APISYJuniorPastPosition,
   APISYPool,
+  JuniorPastPositionTypes,
   Markets,
   Pools,
   SYMarketMeta,
   SYPoolMeta,
-  fetchSYJuniorInstantWithdrawals,
-  fetchSYJuniorRedeems,
+  fetchSYJuniorPastPositions,
 } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
-type TableEntity = APISYJuniorRedeem & {
+type TableEntity = APISYJuniorPastPosition & {
   pool?: APISYPool & {
     meta?: SYPoolMeta;
     market?: SYMarketMeta;
@@ -132,7 +132,7 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
-        {entity.juniorBondAddress ? '2 step' : 'Instant'}
+        {JuniorPastPositionTypes.get(entity.transactionType)}
       </Text>
     ),
   },
@@ -179,25 +179,9 @@ const PastPositionsTable: React.FC = () => {
       );
 
       try {
-        const redeems = await fetchSYJuniorRedeems(wallet.account, state.page, state.pageSize);
-        const instantWithdrawals = await fetchSYJuniorInstantWithdrawals(wallet.account, state.page, state.pageSize);
+        const pastPositions = await fetchSYJuniorPastPositions(wallet.account, state.page, state.pageSize);
 
-        const dataIW = instantWithdrawals.data.map(item => {
-          return {
-            juniorBondAddress: '',
-            userAddress: '',
-            juniorBondId: item.blockTimestamp,
-            smartYieldAddress: item.smartYieldAddress,
-            tokensIn: item.tokensIn,
-            maturesAt: 0,
-            underlyingOut: item.underlyingOut,
-            blockTimestamp: item.blockTimestamp,
-            transactionHash: item.transactionHash,
-            forfeits: item.forfeits,
-          } as APISYJuniorRedeem;
-        });
-
-        const data = redeems.data.concat(dataIW).map(item => {
+        const data = pastPositions.data.map(item => {
           const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.smartYieldAddress);
 
           return {
@@ -216,7 +200,7 @@ const PastPositionsTable: React.FC = () => {
           mergeState<State>({
             loading: false,
             data,
-            total: redeems.meta.count,
+            total: pastPositions.meta.count,
           }),
         );
       } catch {
