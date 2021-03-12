@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
+import capitalize from 'lodash/capitalize';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
@@ -12,7 +13,7 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYUserTxHistory, HistoryTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { APISYUserTxHistory, HistoryShortTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
@@ -103,10 +104,10 @@ const Columns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {entity.tranche}
+          {capitalize(entity.tranche)}
         </Text>
         <Text type="small" weight="semibold">
-          {HistoryTypes.get(entity.transactionType)}
+          {HistoryShortTypes.get(entity.transactionType)}
         </Text>
       </>
     ),
@@ -119,9 +120,6 @@ type State = {
   total: number;
   pageSize: number;
   page: number;
-  originatorFilter: string;
-  tokenFilter: string;
-  transactionTypeFilter: string;
 };
 
 const InitialState: State = {
@@ -130,9 +128,6 @@ const InitialState: State = {
   total: 0,
   pageSize: 10,
   page: 1,
-  originatorFilter: 'all',
-  tokenFilter: 'all',
-  transactionTypeFilter: 'all',
 };
 
 const InitialFilters: HistoryTableFilterValues = {
@@ -167,9 +162,9 @@ const HistoryTable: React.FC = () => {
           wallet.account,
           state.page,
           state.pageSize,
-          state.originatorFilter,
-          state.tokenFilter,
-          state.transactionTypeFilter,
+          filters.originator,
+          filters.token,
+          filters.transactionType,
         );
 
         setState(
