@@ -2,10 +2,11 @@ import React from 'react';
 import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
+import Tooltip from 'components/antd/tooltip';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
@@ -23,6 +24,8 @@ import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
+import ExternalLink from 'components/custom/externalLink';
+import { format } from 'date-fns';
 
 type ListEntity = APISYSeniorRedeem & {
   pool?: APISYPool & {
@@ -146,8 +149,14 @@ const PastPositionsList: React.FC<Props> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   Deposited
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(entity.underlyingIn)}
+                <Tooltip title={entity.underlyingIn}>
+                  <Text type="p1" tag="span" weight="semibold" color="primary">
+                    {formatBigValue(entity.underlyingIn)}
+                    {` ${entity.pool?.underlyingSymbol}`}
+                  </Text>
+                </Tooltip>
+                <Text type="p2" weight="semibold" color="secondary">
+                  {formatUSDValue(entity.underlyingIn)}
                 </Text>
               </div>
               <Divider />
@@ -155,8 +164,26 @@ const PastPositionsList: React.FC<Props> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   Redeemed
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(entity.gain)}
+                <Tooltip title={Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee)}>
+                  <Text type="p1" tag="span" weight="semibold" color="primary">
+                    {formatBigValue(Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee))}
+                    {` ${entity.pool?.underlyingSymbol}`}
+                  </Text>
+                </Tooltip>
+                <Text type="p2" weight="semibold" color="secondary">
+                  {formatUSDValue(Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee))}
+                </Text>
+              </div>
+              <Divider />
+              <div className="p-24">
+                <Text type="small" weight="semibold" color="secondary">
+                  Transaction hash/timestamp
+                </Text>
+                <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+                  {shortenAddr(entity.transactionHash)}
+                </ExternalLink>
+                <Text type="small" weight="semibold" color="secondary">
+                  {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
                 </Text>
               </div>
               <Divider />

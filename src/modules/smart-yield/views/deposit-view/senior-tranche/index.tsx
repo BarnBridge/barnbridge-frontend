@@ -21,6 +21,7 @@ import { mergeState } from 'hooks/useMergeState';
 import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TransactionSummary from 'modules/smart-yield/components/transaction-summary';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
+import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
@@ -72,6 +73,17 @@ const SeniorTranche: React.FC = () => {
   const [bondGain, setBondGain] = React.useState<BigNumber | undefined>();
 
   const [formState, setFormState] = React.useState<FormData>(InitialFormValues);
+  const [jseniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
+
+  React.useEffect(() => {
+    if (!pool) {
+      return;
+    }
+
+    const controllerContract = new SYControllerContract(pool.controllerAddress);
+    controllerContract.setProvider(wallet.provider);
+    controllerContract.getSeniorRedeemFee().then(setSeniorRedeemFee);
+  }, [pool?.controllerAddress]);
 
   const formDisabled = !pool?.underlyingIsAllowed;
 
@@ -196,7 +208,7 @@ const SeniorTranche: React.FC = () => {
 
   const reward = formState.amount
     ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
-    ?.plus(bondGain ?? ZERO_BIG_NUMBER);
+    ?.plus(bondGain?.multipliedBy(1 - (jseniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
 
   return (
     <>
@@ -297,6 +309,8 @@ const SeniorTranche: React.FC = () => {
         </Form.Item>
         <TransactionSummary
           apy={apy}
+          gain={getHumanValue(bondGain, pool?.underlyingDecimals)}
+          gainFee={jseniorRedeemFee?.dividedBy(1e18)}
           reward={getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER}
           symbol={pool?.underlyingSymbol}
         />

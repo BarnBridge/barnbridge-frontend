@@ -6,10 +6,11 @@ import { formatBigValue, getHumanValue } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Card from 'components/antd/card';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
-import { Text } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -98,12 +99,34 @@ const InitiateWithdraw: React.FC = () => {
               </Text>
             )}
           </UseLeftTime>
-          <Text type="small" weight="semibold" className="mb-4">
-            Total withdrawable amount
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(totalWithdrawable, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
-          </Text>
+          <Tooltip
+            title={formatBigValue(
+              getHumanValue(totalWithdrawable, pool?.underlyingDecimals),
+              pool?.underlyingDecimals,
+            )}>
+            <Hint
+              text={
+                <Grid flow="row" gap={8} align="start">
+                  <Text type="p2">
+                    This value is based on current junior token prices. At the actual maturity date of the junior bond,
+                    the price may differ and be higher or lower.
+                  </Text>
+                  <ExternalLink
+                    href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit"
+                    className="link-blue"
+                    style={{ fontWeight: 600 }}>
+                    Learn more
+                  </ExternalLink>
+                </Grid>
+              }>
+              <Text type="small" weight="semibold" className="mb-4">
+                Total withdrawable amount
+              </Text>
+            </Hint>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatBigValue(getHumanValue(totalWithdrawable, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
+            </Text>
+          </Tooltip>
         </RadioCard>
         <RadioCard selected={type === WITHDRAW_INSTANT_KEY} onClick={handleInstantType}>
           <Icon name="withdrawal_instant" width={64} height={64} className="mb-16" />
@@ -116,12 +139,19 @@ const InitiateWithdraw: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary" className="mb-16">
             None
           </Text>
-          <Text type="small" weight="semibold" className="mb-4">
-            Total withdrawable amount
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(totalInstantWithdrawable, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
-          </Text>
+          <Tooltip
+            title={formatBigValue(
+              getHumanValue(totalInstantWithdrawable, pool?.underlyingDecimals),
+              pool?.underlyingDecimals,
+            )}>
+            <Text type="small" weight="semibold" className="mb-4">
+              Total withdrawable amount
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatBigValue(getHumanValue(totalInstantWithdrawable, pool?.underlyingDecimals))}{' '}
+              {pool?.underlyingSymbol}
+            </Text>
+          </Tooltip>
           <Text type="small" weight="semibold" color="red">
             Forfeits: {formatBigValue(getHumanValue(forfeits, pool?.underlyingDecimals), pool?.underlyingDecimals)}{' '}
             {pool?.underlyingSymbol} <Icon name="arrow-top-right" width={9} height={8} rotate={90} color="red" />

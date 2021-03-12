@@ -53,7 +53,12 @@ const JuniorTranche: React.FC = () => {
   const { pool, marketId, tokenId } = poolCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
+  const [priceReversible, setPriceReversible] = React.useState(false);
   const formDisabled = !pool?.underlyingIsAllowed;
+
+  function handlePriceReverse() {
+    setPriceReversible(prevState => !prevState);
+  }
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
@@ -98,6 +103,7 @@ const JuniorTranche: React.FC = () => {
       return undefined;
     }
 
+    /// to = (from - fee) * price
     const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
 
     return minAmount.dividedBy(price.dividedBy(1e18));
@@ -114,6 +120,7 @@ const JuniorTranche: React.FC = () => {
       return undefined;
     }
 
+    /// minTo = (from - fee) * price - slippage
     const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
 
     return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippageTolerance ?? 0) / 100);
@@ -220,11 +227,19 @@ const JuniorTranche: React.FC = () => {
           label="To"
           extra={
             <div className="grid flow-col col-gap-8 justify-center">
-              <Icon name="refresh" width={16} height={16} />
-              <Text type="small" weight="semibold" color="secondary">
-                {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} j{pool?.underlyingSymbol} per{' '}
-                {pool?.underlyingSymbol}
-              </Text>
+              {priceReversible ? (
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} j{pool?.underlyingSymbol} per{' '}
+                  {pool?.underlyingSymbol}
+                </Text>
+              ) : (
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
+                </Text>
+              )}
+              <button type="button" className="button-text" onClick={handlePriceReverse}>
+                <Icon name="refresh" width={16} height={16} />
+              </button>
             </div>
           }
           dependencies={['from', 'slippageTolerance']}>
@@ -276,7 +291,7 @@ const JuniorTranche: React.FC = () => {
           <div className="pv-24 ph-24">
             <div className="grid flow-col justify-space-between mb-16">
               <Text type="small" weight="semibold" color="secondary">
-                Transaction fees
+                Protocol fees
               </Text>
               <Text type="p2" weight="semibold" color="primary">
                 <Form.Item dependencies={['from']} noStyle>
@@ -295,7 +310,7 @@ const JuniorTranche: React.FC = () => {
             </div>
             <div className="grid flow-col justify-space-between">
               <Text type="small" weight="semibold" color="secondary">
-                You will get
+                Minimum received
               </Text>
               <Form.Item dependencies={['from', 'slippageTolerance']} noStyle>
                 {() => (
