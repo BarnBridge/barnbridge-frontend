@@ -222,7 +222,13 @@ const JuniorPortfolio: React.FC = () => {
   }, ZERO_BIG_NUMBER);
 
   const apySum = state.dataActive.reduce((a, c) => {
-    return a.plus(c.smartYieldBalance.multipliedBy(c.state.jTokenPrice).multipliedBy(c.state.juniorApy));
+    return a.plus(
+      getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
+        ?.multipliedBy(c.state.jTokenPrice)
+        .multipliedBy(1)
+        .multipliedBy(c.state.juniorApy)
+        .dividedBy(100) ?? ZERO_BIG_NUMBER,
+    );
   }, ZERO_BIG_NUMBER);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);

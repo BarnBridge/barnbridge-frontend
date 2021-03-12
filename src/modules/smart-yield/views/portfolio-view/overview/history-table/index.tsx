@@ -101,9 +101,14 @@ const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Transaction type',
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {HistoryTypes.get(entity.transactionType)}
-      </Text>
+      <>
+        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          {entity.tranche}
+        </Text>
+        <Text type="small" weight="semibold">
+          {HistoryTypes.get(entity.transactionType)}
+        </Text>
+      </>
     ),
   },
 ];
