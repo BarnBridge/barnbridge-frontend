@@ -1,4 +1,5 @@
 import React from 'react';
+import AntdBadge from 'antd/lib/badge';
 import AntdSpin from 'antd/lib/spin';
 import format from 'date-fns/format';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
@@ -20,7 +21,7 @@ import { useWallet } from 'wallets/wallet';
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';
 import PastPositionsTable from './past-positions-table';
-import PositionsTableFilter from './positions-table-filter';
+import PositionsTableFilter, { PositionsTableFilterValues } from './positions-table-filter';
 
 import { doSequential } from 'utils';
 
@@ -40,16 +41,35 @@ const InitialState: State = {
   dataLocked: [],
 };
 
+const InitialFiltersMap: Record<string, PositionsTableFilterValues> = {
+  active: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+  locked: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+  past: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+};
+
 const JuniorPortfolio: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState<string>('active');
+  const [activeTab, setActiveTab] = React.useState('active');
 
   const wallet = useWallet();
   const poolsCtx = usePools();
 
   const { pools } = poolsCtx;
 
-  const [state, setState] = React.useState<State>(InitialState);
+  const [state, setState] = React.useState(InitialState);
   const [redeemModal, setRedeemModal] = React.useState<LockedPositionsTableEntity | undefined>();
+  const [filtersMap, setFiltersMap] = React.useState(InitialFiltersMap);
 
   React.useEffect(() => {
     if (!wallet.account) {
@@ -155,6 +175,16 @@ const JuniorPortfolio: React.FC = () => {
     })();
   }, [wallet.account, pools]);
 
+  function handleFiltersApply(values: PositionsTableFilterValues) {
+    setFiltersMap(prevState => ({
+      ...prevState,
+      [activeTab]: {
+        ...prevState[activeTab],
+        ...values,
+      },
+    }));
+  }
+
   function handleRedeemCancel() {
     setRedeemModal(undefined);
   }
@@ -183,9 +213,12 @@ const JuniorPortfolio: React.FC = () => {
     return a.plus(getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
   }, ZERO_BIG_NUMBER);
 
-  const apy = state.dataActive[0]?.state.juniorApy; /// calculate by formula
+  const apySum = state.dataActive.reduce((a, c) => {
+    return a.plus(c.smartYieldBalance.multipliedBy(c.state.jTokenPrice).multipliedBy(c.state.juniorApy));
+  }, ZERO_BIG_NUMBER);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
+  const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).toNumber() : 0; /// calculate by formula
 
   return (
     <>
@@ -222,11 +255,25 @@ const JuniorPortfolio: React.FC = () => {
           className={s.tabs}
           activeKey={activeTab}
           onChange={setActiveTab}
-          tabBarExtraContent={<PositionsTableFilter originators={pools} onFiltersApply={() => null} />}>
+          tabBarExtraContent={
+            <PositionsTableFilter
+              originators={pools}
+              showWithdrawTypeFilter={activeTab === 'past'}
+              value={filtersMap[activeTab]}
+              onChange={handleFiltersApply}
+            />
+          }>
           <Tabs.Tab key="active" tab="Active">
             <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
           </Tabs.Tab>
-          <Tabs.Tab key="locked" tab="Locked">
+          <Tabs.Tab
+            key="locked"
+            tab={
+              <>
+                Locked
+                <AntdBadge count={state.dataLocked.length} />
+              </>
+            }>
             <LockedPositionsTable loading={state.loadingLocked} data={state.dataLocked} />
             {redeemModal && (
               <TxConfirmModal

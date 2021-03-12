@@ -2,7 +2,6 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import capitalize from 'lodash/capitalize';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
@@ -97,14 +96,6 @@ const Columns: ColumnsType<TableEntity> = [
           {formatUSDValue(new BigNumber(entity.amount))}
         </Text>
       </Grid>
-    ),
-  },
-  {
-    title: 'Tranche',
-    render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {capitalize(entity.tranche)}
-      </Text>
     ),
   },
   {

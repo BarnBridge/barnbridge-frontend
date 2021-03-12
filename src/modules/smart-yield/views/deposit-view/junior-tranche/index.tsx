@@ -87,6 +87,22 @@ const JuniorTranche: React.FC = () => {
     smartYieldContract.getPrice().then(setPrice);
   }, [pool?.smartYieldAddress]);
 
+  function getAmount() {
+    if (!pool || !juniorFee || !price) {
+      return undefined;
+    }
+
+    const { from } = form.getFieldsValue();
+
+    if (!from) {
+      return undefined;
+    }
+
+    const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
+
+    return minAmount.dividedBy(price.dividedBy(1e18));
+  }
+
   function getMinAmount() {
     if (!pool || !juniorFee || !price) {
       return undefined;
@@ -225,7 +241,7 @@ const JuniorTranche: React.FC = () => {
               }
               maximumFractionDigits={pool?.underlyingDecimals}
               displayDecimals={pool?.underlyingDecimals}
-              value={new BigNumber(getMinAmount()?.toFixed(pool?.underlyingDecimals ?? 0) ?? ZERO_BIG_NUMBER)}
+              value={new BigNumber(getAmount()?.toFixed(pool?.underlyingDecimals ?? 0) ?? ZERO_BIG_NUMBER)}
               disabled
             />
           )}

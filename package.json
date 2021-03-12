@@ -75,6 +75,7 @@
       "prefer-const": "off",
       "no-debugger": "off",
       "no-console": "off",
+      "no-underscore-dangle": "off",
       "no-param-reassign": "off",
       "no-empty": [
         "error",

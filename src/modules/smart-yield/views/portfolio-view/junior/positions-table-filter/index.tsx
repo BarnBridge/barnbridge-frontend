@@ -5,28 +5,30 @@ import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
 import Icon from 'components/custom/icon';
-import { HistoryTypes } from 'modules/smart-yield/api';
+import { JuniorPastPositionTypes } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 
 export type PositionsTableFilterValues = {
   originator: string;
   token: string;
-  transactionType: string;
+  withdrawType: string;
 };
 
 const InitialFormValues: PositionsTableFilterValues = {
   originator: 'all',
   token: 'all',
-  transactionType: 'all',
+  withdrawType: 'all',
 };
 
 type Props = {
   originators: SYPool[];
-  onFiltersApply: (values: PositionsTableFilterValues) => void;
+  showWithdrawTypeFilter?: boolean;
+  value?: PositionsTableFilterValues;
+  onChange: (values: PositionsTableFilterValues) => void;
 };
 
 const PositionsTableFilter: React.FC<Props> = props => {
-  const { originators, onFiltersApply } = props;
+  const { originators, showWithdrawTypeFilter, value = InitialFormValues, onChange } = props;
   const [form] = AntdForm.useForm<PositionsTableFilterValues>();
   const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
 
@@ -56,36 +58,43 @@ const PositionsTableFilter: React.FC<Props> = props => {
     ];
   }, [originators]);
 
-  const txOpts = React.useMemo<SelectOption[]>(() => {
+  const withdrawOpts = React.useMemo<SelectOption[]>(() => {
     return [
       {
-        label: 'All transactions',
+        label: 'All withdrawals',
         value: 'all',
       },
-      ...Array.from(HistoryTypes.entries()).map(([value, label]) => ({
+      ...Array.from(JuniorPastPositionTypes.entries()).map(([type, label]) => ({
         label,
-        value,
+        value: type,
       })),
     ];
   }, []);
 
   function handleSubmit(values: PositionsTableFilterValues) {
     setFiltersVisible(false);
-    onFiltersApply(values);
+    onChange(values);
   }
 
+  React.useEffect(() => {
+    if (form.getFieldInstance('originator')) {
+      form.setFieldsValue(value ?? InitialFormValues);
+    }
+  }, [value]);
+
   const Content = (
-    <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
+    <Form form={form} initialValues={value} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
       <Form.Item label="Originator" name="originator" className="mb-32">
         <Select options={originatorOpts} className="full-width" />
       </Form.Item>
       <Form.Item label="Token" name="token" className="mb-32">
         <Select options={tokenOpts} className="full-width" />
       </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select options={txOpts} className="full-width" />
-      </Form.Item>
-
+      {showWithdrawTypeFilter && (
+        <Form.Item label="Withdraw type" name="withdrawType" className="mb-32">
+          <Select options={withdrawOpts} className="full-width" />
+        </Form.Item>
+      )}
       <div className="grid flow-col align-center justify-space-between">
         <button type="button" onClick={() => form.resetFields()} className="button-text">
           Reset filters
