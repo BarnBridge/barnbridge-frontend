@@ -40,6 +40,7 @@ const MarketsView: React.FC = () => {
             type="button"
             className={cn('tab-card', state.activeMarket === market && 'active')}
             disabled={!market.active}
+            style={{ color: !market.active ? 'red' : '' }}
             onClick={() => {
               setState(
                 mergeState<State>({
@@ -47,7 +48,7 @@ const MarketsView: React.FC = () => {
                 }),
               );
             }}>
-            <Icon name={market.icon as IconNames} width={40} height={40} className="mr-16" />
+            <Icon name={market.icon as IconNames} width={40} height={40} className="mr-16" color="inherit" />
             <div>
               <Text type="p1" weight="semibold" color="primary">
                 {market.name}

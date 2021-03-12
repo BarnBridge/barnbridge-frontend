@@ -107,7 +107,6 @@
 
   &.disabled {
     :global(.ant-input-group) {
-      border: none;
       background: var(--input-bg-disabled);
 
       :global(.ant-input),

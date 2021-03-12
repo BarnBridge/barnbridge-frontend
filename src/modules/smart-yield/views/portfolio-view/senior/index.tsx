@@ -3,6 +3,7 @@ import AntdSpin from 'antd/lib/spin';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
+import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
@@ -183,6 +184,9 @@ const SeniorPortfolio: React.FC = () => {
         </AntdSpin>
         <PortfolioValue type="senior" />
       </div>
+      <Text type="h1" weight="bold" color="primary" className="mb-32">
+        Positions
+      </Text>
       <Tabs
         simple
         activeKey={activeTab}

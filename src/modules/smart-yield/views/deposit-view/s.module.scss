@@ -14,7 +14,9 @@
 }
 
 .content {
+  flex-grow: 1;
   max-width: 640px;
+  width: 100%;
 
   @media (max-width: 1024px) {
     max-width: none;
@@ -22,9 +24,15 @@
 }
 
 .sidebar {
-  max-width: 480px;
+  flex-shrink: 0;
+  width: 482px;
+
+  @media (max-width: 1200px) {
+    width: 380px;
+  }
+
 
   @media (max-width: 1024px) {
-    max-width: none;
+    width: auto;
   }
 }

@@ -26,7 +26,7 @@ const DepositView: React.FC = () => {
   }
 
   return (
-    <div className="mh-auto">
+    <div className="mh-auto" style={{ maxWidth: '1154px', width: '100%' }}>
       <DepositHeader />
       <div className={s.container}>
         <div className={cn('card p-32', s.content)}>
