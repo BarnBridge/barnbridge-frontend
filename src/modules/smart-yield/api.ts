@@ -246,6 +246,7 @@ export type APISYSeniorRedeem = {
   gain: number;
   forDays: number;
   blockTimestamp: number;
+  transactionHash: string;
 };
 
 export function fetchSYSeniorRedeems(

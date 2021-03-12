@@ -12,12 +12,14 @@ import s from './s.module.scss';
 type TransactionSummaryProps = {
   className?: string;
   apy?: BigNumber;
+  gain?: BigNumber;
+  gainFee?: BigNumber;
   reward?: BigNumber;
   symbol?: string;
 };
 
 const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
-  const { className, apy, reward, symbol } = props;
+  const { className, apy, gain, gainFee, reward, symbol } = props;
 
   return (
     <section className={cn(s.container, className)}>
@@ -34,17 +36,37 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
               Guaranteed APY
             </Text>
           </Hint>
-          <Text type="p1" weight="bold" color="green" className="ml-auto">
+          <Text type="p2" weight="bold" color="green" className="ml-auto">
             {apy?.toFixed(2)}%
+          </Text>
+        </div>
+        <div className="flex mb-24">
+          <Hint text="">
+            <Text type="small" weight="semibold" color="secondary">
+              Gain
+            </Text>
+          </Hint>
+          <Text type="p2" weight="bold" color="primary" className="ml-auto">
+            {formatBigValue(gain)}
+          </Text>
+        </div>
+        <div className="flex mb-24">
+          <Hint text="">
+            <Text type="small" weight="semibold" color="secondary">
+              Fee at maturity
+            </Text>
+          </Hint>
+          <Text type="p2" weight="bold" color="primary" className="ml-auto">
+            {gainFee?.multipliedBy(100)?.toFixed(2)}% of gains
           </Text>
         </div>
         <div className="flex">
           <Hint text="This is the amount your senior bond will be guaranteed to be redeemable for at maturity.">
             <Text type="small" weight="semibold" color="secondary">
-              Reward at maturity
+              Redeemable at maturity
             </Text>
           </Hint>
-          <Text type="p1" weight="bold" color="primary" className="ml-auto">
+          <Text type="p2" weight="bold" color="primary" className="ml-auto">
             <Tooltip title={formatBigValue(reward, 18)}>
               {formatBigValue(reward)} {symbol}
             </Tooltip>

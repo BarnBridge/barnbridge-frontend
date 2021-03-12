@@ -13,7 +13,14 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYUserTxHistory, HistoryShortTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import {
+  APISYTxHistoryType,
+  APISYUserTxHistory,
+  HistoryShortTypes,
+  Markets,
+  Pools,
+  fetchSYUserTxHistory,
+} from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
@@ -22,7 +29,10 @@ import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-type TableEntity = APISYUserTxHistory;
+type TableEntity = APISYUserTxHistory & {
+  isTokenAmount?: boolean;
+  computedAmount?: BigNumber;
+};
 
 const Columns: ColumnsType<TableEntity> = [
   {
@@ -90,11 +100,11 @@ const Columns: ColumnsType<TableEntity> = [
         <Tooltip title={formatBigValue(entity.amount, 18)}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(entity.amount)}
-            {` ${entity.underlyingTokenSymbol}`}
+            {` ${entity.isTokenAmount ? 'j' : ''}${entity.underlyingTokenSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold">
-          {formatUSDValue(new BigNumber(entity.amount))}
+          {formatUSDValue(entity.computedAmount)}
         </Text>
       </Grid>
     ),
@@ -186,6 +196,55 @@ const HistoryTable: React.FC = () => {
     })();
   }, [wallet.account, filters.originator, filters.token, filters.transactionType, state.page]);
 
+  const mappedData = React.useMemo(
+    () =>
+      state.data.map(item => {
+        const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.pool);
+
+        let isTokenAmount: boolean | undefined;
+        let computedAmount: BigNumber | undefined;
+
+        if (pool) {
+          if (
+            [
+              APISYTxHistoryType.SENIOR_DEPOSIT,
+              APISYTxHistoryType.SENIOR_REDEEM,
+              APISYTxHistoryType.JUNIOR_DEPOSIT,
+              APISYTxHistoryType.JUNIOR_REDEEM,
+              APISYTxHistoryType.SBOND_SEND,
+              APISYTxHistoryType.SBOND_RECEIVE,
+            ].includes(item.transactionType as APISYTxHistoryType)
+          ) {
+            isTokenAmount = false;
+            computedAmount = new BigNumber(item.amount);
+          }
+
+          if (
+            [
+              APISYTxHistoryType.JUNIOR_INSTANT_WITHDRAW,
+              APISYTxHistoryType.JUNIOR_REGULAR_WITHDRAW,
+              APISYTxHistoryType.JTOKEN_SEND,
+              APISYTxHistoryType.JTOKEN_RECEIVE,
+              APISYTxHistoryType.JBOND_SEND,
+              APISYTxHistoryType.JBOND_RECEIVE,
+              APISYTxHistoryType.JUNIOR_STAKE,
+              APISYTxHistoryType.JUNIOR_UNSTAKE,
+            ].includes(item.transactionType as APISYTxHistoryType)
+          ) {
+            isTokenAmount = true;
+            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
+          }
+        }
+
+        return {
+          ...item,
+          isTokenAmount,
+          computedAmount,
+        };
+      }),
+    [state.data, pools],
+  );
+
   function handleFiltersApply(values: HistoryTableFilterValues) {
     setState(prevState => ({
       ...prevState,
@@ -220,7 +279,7 @@ const HistoryTable: React.FC = () => {
       }>
       <Table
         columns={Columns}
-        dataSource={state.data}
+        dataSource={mappedData}
         rowKey="transactionHash"
         loading={state.loading}
         pagination={{
