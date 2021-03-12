@@ -195,13 +195,16 @@ const InstantWithdraw: React.FC = () => {
           dependencies={['from']}>
           {() => {
             const { from } = form.getFieldsValue();
-            const to = from && pool ? new BigNumber(from.multipliedBy(pool.state.jTokenPrice).toFixed(4)) : undefined;
+            const to =
+              from && pool
+                ? new BigNumber(from.multipliedBy(pool.state.jTokenPrice).toFixed(pool?.underlyingDecimals))
+                : undefined;
 
             return (
               <TokenAmount
                 tokenIcon={pool?.meta?.icon as TokenIconNames}
                 maximumFractionDigits={pool?.underlyingDecimals}
-                displayDecimals={4}
+                displayDecimals={pool?.underlyingDecimals}
                 value={to}
                 disabled
               />

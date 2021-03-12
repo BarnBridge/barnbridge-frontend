@@ -54,7 +54,14 @@
       "project": "./tsconfig.json"
     },
     "rules": {
-      "prettier/prettier": "warn",
+      "prettier/prettier": [
+        "warn",
+        {
+          "endOfLine": "auto"
+        }
+      ],
+      "react/jsx-uses-react": "off",
+      "react/react-in-jsx-scope": "off",
       "react-hooks/exhaustive-deps": "off",
       "react/destructuring-assignment": "off",
       "react/jsx-props-no-spreading": "off",
@@ -73,6 +80,7 @@
       "prefer-const": "off",
       "no-debugger": "off",
       "no-console": "off",
+      "no-underscore-dangle": "off",
       "no-param-reassign": "off",
       "no-empty": [
         "error",

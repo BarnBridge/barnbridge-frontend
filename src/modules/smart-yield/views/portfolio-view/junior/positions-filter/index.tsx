@@ -6,30 +6,31 @@ import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
 import Icon from 'components/custom/icon';
-import { HistoryTypes } from 'modules/smart-yield/api';
+import { JuniorPastPositionTypes } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 
-export type HistoryTableFilterValues = {
+export type PositionsFilterValues = {
   originator: string;
   token: string;
-  transactionType: string;
+  withdrawType: string;
 };
 
-const InitialFormValues: HistoryTableFilterValues = {
+const InitialFormValues: PositionsFilterValues = {
   originator: 'all',
   token: 'all',
-  transactionType: 'all',
+  withdrawType: 'all',
 };
 
 type Props = {
   originators: SYPool[];
-  value?: HistoryTableFilterValues;
-  onChange: (values: HistoryTableFilterValues) => void;
+  showWithdrawTypeFilter?: boolean;
+  value?: PositionsFilterValues;
+  onChange: (values: PositionsFilterValues) => void;
 };
 
-const HistoryTableFilter: React.FC<Props> = props => {
-  const { originators, value = InitialFormValues, onChange } = props;
-  const [form] = AntdForm.useForm<HistoryTableFilterValues>();
+const PositionsFilter: React.FC<Props> = props => {
+  const { originators, showWithdrawTypeFilter, value = InitialFormValues, onChange } = props;
+  const [form] = AntdForm.useForm<PositionsFilterValues>();
   const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
 
   const originatorOpts = React.useMemo<SelectOption[]>(() => {
@@ -58,13 +59,13 @@ const HistoryTableFilter: React.FC<Props> = props => {
     ];
   }, [originators]);
 
-  const txOpts = React.useMemo<SelectOption[]>(() => {
+  const withdrawOpts = React.useMemo<SelectOption[]>(() => {
     return [
       {
-        label: 'All transactions',
+        label: 'All withdrawals',
         value: 'all',
       },
-      ...Array.from(HistoryTypes.entries()).map(([type, label]) => ({
+      ...Array.from(JuniorPastPositionTypes.entries()).map(([type, label]) => ({
         label,
         value: type,
       })),
@@ -82,7 +83,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
       count += 1;
     }
 
-    if (value.transactionType !== 'all') {
+    if (value.withdrawType !== 'all') {
       count += 1;
     }
 
@@ -95,7 +96,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
     }
   }, [value]);
 
-  function handleSubmit(values: HistoryTableFilterValues) {
+  function handleSubmit(values: PositionsFilterValues) {
     setFiltersVisible(false);
     onChange(values);
   }
@@ -108,10 +109,11 @@ const HistoryTableFilter: React.FC<Props> = props => {
       <Form.Item label="Token" name="token" className="mb-32">
         <Select options={tokenOpts} className="full-width" />
       </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select options={txOpts} className="full-width" />
-      </Form.Item>
-
+      {showWithdrawTypeFilter && (
+        <Form.Item label="Withdraw type" name="withdrawType" className="mb-32">
+          <Select options={withdrawOpts} className="full-width" />
+        </Form.Item>
+      )}
       <div className="grid flow-col align-center justify-space-between">
         <button type="button" onClick={() => form.resetFields()} className="button-text">
           Reset filters
@@ -131,7 +133,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
       visible={filtersVisible}
       onVisibleChange={setFiltersVisible}
       placement="bottomRight">
-      <button type="button" className="button-ghost-monochrome pv-16 ml-auto">
+      <button type="button" className="button-ghost-monochrome pv-16 mb-12 ml-auto">
         <Icon name="filter" className="mr-8" color="inherit" />
         <span className="mr-8">Filters</span>
         <AntdBadge count={countApplied} />
@@ -140,4 +142,4 @@ const HistoryTableFilter: React.FC<Props> = props => {
   );
 };
 
-export default HistoryTableFilter;
+export default PositionsFilter;

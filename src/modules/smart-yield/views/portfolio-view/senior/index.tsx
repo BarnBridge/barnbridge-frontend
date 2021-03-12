@@ -14,8 +14,8 @@ import { useWallet } from 'wallets/wallet';
 
 import PortfolioBalance from '../../../components/portfolio-balance';
 import { PoolsSYPool, usePools } from '../../../providers/pools-provider';
-import FiltersPopup from './filters-popup';
 import PastPositionsList from './past-positions-list';
+import PositionsFilter, { PositionsFilterValues } from './positions-filter';
 
 import { doSequential } from 'utils';
 
@@ -36,6 +36,17 @@ const InitialState: State = {
   data: [],
 };
 
+const InitialFiltersMap: Record<string, PositionsFilterValues> = {
+  active: {
+    originator: 'all',
+    token: 'all',
+  },
+  past: {
+    originator: 'all',
+    token: 'all',
+  },
+};
+
 const SeniorPortfolio: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
@@ -45,6 +56,7 @@ const SeniorPortfolio: React.FC = () => {
 
   const [state, setState] = React.useState<State>(InitialState);
   const [activeTab, setActiveTab] = React.useState<string>('active');
+  const [filtersMap, setFiltersMap] = React.useState(InitialFiltersMap);
 
   React.useEffect(() => {
     if (!wallet.account) {
@@ -103,12 +115,22 @@ const SeniorPortfolio: React.FC = () => {
     reload();
   }
 
+  const dataActiveFilters = React.useMemo(() => {
+    const filter = filtersMap.active;
+
+    return state.data.filter(
+      item =>
+        ['all', item.pool.protocolId].includes(filter.originator) &&
+        ['all', item.pool.underlyingAddress].includes(filter.token),
+    );
+  }, [state.data, filtersMap, activeTab]);
+
   const totalPrincipal = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
   const totalGain = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
   const total = totalPrincipal?.plus(totalGain ?? ZERO_BIG_NUMBER);
@@ -134,12 +156,23 @@ const SeniorPortfolio: React.FC = () => {
       .dividedBy(totalRedeemable);
   }, [state.data, totalRedeemable]);
 
+  function handleFiltersApply(values: PositionsFilterValues) {
+    setFiltersMap(prevState => ({
+      ...prevState,
+      [activeTab]: {
+        ...prevState[activeTab],
+        ...values,
+      },
+    }));
+  }
+
   return (
     <>
       <div className={s.portfolioContainer}>
         <AntdSpin spinning={state.loading}>
           <PortfolioBalance
             total={total?.toNumber()}
+            totalHint="This number includes the gains from the senior bonds that have not yet reached their maturity date."
             aggregated={aggregatedAPY.toNumber()}
             aggregatedText="This number is a weighted average across your active positions."
             aggregatedColor="green"
@@ -154,11 +187,17 @@ const SeniorPortfolio: React.FC = () => {
       <Text type="h1" weight="bold" color="primary" className="mb-32">
         Positions
       </Text>
-      <Tabs simple activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={<FiltersPopup />}>
+      <Tabs
+        simple
+        activeKey={activeTab}
+        onChange={setActiveTab}
+        tabBarExtraContent={
+          <PositionsFilter originators={pools} value={filtersMap[activeTab]} onChange={handleFiltersApply} />
+        }>
         <Tabs.Tab key="active" tab="Active">
           <AntdSpin spinning={state.loading}>
             <div className={s.cards}>
-              {state.data.map(entity => (
+              {dataActiveFilters.map(entity => (
                 <ActivePosition
                   key={entity.sBond.sBondId}
                   pool={entity.pool}
@@ -170,7 +209,7 @@ const SeniorPortfolio: React.FC = () => {
           </AntdSpin>
         </Tabs.Tab>
         <Tabs.Tab key="past" tab="Past">
-          <PastPositionsList />
+          <PastPositionsList originatorFilter={filtersMap.past.originator} tokenFilter={filtersMap.past.token} />
         </Tabs.Tab>
       </Tabs>
     </>

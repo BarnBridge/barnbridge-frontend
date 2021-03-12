@@ -1,10 +1,11 @@
 import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import Web3Contract from 'web3/contract';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYSmartYieldContract, { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
@@ -94,6 +95,22 @@ export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
+function useContract<T extends Web3Contract>(C: new (a: string) => T, address?: string): T | undefined {
+  const wallet = useWallet();
+
+  return React.useMemo<T | undefined>(() => {
+    if (!address) {
+      return undefined;
+    }
+
+    const contract = new C(address);
+    contract.setProvider(wallet.provider);
+    contract.setAccount(wallet.account);
+
+    return contract;
+  }, [address, wallet.provider, wallet.account]);
+}
+
 const PoolProvider: React.FC = props => {
   const { children } = props;
 
@@ -107,6 +124,10 @@ const PoolProvider: React.FC = props => {
   const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/junior'));
   const isJuniorWithdraw = Boolean(useRouteMatch('/smart-yield/withdraw'));
 
+  const smartYieldContract = useContract(SYSmartYieldContract, state.pool?.smartYieldAddress);
+  const underlyingContract = useContract(SYUnderlyingContract, state.pool?.underlyingAddress);
+  // const controllerContract = useContract(SYControllerContract, state.pool?.controllerAddress);
+
   const [market, token] = React.useMemo(() => {
     const urlQuery = new URLSearchParams(location.search);
     const marketStr = decodeURIComponent(urlQuery.get('m') ?? '');
@@ -114,34 +135,6 @@ const PoolProvider: React.FC = props => {
 
     return [marketStr, tokenStr];
   }, [location.search]);
-
-  const underlyingContract = React.useMemo(() => {
-    const { pool } = state;
-
-    if (!pool) {
-      return undefined;
-    }
-
-    const contract = new SYUnderlyingContract(pool.underlyingAddress);
-    contract.setProvider(wallet.provider);
-    contract.setAccount(wallet.account);
-
-    return contract;
-  }, [state.pool, wallet.provider, wallet.account]);
-
-  const smartYieldContract = React.useMemo(() => {
-    const { pool } = state;
-
-    if (!pool) {
-      return undefined;
-    }
-
-    const contract = new SYSmartYieldContract(pool.smartYieldAddress);
-    contract.setProvider(wallet.provider);
-    contract.setAccount(wallet.account);
-
-    return contract;
-  }, [state.pool, wallet.provider, wallet.account]);
 
   React.useEffect(() => {
     setState(prevState => ({
@@ -154,8 +147,7 @@ const PoolProvider: React.FC = props => {
 
     (async () => {
       try {
-        const pools = await fetchSYPools(market);
-        const pool = pools.find(poolItem => poolItem.underlyingSymbol === token);
+        const pool = await fetchSYPool(market, token);
 
         if (!pool) {
           return await Promise.reject();
@@ -328,24 +320,19 @@ const PoolProvider: React.FC = props => {
     (enable: boolean) => {
       const { pool } = state;
 
-      if (!pool || !wallet.account) {
+      if (!underlyingContract || !pool || !wallet.account) {
         return Promise.reject();
       }
 
-      const contract = new SYUnderlyingContract(pool.underlyingAddress);
-      contract.setProvider(wallet.provider);
-      contract.setAccount(wallet.account);
-
-      return contract
+      return underlyingContract
         .approve(enable, pool.providerAddress)
-        .then(() => {
-          return contract.getAllowance(pool.providerAddress).then(allowance => {
-            pool.underlyingAllowance = allowance;
-          });
-        })
-        .then(reload);
+        .then(() => underlyingContract.getAllowance(pool.providerAddress))
+        .then(allowance => {
+          pool.underlyingAllowance = allowance;
+          reload();
+        });
     },
-    [state.pool, wallet.provider, wallet.account],
+    [underlyingContract, state.pool, wallet.provider, wallet.account],
   );
 
   const seniorDeposit = React.useCallback(

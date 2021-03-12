@@ -47,7 +47,14 @@ const InitialState: State = {
   page: 1,
 };
 
-const PastPositionsList: React.FC = () => {
+type Props = {
+  originatorFilter?: string;
+  tokenFilter?: string;
+};
+
+const PastPositionsList: React.FC<Props> = props => {
+  const { originatorFilter = 'all', tokenFilter = 'all' } = props;
+
   const wallet = useWallet();
   const poolsCtx = usePools();
 
@@ -72,7 +79,13 @@ const PastPositionsList: React.FC = () => {
       );
 
       try {
-        const redeems = await fetchSYSeniorRedeems(wallet.account, state.page, state.pageSize);
+        const redeems = await fetchSYSeniorRedeems(
+          wallet.account,
+          state.page,
+          state.pageSize,
+          originatorFilter,
+          tokenFilter,
+        );
 
         const data = redeems.data.map(item => {
           const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.smartYieldAddress);
@@ -106,7 +119,7 @@ const PastPositionsList: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.page, pools]);
+  }, [wallet.account, state.page, originatorFilter, tokenFilter, pools]);
 
   return (
     <>

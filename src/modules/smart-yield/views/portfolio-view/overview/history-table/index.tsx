@@ -13,7 +13,7 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYUserTxHistory, HistoryTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
+import { APISYUserTxHistory, HistoryShortTypes, Markets, Pools, fetchSYUserTxHistory } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
@@ -100,19 +100,16 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: 'Tranche',
-    render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {capitalize(entity.tranche)}
-      </Text>
-    ),
-  },
-  {
     title: 'Transaction type',
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {HistoryTypes.get(entity.transactionType)}
-      </Text>
+      <>
+        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          {capitalize(entity.tranche)}
+        </Text>
+        <Text type="small" weight="semibold">
+          {HistoryShortTypes.get(entity.transactionType)}
+        </Text>
+      </>
     ),
   },
 ];
@@ -123,9 +120,6 @@ type State = {
   total: number;
   pageSize: number;
   page: number;
-  originatorFilter: string;
-  tokenFilter: string;
-  transactionTypeFilter: string;
 };
 
 const InitialState: State = {
@@ -134,9 +128,12 @@ const InitialState: State = {
   total: 0,
   pageSize: 10,
   page: 1,
-  originatorFilter: 'all',
-  tokenFilter: 'all',
-  transactionTypeFilter: 'all',
+};
+
+const InitialFilters: HistoryTableFilterValues = {
+  originator: 'all',
+  token: 'all',
+  transactionType: 'all',
 };
 
 const HistoryTable: React.FC = () => {
@@ -146,6 +143,7 @@ const HistoryTable: React.FC = () => {
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
+  const [filters, setFilters] = React.useState<HistoryTableFilterValues>(InitialFilters);
 
   React.useEffect(() => {
     (async () => {
@@ -164,9 +162,9 @@ const HistoryTable: React.FC = () => {
           wallet.account,
           state.page,
           state.pageSize,
-          state.originatorFilter,
-          state.tokenFilter,
-          state.transactionTypeFilter,
+          filters.originator,
+          filters.token,
+          filters.transactionType,
         );
 
         setState(
@@ -186,15 +184,17 @@ const HistoryTable: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.originatorFilter, state.tokenFilter, state.transactionTypeFilter, state.page]);
+  }, [wallet.account, filters.originator, filters.token, filters.transactionType, state.page]);
 
-  function handleFiltersApply(filters: HistoryTableFilterValues) {
+  function handleFiltersApply(values: HistoryTableFilterValues) {
     setState(prevState => ({
       ...prevState,
       page: 1,
-      originatorFilter: filters.originator,
-      tokenFilter: filters.token,
-      transactionTypeFilter: filters.transactionType,
+    }));
+
+    setFilters(prevState => ({
+      ...prevState,
+      ...values,
     }));
   }
 
@@ -215,7 +215,7 @@ const HistoryTable: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-          <HistoryTableFilter originators={pools} onFiltersApply={handleFiltersApply} />
+          <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
         </Grid>
       }>
       <Table

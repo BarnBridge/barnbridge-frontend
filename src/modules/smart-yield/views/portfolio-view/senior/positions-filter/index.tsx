@@ -6,30 +6,27 @@ import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
 import Icon from 'components/custom/icon';
-import { HistoryTypes } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 
-export type HistoryTableFilterValues = {
+export type PositionsFilterValues = {
   originator: string;
   token: string;
-  transactionType: string;
 };
 
-const InitialFormValues: HistoryTableFilterValues = {
+const InitialFormValues: PositionsFilterValues = {
   originator: 'all',
   token: 'all',
-  transactionType: 'all',
 };
 
 type Props = {
   originators: SYPool[];
-  value?: HistoryTableFilterValues;
-  onChange: (values: HistoryTableFilterValues) => void;
+  value?: PositionsFilterValues;
+  onChange: (values: PositionsFilterValues) => void;
 };
 
-const HistoryTableFilter: React.FC<Props> = props => {
+const PositionsFilter: React.FC<Props> = props => {
   const { originators, value = InitialFormValues, onChange } = props;
-  const [form] = AntdForm.useForm<HistoryTableFilterValues>();
+  const [form] = AntdForm.useForm<PositionsFilterValues>();
   const [filtersVisible, setFiltersVisible] = useState<boolean>(false);
 
   const originatorOpts = React.useMemo<SelectOption[]>(() => {
@@ -58,19 +55,6 @@ const HistoryTableFilter: React.FC<Props> = props => {
     ];
   }, [originators]);
 
-  const txOpts = React.useMemo<SelectOption[]>(() => {
-    return [
-      {
-        label: 'All transactions',
-        value: 'all',
-      },
-      ...Array.from(HistoryTypes.entries()).map(([type, label]) => ({
-        label,
-        value: type,
-      })),
-    ];
-  }, []);
-
   const countApplied = React.useMemo(() => {
     let count = 0;
 
@@ -79,10 +63,6 @@ const HistoryTableFilter: React.FC<Props> = props => {
     }
 
     if (value.token !== 'all') {
-      count += 1;
-    }
-
-    if (value.transactionType !== 'all') {
       count += 1;
     }
 
@@ -95,7 +75,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
     }
   }, [value]);
 
-  function handleSubmit(values: HistoryTableFilterValues) {
+  function handleSubmit(values: PositionsFilterValues) {
     setFiltersVisible(false);
     onChange(values);
   }
@@ -107,9 +87,6 @@ const HistoryTableFilter: React.FC<Props> = props => {
       </Form.Item>
       <Form.Item label="Token" name="token" className="mb-32">
         <Select options={tokenOpts} className="full-width" />
-      </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select options={txOpts} className="full-width" />
       </Form.Item>
 
       <div className="grid flow-col align-center justify-space-between">
@@ -140,4 +117,4 @@ const HistoryTableFilter: React.FC<Props> = props => {
   );
 };
 
-export default HistoryTableFilter;
+export default PositionsFilter;
