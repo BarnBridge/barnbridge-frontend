@@ -1,4 +1,6 @@
-import { addDays, addMonths, addWeeks } from 'date-fns';
+import addDays from 'date-fns/addDays';
+import addMonths from 'date-fns/addMonths';
+import addWeeks from 'date-fns/addWeeks';
 
 export const DURATION_1_DAY = '1 day';
 export const DURATION_30_DAYS = '30 days';

@@ -111,12 +111,15 @@ export function fetchSYPools(protocolID = 'all'): Promise<APISYPool[]> {
     .then(result => result.data);
 }
 
-export function fetchSYPool(syAddr: string): Promise<APISYPool> {
-  const url = new URL(`/api/smartyield/pools/${syAddr}`, GOV_API_URL);
+export function fetchSYPool(protocolID: string, underlyingSymbol: string): Promise<APISYPool> {
+  const url = new URL(
+    `/api/smartyield/pools?protocolID=${protocolID}&underlyingSymbol=${underlyingSymbol}`,
+    GOV_API_URL,
+  );
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => result.data);
+    .then(result => result.data?.[0]);
 }
 
 export type APISYPoolAPY = {
@@ -146,21 +149,25 @@ export enum APISYTxHistoryType {
   JBOND_RECEIVE = 'JBOND_RECEIVE',
   SBOND_SEND = 'SBOND_SEND',
   SBOND_RECEIVE = 'SBOND_RECEIVE',
+  JUNIOR_STAKE = 'JUNIOR_STAKE',
+  JUNIOR_UNSTAKE = 'JUNIOR_UNSTAKE',
 }
 
 export const HistoryTypes = new Map<string, string>([
-  [APISYTxHistoryType.JUNIOR_DEPOSIT, 'Deposit'],
-  [APISYTxHistoryType.JUNIOR_INSTANT_WITHDRAW, 'Instant Withdraw'],
-  [APISYTxHistoryType.JUNIOR_REGULAR_WITHDRAW, '2 Step Withdraw'],
-  [APISYTxHistoryType.JUNIOR_REDEEM, 'Redeem'],
-  [APISYTxHistoryType.SENIOR_DEPOSIT, 'Deposit'],
-  [APISYTxHistoryType.SENIOR_REDEEM, 'Redeem'],
-  [APISYTxHistoryType.JTOKEN_SEND, 'Send'],
-  [APISYTxHistoryType.JTOKEN_RECEIVE, 'Receive'],
-  [APISYTxHistoryType.JBOND_SEND, 'Send'],
-  [APISYTxHistoryType.JBOND_RECEIVE, 'Receive'],
-  [APISYTxHistoryType.SBOND_SEND, 'Send'],
-  [APISYTxHistoryType.SBOND_RECEIVE, 'Receive'],
+  [APISYTxHistoryType.JUNIOR_DEPOSIT, 'Junior Deposit'],
+  [APISYTxHistoryType.JUNIOR_INSTANT_WITHDRAW, 'Junior Instant Withdraw'],
+  [APISYTxHistoryType.JUNIOR_REGULAR_WITHDRAW, 'Junior 2 Step Withdraw'],
+  [APISYTxHistoryType.JUNIOR_REDEEM, 'Junior Redeem'],
+  [APISYTxHistoryType.JTOKEN_SEND, 'Junior Token Send'],
+  [APISYTxHistoryType.JTOKEN_RECEIVE, 'Junior Token Receive'],
+  [APISYTxHistoryType.JBOND_SEND, 'Junior Bond Send'],
+  [APISYTxHistoryType.JBOND_RECEIVE, 'Junior Bond Receive'],
+  [APISYTxHistoryType.JUNIOR_STAKE, 'Junior Stake'],
+  [APISYTxHistoryType.JUNIOR_UNSTAKE, 'Junior Unstake'],
+  [APISYTxHistoryType.SENIOR_DEPOSIT, 'Senior Deposit'],
+  [APISYTxHistoryType.SENIOR_REDEEM, 'Senior Redeem'],
+  [APISYTxHistoryType.SBOND_SEND, 'Senior Bond Send'],
+  [APISYTxHistoryType.SBOND_RECEIVE, 'Senior Bond Receive'],
 ]);
 
 export type APISYUserTxHistory = {
@@ -228,8 +235,24 @@ export function fetchSYSeniorRedeems(
   address: string,
   page = 1,
   limit = 10,
+  originator = 'all',
+  token = 'all',
 ): Promise<PaginatedResult<APISYSeniorRedeem>> {
-  const url = new URL(`/api/smartyield/users/${address}/redeems/senior?page=${page}&limit=${limit}`, GOV_API_URL);
+  const query = QueryString.stringify(
+    {
+      page: String(page),
+      limit: String(limit),
+      originator,
+      token,
+    },
+    {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: true,
+    },
+  );
+
+  const url = new URL(`/api/smartyield/users/${address}/redeems/senior?=${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -241,67 +264,63 @@ export function fetchSYSeniorRedeems(
     }));
 }
 
-export type APISYJuniorRedeem = {
-  juniorBondAddress: string;
-  userAddress: string;
-  juniorBondId: number;
-  smartYieldAddress: string;
-  tokensIn: BigNumber;
-  maturesAt: number;
-  underlyingOut: BigNumber;
-  blockTimestamp: number;
-  transactionHash: string;
-};
-
-export function fetchSYJuniorRedeems(
-  address: string,
-  page = 1,
-  limit = 10,
-): Promise<PaginatedResult<APISYJuniorRedeem>> {
-  const url = new URL(`/api/smartyield/users/${address}/redeems/junior?page=${page}&limit=${limit}`, GOV_API_URL);
-
-  return fetch(url.toString())
-    .then(result => result.json())
-    .then(result => ({
-      ...result,
-      data: (result.data ?? []).map((item: APISYJuniorRedeem) => ({
-        ...item,
-        tokensIn: new BigNumber(item.tokensIn),
-        underlyingOut: new BigNumber(item.underlyingOut),
-        maturesAt: Number(item.maturesAt),
-        blockTimestamp: Number(item.blockTimestamp),
-      })),
-    }));
+export enum APISYJuniorPastPositionType {
+  JUNIOR_REDEEM = 'JUNIOR_REDEEM',
+  JUNIOR_INSTANT_WITHDRAW = 'JUNIOR_INSTANT_WITHDRAW',
 }
 
-export type APISYJuniorInstantWithdrawals = {
+export const JuniorPastPositionTypes = new Map<string, string>([
+  [APISYJuniorPastPositionType.JUNIOR_REDEEM, 'Redeem'],
+  [APISYJuniorPastPositionType.JUNIOR_INSTANT_WITHDRAW, 'Instant Withdraw'],
+]);
+
+export type APISYJuniorPastPosition = {
+  protocolId: string;
   smartYieldAddress: string;
+  underlyingTokenAddress: string;
+  underlyingTokenSymbol: string;
   tokensIn: BigNumber;
   underlyingOut: BigNumber;
   forfeits: BigNumber;
+  transactionType: string;
   blockTimestamp: number;
   transactionHash: string;
-  underlyingTokenAddress: string;
-  protocolId: string;
 };
 
-export function fetchSYJuniorInstantWithdrawals(
+export function fetchSYJuniorPastPositions(
   address: string,
   page = 1,
   limit = 10,
-): Promise<PaginatedResult<APISYJuniorInstantWithdrawals>> {
-  const url = new URL(`/api/smartyield/users/${address}/instant-withdrawals?page=${page}&limit=${limit}`, GOV_API_URL);
+  originator = 'all',
+  token = 'all',
+  transactionType = 'all',
+): Promise<PaginatedResult<APISYJuniorPastPosition>> {
+  const query = QueryString.stringify(
+    {
+      page: String(page),
+      limit: String(limit),
+      originator,
+      token,
+      transactionType,
+    },
+    {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: true,
+    },
+  );
+
+  const url = new URL(`/api/smartyield/users/${address}/junior-past-positions?${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
     .then(result => ({
       ...result,
-      data: (result.data ?? []).map((item: APISYJuniorInstantWithdrawals) => ({
+      data: (result.data ?? []).map((item: APISYJuniorPastPosition) => ({
         ...item,
         tokensIn: new BigNumber(item.tokensIn),
         underlyingOut: new BigNumber(item.underlyingOut),
         forfeits: new BigNumber(item.forfeits),
-        blockTimestamp: Number(item.blockTimestamp),
       })),
     }));
 }

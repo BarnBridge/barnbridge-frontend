@@ -4,116 +4,98 @@ import { getGasValue } from 'web3/utils';
 
 const ABI: any[] = [
   {
+    name: 'name',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+  },
+  {
+    name: 'symbol',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ internalType: 'string', name: '', type: 'string' }],
+  },
+  {
+    name: 'decimals',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ internalType: 'uint8', name: '', type: 'uint8' }],
+  },
+  {
+    name: 'balanceOf',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+  },
+  {
     name: 'totalSupply',
     type: 'function',
+    stateMutability: 'view',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-      },
-    ],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
   },
   {
     name: 'price',
     type: 'function',
+    stateMutability: 'nonpayable',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-      },
-    ],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
   },
   {
     name: 'abondDebt',
     type: 'function',
+    stateMutability: 'view',
     inputs: [],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-      },
-    ],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
   },
   {
     name: 'abond',
     type: 'function',
+    stateMutability: 'view',
     inputs: [],
     outputs: [
+      { internalType: 'uint256', name: 'principal', type: 'uint256' },
       {
-        name: 'principal',
-        type: 'uint256',
-      },
-      {
+        internalType: 'uint256',
         name: 'gain',
         type: 'uint256',
       },
+      { internalType: 'uint256', name: 'issuedAt', type: 'uint256' },
       {
-        name: 'issuedAt',
-        type: 'uint256',
-      },
-      {
+        internalType: 'uint256',
         name: 'maturesAt',
         type: 'uint256',
       },
-      {
-        name: 'liquidated',
-        type: 'bool',
-      },
+      { internalType: 'bool', name: 'liquidated', type: 'bool' },
     ],
   },
   {
     name: 'bondGain',
     type: 'function',
+    stateMutability: 'nonpayable',
     inputs: [
       {
-        name: 'principalAmount',
+        internalType: 'uint256',
+        name: 'principalAmount_',
         type: 'uint256',
       },
-      {
-        name: 'forDays',
-        type: 'uint16',
-      },
+      { internalType: 'uint16', name: 'forDays_', type: 'uint16' },
     ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-      },
-    ],
-  },
-  {
-    name: 'balanceOf',
-    type: 'function',
-    inputs: [
-      {
-        name: 'owner',
-        type: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: '',
-        type: 'uint256',
-      },
-    ],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
   },
   {
     name: 'juniorBonds',
     type: 'function',
-    inputs: [
-      {
-        name: 'jBondId',
-        type: 'uint256',
-      },
-    ],
+    stateMutability: 'view',
+    inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     outputs: [
+      { internalType: 'uint256', name: 'tokens', type: 'uint256' },
       {
-        name: 'tokens',
-        type: 'uint256',
-      },
-      {
+        internalType: 'uint256',
         name: 'maturesAt',
         type: 'uint256',
       },
@@ -122,49 +104,38 @@ const ABI: any[] = [
   {
     name: 'seniorBonds',
     type: 'function',
-    inputs: [
-      {
-        name: 'sBondId',
-        type: 'uint256',
-      },
-    ],
+    stateMutability: 'view',
+    inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
     outputs: [
+      { internalType: 'uint256', name: 'principal', type: 'uint256' },
       {
-        name: 'principal',
-        type: 'uint256',
-      },
-      {
+        internalType: 'uint256',
         name: 'gain',
         type: 'uint256',
       },
+      { internalType: 'uint256', name: 'issuedAt', type: 'uint256' },
       {
-        name: 'issuedAt',
-        type: 'uint256',
-      },
-      {
+        internalType: 'uint256',
         name: 'maturesAt',
         type: 'uint256',
       },
-      {
-        name: 'liquidated',
-        type: 'bool',
-      },
+      { internalType: 'bool', name: 'liquidated', type: 'bool' },
     ],
   },
   {
     name: 'buyTokens',
     type: 'function',
+    stateMutability: 'nonpayable',
     inputs: [
       {
-        name: 'underlyingAmount',
+        internalType: 'uint256',
+        name: 'underlyingAmount_',
         type: 'uint256',
       },
+      { internalType: 'uint256', name: 'minTokens_', type: 'uint256' },
       {
-        name: 'minTokens',
-        type: 'uint256',
-      },
-      {
-        name: 'deadline',
+        internalType: 'uint256',
+        name: 'deadline_',
         type: 'uint256',
       },
     ],
@@ -173,84 +144,65 @@ const ABI: any[] = [
   {
     name: 'buyBond',
     type: 'function',
+    stateMutability: 'nonpayable',
     inputs: [
       {
-        name: 'principalAmount',
+        internalType: 'uint256',
+        name: 'principalAmount_',
         type: 'uint256',
       },
+      { internalType: 'uint256', name: 'minGain_', type: 'uint256' },
       {
-        name: 'minGain',
+        internalType: 'uint256',
+        name: 'deadline_',
         type: 'uint256',
       },
-      {
-        name: 'deadline',
-        type: 'uint256',
-      },
-      {
-        name: 'forDays',
-        type: 'uint16',
-      },
+      { internalType: 'uint16', name: 'forDays_', type: 'uint16' },
     ],
-    outputs: [],
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
   },
   {
     name: 'buyJuniorBond',
     type: 'function',
+    stateMutability: 'nonpayable',
     inputs: [
+      { internalType: 'uint256', name: 'tokenAmount_', type: 'uint256' },
       {
-        name: 'tokenAmount',
+        internalType: 'uint256',
+        name: 'maxMaturesAt_',
         type: 'uint256',
       },
-      {
-        name: 'maxMaturesAt',
-        type: 'uint256',
-      },
-      {
-        name: 'deadline',
-        type: 'uint256',
-      },
+      { internalType: 'uint256', name: 'deadline_', type: 'uint256' },
     ],
     outputs: [],
   },
   {
     name: 'sellTokens',
     type: 'function',
+    stateMutability: 'nonpayable',
     inputs: [
+      { internalType: 'uint256', name: 'tokenAmount_', type: 'uint256' },
       {
-        name: 'tokenAmount',
+        internalType: 'uint256',
+        name: 'minUnderlying_',
         type: 'uint256',
       },
-      {
-        name: 'minUnderlying',
-        type: 'uint256',
-      },
-      {
-        name: 'deadline',
-        type: 'uint256',
-      },
+      { internalType: 'uint256', name: 'deadline_', type: 'uint256' },
     ],
     outputs: [],
   },
   {
     name: 'redeemJuniorBond',
     type: 'function',
-    inputs: [
-      {
-        name: 'jBondId',
-        type: 'uint256',
-      },
-    ],
+    stateMutability: 'nonpayable',
+    inputs: [{ internalType: 'uint256', name: 'jBondId_', type: 'uint256' }],
     outputs: [],
   },
   {
     name: 'redeemBond',
     type: 'function',
-    inputs: [
-      {
-        name: 'bondId',
-        type: 'uint256',
-      },
-    ],
+    stateMutability: 'nonpayable',
+    inputs: [{ internalType: 'uint256', name: 'bondId_', type: 'uint256' }],
     outputs: [],
   },
 ];

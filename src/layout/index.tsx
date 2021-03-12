@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import AntdSpin from 'antd/lib/spin';
 
 import WarningProvider from 'components/providers/warning-provider';
 import LayoutFooter from 'layout/components/layout-footer';
@@ -13,8 +14,6 @@ const GovernanceView = lazy(() => import('modules/governance'));
 const SmartYieldView = lazy(() => import('modules/smart-yield'));
 const SmartAlphaView = lazy(() => import('modules/smart-alpha'));
 
-const PageLoading = () => <>loading...</>;
-
 const LayoutView: React.FC = () => {
   return (
     <div className={s.layout}>
@@ -23,7 +22,7 @@ const LayoutView: React.FC = () => {
         <WarningProvider>
           <LayoutHeader />
           <main className={s.main}>
-            <Suspense fallback={<PageLoading />}>
+            <Suspense fallback={<AntdSpin className="pv-24 ph-64" />}>
               <Switch>
                 <Route path="/yield-farming" component={YieldFarmingView} />
                 <Route path="/governance/:vt(\w+)" component={GovernanceView} />

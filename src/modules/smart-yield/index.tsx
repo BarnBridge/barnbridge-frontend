@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import AntdSpin from 'antd/lib/spin';
 
 import Tabs from 'components/antd/tabs';
 import Icon from 'components/custom/icon';
@@ -7,12 +8,13 @@ import { useWallet } from 'wallets/wallet';
 
 import PoolProvider from './providers/pool-provider';
 import PoolsProvider from './providers/pools-provider';
-import DepositView from './views/deposit-view';
-import MarketsView from './views/markets-view';
-import PortfolioView from './views/portfolio-view';
-import WithdrawView from './views/withdraw-view';
 
 import s from './s.module.scss';
+
+const MarketsView = lazy(() => import('./views/markets-view'));
+const PortfolioView = lazy(() => import('./views/portfolio-view'));
+const DepositView = lazy(() => import('./views/deposit-view'));
+const WithdrawView = lazy(() => import('./views/withdraw-view'));
 
 type SmartYieldViewParams = {
   vt: string;
@@ -68,43 +70,45 @@ const SmartYieldView: React.FC = () => {
         />
       </Tabs>
       <div className="content-container">
-        <Switch>
-          <Route
-            path="/smart-yield/:path(markets|portfolio)"
-            render={() => (
-              <PoolsProvider>
-                <Route path="/smart-yield/markets" exact component={MarketsView} />
-                {wallet.initialized && (
+        <Suspense fallback={<AntdSpin />}>
+          <Switch>
+            <Route
+              path="/smart-yield/:path(markets|portfolio)"
+              render={() => (
+                <PoolsProvider>
+                  <Route path="/smart-yield/markets" exact component={MarketsView} />
+                  {wallet.initialized && (
+                    <>
+                      {wallet.isActive ? (
+                        <Route path="/smart-yield/portfolio" component={PortfolioView} />
+                      ) : (
+                        <Redirect to="/smart-yield/markets" />
+                      )}
+                    </>
+                  )}
+                </PoolsProvider>
+              )}
+            />
+            <Route
+              path="/smart-yield/:path(deposit|withdraw)"
+              render={() =>
+                wallet.initialized && (
                   <>
                     {wallet.isActive ? (
-                      <Route path="/smart-yield/portfolio" component={PortfolioView} />
+                      <PoolProvider>
+                        <Route path="/smart-yield/deposit" component={DepositView} />
+                        <Route path="/smart-yield/withdraw" component={WithdrawView} />
+                      </PoolProvider>
                     ) : (
                       <Redirect to="/smart-yield/markets" />
                     )}
                   </>
-                )}
-              </PoolsProvider>
-            )}
-          />
-          <Route
-            path="/smart-yield/:path(deposit|withdraw)"
-            render={() =>
-              wallet.initialized && (
-                <>
-                  {wallet.isActive ? (
-                    <PoolProvider>
-                      <Route path="/smart-yield/deposit" component={DepositView} />
-                      <Route path="/smart-yield/withdraw" component={WithdrawView} />
-                    </PoolProvider>
-                  ) : (
-                    <Redirect to="/smart-yield/markets" />
-                  )}
-                </>
-              )
-            }
-          />
-          <Redirect to="/smart-yield/markets" />
-        </Switch>
+                )
+              }
+            />
+            <Redirect to="/smart-yield/markets" />
+          </Switch>
+        </Suspense>
       </div>
     </>
   );

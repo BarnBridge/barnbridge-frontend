@@ -2,7 +2,6 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import capitalize from 'lodash/capitalize';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
@@ -100,14 +99,6 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: 'Tranche',
-    render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {capitalize(entity.tranche)}
-      </Text>
-    ),
-  },
-  {
     title: 'Transaction type',
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="primary">
@@ -139,6 +130,12 @@ const InitialState: State = {
   transactionTypeFilter: 'all',
 };
 
+const InitialFilters: HistoryTableFilterValues = {
+  originator: 'all',
+  token: 'all',
+  transactionType: 'all',
+};
+
 const HistoryTable: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
@@ -146,6 +143,7 @@ const HistoryTable: React.FC = () => {
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
+  const [filters, setFilters] = React.useState<HistoryTableFilterValues>(InitialFilters);
 
   React.useEffect(() => {
     (async () => {
@@ -186,15 +184,17 @@ const HistoryTable: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.originatorFilter, state.tokenFilter, state.transactionTypeFilter, state.page]);
+  }, [wallet.account, filters.originator, filters.token, filters.transactionType, state.page]);
 
-  function handleFiltersApply(filters: HistoryTableFilterValues) {
+  function handleFiltersApply(values: HistoryTableFilterValues) {
     setState(prevState => ({
       ...prevState,
       page: 1,
-      originatorFilter: filters.originator,
-      tokenFilter: filters.token,
-      transactionTypeFilter: filters.transactionType,
+    }));
+
+    setFilters(prevState => ({
+      ...prevState,
+      ...values,
     }));
   }
 
@@ -215,7 +215,7 @@ const HistoryTable: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-          <HistoryTableFilter originators={pools} onFiltersApply={handleFiltersApply} />
+          <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
         </Grid>
       }>
       <Table

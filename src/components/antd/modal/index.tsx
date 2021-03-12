@@ -30,7 +30,7 @@ const Modal: React.FC<ModalProps> = props => {
 
   return (
     <AntdModal
-      zIndex={1}
+      zIndex={1000}
       className={cn(s.component, className)}
       visible
       centered
@@ -42,7 +42,7 @@ const Modal: React.FC<ModalProps> = props => {
 
       {confirmVisible && (
         <AntdModal
-          zIndex={2}
+          zIndex={1001}
           className={s.component}
           visible
           centered

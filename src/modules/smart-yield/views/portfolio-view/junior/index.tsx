@@ -1,18 +1,13 @@
 import React from 'react';
-import AntdForm from 'antd/lib/form';
+import AntdBadge from 'antd/lib/badge';
 import AntdSpin from 'antd/lib/spin';
 import format from 'date-fns/format';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
-import Form from 'components/antd/form';
-import Popover from 'components/antd/popover';
-import Select from 'components/antd/select';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
@@ -26,88 +21,11 @@ import { useWallet } from 'wallets/wallet';
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';
 import PastPositionsTable from './past-positions-table';
+import PositionsFilter, { PositionsFilterValues } from './positions-filter';
 
 import { doSequential } from 'utils';
 
 import s from './s.module.scss';
-
-const originatorFilterOptions = [
-  {
-    label: 'All originators',
-    value: 1,
-  },
-  {
-    label: 'All originators 2',
-    value: 2,
-  },
-];
-
-const tokenFilterOptions = [
-  {
-    label: 'All tokens',
-    value: 1,
-  },
-  {
-    label: 'All tokens 2',
-    value: 2,
-  },
-];
-
-const transactionFilterOptions = [
-  {
-    label: 'All transactions',
-    value: 1,
-  },
-  {
-    label: 'All transactions 2',
-    value: 2,
-  },
-];
-
-type FormValues = {
-  originator?: string;
-  token?: string;
-  transactionType?: string;
-};
-
-const Filters: React.FC = () => {
-  const [form] = AntdForm.useForm<FormValues>();
-
-  const handleFinish = React.useCallback((values: FormData) => {
-    console.log(values);
-  }, []);
-
-  return (
-    <Form
-      form={form}
-      initialValues={{
-        originator: originatorFilterOptions[0].value,
-        token: tokenFilterOptions[0].value,
-        transactionType: transactionFilterOptions[0].value,
-      }}
-      validateTrigger={['onSubmit']}
-      onFinish={handleFinish}>
-      <Form.Item label="Originator" name="originator" className="mb-32">
-        <Select loading={false} disabled={false} options={originatorFilterOptions} style={{ width: '100%' }} />
-      </Form.Item>
-      <Form.Item label="Token" name="token" className="mb-32">
-        <Select loading={false} disabled={false} options={tokenFilterOptions} style={{ width: '100%' }} />
-      </Form.Item>
-      <Form.Item label="Transaction type" name="transactionType" className="mb-32">
-        <Select loading={false} disabled={false} options={transactionFilterOptions} style={{ width: '100%' }} />
-      </Form.Item>
-
-      <div className="grid flow-col align-center justify-space-between">
-        <button type="button" onClick={() => form.resetFields()} className="button-text">
-          Reset filters
-        </button>
-        <button type="submit" className="button-primary">
-          Apply filters
-        </button>
-      </div>
-    </Form>
-  );
-};
 
 type State = {
   loadingActive: boolean;
@@ -123,17 +41,35 @@ const InitialState: State = {
   dataLocked: [],
 };
 
+const InitialFiltersMap: Record<string, PositionsFilterValues> = {
+  active: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+  locked: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+  past: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+};
+
 const JuniorPortfolio: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState<string>('active');
-  const [filtersVisible, setFiltersVisible] = React.useState<boolean>(false);
+  const [activeTab, setActiveTab] = React.useState('active');
 
   const wallet = useWallet();
   const poolsCtx = usePools();
 
   const { pools } = poolsCtx;
 
-  const [state, setState] = React.useState<State>(InitialState);
+  const [state, setState] = React.useState(InitialState);
   const [redeemModal, setRedeemModal] = React.useState<LockedPositionsTableEntity | undefined>();
+  const [filtersMap, setFiltersMap] = React.useState(InitialFiltersMap);
 
   React.useEffect(() => {
     if (!wallet.account) {
@@ -239,6 +175,16 @@ const JuniorPortfolio: React.FC = () => {
     })();
   }, [wallet.account, pools]);
 
+  function handleFiltersApply(values: PositionsFilterValues) {
+    setFiltersMap(prevState => ({
+      ...prevState,
+      [activeTab]: {
+        ...prevState[activeTab],
+        ...values,
+      },
+    }));
+  }
+
   function handleRedeemCancel() {
     setRedeemModal(undefined);
   }
@@ -260,16 +206,46 @@ const JuniorPortfolio: React.FC = () => {
   }
 
   const activeBalance = state.dataActive?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.smartYieldBalance, c.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
+    return a.plus(
+      getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
+        ?.multipliedBy(c.state.jTokenPrice ?? 0)
+        .multipliedBy(1) ?? ZERO_BIG_NUMBER,
+    ); /// price
   }, ZERO_BIG_NUMBER);
 
   const lockedBalance = state.dataLocked?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
+    return a.plus(
+      getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)
+        ?.multipliedBy(c.pool.state.jTokenPrice ?? 0)
+        .multipliedBy(1) ?? ZERO_BIG_NUMBER,
+    ); /// price
   }, ZERO_BIG_NUMBER);
 
-  const apy = state.dataActive[0]?.state.juniorApy; /// calculate by formula
+  const apySum = state.dataActive.reduce((a, c) => {
+    return a.plus(c.smartYieldBalance.multipliedBy(c.state.jTokenPrice).multipliedBy(c.state.juniorApy));
+  }, ZERO_BIG_NUMBER);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
+  const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).toNumber() : 0; /// calculate by formula
+
+  const dataActiveFilters = React.useMemo(() => {
+    const filter = filtersMap.active;
+
+    return state.dataActive.filter(
+      item =>
+        ['all', item.protocolId].includes(filter.originator) && ['all', item.underlyingAddress].includes(filter.token),
+    );
+  }, [state.dataActive, filtersMap, activeTab]);
+
+  const dataLockedFilters = React.useMemo(() => {
+    const filter = filtersMap.locked;
+
+    return state.dataLocked.filter(
+      item =>
+        ['all', item.pool.protocolId].includes(filter.originator) &&
+        ['all', item.pool.underlyingAddress].includes(filter.token),
+    );
+  }, [state.dataLocked, filtersMap, activeTab]);
 
   return (
     <>
@@ -300,31 +276,32 @@ const JuniorPortfolio: React.FC = () => {
         Positions
       </Text>
 
-      <Card className="mb-32" noPaddingBody>
+      <div className="card mb-32">
         <Tabs
           simple
           className={s.tabs}
           activeKey={activeTab}
           onChange={setActiveTab}
           tabBarExtraContent={
-            <Popover
-              title="Filters"
-              overlayStyle={{ width: 348 }}
-              content={<Filters />}
-              visible={filtersVisible}
-              onVisibleChange={setFiltersVisible}
-              placement="bottomRight">
-              <button type="button" className="button-ghost-monochrome ml-auto mb-12 ph-16">
-                <Icon name="filter" className="mr-8" color="inherit" />
-                Filters
-              </button>
-            </Popover>
+            <PositionsFilter
+              originators={pools}
+              showWithdrawTypeFilter={false}
+              value={filtersMap[activeTab]}
+              onChange={handleFiltersApply}
+            />
           }>
           <Tabs.Tab key="active" tab="Active">
-            <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
+            <ActivePositionsTable loading={state.loadingActive} data={dataActiveFilters} />
           </Tabs.Tab>
-          <Tabs.Tab key="locked" tab="Locked">
-            <LockedPositionsTable loading={state.loadingLocked} data={state.dataLocked} />
+          <Tabs.Tab
+            key="locked"
+            tab={
+              <>
+                Locked
+                <AntdBadge count={state.dataLocked.length} />
+              </>
+            }>
+            <LockedPositionsTable loading={state.loadingLocked} data={dataLockedFilters} />
             {redeemModal && (
               <TxConfirmModal
                 visible
@@ -362,10 +339,14 @@ const JuniorPortfolio: React.FC = () => {
             )}
           </Tabs.Tab>
           <Tabs.Tab key="past" tab="Past">
-            <PastPositionsTable />
+            <PastPositionsTable
+              originatorFilter={filtersMap.past.originator}
+              tokenFilter={filtersMap.past.token}
+              transactionTypeFilter={filtersMap.past.withdrawType}
+            />
           </Tabs.Tab>
         </Tabs>
-      </Card>
+      </div>
     </>
   );
 };
