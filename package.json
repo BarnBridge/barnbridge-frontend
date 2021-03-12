@@ -54,7 +54,12 @@
       "project": "./tsconfig.json"
     },
     "rules": {
-      "prettier/prettier": "warn",
+      "prettier/prettier": [
+        "warn",
+        {
+          "endOfLine": "auto"
+        }
+      ],
       "react/jsx-uses-react": "off",
       "react/react-in-jsx-scope": "off",
       "react-hooks/exhaustive-deps": "off",

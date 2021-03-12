@@ -158,7 +158,15 @@ const InitialState: State = {
   page: 1,
 };
 
-const PastPositionsTable: React.FC = () => {
+type Props = {
+  originatorFilter: string;
+  tokenFilter: string;
+  transactionTypeFilter: string;
+};
+
+const PastPositionsTable: React.FC<Props> = props => {
+  const { originatorFilter, tokenFilter, transactionTypeFilter } = props;
+
   const wallet = useWallet();
   const poolsCtx = usePools();
 
@@ -179,7 +187,14 @@ const PastPositionsTable: React.FC = () => {
       );
 
       try {
-        const pastPositions = await fetchSYJuniorPastPositions(wallet.account, state.page, state.pageSize);
+        const pastPositions = await fetchSYJuniorPastPositions(
+          wallet.account,
+          state.page,
+          state.pageSize,
+          originatorFilter,
+          tokenFilter,
+          transactionTypeFilter,
+        );
 
         const data = pastPositions.data.map(item => {
           const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.smartYieldAddress);
@@ -213,7 +228,7 @@ const PastPositionsTable: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.page]);
+  }, [wallet.account, state.page, originatorFilter, tokenFilter, transactionTypeFilter]);
 
   function handlePageChange(page: number) {
     setState(

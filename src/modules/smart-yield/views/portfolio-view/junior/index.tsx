@@ -21,7 +21,7 @@ import { useWallet } from 'wallets/wallet';
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';
 import PastPositionsTable from './past-positions-table';
-import PositionsTableFilter, { PositionsTableFilterValues } from './positions-table-filter';
+import PositionsFilter, { PositionsFilterValues } from './positions-filter';
 
 import { doSequential } from 'utils';
 
@@ -41,7 +41,7 @@ const InitialState: State = {
   dataLocked: [],
 };
 
-const InitialFiltersMap: Record<string, PositionsTableFilterValues> = {
+const InitialFiltersMap: Record<string, PositionsFilterValues> = {
   active: {
     originator: 'all',
     token: 'all',
@@ -175,7 +175,7 @@ const JuniorPortfolio: React.FC = () => {
     })();
   }, [wallet.account, pools]);
 
-  function handleFiltersApply(values: PositionsTableFilterValues) {
+  function handleFiltersApply(values: PositionsFilterValues) {
     setFiltersMap(prevState => ({
       ...prevState,
       [activeTab]: {
@@ -220,6 +220,25 @@ const JuniorPortfolio: React.FC = () => {
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
   const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).toNumber() : 0; /// calculate by formula
 
+  const dataActiveFilters = React.useMemo(() => {
+    const filter = filtersMap.active;
+
+    return state.dataActive.filter(
+      item =>
+        ['all', item.protocolId].includes(filter.originator) && ['all', item.underlyingAddress].includes(filter.token),
+    );
+  }, [state.dataActive, filtersMap, activeTab]);
+
+  const dataLockedFilters = React.useMemo(() => {
+    const filter = filtersMap.locked;
+
+    return state.dataLocked.filter(
+      item =>
+        ['all', item.pool.protocolId].includes(filter.originator) &&
+        ['all', item.pool.underlyingAddress].includes(filter.token),
+    );
+  }, [state.dataLocked, filtersMap, activeTab]);
+
   return (
     <>
       <div className={s.portfolioContainer}>
@@ -256,7 +275,7 @@ const JuniorPortfolio: React.FC = () => {
           activeKey={activeTab}
           onChange={setActiveTab}
           tabBarExtraContent={
-            <PositionsTableFilter
+            <PositionsFilter
               originators={pools}
               showWithdrawTypeFilter={activeTab === 'past'}
               value={filtersMap[activeTab]}
@@ -264,7 +283,7 @@ const JuniorPortfolio: React.FC = () => {
             />
           }>
           <Tabs.Tab key="active" tab="Active">
-            <ActivePositionsTable loading={state.loadingActive} data={state.dataActive} />
+            <ActivePositionsTable loading={state.loadingActive} data={dataActiveFilters} />
           </Tabs.Tab>
           <Tabs.Tab
             key="locked"
@@ -274,7 +293,7 @@ const JuniorPortfolio: React.FC = () => {
                 <AntdBadge count={state.dataLocked.length} />
               </>
             }>
-            <LockedPositionsTable loading={state.loadingLocked} data={state.dataLocked} />
+            <LockedPositionsTable loading={state.loadingLocked} data={dataLockedFilters} />
             {redeemModal && (
               <TxConfirmModal
                 visible
@@ -312,7 +331,11 @@ const JuniorPortfolio: React.FC = () => {
             )}
           </Tabs.Tab>
           <Tabs.Tab key="past" tab="Past">
-            <PastPositionsTable />
+            <PastPositionsTable
+              originatorFilter={filtersMap.past.originator}
+              tokenFilter={filtersMap.past.token}
+              transactionTypeFilter={filtersMap.past.withdrawType}
+            />
           </Tabs.Tab>
         </Tabs>
       </div>

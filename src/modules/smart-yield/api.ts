@@ -235,8 +235,24 @@ export function fetchSYSeniorRedeems(
   address: string,
   page = 1,
   limit = 10,
+  originator = 'all',
+  token = 'all',
 ): Promise<PaginatedResult<APISYSeniorRedeem>> {
-  const url = new URL(`/api/smartyield/users/${address}/redeems/senior?page=${page}&limit=${limit}`, GOV_API_URL);
+  const query = QueryString.stringify(
+    {
+      page: String(page),
+      limit: String(limit),
+      originator,
+      token,
+    },
+    {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: true,
+    },
+  );
+
+  const url = new URL(`/api/smartyield/users/${address}/redeems/senior?=${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -275,11 +291,26 @@ export function fetchSYJuniorPastPositions(
   address: string,
   page = 1,
   limit = 10,
+  originator = 'all',
+  token = 'all',
+  transactionType = 'all',
 ): Promise<PaginatedResult<APISYJuniorPastPosition>> {
-  const url = new URL(
-    `/api/smartyield/users/${address}/junior-past-positions?page=${page}&limit=${limit}`,
-    GOV_API_URL,
+  const query = QueryString.stringify(
+    {
+      page: String(page),
+      limit: String(limit),
+      originator,
+      token,
+      transactionType,
+    },
+    {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: true,
+    },
   );
+
+  const url = new URL(`/api/smartyield/users/${address}/junior-past-positions?${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())

@@ -130,6 +130,12 @@ const InitialState: State = {
   transactionTypeFilter: 'all',
 };
 
+const InitialFilters: HistoryTableFilterValues = {
+  originator: 'all',
+  token: 'all',
+  transactionType: 'all',
+};
+
 const HistoryTable: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
@@ -137,6 +143,7 @@ const HistoryTable: React.FC = () => {
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
+  const [filters, setFilters] = React.useState<HistoryTableFilterValues>(InitialFilters);
 
   React.useEffect(() => {
     (async () => {
@@ -177,15 +184,17 @@ const HistoryTable: React.FC = () => {
         );
       }
     })();
-  }, [wallet.account, state.originatorFilter, state.tokenFilter, state.transactionTypeFilter, state.page]);
+  }, [wallet.account, filters.originator, filters.token, filters.transactionType, state.page]);
 
-  function handleFiltersApply(filters: HistoryTableFilterValues) {
+  function handleFiltersApply(values: HistoryTableFilterValues) {
     setState(prevState => ({
       ...prevState,
       page: 1,
-      originatorFilter: filters.originator,
-      tokenFilter: filters.token,
-      transactionTypeFilter: filters.transactionType,
+    }));
+
+    setFilters(prevState => ({
+      ...prevState,
+      ...values,
     }));
   }
 
@@ -206,7 +215,7 @@ const HistoryTable: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-          <HistoryTableFilter originators={pools} onFiltersApply={handleFiltersApply} />
+          <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
         </Grid>
       }>
       <Table
