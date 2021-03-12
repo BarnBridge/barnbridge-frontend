@@ -232,7 +232,7 @@ const JuniorPortfolio: React.FC = () => {
   }, ZERO_BIG_NUMBER);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
-  const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).toNumber() : 0; /// calculate by formula
+  const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).multipliedBy(100).toNumber() : 0; /// calculate by formula
 
   const dataActiveFilters = React.useMemo(() => {
     const filter = filtersMap.active;

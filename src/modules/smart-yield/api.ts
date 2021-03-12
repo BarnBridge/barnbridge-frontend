@@ -153,6 +153,23 @@ export enum APISYTxHistoryType {
   JUNIOR_UNSTAKE = 'JUNIOR_UNSTAKE',
 }
 
+export const HistoryShortTypes = new Map<string, string>([
+  [APISYTxHistoryType.JUNIOR_DEPOSIT, 'Deposit'],
+  [APISYTxHistoryType.JUNIOR_INSTANT_WITHDRAW, 'Instant Withdraw'],
+  [APISYTxHistoryType.JUNIOR_REGULAR_WITHDRAW, '2 Step Withdraw'],
+  [APISYTxHistoryType.JUNIOR_REDEEM, 'Redeem'],
+  [APISYTxHistoryType.JTOKEN_SEND, 'Token Send'],
+  [APISYTxHistoryType.JTOKEN_RECEIVE, 'Token Receive'],
+  [APISYTxHistoryType.JBOND_SEND, 'Bond Send'],
+  [APISYTxHistoryType.JBOND_RECEIVE, 'Bond Receive'],
+  [APISYTxHistoryType.JUNIOR_STAKE, 'Stake'],
+  [APISYTxHistoryType.JUNIOR_UNSTAKE, 'Unstake'],
+  [APISYTxHistoryType.SENIOR_DEPOSIT, 'Deposit'],
+  [APISYTxHistoryType.SENIOR_REDEEM, 'Redeem'],
+  [APISYTxHistoryType.SBOND_SEND, 'Bond Send'],
+  [APISYTxHistoryType.SBOND_RECEIVE, 'Bond Receive'],
+]);
+
 export const HistoryTypes = new Map<string, string>([
   [APISYTxHistoryType.JUNIOR_DEPOSIT, 'Junior Deposit'],
   [APISYTxHistoryType.JUNIOR_INSTANT_WITHDRAW, 'Junior Instant Withdraw'],
