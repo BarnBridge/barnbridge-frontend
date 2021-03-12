@@ -79,7 +79,9 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
               The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
               positions might differ.
             </Text>
-            <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">Learn more</ExternalLink>
+            <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">
+              Learn more
+            </ExternalLink>
           </Grid>
         }>
         APY
@@ -103,7 +105,9 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
               This is the amount of time you would have to wait if you chose to go through the 2 step withdrawal
               process.
             </Text>
-            <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit">Learn more</ExternalLink>
+            <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit">
+              Learn more
+            </ExternalLink>
           </Grid>
         }>
         Withdraw wait time
