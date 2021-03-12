@@ -18,8 +18,7 @@
     "lint:types": "tsc --noEmit",
     "lint:style": "stylelint --syntax scss 'src/**/*.scss'",
     "format": "prettier --write src/**/*.ts{,x}",
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "import:abi": "node tools/import_abi.js"
+    "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
   "engines": {
     "node": "> 12.x",
