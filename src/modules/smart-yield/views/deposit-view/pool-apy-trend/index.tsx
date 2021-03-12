@@ -93,7 +93,7 @@ const PoolAPYTrend: React.FC = () => {
       }>
       <Spin spinning={state.loading}>
         <ReCharts.ResponsiveContainer width="100%" height={225}>
-          <ReCharts.AreaChart data={state.data}>
+          <ReCharts.AreaChart data={state.data} margin={{ left: -30 }}>
             <defs>
               <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
                 <stop offset="0%" stopColor="rgba(var(--theme-green-color-rgb), 0.08)" />

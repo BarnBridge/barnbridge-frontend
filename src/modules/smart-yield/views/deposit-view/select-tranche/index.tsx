@@ -67,7 +67,7 @@ const SelectTranche: React.FC = () => {
                   Senior tranches are ERC-721 non-fungible tokens which provide guaranteed yield for the life of the
                   bonds.
                 </Text>
-                <ExternalLink href="#">Learn more</ExternalLink>
+                <ExternalLink href="https://docs.barnbridge.com/sy-specs/senior-tranches">Learn more</ExternalLink>
               </Grid>
             }>
             <Text type="small" weight="semibold" color="secondary" className="mb-4">
@@ -90,7 +90,7 @@ const SelectTranche: React.FC = () => {
                   Junior tranches are ERC-20 tokens which provide liquidity and buy risk from the senior bond investors.
                   The risk here is the risk of the underlying asset annuities going down.
                 </Text>
-                <ExternalLink href="#">Learn more</ExternalLink>
+                <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches">Learn more</ExternalLink>
               </Grid>
             }>
             <Text type="small" weight="semibold" color="secondary" className="mb-4">
@@ -117,7 +117,7 @@ const SelectTranche: React.FC = () => {
                 your deposits will be locked in the bond until this maturity date is reached. Make sure you read the
                 docs thoroughly.
               </div>
-              <ExternalLink href="#" className={s.alertLink}>
+              <ExternalLink href="https://docs.barnbridge.com/sy-specs/senior-tranches" className={s.alertLink}>
                 Learn more
               </ExternalLink>
             </>
@@ -135,7 +135,7 @@ const SelectTranche: React.FC = () => {
                 When purchasing junior tokens you will get a variable rate. However, depending on the state of the pool
                 and the originator APY - your actual interest rate may be lower. Make sure you read the docs thoroughly.
               </div>
-              <ExternalLink href="#" className={s.alertLink}>
+              <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches" className={s.alertLink}>
                 Learn more
               </ExternalLink>
             </>
