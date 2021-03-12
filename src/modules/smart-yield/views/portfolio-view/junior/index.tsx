@@ -285,7 +285,7 @@ const JuniorPortfolio: React.FC = () => {
                   The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
                   positions might differ. This number shows a weighted average of these APYs for your active positions.
                 </Text>
-                <ExternalLink href="#">Learn more</ExternalLink>
+                <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">Learn more</ExternalLink>
               </Grid>
             }
             data={[

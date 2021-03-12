@@ -155,7 +155,7 @@ const SeniorPortfolio: React.FC = () => {
         Positions
       </Text>
       <Tabs simple activeKey={activeTab} onChange={setActiveTab} tabBarExtraContent={<FiltersPopup />}>
-        <Tabs.Tab key="active" tab="Active positions">
+        <Tabs.Tab key="active" tab="Active">
           <AntdSpin spinning={state.loading}>
             <div className={s.cards}>
               {state.data.map(entity => (
@@ -169,7 +169,7 @@ const SeniorPortfolio: React.FC = () => {
             </div>
           </AntdSpin>
         </Tabs.Tab>
-        <Tabs.Tab key="past" tab="Past positions">
+        <Tabs.Tab key="past" tab="Past">
           <PastPositionsList />
         </Tabs.Tab>
       </Tabs>
