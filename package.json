@@ -94,7 +94,8 @@
     "singleQuote": true,
     "jsxBracketSameLine": true,
     "arrowParens": "avoid",
-    "trailingComma": "all"
+    "trailingComma": "all",
+    "endOfLine": "lf"
   },
   "stylelint": {
     "extends": [
