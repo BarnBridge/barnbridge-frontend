@@ -170,7 +170,9 @@ const InitiateWithdraw: React.FC = () => {
                 The 2-step process allows a user to first signal the intention of exiting the pool. In return they
                 receive an NFT that can be redeemed after the current seniors reach their maturity dates.
               </div>
-              <ExternalLink href="#" className={s.alertLink}>
+              <ExternalLink
+                href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit"
+                className={s.alertLink}>
                 Learn more
               </ExternalLink>
             </>
@@ -195,7 +197,9 @@ const InitiateWithdraw: React.FC = () => {
                 <br />
                 Using this function, you forfeit your locked underlying.
               </div>
-              <ExternalLink href="#" className={s.alertLink}>
+              <ExternalLink
+                href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit"
+                className={s.alertLink}>
                 Learn more
               </ExternalLink>
             </>

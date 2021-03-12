@@ -194,7 +194,7 @@ const SeniorPortfolio: React.FC = () => {
         tabBarExtraContent={
           <PositionsFilter originators={pools} value={filtersMap[activeTab]} onChange={handleFiltersApply} />
         }>
-        <Tabs.Tab key="active" tab="Active positions">
+        <Tabs.Tab key="active" tab="Active">
           <AntdSpin spinning={state.loading}>
             <div className={s.cards}>
               {dataActiveFilters.map(entity => (
@@ -208,7 +208,7 @@ const SeniorPortfolio: React.FC = () => {
             </div>
           </AntdSpin>
         </Tabs.Tab>
-        <Tabs.Tab key="past" tab="Past positions">
+        <Tabs.Tab key="past" tab="Past">
           <PastPositionsList originatorFilter={filtersMap.past.originator} tokenFilter={filtersMap.past.token} />
         </Tabs.Tab>
       </Tabs>
