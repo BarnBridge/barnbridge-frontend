@@ -137,6 +137,10 @@ const PoolProvider: React.FC = props => {
   }, [location.search]);
 
   React.useEffect(() => {
+    smartYieldContract?.loadCommon();
+  }, [smartYieldContract]);
+
+  React.useEffect(() => {
     setState(prevState => ({
       ...prevState,
       marketId: market,

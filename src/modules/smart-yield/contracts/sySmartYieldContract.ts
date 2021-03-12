@@ -235,6 +235,25 @@ class SYSmartYieldContract extends Web3Contract {
     super(ABI, address, '');
   }
 
+  async loadCommon() {
+    return this.batch([
+      {
+        method: 'name',
+      },
+      {
+        method: 'symbol',
+      },
+      {
+        method: 'decimals',
+        transform: value => Number(value),
+      },
+      {
+        method: 'totalSupply',
+        transform: value => new BigNumber(value),
+      },
+    ]);
+  }
+
   async getBalance(): Promise<BigNumber> {
     if (!this.account) {
       return Promise.reject();
