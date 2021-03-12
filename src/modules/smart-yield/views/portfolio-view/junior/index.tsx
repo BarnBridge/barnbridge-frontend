@@ -206,11 +206,19 @@ const JuniorPortfolio: React.FC = () => {
   }
 
   const activeBalance = state.dataActive?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.smartYieldBalance, c.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
+    return a.plus(
+      getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
+        ?.multipliedBy(c.state.jTokenPrice ?? 0)
+        .multipliedBy(1) ?? ZERO_BIG_NUMBER,
+    ); /// price
   }, ZERO_BIG_NUMBER);
 
   const lockedBalance = state.dataLocked?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER); /// price
+    return a.plus(
+      getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)
+        ?.multipliedBy(c.pool.state.jTokenPrice ?? 0)
+        .multipliedBy(1) ?? ZERO_BIG_NUMBER,
+    ); /// price
   }, ZERO_BIG_NUMBER);
 
   const apySum = state.dataActive.reduce((a, c) => {
@@ -277,7 +285,7 @@ const JuniorPortfolio: React.FC = () => {
           tabBarExtraContent={
             <PositionsFilter
               originators={pools}
-              showWithdrawTypeFilter={activeTab === 'past'}
+              showWithdrawTypeFilter={false}
               value={filtersMap[activeTab]}
               onChange={handleFiltersApply}
             />

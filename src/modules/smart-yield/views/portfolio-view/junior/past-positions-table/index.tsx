@@ -16,7 +16,6 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import {
@@ -135,10 +134,6 @@ const Columns: ColumnsType<TableEntity> = [
         {JuniorPastPositionTypes.get(entity.transactionType)}
       </Text>
     ),
-  },
-  {
-    width: '15%',
-    render: () => <StatusTag text="Redeemed" color="green" />,
   },
 ];
 

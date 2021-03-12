@@ -10,6 +10,7 @@ import s from './s.module.scss';
 
 type Props = {
   total?: number;
+  totalHint?: string;
   aggregated: number | null;
   aggregatedText?: React.ReactNode;
   aggregatedColor: TextProps['color'];
@@ -19,6 +20,7 @@ type Props = {
 const PortfolioBalance: React.FC<Props> = (props: Props) => {
   const {
     total,
+    totalHint,
     aggregated,
     aggregatedColor,
     aggregatedText,
@@ -35,9 +37,11 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
       <Divider />
       <div className="p-24 flexbox-grid flow-col gap-16">
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Total balance
-          </Text>
+          <Hint text={totalHint}>
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              Total balance
+            </Text>
+          </Hint>
           <Text type="h2" weight="bold" color="primary">
             {formatUSDValue(total)}
           </Text>

@@ -125,11 +125,11 @@ const SeniorPortfolio: React.FC = () => {
   }, [state.data, filtersMap, activeTab]);
 
   const totalPrincipal = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
   const totalGain = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER);
   }, ZERO_BIG_NUMBER);
 
   const total = totalPrincipal?.plus(totalGain ?? ZERO_BIG_NUMBER);
@@ -171,6 +171,7 @@ const SeniorPortfolio: React.FC = () => {
         <AntdSpin spinning={state.loading}>
           <PortfolioBalance
             total={total?.toNumber()}
+            totalHint="This number includes the gains from the senior bonds that have not yet reached their maturity date."
             aggregated={aggregatedAPY.toNumber()}
             aggregatedText="This number is a weighted average across your active positions."
             aggregatedColor="green"

@@ -79,6 +79,7 @@ const PortfolioOverview: React.FC = () => {
         <AntdSpin spinning={state.loading}>
           <PortfolioBalance
             total={lastData?.value}
+            totalHint="This number doesn’t include the gains from the senior bonds that have not yet reached their maturity date."
             aggregated={null}
             aggregatedColor="red"
             data={[
