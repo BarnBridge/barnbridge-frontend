@@ -1,12 +1,11 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { RadioGroupProps as AntdRadioGroupProps } from 'antd/lib/radio';
 import { CheckboxOptionType } from 'antd/lib/checkbox/Group';
-import cx from 'classnames';
+import AntdRadio, { RadioGroupProps as AntdRadioGroupProps } from 'antd/lib/radio';
+import cn from 'classnames';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
-export type YesNoSelectorProps = AntdRadioGroupProps & {};
+export type YesNoSelectorProps = AntdRadioGroupProps;
 
 const YesNoOptions: CheckboxOptionType[] = [
   {
@@ -19,12 +18,12 @@ const YesNoOptions: CheckboxOptionType[] = [
   },
 ];
 
-const YesNoSelector: React.FunctionComponent<YesNoSelectorProps> = props => {
+const YesNoSelector: React.FC<YesNoSelectorProps> = props => {
   const { className, ...groupProps } = props;
 
   return (
-    <Antd.Radio.Group
-      className={cx(s.component, className)}
+    <AntdRadio.Group
+      className={cn(s.component, className)}
       options={YesNoOptions}
       optionType="button"
       buttonStyle="outline"

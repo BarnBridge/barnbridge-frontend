@@ -1,17 +1,17 @@
 import React from 'react';
-import * as Antd from 'antd';
-import {
+import AntdSelect, {
+  OptionProps as AntdOptionProps,
   SelectProps as AntdSelectProps,
   SelectValue as AntdSelectValue,
-  OptionProps as AntdOptionProps,
 } from 'antd/lib/select';
-import cx from 'classnames';
+import AntdSpin from 'antd/lib/spin';
+import cn from 'classnames';
 
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
-import { Paragraph } from 'components/custom/typography';
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type SelectOption = Partial<AntdOptionProps> & {
   label: React.ReactNode;
@@ -24,37 +24,40 @@ export type SelectProps<T> = AntdSelectProps<T> & {
   fixScroll?: boolean;
 };
 
-const Select = <T extends AntdSelectValue>(props: SelectProps<T>) => {
+const Select: React.FC<SelectProps<AntdSelectValue>> = <T extends AntdSelectValue>(
+  props: React.PropsWithChildren<SelectProps<T>>,
+) => {
   const { className, label, loading, options, fixScroll, ...selectProps } = props;
 
   return (
-    <div className={s.component}>
-      {loading && <Antd.Spin className={s.spin} />}
-      <Antd.Select<T>
-        className={cx(s.select, className, loading && s.loading)}
-        dropdownClassName={s.dropdown}
-        suffixIcon={<Icons name="dropdown-arrow" />}
-        optionLabelProp="label"
-        getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
-        {...selectProps}>
-        {options.map(option => (
-          <Antd.Select.Option
-            {...option}
-            key={option.value}
-            label={
-              <Grid flow="col" gap={12}>
-                {label && <Paragraph type="p2">{label}</Paragraph>}
-                <Paragraph type="p2" semiBold>
-                  {option.label}
-                </Paragraph>
-              </Grid>
-            }
-            value={option.value}>
-            {option.label}
-          </Antd.Select.Option>
-        ))}
-      </Antd.Select>
-    </div>
+    <AntdSelect<T>
+      className={cn(s.component, className)}
+      dropdownClassName={s.dropdown}
+      suffixIcon={loading ? <AntdSpin size="small" /> : <Icon name="dropdown-arrow" />}
+      optionLabelProp="label"
+      getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
+      {...selectProps}>
+      {options.map(option => (
+        <AntdSelect.Option
+          {...option}
+          key={option.value}
+          label={
+            <Grid flow="col" gap={12}>
+              {label && (
+                <Text type="p2" color="secondary">
+                  {label}
+                </Text>
+              )}
+              <Text type="p2" weight="semibold" color="primary">
+                {option.label}
+              </Text>
+            </Grid>
+          }
+          value={option.value}>
+          {option.label}
+        </AntdSelect.Option>
+      ))}
+    </AntdSelect>
   );
 };
 

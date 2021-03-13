@@ -1,12 +1,11 @@
 import React from 'react';
 
+import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Select, { SelectOption } from 'components/antd/select';
-import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-
+import LedgerWalletConfig from 'wallets/connectors/ledger';
 import { useWallet } from 'wallets/wallet';
-import { LedgerWalletConfig } from 'wallets/connectors/ledger';
 
 const WEB3_LEDGER_DERIVATION_PATHS: SelectOption[] = [
   {
@@ -19,33 +18,31 @@ const WEB3_LEDGER_DERIVATION_PATHS: SelectOption[] = [
   },
 ];
 
-export type LedgerDerivationPathModalProps = ModalProps & {};
-
-const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathModalProps> = props => {
+const LedgerDerivationPathModal: React.FC<ModalProps> = props => {
   const { ...modalProps } = props;
 
   const wallet = useWallet();
 
-  const [derivationPath, setDerivationPath] = React.useState<string>(
-    String(WEB3_LEDGER_DERIVATION_PATHS[0].value),
-  );
+  const [derivationPath, setDerivationPath] = React.useState<string>(String(WEB3_LEDGER_DERIVATION_PATHS[0].value));
 
-  function handleSelect(value: string | number) {
-    setDerivationPath(String(value));
+  function handleSelect(value: any) {
+    setDerivationPath(value as string);
   }
 
-  function handleConnect(ev: React.MouseEvent<HTMLElement>) {
-    modalProps.onCancel?.(ev);
+  function handleConnect() {
+    modalProps.onCancel?.();
 
     setTimeout(() => {
-      wallet.connect(LedgerWalletConfig, {
-        baseDerivationPath: derivationPath,
-      }).catch(Error);
+      wallet
+        .connect(LedgerWalletConfig, {
+          baseDerivationPath: derivationPath,
+        })
+        .catch(Error);
     });
   }
 
   return (
-    <Modal centered {...modalProps}>
+    <Modal width={568} {...modalProps}>
       <Grid flow="row" gap={32} align="center">
         <Select
           options={WEB3_LEDGER_DERIVATION_PATHS}
@@ -53,9 +50,7 @@ const LedgerDerivationPathModal: React.FunctionComponent<LedgerDerivationPathMod
           onSelect={handleSelect}
           style={{ width: '352px' }}
         />
-        <Button
-          type="primary"
-          onClick={handleConnect}>
+        <Button type="primary" onClick={handleConnect}>
           Connect
         </Button>
       </Grid>

@@ -1,0 +1,19 @@
+@import 'src/styles/text';
+
+.content {
+  min-height: 24px;
+}
+
+.address {
+  float: left;
+  max-width: 200px;
+}
+
+div.paragraph:global(.ant-typography) {
+  margin: 0;
+  @include font-p1-regular;
+
+  &.expanded {
+    white-space: pre-wrap;
+  }
+}

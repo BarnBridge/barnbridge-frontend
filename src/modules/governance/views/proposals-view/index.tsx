@@ -1,60 +1,58 @@
 import React from 'react';
-import { useHistory } from 'react-router';
+import { useHistory } from 'react-router-dom';
+import useDebounce from '@rooks/use-debounce';
 import { CardTabListType } from 'antd/lib/card';
-import * as Antd from 'antd';
-import useDebounce from "@rooks/use-debounce";
+import AntdSpin from 'antd/lib/spin';
 
-import Card from 'components/antd/card';
 import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
-import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
 import ExternalLink from 'components/custom/externalLink';
-import { Heading, Paragraph, Small } from 'components/custom/typography';
-import ProposalsProvider, {
-  useProposals,
-} from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
-import ProposalsTable from './components/proposals-table';
-import { useDAO } from '../../components/dao-provider';
-import ActivationThreshold from '../overview-view/components/activation-threshold';
-
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
 import { useWallet } from 'wallets/wallet';
 
-import s from './styles.module.scss';
+import { useDAO } from '../../components/dao-provider';
+import ActivationThreshold from '../overview-view/components/activation-threshold';
+import ProposalsTable from './components/proposals-table';
+
+import s from './s.module.scss';
 
 const TABS: CardTabListType[] = [
   {
     key: 'all',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Text type="p1" weight="semibold" color="primary">
         All proposals
-      </Paragraph>
+      </Text>
     ),
   },
   {
     key: 'active',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Text type="p1" weight="semibold" color="primary">
         Active
-      </Paragraph>
+      </Text>
     ),
   },
   {
     key: 'executed',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Text type="p1" weight="semibold" color="primary">
         Executed
-      </Paragraph>
+      </Text>
     ),
   },
   {
     key: 'failed',
     tab: (
-      <Paragraph type="p1" semiBold color="grey900">
+      <Text type="p1" weight="semibold" color="primary">
         Failed
-      </Paragraph>
+      </Text>
     ),
   },
 ];
@@ -69,80 +67,70 @@ const InitialState: ProposalsViewState = {
   showWhyReason: false,
 };
 
-const ProposalsViewInner: React.FunctionComponent = () => {
+const ProposalsViewInner: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const daoCtx = useDAO();
   const proposalsCtx = useProposals();
 
-  const [state, setState] = useMergeState(InitialState);
+  const [state, setState] = useMergeState<ProposalsViewState>(InitialState);
 
   function handleStateChange(stateFilter: string) {
     proposalsCtx.changeStateFilter(stateFilter);
   }
 
-  const handleSearchChange = useDebounce(
-    (ev: React.ChangeEvent<HTMLInputElement>) => {
-      proposalsCtx.changeSearchFilter(ev.target.value);
-    },
-    400,
-  );
+  const handleSearchChange = useDebounce((ev: React.ChangeEvent<HTMLInputElement>) => {
+    proposalsCtx.changeSearchFilter(ev.target.value);
+  }, 400);
 
   React.useEffect(() => {
-    daoCtx.actions.hasActiveProposal()
-      .then(hasActiveProposal => {
-        setState({ hasActiveProposal });
-      });
+    daoCtx.actions.hasActiveProposal().then(hasActiveProposal => {
+      setState({ hasActiveProposal });
+    });
   }, [wallet.account]);
 
-  const hasCreateRestrictions = state.hasActiveProposal !== undefined
-    && daoCtx.actions.hasThreshold() !== undefined;
-  const canCreateProposal = state.hasActiveProposal === false
-    && daoCtx.actions.hasThreshold() === true;
+  const hasCreateRestrictions = state.hasActiveProposal !== undefined && daoCtx.actions.hasThreshold() !== undefined;
+  const canCreateProposal = state.hasActiveProposal === false && daoCtx.actions.hasThreshold() === true;
 
   return (
     <Grid flow="row" gap={32}>
       <Grid flow="col" align="center" justify="space-between">
-        <Heading type="h1" bold color="grey900">
+        <Text type="h1" weight="bold" color="primary">
           Proposals
-        </Heading>
+        </Text>
         {wallet.isActive && (
           <Grid flow="row" gap={8} align="end" justify="end">
-            <Button
-              type="primary"
-              disabled={!canCreateProposal}
-              onClick={() => history.push('proposals/create')}>
+            <Button type="primary" disabled={!canCreateProposal} onClick={() => history.push('proposals/create')}>
               Create proposal
             </Button>
 
             {hasCreateRestrictions && !canCreateProposal && (
               <Grid flow="col" gap={8} align="center">
-                <Small semiBold color="grey500">
+                <Text type="small" weight="semibold" color="secondary">
                   You are not able to create a proposal.
-                </Small>
+                </Text>
                 <Popover
                   title="Why you can’t create a proposal"
                   placement="bottomLeft"
                   overlayStyle={{ width: 520 }}
                   content={
                     <Grid flow="row" gap={8}>
-                      <Paragraph type="p2" semiBold>
-                        There are 2 possible reasons for why you can’t create a
-                        proposal:
-                      </Paragraph>
+                      <Text type="p2" weight="semibold">
+                        There are 2 possible reasons for why you can’t create a proposal:
+                      </Text>
 
                       <ul>
                         <li>
-                          <Paragraph type="p2" semiBold>
+                          <Text type="p2" weight="semibold">
                             You already are the creator of an ongoing proposal
-                          </Paragraph>
+                          </Text>
                         </li>
                         <li>
-                          <Paragraph type="p2" semiBold>
+                          <Text type="p2" weight="semibold">
                             You don’t have enough voting power to create a proposal. The creator of a proposal needs to
                             have a voting power of at least {daoCtx.minThreshold}% of the amount of $BOND staked in the
                             DAO.
-                          </Paragraph>
+                          </Text>
                         </li>
                       </ul>
 
@@ -152,9 +140,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
                     </Grid>
                   }
                   visible={state.showWhyReason}
-                  onVisibleChange={visible =>
-                    setState({ showWhyReason: visible })
-                  }>
+                  onVisibleChange={visible => setState({ showWhyReason: visible })}>
                   <Button type="link">See why</Button>
                 </Popover>
               </Grid>
@@ -170,7 +156,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
         tabBarExtraContent={
           <Input
             className={s.search}
-            prefix={<Icons name="search-outlined" />}
+            prefix={<Icon name="search-outlined" width={16} height={16} />}
             placeholder="Search proposal"
             onChange={ev => handleSearchChange(ev)}
           />
@@ -182,7 +168,7 @@ const ProposalsViewInner: React.FunctionComponent = () => {
   );
 };
 
-const ProposalsView = () => {
+const ProposalsView: React.FC = () => {
   const history = useHistory();
   const dao = useDAO();
 
@@ -191,16 +177,13 @@ const ProposalsView = () => {
   }
 
   if (dao.isActive === undefined) {
-    return <Antd.Spin />;
+    return <AntdSpin />;
   }
 
   if (!dao.isActive) {
     return (
       <Grid flow="row" gap={24} align="start">
-        <Button
-          type="link"
-          icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>
+        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Overview
         </Button>
         <ActivationThreshold className={s.activationThreshold} />

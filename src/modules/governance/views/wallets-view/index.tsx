@@ -1,22 +1,20 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
-
-import WalletDepositView from 'modules/governance/views/wallet-deposit-view';
-import WalletLockView from 'modules/governance/views/wallet-lock-view';
-import WalletDelegateView from 'modules/governance/views/wallet-delegate-view';
-import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
 import Grid from 'components/custom/grid';
-import { Heading } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
+import WalletDelegateView from 'modules/governance/views/wallet-delegate-view';
+import WalletDepositView from 'modules/governance/views/wallet-deposit-view';
+import WalletLockView from 'modules/governance/views/wallet-lock-view';
+import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
 import { useWallet } from 'wallets/wallet';
 
 type WalletViewRouteParams = {
   action: string;
 };
 
-const WalletView: React.FunctionComponent = () => {
+const WalletView: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const {
@@ -40,16 +38,14 @@ const WalletView: React.FunctionComponent = () => {
   }
 
   if (!wallet.isActive) {
-    return (
-      <Redirect to="/governance/overview" />
-    );
+    return <Redirect to="/governance/overview" />;
   }
 
   return (
     <Grid flow="row" gap={32}>
-      <Heading type="h1" bold color="grey900">
+      <Text type="h1" weight="bold" color="primary">
         Wallet
-      </Heading>
+      </Text>
       <Tabs activeKey={activeTab} simple onChange={handleTabChange}>
         <Tabs.Tab key="deposit" tab="Deposit" />
         <Tabs.Tab key="lock" tab="Lock" />

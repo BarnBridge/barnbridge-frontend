@@ -1,24 +1,22 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { TrezorConnector } from '@web3-react/trezor-connector';
 
-import { WalletConnector } from 'wallets/types';
-import { WEB3_RPC_HTTPS_URL } from 'web3/contract';
-
+import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
 import TrezorLogo from 'resources/svg/wallets/trezor-logo.svg';
 
-const WEB3_POLLING_INTERVAL = Number(
-  process.env.REACT_APP_WEB3_POLLING_INTERVAL,
-);
+import { WalletConnector } from 'wallets/types';
+
+const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
 const WEB3_TREZOR_EMAIL = String(process.env.REACT_APP_WEB3_TREZOR_EMAIL);
 const WEB3_TREZOR_APP_URL = String(process.env.REACT_APP_WEB3_TREZOR_APP_URL);
 
-export const TrezorWalletConfig: WalletConnector = {
+const TrezorWalletConfig: WalletConnector = {
   id: 'trezor',
   logo: TrezorLogo,
   name: 'Trezor',
   factory(chainId: number): AbstractConnector {
     return new TrezorConnector({
-      chainId: chainId,
+      chainId,
       url: WEB3_RPC_HTTPS_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       manifestEmail: WEB3_TREZOR_EMAIL,
@@ -30,11 +28,14 @@ export const TrezorWalletConfig: WalletConnector = {
   },
   onError(error: Error): Error | undefined {
     if (error.message === 'Cancelled') {
-      return;
-    } else if (error.message === 'Popup closed') {
-      return;
+      return undefined;
+    }
+    if (error.message === 'Popup closed') {
+      return undefined;
     }
 
     return error;
   },
 };
+
+export default TrezorWalletConfig;

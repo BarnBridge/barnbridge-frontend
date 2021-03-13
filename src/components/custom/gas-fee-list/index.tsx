@@ -1,13 +1,14 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { RadioGroupProps, RadioChangeEvent } from 'antd/lib/radio';
+import AntdRadio, { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
+import AntdSpin from 'antd/lib/spin';
+import { fetchGasPrice } from 'web3/utils';
 
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
-import { fetchGasPrice } from 'web3/utils';
+
+import s from './s.module.scss';
 
 type GasFeeOption = {
   key: string;
@@ -26,7 +27,7 @@ export type GasFeeListProps = RadioGroupProps & {
   onChange?: (value: GasFeeOption) => void;
 };
 
-const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
+const GasFeeList: React.FC<GasFeeListProps> = props => {
   const { className, value, onChange, ...groupProps } = props;
 
   const [state, setState] = useMergeState<GasFeeListState>({
@@ -94,40 +95,40 @@ const GasFeeList: React.FunctionComponent<GasFeeListProps> = props => {
   }, [value]);
 
   return (
-    <Antd.Radio.Group
+    <AntdRadio.Group
       className={className}
       style={{ width: '100%' }}
       {...groupProps}
       value={state.selected}
       onChange={handleChange}>
       {state.loading ? (
-        <Antd.Spin />
+        <AntdSpin />
       ) : (
-        <Grid gap={16} colsTemplate="minmax(166px, 1fr) minmax(166px, 1fr)">
+        <div className={s.list}>
           {state.options.map(option => (
             <RadioButton
               key={option.key}
               label={
-                <Paragraph type="p1" semiBold color="grey900">
+                <Text type="p1" weight="semibold" color="primary">
                   {option.name}
-                </Paragraph>
+                </Text>
               }
               hint={
                 <Grid flow="col" gap={4}>
-                  <Paragraph type="p1" semiBold color="grey900">
+                  <Text type="p1" weight="semibold" color="primary">
                     {option.value}
-                  </Paragraph>
-                  <Paragraph type="p2" color="grey500">
+                  </Text>
+                  <Text type="p2" weight="semibold" color="secondary">
                     Gwei
-                  </Paragraph>
+                  </Text>
                 </Grid>
               }
               value={option}
             />
           ))}
-        </Grid>
+        </div>
       )}
-    </Antd.Radio.Group>
+    </AntdRadio.Group>
   );
 };
 

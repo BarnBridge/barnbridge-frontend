@@ -1,20 +1,19 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
+import { useWeb3Contracts } from 'web3/contracts';
+import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import Icons from 'components/custom/icon';
-import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
-
-import { isValidAddress } from 'utils';
-import { formatBONDValue, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
+import Icon from 'components/custom/icon';
 import { useLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 
-import s from './styles.module.scss';
+import { isValidAddress } from 'utils';
 
-export type VotingDetailedModalProps = ModalProps & {};
+import s from './s.module.scss';
+
+export type VotingDetailedModalProps = ModalProps;
 
 type VotingDetailedModalState = {
   leftBonus?: BigNumber;
@@ -26,15 +25,9 @@ const InitialState: VotingDetailedModalState = {
   leftTotalVotingPower: undefined,
 };
 
-const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = props => {
+const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   const web3c = useWeb3Contracts();
-  const {
-    votingPower,
-    userDelegatedTo,
-    delegatedPower,
-    userLockedUntil,
-    balance: myBondBalance,
-  } = web3c.daoBarn;
+  const { votingPower, userDelegatedTo, delegatedPower, userLockedUntil, balance: myBondBalance } = web3c.daoBarn;
 
   const [state, setState] = useMergeState<VotingDetailedModalState>(InitialState);
 
@@ -45,17 +38,14 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
     end: userLockedUntil ?? 0,
     delay: 1_000,
     onTick: leftTime => {
-      let bonus = votingPower
-        ?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
+      let bonus = votingPower?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
 
       if (!isDelegated) {
         bonus = bonus?.minus(myBondBalance ?? ZERO_BIG_NUMBER);
       }
 
       const leftBonus = bonus?.multipliedBy(leftTime).div(loadedUserLockedUntil);
-      const leftTotalVotingPower = votingPower
-        ?.minus(bonus ?? ZERO_BIG_NUMBER)
-        .plus(leftBonus ?? ZERO_BIG_NUMBER);
+      const leftTotalVotingPower = votingPower?.minus(bonus ?? ZERO_BIG_NUMBER).plus(leftBonus ?? ZERO_BIG_NUMBER);
 
       setState({
         leftBonus,
@@ -66,9 +56,9 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
 
   React.useEffect(() => {
     setState({
-      leftBonus: isDelegated ? ZERO_BIG_NUMBER : votingPower
-        ?.minus(myBondBalance ?? ZERO_BIG_NUMBER)
-        .minus(delegatedPower ?? ZERO_BIG_NUMBER),
+      leftBonus: isDelegated
+        ? ZERO_BIG_NUMBER
+        : votingPower?.minus(myBondBalance ?? ZERO_BIG_NUMBER).minus(delegatedPower ?? ZERO_BIG_NUMBER),
       leftTotalVotingPower: votingPower,
     });
 
@@ -78,88 +68,58 @@ const VotingDetailedModal: React.FunctionComponent<VotingDetailedModalProps> = p
   }, [isDelegated]);
 
   return (
-    <Modal
-      className={s.component}
-      title="Voting power detailed view"
-      {...props}>
-      <Grid flow="row">
-        <Grid flow="row" padding={[16, 0]}>
-          <Grid flow="col" justify="space-between" padding={[16, 32]}>
-            <Grid flow="col" gap={16}>
-              <Icons name="wallet-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="grey500">
-                My staked balance
-              </Paragraph>
-            </Grid>
-            <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="grey900">
-                {formatBONDValue(myBondBalance)}
-                <Icons name="circle-plus-outlined" width={18} height={18} color="green500" />
-              </Paragraph>
-            </Grid>
-          </Grid>
-
-          <Grid flow="col" justify="space-between" padding={[16, 32]}>
-            <Grid flow="col" gap={16}>
-              <Icons name="wallet-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="grey500">
-                Delegated by me
-              </Paragraph>
-            </Grid>
-            <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="grey900">
-                {isDelegated ? formatBONDValue(myBondBalance) : 0}
-                <Icons name="circle-minus-outlined" width={18} height={18} color="red500" />
-              </Paragraph>
-            </Grid>
-          </Grid>
-
-          <Grid flow="col" justify="space-between" padding={[16, 32]}>
-            <Grid flow="col" gap={16}>
-              <Icons name="rate-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="grey500">
-                Locked balance bonus
-              </Paragraph>
-            </Grid>
-            <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="grey900">
-                {state.leftBonus?.gt(ZERO_BIG_NUMBER) ? '> ' : ''}
-                {formatBONDValue(state.leftBonus)}
-                <Icons name="circle-plus-outlined" width={18} height={18} color="green500" />
-              </Paragraph>
-            </Grid>
-          </Grid>
-
-          <Grid flow="col" justify="space-between" padding={[16, 32]}>
-            <Grid flow="col" gap={16}>
-              <Icons name="handshake-outlined" width={20} height={20} />
-              <Paragraph type="p1" semiBold color="grey500">
-                Delegated to me
-              </Paragraph>
-            </Grid>
-            <Grid flow="col" gap={16}>
-              <Paragraph type="p1" semiBold color="grey900">
-                {formatBONDValue(delegatedPower)}
-                <Icons name="circle-plus-outlined" width={18} height={18} color="green500" />
-              </Paragraph>
-            </Grid>
-          </Grid>
-        </Grid>
+    <Modal className={s.component} title="Voting power detailed view" {...props}>
+      <dl className={s.list}>
+        <div className={s.row}>
+          <dt className={s.term}>
+            <Icon name="wallet-outlined" width={20} height={20} className={s.termIcon} />
+            My staked balance
+          </dt>
+          <dd className={s.data}>
+            {formatBONDValue(myBondBalance)}
+            <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
+          </dd>
+        </div>
+        <div className={s.row}>
+          <dt className={s.term}>
+            <Icon name="wallet-outlined" width={20} height={20} className={s.termIcon} />
+            Delegated by me
+          </dt>
+          <dd className={s.data}>
+            {isDelegated ? formatBONDValue(myBondBalance) : 0}
+            <Icon name="circle-minus-outlined" width={18} height={18} color="red" className={s.dataIcon} />
+          </dd>
+        </div>
+        <div className={s.row}>
+          <dt className={s.term}>
+            <Icon name="rate-outlined" width={20} height={20} className={s.termIcon} />
+            Locked balance bonus
+          </dt>
+          <dd className={s.data}>
+            {state.leftBonus?.gt(ZERO_BIG_NUMBER) ? '> ' : ''}
+            {formatBONDValue(state.leftBonus)}
+            <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
+          </dd>
+        </div>
+        <div className={s.row}>
+          <dt className={s.term}>
+            <Icon name="handshake-outlined" width={20} height={20} className={s.termIcon} />
+            Delegated to me
+          </dt>
+          <dd className={s.data}>
+            {formatBONDValue(delegatedPower)}
+            <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
+          </dd>
+        </div>
         <div className={s.separator} />
-        <Grid flow="col" justify="space-between" padding={[32]}>
-          <Grid flow="col" gap={16}>
-            <Icons name="stamp-outlined" width={20} height={20} />
-            <Paragraph type="p1" semiBold color="grey500">
-              My total voting power
-            </Paragraph>
-          </Grid>
-          <Grid flow="col" gap={16}>
-            <Heading type="h3" bold color="grey900">
-              {formatBONDValue(state.leftTotalVotingPower)}
-            </Heading>
-          </Grid>
-        </Grid>
-      </Grid>
+        <div className={s.row}>
+          <dt className={s.term}>
+            <Icon name="stamp-outlined" width={20} height={20} className={s.termIcon} />
+            My total voting power
+          </dt>
+          <dd className={cn(s.data, s.dataTotal)}>{formatBONDValue(state.leftTotalVotingPower)}</dd>
+        </div>
+      </dl>
     </Modal>
   );
 };

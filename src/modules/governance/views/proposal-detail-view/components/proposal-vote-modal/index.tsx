@@ -1,19 +1,21 @@
 import React from 'react';
-import * as Antd from 'antd';
-
-import Modal, { ModalProps } from 'components/antd/modal';
-import Form from 'components/antd/form';
-import Button from 'components/antd/button';
-import RadioButton from 'components/antd/radio-button';
-import Grid from 'components/custom/grid';
-import { Heading, Paragraph } from 'components/custom/typography';
-import GasFeeList from 'components/custom/gas-fee-list';
-import { useProposal } from '../../providers/ProposalProvider';
-
+import AntdForm from 'antd/lib/form';
+import AntdRadio from 'antd/lib/radio';
 import { formatBigValue } from 'web3/utils';
+
+import Button from 'components/antd/button';
+import Divider from 'components/antd/divider';
+import Form from 'components/antd/form';
+import Modal, { ModalProps } from 'components/antd/modal';
+import RadioButton from 'components/antd/radio-button';
+import GasFeeList from 'components/custom/gas-fee-list';
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
-import s from './styles.module.scss';
+import { useProposal } from '../../providers/ProposalProvider';
+
+import s from './s.module.scss';
 
 export enum VoteState {
   None,
@@ -47,44 +49,39 @@ const InitialState: ProposalVoteModalState = {
   submitting: false,
 };
 
-const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalProps> = props => {
+const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props => {
   const { voteState, ...modalProps } = props;
 
-  const [form] = Antd.Form.useForm<FormState>();
+  const [form] = AntdForm.useForm<FormState>();
   const proposalCtx = useProposal();
 
   const [state, setState] = useMergeState<ProposalVoteModalState>(InitialState);
 
   async function handleSubmit(values: FormState) {
-    if (!proposalCtx.proposal) {
+    const { gasPrice } = values;
+
+    if (!proposalCtx.proposal || !gasPrice) {
       return;
     }
 
     setState({ submitting: true });
 
-    const { gasPrice } = values;
-    const gasFee = gasPrice?.value!;
-
     try {
       await form.validateFields();
 
       if (voteState === VoteState.VoteFor) {
-        await proposalCtx.proposalCastVote(true, gasFee);
+        await proposalCtx.proposalCastVote(true, gasPrice.value);
       } else if (voteState === VoteState.VoteAgainst) {
-        await proposalCtx.proposalCastVote(false, gasFee);
+        await proposalCtx.proposalCastVote(false, gasPrice.value);
       } else if (voteState === VoteState.VoteChange) {
-        await proposalCtx.proposalCastVote(
-          values.changeOption === true,
-          gasFee,
-        );
+        await proposalCtx.proposalCastVote(values.changeOption === true, gasPrice.value);
       } else if (voteState === VoteState.VoteCancel) {
-        await proposalCtx.proposalCancelVote(gasFee);
+        await proposalCtx.proposalCancelVote(gasPrice.value);
       }
 
       proposalCtx.reload();
       props.onCancel?.();
-    } catch {
-    }
+    } catch {}
 
     setState({ submitting: false });
   }
@@ -100,7 +97,6 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
   return (
     <Modal
       className={s.component}
-      centered
       width={560}
       title={
         <>
@@ -118,88 +114,80 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
           <Grid flow="col" gap={8} align="center">
-            <Heading type="h2" bold color="grey900">
+            <Text type="h2" weight="bold" color="primary">
               {formatBigValue(proposalCtx.votingPower, 2)}
-            </Heading>
-            <Paragraph type="p1" semiBold color="grey500">
+            </Text>
+            <Text type="p1" weight="semibold" color="secondary">
               Votes
-            </Paragraph>
+            </Text>
           </Grid>
           {(voteState === VoteState.VoteFor || voteState === VoteState.VoteAgainst) && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="grey500">
+              <Text type="p2" color="secondary">
                 You are about to vote on proposal
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
-                "{proposalCtx.proposal?.title}"
-              </Paragraph>
-              <Paragraph type="p2" color="grey500">
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
+                &ldquo;{proposalCtx.proposal?.title}&rdquo;
+              </Text>
+              <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote later.
-              </Paragraph>
+              </Text>
             </Grid>
           )}
           {voteState === VoteState.VoteChange && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="grey500">
+              <Text type="p2" color="secondary">
                 You are about to change your vote on proposal
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
-                "{proposalCtx.proposal?.title}"
-              </Paragraph>
-              <Paragraph type="p2" color="grey500">
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
+                &ldquo;{proposalCtx.proposal?.title}&rdquo;
+              </Text>
+              <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
-              </Paragraph>
+              </Text>
             </Grid>
           )}
           {voteState === VoteState.VoteCancel && (
             <Grid flow="row" gap={8}>
-              <Paragraph type="p2" color="grey500">
+              <Text type="p2" color="secondary">
                 You are about to cancel your vote on proposal
-              </Paragraph>
-              <Paragraph type="p2" semiBold color="grey500">
-                "{proposalCtx.proposal?.title}"
-              </Paragraph>
-              <Paragraph type="p2" color="grey500">
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
+                &ldquo;{proposalCtx.proposal?.title}&rdquo;
+              </Text>
+              <Text type="p2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
-              </Paragraph>
+              </Text>
             </Grid>
           )}
         </Grid>
-        <div className={s.delimiter} />
+        <Divider />
         <Grid flow="row" gap={32} className={s.row}>
           {voteState === VoteState.VoteChange && (
-            <Form.Item
-              name="changeOption"
-              label="Vote"
-              rules={[{ required: true, message: 'Required' }]}>
-              <Antd.Radio.Group
-                className={s.changeGroup}
-                disabled={state.submitting}>
+            <Form.Item name="changeOption" label="Vote" rules={[{ required: true, message: 'Required' }]}>
+              <AntdRadio.Group className={s.changeGroup} disabled={state.submitting}>
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="grey900">
+                      <Text type="p1" weight="semibold" color="primary">
                         For
-                      </Paragraph>
+                      </Text>
                     }
-                    value={true}
+                    value
                   />
                   <RadioButton
                     label={
-                      <Paragraph type="p1" semiBold color="grey900">
+                      <Text type="p1" weight="semibold" color="primary">
                         Against
-                      </Paragraph>
+                      </Text>
                     }
                     value={false}
                   />
                 </Grid>
-              </Antd.Radio.Group>
+              </AntdRadio.Group>
             </Form.Item>
           )}
-          <Form.Item
-            name="gasPrice"
-            label="Gas Fee (Gwei)"
-            rules={[{ required: true, message: 'Required' }]}>
+          <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
             <GasFeeList disabled={state.submitting} />
           </Form.Item>
 
@@ -223,15 +211,10 @@ const ProposalVoteModal: React.FunctionComponent<ModalProps & ProposalVoteModalP
                   disabled={isDisabled}
                   className={s.actionBtn}>
                   {voteState === VoteState.VoteFor && 'Vote for proposal'}
-                  {voteState === VoteState.VoteAgainst &&
-                  'Vote against proposal'}
+                  {voteState === VoteState.VoteAgainst && 'Vote against proposal'}
                   {voteState === VoteState.VoteCancel && 'Cancel vote'}
-                  {voteState === VoteState.VoteChange &&
-                  changeOption === true &&
-                  'Vote for proposal'}
-                  {voteState === VoteState.VoteChange &&
-                  changeOption === false &&
-                  'Vote against proposal'}
+                  {voteState === VoteState.VoteChange && changeOption === true && 'Vote for proposal'}
+                  {voteState === VoteState.VoteChange && changeOption === false && 'Vote against proposal'}
                 </Button>
               );
             }}

@@ -1,0 +1,9 @@
+{
+  "extends": [
+    "stylelint-config-sass-guidelines"
+  ],
+  "rules": {
+    "selector-class-pattern": null,
+    "declaration-property-value-disallowed-list": null
+  }
+}

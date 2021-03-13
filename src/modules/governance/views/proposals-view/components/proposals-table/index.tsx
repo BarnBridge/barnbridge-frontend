@@ -1,50 +1,43 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-
-import Grid from 'components/custom/grid';
-import Table from 'components/antd/table';
-import Progress from 'components/antd/progress';
-import { Paragraph, Small } from 'components/custom/typography';
-import ProposalStatusTag from '../proposal-status-tag';
-import { useProposals } from '../../providers/ProposalsProvider';
-
-import { APILiteProposalEntity } from 'modules/governance/api';
-import { getFormattedDuration } from 'utils';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
-import s from './styles.module.scss';
+import Progress from 'components/antd/progress';
+import Table from 'components/antd/table';
+import Grid from 'components/custom/grid';
+import { Text } from 'components/custom/typography';
+import { APILiteProposalEntity } from 'modules/governance/api';
+
+import { useProposals } from '../../providers/ProposalsProvider';
+import ProposalStatusTag from '../proposal-status-tag';
+
+import { getFormattedDuration } from 'utils';
+
+import s from './s.module.scss';
 
 const Columns: ColumnsType<APILiteProposalEntity> = [
   {
-    title: () => (
-      <Small semiBold color="grey300">
-        Proposal
-      </Small>
-    ),
+    title: 'Proposal',
     width: '70%',
     render: (_, data: APILiteProposalEntity) => (
       <Grid flow="row" gap={8}>
         <Link to={`proposals/${data.proposalId}`}>
-          <Paragraph type="p1" semiBold color="grey900">
+          <Text type="p1" weight="semibold" color="primary">
             PID-{data.proposalId}: {data.title}
-          </Paragraph>
+          </Text>
         </Link>
         <Grid flow="col" gap={16} align="center">
           <ProposalStatusTag state={data.state} />
-          <Paragraph type="p2" semiBold color="grey500">
+          <Text type="p2" weight="semibold" color="secondary">
             {data.stateTimeLeft ? `${getFormattedDuration(data.stateTimeLeft)} left` : ''}
-          </Paragraph>
+          </Text>
         </Grid>
       </Grid>
     ),
   },
   {
-    title: () => (
-      <Small semiBold color="grey300">
-        Votes
-      </Small>
-    ),
+    title: 'Votes',
     width: '30%',
     render: (_, data: APILiteProposalEntity) => {
       const total = data.forVotes.plus(data.againstVotes);
@@ -62,22 +55,22 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
           <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
             <Progress
               percent={forRate.toNumber()}
-              strokeColor="var(--text-color-green500)"
-              trailColor="rgba(var(--text-color-green500-rgb), .16)"
+              strokeColor="var(--theme-green-color)"
+              trailColor="rgba(var(--theme-green-color-rgb), .16)"
             />
-            <Paragraph type="p2" semiBold color="grey500" align="right">
+            <Text type="p2" weight="semibold" color="secondary" align="right">
               {forRate.toFormat(2)}%
-            </Paragraph>
+            </Text>
           </Grid>
           <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
             <Progress
               percent={againstRate.toNumber()}
-              strokeColor="var(--text-color-red500)"
-              trailColor="rgba(var(--text-color-red500-rgb), .16)"
+              strokeColor="var(--theme-red-color)"
+              trailColor="rgba(var(--theme-red-color-rgb), .16)"
             />
-            <Paragraph type="p2" semiBold color="grey500" align="right">
+            <Text type="p2" weight="semibold" color="secondary" align="right">
               {againstRate.toFormat(2)}%
-            </Paragraph>
+            </Text>
           </Grid>
         </Grid>
       );
@@ -85,7 +78,7 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
   },
 ];
 
-const ProposalsTable: React.FunctionComponent = () => {
+const ProposalsTable: React.FC = () => {
   const proposalsCtx = useProposals();
 
   function handlePaginationChange(page: number) {
@@ -109,9 +102,9 @@ const ProposalsTable: React.FunctionComponent = () => {
         pageSize: proposalsCtx.pageSize,
         position: ['bottomRight'],
         showTotal: (total: number, [from, to]: [number, number]) => (
-          <Paragraph type="p2" semiBold color="grey500">
+          <Text type="p2" weight="semibold" color="secondary">
             Showing {from} to {to} out of {total} proposals
-          </Paragraph>
+          </Text>
         ),
         onChange: handlePaginationChange,
       }}

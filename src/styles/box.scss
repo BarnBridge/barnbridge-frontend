@@ -1,0 +1,82 @@
+.block {
+  display: block;
+}
+
+.inline {
+  display: inline-block;
+}
+
+$margins: 4, 8, 12, 16, 24, 32, 40, 48, 64;
+
+@each $margin in $margins {
+  .mr-#{$margin}.mr-#{$margin} {
+    margin-right: #{$margin}px;
+  }
+  .mb-#{$margin}.mb-#{$margin} {
+    margin-bottom: #{$margin}px;
+  }
+}
+
+@media (max-width: 768px) {
+  @each $margin in $margins {
+    .sm-mr-#{$margin}.sm-mr-#{$margin} {
+      margin-right: #{$margin}px;
+    }
+    .sm-mb-#{$margin}.sm-mb-#{$margin} {
+      margin-bottom: #{$margin}px;
+    }
+  }
+}
+
+.ml-auto {
+  margin-left: auto;
+}
+
+.mr-auto {
+  margin-right: auto;
+}
+
+.mh-auto {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+$paddings: 4, 8, 12, 16, 24, 32, 48, 64;
+
+@each $padding in $paddings {
+  .p-#{$padding}.p-#{$padding} {
+    padding: #{$padding}px;
+  }
+  .pv-#{$padding}.pv-#{$padding} {
+    padding-top: #{$padding}px;
+    padding-bottom: #{$padding}px;
+  }
+  .ph-#{$padding}.ph-#{$padding} {
+    padding-left: #{$padding}px;
+    padding-right: #{$padding}px;
+  }
+}
+
+@media (max-width: 768px) {
+  @each $padding in $paddings {
+    .sm-p-#{$padding} {
+      padding: #{$padding}px;
+    }
+    .sm-pv-#{$padding} {
+      padding-top: #{$padding}px;
+      padding-bottom: #{$padding}px;
+    }
+    .sm-ph-#{$padding} {
+      padding-left: #{$padding}px;
+      padding-right: #{$padding}px;
+    }
+  }
+}
+
+.full-width {
+  width: 100%;
+}
+
+.full-height {
+  height: 100%;
+}

@@ -1,0 +1,13 @@
+.card {
+  :global(.ant-card-head-title) {
+    max-width: calc(100% - 52px);
+  }
+}
+
+.balanceBlock {
+  border-bottom: 1px solid var(--theme-border-color);
+
+  + .balanceBlock {
+    border-left: 1px solid var(--theme-border-color);
+  }
+}

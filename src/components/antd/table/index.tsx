@@ -1,22 +1,27 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { TableProps as AntdTableProps } from 'antd/lib/table';
-import cx from 'classnames';
+import AntdTable, { TableProps as AntdTableProps } from 'antd/lib/table';
+import cn from 'classnames';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type TableProps<T> = AntdTableProps<T>;
 
-const Table = <T extends {}>(props: React.PropsWithChildren<TableProps<T>>) => {
+const Table = <T extends Record<string, any>>(props: React.PropsWithChildren<TableProps<T>>): React.ReactElement => {
   const { className, pagination, ...tableProps } = props;
 
   return (
-    <Antd.Table<T>
-      className={cx(s.component, className)}
-      pagination={pagination ? {
-        showSizeChanger: false,
-        ...pagination,
-      } : false}
+    <AntdTable<T>
+      className={cn(s.component, className)}
+      bordered={false}
+      showSorterTooltip={false}
+      pagination={
+        pagination
+          ? {
+              showSizeChanger: false,
+              ...pagination,
+            }
+          : false
+      }
       {...tableProps}
     />
   );

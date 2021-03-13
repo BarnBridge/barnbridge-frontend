@@ -1,0 +1,26 @@
+.component {
+  :global(.ant-slider-rail),
+  &:global(.ant-slider:hover .ant-slider-rail) {
+    height: 8px;
+    background: var(--theme-border-color);
+  }
+
+  :global(.ant-slider-track),
+  &:global(.ant-slider:hover .ant-slider-track) {
+    height: 8px;
+    background: var(--theme-red-color);
+  }
+
+  :global(.ant-slider-step) {
+    height: 8px;
+  }
+
+  :global(.ant-slider-handle) {
+    width: 24px;
+    height: 24px;
+    margin-top: -8px;
+    border: 6px solid var(--theme-red-color);
+    background: var(--theme-card-color);
+    box-shadow: 0 0 0 5px var(--theme-card-color);
+  }
+}

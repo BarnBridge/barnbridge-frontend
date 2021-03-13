@@ -1,0 +1,128 @@
+.content-container {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  padding: 64px;
+
+  @media (max-width: 768px) {
+    padding: 24px 8px;
+  }
+}
+
+.tab-cards {
+  display: grid;
+  gap: 24px;
+  grid-template-columns: repeat(auto-fit, minmax(200px, max-content));
+
+  @media (max-width: 768px) {
+    gap: 8px;
+    // grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  }
+}
+
+.tab-card {
+  background-color: var(--theme-card-color);
+  border: 1px solid var(--theme-border-color);
+  border-radius: 4px;
+  box-shadow: var(--theme-card-shadow);
+  display: flex;
+  padding: 16px;
+  text-align: left;
+
+  &disabled {
+    border-color: var(--theme-body-color);
+
+    [data-theme='dark'] & {
+      border-color: var(--theme-body-color);
+    }
+  }
+}
+
+.tab-card.active {
+  border-color: var(--theme-red-color);
+}
+
+.card {
+  background-color: var(--theme-card-color);
+  border-radius: 4px;
+  box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+}
+
+.card-header {
+  padding: 24px;
+  border-bottom: 1px solid var(--theme-border-color);
+}
+
+.css-grid {
+  --gap: 1rem;
+  // --sm-gap: 0.5rem;
+  --min: 15ch;
+  // --sm-min: 10ch;
+
+  display: grid;
+  grid-gap: var(--gap);
+  grid-template-columns: repeat(auto-fit, minmax(var(--min), 1fr));
+
+  @media (max-width: 768px) {
+    grid-gap: var(--sm-gap, --gap);
+    grid-template-columns: repeat(auto-fit, minmax(var(--sm-min, --min), 1fr));
+  }
+}
+
+.flexbox-grid {
+  --gap: 1rem;
+  // --sm-gap: 0.5rem;
+  --min: 10ch;
+  // --sm-min: 5ch;
+
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+
+  @media (max-width: 768px) {
+    gap: var(--sm-gap, --gap);
+  }
+}
+
+.flexbox-grid > * {
+  flex: 1 1 var(--min);
+
+  @media (max-width: 768px) {
+    gap: var(--sm-min, --min) !important;
+  }
+}
+
+.flexbox-list {
+  --gap: 16px;
+  // --sm-gap: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--gap);
+
+  @media (max-width: 768px) {
+    gap: var(--sm-gap, --gap);
+  }
+}
+
+.hidden-mobile {
+  @media (max-width: 480px) {
+    display: none !important;
+  }
+}
+
+.hidden-tablet {
+  @media (min-width: 481px) and (max-width: 767px) {
+    display: none !important;
+  }
+}
+
+.hidden-desktop {
+  @media (min-width: 768px) {
+    display: none !important;
+  }
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

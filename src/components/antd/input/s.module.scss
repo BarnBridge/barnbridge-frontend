@@ -1,0 +1,135 @@
+@import 'src/styles/text';
+
+:root .component {
+  --input-shadow: none;
+  --input-shadow-focused: 0 0 0 3px rgba(255, 67, 57, 0.16);
+  --input-border: 1px solid #e3e4e6;
+  --input-border-focused: 1px solid #ff4339;
+  --input-border-disabled: 1px solid #e3e4e6;
+  --input-bg: #fff;
+  --input-bg-disabled: #f8f8f9;
+  --input-text: var(--theme-primary-color);
+  --input-text-active: #13202b;
+  --input-text-disabled: #717980;
+}
+
+[data-theme='dark'] .component {
+  --input-border: 1px solid #43484d;
+  --input-border-disabled: none;
+  --input-text-active: #fff;
+  --input-text-disabled: #939496;
+}
+
+.component {
+  width: 100%;
+
+  :global(.ant-input),
+  &:global(.ant-input) {
+    height: 48px;
+    padding: 12px 16px;
+    box-shadow: var(--input-shadow);
+    border: var(--input-border);
+    border-radius: 4px;
+    background: var(--theme-input-background);
+    outline: none;
+
+    @include font-p1-semi-bold;
+    color: var(--input-text);
+
+    &:global(.ant-input-lg) {
+      height: 64px;
+      padding: 20px 24px;
+    }
+
+    &:focus {
+      box-shadow: var(--input-shadow-focused);
+      border: var(--input-border-focused);
+      color: var(--input-text-active);
+    }
+
+    &::placeholder {
+      color: var(--theme-input-placeholder);
+    }
+
+    &:global(.ant-input-disabled) {
+      border: var(--input-border-disabled);
+      background: var(--input-bg-disabled);
+
+      &::placeholder {
+        color: var(--input-text-disabled);
+      }
+    }
+
+    /* Chrome, Safari, Edge, Opera */
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    /* Firefox */
+    &[type='number'] {
+      -moz-appearance: textfield;
+    }
+  }
+
+  :global(.ant-input-group) {
+    border: var(--input-border);
+    border-radius: 4px;
+
+    :global(.ant-input-group-addon) {
+      background: var(--input-bg);
+      border: none;
+
+      &:first-of-type {
+        border-right: var(--input-border);
+      }
+    }
+
+    :global(.ant-input) {
+      height: 50px;
+      padding: 12px 16px;
+      box-shadow: none;
+      border: none;
+      border-radius: 0;
+
+      &:global(.ant-input-lg) {
+        height: 64px;
+        padding: 20px 24px;
+      }
+    }
+
+    &:focus-within {
+      box-shadow: var(--input-shadow-focused);
+      border: var(--input-border-focused);
+    }
+  }
+
+  &.disabled {
+    :global(.ant-input-group) {
+      background: var(--input-bg-disabled);
+
+      :global(.ant-input),
+      :global(.ant-input-group-addon) {
+        border: none;
+        background: var(--input-bg-disabled);
+      }
+
+      :global(.ant-input-group-addon) {
+        &:first-of-type {
+          border-right: var(--input-border-disabled);
+        }
+      }
+    }
+  }
+
+  &:global(.ant-input-affix-wrapper) {
+    background: var(--theme-input-background);
+    border: var(--input-border);
+
+    :global(.ant-input),
+    :global(.ant-input):focus {
+      border: none;
+    }
+  }
+}

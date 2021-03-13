@@ -1,0 +1,50 @@
+@import 'src/styles/text';
+
+.component:global(.ant-alert) {
+  padding: 16px 24px;
+  border-radius: 4px;
+
+  > :global(.ant-alert-icon) {
+    margin-right: 12px;
+    width: 24px;
+    height: 24px;
+
+    svg {
+      width: 24px;
+      height: 24px;
+    }
+  }
+
+  > :global(.ant-alert-content) {
+    @include font-p2-semi-bold;
+  }
+
+  &:global(.ant-alert-info) {
+    --alert-bg-color: var(--theme-blue-color-rgb);
+    --alert-text-color: var(--theme-blue-color);
+  }
+
+  &:global(.ant-alert-success) {
+    --alert-bg-color: var(--theme-green-color-rgb);
+    --alert-text-color: var(--theme-green-color);
+  }
+
+  &:global(.ant-alert-warning) {
+    --alert-bg-color: var(--theme-yellow-color-rgb);
+    --alert-text-color: var(--theme-yellow-color);
+  }
+
+  &:global(.ant-alert-error) {
+    --alert-bg-color: var(--theme-red-color-rgb);
+    --alert-text-color: var(--theme-red-color);
+  }
+
+  background: rgba(var(--alert-bg-color), 0.04);
+  border: 1px solid rgba(var(--alert-bg-color), 0.32);
+
+  > :global(.ant-alert-icon),
+  > :global(.ant-alert-content .ant-alert-message),
+  > :global(.ant-alert-content .ant-alert-description) {
+    color: var(--alert-text-color);
+  }
+}

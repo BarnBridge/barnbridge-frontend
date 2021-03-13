@@ -1,24 +1,23 @@
 import React from 'react';
-import { useRouteMatch } from 'react-router-dom';
-import { useHistory } from 'react-router';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import { Heading } from 'components/custom/typography';
-import Icons from 'components/custom/icon';
-import ProposalVoteResultsCard from './components/proposal-vote-results-card';
-import ProposalDetailsCard from './components/proposal-details-card';
-import ProposalStatusCard from './components/proposal-status-card';
-import ProposalAbrogationCard from './components/proposal-abrogation-card';
-import ProposalVotesCard from './components/proposal-votes-card';
-import ProposalQuorumCard from './components/proposal-quorum-card';
-import ProposalApprovalCard from './components/proposal-approval-card';
-import ProposalProvider, { useProposal } from './providers/ProposalProvider';
-import QueueForExecutionModal from './components/queue-for-execution-modal';
-
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
+import useMergeState from 'hooks/useMergeState';
 import { APIProposalState } from 'modules/governance/api';
 import { useWallet } from 'wallets/wallet';
-import useMergeState from 'hooks/useMergeState';
+
+import ProposalAbrogationCard from './components/proposal-abrogation-card';
+import ProposalApprovalCard from './components/proposal-approval-card';
+import ProposalDetailsCard from './components/proposal-details-card';
+import ProposalQuorumCard from './components/proposal-quorum-card';
+import ProposalStatusCard from './components/proposal-status-card';
+import ProposalVoteResultsCard from './components/proposal-vote-results-card';
+import ProposalVotesCard from './components/proposal-votes-card';
+import QueueForExecutionModal from './components/queue-for-execution-modal';
+import ProposalProvider, { useProposal } from './providers/ProposalProvider';
 
 type ProposalDetailViewInnerState = {
   showQueueForExecution: boolean;
@@ -30,15 +29,13 @@ const InitialState: ProposalDetailViewInnerState = {
   executing: false,
 };
 
-const ProposalDetailViewInner: React.FunctionComponent = () => {
+const ProposalDetailViewInner: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const proposalCtx = useProposal();
 
   const proposalState = proposalCtx.proposal?.state;
-  const [state, setState] = useMergeState<ProposalDetailViewInnerState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<ProposalDetailViewInnerState>(InitialState);
 
   function handleBackClick() {
     history.push('/governance/proposals');
@@ -65,22 +62,15 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
   return (
     <Grid flow="row" gap={32} align="center">
       <Grid flow="col" width={1070}>
-        <Button
-          type="link"
-          icon={<Icons name="left-arrow" />}
-          onClick={handleBackClick}>
+        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Proposals
         </Button>
       </Grid>
 
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-        <Heading
-          type="h2"
-          semiBold
-          color="grey900"
-          loading={!proposalCtx.proposal}>
+        <Text type="h2" weight="semibold" color="primary">
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
-        </Heading>
+        </Text>
 
         <Grid flow="col" justify="end">
           {wallet.account && (
@@ -94,10 +84,7 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
                 </Button>
               )}
               {APIProposalState.GRACE === proposalState && (
-                <Button
-                  type="primary"
-                  loading={state.executing}
-                  onClick={handleExecuteProposal}>
+                <Button type="primary" loading={state.executing} onClick={handleExecuteProposal}>
                   Execute proposal
                 </Button>
               )}
@@ -106,22 +93,16 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
         </Grid>
       </Grid>
 
-      <Grid
-        flow="col"
-        gap={32}
-        colsTemplate="minmax(0, 610px) minmax(0px, 428px)"
-        width={1070}>
+      <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0, 428px)" width={1070}>
         <Grid flow="row" gap={32}>
-          {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(
-            proposalState as any,
-          ) && <ProposalVoteResultsCard />}
+          {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState as any) && (
+            <ProposalVoteResultsCard />
+          )}
           <ProposalDetailsCard />
         </Grid>
         <Grid flow="row" gap={32}>
           <ProposalStatusCard />
-          {(APIProposalState.QUEUED === proposalState || proposalCtx.isCanceled) && (
-            <ProposalAbrogationCard />
-          )}
+          {(APIProposalState.QUEUED === proposalState || proposalCtx.isCanceled) && <ProposalAbrogationCard />}
           {APIProposalState.ACTIVE === proposalState && (
             <>
               <ProposalVotesCard />
@@ -133,15 +114,13 @@ const ProposalDetailViewInner: React.FunctionComponent = () => {
       </Grid>
 
       {state.showQueueForExecution && (
-        <QueueForExecutionModal
-          visible
-          onCancel={() => setState({ showQueueForExecution: false })} />
+        <QueueForExecutionModal onCancel={() => setState({ showQueueForExecution: false })} />
       )}
     </Grid>
   );
 };
 
-const ProposalDetailView = () => {
+const ProposalDetailView: React.FC = () => {
   const { params } = useRouteMatch<{ id: string }>();
 
   return (

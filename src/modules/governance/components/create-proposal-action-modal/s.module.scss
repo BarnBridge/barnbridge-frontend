@@ -1,0 +1,42 @@
+.component {
+  top: 0;
+  bottom: 0;
+  width: 100vw !important;
+  height: 100vh;
+  margin: 0 auto;
+  padding: 24px;
+
+  :global(.ant-modal-content) {
+    height: 100%;
+  }
+
+  :global(.ant-modal-body) {
+    padding: 106px 32px 32px;
+    height: 100%;
+    background: var(--theme-body-color);
+  }
+
+  .wrap {
+    width: 460px;
+    margin: 0 auto;
+  }
+
+  .form {
+    display: grid;
+    grid-auto-flow: row;
+    grid-row-gap: 24px;
+    margin-top: 64px;
+  }
+
+  .textarea {
+    color: #060a0d;
+  }
+
+  .actions {
+    display: grid;
+    grid-auto-flow: column;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+  }
+}

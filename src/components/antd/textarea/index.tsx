@@ -1,21 +1,15 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { TextAreaProps as AntdTextAreaProps } from 'antd/lib/input';
-import cx from 'classnames';
+import AntdInput, { TextAreaProps as AntdTextAreaProps } from 'antd/lib/input';
+import cn from 'classnames';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type TextareaProps = AntdTextAreaProps;
 
-const Textarea: React.FunctionComponent<TextareaProps> = props => {
+const Textarea: React.FC<TextareaProps> = props => {
   const { className, ...inputProps } = props;
 
-  return (
-    <Antd.Input.TextArea
-      className={cx(s.component, className)}
-      {...inputProps}
-    />
-  );
+  return <AntdInput.TextArea className={cn(s.component, className)} {...inputProps} />;
 };
 
 export default Textarea;

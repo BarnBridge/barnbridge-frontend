@@ -1,110 +1,67 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
-import Skeleton from 'components/antd/skeleton';
+import Tooltip from 'components/antd/tooltip';
+import Icon from 'components/custom/icon';
 
-import { Colors } from 'styles/colors';
+import s from './s.module.scss';
 
-import s from './styles.module.scss';
-import Tooltip from '../../antd/tooltip';
-
-type CommonProps = {
-  bold?: boolean;
-  semiBold?: boolean;
-  color?: Colors;
+export type TextProps = {
+  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label' | 'p' | 'div' | 'span' | 'small';
+  type: 'h1' | 'h2' | 'h3' | 'p1' | 'p2' | 'lb1' | 'lb2' | 'small';
+  weight?: 'semibold' | 'bold';
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'purple';
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;
   wrap?: boolean;
   className?: string;
-  loading?: boolean;
-  hint?: React.ReactNode;
+  style?: Partial<CSSStyleDeclaration>;
+  title?: string;
 };
 
-function classNamesFromProps(props: CommonProps) {
-  const { bold, semiBold, color, align, ellipsis, wrap, className } = props;
-
-  return cx(
-    bold && s.bold,
-    semiBold && s.semiBold,
-    color && `clr-${color}-prior`,
-    align && `text-${align}`,
-    ellipsis && 'text-ellipsis',
-    wrap && 'text-wrap',
-    className,
-  );
-}
-
-export type HeadingProps = CommonProps & {
-  type: 'h1' | 'h2' | 'h3';
-};
-
-export const Heading: React.FunctionComponent<HeadingProps> = props => {
-  const { type, loading, children } = props;
-  const classNames = cx(s.heading, classNamesFromProps(props));
+export const Text: React.FC<TextProps> = React.memo(props => {
+  const { tag = 'div', type, weight, color, align, ellipsis, wrap, className, children, ...textProps } = props;
 
   return React.createElement(
-    type,
+    tag,
     {
-      className: classNames,
+      className: cn(
+        s.text,
+        s[type],
+        weight && s[`weight-${weight}`],
+        color && s[`${color}-color`],
+        align && `text-${align}`,
+        ellipsis && 'text-ellipsis',
+        wrap === true && 'text-wrap',
+        wrap === false && 'text-nowrap',
+        className,
+      ),
+      ...textProps,
     },
-    !loading ? children : <Skeleton className={classNames} />,
+    children,
   );
+});
+
+export type HintProps = {
+  text: React.ReactNode;
+  className?: string;
 };
 
-export type ParagraphProps = CommonProps & {
-  type: 'p1' | 'p2';
-};
+export const Hint: React.FC<HintProps> = props => {
+  const { text, className, children } = props;
 
-export const Paragraph: React.FunctionComponent<ParagraphProps> = props => {
-  const { type, loading, hint, children } = props;
-  const classNames = cx(s.paragraph, s[type], classNamesFromProps(props));
+  if (!text) {
+    return <>{children}</>;
+  }
 
-  return !loading ? (
-    <p className={classNames}>
-      {children}
-      {hint && (
-        <Tooltip type="info" title={hint} />
-      )}
-    </p>
-  ) : (
-    <Skeleton className={classNames} />
-  );
-};
-
-export type LabelProps = CommonProps & {
-  type: 'lb1' | 'lb2';
-};
-
-export const Label: React.FunctionComponent<LabelProps> = props => {
-  const { type, loading, hint, children } = props;
-  const classNames = cx(s.label, s[type], classNamesFromProps(props));
-
-  return !loading ? (
-    <label className={classNames}>
-      {children}
-      {hint && (
-        <Tooltip type="info" title={hint} />
-      )}
-    </label>
-  ) : (
-    <Skeleton className={classNames} />
-  );
-};
-
-export type SmallProps = CommonProps;
-
-export const Small: React.FunctionComponent<SmallProps> = props => {
-  const { loading, hint, children } = props;
-  const classNames = cx(s.small, classNamesFromProps(props));
-
-  return !loading ? (
-    <small className={cx(s.small, classNamesFromProps(props))}>
-      {children}
-      {hint && (
-        <Tooltip type="info" title={hint} />
-      )}
-    </small>
-  ) : (
-    <Skeleton className={classNames} />
+  return (
+    <div className={cn(s.hint, className)}>
+      <span>{children}</span>
+      <Tooltip title={text} className={s.tooltip}>
+        <span>
+          <Icon name="info-outlined" width={16} height={16} className={s.icon} />
+        </span>
+      </Tooltip>
+    </div>
   );
 };

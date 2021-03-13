@@ -1,19 +1,18 @@
 import React from 'react';
-import cx from 'classnames';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
+import { MAX_UINT_256, formatBigValue } from 'web3/utils';
 
-import Button from 'components/antd/button';
 import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
+import Icon, { TokenIconNames } from 'components/custom/icon';
 import NumericInput from 'components/custom/numeric-input';
-import Icons, { TokenIconNames } from 'components/custom/icon';
-import { formatBigValue } from 'web3/utils';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type TokenAmountProps = {
   className?: string;
-  tokenIcon?: TokenIconNames;
+  tokenIcon?: TokenIconNames | React.ReactNode;
   max?: number | BigNumber;
   maximumFractionDigits?: number;
   value?: number | BigNumber;
@@ -23,11 +22,11 @@ export type TokenAmountProps = {
   onChange?: (value?: BigNumber) => void;
 };
 
-const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
+const TokenAmount: React.FC<TokenAmountProps> = props => {
   const {
     className,
     tokenIcon,
-    max = 100,
+    max,
     maximumFractionDigits = 4,
     value,
     disabled = false,
@@ -36,44 +35,41 @@ const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
     onChange,
   } = props;
 
-  const step = 1 / (10 ** Math.min(displayDecimals, 6));
-  const bnMaxValue = new BigNumber(max);
+  const step = 1 / 10 ** Math.min(displayDecimals, 6);
+  const bnMaxValue = new BigNumber(max ?? MAX_UINT_256);
 
-  const bnValue = value !== undefined
-    ? BigNumber.min(new BigNumber(value), bnMaxValue)
-    : undefined;
+  const bnValue = value !== undefined ? BigNumber.min(new BigNumber(value), bnMaxValue) : undefined;
 
   function onMaxHandle() {
     onChange?.(bnMaxValue);
   }
 
-  function handleInputChange(value: BigNumber) {
-    onChange?.(value ? BigNumber.min(value, bnMaxValue) : undefined);
+  function handleInputChange(inputValue?: BigNumber) {
+    onChange?.(inputValue ? BigNumber.min(inputValue, bnMaxValue) : undefined);
   }
 
-  function onSliderChange(value: number) {
-    onChange?.(new BigNumber(value));
+  function onSliderChange(sliderValue: number) {
+    onChange?.(new BigNumber(sliderValue));
   }
 
   return (
     <Grid flow="row" gap={32}>
       <NumericInput
-        className={cx(s.component, className)}
-        placeholder={`0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})`}
-        addonBefore={tokenIcon ? (
-          <Grid flow="col" gap={4}>
-            <Icons name={tokenIcon} width={24} height={24} />
-          </Grid>
-        ) : undefined}
-        addonAfter={(
-          <Button
-            type="default"
-            className={s.maxBtn}
-            disabled={disabled}
-            onClick={onMaxHandle}>
-            MAX
-          </Button>
-        )}
+        className={cn(s.component, className)}
+        placeholder={max !== undefined ? `0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})` : ''}
+        addonBefore={
+          <>
+            {typeof tokenIcon === 'string' && <Icon name={tokenIcon as TokenIconNames} width={36} height={36} />}
+            {typeof tokenIcon === 'object' && tokenIcon}
+          </>
+        }
+        addonAfter={
+          max !== undefined ? (
+            <button type="button" className="button-ghost" disabled={disabled} onClick={onMaxHandle}>
+              MAX
+            </button>
+          ) : null
+        }
         maximumFractionDigits={maximumFractionDigits}
         disabled={disabled}
         value={bnValue}
@@ -85,7 +81,7 @@ const TokenAmount: React.FunctionComponent<TokenAmountProps> = props => {
           max={bnMaxValue.toNumber()}
           step={step}
           tooltipPlacement="bottom"
-          tipFormatter={value => value ? formatBigValue(new BigNumber(value), displayDecimals) : 0}
+          tipFormatter={sliderValue => (sliderValue ? formatBigValue(new BigNumber(sliderValue), displayDecimals) : 0)}
           disabled={disabled}
           value={bnValue?.toNumber()}
           onChange={onSliderChange}

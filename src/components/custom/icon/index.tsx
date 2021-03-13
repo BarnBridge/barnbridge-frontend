@@ -1,27 +1,37 @@
 import React, { CSSProperties } from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
 import Sprite from 'resources/svg/icons-sprite.svg';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type LogoIconNames = 'barnbridge';
+
 export type TokenIconNames =
   | 'bond-token'
+  | 'bond-circle-token'
   | 'bond-square-token'
   | 'dai-token'
   | 'susd-token'
   | 'usdc-token'
-  | 'uniswap-token';
+  | 'uniswap-token'
+  | 'compound'
+  | 'static/aave'
+  | 'cream_finance'
+  | 'yearn_finance';
 export type NavIconNames =
   | 'paper-bill-outlined'
+  | 'paper-alpha-outlined'
   | 'chats-outlined'
   | 'forum-outlined'
   | 'bar-charts-outlined'
   | 'savings-outlined'
   | 'proposal-outlined'
   | 'bank-outlined'
-  | 'wallet-outlined';
+  | 'tractor-outlined'
+  | 'wallet-outlined'
+  | 'docs-outlined';
+
 export type ThemeIconNames = 'moon' | 'sun';
 
 export type IconNames =
@@ -31,7 +41,10 @@ export type IconNames =
   | ThemeIconNames
   | 'right-arrow-circle-outlined'
   | 'left-arrow'
+  | 'down-arrow-circle'
+  | 'refresh'
   | 'bell'
+  | 'bell-outlined'
   | 'chevron-right'
   | 'close-circle-outlined'
   | 'check-circle-outlined'
@@ -40,7 +53,7 @@ export type IconNames =
   | 'dropdown-arrow'
   | 'warning-outlined'
   | 'gear'
-  | 'earth'
+  | 'node-status'
   | 'info-outlined'
   | 'network'
   | 'pencil-outlined'
@@ -56,35 +69,44 @@ export type IconNames =
   | 'handshake-outlined'
   | 'stamp-outlined'
   | 'circle-plus-outlined'
-  | 'circle-minus-outlined';
+  | 'circle-minus-outlined'
+  | 'senior_tranche'
+  | 'junior_tranche'
+  | 'senior_tranche_simplified'
+  | 'junior_tranche_simplified'
+  | 'withdrawal_regular'
+  | 'withdrawal_instant'
+  | 'statistics'
+  | 'filter'
+  | 'tx-progress'
+  | 'tx-success'
+  | 'tx-failure'
+  | 'burger';
 
-export type IconsProps = {
+export type IconProps = {
   name: IconNames;
   width?: number | string;
   height?: number | string;
-  color?: string;
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'inherit';
   rotate?: 0 | 90 | 180 | 270;
   className?: string;
   style?: CSSProperties;
 };
 
-const Icons: React.FunctionComponent<IconsProps> = props => {
+const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style } = props;
+
+  const isStatic = name.indexOf('static/') === 0;
 
   return (
     <svg
-      className={cx(
-        s.component,
-        className,
-        rotate && `rotate-${rotate}`,
-        color && `clr-${color}`,
-      )}
+      className={cn(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
       style={style}>
-      <use xlinkHref={`${Sprite}#icon__${name}`} />
+      {!isStatic ? <use xlinkHref={`${Sprite}#icon__${name}`} /> : <use xlinkHref={`#icon__${name}`} />}
     </svg>
   );
 };
 
-export default Icons;
+export default Icon;

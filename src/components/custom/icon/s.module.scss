@@ -1,0 +1,39 @@
+.component {
+  color: var(--theme-icon-color);
+
+  &:global(.rotate-90) {
+    transform: rotate(90deg);
+  }
+
+  &:global(.rotate-180) {
+    transform: rotate(180deg);
+  }
+
+  &:global(.rotate-270) {
+    transform: rotate(270deg);
+  }
+
+  &.primary-color {
+    color: var(--theme-primary-color);
+  }
+
+  &.secondary-color {
+    color: var(--theme-secondary-color);
+  }
+
+  &.red-color {
+    color: var(--theme-red-color);
+  }
+
+  &.green-color {
+    color: var(--theme-green-color);
+  }
+
+  &.blue-color {
+    color: var(--theme-blue-color);
+  }
+
+  &.inherit-color {
+    color: inherit;
+  }
+}

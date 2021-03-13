@@ -1,0 +1,15 @@
+.component {
+  background: var(--theme-card-color);
+}
+
+.items {
+  @media (max-width: 480px) {
+    display: block;
+  }
+}
+
+.ratio {
+  background: rgba(255, 67, 57, 0.08);
+  border-radius: 18px;
+  padding: 0 12px;
+}

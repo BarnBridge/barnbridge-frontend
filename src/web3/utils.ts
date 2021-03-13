@@ -1,13 +1,10 @@
-import React from 'react';
 import BigNumber from 'bignumber.js';
-import memoize from 'lodash/memoize';
-
-import { TokenMeta } from 'web3/types';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import { USDCTokenMeta } from 'web3/contracts/usdc';
+import { TokenMeta } from 'web3/types';
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
@@ -15,59 +12,52 @@ export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
 const ETHERSCAN_API_KEY = String(process.env.REACT_APP_ETHERSCAN_API_KEY);
 
 export function getEtherscanTxUrl(
-  txHash: string,
-  chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string {
-  switch (chainId) {
-    case 1:
-      return `https://etherscan.io/tx/${txHash}`;
-    case 4:
-      return `https://rinkeby.etherscan.io/tx/${txHash}`;
-    default:
-      throw new Error(`Not supported chainId=${chainId}.`);
+  txHash?: string,
+  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string | undefined {
+  if (txHash) {
+    switch (chainId) {
+      case 1:
+        return `https://etherscan.io/tx/${txHash}`;
+      case 4:
+        return `https://rinkeby.etherscan.io/tx/${txHash}`;
+      case 42:
+        return `https://kovan.etherscan.io/tx/${txHash}`;
+      default:
+    }
   }
+
+  return undefined;
 }
 
 export function getEtherscanAddressUrl(
-  address: string,
-  chainId: number = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string {
-  switch (chainId) {
-    case 1:
-      return `https://etherscan.io/address/${address}`;
-    case 4:
-      return `https://rinkeby.etherscan.io/address/${address}`;
-    default:
-      throw new Error(`Not supported chainId=${chainId}.`);
+  address?: string,
+  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string | undefined {
+  if (address) {
+    switch (chainId) {
+      case 1:
+        return `https://etherscan.io/address/${address}`;
+      case 4:
+        return `https://rinkeby.etherscan.io/address/${address}`;
+      case 42:
+        return `https://kovan.etherscan.io/address/${address}`;
+      default:
+    }
   }
+
+  return undefined;
 }
 
-export function getNetworkName(chainId: number | undefined): string {
-  switch (chainId) {
-    case 1:
-      return 'Mainnet';
-    case 4:
-      return 'Rinkeby';
-    default:
-      return '-';
-  }
-}
-
-export function getExponentValue(decimals: number = 0): BigNumber {
+export function getExponentValue(decimals = 0): BigNumber {
   return new BigNumber(10).pow(decimals);
 }
 
-export function getHumanValue(
-  value?: BigNumber,
-  decimals: number = 0,
-): BigNumber | undefined {
+export function getHumanValue(value?: BigNumber, decimals = 0): BigNumber | undefined {
   return value?.div(getExponentValue(decimals));
 }
 
-export function getNonHumanValue(
-  value: BigNumber | number,
-  decimals: number = 0,
-): BigNumber {
+export function getNonHumanValue(value: BigNumber | number, decimals = 0): BigNumber {
   return new BigNumber(value).multipliedBy(getExponentValue(decimals));
 }
 
@@ -77,8 +67,8 @@ export function getGasValue(price: number): number {
 
 export function formatBigValue(
   value?: BigNumber | number,
-  decimals: number = 4,
-  defaultValue: string = '-',
+  decimals = 4,
+  defaultValue = '-',
   minDecimals: number | undefined = undefined,
 ): string {
   if (value === undefined) {
@@ -91,15 +81,10 @@ export function formatBigValue(
     return defaultValue;
   }
 
-  return new BigNumber(bnValue.toFixed(decimals))
-    .toFormat(minDecimals);
+  return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatUSDValue(
-  value?: BigNumber,
-  decimals: number = 2,
-  minDecimals: number = decimals,
-): string {
+export function formatUSDValue(value?: BigNumber | number, decimals = 2, minDecimals: number = decimals): string {
   if (value === undefined) {
     return '-';
   }
@@ -118,14 +103,8 @@ export function isSmallBONDValue(value?: BigNumber): boolean {
   return !!value && value.gt(ZERO_BIG_NUMBER) && value.lt(0.0001);
 }
 
-export function shortenAddr(
-  addr: string | undefined,
-  first: number = 6,
-  last: number = 4,
-): string | undefined {
-  return addr
-    ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...')
-    : undefined;
+export function shortenAddr(addr: string | undefined, first = 6, last = 4): string | undefined {
+  return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
 }
 
 export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
@@ -144,40 +123,6 @@ export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
       return undefined;
   }
 }
-
-export enum PoolTypes {
-  STABLE = 'stable',
-  UNILP = 'unilp',
-  BOND = 'bond',
-}
-
-export const getPoolIcons = memoize(
-  (poolType: PoolTypes): React.ReactNode[] => {
-    switch (poolType) {
-      case PoolTypes.STABLE:
-        return [USDCTokenMeta.icon, DAITokenMeta.icon, SUSDTokenMeta.icon];
-      case PoolTypes.UNILP:
-        return [UNISWAPTokenMeta.icon];
-      case PoolTypes.BOND:
-        return [BONDTokenMeta.icon];
-      default:
-        return [];
-    }
-  },
-);
-
-export const getPoolNames = memoize((poolType: PoolTypes): string[] => {
-  switch (poolType) {
-    case PoolTypes.STABLE:
-      return [USDCTokenMeta.name, DAITokenMeta.name, SUSDTokenMeta.name];
-    case PoolTypes.UNILP:
-      return [UNISWAPTokenMeta.name];
-    case PoolTypes.BOND:
-      return [BONDTokenMeta.name];
-    default:
-      return [];
-  }
-});
 
 export function fetchContractABI(address: string): any {
   return fetch(
@@ -211,5 +156,5 @@ export function fetchGasPrice(): Promise<GasPriceResult> {
         average: Math.round((Number(result.ProposeGasPrice) + Number(result.SafeGasPrice)) / 2),
         safeLow: Number(result.SafeGasPrice),
       };
-    })
+    });
 }

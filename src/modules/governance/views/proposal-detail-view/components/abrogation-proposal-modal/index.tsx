@@ -1,55 +1,45 @@
 import React from 'react';
 
 import Modal, { ModalProps } from 'components/antd/modal';
-import { Heading, Paragraph } from 'components/custom/typography';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
-import AbrogationDetailsCard from '../abrogation-details-card';
-import AbrogationVotesCard from '../abrogation-votes-card';
-import AbrogationApprovalCard from '../abrogation-approval-card';
-import AbrogationVoteResultsCard from '../abrogation-vote-results-card';
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
+
+import { APIProposalState } from '../../../../api';
 import AbrogationProvider from '../../providers/AbrogationProvider';
 import { useProposal } from '../../providers/ProposalProvider';
-import { APIProposalState } from '../../../../api';
+import AbrogationApprovalCard from '../abrogation-approval-card';
+import AbrogationDetailsCard from '../abrogation-details-card';
+import AbrogationVoteResultsCard from '../abrogation-vote-results-card';
+import AbrogationVotesCard from '../abrogation-votes-card';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type AbrogationProposalModalProps = ModalProps;
 
-const AbrogationProposalModalInner: React.FunctionComponent<AbrogationProposalModalProps> = props => {
+const AbrogationProposalModalInner: React.FC<AbrogationProposalModalProps> = props => {
   const proposalCtx = useProposal();
 
   return (
     <Modal className={s.component} {...props}>
       <Grid flow="row" gap={16} align="center">
         <Grid flow="col" gap={8} align="start" width={1070}>
-          <Icons name="warning-outlined" />
-          <Paragraph type="p1" semiBold color="red500">
+          <Icon name="warning-outlined" />
+          <Text type="p1" weight="semibold" color="red">
             Abrogation proposal
-          </Paragraph>
+          </Text>
         </Grid>
 
         <Grid flow="row" gap={64} align="center">
           <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
-            <Heading
-              type="h2"
-              semiBold
-              color="grey900"
-              loading={!proposalCtx.proposal}>
-              PID-{proposalCtx.proposal?.proposalId}:{' '}
-              {proposalCtx.proposal?.title}
-            </Heading>
+            <Text type="h2" weight="semibold" color="primary">
+              PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
+            </Text>
           </Grid>
 
-          <Grid
-            flow="col"
-            gap={32}
-            colsTemplate="minmax(0, 610px) minmax(0px, 428px)"
-            width={1070}>
+          <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0, 428px)" width={1070}>
             <Grid flow="row" gap={32}>
-              {proposalCtx.proposal?.state !== APIProposalState.QUEUED && (
-                <AbrogationVoteResultsCard />
-              )}
+              {proposalCtx.proposal?.state !== APIProposalState.QUEUED && <AbrogationVoteResultsCard />}
               <AbrogationDetailsCard />
             </Grid>
             <Grid flow="row" gap={32}>
@@ -67,7 +57,7 @@ const AbrogationProposalModalInner: React.FunctionComponent<AbrogationProposalMo
   );
 };
 
-const AbrogationProposalModal: React.FunctionComponent<AbrogationProposalModalProps> = props => {
+const AbrogationProposalModal: React.FC<AbrogationProposalModalProps> = props => {
   return (
     <AbrogationProvider>
       <AbrogationProposalModalInner {...props} />

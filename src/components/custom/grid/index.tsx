@@ -1,7 +1,7 @@
 import React from 'react';
-import cx from 'classnames';
+import cn from 'classnames';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type SupportedFlow = 'row' | 'col';
 export type SupportedAlign = 'start' | 'center' | 'end';
@@ -22,7 +22,7 @@ export type GridProps = {
   width?: string | number;
 };
 
-const Grid: React.FunctionComponent<GridProps> = props => {
+const Grid: React.FC<GridProps> = props => {
   const {
     className,
     flow,
@@ -50,7 +50,7 @@ const Grid: React.FunctionComponent<GridProps> = props => {
 
   return (
     <div
-      className={cx(
+      className={cn(
         s.grid,
         flow && s[flow],
         align && s[`align-${align}`],

@@ -1,18 +1,20 @@
 import React from 'react';
-
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
-import Grid from 'components/custom/grid';
-import Identicon from 'components/custom/identicon';
-import Icons from 'components/custom/icon';
-import ExternalLink from 'components/custom/externalLink';
-import { Paragraph, Small } from 'components/custom/typography';
-import { useProposal } from '../../providers/ProposalProvider';
-import ProposalActionCard from '../../../../components/proposal-action-card';
-
-import { APIProposalState } from 'modules/governance/api';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
+import Divider from 'components/antd/divider';
+import Skeleton from 'components/antd/skeleton';
+import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
+import Identicon from 'components/custom/identicon';
+import { Hint, Text } from 'components/custom/typography';
+import { APIProposalState } from 'modules/governance/api';
 import { useWallet } from 'wallets/wallet';
+
+import ProposalActionCard from '../../../../components/proposal-action-card';
+import { useProposal } from '../../providers/ProposalProvider';
 
 type ProposalDetailsCardState = {
   cancelling: boolean;
@@ -22,20 +24,16 @@ const InitialState: ProposalDetailsCardState = {
   cancelling: false,
 };
 
-const ProposalDetailsCard: React.FunctionComponent = () => {
+const ProposalDetailsCard: React.FC = () => {
   const wallet = useWallet();
   const proposalCtx = useProposal();
 
-  const [state, setState] = React.useState<ProposalDetailsCardState>(
-    InitialState,
-  );
+  const [state, setState] = React.useState<ProposalDetailsCardState>(InitialState);
 
   const canCancel =
     ((proposalCtx.thresholdRate && proposalCtx.thresholdRate < proposalCtx.minThreshold) ||
       proposalCtx.proposal?.proposer === wallet.account) &&
-    [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(
-      proposalCtx.proposal?.state as any,
-    );
+    [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalCtx.proposal?.state as any);
 
   function handleProposalCancel() {
     setState(prevState => ({
@@ -63,91 +61,73 @@ const ProposalDetailsCard: React.FunctionComponent = () => {
   return (
     <Card
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Text type="p1" weight="semibold" color="primary">
           Details
-        </Paragraph>
+        </Text>
       }
       noPaddingBody>
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500">
+            <Text type="small" weight="semibold" color="secondary">
               Created by
-            </Small>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Identicon
-                address={proposalCtx.proposal?.proposer}
-                width={24}
-                height={24}
-              />
-              <ExternalLink
-                href={`${getEtherscanAddressUrl(
-                  proposalCtx.proposal?.proposer!,
-                )}`}>
-                <Paragraph
-                  type="p1"
-                  semiBold
-                  color="blue500"
-                  loading={!proposalCtx.proposal}>
+              <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
+              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
+                <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(proposalCtx.proposal?.proposer)}
-                </Paragraph>
+                </Text>
               </ExternalLink>
             </Grid>
           </Grid>
           <Grid flow="row" gap={4}>
-            <Small semiBold color="grey500"
-                   hint={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
-              Creator threshold
-            </Small>
+            <Hint
+              text={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
+              <Text type="small" weight="semibold" color="secondary">
+                Creator threshold
+              </Text>
+            </Hint>
             <Grid flow="col" gap={8}>
               {proposalCtx.thresholdRate !== undefined && (
                 <>
-                  <Icons
+                  <Icon
                     name={
                       proposalCtx.thresholdRate > proposalCtx.minThreshold
                         ? 'check-circle-outlined'
                         : 'close-circle-outlined'
                     }
                   />
-                  <Paragraph
-                    type="p1"
-                    semiBold
-                    color="grey900"
-                    loading={proposalCtx.proposal === undefined}>
-                    {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
-                  </Paragraph>
+                  <Skeleton loading={proposalCtx.proposal === undefined}>
+                    <Text type="p1" weight="semibold" color="primary">
+                      {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
+                    </Text>
+                  </Skeleton>
                 </>
               )}
             </Grid>
           </Grid>
           {canCancel && (
-            <Button
-              type="default"
-              loading={state.cancelling}
-              onClick={handleProposalCancel}>
+            <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
               Cancel proposal
             </Button>
           )}
         </Grid>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="grey500">
+        <Text type="small" weight="semibold" color="secondary">
           Description
-        </Small>
-        <Paragraph
-          type="p1"
-          color="grey900"
-          loading={!proposalCtx.proposal}
-          wrap>
+        </Text>
+        <Text type="p1" color="primary" wrap>
           {proposalCtx.proposal?.description}
-        </Paragraph>
+        </Text>
       </Grid>
-      <Card.Delimiter />
+      <Divider />
       <Grid flow="row" gap={16} padding={24}>
-        <Small semiBold color="grey500">
+        <Text type="small" weight="semibold" color="secondary">
           Actions
-        </Small>
+        </Text>
         {proposalCtx.proposal?.targets.map((target: string, index: number) => (
           <ProposalActionCard
             key={index}

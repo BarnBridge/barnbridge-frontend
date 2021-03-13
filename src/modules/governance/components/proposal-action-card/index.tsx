@@ -1,25 +1,18 @@
 import React from 'react';
-import * as Antd from 'antd';
-import cx from 'classnames';
+import AntdTypography from 'antd/lib/typography';
+import cn from 'classnames';
+import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
-import { Paragraph, Small } from 'components/custom/typography';
-import ExpandableCard, {
-  ExpandableCardProps,
-} from 'components/custom/expandable-card';
-import Grid from 'components/custom/grid';
+import ExpandableCard, { ExpandableCardProps } from 'components/custom/expandable-card';
 import ExternalLink from 'components/custom/externalLink';
-import Icons from 'components/custom/icon';
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
-import {
-  AbiDecodeResult,
-  AbiFunctionFragment,
-  AbiInterface,
-} from 'web3/abiInterface';
-
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type ProposalActionCardProps = ExpandableCardProps & {
   title: React.ReactNode;
@@ -27,11 +20,11 @@ export type ProposalActionCardProps = ExpandableCardProps & {
   signature: string;
   callData: string;
   showSettings?: boolean;
-  onDeleteAction?: Function;
-  onEditAction?: Function;
+  onDeleteAction?: () => void;
+  onEditAction?: () => void;
 };
 
-const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = props => {
+const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
   const {
     className,
     title,
@@ -62,9 +55,7 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   }, [functionFragment, callData]);
 
   const stringParams = React.useMemo<string>(() => {
-    const params = functionParamValues?.map(param =>
-      AbiInterface.stringifyParamValue(param),
-    );
+    const params = functionParamValues?.map(param => AbiInterface.stringifyParamValue(param));
     return params?.join(',\n') ?? '';
   }, [functionParamValues]);
 
@@ -75,25 +66,25 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   const ActionMenuItems: PopoverMenuItem[] = [
     {
       key: 'sig',
-      icon: <Icons name="chevron-right" />,
+      icon: <Icon name="chevron-right" />,
       title: (
-        <Paragraph type="p1" semiBold>
+        <Text type="p1" weight="semibold">
           {isSignature ? 'Show transaction' : 'Show function signature'}
-        </Paragraph>
+        </Text>
       ),
     },
     {
       key: 'edit',
-      icon: <Icons name="pencil-outlined" />,
+      icon: <Icon name="pencil-outlined" />,
       title: 'Edit action',
     },
     {
       key: 'delete',
-      icon: <Icons name="bin-outlined" color="red500" />,
+      icon: <Icon name="bin-outlined" color="red" />,
       title: (
-        <Paragraph type="p1" semiBold color="red500">
+        <Text type="p1" weight="semibold" color="red">
           Delete action
-        </Paragraph>
+        </Text>
       ),
     },
   ];
@@ -127,23 +118,20 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
   return (
     <ExpandableCard
       title={
-        <Paragraph type="p2" semiBold color="grey900">
+        <Text type="p2" weight="semibold" color="primary">
           {title}
-        </Paragraph>
+        </Text>
       }
       extra={
         showSettings ? (
-          <PopoverMenu
-            items={ActionMenuItems}
-            placement="bottomLeft"
-            onClick={key => handleActionMenu(String(key))}>
-            <Button type="link" icon={<Icons name="gear" />} />
+          <PopoverMenu items={ActionMenuItems} placement="bottomLeft" onClick={key => handleActionMenu(String(key))}>
+            <Button type="link" icon={<Icon name="gear" />} />
           </PopoverMenu>
         ) : (
           <Button type="link" onClick={handleShowSignature}>
-            <Small semiBold color="grey500">
+            <Text type="small" weight="semibold" color="secondary">
               {isSignature ? 'Show transaction' : 'Show function signature'}
-            </Small>
+            </Text>
           </Button>
         )
       }
@@ -151,9 +139,9 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
         ellipsis || expanded ? (
           <Grid flow="col" align="center" justify="center">
             <Button type="link" onClick={handleExpand}>
-              <Small semiBold color="grey500">
+              <Text type="small" weight="semibold" color="secondary">
                 {expanded ? 'Hide details' : 'Show more'}
-              </Small>
+              </Text>
             </Button>
           </Grid>
         ) : null
@@ -161,23 +149,21 @@ const ProposalActionCard: React.FunctionComponent<ProposalActionCardProps> = pro
       {...cardProps}>
       <div className={s.content}>
         <ExternalLink href={etherscanLink}>
-          <Paragraph type="p1" semiBold className={s.address} color="blue500">
+          <Text type="p1" weight="semibold" className={s.address} color="blue">
             {shortenAddr(target)}
-          </Paragraph>
+          </Text>
         </ExternalLink>
         {signature && (
-          <Antd.Typography.Paragraph
-            className={cx(s.paragraph, expanded && s.expanded)}
+          <AntdTypography.Paragraph
+            className={cn(s.paragraph, expanded && s.expanded)}
             style={{ maxWidth: '514px' }}
             ellipsis={{
               rows: expanded ? 9999 : 2,
               expandable: false,
               onEllipsis: handleEllipsis,
-            }}>.
-            {isSignature
-              ? signature
-              : `${functionFragment?.name}(${stringParams})`}
-          </Antd.Typography.Paragraph>
+            }}>
+            .{isSignature ? signature : `${functionFragment?.name}(${stringParams})`}
+          </AntdTypography.Paragraph>
         )}
       </div>
     </ExpandableCard>

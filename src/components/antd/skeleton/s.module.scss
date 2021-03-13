@@ -1,0 +1,9 @@
+.skeleton:global(.ant-skeleton) {
+  :global(.ant-skeleton-title) {
+    margin: 0;
+  }
+
+  :global(.ant-skeleton-paragraph):empty {
+    display: none;
+  }
+}

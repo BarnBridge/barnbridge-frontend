@@ -1,14 +1,13 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { ModalProps as AntdModalProps } from 'antd/lib/modal';
-import cx from 'classnames';
+import AntdModal, { ModalProps as AntdModalProps } from 'antd/lib/modal';
+import cn from 'classnames';
 
-import Icons from 'components/custom/icon';
+import Button from 'components/antd/button';
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 
-import s from './styles.module.scss';
-import { Paragraph } from '../../custom/typography';
-import Grid from '../../custom/grid';
-import Button from '../button';
+import s from './s.module.scss';
 
 export type ModalProps = AntdModalProps & {
   confirmClose?: boolean;
@@ -16,15 +15,8 @@ export type ModalProps = AntdModalProps & {
   onCancel: (e?: React.MouseEvent<HTMLElement>) => void;
 };
 
-const Modal: React.FunctionComponent<ModalProps> = props => {
-  const {
-    className,
-    children,
-    confirmClose = false,
-    confirmText,
-    onCancel,
-    ...modalProps
-  } = props;
+const Modal: React.FC<ModalProps> = props => {
+  const { className, children, confirmClose = false, confirmText, onCancel, ...modalProps } = props;
 
   const [confirmVisible, showConfirm] = React.useState<boolean>(false);
 
@@ -37,33 +29,42 @@ const Modal: React.FunctionComponent<ModalProps> = props => {
   }
 
   return (
-    <Antd.Modal
-      zIndex={1}
-      className={cx(s.component, className)}
+    <AntdModal
+      zIndex={1000}
+      className={cn(s.component, className)}
+      visible
+      centered
       footer={null}
-      closeIcon={<Icons name="close-circle-outlined" />}
+      closeIcon={<Icon name="close-circle-outlined" />}
       onCancel={handleCancel}
       {...modalProps}>
       {children}
 
       {confirmVisible && (
-        <Antd.Modal
-          zIndex={2}
+        <AntdModal
+          zIndex={1001}
           className={s.component}
           visible
+          centered
           footer={null}
           closeIcon={<></>}
           onCancel={() => showConfirm(false)}>
           <Grid flow="row" gap={32}>
-            <Paragraph type="p2" semiBold color="grey500">{confirmText}</Paragraph>
+            <Text type="p2" weight="semibold" color="secondary">
+              {confirmText}
+            </Text>
             <Grid flow="col" justify="space-between">
-              <Button type="ghost" onClick={() => showConfirm(false)}>No</Button>
-              <Button type="primary" onClick={onCancel}>Yes</Button>
+              <Button type="ghost" onClick={() => showConfirm(false)}>
+                No
+              </Button>
+              <Button type="primary" onClick={onCancel}>
+                Yes
+              </Button>
             </Grid>
           </Grid>
-        </Antd.Modal>
+        </AntdModal>
       )}
-    </Antd.Modal>
+    </AntdModal>
   );
 };
 

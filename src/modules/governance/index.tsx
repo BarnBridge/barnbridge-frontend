@@ -1,37 +1,34 @@
 import React from 'react';
-import { useHistory } from 'react-router';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import Tabs from 'components/antd/tabs';
+import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
-import LayoutHeader from 'layout/components/layout-header';
-import DAOProvider, { useDAO } from './components/dao-provider';
-import VotingHeader from './components/voting-header';
-import OverviewView from './views/overview-view';
-import WalletView from './views/wallets-view';
-import ProposalsView from './views/proposals-view';
-import ProposalCreateView from './views/proposal-create-view';
-import ProposalDetailView from './views/proposal-detail-view';
-
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { useWallet } from 'wallets/wallet';
 
-import s from './styles.module.scss';
-import ExternalLink from '../../components/custom/externalLink';
-import { Paragraph } from '../../components/custom/typography';
+import DAOProvider from './components/dao-provider';
+import VotingHeader from './components/voting-header';
+import OverviewView from './views/overview-view';
+import ProposalCreateView from './views/proposal-create-view';
+import ProposalDetailView from './views/proposal-detail-view';
+import ProposalsView from './views/proposals-view';
+import WalletView from './views/wallets-view';
+
+import s from './s.module.scss';
 
 type GovernanceViewParams = {
   vt: string;
 };
 
-const GovernanceViewInternal: React.FunctionComponent = () => {
+const GovernanceViewInternal: React.FC = () => {
   const history = useHistory();
   const {
     params: { vt = 'overview' },
   } = useRouteMatch<GovernanceViewParams>();
 
   const wallet = useWallet();
-  const dao = useDAO();
 
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
@@ -50,7 +47,6 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
 
   return (
     <Grid flow="row">
-      <LayoutHeader title="Governance" />
       {wallet.account && <VotingHeader />}
 
       <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
@@ -58,7 +54,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
           key="overview"
           tab={
             <>
-              <Icons name="bar-charts-outlined" /> Overview
+              <Icon name="bar-charts-outlined" /> Overview
             </>
           }
         />
@@ -67,7 +63,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
           disabled={!wallet.account}
           tab={
             <>
-              <Icons name="wallet-outlined" /> Wallet
+              <Icon name="wallet-outlined" /> Wallet
             </>
           }
         />
@@ -75,18 +71,20 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
           key="proposals"
           tab={
             <>
-              <Icons name="proposal-outlined" /> Proposals
+              <Icon name="proposal-outlined" /> Proposals
             </>
           }
         />
         <Tabs.Tab
           key="signal"
           tab={
-            <ExternalLink href="https://signal.barnbridge.com/">
+            <ExternalLink href="https://signal.barnbridge.com/" style={{ color: 'inherit' }}>
               <Grid flow="col" gap={8} align="center">
-                <Icons name="chats-outlined" />
-                <Paragraph type="p1" semiBold color="grey500">Signal</Paragraph>
-                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+                <Icon name="chats-outlined" />
+                <Text type="p1" weight="semibold">
+                  Signal
+                </Text>
+                <Icon name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start', color: 'inherit' }} />
               </Grid>
             </ExternalLink>
           }
@@ -94,17 +92,19 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
         <Tabs.Tab
           key="forum"
           tab={
-            <ExternalLink href="https://forum.barnbridge.com/">
+            <ExternalLink href="https://forum.barnbridge.com/" style={{ color: 'inherit' }}>
               <Grid flow="col" gap={8} align="center">
-                <Icons name="forum-outlined" />
-                <Paragraph type="p1" semiBold color="grey500">Forum</Paragraph>
-                <Icons name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start' }} />
+                <Icon name="forum-outlined" />
+                <Text type="p1" weight="semibold">
+                  Forum
+                </Text>
+                <Icon name="arrow-top-right" width={8} height={8} style={{ alignSelf: 'start', color: 'inherit' }} />
               </Grid>
             </ExternalLink>
           }
         />
       </Tabs>
-      <div className={s.view}>
+      <div className="content-container">
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
           <Route path="/governance/wallet/:action(\w+)" component={WalletView} />
@@ -119,7 +119,7 @@ const GovernanceViewInternal: React.FunctionComponent = () => {
   );
 };
 
-const GovernanceView: React.FunctionComponent = props => {
+const GovernanceView: React.FC = props => {
   return (
     <DAOProvider>
       <GovernanceViewInternal>{props.children}</GovernanceViewInternal>

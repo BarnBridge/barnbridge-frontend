@@ -1,0 +1,22 @@
+.tabs:global > {
+  .ant-tabs-nav {
+    height: 80px;
+    margin-bottom: 0;
+    padding: 0 24px;
+    background: var(--theme-card-color);
+    box-shadow: var(--theme-card-shadow);
+    border: 1px solid;
+    border-color: var(--theme-border-color);
+    border-radius: 4px 4px 0 0;
+  }
+}
+
+.activationThreshold {
+  width: 100%;
+}
+
+.search {
+  input {
+    height: 38px !important;
+  }
+}

@@ -1,21 +1,19 @@
 import React from 'react';
+import { formatBigValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
-import Button from 'components/antd/button';
 import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
+import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-import AbrogationVoteModal, {
-  VoteAbrogationState,
-} from '../abrogation-vote-modal';
-import AbrogationVotersModal from '../abrogation-voters-modal';
-import { useAbrogation } from '../../providers/AbrogationProvider';
-
-import { formatBigValue } from 'web3/utils';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 
-import s from './styles.module.scss';
+import { useAbrogation } from '../../providers/AbrogationProvider';
+import AbrogationVoteModal, { VoteAbrogationState } from '../abrogation-vote-modal';
+import AbrogationVotersModal from '../abrogation-voters-modal';
+
+import s from './s.module.scss';
 
 type AbrogationVotesCardState = {
   showVotersModal: boolean;
@@ -29,12 +27,10 @@ const InitialState: AbrogationVotesCardState = {
   voteState: VoteAbrogationState.None,
 };
 
-const AbrogationVotesCard: React.FunctionComponent = () => {
+const AbrogationVotesCard: React.FC = () => {
   const abrogationCtx = useAbrogation();
 
-  const [state, setState] = useMergeState<AbrogationVotesCardState>(
-    InitialState,
-  );
+  const [state, setState] = useMergeState<AbrogationVotesCardState>(InitialState);
 
   function handleShowVotersModal() {
     setState({ showVotersModal: true });
@@ -83,9 +79,9 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
     <Card
       className={s.component}
       title={
-        <Paragraph type="p1" semiBold color="grey900">
+        <Text type="p1" weight="semibold" color="primary">
           Abrogation proposal votes
-        </Paragraph>
+        </Text>
       }
       extra={
         <Button type="link" onClick={handleShowVotersModal}>
@@ -95,67 +91,61 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
       <Grid flow="row" gap={32} className={s.row}>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Text type="p1" weight="semibold" color="primary">
               For
-            </Paragraph>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="grey900">
+              <Text type="p1" weight="semibold" color="primary">
                 {abrogationCtx.abrogation?.forVotes.toFormat(2)}
-              </Paragraph>
-              <Paragraph type="p1" color="grey500">
+              </Text>
+              <Text type="p1" color="secondary">
                 ({abrogationCtx.forRate?.toFixed(2)}%)
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Progress
             percent={abrogationCtx.forRate}
-            strokeColor="var(--text-color-green500)"
-            trailColor="rgba(var(--text-color-green500-rgb), .16)"
+            strokeColor="var(--theme-green-color)"
+            trailColor="rgba(var(--theme-green-color-rgb), .16)"
           />
         </Grid>
         <Grid flow="row" gap={16}>
           <Grid flow="col" justify="space-between">
-            <Paragraph type="p1" semiBold color="grey900">
+            <Text type="p1" weight="semibold" color="primary">
               Against
-            </Paragraph>
+            </Text>
             <Grid flow="col" gap={8}>
-              <Paragraph type="p1" semiBold color="grey900">
+              <Text type="p1" weight="semibold" color="primary">
                 {abrogationCtx.abrogation?.againstVotes.toFormat(2)}
-              </Paragraph>
-              <Paragraph type="p1" color="grey500">
+              </Text>
+              <Text type="p1" color="secondary">
                 ({abrogationCtx.againstRate?.toFixed(2)}%)
-              </Paragraph>
+              </Text>
             </Grid>
           </Grid>
           <Progress
             percent={abrogationCtx.againstRate}
-            strokeColor="var(--text-color-red500)"
-            trailColor="rgba(var(--text-color-red500-rgb), .16)"
+            strokeColor="var(--theme-red-color)"
+            trailColor="rgba(var(--theme-red-color-rgb), .16)"
           />
         </Grid>
       </Grid>
       <Grid flow="row" gap={24} className={s.row}>
         <Grid flow="row" gap={8}>
-          <Paragraph type="p1" color="grey500">
+          <Text type="p1" color="secondary">
             Your voting power for this proposal
-          </Paragraph>
-          <Paragraph type="p1" semiBold color="grey900">
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(abrogationCtx.votingPower, 2)}
-          </Paragraph>
+          </Text>
         </Grid>
         <Grid flow="row" gap={24}>
           {!abrogationCtx.receipt?.hasVoted ? (
             <Grid gap={24} colsTemplate="1fr 1fr">
-              <Button
-                type="primary"
-                className={s.actionBtn}
-                onClick={handleVoteForModal}>
+              <Button type="primary" className={s.actionBtn} onClick={handleVoteForModal}>
                 Vote for
               </Button>
-              <Button
-                type="default"
-                className={s.actionBtn}
-                onClick={handleVoteAgainstModal}>
+              <Button type="default" className={s.actionBtn} onClick={handleVoteAgainstModal}>
                 Vote against
               </Button>
             </Grid>
@@ -167,16 +157,10 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
                 } the proposal abrogation`}
               />
               <Grid flow="col" gap={24} colsTemplate="1fr 1fr">
-                <Button
-                  type="primary"
-                  className={s.actionBtn}
-                  onClick={handleVoteChangeModal}>
+                <Button type="primary" className={s.actionBtn} onClick={handleVoteChangeModal}>
                   Change vote
                 </Button>
-                <Button
-                  type="default"
-                  className={s.actionBtn}
-                  onClick={handleVoteCancelModal}>
+                <Button type="default" className={s.actionBtn} onClick={handleVoteCancelModal}>
                   Cancel vote
                 </Button>
               </Grid>
@@ -185,17 +169,9 @@ const AbrogationVotesCard: React.FunctionComponent = () => {
         </Grid>
       </Grid>
 
-      {state.showVotersModal && (
-        <AbrogationVotersModal visible onCancel={handleHideVotersModal} />
-      )}
+      {state.showVotersModal && <AbrogationVotersModal onCancel={handleHideVotersModal} />}
 
-      {state.showVoteModal && (
-        <AbrogationVoteModal
-          visible
-          voteState={state.voteState}
-          onCancel={handleHideVoteModal}
-        />
-      )}
+      {state.showVoteModal && <AbrogationVoteModal voteState={state.voteState} onCancel={handleHideVoteModal} />}
     </Card>
   );
 };

@@ -1,21 +1,19 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
-import { WalletConnector } from 'wallets/types';
-import { WEB3_RPC_HTTPS_URL } from 'web3/contract';
-
+import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 
-const WEB3_POLLING_INTERVAL = Number(
-  process.env.REACT_APP_WEB3_POLLING_INTERVAL,
-);
+import { WalletConnector } from 'wallets/types';
+
+const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
 const LEDGER_BASE_DERIVATION_PATH = 'base_derivation_path';
 
 export type LedgerWalletArgs = {
   baseDerivationPath?: string;
 };
 
-export const LedgerWalletConfig: WalletConnector = {
+const LedgerWalletConfig: WalletConnector = {
   id: 'ledger',
   logo: LedgerLogo,
   name: 'Ledger',
@@ -23,12 +21,11 @@ export const LedgerWalletConfig: WalletConnector = {
     let baseDerivationPath: string | undefined = args?.baseDerivationPath;
 
     if (!baseDerivationPath) {
-      baseDerivationPath =
-        sessionStorage.getItem(LEDGER_BASE_DERIVATION_PATH) ?? undefined;
+      baseDerivationPath = sessionStorage.getItem(LEDGER_BASE_DERIVATION_PATH) ?? undefined;
     }
 
     return new LedgerConnector({
-      chainId: chainId,
+      chainId,
       url: WEB3_RPC_HTTPS_URL,
       pollingInterval: WEB3_POLLING_INTERVAL,
       baseDerivationPath,
@@ -38,10 +35,7 @@ export const LedgerWalletConfig: WalletConnector = {
     const { sessionStorage } = window;
 
     if (args?.baseDerivationPath) {
-      sessionStorage.setItem(
-        LEDGER_BASE_DERIVATION_PATH,
-        args?.baseDerivationPath ?? '',
-      );
+      sessionStorage.setItem(LEDGER_BASE_DERIVATION_PATH, args?.baseDerivationPath ?? '');
     }
   },
   onDisconnect(): void {
@@ -52,3 +46,5 @@ export const LedgerWalletConfig: WalletConnector = {
     return error;
   },
 };
+
+export default LedgerWalletConfig;

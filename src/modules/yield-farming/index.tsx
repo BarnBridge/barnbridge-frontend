@@ -1,33 +1,35 @@
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
 import { isMobile } from 'react-device-detect';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
+import { useWarning } from 'components/providers/warning-provider';
 import { useWallet } from 'wallets/wallet';
-import { useWarnings } from 'components/custom/warnings';
-import LayoutHeader from 'layout/components/layout-header';
+
 import PoolRewards from './components/pool-rewards';
 import PoolStats from './components/pool-stats';
-import PoolOverview from './components/pool-overview';
-import PoolStak from './components/pool-stak';
+import PoolDetailsView from './views/pool-details-view';
+import PoolsOverviewView from './views/pools-overview-view';
 
-import s from './styles.module.scss';
+import { PoolActions, PoolTypes } from './utils';
 
-const YieldFarmingView: React.FunctionComponent = () => {
+const PATH_POOLS_OPTS = [PoolTypes.STABLE, PoolTypes.UNILP, PoolTypes.BOND].join('|');
+const PATH_ACTIONS_OPTS = [PoolActions.DEPOSIT, PoolActions.WITHDRAW].join('|');
+
+const YieldFarmingView: React.FC = () => {
   const wallet = useWallet();
-  const warnings = useWarnings();
+  const warning = useWarning();
 
   React.useEffect(() => {
-    let warningDestructor: Function;
+    let warningDestructor: () => void;
 
     if (isMobile) {
-      warningDestructor = warnings.addWarn({
-        text:
-          'Transactions can only be made from the desktop version using Metamask',
+      warningDestructor = warning.addWarn({
+        text: 'Transactions can only be made from the desktop version using Metamask',
         closable: true,
         storageIdentity: 'bb_desktop_metamask_tx_warn',
       });
     } else {
-      warningDestructor = warnings.addWarn({
+      warningDestructor = warning.addWarn({
         text: 'Do not send funds directly to the contract!',
         closable: true,
         storageIdentity: 'bb_send_funds_warn',
@@ -37,45 +39,29 @@ const YieldFarmingView: React.FunctionComponent = () => {
     return () => {
       warningDestructor?.();
     };
-  }, [isMobile]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [isMobile]);
 
   return (
-    <div className={s.component}>
-      <LayoutHeader title="Yield Farming" />
+    <>
       {!isMobile && wallet.isActive && <PoolRewards />}
 
-      <div className={s.body}>
-        <PoolStats />
-        <div className={s.content}>
-          <Switch>
-            <Route
-              path="/yield-farming"
-              exact
-              render={() => <PoolOverview />}
-            />
-            {wallet.isActive && (
-              <>
-                <Route
-                  path="/yield-farming/stable"
-                  exact
-                  render={() => <PoolStak stableToken />}
-                />
-                <Route
-                  path="/yield-farming/unilp"
-                  exact
-                  render={() => <PoolStak unilpToken />}
-                />
-                <Route
-                  path="/yield-farming/bond"
-                  exact
-                  render={() => <PoolStak bondToken />}
-                />
-              </>
-            )}
-          </Switch>
-        </div>
+      <div className="content-container">
+        <PoolStats className="mb-64" />
+        <Switch>
+          <Route path="/yield-farming" exact component={PoolsOverviewView} />
+          <Route
+            path={`/yield-farming/:pool(${PATH_POOLS_OPTS})/:action(${PATH_ACTIONS_OPTS})`}
+            exact
+            component={PoolDetailsView}
+          />
+          <Redirect
+            from={`/yield-farming/:pool(${PATH_POOLS_OPTS})`}
+            to={`/yield-farming/:pool/${PoolActions.DEPOSIT}`}
+          />
+          <Redirect to="/yield-farming" />
+        </Switch>
       </div>
-    </div>
+    </>
   );
 };
 

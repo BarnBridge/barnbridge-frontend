@@ -1,56 +1,33 @@
 import React from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
-import * as Antd from 'antd';
-import cx from 'classnames';
+import { isMobile } from 'react-device-detect';
+import { NavLink, useLocation } from 'react-router-dom';
+import cn from 'classnames';
 
-import Button from 'components/antd/button';
 import Tooltip from 'components/antd/tooltip';
-import Grid from 'components/custom/grid';
-import { Paragraph } from 'components/custom/typography';
-import Icons, { NavIconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
+import { useGeneral } from 'components/providers/general-provider';
 import { useTheme } from 'components/providers/theme-provider';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
-export type NavLinkProps = {
-  icon: NavIconNames;
-  label: string;
-  path: string;
-  expanded: boolean;
-};
-
-const NavLink: React.FunctionComponent<NavLinkProps> = props => {
-  const { icon, label, path, expanded } = props;
-
-  const history = useHistory();
-  const isActivePath = Boolean(useRouteMatch({ path, exact: path === '/' }));
-
-  function handleClick() {
-    history.push(path);
-  }
-
-  return (
-    <Tooltip title={label} placement="right">
-      <Grid flow="col" className={cx(s.navLink, isActivePath && s.isActive)}>
-        <div className={s.activeTick} />
-        <Button type="light" onClick={handleClick}>
-          <Icons name={icon} />
-          {expanded && (
-            <Paragraph type="p2" semiBold className={s.linkLabel}>{label}</Paragraph>
-          )}
-        </Button>
-      </Grid>
-    </Tooltip>
-  );
-};
-
-export type LayoutSideNavProps = {
-  className?: string;
-};
-
-const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
+const LayoutSideNav: React.FC = () => {
   const { toggleDarkTheme, isDarkTheme } = useTheme();
+  const { navOpen, setNavOpen } = useGeneral();
+  const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
+
+  React.useEffect(() => {
+    setNavOpen(false);
+  }, [location.pathname]);
+
+  React.useEffect(() => {
+    if (navOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+  }, [navOpen]);
 
   function handleExpand() {
     setExpanded(prevState => !prevState);
@@ -60,55 +37,81 @@ const LayoutSideNav: React.FunctionComponent<LayoutSideNavProps> = props => {
     toggleDarkTheme();
   }
 
+  const displayTooltip = !isMobile && !expanded;
+
   return (
-    <Antd.Layout.Sider
-      className={cx(s.component, expanded && s.expanded)}
-      collapsed={!expanded}
-      collapsedWidth={72}
-      width={200}>
-      <Grid flow="row" gap={48} className={s.headerWrap}>
-        <Grid flow="col" gap={12} className={s.headerLogo}>
-          <Icons name="bond-square-token" />
-          {expanded && <Icons name="barnbridge" width="113" color="grey900" />}
-        </Grid>
-        <Grid flow="row" gap={24}>
-          <NavLink
-            label="Pools"
-            icon="savings-outlined"
-            path="/yield-farming"
-            expanded={expanded}
-          />
-          <NavLink
-            label="Voting"
-            icon="bank-outlined"
-            path="/governance"
-            expanded={expanded}
-          />
-          <NavLink
-            label="Bonds"
-            icon="paper-bill-outlined"
-            path="/bonds"
-            expanded={expanded}
-          />
-        </Grid>
-      </Grid>
-      <Grid flow="row" gap={48} className={s.footerWrap} colsTemplate="48px">
-        <Button type="light" onClick={handleThemeToggle}>
-          <Icons name={isDarkTheme ? 'sun' : 'moon'} />
-          {expanded && (
-            <Paragraph type="p2" semiBold className={s.linkLabel}>
-              {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
-            </Paragraph>
-          )}
-        </Button>
-        <Button type="light" className={s.hideLink} onClick={handleExpand}>
-          <Icons name="right-arrow-circle-outlined" />
-          {expanded && (
-            <Paragraph type="p2" semiBold className={s.linkLabel}>Hide menu</Paragraph>
-          )}
-        </Button>
-      </Grid>
-    </Antd.Layout.Sider>
+    <>
+      <div className={cn(s.mask, { [s.open]: navOpen })} />
+      <aside className={cn(s.aside, { [s.expanded]: expanded, [s.open]: navOpen })}>
+        <div className={s.logoContainer}>
+          <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
+            <Icon name="close-circle-outlined" />
+          </button>
+          <Icon name="bond-square-token" className={s.logo} />
+          <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+        </div>
+        <nav className={s.top}>
+          <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
+            <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
+              <Icon name="tractor-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Yield Farming
+              </Text>
+            </NavLink>
+          </Tooltip>
+          <Tooltip title={displayTooltip && 'Governance'} placement="right">
+            <NavLink to="/governance" className={s.button} activeClassName={s.active}>
+              <Icon name="bank-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Governance
+              </Text>
+            </NavLink>
+          </Tooltip>
+          <Tooltip title={displayTooltip && 'Smart Yield'} placement="right">
+            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+              <Icon name="paper-bill-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Smart Yield
+              </Text>
+            </NavLink>
+          </Tooltip>
+          <Tooltip title={displayTooltip && 'Smart Alpha'} placement="right">
+            <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
+              <Icon name="paper-alpha-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Smart Alpha
+              </Text>
+            </NavLink>
+          </Tooltip>
+        </nav>
+        <div className={s.bottom}>
+          <Tooltip title={displayTooltip && 'Docs'} placement="right">
+            <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
+              <Icon name="docs-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Docs
+              </Text>
+            </a>
+          </Tooltip>
+          <Tooltip title={displayTooltip && (isDarkTheme ? 'Light Theme' : 'Dark Theme')} placement="right">
+            <button type="button" onClick={handleThemeToggle} className={s.button}>
+              <Icon name={isDarkTheme ? 'sun' : 'moon'} />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
+              </Text>
+            </button>
+          </Tooltip>
+          <Tooltip title={displayTooltip && (expanded ? 'Hide menu' : 'Show menu')} placement="right">
+            <button type="button" onClick={handleExpand} className={cn(s.button, 'hidden-mobile hidden-tablet')}>
+              <Icon name="right-arrow-circle-outlined" style={{ transform: expanded ? 'rotate(-180deg)' : 'none' }} />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                Hide menu
+              </Text>
+            </button>
+          </Tooltip>
+        </div>
+      </aside>
+    </>
   );
 };
 

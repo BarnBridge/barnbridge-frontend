@@ -1,23 +1,24 @@
 import React from 'react';
-import * as Antd from 'antd';
+import AntdForm from 'antd/lib/form';
+import AntdSwitch from 'antd/lib/switch';
 import BigNumber from 'bignumber.js';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import { MAX_UINT_256, ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
+import Alert from 'components/antd/alert';
+import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Form from 'components/antd/form';
-import Button from 'components/antd/button';
-import Alert from 'components/antd/alert';
-import Grid from 'components/custom/grid';
-import Icons from 'components/custom/icon';
-import { Paragraph, Small } from 'components/custom/typography';
-import TokenAmount from 'components/custom/token-amount';
 import GasFeeList from 'components/custom/gas-fee-list';
-import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
-
-import { formatBONDValue, MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
-import { useWeb3Contracts } from 'web3/contracts';
-import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
+import TokenAmount from 'components/custom/token-amount';
+import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+
+import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
 type DepositFormData = {
   amount?: BigNumber;
@@ -47,9 +48,9 @@ const InitialState: WalletDepositViewState = {
   expanded: false,
 };
 
-const WalletDepositView: React.FunctionComponent = () => {
+const WalletDepositView: React.FC = () => {
   const web3c = useWeb3Contracts();
-  const [form] = Antd.Form.useForm<DepositFormData>();
+  const [form] = AntdForm.useForm<DepositFormData>();
 
   const [state, setState] = useMergeState<WalletDepositViewState>(InitialState);
 
@@ -64,35 +65,37 @@ const WalletDepositView: React.FunctionComponent = () => {
 
     try {
       await web3c.bond.approveSend(CONTRACT_DAO_BARN_ADDR, value);
-    } catch {
-    }
+    } catch {}
 
     setState({ enabling: false });
+  }
+
+  async function handleSubmit(values: DepositFormData) {
+    const { amount, gasPrice } = values;
+
+    if (!amount || !gasPrice) {
+      return;
+    }
+
+    setState({ saving: true });
+
+    try {
+      await web3c.daoBarn.actions.deposit(amount, gasPrice.value);
+      form.setFieldsValue(InitialFormValues);
+      web3c.daoBarn.reload();
+      web3c.bond.reload();
+    } catch {}
+
+    setState({ saving: false });
   }
 
   function handleFinish(values: DepositFormData) {
     if (isLocked) {
       setState({ showDepositConfirmModal: true });
-    } else {
-      return handleSubmit(values);
-    }
-  }
-
-  async function handleSubmit(values: DepositFormData) {
-    setState({ saving: true });
-
-    const { gasPrice, amount } = values;
-    const gasFee = gasPrice?.value!;
-
-    try {
-      await web3c.daoBarn.actions.deposit(amount!, gasFee);
-      form.setFieldsValue(InitialFormValues);
-      web3c.daoBarn.reload();
-      web3c.bond.reload();
-    } catch {
+      return;
     }
 
-    setState({ saving: false });
+    handleSubmit(values);
   }
 
   React.useEffect(() => {
@@ -107,35 +110,35 @@ const WalletDepositView: React.FunctionComponent = () => {
   const CardTitle = (
     <Grid flow="col" gap={24} colsTemplate="auto" align="start">
       <Grid flow="col" gap={12}>
-        <Icons name="bond-token" width={40} height={40} />
-        <Paragraph type="p1" semiBold color="grey900">
+        <Icon name="bond-token" width={40} height={40} />
+        <Text type="p1" weight="semibold" color="primary">
           BOND
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Text type="small" weight="semibold" color="secondary">
           Staked Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="grey900">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(stakedBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Text type="small" weight="semibold" color="secondary">
           Wallet Balance
-        </Small>
-        <Paragraph type="p1" semiBold color="grey900">
+        </Text>
+        <Text type="p1" weight="semibold" color="primary">
           {formatBONDValue(bondBalance)}
-        </Paragraph>
+        </Text>
       </Grid>
 
       <Grid flow="row" gap={4}>
-        <Small semiBold color="grey500">
+        <Text type="small" weight="semibold" color="secondary">
           Enable Token
-        </Small>
-        <Antd.Switch
+        </Text>
+        <AntdSwitch
           style={{ justifySelf: 'flex-start' }}
           checked={state.enabled}
           loading={state.enabled === undefined || state.enabling}
@@ -146,22 +149,12 @@ const WalletDepositView: React.FunctionComponent = () => {
   );
 
   return (
-    <Card
-      title={CardTitle}
-      showExpandButton={state.enabled}
-      expanded={state.expanded}>
-      <Form
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onFinish={handleFinish}>
+    <Card title={CardTitle} showExpandButton={state.enabled} expanded={state.expanded}>
+      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
-              <Form.Item
-                name="amount"
-                label="Amount"
-                rules={[{ required: true, message: 'Required' }]}>
+              <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
                   tokenIcon="bond-token"
                   max={bondBalance}
@@ -171,8 +164,7 @@ const WalletDepositView: React.FunctionComponent = () => {
                   slider
                 />
               </Form.Item>
-              <Alert
-                message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
+              <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
             <Grid flow="row">
               <Form.Item
@@ -184,12 +176,7 @@ const WalletDepositView: React.FunctionComponent = () => {
               </Form.Item>
             </Grid>
           </Grid>
-          <Button
-            type="primary"
-            htmlType="submit"
-            size="large"
-            loading={state.saving}
-            style={{ justifySelf: 'start' }}>
+          <Button type="primary" htmlType="submit" loading={state.saving} style={{ justifySelf: 'start' }}>
             Deposit
           </Button>
         </Grid>
@@ -197,7 +184,6 @@ const WalletDepositView: React.FunctionComponent = () => {
 
       {state.showDepositConfirmModal && (
         <WalletDepositConfirmModal
-          visible
           deposit={form.getFieldsValue().amount}
           lockDuration={userLockedUntil}
           onCancel={() => setState({ showDepositConfirmModal: false })}

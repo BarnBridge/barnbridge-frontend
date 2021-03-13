@@ -1,9 +1,9 @@
 import React from 'react';
-import * as Antd from 'antd';
-import { PopoverProps as AntdPopoverProps } from 'antd/lib/popover';
+import AntdMenu from 'antd/lib/menu';
+import AntdPopover, { PopoverProps as AntdPopoverProps } from 'antd/lib/popover';
 import { MenuInfo } from 'rc-menu/lib/interface';
 
-import s from './styles.module.scss';
+import s from './s.module.scss';
 
 export type PopoverMenuItem = {
   key: string | number;
@@ -16,7 +16,7 @@ export type PopoverMenuProps = AntdPopoverProps & {
   onClick: (key: string | number) => void;
 };
 
-const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
+const PopoverMenu: React.FC<PopoverMenuProps> = props => {
   const { children, items, onClick, ...popoverProps } = props;
 
   const popoverRef = React.useRef<any>();
@@ -27,24 +27,24 @@ const PopoverMenu: React.FunctionComponent<PopoverMenuProps> = props => {
   }
 
   return (
-    <Antd.Popover
+    <AntdPopover
       ref={popoverRef}
       overlayClassName={s.component}
       placement="bottom"
       trigger="click"
       content={
-        <Antd.Menu onClick={handleMenuClick}>
+        <AntdMenu onClick={handleMenuClick}>
           {items?.map(item => (
-            <Antd.Menu.Item key={item.key}>
+            <AntdMenu.Item key={item.key}>
               {item.icon}
               {item.title}
-            </Antd.Menu.Item>
+            </AntdMenu.Item>
           ))}
-        </Antd.Menu>
+        </AntdMenu>
       }
       {...popoverProps}>
       {children}
-    </Antd.Popover>
+    </AntdPopover>
   );
 };
 
