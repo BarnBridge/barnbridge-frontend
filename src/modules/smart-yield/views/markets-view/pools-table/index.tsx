@@ -128,10 +128,10 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
     },
     {
       title: 'Originator APY',
-      sorter: (a, b) => a.state.originatorApy - b.state.originatorApy,
+      sorter: (a, b) => a.state.originatorNetApy - b.state.originatorNetApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="primary">
-          {formatPercent(entity.state.originatorApy)}
+          {formatPercent(entity.state.originatorNetApy)}
         </Text>
       ),
     },
