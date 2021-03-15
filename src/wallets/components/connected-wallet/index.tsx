@@ -1,6 +1,5 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-import AntdBadge from 'antd/lib/badge';
 import cn from 'classnames';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
@@ -99,9 +98,7 @@ const ConnectedWallet: React.FC = () => {
           </Grid>
         </Card>
       }>
-      <AntdBadge dot count={0} showZero={false}>
-        <Icon name="bell-outlined" width={26} height={26} style={{ cursor: 'pointer' }} />
-      </AntdBadge>
+      <Icon name="bell-outlined" width={26} height={26} style={{ cursor: 'pointer' }} />
     </Popover>
   );
 

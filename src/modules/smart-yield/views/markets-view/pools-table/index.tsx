@@ -1,4 +1,5 @@
 import React from 'react';
+import { isMobile } from 'react-device-detect';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, getHumanValue } from 'web3/utils';
@@ -175,22 +176,26 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           },
         ] as ColumnsType<PoolEntity>)
       : []),
-    {
-      fixed: 'right',
-      render(_, entity) {
-        return (
-          <NavLink
-            className="button-ghost"
-            to={{
-              pathname: `/smart-yield/deposit`,
-              search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
-            }}
-            {...{ disabled: !wallet.isActive }}>
-            Deposit
-          </NavLink>
-        );
-      },
-    },
+    ...(!isMobile
+      ? ([
+          {
+            fixed: 'right',
+            render(_, entity) {
+              return (
+                <NavLink
+                  className="button-ghost"
+                  to={{
+                    pathname: `/smart-yield/deposit`,
+                    search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
+                  }}
+                  {...{ disabled: !wallet.isActive }}>
+                  Deposit
+                </NavLink>
+              );
+            },
+          },
+        ] as ColumnsType<PoolEntity>)
+      : []),
   ];
 }
 

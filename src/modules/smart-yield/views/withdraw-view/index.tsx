@@ -21,16 +21,18 @@ const WithdrawView: React.FC = () => {
   }
 
   return (
-    <div className="mh-auto" style={{ maxWidth: '640px' }}>
+    <>
       <WithdrawHeader />
-      <Suspense fallback={<AntdSpin />}>
-        <Switch>
-          <Route path="/smart-yield/withdraw" exact component={InitiateWithdraw} />
-          <Route path="/smart-yield/withdraw/two-step" exact component={TwoStepWithdraw} />
-          <Route path="/smart-yield/withdraw/instant" exact component={InstantWithdraw} />
-        </Switch>
-      </Suspense>
-    </div>
+      <div className="mh-auto" style={{ maxWidth: '640px' }}>
+        <Suspense fallback={<AntdSpin />}>
+          <Switch>
+            <Route path="/smart-yield/withdraw" exact component={InitiateWithdraw} />
+            <Route path="/smart-yield/withdraw/two-step" exact component={TwoStepWithdraw} />
+            <Route path="/smart-yield/withdraw/instant" exact component={InstantWithdraw} />
+          </Switch>
+        </Suspense>
+      </div>
+    </>
   );
 };
 

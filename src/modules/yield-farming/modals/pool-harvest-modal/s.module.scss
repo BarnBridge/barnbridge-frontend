@@ -1,6 +1,7 @@
 .btn {
   position: relative !important;
   padding: 24px !important;
+  text-align: left !important;
 
   :global(.ant-btn-loading-icon) {
     position: absolute !important;
