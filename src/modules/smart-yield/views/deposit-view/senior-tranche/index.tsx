@@ -219,6 +219,7 @@ const SeniorTranche: React.FC = () => {
         Choose the amount of tokens you want to deposit in the senior bond. Make sure you double check the amounts,
         including reward at maturity and maturity date.
       </Text>
+
       <Form
         className="grid flow-row row-gap-32"
         form={form}
