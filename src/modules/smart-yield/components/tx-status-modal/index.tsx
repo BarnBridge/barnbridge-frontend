@@ -7,7 +7,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 type Props = ModalProps & {
-  type?: 'deposit' | 'withdraw' | 'redeem' | 'transfer';
+  type?: 'deposit' | 'withdraw' | 'redeem' | 'transfer' | 'redeemJunior';
   state?: 'progress' | 'success' | 'failure';
   txLink?: string;
   onSuccessClick?: () => void;
