@@ -8,7 +8,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
@@ -73,7 +73,7 @@ const SeniorTranche: React.FC = () => {
   const [bondGain, setBondGain] = React.useState<BigNumber | undefined>();
 
   const [formState, setFormState] = React.useState<FormData>(InitialFormValues);
-  const [jseniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
+  const [seniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
 
   React.useEffect(() => {
     if (!pool) {
@@ -85,7 +85,7 @@ const SeniorTranche: React.FC = () => {
     controllerContract.getSeniorRedeemFee().then(setSeniorRedeemFee);
   }, [pool?.controllerAddress]);
 
-  const formDisabled = !pool?.underlyingIsAllowed;
+  const formDisabled = !pool?.contracts.underlying.isAllowed;
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
@@ -159,6 +159,10 @@ const SeniorTranche: React.FC = () => {
 
   function handleValuesChange(changedValues: Partial<FormData>, allValues: FormData) {
     setFormState(allValues);
+
+    if (changedValues.amount) {
+      setBondGain(undefined);
+    }
   }
 
   const getBondGain = useDebounce((pPool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
@@ -201,14 +205,13 @@ const SeniorTranche: React.FC = () => {
         ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
         .dividedBy(formState.amount ?? 1)
         .dividedBy(maturityDays)
-        .multipliedBy(365)
-        .multipliedBy(100) ?? ZERO_BIG_NUMBER
+        .multipliedBy(365) ?? ZERO_BIG_NUMBER
     );
   }, [pool, bondGain, maturityDays]);
 
   const reward = formState.amount
     ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
-    ?.plus(bondGain?.multipliedBy(1 - (jseniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
+    ?.plus(bondGain?.multipliedBy(1 - (seniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
 
   return (
     <>
@@ -219,6 +222,7 @@ const SeniorTranche: React.FC = () => {
         Choose the amount of tokens you want to deposit in the senior bond. Make sure you double check the amounts,
         including reward at maturity and maturity date.
       </Text>
+
       <Form
         className="grid flow-row row-gap-32"
         form={form}
@@ -229,7 +233,7 @@ const SeniorTranche: React.FC = () => {
         <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={pool?.meta?.icon as TokenIconNames}
-            max={getHumanValue(pool?.underlyingMaxAllowed, pool?.underlyingDecimals)}
+            max={getHumanValue(pool?.contracts.underlying.maxAllowed, pool?.underlyingDecimals)}
             maximumFractionDigits={pool?.underlyingDecimals}
             displayDecimals={4}
             disabled={formDisabled || state.isSaving}
@@ -277,6 +281,7 @@ const SeniorTranche: React.FC = () => {
                             maturityDate: date,
                           }),
                         );
+                        setBondGain(undefined);
                       }}>
                       <Text type="p1" weight="semibold" color="primary">
                         {opt}
@@ -308,10 +313,10 @@ const SeniorTranche: React.FC = () => {
           }}
         </Form.Item>
         <TransactionSummary
-          apy={apy}
+          apy={bondGain ? apy : undefined}
           gain={getHumanValue(bondGain, pool?.underlyingDecimals)}
-          gainFee={jseniorRedeemFee?.dividedBy(1e18)}
-          reward={getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER}
+          gainFee={seniorRedeemFee?.dividedBy(1e18)}
+          reward={bondGain ? getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER : undefined}
           symbol={pool?.underlyingSymbol}
         />
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
@@ -360,7 +365,7 @@ const SeniorTranche: React.FC = () => {
                   APY
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
-                  {apy.toFixed(2)}%
+                  {formatPercent(apy)}
                 </Text>
               </div>
             </div>

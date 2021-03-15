@@ -1,7 +1,6 @@
 import React from 'react';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatUSDValue } from 'web3/utils';
+import { formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Icon, { IconNames } from 'components/custom/icon';
@@ -21,15 +20,9 @@ const InitialState: State = {
 
 const MarketsView: React.FC = () => {
   const poolsCtx = usePools();
-  const { pools, loading } = poolsCtx;
+  const { totalLiquidity } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
-
-  const totalLiquidity = React.useMemo<BigNumber>(() => {
-    return pools.reduce((sum, pool) => {
-      return sum.plus(pool.state.seniorLiquidity).plus(pool.state.juniorLiquidity);
-    }, ZERO_BIG_NUMBER);
-  }, [pools]);
 
   return (
     <>
@@ -68,7 +61,7 @@ const MarketsView: React.FC = () => {
             </Text>
           </Hint>
           <Text type="h2" weight="bold" color="primary" className="mb-40">
-            {!loading ? formatUSDValue(totalLiquidity) : '-'}
+            {formatUSDValue(totalLiquidity)}
           </Text>
         </>
       )}

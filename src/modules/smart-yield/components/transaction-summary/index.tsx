@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatToken } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
@@ -37,7 +37,7 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
             </Text>
           </Hint>
           <Text type="p2" weight="bold" color="green" className="ml-auto">
-            {apy?.toFixed(2)}%
+            {formatPercent(apy) ?? '-'}
           </Text>
         </div>
         <div className="flex mb-24">
@@ -57,7 +57,7 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
             </Text>
           </Hint>
           <Text type="p2" weight="bold" color="primary" className="ml-auto">
-            {gainFee?.multipliedBy(100)?.toFixed(2)}% of gains
+            {formatPercent(gainFee)} of gains
           </Text>
         </div>
         <div className="flex">
@@ -68,7 +68,9 @@ const TransactionSummary: React.FC<TransactionSummaryProps> = props => {
           </Hint>
           <Text type="p2" weight="bold" color="primary" className="ml-auto">
             <Tooltip title={formatBigValue(reward, 18)}>
-              {formatBigValue(reward)} {symbol}
+              {formatToken(reward, {
+                tokenName: symbol,
+              }) ?? '-'}
             </Tooltip>
           </Text>
         </div>

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import AntdSwitch from 'antd/lib/switch';
-import { formatBigValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, getHumanValue } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
@@ -64,13 +64,16 @@ const DepositHeader: React.FC = () => {
         </div>
       </Grid>
       <Tooltip
-        title={formatBigValue(getHumanValue(pool.underlyingBalance, pool.underlyingDecimals), pool.underlyingDecimals)}>
+        title={formatBigValue(
+          getHumanValue(pool.contracts.underlying.balance, pool.underlyingDecimals),
+          pool.underlyingDecimals,
+        )}>
         <Text type="small" weight="semibold" className="mb-4">
           Wallet balance
         </Text>
         <Text type="p1" weight="semibold" color="primary">
           <span className="grid flow-col col-gap-8 align-center">
-            {formatBigValue(getHumanValue(pool.underlyingBalance, pool.underlyingDecimals))}
+            {formatBigValue(getHumanValue(pool.contracts.underlying.balance, pool.underlyingDecimals))}
             <Text type="small" tag="span" weight="semibold" color="secondary">
               {pool.underlyingSymbol}
             </Text>
@@ -80,7 +83,7 @@ const DepositHeader: React.FC = () => {
       {!isSeniorDeposit && !isRootDeposit && (
         <Tooltip
           title={formatBigValue(
-            getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals),
+            getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals),
             pool.underlyingDecimals,
           )}>
           <Text type="small" weight="semibold" className="mb-4">
@@ -88,9 +91,9 @@ const DepositHeader: React.FC = () => {
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             <span className="grid flow-col col-gap-8 align-center">
-              {formatBigValue(getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals))}
+              {formatBigValue(getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals))}
               <Text type="small" tag="span" weight="semibold" color="secondary">
-                j{pool.underlyingSymbol}
+                {pool.contracts.smartYield.symbol}
               </Text>
             </span>
           </Text>
@@ -102,7 +105,7 @@ const DepositHeader: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="green">
-            {formatBigValue(pool.state.seniorApy * 100)}%
+            {formatPercent(pool.state.seniorApy)}
           </Text>
         </div>
       )}
@@ -112,7 +115,7 @@ const DepositHeader: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            {formatBigValue(pool.state.juniorApy * 100)}%
+            {formatPercent(pool.state.juniorApy)}
           </Text>
         </div>
       )}
@@ -123,8 +126,8 @@ const DepositHeader: React.FC = () => {
           </Text>
           <AntdSwitch
             style={{ justifySelf: 'flex-start' }}
-            checked={pool.underlyingIsAllowed}
-            loading={pool.underlyingIsAllowed === undefined || isApproving}
+            checked={pool.contracts.underlying.isAllowed}
+            loading={pool.contracts.underlying.isAllowed === undefined || isApproving}
             onChange={handleSwitchChange}
           />
         </div>

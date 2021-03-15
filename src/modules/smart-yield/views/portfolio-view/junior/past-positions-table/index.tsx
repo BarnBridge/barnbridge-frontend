@@ -18,24 +18,12 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import {
-  APISYJuniorPastPosition,
-  APISYPool,
-  JuniorPastPositionTypes,
-  Markets,
-  Pools,
-  SYMarketMeta,
-  SYPoolMeta,
-  fetchSYJuniorPastPositions,
-} from 'modules/smart-yield/api';
-import { usePools } from 'modules/smart-yield/providers/pools-provider';
+import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 type TableEntity = APISYJuniorPastPosition & {
-  pool?: APISYPool & {
-    meta?: SYPoolMeta;
-    market?: SYMarketMeta;
-  };
+  pool?: PoolsSYPool;
   forfeits?: BigNumber;
 };
 
@@ -81,7 +69,7 @@ const Columns: ColumnsType<TableEntity> = [
         <Tooltip title={formatBigValue(entity.tokensIn, entity.pool?.underlyingDecimals)}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(entity.tokensIn)}
-            {` j${entity.pool?.underlyingSymbol}`}
+            {` ${entity.pool?.contracts.smartYield?.symbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
@@ -196,13 +184,7 @@ const PastPositionsTable: React.FC<Props> = props => {
 
           return {
             ...item,
-            pool: pool
-              ? {
-                  ...pool,
-                  meta: Pools.get(pool.underlyingSymbol),
-                  market: Markets.get(pool.protocolId),
-                }
-              : undefined,
+            pool,
           };
         });
 

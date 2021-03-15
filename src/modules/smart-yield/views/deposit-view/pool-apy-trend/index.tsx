@@ -2,7 +2,7 @@ import React from 'react';
 import { Spin } from 'antd';
 import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
-import { formatBigValue } from 'web3/utils';
+import { formatPercent } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import StatusDot from 'components/custom/status-dot';
@@ -55,8 +55,6 @@ const PoolAPYTrend: React.FC = () => {
             loading: false,
             data: poolAPYs.map(apy => ({
               ...apy,
-              seniorApy: apy.seniorApy * 100,
-              juniorApy: apy.juniorApy * 100,
               point: new Date(apy.point),
             })),
           }),
@@ -93,7 +91,7 @@ const PoolAPYTrend: React.FC = () => {
       }>
       <Spin spinning={state.loading}>
         <ReCharts.ResponsiveContainer width="100%" height={225}>
-          <ReCharts.AreaChart data={state.data} margin={{ left: -30 }}>
+          <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
             <defs>
               <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
                 <stop offset="0%" stopColor="rgba(var(--theme-green-color-rgb), 0.08)" />
@@ -106,7 +104,7 @@ const PoolAPYTrend: React.FC = () => {
             </defs>
             <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
             <ReCharts.XAxis dataKey="point" hide />
-            <ReCharts.YAxis axisLine={false} tickLine={false} />
+            <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value, 0) ?? ''} />
             <ReCharts.Tooltip
               separator=""
               labelFormatter={value => (
@@ -116,7 +114,7 @@ const PoolAPYTrend: React.FC = () => {
               )}
               formatter={(value: number, _: any, { dataKey }: any) => (
                 <Text type="p2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
-                  {formatBigValue(value)}%
+                  {formatPercent(value)}
                 </Text>
               )}
             />

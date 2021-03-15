@@ -2,8 +2,7 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-import BigNumber from 'bignumber.js';
-import { formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -26,7 +25,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         <div className="flex flow-col col-gap-16 align-center">
           <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
           <div>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
               {entity.underlyingSymbol}
             </Text>
             <Text type="small" weight="semibold" wrap={false}>
@@ -44,26 +43,23 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           title={
             <>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                {formatBigValue(entity.state.seniorLiquidity)}
-                {` ${entity.underlyingSymbol}`}
+                {formatToken(entity.state.seniorLiquidity, {
+                  tokenName: entity.underlyingSymbol,
+                })}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                {formatUSDValue(new BigNumber(entity.state.seniorLiquidity))}
+                {formatUSD(entity.state.seniorLiquidity)}
               </Text>
             </>
           }>
-          <div className="flex flow-col col-gap-8">
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.seniorLiquidity)}
-            </Text>
-            <Text type="p1" weight="semibold" color="primary">
-              {entity.underlyingSymbol}
-            </Text>
-          </div>
+          <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
+            {formatToken(entity.state.seniorLiquidity, {
+              tokenName: entity.underlyingSymbol,
+              compact: true,
+            })}
+          </Text>
           <Text type="small" weight="semibold">
-            {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-              entity.state.seniorLiquidity,
-            )}
+            {formatUSD(entity.state.seniorLiquidity, true)}
           </Text>
         </Tooltip>
       ),
@@ -73,7 +69,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       sorter: (a, b) => a.state.seniorApy - b.state.seniorApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="green">
-          {formatBigValue(entity.state.seniorApy * 100)}%
+          {formatPercent(entity.state.seniorApy)}
         </Text>
       ),
     },
@@ -85,26 +81,23 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           title={
             <>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                {formatBigValue(entity.state.juniorLiquidity)}
-                {` ${entity.underlyingSymbol}`}
+                {formatToken(entity.state.juniorLiquidity, {
+                  tokenName: entity.underlyingSymbol,
+                })}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                {formatUSDValue(new BigNumber(entity.state.juniorLiquidity))}
+                {formatUSD(entity.state.juniorLiquidity)}
               </Text>
             </>
           }>
-          <div className="flex flow-col col-gap-8">
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {Intl.NumberFormat('en', { notation: 'compact' }).format(entity.state.juniorLiquidity)}
-            </Text>
-            <Text type="p1" weight="semibold" color="primary">
-              {entity.underlyingSymbol}
-            </Text>
-          </div>
+          <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
+            {formatToken(entity.state.juniorLiquidity, {
+              tokenName: entity.underlyingSymbol,
+              compact: true,
+            })}
+          </Text>
           <Text type="small" weight="semibold">
-            {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-              entity.state.juniorLiquidity,
-            )}
+            {formatUSD(entity.state.juniorLiquidity, true)}
           </Text>
         </Tooltip>
       ),
@@ -129,7 +122,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="purple">
-          {formatBigValue(entity.state.juniorApy * 100)}%
+          {formatPercent(entity.state.juniorApy)}
         </Text>
       ),
     },
@@ -138,7 +131,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       sorter: (a, b) => a.state.originatorApy - b.state.originatorApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="primary">
-          {formatBigValue(entity.state.originatorApy * 100)}%
+          {formatPercent(entity.state.originatorApy)}
         </Text>
       ),
     },
@@ -150,7 +143,10 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             1 {entity.underlyingSymbol}
           </Text>
           <Text type="small" weight="semibold" wrap={false}>
-            = {formatBigValue(entity.state.jTokenPrice)} j{entity.underlyingSymbol}
+            ={' '}
+            {formatToken(entity.state.jTokenPrice, {
+              tokenName: entity.contracts.smartYield?.symbol,
+            })}
           </Text>
         </>
       ),
@@ -159,12 +155,13 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ? ([
           {
             title: 'Wallet balance',
-            sorter: (a, b) => (a.underlyingBalance?.toNumber() ?? 0) - (b.underlyingBalance?.toNumber() ?? 0),
+            sorter: (a, b) =>
+              (a.contracts.underlying?.balance?.toNumber() ?? 0) - (b.contracts.underlying?.balance?.toNumber() ?? 0),
             render: (_, entity) => (
               <>
                 <div className="flex flow-col col-gap-8">
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                    {formatBigValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+                    {formatBigValue(getHumanValue(entity.contracts.underlying?.balance, entity.underlyingDecimals))}
                   </Text>
                   <Text type="p1" weight="semibold" color="primary">
                     {entity.underlyingSymbol}
@@ -172,7 +169,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
                 </div>
 
                 <Text type="small" weight="semibold">
-                  {formatUSDValue(getHumanValue(entity.underlyingBalance, entity.underlyingDecimals))}
+                  {formatUSDValue(getHumanValue(entity.contracts.underlying?.balance, entity.underlyingDecimals))}
                 </Text>
               </>
             ),
@@ -186,12 +183,12 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             render(_, entity) {
               return (
                 <NavLink
+                  className="button-ghost"
                   to={{
                     pathname: `/smart-yield/deposit`,
                     search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
                   }}
-                  {...{ disabled: !wallet.isActive }}
-                  className="button-ghost">
+                  {...{ disabled: !wallet.isActive }}>
                   Deposit
                 </NavLink>
               );

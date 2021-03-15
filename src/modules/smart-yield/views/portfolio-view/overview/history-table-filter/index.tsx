@@ -7,7 +7,7 @@ import Select, { SelectOption } from 'components/antd/select';
 import Badge from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { HistoryTypes } from 'modules/smart-yield/api';
-import { SYPool } from 'modules/smart-yield/providers/pool-provider';
+import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
 
 export type HistoryTableFilterValues = {
   originator: string;
@@ -22,7 +22,7 @@ const InitialFormValues: HistoryTableFilterValues = {
 };
 
 type Props = {
-  originators: SYPool[];
+  originators: PoolsSYPool[];
   value?: HistoryTableFilterValues;
   onChange: (values: HistoryTableFilterValues) => void;
 };
