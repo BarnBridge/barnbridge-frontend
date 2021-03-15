@@ -44,6 +44,7 @@ const TxStatusModal: React.FC<Props> = props => {
               {type === 'deposit' && 'You can see your new position in your portfolio'}
               {type === 'withdraw' && 'You can see your past positions in your portfolio'}
               {type === 'redeem' && 'You can see your past positions in your portfolio'}
+              {type === 'redeemJunior' && 'You can see your past positions in your portfolio'}
             </Text>
             {type !== 'transfer' && (
               <Button htmlType="submit" type="primary" onClick={onSuccessClick}>
