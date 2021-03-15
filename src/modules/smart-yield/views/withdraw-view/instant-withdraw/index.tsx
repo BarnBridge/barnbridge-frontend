@@ -24,14 +24,14 @@ import { useWallet } from 'wallets/wallet';
 type FormData = {
   from?: BigNumber;
   to?: BigNumber;
-  slippageTolerance?: number;
+  slippage?: number;
   deadline?: number;
 };
 
 const InitialFormValues: FormData = {
   from: undefined,
   to: undefined,
-  slippageTolerance: 0.5,
+  slippage: 0.5,
   deadline: 20,
 };
 
@@ -88,7 +88,7 @@ const InstantWithdraw: React.FC = () => {
   }
 
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
-    const { from = ZERO_BIG_NUMBER, slippageTolerance, deadline } = form.getFieldsValue();
+    const { from = ZERO_BIG_NUMBER, slippage, deadline } = form.getFieldsValue();
 
     if (!pool) {
       return;
@@ -114,7 +114,7 @@ const InstantWithdraw: React.FC = () => {
         .multipliedBy(price)
         .div(1e18)
         .minus(forfeitsValue ?? ZERO_BIG_NUMBER);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0) / 100).toFixed(0)); // slippage / rounding mode
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
@@ -130,8 +130,8 @@ const InstantWithdraw: React.FC = () => {
     return formValues.from
       ?.multipliedBy(pool.state.jTokenPrice)
       .minus(forfeits)
-      .multipliedBy(1 - (formValues.slippageTolerance ?? 0) / 100);
-  }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippageTolerance]);
+      .multipliedBy(1 - (formValues.slippage ?? 0) / 100);
+  }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippage]);
 
   if (!pool) {
     return null;
@@ -214,7 +214,7 @@ const InstantWithdraw: React.FC = () => {
           }}
         </Form.Item>
 
-        <Form.Item name="slippageTolerance" noStyle hidden>
+        <Form.Item name="slippage" noStyle hidden>
           <Input />
         </Form.Item>
         <Form.Item name="deadline" noStyle hidden>
@@ -222,12 +222,14 @@ const InstantWithdraw: React.FC = () => {
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
           {() => {
-            const { slippageTolerance, deadline } = form.getFieldsValue();
+            const { slippage, deadline } = form.getFieldsValue();
 
             return (
               <TransactionDetails
                 className="mb-32"
-                slippageTolerance={slippageTolerance}
+                showSlippage
+                slippage={slippage}
+                showDeadline
                 deadline={deadline}
                 onChange={handleTxDetailsChange}
               />

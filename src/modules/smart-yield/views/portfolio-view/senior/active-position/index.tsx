@@ -15,9 +15,8 @@ import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
-import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
-import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
+import { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import { getFormattedDuration } from 'utils';
@@ -35,6 +34,7 @@ type TransferConfirmArgs = ConfirmTxModalArgs & {
 const ActivePosition: React.FC<ActivePositionProps> = props => {
   const { pool, sBond, onRefresh } = props;
 
+  const poolsCtx = usePools();
   const wallet = useWallet();
   const [redeemModalVisible, showRedeemModal] = React.useState<boolean>(false);
   const [transferModalVisible, showTransferModal] = React.useState<boolean>(false);
@@ -65,15 +65,17 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
     }
 
     setSaving(true);
+    showRedeemModal(false);
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
-
-    return smartYieldContract.redeemBondSend(sBond.sBondId, args.gasPrice).then(() => {
-      onRefresh();
-      setSaving(false);
-    });
+    return poolsCtx
+      .redeemBond(pool.smartYieldAddress, sBond.sBondId, args.gasPrice)
+      .then(() => {
+        onRefresh();
+        setSaving(false);
+      })
+      .catch(() => {
+        setSaving(false);
+      });
   }
 
   function handleTransferShow() {
@@ -90,15 +92,17 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
     }
 
     setSaving(true);
+    showTransferModal(false);
 
-    const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
-    seniorBondContract.setProvider(wallet.provider);
-    seniorBondContract.setAccount(wallet.account);
-
-    return seniorBondContract.transferFromSend(wallet.account, args.address, sBond.sBondId, args.gasPrice).then(() => {
-      onRefresh();
-      setSaving(false);
-    });
+    return poolsCtx
+      .transferFrom(pool.seniorBondAddress, args.address, sBond.sBondId, args.gasPrice)
+      .then(() => {
+        onRefresh();
+        setSaving(false);
+      })
+      .catch(() => {
+        setSaving(false);
+      });
   }
 
   const maturesAt = sBond.maturesAt * 1_000;
