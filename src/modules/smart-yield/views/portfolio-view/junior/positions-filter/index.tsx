@@ -4,8 +4,8 @@ import AntdForm from 'antd/lib/form';
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
-import Icon from 'components/custom/icon';
 import Badge from 'components/custom/badge';
+import Icon from 'components/custom/icon';
 import { JuniorPastPositionTypes } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 

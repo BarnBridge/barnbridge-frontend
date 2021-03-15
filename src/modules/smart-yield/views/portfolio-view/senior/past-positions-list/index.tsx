@@ -2,11 +2,13 @@ import React from 'react';
 import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
+import { format } from 'date-fns';
 import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
+import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
@@ -24,8 +26,6 @@ import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
-import ExternalLink from 'components/custom/externalLink';
-import { format } from 'date-fns';
 
 type ListEntity = APISYSeniorRedeem & {
   pool?: APISYPool & {
