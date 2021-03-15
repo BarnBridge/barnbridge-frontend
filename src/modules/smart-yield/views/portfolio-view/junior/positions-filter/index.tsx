@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import AntdBadge from 'antd/lib/badge';
 import AntdForm from 'antd/lib/form';
 
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
 import Icon from 'components/custom/icon';
+import Badge from 'components/custom/badge';
 import { JuniorPastPositionTypes } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 
@@ -136,7 +136,7 @@ const PositionsFilter: React.FC<Props> = props => {
       <button type="button" className="button-ghost-monochrome pv-16 mb-12 ml-auto">
         <Icon name="filter" className="mr-8" color="inherit" />
         <span className="mr-8">Filters</span>
-        <AntdBadge count={countApplied} />
+        <Badge>{countApplied}</Badge>
       </button>
     </Popover>
   );

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import AntdBadge from 'antd/lib/badge';
 import AntdForm from 'antd/lib/form';
 
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
+import Badge from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { HistoryTypes } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -134,7 +134,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
       <button type="button" className="button-ghost-monochrome pv-16 ml-auto">
         <Icon name="filter" className="mr-8" color="inherit" />
         <span className="mr-8">Filters</span>
-        <AntdBadge count={countApplied} />
+        <Badge>{countApplied}</Badge>
       </button>
     </Popover>
   );

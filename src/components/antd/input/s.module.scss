@@ -78,7 +78,7 @@
     border-radius: 4px;
 
     :global(.ant-input-group-addon) {
-      background: var(--input-bg);
+      background: var(--theme-input-background);
       border: none;
 
       &:first-of-type {

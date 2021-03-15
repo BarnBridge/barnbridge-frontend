@@ -1,0 +1,17 @@
+@import 'src/styles/text';
+
+.badge {
+  @include font-sm-semi-bold;
+  align-items: center;
+  background: rgba(113, 121, 128, 0.08);
+  border-radius: 4px;
+  display: flex;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+
+  :global(.ant-tabs-tab-active) & {
+    background-color: rgba(255, 67, 57, 0.08);
+    color: var(--theme-red-color);
+  }
+}

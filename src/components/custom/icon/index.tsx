@@ -94,7 +94,7 @@ export type IconProps = {
 };
 
 const Icon: React.FC<IconProps> = props => {
-  const { name, width = 24, height = 24, rotate, color, className, style } = props;
+  const { name, width = 24, height = 24, rotate, color, className, style, ...rest } = props;
 
   const isStatic = name.indexOf('static/') === 0;
 
@@ -103,7 +103,8 @@ const Icon: React.FC<IconProps> = props => {
       className={cn(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
       width={width}
       height={height ?? width}
-      style={style}>
+      style={style}
+      {...rest}>
       {!isStatic ? <use xlinkHref={`${Sprite}#icon__${name}`} /> : <use xlinkHref={`#icon__${name}`} />}
     </svg>
   );

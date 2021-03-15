@@ -1,11 +1,11 @@
 import React from 'react';
-import AntdBadge from 'antd/lib/badge';
 import AntdSpin from 'antd/lib/spin';
 import format from 'date-fns/format';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
+import Badge from 'components/custom/badge';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
@@ -306,7 +306,7 @@ const JuniorPortfolio: React.FC = () => {
             tab={
               <>
                 Locked
-                <AntdBadge count={state.dataLocked.length} />
+                <Badge>{state.dataLocked.length}</Badge>
               </>
             }>
             <LockedPositionsTable loading={state.loadingLocked} data={dataLockedFilters} />
