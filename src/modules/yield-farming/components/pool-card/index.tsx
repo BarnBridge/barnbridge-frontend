@@ -233,14 +233,14 @@ const PoolCard: React.FC<PoolCardProps> = props => {
     <div className={s.cardTitleContainer}>
       <IconsSet icons={getPoolIcons(pool)} />
       <div className={s.cardTitleTexts}>
-        <Text type="p1" weight="semibold" color="primary" className="truncate" title={getPoolNames(pool).join('/')}>
+        <Text type="p1" weight="semibold" color="primary" ellipsis title={getPoolNames(pool).join('/')}>
           {getPoolNames(pool).join('/')}
         </Text>
         <Text
           type="lb2"
           weight="semibold"
           color="red"
-          className="truncate"
+          ellipsis
           title={`EPOCH ${state.currentEpoch ?? '-'}/${state.totalEpochs ?? '-'}`}>
           EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
         </Text>

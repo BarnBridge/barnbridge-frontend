@@ -8,13 +8,16 @@ import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
+import Input from 'components/antd/input';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
-import { Hint, Text } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useReload } from 'hooks/useReload';
+import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -24,21 +27,29 @@ import { getFormattedDuration } from 'utils';
 
 type FormData = {
   to?: BigNumber;
+  deadline?: number;
 };
 
 const InitialFormValues: FormData = {
   to: undefined,
+  deadline: 20,
 };
 
 const TwoStepWithdraw: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const poolCtx = useSYPool();
+  const [reload] = useReload();
   const [form] = Antd.Form.useForm<FormData>();
 
   const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
 
   const { pool, marketId, tokenId } = poolCtx;
+
+  const handleTxDetailsChange = React.useCallback(values => {
+    form.setFieldsValue(values);
+    reload();
+  }, []);
 
   function handleCancel() {
     history.push({
@@ -56,7 +67,7 @@ const TwoStepWithdraw: React.FC = () => {
   }
 
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
-    const { to = ZERO_BIG_NUMBER } = form.getFieldsValue();
+    const { to = ZERO_BIG_NUMBER, deadline = 20 } = form.getFieldsValue();
 
     if (!pool) {
       return;
@@ -73,9 +84,9 @@ const TwoStepWithdraw: React.FC = () => {
       const decimals = pool.underlyingDecimals;
       const tokenAmount = getNonHumanValue(new BigNumber(to), decimals);
       const maxMaturesAt = 1 + abond.maturesAt;
-      const deadline = Math.round(Date.now() / 1_000) + 1200;
+      const deadlineMs = Math.round(Date.now() / 1_000) + deadline * 60;
 
-      await poolCtx.actions.twoStepWithdraw(tokenAmount, maxMaturesAt, deadline, args.gasPrice);
+      await poolCtx.actions.twoStepWithdraw(tokenAmount, maxMaturesAt, deadlineMs, args.gasPrice);
       form.resetFields();
     } catch {}
   }
@@ -109,27 +120,25 @@ const TwoStepWithdraw: React.FC = () => {
                 height={36}
               />
             }
-            max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
+            max={getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}
             disabled={false}
           />
         </Form.Item>
 
-        <div className="card mb-32">
-          <div className="pv-24 ph-24">
-            <div className="grid flow-col justify-space-between">
-              <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
-                <Text type="small" weight="semibold" color="secondary">
-                  Transaction deadline
-                </Text>
-              </Hint>
-              <Text type="p2" weight="semibold" color="primary">
-                20 minutes
-              </Text>
-            </div>
-          </div>
-        </div>
+        <Form.Item name="deadline" noStyle hidden>
+          <Input />
+        </Form.Item>
+        <Form.Item shouldUpdate noStyle>
+          {() => {
+            const { deadline } = form.getFieldsValue();
+
+            return (
+              <TransactionDetails className="mb-32" showDeadline deadline={deadline} onChange={handleTxDetailsChange} />
+            );
+          }}
+        </Form.Item>
 
         <div className="card mb-32">
           <div className="pv-24 ph-24">
@@ -143,10 +152,12 @@ const TwoStepWithdraw: React.FC = () => {
               <Text type="small" weight="semibold" color="secondary">
                 Wait time
               </Text>
-              <UseLeftTime end={(pool.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
+              <UseLeftTime end={(pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
                 {leftTime => (
                   <Text type="p2" weight="semibold" color="primary">
-                    {leftTime > 0 ? getFormattedDuration(0, (pool.abond?.maturesAt ?? 0) * 1_000) : '0s'}
+                    {leftTime > 0
+                      ? getFormattedDuration(0, (pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)
+                      : '0s'}
                   </Text>
                 )}
               </UseLeftTime>
@@ -184,7 +195,7 @@ const TwoStepWithdraw: React.FC = () => {
                   Token amount
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(form.getFieldsValue().to)} j{pool.underlyingSymbol}
+                  {formatBigValue(form.getFieldsValue().to)} {pool.contracts.smartYield.symbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -200,7 +211,7 @@ const TwoStepWithdraw: React.FC = () => {
                   Wait time
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {getFormattedDuration(0, (pool.abond?.maturesAt ?? 0) * 1_000)}
+                  {getFormattedDuration(0, (pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)}
                 </Text>
               </div>
             </div>

@@ -3,10 +3,3 @@
   border: 1px solid rgba(var(--theme-secondary-color-rgb), 0.16);
   border-radius: 4px;
 }
-
-.deadlineInput {
-  :global(.ant-input) {
-    width: 75px;
-    text-align: right;
-  }
-}

@@ -24,14 +24,14 @@ import { useWallet } from 'wallets/wallet';
 type FormData = {
   from?: BigNumber;
   to?: BigNumber;
-  slippageTolerance?: number;
+  slippage?: number;
   deadline?: number;
 };
 
 const InitialFormValues: FormData = {
   from: undefined,
   to: undefined,
-  slippageTolerance: 0.5,
+  slippage: 0.5,
   deadline: 20,
 };
 
@@ -88,7 +88,7 @@ const InstantWithdraw: React.FC = () => {
   }
 
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
-    const { from = ZERO_BIG_NUMBER, slippageTolerance, deadline } = form.getFieldsValue();
+    const { from = ZERO_BIG_NUMBER, slippage, deadline } = form.getFieldsValue();
 
     if (!pool) {
       return;
@@ -114,7 +114,7 @@ const InstantWithdraw: React.FC = () => {
         .multipliedBy(price)
         .div(1e18)
         .minus(forfeitsValue ?? ZERO_BIG_NUMBER);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippageTolerance ?? 0) / 100).toFixed(0)); // slippage / rounding mode
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
@@ -130,8 +130,8 @@ const InstantWithdraw: React.FC = () => {
     return formValues.from
       ?.multipliedBy(pool.state.jTokenPrice)
       .minus(forfeits)
-      .multipliedBy(1 - (formValues.slippageTolerance ?? 0) / 100);
-  }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippageTolerance]);
+      .multipliedBy(1 - (formValues.slippage ?? 0) / 100);
+  }, [formValues.from, pool?.state.jTokenPrice, forfeits, formValues.slippage]);
 
   if (!pool) {
     return null;
@@ -159,14 +159,14 @@ const InstantWithdraw: React.FC = () => {
           <TokenAmount
             tokenIcon={
               <IconBubble
-                name={pool?.meta?.icon}
+                name={pool.meta?.icon}
                 bubbleName="bond-circle-token"
-                secondBubbleName={pool?.market?.icon}
+                secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}
               />
             }
-            max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
+            max={getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}
             disabled={false}
@@ -180,11 +180,13 @@ const InstantWithdraw: React.FC = () => {
             <div className="grid flow-col col-gap-8 justify-center">
               {priceReversible ? (
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatBigValue(1 / pool?.state.jTokenPrice)} j{pool?.underlyingSymbol} per {pool?.underlyingSymbol}
+                  {formatBigValue(1 / pool.state.jTokenPrice)} {pool.contracts.smartYield.symbol} per{' '}
+                  {pool.underlyingSymbol}
                 </Text>
               ) : (
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
+                  {formatBigValue(pool.state.jTokenPrice)} {pool.underlyingSymbol} per{' '}
+                  {pool.contracts.smartYield.symbol}
                 </Text>
               )}
               <button type="button" className="button-text" onClick={handlePriceReverse}>
@@ -197,14 +199,14 @@ const InstantWithdraw: React.FC = () => {
             const { from } = form.getFieldsValue();
             const to =
               from && pool
-                ? new BigNumber(from.multipliedBy(pool.state.jTokenPrice).toFixed(pool?.underlyingDecimals))
+                ? new BigNumber(from.multipliedBy(pool.state.jTokenPrice).toFixed(pool.underlyingDecimals))
                 : undefined;
 
             return (
               <TokenAmount
-                tokenIcon={pool?.meta?.icon as TokenIconNames}
-                maximumFractionDigits={pool?.underlyingDecimals}
-                displayDecimals={pool?.underlyingDecimals}
+                tokenIcon={pool.meta?.icon as TokenIconNames}
+                maximumFractionDigits={pool.underlyingDecimals}
+                displayDecimals={pool.underlyingDecimals}
                 value={to}
                 disabled
               />
@@ -212,7 +214,7 @@ const InstantWithdraw: React.FC = () => {
           }}
         </Form.Item>
 
-        <Form.Item name="slippageTolerance" noStyle hidden>
+        <Form.Item name="slippage" noStyle hidden>
           <Input />
         </Form.Item>
         <Form.Item name="deadline" noStyle hidden>
@@ -220,12 +222,14 @@ const InstantWithdraw: React.FC = () => {
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
           {() => {
-            const { slippageTolerance, deadline } = form.getFieldsValue();
+            const { slippage, deadline } = form.getFieldsValue();
 
             return (
               <TransactionDetails
                 className="mb-32"
-                slippageTolerance={slippageTolerance}
+                showSlippage
+                slippage={slippage}
+                showDeadline
                 deadline={deadline}
                 onChange={handleTxDetailsChange}
               />
@@ -246,7 +250,7 @@ const InstantWithdraw: React.FC = () => {
                 Forfeited balance
               </Text>
               <Text type="p2" weight="semibold" color="red">
-                {formatBigValue(forfeits ?? ZERO_BIG_NUMBER, pool?.underlyingDecimals)} {pool.underlyingSymbol}
+                {formatBigValue(forfeits ?? ZERO_BIG_NUMBER, pool.underlyingDecimals)} {pool.underlyingSymbol}
               </Text>
             </div>
             <div className="grid flow-col justify-space-between mb-16">
@@ -262,7 +266,7 @@ const InstantWithdraw: React.FC = () => {
                 Minimum received
               </Text>
               <Text type="p2" weight="semibold" color="primary">
-                {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool?.underlyingSymbol}
+                {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool.underlyingSymbol}
               </Text>
             </div>
           </div>
@@ -290,7 +294,7 @@ const InstantWithdraw: React.FC = () => {
                   Minimum received
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool?.underlyingSymbol}
+                  {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">

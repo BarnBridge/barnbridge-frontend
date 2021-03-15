@@ -51,6 +51,14 @@ const LayoutSideNav: React.FC = () => {
           <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
         </div>
         <nav className={s.top}>
+          <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
+            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+              <Icon name="paper-bill-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                SMART Yield
+              </Text>
+            </NavLink>
+          </Tooltip>
           <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
             <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
               <Icon name="tractor-outlined" />
@@ -67,19 +75,11 @@ const LayoutSideNav: React.FC = () => {
               </Text>
             </NavLink>
           </Tooltip>
-          <Tooltip title={displayTooltip && 'Smart Yield'} placement="right">
-            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-              <Icon name="paper-bill-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                Smart Yield
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'Smart Alpha'} placement="right">
+          <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
             <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
               <Icon name="paper-alpha-outlined" />
               <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                Smart Alpha
+                SMART Alpha
               </Text>
             </NavLink>
           </Tooltip>

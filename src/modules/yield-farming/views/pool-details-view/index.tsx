@@ -59,8 +59,8 @@ const PoolDetailsView: React.FC = () => {
   }
 
   return (
-    <Grid flow="row" gap={32} align="start">
-      <Button type="link" onClick={handleBackClick}>
+    <div>
+      <Button type="link" onClick={handleBackClick} className="mb-32">
         <Grid flow="col" gap={16} align="center">
           <Icon name="left-arrow" />
           <Text type="h1" weight="bold" color="primary">
@@ -69,68 +69,62 @@ const PoolDetailsView: React.FC = () => {
         </Grid>
       </Button>
 
-      <Grid flow="row" gap={24} width="100%">
-        <Tabs simple activeKey={activeTab} onChange={handleTabChange}>
-          <Tabs.Tab key={PoolActions.DEPOSIT} tab="Deposit" />
-          <Tabs.Tab key={PoolActions.WITHDRAW} tab="Withdraw" />
-        </Tabs>
+      <Tabs simple activeKey={activeTab} onChange={handleTabChange} className="mb-24">
+        <Tabs.Tab key={PoolActions.DEPOSIT} tab="Deposit" />
+        <Tabs.Tab key={PoolActions.WITHDRAW} tab="Withdraw" />
+      </Tabs>
 
-        <Switch>
-          <Route
-            path={`/yield-farming/${pool}/${PoolActions.DEPOSIT}`}
-            exact
-            render={() => (
-              <div>
-                <div className="grid flow-row row-gap-16 mb-64">
-                  {pool === PoolTypes.STABLE && (
-                    <>
-                      <PoolTokenDeposit token={USDCTokenMeta} />
-                      <PoolTokenDeposit token={DAITokenMeta} />
-                      <PoolTokenDeposit token={SUSDTokenMeta} />
-                    </>
-                  )}
-                  {pool === PoolTypes.UNILP && <PoolTokenDeposit token={UNISWAPTokenMeta} expanded />}
-                  {pool === PoolTypes.BOND && <PoolTokenDeposit token={BONDTokenMeta} expanded />}
-                </div>
-
-                <div>
-                  <Text type="p1" weight="semibold" color="primary" className="mb-24">
-                    Transactions
-                  </Text>
-                  <PoolTxTable label="My Transactions" ownTransactions pool={pool} action={PoolActions.DEPOSIT} />
-                </div>
+      <Switch>
+        <Route
+          path={`/yield-farming/${pool}/${PoolActions.DEPOSIT}`}
+          exact
+          render={() => (
+            <>
+              <div className="grid flow-row row-gap-16 mb-64">
+                {pool === PoolTypes.STABLE && (
+                  <>
+                    <PoolTokenDeposit token={USDCTokenMeta} />
+                    <PoolTokenDeposit token={DAITokenMeta} />
+                    <PoolTokenDeposit token={SUSDTokenMeta} />
+                  </>
+                )}
+                {pool === PoolTypes.UNILP && <PoolTokenDeposit token={UNISWAPTokenMeta} expanded />}
+                {pool === PoolTypes.BOND && <PoolTokenDeposit token={BONDTokenMeta} expanded />}
               </div>
-            )}
-          />
-          <Route
-            path={`/yield-farming/${pool}/${PoolActions.WITHDRAW}`}
-            exact
-            render={() => (
-              <Grid flow="row" gap={64}>
-                <Grid flow="row" gap={16}>
-                  {pool === PoolTypes.STABLE && (
-                    <>
-                      <PoolTokenWithdraw token={USDCTokenMeta} />
-                      <PoolTokenWithdraw token={DAITokenMeta} />
-                      <PoolTokenWithdraw token={SUSDTokenMeta} />
-                    </>
-                  )}
-                  {pool === PoolTypes.UNILP && <PoolTokenWithdraw token={UNISWAPTokenMeta} expanded />}
-                  {pool === PoolTypes.BOND && <PoolTokenWithdraw token={BONDTokenMeta} expanded />}
-                </Grid>
 
-                <Grid flow="row" gap={24}>
-                  <Text type="p1" weight="semibold" color="primary">
-                    Transactions
-                  </Text>
-                  <PoolTxTable label="My Transactions" ownTransactions pool={pool} action={PoolActions.WITHDRAW} />
-                </Grid>
-              </Grid>
-            )}
-          />
-        </Switch>
-      </Grid>
-    </Grid>
+              <Text type="p1" weight="semibold" color="primary" className="mb-24">
+                Transactions
+              </Text>
+              <PoolTxTable label="My Transactions" ownTransactions pool={pool} action={PoolActions.DEPOSIT} />
+            </>
+          )}
+        />
+        <Route
+          path={`/yield-farming/${pool}/${PoolActions.WITHDRAW}`}
+          exact
+          render={() => (
+            <>
+              <div className="grid flow-row row-gap-16 mb-64">
+                {pool === PoolTypes.STABLE && (
+                  <>
+                    <PoolTokenWithdraw token={USDCTokenMeta} />
+                    <PoolTokenWithdraw token={DAITokenMeta} />
+                    <PoolTokenWithdraw token={SUSDTokenMeta} />
+                  </>
+                )}
+                {pool === PoolTypes.UNILP && <PoolTokenWithdraw token={UNISWAPTokenMeta} expanded />}
+                {pool === PoolTypes.BOND && <PoolTokenWithdraw token={BONDTokenMeta} expanded />}
+              </div>
+
+              <Text type="p1" weight="semibold" color="primary" className="mb-24">
+                Transactions
+              </Text>
+              <PoolTxTable label="My Transactions" ownTransactions pool={pool} action={PoolActions.WITHDRAW} />
+            </>
+          )}
+        />
+      </Switch>
+    </div>
   );
 };
 

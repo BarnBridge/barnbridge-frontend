@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -15,9 +15,8 @@ import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
-import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
-import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
+import { SYSeniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import { getFormattedDuration } from 'utils';
@@ -35,6 +34,7 @@ type TransferConfirmArgs = ConfirmTxModalArgs & {
 const ActivePosition: React.FC<ActivePositionProps> = props => {
   const { pool, sBond, onRefresh } = props;
 
+  const poolsCtx = usePools();
   const wallet = useWallet();
   const [redeemModalVisible, showRedeemModal] = React.useState<boolean>(false);
   const [transferModalVisible, showTransferModal] = React.useState<boolean>(false);
@@ -65,15 +65,17 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
     }
 
     setSaving(true);
+    showRedeemModal(false);
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
-
-    return smartYieldContract.redeemBondSend(sBond.sBondId, args.gasPrice).then(() => {
-      onRefresh();
-      setSaving(false);
-    });
+    return poolsCtx
+      .redeemBond(pool.smartYieldAddress, sBond.sBondId, args.gasPrice)
+      .then(() => {
+        onRefresh();
+        setSaving(false);
+      })
+      .catch(() => {
+        setSaving(false);
+      });
   }
 
   function handleTransferShow() {
@@ -90,15 +92,17 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
     }
 
     setSaving(true);
+    showTransferModal(false);
 
-    const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
-    seniorBondContract.setProvider(wallet.provider);
-    seniorBondContract.setAccount(wallet.account);
-
-    return seniorBondContract.transferFromSend(wallet.account, args.address, sBond.sBondId, args.gasPrice).then(() => {
-      onRefresh();
-      setSaving(false);
-    });
+    return poolsCtx
+      .transferFrom(pool.seniorBondAddress, args.address, sBond.sBondId, args.gasPrice)
+      .then(() => {
+        onRefresh();
+        setSaving(false);
+      })
+      .catch(() => {
+        setSaving(false);
+      });
   }
 
   const maturesAt = sBond.maturesAt * 1_000;
@@ -110,8 +114,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const apy = gained
     .dividedBy(deposited)
     .dividedBy(maturesAt - issuedAt)
-    .multipliedBy(365 * 24 * 60 * 60 * 1_000)
-    .multipliedBy(100);
+    .multipliedBy(365 * 24 * 60 * 60 * 1_000);
   const completed = 100 - ((maturesAt - Math.min(Date.now(), maturesAt)) * 100) / (maturesAt - issuedAt);
   const canTransfer = !sBond.liquidated;
   const gainedFee = gained.multipliedBy(seniorRedeemFee?.dividedBy(1e18) ?? ZERO_BIG_NUMBER);
@@ -192,7 +195,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           APY
         </Text>
         <Text type="p1" weight="semibold" color="green">
-          {formatBigValue(apy)}%
+          {formatPercent(apy)}
         </Text>
       </div>
       <Divider />
@@ -223,7 +226,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
-                  Protocol fee ({seniorRedeemFee?.dividedBy(1e18)?.multipliedBy(100).toFixed(2)}%)
+                  Protocol fee ({formatPercent(seniorRedeemFee?.dividedBy(1e18))})
                 </Text>
                 <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
                   <Text type="p1" weight="semibold" color="primary">
@@ -286,7 +289,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                   APY
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
-                  {formatBigValue(apy)}%
+                  {formatPercent(apy)}
                 </Text>
               </div>
             </div>
