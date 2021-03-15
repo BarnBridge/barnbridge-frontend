@@ -30,7 +30,7 @@ const LayoutView: React.FC = () => {
                 <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
                 <Route path="/smart-yield" component={SmartYieldView} />
                 <Route path="/smart-alpha" component={SmartAlphaView} />
-                <Redirect from="/" to="/yield-farming" />
+                <Redirect from="/" to="/smart-yield" />
               </Switch>
             </Suspense>
           </main>
