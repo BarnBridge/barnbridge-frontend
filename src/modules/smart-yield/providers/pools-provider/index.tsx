@@ -1,9 +1,12 @@
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
+import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
@@ -29,11 +32,23 @@ const InitialState: State = {
   totalLiquidity: undefined,
 };
 
-type ContextType = State;
+type ContextType = State & {
+  redeemBond: (smartYieldAddress: string, sBondId: number, gasPrice: number) => Promise<void>;
+  transferFrom: (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => Promise<void>;
+};
 
 const Context = React.createContext<ContextType>({
   ...InitialState,
+  redeemBond: () => Promise.reject(),
+  transferFrom: () => Promise.reject(),
 });
+
+type StatusModal = {
+  visible: boolean;
+  type?: 'redeem' | 'transfer';
+  state?: 'progress' | 'success' | 'failure';
+  txHash?: string;
+};
 
 export function usePools(): ContextType {
   return React.useContext(Context);
@@ -42,9 +57,17 @@ export function usePools(): ContextType {
 const PoolsProvider: React.FC = props => {
   const { children } = props;
 
+  const history = useHistory();
   const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
+
+  const [statusModal, setStatusModal] = React.useState<StatusModal>({
+    visible: false,
+    type: undefined,
+    state: undefined,
+    txHash: undefined,
+  });
 
   React.useEffect(() => {
     setState(prevState => ({
@@ -103,13 +126,121 @@ const PoolsProvider: React.FC = props => {
     });
   }, [state.pools, wallet.account]);
 
+  const redeemBond = React.useCallback(
+    (smartYieldAddress: string, sBondId: number, gasPrice: number) => {
+      const smartYieldContract = new SYSmartYieldContract(smartYieldAddress);
+      smartYieldContract.setProvider(wallet.provider);
+      smartYieldContract.setAccount(wallet.account);
+
+      smartYieldContract
+        .on('tx:transactionHash', (txHash: string) => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            visible: true,
+            type: 'redeem',
+            state: 'progress',
+            txHash,
+          }));
+        })
+        .on('tx:complete', () => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            state: 'success',
+          }));
+        })
+        .on('tx:failure', () => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            state: 'failure',
+          }));
+        });
+
+      return smartYieldContract.redeemBondSend(sBondId, gasPrice);
+    },
+    [wallet.account, wallet.provider],
+  );
+
+  const transferFrom = React.useCallback(
+    (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => {
+      const seniorBondContract = new SYSeniorBondContract(seniorBondAddress);
+      seniorBondContract.setProvider(wallet.provider);
+      seniorBondContract.setAccount(wallet.account);
+
+      seniorBondContract
+        .on('tx:transactionHash', (txHash: string) => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            visible: true,
+            type: 'transfer',
+            state: 'progress',
+            txHash,
+          }));
+        })
+        .on('tx:complete', () => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            state: 'success',
+          }));
+        })
+        .on('tx:failure', () => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            state: 'failure',
+          }));
+        });
+
+      return seniorBondContract.transferFromSend(wallet.account!, address, sBondId, gasPrice);
+    },
+    [wallet.account, wallet.provider],
+  );
+
+  function handleStatusModalCancel() {
+    setStatusModal(prevState => ({
+      ...prevState,
+      visible: false,
+      type: undefined,
+      state: undefined,
+      txHash: undefined,
+    }));
+  }
+
+  function handleTxSuccess() {
+    setStatusModal(prevState => ({
+      ...prevState,
+      visible: false,
+      type: undefined,
+      state: undefined,
+      txHash: undefined,
+    }));
+
+    history.push({
+      pathname: `/smart-yield/portfolio/senior`,
+    });
+  }
+
   const value = React.useMemo<ContextType>(() => {
     return {
       ...state,
+      redeemBond,
+      transferFrom,
     };
   }, [state, version]);
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <>
+      <Context.Provider value={value}>{children}</Context.Provider>
+      {statusModal.visible && (
+        <TxStatusModal
+          visible
+          type={statusModal.type}
+          state={statusModal.state}
+          txLink={statusModal.txHash && getEtherscanTxUrl(statusModal.txHash)}
+          onCancel={handleStatusModalCancel}
+          onSuccessClick={handleTxSuccess}
+        />
+      )}
+    </>
+  );
 };
 
 export default PoolsProvider;

@@ -23,7 +23,7 @@ import { useWallet } from 'wallets/wallet';
 type FormData = {
   from?: BigNumber;
   to?: BigNumber;
-  slippageTolerance?: number;
+  slippage?: number;
   deadline?: number;
 };
 
@@ -37,7 +37,7 @@ const InitialState: State = {
   formValues: {
     from: undefined,
     to: undefined,
-    slippageTolerance: 0.5,
+    slippage: 0.5,
     deadline: 20,
   },
   isSaving: false,
@@ -114,7 +114,7 @@ const JuniorTranche: React.FC = () => {
       return undefined;
     }
 
-    const { from, slippageTolerance } = form.getFieldsValue();
+    const { from, slippage } = form.getFieldsValue();
 
     if (!from) {
       return undefined;
@@ -123,7 +123,7 @@ const JuniorTranche: React.FC = () => {
     /// minTo = (from - fee) * price - slippage
     const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
 
-    return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippageTolerance ?? 0) / 100);
+    return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippage ?? 0) / 100);
   }
 
   function handleFormValuesChange(_: any, values: FormData) {
@@ -243,7 +243,7 @@ const JuniorTranche: React.FC = () => {
               </button>
             </div>
           }
-          dependencies={['from', 'slippageTolerance']}>
+          dependencies={['from', 'slippage']}>
           {() => (
             <TokenAmount
               tokenIcon={
@@ -262,7 +262,7 @@ const JuniorTranche: React.FC = () => {
             />
           )}
         </Form.Item>
-        <Form.Item name="slippageTolerance" noStyle hidden>
+        <Form.Item name="slippage" noStyle hidden>
           <Input />
         </Form.Item>
         <Form.Item name="deadline" noStyle hidden>
@@ -270,12 +270,14 @@ const JuniorTranche: React.FC = () => {
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
           {() => {
-            const { slippageTolerance, deadline } = form.getFieldsValue();
+            const { slippage, deadline } = form.getFieldsValue();
 
             return (
               <TransactionDetails
                 className="mb-32"
-                slippageTolerance={slippageTolerance}
+                showSlippage
+                slippage={slippage}
+                showDeadline
                 deadline={deadline}
                 onChange={handleTxDetailsChange}
               />
@@ -313,7 +315,7 @@ const JuniorTranche: React.FC = () => {
               <Text type="small" weight="semibold" color="secondary">
                 Minimum received
               </Text>
-              <Form.Item dependencies={['from', 'slippageTolerance']} noStyle>
+              <Form.Item dependencies={['from', 'slippage']} noStyle>
                 {() => (
                   <Text type="p2" weight="semibold" color="primary">
                     {formatBigValue(getMinAmount() ?? ZERO_BIG_NUMBER)} {pool?.contracts.smartYield.symbol}
