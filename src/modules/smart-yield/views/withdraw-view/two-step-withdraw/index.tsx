@@ -109,7 +109,7 @@ const TwoStepWithdraw: React.FC = () => {
                 height={36}
               />
             }
-            max={getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals)}
+            max={getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals)}
             maximumFractionDigits={pool.underlyingDecimals}
             displayDecimals={pool.underlyingDecimals}
             disabled={false}
@@ -143,10 +143,12 @@ const TwoStepWithdraw: React.FC = () => {
               <Text type="small" weight="semibold" color="secondary">
                 Wait time
               </Text>
-              <UseLeftTime end={(pool.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
+              <UseLeftTime end={(pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
                 {leftTime => (
                   <Text type="p2" weight="semibold" color="primary">
-                    {leftTime > 0 ? getFormattedDuration(0, (pool.abond?.maturesAt ?? 0) * 1_000) : '0s'}
+                    {leftTime > 0
+                      ? getFormattedDuration(0, (pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)
+                      : '0s'}
                   </Text>
                 )}
               </UseLeftTime>
@@ -184,7 +186,7 @@ const TwoStepWithdraw: React.FC = () => {
                   Token amount
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(form.getFieldsValue().to)} j{pool.underlyingSymbol}
+                  {formatBigValue(form.getFieldsValue().to)} {pool.contracts.smartYield.symbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -200,7 +202,7 @@ const TwoStepWithdraw: React.FC = () => {
                   Wait time
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {getFormattedDuration(0, (pool.abond?.maturesAt ?? 0) * 1_000)}
+                  {getFormattedDuration(0, (pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)}
                 </Text>
               </div>
             </div>

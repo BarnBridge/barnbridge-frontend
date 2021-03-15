@@ -259,7 +259,7 @@ const JuniorPortfolio: React.FC = () => {
         <AntdSpin spinning={state.loadingActive || state.loadingLocked}>
           <PortfolioBalance
             total={totalBalance?.toNumber()}
-            aggregated={apy * 100}
+            aggregated={apy}
             aggregatedColor="purple"
             aggregatedText={
               <Grid flow="row" gap={8} align="start">

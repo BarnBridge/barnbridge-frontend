@@ -69,7 +69,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
           )}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
-            {` j${entity.pool.underlyingSymbol}`}
+            {` ${entity.pool.contracts.smartYield?.symbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">

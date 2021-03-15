@@ -148,7 +148,6 @@ const SeniorPortfolio: React.FC = () => {
           .dividedBy(principal)
           .dividedBy(maturesAt - issuedAt)
           .multipliedBy(365 * 24 * 60 * 60)
-          .multipliedBy(100)
           .dividedBy(10 ** c.pool.underlyingDecimals);
 
         return a.plus(principal.plus(gain).multipliedBy(apy));

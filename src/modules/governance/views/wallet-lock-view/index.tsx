@@ -22,7 +22,7 @@ import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 
-import WalletLockChart from './components/wallet-lock-chart';
+// import WalletLockChart from './components/wallet-lock-chart';
 import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
 
 import { getFormattedDuration, isValidAddress } from 'utils';
@@ -227,13 +227,12 @@ const WalletLockView: React.FC = () => {
             </Grid>
           </Grid>
 
-          <Form.Item shouldUpdate>
-            {({ getFieldsValue }) => {
-              const { lockEndDate } = getFieldsValue();
-
-              return lockEndDate ? <WalletLockChart lockEndDate={lockEndDate} /> : null;
-            }}
-          </Form.Item>
+          {/* <Form.Item shouldUpdate> */}
+          {/*  {({ getFieldsValue }) => { */}
+          {/*    const { lockEndDate } = getFieldsValue(); */}
+          {/*    return lockEndDate ? <WalletLockChart lockEndDate={lockEndDate} /> : null; */}
+          {/*  }} */}
+          {/* </Form.Item> */}
 
           <Button
             type="primary"

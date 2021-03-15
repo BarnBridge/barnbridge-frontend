@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatBigValue, formatUSDValue } from 'web3/utils';
+import { formatPercent, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
@@ -27,7 +27,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     data: [[label1, value1, color1], [label2, value2, color2]],
   } = props;
 
-  const progress = value1 && value2 ? (value1 * 100) / (value1 + value2) : undefined;
+  const progress = ((value1 ?? 0) * 100) / ((value1 ?? 0) + (value2 ?? 0));
 
   return (
     <Card noPaddingBody>
@@ -54,7 +54,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
               </Text>
             </Hint>
             <Text type="p1" weight="semibold" color={aggregatedColor}>
-              {formatBigValue(aggregated)}%
+              {formatPercent(aggregated)}
             </Text>
           </div>
         )}
@@ -65,7 +65,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
         strokeLinecap="square"
         percent={progress}
         strokeWidth={8}
-        trailColor={color2}
+        trailColor={value2 !== undefined && value2 > 0 ? color2 : undefined}
         strokeColor={color1}
       />
       <div className="p-24 flexbox-grid flow-col gap-16">

@@ -2,36 +2,25 @@ import React from 'react';
 import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { format } from 'date-fns';
+import { formatBigValue, formatPercent, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
+import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import {
-  APISYPool,
-  APISYSeniorRedeem,
-  Markets,
-  Pools,
-  SYMarketMeta,
-  SYPoolMeta,
-  fetchSYSeniorRedeems,
-} from 'modules/smart-yield/api';
-import { usePools } from 'modules/smart-yield/providers/pools-provider';
+import { APISYSeniorRedeem, fetchSYSeniorRedeems } from 'modules/smart-yield/api';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
-import ExternalLink from 'components/custom/externalLink';
-import { format } from 'date-fns';
 
 type ListEntity = APISYSeniorRedeem & {
-  pool?: APISYPool & {
-    meta?: SYPoolMeta;
-    market?: SYMarketMeta;
-  };
+  pool?: PoolsSYPool;
 };
 
 type State = {
@@ -95,13 +84,7 @@ const PastPositionsList: React.FC<Props> = props => {
 
           return {
             ...item,
-            pool: pool
-              ? {
-                  ...pool,
-                  meta: Pools.get(pool.underlyingSymbol),
-                  market: Markets.get(pool.protocolId),
-                }
-              : undefined,
+            pool,
           };
         });
 
@@ -192,14 +175,12 @@ const PastPositionsList: React.FC<Props> = props => {
                   APY
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
-                  {formatBigValue(
+                  {formatPercent(
                     new BigNumber(entity.gain)
                       .dividedBy(entity.underlyingIn)
                       .dividedBy(entity.forDays)
-                      .multipliedBy(365)
-                      .multipliedBy(100),
-                  )}{' '}
-                  %
+                      .multipliedBy(365),
+                  )}
                 </Text>
               </div>
             </Card>

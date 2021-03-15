@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Table from 'components/antd/table';
@@ -17,10 +17,9 @@ import {
   APISYTxHistoryType,
   APISYUserTxHistory,
   HistoryShortTypes,
-  Markets,
-  Pools,
   fetchSYUserTxHistory,
 } from 'modules/smart-yield/api';
+import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
@@ -30,6 +29,7 @@ import { useWallet } from 'wallets/wallet';
 import s from './s.module.scss';
 
 type TableEntity = APISYUserTxHistory & {
+  poolEntity?: SYPool;
   isTokenAmount?: boolean;
   computedAmount?: BigNumber;
 };
@@ -39,16 +39,13 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble
-          name={Pools.get(entity.underlyingTokenSymbol)?.icon}
-          bubbleName={Markets.get(entity.protocolId)?.icon}
-        />
+        <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {entity.underlyingTokenSymbol}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
-            {Markets.get(entity.protocolId)?.name}
+            {entity.poolEntity?.market?.name}
           </Text>
         </Grid>
       </Grid>
@@ -99,12 +96,15 @@ const Columns: ColumnsType<TableEntity> = [
       <Grid flow="row" gap={4}>
         <Tooltip title={formatBigValue(entity.amount, 18)}>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.amount)}
-            {` ${entity.isTokenAmount ? 'j' : ''}${entity.underlyingTokenSymbol}`}
+            {formatToken(entity.amount, {
+              tokenName: entity.isTokenAmount
+                ? entity.poolEntity?.contracts.smartYield.symbol
+                : entity.underlyingTokenSymbol,
+            })}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold">
-          {formatUSDValue(entity.computedAmount)}
+          {formatUSD(entity.computedAmount)}
         </Text>
       </Grid>
     ),
@@ -238,9 +238,10 @@ const HistoryTable: React.FC = () => {
 
         return {
           ...item,
+          poolEntity: pool,
           isTokenAmount,
           computedAmount,
-        };
+        } as TableEntity;
       }),
     [state.data, pools],
   );
@@ -277,7 +278,7 @@ const HistoryTable: React.FC = () => {
           <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
         </Grid>
       }>
-      <Table
+      <Table<TableEntity>
         columns={Columns}
         dataSource={mappedData}
         rowKey="transactionHash"

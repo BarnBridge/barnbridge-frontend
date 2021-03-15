@@ -1,6 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatUSDValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
@@ -117,7 +117,7 @@ const PoolDetails: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="green">
-            {formatBigValue(pool.state.seniorApy * 100)}%
+            {formatPercent(pool.state.seniorApy)}
           </Text>
         </div>
         <div className="flex flow-row">
@@ -125,7 +125,7 @@ const PoolDetails: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            {formatBigValue(pool.state.juniorApy * 100)}%
+            {formatPercent(pool.state.juniorApy)}
           </Text>
         </div>
       </div>
