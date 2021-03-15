@@ -3,7 +3,7 @@ import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
@@ -175,14 +175,12 @@ const PastPositionsList: React.FC<Props> = props => {
                   APY
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
-                  {formatBigValue(
+                  {formatPercent(
                     new BigNumber(entity.gain)
                       .dividedBy(entity.underlyingIn)
                       .dividedBy(entity.forDays)
-                      .multipliedBy(365)
-                      .multipliedBy(100),
-                  )}{' '}
-                  %
+                      .multipliedBy(365),
+                  )}
                 </Text>
               </div>
             </Card>

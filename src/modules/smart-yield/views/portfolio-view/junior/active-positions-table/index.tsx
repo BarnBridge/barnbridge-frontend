@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatUSDValue, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -92,7 +92,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
     render: (_, entity) => (
       <Text type="p1" weight="semibold" color="purple">
-        {formatBigValue(entity.state.juniorApy * 100)}%
+        {formatPercent(entity.state.juniorApy)}
       </Text>
     ),
   },

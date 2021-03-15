@@ -1,7 +1,7 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import AntdSwitch from 'antd/lib/switch';
-import { formatBigValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, getHumanValue } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
@@ -105,7 +105,7 @@ const DepositHeader: React.FC = () => {
             Senior APY
           </Text>
           <Text type="p1" weight="semibold" color="green">
-            {formatBigValue(pool.state.seniorApy * 100)}%
+            {formatPercent(pool.state.seniorApy)}
           </Text>
         </div>
       )}
@@ -115,7 +115,7 @@ const DepositHeader: React.FC = () => {
             Junior APY
           </Text>
           <Text type="p1" weight="semibold" color="purple">
-            {formatBigValue(pool.state.juniorApy * 100)}%
+            {formatPercent(pool.state.juniorApy)}
           </Text>
         </div>
       )}

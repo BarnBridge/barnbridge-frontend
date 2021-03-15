@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatBigValue, formatUSDValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
@@ -54,7 +54,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
               </Text>
             </Hint>
             <Text type="p1" weight="semibold" color={aggregatedColor}>
-              {formatBigValue(aggregated)}%
+              {formatPercent(aggregated)}
             </Text>
           </div>
         )}

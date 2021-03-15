@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, formatPercent } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -306,7 +306,7 @@ const JuniorTranche: React.FC = () => {
                     </>
                   )}
                 </Form.Item>
-                {pool?.underlyingSymbol} ({juniorFee?.dividedBy(1e18).multipliedBy(100)?.toFixed(2)}%)
+                {pool?.underlyingSymbol} ({formatPercent(juniorFee?.dividedBy(1e18))})
               </Text>
             </div>
             <div className="grid flow-col justify-space-between">
@@ -366,7 +366,7 @@ const JuniorTranche: React.FC = () => {
                       .multipliedBy(juniorFee ?? 0)
                       .dividedBy(1e18),
                   )}{' '}
-                  {pool?.underlyingSymbol} ({juniorFee?.dividedBy(1e18).multipliedBy(100)?.toFixed(2)}%)
+                  {pool?.underlyingSymbol} ({formatPercent(juniorFee?.dividedBy(1e18))})
                 </Text>
               </div>
             </div>

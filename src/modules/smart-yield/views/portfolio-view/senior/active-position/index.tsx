@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue, formatPercent } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -110,8 +110,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const apy = gained
     .dividedBy(deposited)
     .dividedBy(maturesAt - issuedAt)
-    .multipliedBy(365 * 24 * 60 * 60 * 1_000)
-    .multipliedBy(100);
+    .multipliedBy(365 * 24 * 60 * 60 * 1_000);
   const completed = 100 - ((maturesAt - Math.min(Date.now(), maturesAt)) * 100) / (maturesAt - issuedAt);
   const canTransfer = !sBond.liquidated;
   const gainedFee = gained.multipliedBy(seniorRedeemFee?.dividedBy(1e18) ?? ZERO_BIG_NUMBER);
@@ -192,7 +191,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           APY
         </Text>
         <Text type="p1" weight="semibold" color="green">
-          {formatBigValue(apy)}%
+          {formatPercent(apy)}
         </Text>
       </div>
       <Divider />
@@ -223,7 +222,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
-                  Protocol fee ({seniorRedeemFee?.dividedBy(1e18)?.multipliedBy(100).toFixed(2)}%)
+                  Protocol fee ({formatPercent(seniorRedeemFee?.dividedBy(1e18))})
                 </Text>
                 <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
                   <Text type="p1" weight="semibold" color="primary">
@@ -286,7 +285,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                   APY
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
-                  {formatBigValue(apy)}%
+                  {formatPercent(apy)}
                 </Text>
               </div>
             </div>

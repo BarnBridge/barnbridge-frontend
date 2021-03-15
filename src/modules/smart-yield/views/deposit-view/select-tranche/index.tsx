@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { formatBigValue } from 'web3/utils';
+import { formatBigValue, formatPercent } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import button from 'components/antd/button';
@@ -78,7 +78,7 @@ const SelectTranche: React.FC = () => {
             Fixed APY
           </Text>
           <Text type="p1" weight="bold" color="green">
-            {formatBigValue(pool.state.seniorApy * 100)}%
+            {formatPercent(pool.state.seniorApy)}
           </Text>
         </RadioCard>
         <RadioCard selected={tranche === JUNIOR_TRANCHE_KEY} onClick={handleJuniorSelect}>
@@ -101,7 +101,7 @@ const SelectTranche: React.FC = () => {
             Variable APY
           </Text>
           <Text type="p1" weight="bold" color="purple">
-            {formatBigValue(pool.state.juniorApy * 100)}%
+            {formatPercent(pool.state.juniorApy)}
           </Text>
         </RadioCard>
       </div>

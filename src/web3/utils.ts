@@ -49,6 +49,26 @@ export function getEtherscanAddressUrl(
   return undefined;
 }
 
+export function getEtherscanABIUrl(
+  address?: string,
+  apiKey?: string,
+  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+): string | undefined {
+  if (address) {
+    switch (chainId) {
+      case 1:
+        return `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apiKey}`;
+      case 4:
+        return `https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apiKey}`;
+      case 42:
+        return `https://api-kovan.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apiKey}`;
+      default:
+    }
+  }
+
+  return undefined;
+}
+
 export function getExponentValue(decimals = 0): BigNumber {
   return new BigNumber(10).pow(decimals);
 }
@@ -84,12 +104,14 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatPercent(value: number | undefined): string | undefined {
-  if (value === undefined) {
+export function formatPercent(value: number | BigNumber | undefined, decimals: number = 2): string | undefined {
+  if (value === undefined || Number.isNaN(value)) {
     return undefined;
   }
 
-  return `${(value * 100).toFixed(2)}%`;
+  const rate = BigNumber.isBigNumber(value) ? value.toNumber() : value;
+
+  return `${(rate * 100).toFixed(decimals)}%`;
 }
 
 type FormatTokenOptions = {
@@ -175,9 +197,13 @@ export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
 }
 
 export function fetchContractABI(address: string): any {
-  return fetch(
-    `https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${ETHERSCAN_API_KEY}`,
-  )
+  const url = getEtherscanABIUrl(address, ETHERSCAN_API_KEY);
+
+  if (!url) {
+    return Promise.reject();
+  }
+
+  return fetch(url)
     .then(result => result.json())
     .then(({ status, result }: { status: string; result: string }) => {
       if (status === '1') {
