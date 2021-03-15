@@ -7,7 +7,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 type Props = ModalProps & {
-  type?: 'deposit' | 'withdraw' | 'redeem' | 'transfer';
+  type?: 'deposit' | 'withdraw' | 'redeem' | 'transfer' | 'redeemJunior';
   state?: 'progress' | 'success' | 'failure';
   txLink?: string;
   onSuccessClick?: () => void;
@@ -44,6 +44,7 @@ const TxStatusModal: React.FC<Props> = props => {
               {type === 'deposit' && 'You can see your new position in your portfolio'}
               {type === 'withdraw' && 'You can see your past positions in your portfolio'}
               {type === 'redeem' && 'You can see your past positions in your portfolio'}
+              {type === 'redeemJunior' && 'You can see your past positions in your portfolio'}
             </Text>
             {type !== 'transfer' && (
               <Button htmlType="submit" type="primary" onClick={onSuccessClick}>

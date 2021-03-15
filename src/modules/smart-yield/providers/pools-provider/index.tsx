@@ -34,18 +34,20 @@ const InitialState: State = {
 
 type ContextType = State & {
   redeemBond: (smartYieldAddress: string, sBondId: number, gasPrice: number) => Promise<void>;
+  redeemJuniorBond: (smartYieldAddress: string, jBondId: number, gasPrice: number) => Promise<void>;
   transferFrom: (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => Promise<void>;
 };
 
 const Context = React.createContext<ContextType>({
   ...InitialState,
   redeemBond: () => Promise.reject(),
+  redeemJuniorBond: () => Promise.reject(),
   transferFrom: () => Promise.reject(),
 });
 
 type StatusModal = {
   visible: boolean;
-  type?: 'redeem' | 'transfer';
+  type?: 'redeem' | 'transfer' | 'redeemJunior';
   state?: 'progress' | 'success' | 'failure';
   txHash?: string;
 };
@@ -160,6 +162,40 @@ const PoolsProvider: React.FC = props => {
     [wallet.account, wallet.provider],
   );
 
+  const redeemJuniorBond = React.useCallback(
+    (smartYieldAddress: string, jBondId: number, gasPrice: number) => {
+      const smartYieldContract = new SYSmartYieldContract(smartYieldAddress);
+      smartYieldContract.setProvider(wallet.provider);
+      smartYieldContract.setAccount(wallet.account);
+
+      smartYieldContract
+        .on('tx:transactionHash', (txHash: string) => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            visible: true,
+            type: 'redeemJunior',
+            state: 'progress',
+            txHash,
+          }));
+        })
+        .on('tx:complete', () => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            state: 'success',
+          }));
+        })
+        .on('tx:failure', () => {
+          setStatusModal(prevState => ({
+            ...prevState,
+            state: 'failure',
+          }));
+        });
+
+      return smartYieldContract.redeemJuniorBondSend(jBondId, gasPrice);
+    },
+    [wallet.account, wallet.provider],
+  );
+
   const transferFrom = React.useCallback(
     (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => {
       const seniorBondContract = new SYSeniorBondContract(seniorBondAddress);
@@ -223,6 +259,7 @@ const PoolsProvider: React.FC = props => {
       ...state,
       redeemBond,
       transferFrom,
+      redeemJuniorBond,
     };
   }, [state, version]);
 

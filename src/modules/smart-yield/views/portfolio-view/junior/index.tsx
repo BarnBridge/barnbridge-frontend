@@ -10,6 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
+import { useReload } from 'hooks/useReload';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
@@ -67,6 +68,7 @@ const JuniorPortfolio: React.FC = () => {
 
   const { pools } = poolsCtx;
 
+  const [reloadLocked, versionLocked] = useReload();
   const [state, setState] = React.useState(InitialState);
   const [redeemModal, setRedeemModal] = React.useState<LockedPositionsTableEntity | undefined>();
   const [filtersMap, setFiltersMap] = React.useState(InitialFiltersMap);
@@ -173,7 +175,7 @@ const JuniorPortfolio: React.FC = () => {
         }),
       );
     })();
-  }, [wallet.account, pools]);
+  }, [wallet.account, pools, versionLocked]);
 
   function handleFiltersApply(values: PositionsFilterValues) {
     setFiltersMap(prevState => ({
@@ -195,13 +197,11 @@ const JuniorPortfolio: React.FC = () => {
     }
 
     const { pool, jBond } = redeemModal;
+    setRedeemModal(undefined);
 
-    const contract = new SYSmartYieldContract(pool.smartYieldAddress);
-    contract.setProvider(wallet.provider);
-    contract.setAccount(wallet.account);
-
-    return contract.redeemJuniorBondSend(jBond.jBondId, args.gasPrice).then(() => {
-      // reload();
+    return poolsCtx.redeemJuniorBond(pool.smartYieldAddress, jBond.jBondId, args.gasPrice).then(() => {
+      pool.contracts.smartYield?.loadBalance();
+      reloadLocked();
     });
   }
 
@@ -327,6 +327,7 @@ const JuniorPortfolio: React.FC = () => {
                         )}>
                         <Text type="p1" weight="semibold" color="primary">
                           {formatBigValue(getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals))}
+                          {` ${redeemModal.pool.contracts.smartYield?.symbol}`}
                         </Text>
                       </Tooltip>
                     </div>
