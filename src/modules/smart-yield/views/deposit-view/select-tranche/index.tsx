@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { formatBigValue, formatPercent } from 'web3/utils';
+import { formatPercent } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import button from 'components/antd/button';

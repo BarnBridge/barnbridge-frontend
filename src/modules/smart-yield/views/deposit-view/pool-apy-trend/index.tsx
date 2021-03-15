@@ -2,7 +2,7 @@ import React from 'react';
 import { Spin } from 'antd';
 import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
-import { formatBigValue, formatPercent } from 'web3/utils';
+import { formatPercent } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import StatusDot from 'components/custom/status-dot';

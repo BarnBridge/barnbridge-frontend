@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatBigValue, formatPercent, formatUSDValue } from 'web3/utils';
+import { formatPercent, formatUSDValue } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';

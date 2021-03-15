@@ -8,7 +8,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue, formatPercent } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';

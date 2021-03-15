@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, formatPercent } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';

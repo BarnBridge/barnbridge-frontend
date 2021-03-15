@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { ZERO_BIG_NUMBER, formatBigValue, formatUSDValue, getHumanValue, formatPercent } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
