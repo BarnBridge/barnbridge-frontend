@@ -6,7 +6,7 @@ import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
 import Icon from 'components/custom/icon';
-import { SYPool } from 'modules/smart-yield/providers/pool-provider';
+import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
 
 export type PositionsFilterValues = {
   originator: string;
@@ -19,7 +19,7 @@ const InitialFormValues: PositionsFilterValues = {
 };
 
 type Props = {
-  originators: SYPool[];
+  originators: PoolsSYPool[];
   value?: PositionsFilterValues;
   onChange: (values: PositionsFilterValues) => void;
 };

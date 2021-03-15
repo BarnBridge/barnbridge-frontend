@@ -1,26 +1,32 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
-import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
 export type PoolsSYPool = APISYPool & {
   meta?: SYPoolMeta;
   market?: SYMarketMeta;
-  underlyingBalance?: BigNumber;
+  contracts: {
+    smartYield?: SYSmartYieldContract;
+    underlying?: SYUnderlyingContract;
+  };
 };
 
 type State = {
   loading: boolean;
   pools: PoolsSYPool[];
+  totalLiquidity?: BigNumber;
 };
 
 const InitialState: State = {
   loading: false,
   pools: [],
+  totalLiquidity: undefined,
 };
 
 type ContextType = State;
@@ -41,49 +47,59 @@ const PoolsProvider: React.FC = props => {
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
-    setState(
-      mergeState<State>({
-        loading: true,
-      }),
-    );
+    setState(prevState => ({
+      ...prevState,
+      loading: true,
+      pools: [],
+      totalLiquidity: undefined,
+    }));
 
     (async () => {
       try {
         const pools = await fetchSYPools();
+        const totalLiquidity = pools.reduce((sum, pool) => {
+          return sum.plus(pool.state.seniorLiquidity).plus(pool.state.juniorLiquidity);
+        }, ZERO_BIG_NUMBER);
 
-        setState(
-          mergeState<State>({
-            loading: false,
-            pools: pools.map(pool => ({
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          pools: pools.map(pool => {
+            const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
+            const underlying = new SYUnderlyingContract(pool.underlyingAddress);
+
+            smartYield.loadCommon();
+            underlying.loadCommon();
+
+            return {
               ...pool,
               meta: Pools.get(pool.underlyingSymbol),
               market: Markets.get(pool.protocolId),
-            })),
+              contracts: {
+                smartYield,
+                underlying,
+              },
+            };
           }),
-        );
+          totalLiquidity,
+        }));
       } catch {
-        setState(
-          mergeState<State>({
-            loading: false,
-            pools: [],
-          }),
-        );
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+        }));
       }
     })();
   }, []);
 
   React.useEffect(() => {
-    if (!wallet.account) {
-      return;
-    }
-
     state.pools.forEach(pool => {
-      const underlyingContract = new SYUnderlyingContract(pool.underlyingAddress);
-      underlyingContract.setAccount(wallet.account);
-      underlyingContract.getBalance().then(balance => {
-        pool.underlyingBalance = balance;
-        reload();
-      });
+      pool.contracts.smartYield?.setProvider(wallet.provider);
+      pool.contracts.smartYield?.setAccount(wallet.account);
+
+      pool.contracts.underlying?.setProvider(wallet.provider);
+      pool.contracts.underlying?.setAccount(wallet.account);
+      pool.contracts.underlying?.loadBalance().then(reload);
     });
   }, [state.pools, wallet.account]);
 

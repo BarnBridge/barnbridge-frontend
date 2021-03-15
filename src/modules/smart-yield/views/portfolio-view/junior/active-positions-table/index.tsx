@@ -59,7 +59,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
           )}>
           <Text type="p1" weight="semibold" color="primary">
             {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
-            {` j${entity.underlyingSymbol}`}
+            {` ${entity.contracts.smartYield?.symbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">

@@ -64,13 +64,16 @@ const DepositHeader: React.FC = () => {
         </div>
       </Grid>
       <Tooltip
-        title={formatBigValue(getHumanValue(pool.underlyingBalance, pool.underlyingDecimals), pool.underlyingDecimals)}>
+        title={formatBigValue(
+          getHumanValue(pool.contracts.underlying.balance, pool.underlyingDecimals),
+          pool.underlyingDecimals,
+        )}>
         <Text type="small" weight="semibold" className="mb-4">
           Wallet balance
         </Text>
         <Text type="p1" weight="semibold" color="primary">
           <span className="grid flow-col col-gap-8 align-center">
-            {formatBigValue(getHumanValue(pool.underlyingBalance, pool.underlyingDecimals))}
+            {formatBigValue(getHumanValue(pool.contracts.underlying.balance, pool.underlyingDecimals))}
             <Text type="small" tag="span" weight="semibold" color="secondary">
               {pool.underlyingSymbol}
             </Text>
@@ -80,7 +83,7 @@ const DepositHeader: React.FC = () => {
       {!isSeniorDeposit && !isRootDeposit && (
         <Tooltip
           title={formatBigValue(
-            getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals),
+            getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals),
             pool.underlyingDecimals,
           )}>
           <Text type="small" weight="semibold" className="mb-4">
@@ -88,9 +91,9 @@ const DepositHeader: React.FC = () => {
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             <span className="grid flow-col col-gap-8 align-center">
-              {formatBigValue(getHumanValue(pool.smartYieldBalance, pool.underlyingDecimals))}
+              {formatBigValue(getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals))}
               <Text type="small" tag="span" weight="semibold" color="secondary">
-                j{pool.underlyingSymbol}
+                {pool.contracts.smartYield.symbol}
               </Text>
             </span>
           </Text>
@@ -123,8 +126,8 @@ const DepositHeader: React.FC = () => {
           </Text>
           <AntdSwitch
             style={{ justifySelf: 'flex-start' }}
-            checked={pool.underlyingIsAllowed}
-            loading={pool.underlyingIsAllowed === undefined || isApproving}
+            checked={pool.contracts.underlying.isAllowed}
+            loading={pool.contracts.underlying.isAllowed === undefined || isApproving}
             onChange={handleSwitchChange}
           />
         </div>

@@ -73,7 +73,7 @@ const SeniorTranche: React.FC = () => {
   const [bondGain, setBondGain] = React.useState<BigNumber | undefined>();
 
   const [formState, setFormState] = React.useState<FormData>(InitialFormValues);
-  const [jseniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
+  const [seniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
 
   React.useEffect(() => {
     if (!pool) {
@@ -85,7 +85,7 @@ const SeniorTranche: React.FC = () => {
     controllerContract.getSeniorRedeemFee().then(setSeniorRedeemFee);
   }, [pool?.controllerAddress]);
 
-  const formDisabled = !pool?.underlyingIsAllowed;
+  const formDisabled = !pool?.contracts.underlying.isAllowed;
 
   const handleTxDetailsChange = React.useCallback(values => {
     form.setFieldsValue(values);
@@ -208,7 +208,7 @@ const SeniorTranche: React.FC = () => {
 
   const reward = formState.amount
     ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
-    ?.plus(bondGain?.multipliedBy(1 - (jseniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
+    ?.plus(bondGain?.multipliedBy(1 - (seniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
 
   return (
     <>
@@ -229,7 +229,7 @@ const SeniorTranche: React.FC = () => {
         <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={pool?.meta?.icon as TokenIconNames}
-            max={getHumanValue(pool?.underlyingMaxAllowed, pool?.underlyingDecimals)}
+            max={getHumanValue(pool?.contracts.underlying.maxAllowed, pool?.underlyingDecimals)}
             maximumFractionDigits={pool?.underlyingDecimals}
             displayDecimals={4}
             disabled={formDisabled || state.isSaving}
@@ -310,7 +310,7 @@ const SeniorTranche: React.FC = () => {
         <TransactionSummary
           apy={apy}
           gain={getHumanValue(bondGain, pool?.underlyingDecimals)}
-          gainFee={jseniorRedeemFee?.dividedBy(1e18)}
+          gainFee={seniorRedeemFee?.dividedBy(1e18)}
           reward={getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER}
           symbol={pool?.underlyingSymbol}
         />

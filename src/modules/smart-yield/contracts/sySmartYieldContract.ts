@@ -235,7 +235,17 @@ class SYSmartYieldContract extends Web3Contract {
     super(ABI, address, '');
   }
 
-  async loadCommon() {
+  symbol?: string;
+
+  decimals?: number;
+
+  totalSupply?: BigNumber;
+
+  balance?: BigNumber;
+
+  abond?: SYAbond;
+
+  async loadCommon(): Promise<void> {
     return this.batch([
       {
         method: 'name',
@@ -251,7 +261,34 @@ class SYSmartYieldContract extends Web3Contract {
         method: 'totalSupply',
         transform: value => new BigNumber(value),
       },
-    ]);
+      {
+        method: 'abond',
+        transform: (value: SYAbond) => ({
+          ...value,
+          principal: new BigNumber(value.principal),
+          gain: new BigNumber(value.gain),
+          issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
+          maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+        }),
+      },
+    ]).then(([name, symbol, decimals, totalSupply, abond]) => {
+      this.name = name;
+      this.symbol = symbol;
+      this.decimals = decimals;
+      this.totalSupply = totalSupply.dividedBy(10 ** decimals);
+      this.abond = abond;
+    });
+  }
+
+  async loadBalance(): Promise<void> {
+    if (!this.account) {
+      this.balance = undefined;
+      return;
+    }
+
+    return this.call('balanceOf', [this.account]).then(value => {
+      this.balance = new BigNumber(value);
+    });
   }
 
   async getBalance(): Promise<BigNumber> {

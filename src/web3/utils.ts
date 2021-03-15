@@ -84,6 +84,56 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
+export function formatPercent(value: number | undefined): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return `${(value * 100).toFixed(2)}%`;
+}
+
+type FormatTokenOptions = {
+  tokenName?: string;
+  decimals?: number;
+  minDecimals?: number;
+  maxDecimals?: number;
+  compact?: boolean;
+};
+
+export function formatToken(value: number | BigNumber | undefined, options: FormatTokenOptions): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const {
+    tokenName,
+    compact = false,
+    decimals = compact && value >= 1000 ? 0 : 4,
+    minDecimals = decimals,
+    maxDecimals = decimals,
+  } = options;
+
+  const str = Intl.NumberFormat('en', {
+    notation: compact ? 'compact' : undefined,
+    minimumFractionDigits: minDecimals,
+    maximumFractionDigits: maxDecimals,
+  }).format(BigNumber.isBigNumber(value) ? value.toNumber() : value);
+
+  return tokenName ? `${str} ${tokenName}` : str;
+}
+
+export function formatUSD(value: number | BigNumber | undefined, compact?: boolean): string | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
+
+  return Intl.NumberFormat('en', {
+    notation: compact ? 'compact' : undefined,
+    style: 'currency',
+    currency: 'USD',
+  }).format(BigNumber.isBigNumber(value) ? value.toNumber() : value);
+}
+
 export function formatUSDValue(value?: BigNumber | number, decimals = 2, minDecimals: number = decimals): string {
   if (value === undefined) {
     return '-';

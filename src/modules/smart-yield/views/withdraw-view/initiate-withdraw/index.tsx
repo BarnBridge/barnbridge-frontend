@@ -53,16 +53,16 @@ const InitiateWithdraw: React.FC = () => {
   }
 
   React.useEffect(() => {
-    if (!pool || !pool.smartYieldBalance) {
+    if (!pool || !pool.contracts.smartYield.balance) {
       return;
     }
 
-    poolCtx.actions.getForfeitsFor(pool.smartYieldBalance).then(setForfeits);
-  }, [pool?.smartYieldBalance]);
+    poolCtx.actions.getForfeitsFor(pool.contracts.smartYield.balance).then(setForfeits);
+  }, [pool?.contracts.smartYield.balance]);
 
   const totalWithdrawable = React.useMemo(() => {
-    return pool?.smartYieldBalance?.multipliedBy(pool?.state.jTokenPrice);
-  }, [pool?.smartYieldBalance, pool?.state.jTokenPrice]);
+    return pool?.contracts.smartYield.balance?.multipliedBy(pool?.state.jTokenPrice);
+  }, [pool?.contracts.smartYield.balance, pool?.state.jTokenPrice]);
 
   const totalInstantWithdrawable = React.useMemo(() => {
     if (!forfeits) {
@@ -92,10 +92,12 @@ const InitiateWithdraw: React.FC = () => {
           <Text type="small" weight="semibold" className="mb-4">
             Wait time
           </Text>
-          <UseLeftTime end={(pool?.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
+          <UseLeftTime end={(pool?.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
             {leftTime => (
               <Text type="p1" weight="semibold" color="primary" className="mb-16">
-                {leftTime > 0 ? getFormattedDuration(0, (pool?.abond?.maturesAt ?? 0) * 1_000) : '0s'}
+                {leftTime > 0
+                  ? getFormattedDuration(0, (pool?.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)
+                  : '0s'}
               </Text>
             )}
           </UseLeftTime>

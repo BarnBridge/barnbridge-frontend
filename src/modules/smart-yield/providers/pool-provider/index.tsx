@@ -1,25 +1,24 @@
 import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
-import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
+import { getEtherscanTxUrl } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
-import SYSmartYieldContract, { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
+import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
 export type SYPool = APISYPool & {
   meta?: SYPoolMeta;
   market?: SYMarketMeta;
-  underlyingBalance?: BigNumber;
-  smartYieldBalance?: BigNumber;
-  underlyingAllowance?: BigNumber;
-  underlyingMaxAllowed?: BigNumber;
-  underlyingIsAllowed?: boolean;
-  abond?: SYAbond;
+  contracts: {
+    smartYield: SYSmartYieldContract;
+    underlying: SYUnderlyingContract;
+    controller: SYControllerContract;
+  };
 };
 
 type StatusModal = {
@@ -95,22 +94,6 @@ export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
-function useContract<T extends Web3Contract>(C: new (a: string) => T, address?: string): T | undefined {
-  const wallet = useWallet();
-
-  return React.useMemo<T | undefined>(() => {
-    if (!address) {
-      return undefined;
-    }
-
-    const contract = new C(address);
-    contract.setProvider(wallet.provider);
-    contract.setAccount(wallet.account);
-
-    return contract;
-  }, [address, wallet.provider, wallet.account]);
-}
-
 const PoolProvider: React.FC = props => {
   const { children } = props;
 
@@ -124,23 +107,29 @@ const PoolProvider: React.FC = props => {
   const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/junior'));
   const isJuniorWithdraw = Boolean(useRouteMatch('/smart-yield/withdraw'));
 
-  const smartYieldContract = useContract(SYSmartYieldContract, state.pool?.smartYieldAddress);
-  const underlyingContract = useContract(SYUnderlyingContract, state.pool?.underlyingAddress);
-  // const controllerContract = useContract(SYControllerContract, state.pool?.controllerAddress);
-
   const [market, token] = React.useMemo(() => {
     const urlQuery = new URLSearchParams(location.search);
-    const marketStr = decodeURIComponent(urlQuery.get('m') ?? '');
-    const tokenStr = decodeURIComponent(urlQuery.get('t') ?? '');
+
+    let marketStr = urlQuery.get('m') ?? undefined;
+
+    if (marketStr) {
+      marketStr = decodeURIComponent(marketStr);
+    }
+
+    let tokenStr = urlQuery.get('t') ?? undefined;
+
+    if (tokenStr) {
+      tokenStr = decodeURIComponent(tokenStr);
+    }
 
     return [marketStr, tokenStr];
   }, [location.search]);
 
   React.useEffect(() => {
-    smartYieldContract?.loadCommon();
-  }, [smartYieldContract]);
+    if (!market || !token) {
+      return;
+    }
 
-  React.useEffect(() => {
     setState(prevState => ({
       ...prevState,
       marketId: market,
@@ -157,18 +146,25 @@ const PoolProvider: React.FC = props => {
           return await Promise.reject();
         }
 
+        const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
+        smartYield.setProvider(wallet.provider);
+        await smartYield.loadCommon();
+
+        const underlying = new SYUnderlyingContract(pool.underlyingAddress);
+        underlying.setProvider(wallet.provider);
+        await underlying.loadCommon();
+
+        const controller = new SYControllerContract(pool.controllerAddress);
+        controller.setProvider(wallet.provider);
+
         const extPool: SYPool = {
           ...pool,
           meta: Pools.get(pool.underlyingSymbol),
           market: Markets.get(pool.protocolId),
-          get underlyingMaxAllowed(): BigNumber {
-            return BigNumber.min(
-              extPool.underlyingAllowance ?? ZERO_BIG_NUMBER,
-              extPool.underlyingBalance ?? ZERO_BIG_NUMBER,
-            );
-          },
-          get underlyingIsAllowed(): boolean | undefined {
-            return extPool.underlyingAllowance?.gt(ZERO_BIG_NUMBER);
+          contracts: {
+            smartYield,
+            underlying,
+            controller,
           },
         };
 
@@ -194,56 +190,28 @@ const PoolProvider: React.FC = props => {
       return;
     }
 
-    pool.underlyingBalance = undefined;
-    pool.underlyingAllowance = undefined;
+    pool.contracts.smartYield.setAccount(wallet.account);
+    pool.contracts.smartYield.loadBalance().then(reload);
 
-    if (wallet.isActive) {
-      underlyingContract?.getBalance().then(value => {
-        pool.underlyingBalance = value;
-        reload();
-      });
-
-      underlyingContract?.getAllowance(pool.providerAddress).then(allowance => {
-        pool.underlyingAllowance = allowance;
-        reload();
-      });
-    }
-  }, [state.pool, wallet.isActive, underlyingContract]);
-
-  React.useEffect(() => {
-    const { pool } = state;
-
-    if (!pool) {
-      return;
-    }
-
-    pool.smartYieldBalance = undefined;
-
-    if (wallet.isActive) {
-      smartYieldContract?.getBalance().then(value => {
-        pool.smartYieldBalance = value;
-        reload();
-      });
-
-      smartYieldContract?.getAbond().then(value => {
-        pool.abond = value;
-        reload();
-      });
-    }
-  }, [state.pool, wallet.isActive, smartYieldContract]);
+    pool.contracts.underlying.setAccount(wallet.account);
+    pool.contracts.underlying.loadBalance().then(reload);
+    pool.contracts.underlying.loadAllowance(pool.providerAddress).then(reload);
+  }, [state.pool, wallet.account]);
 
   const getForfeitsFor = React.useCallback(
     async (amount: BigNumber): Promise<BigNumber | undefined> => {
-      if (!smartYieldContract) {
+      const { pool } = state;
+
+      if (!pool) {
         return undefined;
       }
 
-      const totalSupply = await smartYieldContract.getTotalSupply();
-      const abondDebt = await smartYieldContract.getAbondDebt();
+      const totalSupply = await pool.contracts.smartYield.getTotalSupply();
+      const abondDebt = await pool.contracts.smartYield.getAbondDebt();
 
       return abondDebt.multipliedBy(amount).dividedBy(totalSupply);
     },
-    [smartYieldContract],
+    [state.pool],
   );
 
   const createSmartYieldContract = React.useCallback(
@@ -324,19 +292,16 @@ const PoolProvider: React.FC = props => {
     (enable: boolean) => {
       const { pool } = state;
 
-      if (!underlyingContract || !pool || !wallet.account) {
+      if (!pool || !wallet.account) {
         return Promise.reject();
       }
 
-      return underlyingContract
+      return pool.contracts.underlying
         .approve(enable, pool.providerAddress)
-        .then(() => underlyingContract.getAllowance(pool.providerAddress))
-        .then(allowance => {
-          pool.underlyingAllowance = allowance;
-          reload();
-        });
+        .then(() => pool.contracts.underlying.loadAllowance(pool.providerAddress))
+        .then(reload);
     },
-    [underlyingContract, state.pool, wallet.provider, wallet.account],
+    [state.pool],
   );
 
   const seniorDeposit = React.useCallback(

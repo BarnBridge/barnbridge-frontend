@@ -54,7 +54,7 @@ const JuniorTranche: React.FC = () => {
 
   const [state, setState] = React.useState<State>(InitialState);
   const [priceReversible, setPriceReversible] = React.useState(false);
-  const formDisabled = !pool?.underlyingIsAllowed;
+  const formDisabled = !pool?.contracts.underlying.isAllowed;
 
   function handlePriceReverse() {
     setPriceReversible(prevState => !prevState);
@@ -214,7 +214,7 @@ const JuniorTranche: React.FC = () => {
         <Form.Item name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={pool?.meta?.icon as TokenIconNames}
-            max={getHumanValue(pool?.underlyingMaxAllowed, pool?.underlyingDecimals)}
+            max={getHumanValue(pool?.contracts.underlying.maxAllowed, pool?.underlyingDecimals)}
             maximumFractionDigits={pool?.underlyingDecimals}
             displayDecimals={4}
             disabled={formDisabled || state.isSaving}
@@ -229,12 +229,13 @@ const JuniorTranche: React.FC = () => {
             <div className="grid flow-col col-gap-8 justify-center">
               {priceReversible ? (
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} j{pool?.underlyingSymbol} per{' '}
+                  {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} {pool?.contracts.smartYield.symbol} per{' '}
                   {pool?.underlyingSymbol}
                 </Text>
               ) : (
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per j{pool?.underlyingSymbol}
+                  {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per{' '}
+                  {pool?.contracts.smartYield.symbol}
                 </Text>
               )}
               <button type="button" className="button-text" onClick={handlePriceReverse}>
@@ -315,7 +316,7 @@ const JuniorTranche: React.FC = () => {
               <Form.Item dependencies={['from', 'slippageTolerance']} noStyle>
                 {() => (
                   <Text type="p2" weight="semibold" color="primary">
-                    {formatBigValue(getMinAmount() ?? ZERO_BIG_NUMBER)} j{pool?.underlyingSymbol}
+                    {formatBigValue(getMinAmount() ?? ZERO_BIG_NUMBER)} {pool?.contracts.smartYield.symbol}
                   </Text>
                 )}
               </Form.Item>
@@ -344,7 +345,7 @@ const JuniorTranche: React.FC = () => {
                   Minimum received
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(getMinAmount())} j{pool?.underlyingSymbol}
+                  {formatBigValue(getMinAmount())} {pool?.contracts.smartYield.symbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
