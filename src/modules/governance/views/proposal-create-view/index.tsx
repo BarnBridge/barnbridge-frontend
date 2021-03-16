@@ -203,14 +203,18 @@ const ProposalCreateView: React.FC = () => {
                 }>
                 <Grid flow="row" gap={24}>
                   <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Required' }]}>
-                    <Input placeholder="Placeholder" disabled={state.submitting} />
+                    <Input placeholder="Proposal title" disabled={state.submitting} />
                   </Form.Item>
                   <Form.Item
                     name="description"
                     label="Description"
                     hint="Be careful with the length of the description, this will eventually have to be stored on chain and the gas needed might make the proposal creation transaction more expensive."
                     rules={[{ required: true, message: 'Required' }]}>
-                    <Textarea placeholder="Placeholder" rows={6} disabled={state.submitting} />
+                    <Textarea
+                      placeholder="Please enter the goal of this proposal here"
+                      rows={6}
+                      disabled={state.submitting}
+                    />
                   </Form.Item>
                 </Grid>
               </Card>
@@ -238,7 +242,7 @@ const ProposalCreateView: React.FC = () => {
                     },
                   ]}>
                   {(fields, _, { errors }) => (
-                    <Grid flow="row" gap={24}>
+                    <>
                       {fields.map((field, index) => {
                         const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
                         const { targetAddress, functionSignature, functionEncodedParams } = fieldData;
@@ -246,6 +250,7 @@ const ProposalCreateView: React.FC = () => {
                         return (
                           <Form.Item key={field.key} noStyle>
                             <ProposalActionCard
+                              className="mb-24"
                               title={`Action ${index + 1}`}
                               target={targetAddress}
                               signature={functionSignature!}
@@ -282,7 +287,7 @@ const ProposalCreateView: React.FC = () => {
                       {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
 
                       <AntdForm.ErrorList errors={errors} />
-                    </Grid>
+                    </>
                   )}
                 </Form.List>
               </Card>

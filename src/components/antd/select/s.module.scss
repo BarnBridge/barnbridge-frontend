@@ -64,6 +64,7 @@
   border: 1px solid var(--theme-border-color);
   border-radius: 4px;
   padding: 4px;
+  pointer-events: all !important;
 
   :global(.ant-select-item) {
     border-radius: 4px;

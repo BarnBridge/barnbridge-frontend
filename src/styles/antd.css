@@ -16530,6 +16530,7 @@ textarea.ant-mentions {
   font-size: 14px;
   line-height: 1.5715;
   word-wrap: break-word;
+  overflow-y: auto;
 }
 .ant-modal-footer {
   padding: 10px 16px;
@@ -17562,6 +17563,7 @@ textarea.ant-pagination-options-quick-jumper input {
   text-align: left;
   cursor: auto;
   user-select: text;
+  pointer-events: all !important;
 }
 .ant-popover::after {
   position: absolute;
