@@ -38,14 +38,14 @@ import {
 type FormData = {
   amount?: BigNumber;
   maturityDate?: Date;
-  slippageTolerance?: number;
+  slippage?: number;
   deadline?: number;
 };
 
 const InitialFormValues: FormData = {
   amount: undefined,
   maturityDate: undefined,
-  slippageTolerance: 0.5,
+  slippage: 0.5,
   deadline: 20,
 };
 
@@ -119,7 +119,7 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
-    const { amount, maturityDate, slippageTolerance, deadline } = form.getFieldsValue();
+    const { amount, maturityDate, slippage, deadline } = form.getFieldsValue();
 
     if (!amount) {
       return;
@@ -143,7 +143,7 @@ const SeniorTranche: React.FC = () => {
       const lockDays = differenceInDays(maturityDate ?? startOfDay(new Date()), startOfDay(new Date()));
 
       const minGain = await smartYieldContract.getBondGain(amountScaled, lockDays);
-      const minGainMFee = minGain.multipliedBy(1 - (slippageTolerance ?? 0) / 100);
+      const minGainMFee = minGain.multipliedBy(1 - (slippage ?? 0) / 100);
       const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
@@ -293,7 +293,7 @@ const SeniorTranche: React.FC = () => {
             );
           }}
         </Form.Item>
-        <Form.Item name="slippageTolerance" noStyle hidden>
+        <Form.Item name="slippage" noStyle hidden>
           <Input />
         </Form.Item>
         <Form.Item name="deadline" noStyle hidden>
@@ -301,11 +301,13 @@ const SeniorTranche: React.FC = () => {
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
           {() => {
-            const { slippageTolerance, deadline } = form.getFieldsValue();
+            const { slippage, deadline } = form.getFieldsValue();
 
             return (
               <TransactionDetails
-                slippageTolerance={slippageTolerance}
+                showSlippage
+                slippage={slippage}
+                showDeadline
                 deadline={deadline}
                 onChange={handleTxDetailsChange}
               />

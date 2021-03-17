@@ -13,12 +13,14 @@ import { Hint, Text } from 'components/custom/typography';
 import s from './s.module.scss';
 
 type FormData = {
-  slippageTolerance?: number;
+  slippage?: number;
   deadline?: number;
 };
 
 type TransactionCustomizationProps = {
-  slippageTolerance?: number;
+  showSlippage?: boolean;
+  slippage?: number;
+  showDeadline?: boolean;
   deadline?: number;
   onChange?: (values: FormData) => void;
 };
@@ -26,19 +28,17 @@ type TransactionCustomizationProps = {
 const SLIPPAGE_OPTIONS = [0.1, 0.3, 0.5];
 
 const TransactionCustomization: React.FC<TransactionCustomizationProps> = props => {
-  const { slippageTolerance, deadline, onChange } = props;
+  const { showSlippage, slippage, showDeadline, deadline, onChange } = props;
 
   const [form] = Antd.Form.useForm<FormData>();
 
   const handleValuesChange = React.useCallback((values: FormData) => {
     if (values.deadline) {
-      const strValue = String(values.deadline);
+      const strValue = String(values.deadline).slice(0, 6);
 
-      if (strValue.length > 6) {
-        form.setFieldsValue({
-          deadline: Number(strValue.slice(0, 6)),
-        });
-      }
+      form.setFieldsValue({
+        deadline: Number(strValue),
+      });
     }
   }, []);
 
@@ -54,55 +54,59 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
     <Form
       form={form}
       initialValues={{
-        slippageTolerance,
+        slippage,
         deadline,
       }}
       validateTrigger={['onSubmit']}
       onValuesChange={handleValuesChange}
       onFinish={handleFinish}>
       <div className="grid flow-row row-gap-32">
-        <Form.Item label="Slippage tolerance">
-          <div className="grid flow-col col-gap-16">
-            {SLIPPAGE_OPTIONS.map(opt => (
-              <Button
-                key={opt}
-                type="ghost"
-                style={{ width: 70 }}
-                onClick={() => {
-                  form.setFieldsValue({
-                    slippageTolerance: Number(opt),
-                  });
-                }}>
-                {opt}%
-              </Button>
-            ))}
-            <Form.Item
-              name="slippageTolerance"
-              rules={[
-                { required: true, message: 'Required' },
-                {
-                  validator: (_: any, value: number) => {
-                    return value > 0 && value <= 100 ? Promise.resolve() : Promise.reject();
+        {showSlippage && (
+          <Form.Item label="Slippage tolerance">
+            <div className="grid flow-col col-gap-16">
+              {SLIPPAGE_OPTIONS.map(opt => (
+                <Button
+                  key={opt}
+                  type="ghost"
+                  style={{ width: 70 }}
+                  onClick={() => {
+                    form.setFieldsValue({
+                      slippage: Number(opt),
+                    });
+                  }}>
+                  {opt}%
+                </Button>
+              ))}
+              <Form.Item
+                name="slippage"
+                rules={[
+                  { required: true, message: 'Required' },
+                  {
+                    validator: (_: any, value: number) => {
+                      return value > 0 && value <= 100 ? Promise.resolve() : Promise.reject();
+                    },
+                    message: 'Enter a valid slippage percentage',
                   },
-                  message: 'Enter a valid slippage percentage',
-                },
-              ]}
-              noStyle>
-              <Input type="number" />
-            </Form.Item>
-          </div>
-        </Form.Item>
-        <Form.Item name="deadline" label="Transaction deadline" rules={[{ required: true, message: 'Required' }]}>
-          <Input
-            type="number"
-            className={s.deadlineInput}
-            suffix={
-              <Text type="p1" weight="semibold" color="primary">
-                minutes
-              </Text>
-            }
-          />
-        </Form.Item>
+                ]}
+                noStyle>
+                <Input type="number" />
+              </Form.Item>
+            </div>
+          </Form.Item>
+        )}
+        {showDeadline && (
+          <Form.Item name="deadline" label="Transaction deadline" rules={[{ required: true, message: 'Required' }]}>
+            <Input
+              type="number"
+              className={s.deadlineInput}
+              suffix={
+                <Text type="p1" weight="semibold" color="primary">
+                  minutes
+                </Text>
+              }
+            />
+          </Form.Item>
+        )}
         <div className="grid flow-col align-center justify-space-between">
           <Button type="light" onClick={handleReset}>
             Reset changes
@@ -118,13 +122,15 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
 
 type TransactionDetailsProps = {
   className?: string;
-  slippageTolerance?: number;
+  showSlippage?: boolean;
+  slippage?: number;
+  showDeadline?: boolean;
   deadline?: number;
   onChange?: (values: FormData) => void;
 };
 
 const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
-  const { className, slippageTolerance, deadline, onChange } = props;
+  const { className, showSlippage = false, slippage, showDeadline = false, deadline, onChange } = props;
 
   const [visible, setVisible] = useState<boolean>(false);
 
@@ -144,7 +150,9 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
           overlayStyle={{ width: 423 }}
           content={
             <TransactionCustomization
-              slippageTolerance={slippageTolerance}
+              showSlippage={showSlippage}
+              slippage={slippage}
+              showDeadline={showDeadline}
               deadline={deadline}
               onChange={handleChange}
             />
@@ -158,26 +166,30 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
       </header>
       <Divider />
       <div className="ph-24 pv-16">
-        <div className="flex mb-24">
-          <Hint text="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage.">
-            <Text type="small" weight="semibold" color="secondary">
-              Slippage tolerance
+        {showSlippage && (
+          <div className="flex mb-24">
+            <Hint text="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage.">
+              <Text type="small" weight="semibold" color="secondary">
+                Slippage tolerance
+              </Text>
+            </Hint>
+            <Text type="small" weight="semibold" color="primary" className="ml-auto">
+              {slippage}%
             </Text>
-          </Hint>
-          <Text type="small" weight="semibold" color="primary" className="ml-auto">
-            {slippageTolerance}%
-          </Text>
-        </div>
-        <div className="flex">
-          <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
-            <Text type="small" weight="semibold" color="secondary">
-              Transaction deadline
+          </div>
+        )}
+        {showDeadline && (
+          <div className="flex">
+            <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
+              <Text type="small" weight="semibold" color="secondary">
+                Transaction deadline
+              </Text>
+            </Hint>
+            <Text type="small" weight="semibold" color="primary" className="ml-auto">
+              {deadline} minutes
             </Text>
-          </Hint>
-          <Text type="small" weight="semibold" color="primary" className="ml-auto">
-            {deadline} minutes
-          </Text>
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

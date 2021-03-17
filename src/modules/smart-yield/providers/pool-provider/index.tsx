@@ -191,15 +191,23 @@ const PoolProvider: React.FC = props => {
     }
 
     pool.contracts.smartYield.setProvider(wallet.provider);
+    pool.contracts.underlying.setProvider(wallet.provider);
+    pool.contracts.controller.setProvider(wallet.provider);
+  }, [state.pool, wallet.provider]);
+
+  React.useEffect(() => {
+    const { pool } = state;
+
+    if (!pool) {
+      return;
+    }
+
     pool.contracts.smartYield.setAccount(wallet.account);
     pool.contracts.smartYield.loadBalance().then(reload);
 
-    pool.contracts.underlying.setProvider(wallet.provider);
     pool.contracts.underlying.setAccount(wallet.account);
     pool.contracts.underlying.loadBalance().then(reload);
     pool.contracts.underlying.loadAllowance(pool.providerAddress).then(reload);
-
-    pool.contracts.controller.setProvider(wallet.provider);
   }, [state.pool, wallet.account]);
 
   const getForfeitsFor = React.useCallback(
@@ -282,12 +290,10 @@ const PoolProvider: React.FC = props => {
     if (isSeniorDeposit) {
       history.push({
         pathname: `/smart-yield/portfolio/senior`,
-        search: `?m=${market}&t=${token}`,
       });
     } else if (isJuniorDeposit || isJuniorWithdraw) {
       history.push({
         pathname: `/smart-yield/portfolio/junior`,
-        search: `?m=${market}&t=${token}`,
       });
     }
   }
@@ -316,7 +322,9 @@ const PoolProvider: React.FC = props => {
         return Promise.reject();
       }
 
-      return contract.buyBondSend(principalAmount, minGain, deadline, forDays, gasPrice);
+      return contract.buyBondSend(principalAmount, minGain, deadline, forDays, gasPrice).then(() => {
+        state.pool?.contracts.underlying.loadBalance().then(reload);
+      });
     },
     [createSmartYieldContract],
   );
@@ -329,7 +337,10 @@ const PoolProvider: React.FC = props => {
         return Promise.reject();
       }
 
-      return contract.buyTokensSend(underlyingAmount, minTokens, deadline, gasPrice);
+      return contract.buyTokensSend(underlyingAmount, minTokens, deadline, gasPrice).then(() => {
+        state.pool?.contracts.smartYield.loadBalance().then(reload);
+        state.pool?.contracts.underlying.loadBalance().then(reload);
+      });
     },
     [createSmartYieldContract],
   );
@@ -342,7 +353,10 @@ const PoolProvider: React.FC = props => {
         return Promise.reject();
       }
 
-      return contract.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasPrice);
+      return contract.buyJuniorBondSend(tokenAmount, maxMaturesAt, deadline, gasPrice).then(() => {
+        state.pool?.contracts.smartYield.loadBalance().then(reload);
+        state.pool?.contracts.underlying.loadBalance().then(reload);
+      });
     },
     [createSmartYieldContract],
   );
@@ -355,7 +369,10 @@ const PoolProvider: React.FC = props => {
         return Promise.reject();
       }
 
-      return contract.sellTokensSend(tokenAmount, minUnderlying, deadline, gasPrice);
+      return contract.sellTokensSend(tokenAmount, minUnderlying, deadline, gasPrice).then(() => {
+        state.pool?.contracts.smartYield.loadBalance().then(reload);
+        state.pool?.contracts.underlying.loadBalance().then(reload);
+      });
     },
     [createSmartYieldContract],
   );
