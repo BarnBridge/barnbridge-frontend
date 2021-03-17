@@ -1,7 +1,6 @@
 import React from 'react';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -14,13 +13,12 @@ const AbrogationDetailsCard: React.FC = () => {
   const abrogationCtx = useAbrogation();
 
   return (
-    <Card
-      title={
+    <div className="card">
+      <div className="card-header">
         <Text type="p1" weight="semibold" color="primary">
           Details
         </Text>
-      }
-      noPaddingBody>
+      </div>
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
@@ -47,7 +45,7 @@ const AbrogationDetailsCard: React.FC = () => {
           {abrogationCtx.abrogation?.description}
         </Text>
       </Grid>
-    </Card>
+    </div>
   );
 };
 

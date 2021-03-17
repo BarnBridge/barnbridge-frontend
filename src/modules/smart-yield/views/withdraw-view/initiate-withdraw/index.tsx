@@ -5,7 +5,6 @@ import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -73,7 +72,7 @@ const InitiateWithdraw: React.FC = () => {
   }, [totalWithdrawable, forfeits]);
 
   return (
-    <Card>
+    <div className="card p-24">
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Initiate Withdraw
       </Text>
@@ -218,7 +217,7 @@ const InitiateWithdraw: React.FC = () => {
           Next step
         </Button>
       </Grid>
-    </Card>
+    </div>
   );
 };
 

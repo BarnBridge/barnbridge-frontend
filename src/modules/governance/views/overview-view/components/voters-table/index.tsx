@@ -3,13 +3,13 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
+import cn from 'classnames';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
@@ -100,15 +100,14 @@ const VotersTable: React.FC<VotersTableProps> = props => {
   }, [page, pageSize]);
 
   return (
-    <Card
-      title={
+    <div className={cn('card', className)}>
+      <div className="card-header">
         <Text type="p1" weight="semibold" color="primary">
           Voter weights
         </Text>
-      }
-      noPaddingBody>
+      </div>
       <Table<APIVoterEntity>
-        className={className}
+        inCard
         columns={Columns}
         dataSource={voters}
         rowKey="address"
@@ -134,7 +133,7 @@ const VotersTable: React.FC<VotersTableProps> = props => {
           x: true,
         }}
       />
-    </Card>
+    </div>
   );
 };
 

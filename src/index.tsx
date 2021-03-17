@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Web3ContractsProvider from 'web3/contracts';
 
+import ErrorBoundary from 'components/custom/error-boundary';
 import EthWeb3Provider from 'components/providers/eth-web3-provider';
 import GeneralContextProvider from 'components/providers/general-provider';
 import ThemeProvider from 'components/providers/theme-provider';
@@ -17,7 +18,7 @@ import * as sw from './serviceWorker';
 
 const App: React.FC = () => {
   return (
-    <>
+    <ErrorBoundary>
       <StaticSprite />
       <WindowStateProvider>
         <ThemeProvider>
@@ -34,7 +35,7 @@ const App: React.FC = () => {
           </EthWeb3Provider>
         </ThemeProvider>
       </WindowStateProvider>
-    </>
+    </ErrorBoundary>
   );
 };
 

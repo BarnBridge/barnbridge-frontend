@@ -220,6 +220,7 @@ const PoolsTable: React.FC<Props> = props => {
 
   return (
     <Table<PoolEntity>
+      inCard
       columns={columns}
       dataSource={entities}
       rowKey={entity => entity.smartYieldAddress}

@@ -2,8 +2,6 @@ import React from 'react';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
-import Divider from 'components/antd/divider';
 import Skeleton from 'components/antd/skeleton';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -59,14 +57,13 @@ const ProposalDetailsCard: React.FC = () => {
   }
 
   return (
-    <Card
-      title={
+    <div className="card">
+      <div className="card-header">
         <Text type="p1" weight="semibold" color="primary">
           Details
         </Text>
-      }
-      noPaddingBody>
-      <Grid flow="col" gap={32} justify="space-between" padding={24}>
+      </div>
+      <Grid className="card-row p-24" flow="col" gap={32} justify="space-between">
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
             <Text type="small" weight="semibold" color="secondary">
@@ -114,8 +111,7 @@ const ProposalDetailsCard: React.FC = () => {
           )}
         </Grid>
       </Grid>
-      <Divider />
-      <Grid flow="row" gap={16} padding={24}>
+      <Grid className="card-row p-24" flow="row" gap={16}>
         <Text type="small" weight="semibold" color="secondary">
           Description
         </Text>
@@ -123,8 +119,7 @@ const ProposalDetailsCard: React.FC = () => {
           {proposalCtx.proposal?.description}
         </Text>
       </Grid>
-      <Divider />
-      <Grid flow="row" gap={16} padding={24}>
+      <Grid className="card-row p-24" flow="row" gap={16}>
         <Text type="small" weight="semibold" color="secondary">
           Actions
         </Text>
@@ -138,7 +133,7 @@ const ProposalDetailsCard: React.FC = () => {
           />
         ))}
       </Grid>
-    </Card>
+    </div>
   );
 };
 

@@ -23,13 +23,10 @@ import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue, formatBigValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
 
 import { inRange } from 'utils';
-
-import s from './s.module.scss';
 
 enum GranularityType {
   NONE,
@@ -171,9 +168,8 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   ]);
 
   return (
-    <Card
-      className={s.card}
-      title={
+    <div className="card">
+      <div className="card-header">
         <Hint
           text={
             <>
@@ -200,7 +196,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
             {formatDistanceToNow(lockEndDate)}
           </Text>
         </Hint>
-      }>
+      </div>
       <ReCharts.ResponsiveContainer width="100%" height={154}>
         <ReCharts.AreaChart data={data} margin={{ top: 0, right: 10, left: 0, bottom: 5 }}>
           <defs>
@@ -266,7 +262,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           <ReCharts.Area dataKey="bonus" name="Bonus" fill="url(#chart-gradient)" strokeWidth={2} stroke="#ff4339" />
         </ReCharts.AreaChart>
       </ReCharts.ResponsiveContainer>
-    </Card>
+    </div>
   );
 };
 

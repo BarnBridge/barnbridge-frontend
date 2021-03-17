@@ -3,7 +3,6 @@ import format from 'date-fns/format';
 import formatDistance from 'date-fns/formatDistance';
 import { getEtherscanTxUrl } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
@@ -74,7 +73,7 @@ const ProposalStatusCard: React.FC = () => {
   const proposalCtx = useProposal();
 
   return (
-    <Card>
+    <div className="card p-24">
       <Grid flow="row" gap={24}>
         {proposalCtx.proposal?.history.map((event, index: number) => (
           <Grid key={event.name} flow="col" gap={12}>
@@ -106,7 +105,7 @@ const ProposalStatusCard: React.FC = () => {
           </Grid>
         ))}
       </Grid>
-    </Card>
+    </div>
   );
 };
 

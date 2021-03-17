@@ -14,8 +14,6 @@ import ProposalStatusTag from '../proposal-status-tag';
 
 import { getFormattedDuration } from 'utils';
 
-import s from './s.module.scss';
-
 const Columns: ColumnsType<APILiteProposalEntity> = [
   {
     title: 'Proposal',
@@ -87,8 +85,7 @@ const ProposalsTable: React.FC = () => {
 
   return (
     <Table<APILiteProposalEntity>
-      className={s.table}
-      title={() => ''}
+      inCard
       columns={Columns}
       dataSource={proposalsCtx.proposals}
       rowKey="proposalId"
