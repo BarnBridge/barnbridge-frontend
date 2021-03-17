@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */
+/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { NavLink, useLocation } from 'react-router-dom';
@@ -41,7 +43,7 @@ const LayoutSideNav: React.FC = () => {
 
   return (
     <>
-      <div className={cn(s.mask, { [s.open]: navOpen })} />
+      <div className={cn(s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
       <aside className={cn(s.aside, { [s.expanded]: expanded, [s.open]: navOpen })}>
         <div className={s.logoContainer}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>

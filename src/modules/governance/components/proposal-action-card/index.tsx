@@ -117,6 +117,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
 
   return (
     <ExpandableCard
+      className={className}
       title={
         <Text type="p2" weight="semibold" color="primary">
           {title}
