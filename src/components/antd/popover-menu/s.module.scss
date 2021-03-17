@@ -1,6 +1,8 @@
 @import 'src/styles/text';
 
 .component:global(.ant-popover) {
+  pointer-events: all !important;
+
   :global(.ant-popover-inner-content) {
     padding: 0;
 
