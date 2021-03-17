@@ -12,6 +12,7 @@ import PoolsProvider from './providers/pools-provider';
 import s from './s.module.scss';
 
 const MarketsView = lazy(() => import('./views/markets-view'));
+const PoolsView = lazy(() => import('./views/pools-view'));
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 const DepositView = lazy(() => import('./views/deposit-view'));
 const WithdrawView = lazy(() => import('./views/withdraw-view'));
@@ -56,6 +57,14 @@ const SmartYieldView: React.FC = () => {
           tab={
             <>
               <Icon name="bar-charts-outlined" /> Markets
+            </>
+          }
+        />
+        <Tabs.Tab
+          key="pools"
+          tab={
+            <>
+              <Icon name="savings-outlined" /> Pools
             </>
           }
         />
@@ -106,6 +115,7 @@ const SmartYieldView: React.FC = () => {
                 )
               }
             />
+            <Route path="/smart-yield/pools" component={PoolsView} />
             <Redirect to="/smart-yield/markets" />
           </Switch>
         </Suspense>
