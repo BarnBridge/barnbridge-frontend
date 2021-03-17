@@ -388,3 +388,17 @@ export function fetchSYJuniorPortfolioValues(address: string): Promise<APISYJuni
       })),
     );
 }
+
+export type APISYRewardPool = {
+  poolAddress: string;
+  poolTokenAddress: string;
+  rewardTokenAddress: string;
+};
+
+export function fetchSYRewardPools(): Promise<APISYRewardPool[]> {
+  const url = new URL(`/api/smartyield/rewards/pools`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => result.data);
+}
