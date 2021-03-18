@@ -21,3 +21,18 @@
     align-items: center;
   }
 }
+
+.stakeStatisticsContainer {
+  display: flex;
+  margin-bottom: 32px;
+}
+
+.stake {
+  flex-grow: 1;
+  margin-right: 32px;
+}
+
+.statistics {
+  max-width: 384px;
+  flex-basis: 384px;
+}

@@ -4,15 +4,21 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 
+import Stake from './stake';
+import Statistics from './statistics';
+import Transactions from './transactions';
+
 import s from './s.module.scss';
 
 const Pool: React.FC = () => {
   return (
     <>
-      <Link to="/smart-yield/pools" className="button-text mb-16">
-        <Icon name="left-arrow" width={14} height={12} className="mr-12" color="inherit" />
-        Pools
-      </Link>
+      <div className="mb-16">
+        <Link to="/smart-yield/pools" className="button-text" style={{ display: 'inline-flex' }}>
+          <Icon name="left-arrow" width={14} height={12} className="mr-12" color="inherit" />
+          Pools
+        </Link>
+      </div>
       <div className="flex align-center mb-32">
         <IconBubble
           name="usdc-token"
@@ -26,7 +32,7 @@ const Pool: React.FC = () => {
           bbcUSDC
         </Text>
       </div>
-      <div className="card p-24">
+      <div className="card p-24 mb-32">
         <dl className={s.headerTerms}>
           <div className={s.headerTermRow}>
             <dt>Pool balance</dt>
@@ -52,6 +58,11 @@ const Pool: React.FC = () => {
           </div>
         </dl>
       </div>
+      <div className={s.stakeStatisticsContainer}>
+        <Stake className={s.stake} />
+        <Statistics className={s.statistics} />
+      </div>
+      <Transactions />
     </>
   );
 };
