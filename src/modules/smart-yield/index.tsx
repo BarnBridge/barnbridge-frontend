@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { RouteComponentProps } from 'react-router';
 import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';

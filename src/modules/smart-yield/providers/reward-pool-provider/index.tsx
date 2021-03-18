@@ -1,14 +1,8 @@
 import React from 'react';
 
 import { useReload } from 'hooks/useReload';
-import {
-  APISYRewardPool,
-  APISYRewardPoolTransaction,
-  fetchSYRewardPoolTransactions,
-  fetchSYRewardPools,
-} from 'modules/smart-yield/api';
+import { APISYRewardPool, APISYRewardPoolTransaction, fetchSYRewardPoolTransactions } from 'modules/smart-yield/api';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
-import { useWallet } from 'wallets/wallet';
 
 export type SYRewardPool = APISYRewardPool & {
   contracts: {

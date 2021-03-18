@@ -3,6 +3,14 @@ import QueryString from 'query-string';
 
 const GOV_API_URL = process.env.REACT_APP_GOV_API_URL;
 
+function queryfy(obj: Record<string, any>): string {
+  return QueryString.stringify(obj, {
+    skipNull: true,
+    skipEmptyString: true,
+    encode: true,
+  });
+}
+
 type PaginatedResult<T extends Record<string, any>> = {
   data: T[];
   meta: {
@@ -200,20 +208,13 @@ export function fetchSYUserTxHistory(
   token = 'all',
   transactionType = 'all',
 ): Promise<PaginatedResult<APISYUserTxHistory>> {
-  const query = QueryString.stringify(
-    {
-      page: String(page),
-      limit: String(limit),
-      originator,
-      token,
-      transactionType,
-    },
-    {
-      skipNull: true,
-      skipEmptyString: true,
-      encode: true,
-    },
-  );
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    originator,
+    token,
+    transactionType,
+  });
 
   const url = new URL(`/api/smartyield/users/${address}/history?${query}`, GOV_API_URL);
 
@@ -248,19 +249,12 @@ export function fetchSYSeniorRedeems(
   originator = 'all',
   token = 'all',
 ): Promise<PaginatedResult<APISYSeniorRedeem>> {
-  const query = QueryString.stringify(
-    {
-      page: String(page),
-      limit: String(limit),
-      originator,
-      token,
-    },
-    {
-      skipNull: true,
-      skipEmptyString: true,
-      encode: true,
-    },
-  );
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    originator,
+    token,
+  });
 
   const url = new URL(`/api/smartyield/users/${address}/redeems/senior?=${query}`, GOV_API_URL);
 
@@ -305,20 +299,13 @@ export function fetchSYJuniorPastPositions(
   token = 'all',
   transactionType = 'all',
 ): Promise<PaginatedResult<APISYJuniorPastPosition>> {
-  const query = QueryString.stringify(
-    {
-      page: String(page),
-      limit: String(limit),
-      originator,
-      token,
-      transactionType,
-    },
-    {
-      skipNull: true,
-      skipEmptyString: true,
-      encode: true,
-    },
-  );
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    originator,
+    token,
+    transactionType,
+  });
 
   const url = new URL(`/api/smartyield/users/${address}/junior-past-positions?${query}`, GOV_API_URL);
 
@@ -393,11 +380,14 @@ export function fetchSYJuniorPortfolioValues(address: string): Promise<APISYJuni
 export type APISYRewardPool = {
   poolAddress: string;
   poolTokenAddress: string;
+  poolTokenDecimals: number;
   rewardTokenAddress: string;
+  protocolId: string;
+  underlyingSymbol: string;
 };
 
-export function fetchSYRewardPools(): Promise<APISYRewardPool[]> {
-  const url = new URL(`/api/smartyield/rewards/pools`, GOV_API_URL);
+export function fetchSYRewardPools(protocolId: string = 'all'): Promise<APISYRewardPool[]> {
+  const url = new URL(`/api/smartyield/rewards/pools?protocolId=${protocolId}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -415,8 +405,19 @@ export type APISYRewardPoolTransaction = {
 
 export function fetchSYRewardPoolTransactions(
   poolAddress: string,
+  page = 1,
+  limit = 10,
+  userAddress: string = 'all',
+  transactionType: string = 'all',
 ): Promise<PaginatedResult<APISYRewardPoolTransaction>> {
-  const url = new URL(`/api/smartyield/rewards/pools/${poolAddress}/transactions`, GOV_API_URL);
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    userAddress,
+    transactionType,
+  });
+
+  const url = new URL(`/api/smartyield/rewards/pools/${poolAddress}/transactions?${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
