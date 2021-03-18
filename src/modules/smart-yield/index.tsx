@@ -1,4 +1,5 @@
-import React, { Suspense, lazy } from 'react';
+import React, { lazy, Suspense } from 'react';
+import { RouteComponentProps } from 'react-router';
 import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
@@ -8,6 +9,8 @@ import { useWallet } from 'wallets/wallet';
 
 import PoolProvider from './providers/pool-provider';
 import PoolsProvider from './providers/pools-provider';
+import RewardPoolProvider from './providers/reward-pool-provider';
+import RewardPoolsProvider from './providers/reward-pools-provider';
 
 import s from './s.module.scss';
 
@@ -15,7 +18,8 @@ const MarketsView = lazy(() => import('./views/markets-view'));
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 const DepositView = lazy(() => import('./views/deposit-view'));
 const WithdrawView = lazy(() => import('./views/withdraw-view'));
-const PoolsView = lazy(() => import('./views/pools-view'));
+const RewardPoolsView = lazy(() => import('./views/reward-pools-view'));
+const RewardPoolView = lazy(() => import('./views/reward-pool-view'));
 
 type SmartYieldViewParams = {
   vt: string;
@@ -116,7 +120,23 @@ const SmartYieldView: React.FC = () => {
                 )
               }
             />
-            <Route path="/smart-yield/pools" component={PoolsView} />
+            <Route
+              path="/smart-yield/pools"
+              exact
+              render={() => (
+                <RewardPoolsProvider>
+                  <RewardPoolsView />
+                </RewardPoolsProvider>
+              )}
+            />
+            <Route
+              path="/smart-yield/pools/:poolAddress"
+              render={({ match: { params } }: RouteComponentProps<{ poolAddress: string }>) => (
+                <RewardPoolProvider poolAddress={params.poolAddress}>
+                  <RewardPoolView />
+                </RewardPoolProvider>
+              )}
+            />
             <Redirect to="/smart-yield/markets" />
           </Switch>
         </Suspense>

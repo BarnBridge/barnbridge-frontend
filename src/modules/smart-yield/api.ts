@@ -7,6 +7,7 @@ type PaginatedResult<T extends Record<string, any>> = {
   data: T[];
   meta: {
     count: number;
+    block: number;
   };
 };
 
@@ -401,4 +402,29 @@ export function fetchSYRewardPools(): Promise<APISYRewardPool[]> {
   return fetch(url.toString())
     .then(result => result.json())
     .then(result => result.data);
+}
+
+export type APISYRewardPoolTransaction = {
+  userAddress: string;
+  transactionType: string;
+  amount: BigNumber;
+  blockNumber: number;
+  blockTimestamp: number;
+  transactionHash: string;
+};
+
+export function fetchSYRewardPoolTransactions(
+  poolAddress: string,
+): Promise<PaginatedResult<APISYRewardPoolTransaction>> {
+  const url = new URL(`/api/smartyield/rewards/pools/${poolAddress}/transactions`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => ({
+      ...result,
+      data: (result.data ?? []).map((item: APISYRewardPoolTransaction) => ({
+        ...item,
+        amount: new BigNumber(item.amount),
+      })),
+    }));
 }
