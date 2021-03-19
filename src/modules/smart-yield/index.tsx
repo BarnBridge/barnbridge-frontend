@@ -65,7 +65,6 @@ const SmartYieldView: React.FC = () => {
         />
         <Tabs.Tab
           key="pools"
-          disabled={!wallet.account}
           tab={
             <>
               <Icon name="savings-outlined" /> Pools
