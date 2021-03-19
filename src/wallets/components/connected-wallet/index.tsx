@@ -12,7 +12,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { useTheme } from 'components/providers/theme-provider';
+import { useGeneral } from 'components/providers/general-provider';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 import { useWallet } from 'wallets/wallet';
@@ -20,7 +20,7 @@ import { useWallet } from 'wallets/wallet';
 import s from './s.module.scss';
 
 const ConnectedWallet: React.FC = () => {
-  const { isDarkTheme } = useTheme();
+  const { isDarkTheme } = useGeneral();
   const wallet = useWallet();
 
   if (wallet.connecting) {

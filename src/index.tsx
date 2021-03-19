@@ -7,7 +7,6 @@ import Web3ContractsProvider from 'web3/contracts';
 
 import EthWeb3Provider from 'components/providers/eth-web3-provider';
 import GeneralContextProvider from 'components/providers/general-provider';
-import ThemeProvider from 'components/providers/theme-provider';
 import WindowStateProvider from 'components/providers/window-state';
 import LayoutView from 'layout';
 import { ReactComponent as StaticSprite } from 'resources/svg/static-sprite.svg';
@@ -20,19 +19,17 @@ const App: React.FC = () => {
     <>
       <StaticSprite />
       <WindowStateProvider>
-        <ThemeProvider>
-          <EthWeb3Provider>
-            <Web3WalletProvider>
-              <Web3ContractsProvider>
-                <GeneralContextProvider>
-                  <Router>
-                    <LayoutView />
-                  </Router>
-                </GeneralContextProvider>
-              </Web3ContractsProvider>
-            </Web3WalletProvider>
-          </EthWeb3Provider>
-        </ThemeProvider>
+        <EthWeb3Provider>
+          <Web3WalletProvider>
+            <Web3ContractsProvider>
+              <GeneralContextProvider>
+                <Router>
+                  <LayoutView />
+                </Router>
+              </GeneralContextProvider>
+            </Web3ContractsProvider>
+          </Web3WalletProvider>
+        </EthWeb3Provider>
       </WindowStateProvider>
     </>
   );
