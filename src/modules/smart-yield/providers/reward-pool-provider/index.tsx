@@ -158,6 +158,32 @@ const RewardPoolProvider: React.FC = props => {
     })();
   }, [state.pool]);
 
+  React.useEffect(() => {
+    const { pool } = state;
+
+    if (pool) {
+      pool.rewardToken.setProvider(wallet.provider);
+      pool.poolToken.setProvider(wallet.provider);
+      pool.pool.setProvider(wallet.provider);
+    }
+  }, [state.pool, wallet.provider]);
+
+  React.useEffect(() => {
+    const { pool } = state;
+
+    if (pool) {
+      pool.rewardToken.setAccount(wallet.account);
+
+      pool.poolToken.setAccount(wallet.account);
+      pool.poolToken.loadBalance().then(reload);
+      pool.poolToken.loadAllowance(pool.poolAddress).then(reload);
+
+      pool.pool.setAccount(wallet.account);
+      pool.pool.loadClaim().then(reload);
+      pool.pool.loadBalance().then(reload);
+    }
+  }, [state.pool, wallet.account]);
+
   const value = React.useMemo<ContextType>(() => {
     return {
       ...state,

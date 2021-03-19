@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import * as Antd from 'antd';
 import cn from 'classnames';
+import { formatBigValue, formatToken, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Form from 'components/antd/form';
 import Tabs from 'components/antd/tabs';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 
 import s from 'modules/smart-yield/views/pool-view/stake/s.module.scss';
 
@@ -19,9 +21,12 @@ const InitialFormValues: FormStateType = {
 
 const StakeForm: React.FC = () => {
   const [form] = Antd.Form.useForm<FormStateType>();
+  const { pool } = useRewardPool();
 
   const submitHandler = (values: FormStateType) => {
-    console.log(values);
+    const value = getNonHumanValue(values.amount, pool?.poolToken.decimals!);
+
+    return pool?.pool.sendDeposit(value, 1);
   };
 
   return (
@@ -33,13 +38,16 @@ const StakeForm: React.FC = () => {
         className="mb-32"
         extra={
           <Text type="small" weight="semibold" color="secondary">
-            Portfolio balance: 10,221.31
+            Portfolio balance:{' '}
+            {formatToken(getHumanValue(pool?.poolToken.balance, pool?.poolToken.decimals), {
+              tokenName: pool?.poolToken.symbol,
+            })}
           </Text>
         }>
         <TokenAmount
           tokenIcon="bond-token"
-          max={200}
-          maximumFractionDigits={4}
+          max={getHumanValue(pool?.poolToken.balance, pool?.poolToken.decimals)?.toNumber()}
+          maximumFractionDigits={pool?.poolToken.decimals}
           displayDecimals={4}
           disabled={false}
           slider
@@ -56,13 +64,24 @@ const StakeForm: React.FC = () => {
 
 const UnstakeForm: React.FC = () => {
   const [form] = Antd.Form.useForm<FormStateType>();
+  const { pool } = useRewardPool();
 
-  const submitHandler = (values: FormStateType) => {
-    console.log(values);
-  };
+  function handleUnstake() {
+    const values = form.getFieldsValue();
+    const value = getNonHumanValue(values.amount, pool?.poolToken.decimals!);
+
+    return pool?.pool.sendWithdraw(value, 1);
+  }
+
+  function handleClaimAndUnstake() {
+    const values = form.getFieldsValue();
+    const value = getNonHumanValue(values.amount, pool?.poolToken.decimals!);
+
+    return pool?.pool.sendWithdrawAndClaim(value, 1);
+  }
 
   return (
-    <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={submitHandler}>
+    <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']}>
       <Form.Item
         name="amount"
         label="Amount"
@@ -70,23 +89,26 @@ const UnstakeForm: React.FC = () => {
         className="mb-32"
         extra={
           <Text type="small" weight="semibold" color="secondary">
-            Staked balance: 10,221.31
+            Staked balance:
+            {formatToken(getHumanValue(pool?.pool.balance, pool?.poolToken.decimals), {
+              tokenName: pool?.poolToken.symbol,
+            })}
           </Text>
         }>
         <TokenAmount
           tokenIcon="bond-token"
-          max={200}
-          maximumFractionDigits={4}
+          max={getHumanValue(pool?.pool.balance, pool?.poolToken.decimals)?.toNumber()}
+          maximumFractionDigits={pool?.poolToken.decimals}
           displayDecimals={4}
           disabled={false}
           slider
         />
       </Form.Item>
       <div className="flex col-gap-24">
-        <button type="button" className="button-primary">
+        <button type="button" className="button-primary" onClick={handleUnstake}>
           Unstake
         </button>
-        <button type="button" className="button-ghost">
+        <button type="button" className="button-ghost" onClick={handleClaimAndUnstake}>
           Claim & Unstake
         </button>
       </div>

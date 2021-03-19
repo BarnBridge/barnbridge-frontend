@@ -134,6 +134,7 @@ const Transactions: React.FC = () => {
             columns={getTableColumns()}
             dataSource={dataMock}
             loading={false}
+            rowKey="transactionHash"
             scroll={{
               x: true,
             }}
@@ -144,6 +145,7 @@ const Transactions: React.FC = () => {
             columns={getTableColumns(true)}
             dataSource={dataMock}
             loading={false}
+            rowKey="transactionHash"
             scroll={{
               x: true,
             }}

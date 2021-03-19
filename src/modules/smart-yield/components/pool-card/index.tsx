@@ -1,31 +1,22 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
+import { formatBigValue, formatPercent, getHumanValue } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { SYRewardPool } from 'modules/smart-yield/providers/reward-pools-provider';
 
 import s from './s.module.scss';
 
 export type PoolsCardProps = {
-  pool: {
-    apy: string;
-    daily: string;
-    current: string;
-    balance: string;
-  };
-  my: {
-    apy: string;
-    daily: string;
-    current: string;
-    balance: string;
-  };
+  pool: SYRewardPool;
   ended?: boolean;
   className?: string;
 };
 
-export const PoolsCard: React.FC<PoolsCardProps> = ({ pool, my, ended = false, className }) => {
+export const PoolsCard: React.FC<PoolsCardProps> = ({ pool, ended = false, className }) => {
   const [activeTab, setActiveTab] = useState<'pool' | 'my'>('pool');
 
   let body;
@@ -44,26 +35,26 @@ export const PoolsCard: React.FC<PoolsCardProps> = ({ pool, my, ended = false, c
     body = (
       <dl>
         <div className={s.defRow}>
-          <dt>APY</dt>
-          <dd>{pool.apy}</dd>
+          <dt>APR</dt>
+          <dd>{formatPercent(getHumanValue(pool.pool.apr, pool.rewardToken.decimals))}</dd>
         </div>
         <div className={s.defRow}>
           <dt>Daily reward</dt>
           <dd>
             <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-            {pool.daily}
+            {formatBigValue(getHumanValue(pool.pool.dailyReward, pool.rewardToken.decimals))}
           </dd>
         </div>
         <div className={s.defRow}>
           <dt>Reward left</dt>
           <dd>
             <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-            {pool.current}
+            {formatBigValue(getHumanValue(pool.pool.rewardLeft, pool.rewardToken.decimals))}
           </dd>
         </div>
         <div className={s.defRow}>
           <dt>Pool balance</dt>
-          <dd>{pool.balance}</dd>
+          <dd>{formatBigValue(getHumanValue(pool.pool.poolSize, pool.poolToken.decimals)?.multipliedBy(1))}</dd>
         </div>
       </dl>
     );
@@ -71,29 +62,33 @@ export const PoolsCard: React.FC<PoolsCardProps> = ({ pool, my, ended = false, c
     body = (
       <dl>
         <div className={s.defRow}>
-          <dt>APY</dt>
-          <dd>{my.apy}</dd>
+          <dt>APR</dt>
+          <dd>{formatPercent(getHumanValue(pool.pool.apr, pool.rewardToken.decimals))}</dd>
         </div>
         <div className={s.defRow}>
-          <dt>Daily reward</dt>
+          <dt>Your daily reward</dt>
           <dd>
             <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-            {my.daily}
+            {formatBigValue(getHumanValue(pool.pool.myDailyReward, pool.rewardToken.decimals))}
           </dd>
         </div>
         <div className={s.defRow}>
-          <dt>Reward left</dt>
+          <dt>Your current reward</dt>
           <dd>
             <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-            {my.current}
+            {formatBigValue(getHumanValue(pool.pool.toClaim, pool.rewardToken.decimals))}
           </dd>
         </div>
         <div className={s.defRow}>
-          <dt>Pool balance</dt>
-          <dd>{my.balance}</dd>
+          <dt>Your balance</dt>
+          <dd>{formatBigValue(getHumanValue(pool.pool.balance, pool.rewardToken.decimals))}</dd>
         </div>
       </dl>
     );
+  }
+
+  function handleClaim() {
+    return pool.pool.sentClaim(1);
   }
 
   return (
@@ -108,7 +103,7 @@ export const PoolsCard: React.FC<PoolsCardProps> = ({ pool, my, ended = false, c
           className="mr-16"
         />
         <Text type="p1" weight="semibold">
-          bbcUSDC
+          {pool.poolToken.symbol}
         </Text>
         {ended && <div className={s.endedLabel}>ENDED</div>}
       </header>
@@ -130,10 +125,10 @@ export const PoolsCard: React.FC<PoolsCardProps> = ({ pool, my, ended = false, c
       )}
       {body}
       <footer className={s.footer}>
-        <Link className="button-primary" to="/smart-yield/pools/1">
+        <Link className="button-primary" to={`/smart-yield/pool?m=${pool.protocolId}&t=${pool.underlyingSymbol}`}>
           View pool
         </Link>
-        <button className="button-ghost" type="button">
+        <button className="button-ghost" type="button" onClick={handleClaim}>
           Claim
         </button>
       </footer>

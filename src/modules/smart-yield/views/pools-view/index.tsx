@@ -1,12 +1,14 @@
 import { useState } from 'react';
+import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
+import { formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsCard } from 'modules/smart-yield/components/pool-card';
-
+import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import Filters from 'modules/smart-yield/views/pools-view/Filters';
 
 type State = {
@@ -17,22 +19,9 @@ const InitialState: State = {
   activeMarket: Array.from(Markets.values())[0],
 };
 
-const pool1 = {
-  apy: '69.420',
-  daily: '200.00',
-  current: '15000.00',
-  balance: '2000000',
-};
-
-const my1 = {
-  apy: '69.420',
-  daily: '0.0012',
-  current: '15000.00',
-  balance: '2000000',
-};
-
 const PoolsView: React.FC = () => {
   const [state, setState] = useState<State>(InitialState);
+  const { loading, pools, totalValueLocked } = useRewardPools();
 
   return (
     <>
@@ -69,14 +58,17 @@ const PoolsView: React.FC = () => {
             Total value locked
           </Text>
           <Text type="h2" weight="bold" color="primary">
-            $ 1,643,900,581.86
+            {formatUSD(totalValueLocked)}
           </Text>
         </div>
         <Filters onChange={console.log} />
       </div>
       <div className="flex row-gap-32 col-gap-32">
-        <PoolsCard pool={pool1} my={my1} />
-        <PoolsCard pool={pool1} my={my1} ended />
+        <AntdSpin spinning={loading}>
+          {pools.map(pool => (
+            <PoolsCard key={pool.poolAddress} pool={pool} />
+          ))}
+        </AntdSpin>
       </div>
     </>
   );

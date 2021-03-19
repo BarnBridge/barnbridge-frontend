@@ -69,11 +69,31 @@ class SYRewardPoolContract extends Web3Contract {
 
   dailyReward?: BigNumber;
 
-  apr?: BigNumber;
+  get apr(): BigNumber | undefined {
+    if (!this.poolSize || !this.dailyReward) {
+      return undefined;
+    }
+
+    const bondPrice = 195;
+    const jTokenPrice = 1;
+
+    const yearlyReward = this.dailyReward!.multipliedBy(bondPrice).multipliedBy(365);
+    const poolBalance = this.poolSize.multipliedBy(jTokenPrice).multipliedBy(1);
+
+    return yearlyReward.dividedBy(poolBalance);
+  }
 
   toClaim?: BigNumber;
 
   balance?: BigNumber;
+
+  get myDailyReward(): BigNumber | undefined {
+    if (!this.dailyReward || !this.balance || !this.poolSize) {
+      return undefined;
+    }
+
+    return this.dailyReward.multipliedBy(this.balance.dividedBy(this.poolSize));
+  }
 
   loadCommon(): Promise<void> {
     this.poolSize = undefined;
@@ -99,10 +119,6 @@ class SYRewardPoolContract extends Web3Contract {
       this.rewardRatePerSecond = rewardRatePerSecond;
       this.rewardLeft = rewardLeft;
       this.dailyReward = rewardRatePerSecond.multipliedBy(DAY_IN_SECONDS);
-
-      const bondPrice = 1;
-      const jTokenPrice = 1;
-      this.apr = this.dailyReward!.multipliedBy(bondPrice).dividedBy(poolSize.multipliedBy(jTokenPrice));
     });
   }
 
@@ -125,12 +141,23 @@ class SYRewardPoolContract extends Web3Contract {
       return Promise.reject();
     }
 
-    return this.call('balances', [this.address]).then(value => {
+    return this.call('balances', [this.account]).then(value => {
       this.balance = new BigNumber(value);
     });
   }
 
-  sendDeposit(amount: number, gasPrice: number): Promise<void> {
+  sentClaim(gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
+    return this.send('claim', [], {
+      from: this.account,
+      gasPrice: getGasValue(gasPrice),
+    });
+  }
+
+  sendDeposit(amount: BigNumber, gasPrice: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }
@@ -141,7 +168,7 @@ class SYRewardPoolContract extends Web3Contract {
     });
   }
 
-  sendWithdraw(amount: number, gasPrice: number): Promise<void> {
+  sendWithdraw(amount: BigNumber, gasPrice: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }
@@ -152,7 +179,7 @@ class SYRewardPoolContract extends Web3Contract {
     });
   }
 
-  sentWithdrawAndClaim(amount: number, gasPrice: number): Promise<void> {
+  sendWithdrawAndClaim(amount: BigNumber, gasPrice: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }

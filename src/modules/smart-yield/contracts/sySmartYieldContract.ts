@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { getGasValue } from 'web3/utils';
+import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 
 const ABI: any[] = [
   {
@@ -230,9 +231,9 @@ export type SYAbond = {
   liquidated: boolean;
 };
 
-class SYSmartYieldContract extends Web3Contract {
+class SYSmartYieldContract extends Erc20Contract {
   constructor(address: string) {
-    super(ABI, address, '');
+    super(ABI, address);
   }
 
   symbol?: string;
@@ -240,6 +241,8 @@ class SYSmartYieldContract extends Web3Contract {
   decimals?: number;
 
   totalSupply?: BigNumber;
+
+  price?: BigNumber;
 
   balance?: BigNumber;
 
@@ -262,6 +265,10 @@ class SYSmartYieldContract extends Web3Contract {
         transform: value => new BigNumber(value),
       },
       {
+        method: 'price',
+        transform: value => new BigNumber(value),
+      },
+      {
         method: 'abond',
         transform: (value: SYAbond) => ({
           principal: new BigNumber(value.principal),
@@ -271,11 +278,12 @@ class SYSmartYieldContract extends Web3Contract {
           liquidated: value.liquidated,
         }),
       },
-    ]).then(([name, symbol, decimals, totalSupply, abond]) => {
+    ]).then(([name, symbol, decimals, totalSupply, price, abond]) => {
       this.name = name;
       this.symbol = symbol;
       this.decimals = decimals;
       this.totalSupply = totalSupply.dividedBy(10 ** decimals);
+      this.price = price;
       this.abond = abond;
     });
   }
