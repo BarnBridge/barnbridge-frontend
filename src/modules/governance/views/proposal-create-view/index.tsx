@@ -2,6 +2,7 @@ import React from 'react';
 import { Redirect, useHistory } from 'react-router-dom';
 import AntdForm from 'antd/lib/form';
 import { waitUntil } from 'async-wait-until';
+import cn from 'classnames';
 import { StoreValue } from 'rc-field-form/lib/interface';
 import { useWeb3Contracts } from 'web3/contracts';
 
@@ -176,152 +177,153 @@ const ProposalCreateView: React.FC = () => {
   }
 
   return (
-    <Grid flow="row" gap={32}>
-      <Grid flow="col">
+    <div className="mh-auto" style={{ maxWidth: 952, width: '100%' }}>
+      <div className="mb-16">
         <button type="button" onClick={handleBackClick} className="button-text">
-          <Icon name="left-arrow" width={14} height={12} className="mr-12" color="inherit" />
+          <Icon name="arrow-back" width={24} height={24} className="mr-8" color="inherit" />
           Proposals
         </button>
-      </Grid>
+      </div>
 
-      <Grid flow="row" gap={16}>
-        <Text type="h1" weight="bold" color="primary" className="mb-16">
-          Create Proposal
-        </Text>
-        <Form
-          form={form}
-          initialValues={InitialFormValues}
-          validateTrigger={['onSubmit', 'onChange']}
-          onFinish={handleSubmit}>
-          <Grid flow="row" gap={32}>
-            <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, minmax(0, 464px))" align="start">
-              <Card
-                title={
-                  <Text type="p1" weight="semibold" color="primary">
-                    Proposal description
-                  </Text>
-                }>
-                <Grid flow="row" gap={24}>
-                  <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Required' }]}>
-                    <Input placeholder="Placeholder" disabled={state.submitting} />
-                  </Form.Item>
-                  <Form.Item
-                    name="description"
-                    label="Description"
-                    hint="Be careful with the length of the description, this will eventually have to be stored on chain and the gas needed might make the proposal creation transaction more expensive."
-                    rules={[{ required: true, message: 'Required' }]}>
-                    <Textarea placeholder="Placeholder" rows={6} disabled={state.submitting} />
-                  </Form.Item>
-                </Grid>
-              </Card>
-
-              <Card
-                title={
-                  <Text type="p1" weight="semibold" color="primary">
-                    Actions
-                  </Text>
-                }>
-                <Form.List
-                  name="actions"
-                  rules={[
-                    {
-                      validator: (_, value: StoreValue) => {
-                        return value.length === 0 ? Promise.reject() : Promise.resolve();
-                      },
-                      message: 'At least one action is required!',
-                    },
-                    {
-                      validator: (_, value: StoreValue) => {
-                        return value.length > 10 ? Promise.reject() : Promise.resolve();
-                      },
-                      message: 'Maximum 10 actions are allowed!',
-                    },
-                  ]}>
-                  {(fields, _, { errors }) => (
-                    <Grid flow="row" gap={24}>
-                      {fields.map((field, index) => {
-                        const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
-                        const { targetAddress, functionSignature, functionEncodedParams } = fieldData;
-
-                        return (
-                          <Form.Item key={field.key} noStyle>
-                            <ProposalActionCard
-                              title={`Action ${index + 1}`}
-                              target={targetAddress}
-                              signature={functionSignature!}
-                              callData={functionEncodedParams!}
-                              showSettings
-                              onDeleteAction={() => {
-                                setState({
-                                  showDeleteActionModal: true,
-                                  selectedAction: fieldData,
-                                });
-                              }}
-                              onEditAction={() => {
-                                setState({
-                                  showCreateActionModal: true,
-                                  selectedAction: fieldData,
-                                });
-                              }}
-                            />
-                          </Form.Item>
-                        );
-                      })}
-
-                      {fields.length < 10 && (
-                        <Button
-                          type="ghost"
-                          icon={<Icon name="plus-circle-outlined" color="inherit" />}
-                          disabled={state.submitting}
-                          className={s.addActionBtn}
-                          onClick={() => setState({ showCreateActionModal: true })}>
-                          Add new action
-                        </Button>
-                      )}
-
-                      {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
-
-                      <AntdForm.ErrorList errors={errors} />
-                    </Grid>
-                  )}
-                </Form.List>
-              </Card>
+      <Text type="h1" weight="bold" color="primary" className="mb-16">
+        Create Proposal
+      </Text>
+      <Form
+        form={form}
+        initialValues={InitialFormValues}
+        validateTrigger={['onSubmit', 'onChange']}
+        onFinish={handleSubmit}>
+        <div className={cn(s.cardsContainer, 'mb-40')}>
+          <Card
+            title={
+              <Text type="p1" weight="semibold" color="primary">
+                Proposal description
+              </Text>
+            }>
+            <Grid flow="row" gap={24}>
+              <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Required' }]}>
+                <Input placeholder="Proposal title" disabled={state.submitting} />
+              </Form.Item>
+              <Form.Item
+                name="description"
+                label="Description"
+                hint="Be careful with the length of the description, this will eventually have to be stored on chain and the gas needed might make the proposal creation transaction more expensive."
+                rules={[{ required: true, message: 'Required' }]}>
+                <Textarea
+                  placeholder="Please enter the goal of this proposal here"
+                  rows={6}
+                  disabled={state.submitting}
+                />
+              </Form.Item>
             </Grid>
-            <div>
-              <Button type="primary" htmlType="submit" size="large" loading={state.submitting}>
-                Create proposal
-              </Button>
-            </div>
-          </Grid>
-        </Form>
+          </Card>
 
-        {state.showCreateActionModal && (
-          <CreateProposalActionModal
-            edit={state.selectedAction !== undefined}
-            initialValues={state.selectedAction}
-            onCancel={() =>
-              setState({
-                showCreateActionModal: false,
-                selectedAction: undefined,
-              })
-            }
-            onSubmit={handleCreateAction}
-          />
-        )}
+          <Card
+            title={
+              <Text type="p1" weight="semibold" color="primary">
+                Actions
+              </Text>
+            }>
+            <Form.List
+              name="actions"
+              rules={[
+                {
+                  validator: (_, value: StoreValue) => {
+                    return value.length === 0 ? Promise.reject() : Promise.resolve();
+                  },
+                  message: 'At least one action is required!',
+                },
+                {
+                  validator: (_, value: StoreValue) => {
+                    return value.length > 10 ? Promise.reject() : Promise.resolve();
+                  },
+                  message: 'Maximum 10 actions are allowed!',
+                },
+              ]}>
+              {(fields, _, { errors }) => (
+                <>
+                  {fields.map((field, index) => {
+                    const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
+                    const { targetAddress, functionSignature, functionEncodedParams } = fieldData;
 
-        {state.showDeleteActionModal && (
-          <DeleteProposalActionModal
-            onCancel={() =>
-              setState({
-                showDeleteActionModal: false,
-                selectedAction: undefined,
-              })
-            }
-            onOk={handleActionDelete}
-          />
-        )}
-      </Grid>
-    </Grid>
+                    return (
+                      <Form.Item key={field.key} noStyle>
+                        <ProposalActionCard
+                          className="mb-24"
+                          title={`Action ${index + 1}`}
+                          target={targetAddress}
+                          signature={functionSignature!}
+                          callData={functionEncodedParams!}
+                          showSettings
+                          onDeleteAction={() => {
+                            setState({
+                              showDeleteActionModal: true,
+                              selectedAction: fieldData,
+                            });
+                          }}
+                          onEditAction={() => {
+                            setState({
+                              showCreateActionModal: true,
+                              selectedAction: fieldData,
+                            });
+                          }}
+                        />
+                      </Form.Item>
+                    );
+                  })}
+
+                  {fields.length < 10 && (
+                    <Button
+                      type="ghost"
+                      icon={<Icon name="plus-circle-outlined" color="inherit" />}
+                      disabled={state.submitting}
+                      className={s.addActionBtn}
+                      onClick={() => setState({ showCreateActionModal: true })}>
+                      Add new action
+                    </Button>
+                  )}
+
+                  {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
+
+                  <AntdForm.ErrorList errors={errors} />
+                </>
+              )}
+            </Form.List>
+          </Card>
+        </div>
+        <div>
+          <Button type="primary" htmlType="submit" size="large" loading={state.submitting}>
+            Create proposal
+          </Button>
+        </div>
+      </Form>
+
+      {state.showCreateActionModal && (
+        <CreateProposalActionModal
+          edit={state.selectedAction !== undefined}
+          initialValues={state.selectedAction}
+          onCancel={() =>
+            setState({
+              showCreateActionModal: false,
+              selectedAction: undefined,
+            })
+          }
+          onSubmit={handleCreateAction}
+        />
+      )}
+
+      {state.showDeleteActionModal && (
+        <DeleteProposalActionModal
+          onCancel={() =>
+            setState({
+              showDeleteActionModal: false,
+              selectedAction: undefined,
+            })
+          }
+          onOk={handleActionDelete}
+        />
+      )}
+    </div>
   );
 };
 

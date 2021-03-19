@@ -14,6 +14,7 @@
 }
 
 [data-theme='dark'] .component {
+  --input-bg-disabled: rgb(32, 37, 41);
   --input-border: 1px solid #43484d;
   --input-border-disabled: none;
   --input-text-active: #fff;
