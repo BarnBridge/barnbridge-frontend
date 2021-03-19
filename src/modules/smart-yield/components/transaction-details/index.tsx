@@ -124,13 +124,14 @@ type TransactionDetailsProps = {
   className?: string;
   showSlippage?: boolean;
   slippage?: number;
+  slippageHint?: string;
   showDeadline?: boolean;
   deadline?: number;
   onChange?: (values: FormData) => void;
 };
 
 const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
-  const { className, showSlippage = false, slippage, showDeadline = false, deadline, onChange } = props;
+  const { className, showSlippage = false, slippage, slippageHint, showDeadline = false, deadline, onChange } = props;
 
   const [visible, setVisible] = useState<boolean>(false);
 
@@ -168,7 +169,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
       <div className="ph-24 pv-16">
         {showSlippage && (
           <div className="flex mb-24">
-            <Hint text="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage.">
+            <Hint text={slippageHint}>
               <Text type="small" weight="semibold" color="secondary">
                 Slippage tolerance
               </Text>

@@ -307,6 +307,7 @@ const SeniorTranche: React.FC = () => {
               <TransactionDetails
                 showSlippage
                 slippage={slippage}
+                slippageHint="Your transaction will revert if the gains for your senior bonds you actually receive are smaller by this percentage."
                 showDeadline
                 deadline={deadline}
                 onChange={handleTxDetailsChange}
