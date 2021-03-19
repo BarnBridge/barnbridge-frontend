@@ -157,7 +157,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
         {signature && (
           <AntdTypography.Paragraph
             className={cn(s.paragraph, expanded && s.expanded)}
-            style={{ maxWidth: '514px' }}
+            style={{ maxWidth: '514px', overflowWrap: 'anywhere' }}
             ellipsis={{
               rows: expanded ? 9999 : 2,
               expandable: false,

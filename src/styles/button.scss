@@ -1,3 +1,5 @@
+@import 'src/styles/text';
+
 .button-primary {
   display: flex;
   flex-direction: row;
@@ -127,9 +129,7 @@
 }
 
 .button-text {
-  font-weight: bold;
-  font-size: 12px;
-  line-height: 16px;
+  @include font-p1-semi-bold;
   color: var(--theme-secondary-color);
   border: none;
   background-color: transparent;
