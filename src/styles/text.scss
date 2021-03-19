@@ -149,9 +149,9 @@
   white-space: nowrap;
 }
 
-$textAligns: left, center, right;
+$text-aligns: left, center, right;
 
-@each $textAlign in $textAligns {
+@each $textAlign in $text-aligns {
   .text-#{$textAlign} {
     text-align: #{$textAlign};
   }

@@ -1,4 +1,4 @@
-@import '../../../../styles/text';
+@import 'src/styles/text';
 
 .headerTerms {
   display: flex;
@@ -13,6 +13,7 @@
     color: var(--theme-secondary-color);
     margin-bottom: 8px;
   }
+
   dd {
     @include font-p1-semi-bold;
     margin: 0;

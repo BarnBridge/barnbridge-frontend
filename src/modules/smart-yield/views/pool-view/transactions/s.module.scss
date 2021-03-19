@@ -1,11 +1,12 @@
 .tabs {
   :global(.ant-tabs-nav) {
-    padding: 0 24px 0 !important;
+    padding: 0 24px !important;
     border-top: none;
     border-left: none;
     border-right: none;
     background-color: transparent;
   }
+
   :global(.ant-tabs-extra-content) {
     padding: 12px 0;
   }

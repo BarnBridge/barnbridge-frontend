@@ -19,7 +19,7 @@
     @include font-p1-semi-bold;
     color: var(--theme-primary-color);
 
-    &:before {
+    &::before {
       display: none;
     }
 

@@ -20,8 +20,8 @@
       height: 0 !important;
       background: transparent;
 
-      &:before,
-      &:after {
+      &::before,
+      &::after {
         content: '';
         position: absolute;
         left: 100%;
@@ -31,12 +31,12 @@
         background: inherit;
       }
 
-      &:before {
+      &::before {
         top: -8px;
         border-radius: 4px 4px 0 0;
       }
 
-      &:after {
+      &::after {
         top: 8px;
         border-radius: 0 0 4px 4px;
       }
@@ -44,8 +44,8 @@
 
     &.fulfilled {
       :global(.ant-progress-success-bg) {
-        &:before,
-        &:after {
+        &::before,
+        &::after {
           left: calc(100% - 4px);
         }
       }
