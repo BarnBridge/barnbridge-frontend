@@ -2,13 +2,15 @@ import React from 'react';
 
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
+import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useWallet } from 'wallets/wallet';
 
 export type SYRewardPool = APISYRewardPool & {
-  contracts: {
-    rewardPool: SYRewardPoolContract;
-  };
+  pool: SYRewardPoolContract;
+  poolToken: SYSmartYieldContract;
+  rewardToken: Erc20Contract;
 };
 
 type State = {
@@ -53,15 +55,23 @@ const RewardPoolsProvider: React.FC = props => {
           ...prevState,
           loading: false,
           pools: pools.map(pool => {
-            const rewardPoolContract = new SYRewardPoolContract(pool.poolAddress);
-            rewardPoolContract.setProvider(wallet.provider);
-            rewardPoolContract.loadCommon().then(reload);
+            const rewardTokenContract = new Erc20Contract([], pool.rewardTokenAddress);
+            rewardTokenContract.setProvider(wallet.provider);
+            rewardTokenContract.loadCommon().then(reload);
+
+            const poolTokenContract = new SYSmartYieldContract(pool.poolTokenAddress);
+            poolTokenContract.setProvider(wallet.provider);
+            poolTokenContract.loadCommon().then(reload);
+
+            const poolContract = new SYRewardPoolContract(pool.poolAddress);
+            poolContract.setProvider(wallet.provider);
+            poolContract.loadCommon().then(reload);
 
             return {
               ...pool,
-              contracts: {
-                rewardPool: rewardPoolContract,
-              },
+              rewardToken: rewardTokenContract,
+              poolToken: poolTokenContract,
+              pool: poolContract,
             };
           }),
         }));
@@ -76,14 +86,22 @@ const RewardPoolsProvider: React.FC = props => {
 
   React.useEffect(() => {
     state.pools.forEach(pool => {
-      pool.contracts.rewardPool.setProvider(wallet.provider);
+      pool.rewardToken.setProvider(wallet.provider);
+      pool.poolToken.setProvider(wallet.provider);
+      pool.pool.setProvider(wallet.provider);
     });
   }, [state.pools, wallet.provider]);
 
   React.useEffect(() => {
     state.pools.forEach(pool => {
-      pool.contracts.rewardPool.setAccount(wallet.account);
-      pool.contracts.rewardPool.loadClaim().then(reload);
+      pool.rewardToken.setAccount(wallet.account);
+
+      pool.poolToken.setAccount(wallet.account);
+      pool.poolToken.loadBalance().then(reload);
+
+      pool.pool.setAccount(wallet.account);
+      pool.pool.loadClaim().then(reload);
+      pool.pool.loadBalance().then(reload);
     });
   }, [state.pools, wallet.account]);
 
@@ -93,9 +111,7 @@ const RewardPoolsProvider: React.FC = props => {
     };
   }, [state, version]);
 
-  return (
-    <Context.Provider value={value}>{children}</Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default RewardPoolsProvider;

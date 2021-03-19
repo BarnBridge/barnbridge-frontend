@@ -220,7 +220,7 @@ export function fetchSYUserTxHistory(
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYUserTxHistory>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYUserTxHistory) => ({
         ...item,
@@ -260,7 +260,7 @@ export function fetchSYSeniorRedeems(
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYSeniorRedeem>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYSeniorRedeem) => ({
         ...item,
@@ -311,7 +311,7 @@ export function fetchSYJuniorPastPositions(
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYJuniorPastPosition>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYJuniorPastPosition) => ({
         ...item,
@@ -386,8 +386,14 @@ export type APISYRewardPool = {
   underlyingSymbol: string;
 };
 
-export function fetchSYRewardPools(protocolId: string = 'all'): Promise<APISYRewardPool[]> {
-  const url = new URL(`/api/smartyield/rewards/pools?protocolId=${protocolId}`, GOV_API_URL);
+export function fetchSYRewardPools(
+  protocolId: string = 'all',
+  underlyingSymbol: string = 'all',
+): Promise<APISYRewardPool[]> {
+  const url = new URL(
+    `/api/smartyield/rewards/pools?protocolId=${protocolId}&underlyingSymbol=${underlyingSymbol}`,
+    GOV_API_URL,
+  );
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -421,7 +427,7 @@ export function fetchSYRewardPoolTransactions(
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYRewardPoolTransaction>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYRewardPoolTransaction) => ({
         ...item,

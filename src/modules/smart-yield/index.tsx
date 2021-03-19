@@ -1,5 +1,4 @@
 import React, { Suspense, lazy } from 'react';
-import { RouteComponentProps } from 'react-router';
 import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
@@ -130,9 +129,9 @@ const SmartYieldView: React.FC = () => {
               )}
             />
             <Route
-              path="/smart-yield/pools/:poolAddress"
-              render={({ match: { params } }: RouteComponentProps<{ poolAddress: string }>) => (
-                <RewardPoolProvider poolAddress={params.poolAddress}>
+              path="/smart-yield/pool"
+              render={() => (
+                <RewardPoolProvider>
                   <RewardPoolView />
                 </RewardPoolProvider>
               )}

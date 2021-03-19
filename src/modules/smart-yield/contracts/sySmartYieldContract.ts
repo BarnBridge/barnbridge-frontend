@@ -264,11 +264,11 @@ class SYSmartYieldContract extends Web3Contract {
       {
         method: 'abond',
         transform: (value: SYAbond) => ({
-          ...value,
           principal: new BigNumber(value.principal),
           gain: new BigNumber(value.gain),
           issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
           maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+          liquidated: value.liquidated,
         }),
       },
     ]).then(([name, symbol, decimals, totalSupply, abond]) => {
@@ -313,11 +313,11 @@ class SYSmartYieldContract extends Web3Contract {
 
   async getAbond(): Promise<SYAbond> {
     return this.call('abond').then(value => ({
-      ...value,
       principal: new BigNumber(value.principal),
       gain: new BigNumber(value.gain),
       issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
       maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+      liquidated: value.liquidated,
     }));
   }
 
