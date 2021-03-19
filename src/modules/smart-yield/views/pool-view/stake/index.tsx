@@ -7,7 +7,7 @@ import Tabs from 'components/antd/tabs';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
 
-import s from './s.module.scss';
+import s from 'modules/smart-yield/views/pool-view/stake/s.module.scss';
 
 type FormStateType = {
   amount: number;

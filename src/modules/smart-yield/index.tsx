@@ -17,8 +17,8 @@ const MarketsView = lazy(() => import('./views/markets-view'));
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 const DepositView = lazy(() => import('./views/deposit-view'));
 const WithdrawView = lazy(() => import('./views/withdraw-view'));
-const RewardPoolsView = lazy(() => import('./views/reward-pools-view'));
-const RewardPoolView = lazy(() => import('./views/reward-pool-view'));
+const PoolsView = lazy(() => import('./views/pools-view'));
+const PoolView = lazy(() => import('./views/pool-view'));
 
 type SmartYieldViewParams = {
   vt: string;
@@ -123,7 +123,7 @@ const SmartYieldView: React.FC = () => {
               exact
               render={() => (
                 <RewardPoolsProvider>
-                  <RewardPoolsView />
+                  <PoolsView />
                 </RewardPoolsProvider>
               )}
             />
@@ -131,7 +131,7 @@ const SmartYieldView: React.FC = () => {
               path="/smart-yield/pool"
               render={() => (
                 <RewardPoolProvider>
-                  <RewardPoolView />
+                  <PoolView />
                 </RewardPoolProvider>
               )}
             />

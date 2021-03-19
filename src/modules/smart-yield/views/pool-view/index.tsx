@@ -4,13 +4,13 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 
-import Stake from './stake';
-import Statistics from './statistics';
-import Transactions from './transactions';
+import Stake from 'modules/smart-yield/views/pool-view/stake';
+import Statistics from 'modules/smart-yield/views/pool-view/statistics';
+import Transactions from 'modules/smart-yield/views/pool-view/transactions';
 
-import s from './s.module.scss';
+import s from 'modules/smart-yield/views/pool-view/s.module.scss';
 
-const Pool: React.FC = () => {
+const PoolView: React.FC = () => {
   return (
     <>
       <div className="mb-16">
@@ -67,4 +67,4 @@ const Pool: React.FC = () => {
   );
 };
 
-export default Pool;
+export default PoolView;

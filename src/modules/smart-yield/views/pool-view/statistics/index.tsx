@@ -3,7 +3,7 @@ import cn from 'classnames';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
-import s from './s.module.scss';
+import s from 'modules/smart-yield/views/pool-view/statistics/s.module.scss';
 
 type Props = {
   className?: string;
