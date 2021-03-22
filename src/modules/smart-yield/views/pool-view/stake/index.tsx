@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import * as Antd from 'antd';
 import cn from 'classnames';
-import { formatBigValue, formatToken, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatToken, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Form from 'components/antd/form';
 import Tabs from 'components/antd/tabs';
@@ -9,7 +9,7 @@ import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 
-import s from 'modules/smart-yield/views/pool-view/stake/s.module.scss';
+import s from './s.module.scss';
 
 type FormStateType = {
   amount: number;

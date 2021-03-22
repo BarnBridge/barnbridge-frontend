@@ -98,9 +98,16 @@
     "endOfLine": "lf"
   },
   "stylelint": {
-    "extends": [
-      "stylelint-config-sass-guidelines"
-    ]
+    "extends": "stylelint-config-sass-guidelines",
+    "rules": {
+      "order/properties-alphabetical-order": null,
+      "selector-class-pattern": null,
+      "selector-max-compound-selectors": 7,
+      "selector-no-qualifying-type": null,
+      "order/order": null,
+      "max-nesting-depth": 7,
+      "selector-max-id": null
+    }
   },
   "importSort": {
     ".ts, .tsx": {

@@ -1,11 +1,11 @@
 import cn from 'classnames';
+import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 
-import s from 'modules/smart-yield/views/pool-view/statistics/s.module.scss';
-import { formatBigValue, getHumanValue } from 'web3/utils';
+import s from './s.module.scss';
 
 type Props = {
   className?: string;

@@ -1,4 +1,6 @@
 import React from 'react';
+import BigNumber from 'bignumber.js';
+import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
@@ -6,8 +8,6 @@ import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useWallet } from 'wallets/wallet';
-import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 export type SYRewardPool = APISYRewardPool & {
   pool: SYRewardPoolContract;

@@ -1,9 +1,9 @@
 .tabs {
   :global(.ant-tabs-nav) {
     padding: 0 24px !important;
-    border-top: none;
-    border-left: none;
-    border-right: none;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
     background-color: transparent;
   }
 

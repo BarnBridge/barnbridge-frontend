@@ -1,6 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
 import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
 
 import Table from 'components/antd/table';
@@ -9,7 +10,6 @@ import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
-import cn from 'classnames';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {

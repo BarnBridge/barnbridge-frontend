@@ -4,7 +4,7 @@
 :root .component {
   // primary regular
   --btn-primary-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
-  --btn-primary-border: none;
+  --btn-primary-border: 0;
   --btn-primary-bg: #{$color-red500};
   --btn-primary-text: #fff;
 
@@ -28,7 +28,7 @@
 
   // default regular
   --btn-default-shadow: none;
-  --btn-default-border: none;
+  --btn-default-border: 0;
   --btn-default-bg: rgba(255, 67, 57, 0.1);
   --btn-default-text: #{$color-red500};
 
@@ -251,7 +251,7 @@
   &:global(.ant-btn-link) {
     height: auto;
     padding: 0;
-    border: none;
+    border: 0;
     color: var(--btn-link-text);
 
     &:hover {

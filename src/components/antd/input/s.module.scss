@@ -63,13 +63,13 @@
     /* Chrome, Safari, Edge, Opera */
     &::-webkit-outer-spin-button,
     &::-webkit-inner-spin-button {
-      -webkit-appearance: none;
+      appearance: none;
       margin: 0;
     }
 
     /* Firefox */
     &[type='number'] {
-      -moz-appearance: textfield;
+      appearance: textfield;
     }
   }
 
@@ -79,7 +79,7 @@
 
     :global(.ant-input-group-addon) {
       background: var(--theme-input-background);
-      border: none;
+      border: 0;
 
       &:first-of-type {
         border-right: var(--input-border);
@@ -90,7 +90,7 @@
       height: 50px;
       padding: 12px 16px;
       box-shadow: none;
-      border: none;
+      border: 0;
       border-radius: 0;
 
       &:global(.ant-input-lg) {
@@ -111,7 +111,7 @@
 
       :global(.ant-input),
       :global(.ant-input-group-addon) {
-        border: none;
+        border: 0;
         background: var(--input-bg-disabled);
       }
 
@@ -129,7 +129,7 @@
 
     :global(.ant-input),
     :global(.ant-input):focus {
-      border: none;
+      border: 0;
     }
   }
 }

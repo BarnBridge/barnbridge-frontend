@@ -10,7 +10,7 @@ import { IconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 
-import s from 'modules/smart-yield/views/pool-view/transactions/s.module.scss';
+import s from './s.module.scss';
 
 type DataType = {
   meta: {
