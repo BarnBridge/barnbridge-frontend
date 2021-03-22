@@ -129,8 +129,10 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
       intervalId = setInterval(() => {
         fetchNotifications({ target: wallet.account, timestamp: timestampRef.current })
           .then(ns => {
-            setNotifications(prevNs => [...prevNs.filter(prevN => prevN.expiresOn * 1000 > Date.now()), ...ns]);
-            ns.forEach(n => addToast(n));
+            if (Array.isArray(ns)) {
+              setNotifications(prevNs => [...prevNs.filter(prevN => prevN.expiresOn * 1000 > Date.now()), ...ns]);
+              ns.forEach(n => addToast(n));
+            }
           })
           .catch(console.error);
       }, 30_000);
