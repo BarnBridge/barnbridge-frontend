@@ -12,15 +12,12 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { useGeneral } from 'components/providers/general-provider';
-import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
-import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
+import Notifications from 'wallets/components/notifications';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
 const ConnectedWallet: React.FC = () => {
-  const { isDarkTheme } = useGeneral();
   const wallet = useWallet();
 
   if (wallet.connecting) {
@@ -79,24 +76,14 @@ const ConnectedWallet: React.FC = () => {
       trigger="click"
       noPadding
       content={
-        <Card
-          title={
+        <div className={cn('card', s.notifications)}>
+          <div className="card-header">
             <Text type="p1" weight="semibold" color="primary">
               Notifications
             </Text>
-          }
-          noPaddingBody>
-          <Grid flow="row" gap={24} align="center" padding={48}>
-            {isDarkTheme ? (
-              <ZeroNotificationsDarkSvg width={138} height={128} />
-            ) : (
-              <ZeroNotificationsSvg width={138} height={128} />
-            )}
-            <Text type="p1" color="secondary" align="center">
-              There are no notifications to show
-            </Text>
-          </Grid>
-        </Card>
+          </div>
+          <Notifications />
+        </div>
       }>
       <Icon name="bell-outlined" width={26} height={26} style={{ cursor: 'pointer' }} />
     </Popover>

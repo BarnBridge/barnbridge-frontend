@@ -1,0 +1,21 @@
+@import 'src/styles/text';
+
+.n {
+  display: flex;
+  word-break: break-word;
+  color: var(--theme-secondary-color);
+  padding: 24px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.close {
+  margin-left: 16px;
+}
+
+.time {
+  @include font-sm-semi-bold;
+  color: var(--theme-icon-color)
+}
