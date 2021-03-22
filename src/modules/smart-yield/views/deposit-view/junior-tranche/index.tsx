@@ -277,6 +277,7 @@ const JuniorTranche: React.FC = () => {
                 className="mb-32"
                 showSlippage
                 slippage={slippage}
+                slippageHint="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage."
                 showDeadline
                 deadline={deadline}
                 onChange={handleTxDetailsChange}
