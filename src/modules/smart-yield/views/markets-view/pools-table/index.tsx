@@ -65,7 +65,16 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: 'Senior APY',
+      title: (
+        <Hint
+          text={
+            <Text type="p2" className="mb-8">
+              The Senior APY shown is the maximum theoretically possible daily rate for senior bonds.
+            </Text>
+          }>
+          Senior APY
+        </Hint>
+      ),
       sorter: (a, b) => a.state.seniorApy - b.state.seniorApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="green">
@@ -127,7 +136,17 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
     },
     {
-      title: 'Originator APY',
+      title: (
+        <Hint
+          text={
+            <Text type="p2" className="mb-8">
+              The originator APY is the APY that deposits get on the 3rd party lending provider. This number includes
+              any governance token rewards.
+            </Text>
+          }>
+          Originator APY
+        </Hint>
+      ),
       sorter: (a, b) => a.state.originatorNetApy - b.state.originatorNetApy,
       render: (_, entity) => (
         <Text type="p1" weight="semibold" color="primary">
@@ -140,12 +159,12 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       render: (_, entity) => (
         <>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            1 {entity.underlyingSymbol}
+            1 {entity.contracts.smartYield?.symbol}
           </Text>
           <Text type="small" weight="semibold" wrap={false}>
             ={' '}
             {formatToken(entity.state.jTokenPrice, {
-              tokenName: entity.contracts.smartYield?.symbol,
+              tokenName: entity.underlyingSymbol,
             })}
           </Text>
         </>
