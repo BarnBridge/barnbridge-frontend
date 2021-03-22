@@ -1,5 +1,3 @@
-import '@animated-burgers/burger-squeeze/dist/styles.css';
-
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 

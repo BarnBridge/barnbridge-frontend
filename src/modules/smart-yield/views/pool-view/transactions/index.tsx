@@ -11,6 +11,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
+import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 
 type DataType = {
   meta: {
@@ -115,6 +116,12 @@ const Transactions: React.FC = () => {
     ];
   }, []);
 
+  const rewardPool = useRewardPool();
+
+  React.useEffect(() => {
+    rewardPool.transactions
+  }, []);
+
   return (
     <div className="card mb-32">
       <Tabs
@@ -129,29 +136,19 @@ const Transactions: React.FC = () => {
             onChange={value => setTransactionFilter(String(value))}
           />
         }>
-        <Tabs.Tab key="my" tab="My transactions">
-          <Table<DataType>
-            columns={getTableColumns()}
-            dataSource={dataMock}
-            loading={false}
-            rowKey="transactionHash"
-            scroll={{
-              x: true,
-            }}
-          />
-        </Tabs.Tab>
-        <Tabs.Tab key="all" tab="All transactions">
-          <Table<DataType>
-            columns={getTableColumns(true)}
-            dataSource={dataMock}
-            loading={false}
-            rowKey="transactionHash"
-            scroll={{
-              x: true,
-            }}
-          />
-        </Tabs.Tab>
+        <Tabs.Tab key="my" tab="My transactions" />
+        <Tabs.Tab key="all" tab="All transactions" />
       </Tabs>
+
+      <Table<DataType>
+        columns={getTableColumns()}
+        dataSource={dataMock}
+        loading={false}
+        rowKey="transactionHash"
+        scroll={{
+          x: true,
+        }}
+      />
     </div>
   );
 };
