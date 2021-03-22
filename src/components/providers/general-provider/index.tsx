@@ -1,6 +1,8 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { useLocalStorage } from 'react-use-storage';
 
+import { Toast } from 'components/custom/notification';
 import { useWallet } from 'wallets/wallet';
 
 export type GeneralContextType = {
@@ -62,10 +64,20 @@ const GeneralContext = React.createContext<GeneralContextType>({} as any);
 const mqlDark = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultTheme = mqlDark.matches ? 'dark' : 'light';
 
-export function fetchNotifications(target?: string): Promise<NotificationType[]> {
-  const url = new URL('/api/notifications', process.env.REACT_APP_GOV_API_URL);
+export function fetchNotifications({
+  target,
+  timestamp,
+}: {
+  target?: string;
+  timestamp?: number | null;
+}): Promise<NotificationType[]> {
+  const url = new URL('/api/notifications/list', process.env.REACT_APP_GOV_API_URL);
   if (target) {
     url.searchParams.set('target', target);
+  }
+
+  if (timestamp) {
+    url.searchParams.set('timestamp', String(timestamp));
   }
 
   return fetch(url.toString())
@@ -73,126 +85,7 @@ export function fetchNotifications(target?: string): Promise<NotificationType[]>
     .then(result => result.data);
 }
 
-const notificationsMock: NotificationType[] = [
-  {
-    id: 1,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615305679,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-1 created by 0xA01E9D3F3369aAF24cAc80Ba8CD611dB28d3937c',
-    metadata: {
-      proposalId: 1,
-      proposer: '0xA01E9D3F3369aAF24cAc80Ba8CD611dB28d3937c',
-    },
-  },
-  {
-    id: 2,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615380335,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-2 created by 0xBBBbBB9B32eeF4239E6554542d1d638e382224C7',
-    metadata: {
-      proposalId: 2,
-      proposer: '0xBBBbBB9B32eeF4239E6554542d1d638e382224C7',
-    },
-  },
-  {
-    id: 3,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615817999,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-3 created by 0xbbbbbbf2e986C085bF79d44BaCFA791C92b71fe8',
-    metadata: {
-      proposalId: 3,
-      proposer: '0xbbbbbbf2e986C085bF79d44BaCFA791C92b71fe8',
-    },
-  },
-  {
-    id: 4,
-    target: 'system',
-    notificationType: 'abrogation-proposal-created',
-    startsOn: 1615821468,
-    expiresOn: 1616760199,
-    message: 'Abrogation proposal for PID-3 created by 0xbbbbbbf2e986C085bF79d44BaCFA791C92b71fe8',
-    metadata: {
-      proposalId: 3,
-      proposer: '0xbbbbbbf2e986C085bF79d44BaCFA791C92b71fe8',
-    },
-  },
-  {
-    id: 5,
-    target: 'system',
-    notificationType: 'proposal-executed',
-    startsOn: 1615822464,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-3 has been executed',
-    metadata: {
-      proposalId: 3,
-    },
-  },
-  {
-    id: 6,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615849199,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-4 created by 0xBBBbBB9B32eeF4239E6554542d1d638e382224C7',
-    metadata: {
-      proposalId: 4,
-      proposer: '0xBBBbBB9B32eeF4239E6554542d1d638e382224C7',
-    },
-  },
-  {
-    id: 7,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615899459,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-5 created by 0xBBBbBB9B32eeF4239E6554542d1d638e382224C7',
-    metadata: {
-      proposalId: 5,
-      proposer: '0xBBBbBB9B32eeF4239E6554542d1d638e382224C7',
-    },
-  },
-  {
-    id: 8,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615905631,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-6 created by 0xA01E9D3F3369aAF24cAc80Ba8CD611dB28d3937c',
-    metadata: {
-      proposalId: 6,
-      proposer: '0xA01E9D3F3369aAF24cAc80Ba8CD611dB28d3937c',
-    },
-  },
-  {
-    id: 9,
-    target: 'system',
-    notificationType: 'proposal-created',
-    startsOn: 1615907115,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-7 created by 0xbbbbbbf2e986C085bF79d44BaCFA791C92b71fe8',
-    metadata: {
-      proposalId: 7,
-      proposer: '0xbbbbbbf2e986C085bF79d44BaCFA791C92b71fe8',
-    },
-  },
-  {
-    id: 10,
-    target: 'system',
-    notificationType: 'proposal-canceled',
-    startsOn: 1615907584,
-    expiresOn: 1616760199,
-    message: 'Proposal PID-6 has been canceled',
-    metadata: {
-      proposalId: 6,
-    },
-  },
-];
+const notificationsNode = document.querySelector('#notifications-root');
 
 type Props = {
   children: React.ReactNode;
@@ -201,6 +94,7 @@ type Props = {
 const GeneralContextProvider: React.FC<Props> = ({ children }) => {
   const [navOpen, setNavOpen] = React.useState<boolean>(false);
   const [notifications, setNotifications] = React.useState<NotificationType[]>([]);
+  const [toasts, setToasts] = React.useState<NotificationType[]>([]);
   const [theme, setTheme] = useLocalStorage('bb_theme', defaultTheme);
   const wallet = useWallet();
 
@@ -212,14 +106,39 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
     }
   }, [theme]);
 
+  const addToast = React.useCallback((notification: NotificationType) => {
+    setToasts(ns => [...ns, notification]);
+  }, []);
+
+  const removeToast = React.useCallback((id: NotificationType['id']) => {
+    setToasts(prevNotifications => prevNotifications.filter(n => n.id !== id));
+  }, []);
+
+  const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications.length
+    ? notifications[notifications.length - 1].startsOn
+    : null;
+  const timestampRef = React.useRef(lastNotificationTimestamp);
+  timestampRef.current = lastNotificationTimestamp;
+
   React.useEffect(() => {
-    // if (wallet.initialized) {
-    //   console.log(`Fetch`, wallet.initialized, wallet.account)
-    //   fetchNotifications(wallet.account).then(setNotifications);
-    // }
-    setTimeout(() => {
-      setNotifications(notificationsMock);
-    }, 1000);
+    let intervalId: NodeJS.Timeout;
+
+    if (wallet.initialized) {
+      fetchNotifications({ target: wallet.account }).then(setNotifications).catch(console.error);
+
+      intervalId = setInterval(() => {
+        fetchNotifications({ target: wallet.account, timestamp: timestampRef.current })
+          .then(ns => {
+            setNotifications(prevNs => [...prevNs.filter(prevN => prevN.expiresOn * 1000 > Date.now()), ...ns]);
+            ns.forEach(n => addToast(n));
+          })
+          .catch(console.error);
+      }, 30_000);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
   }, [wallet.initialized, wallet.account]);
 
   return (
@@ -235,6 +154,15 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
         notifications,
       }}>
       {children}
+      {notificationsNode &&
+        ReactDOM.createPortal(
+          <>
+            {toasts.map(n => (
+              <Toast key={n.id} n={n} onClose={removeToast} timeout={10_000} />
+            ))}
+          </>,
+          notificationsNode,
+        )}
     </GeneralContext.Provider>
   );
 };

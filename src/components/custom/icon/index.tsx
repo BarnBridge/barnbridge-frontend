@@ -51,6 +51,7 @@ export type IconNames =
   | 'check-circle-outlined'
   | 'history-circle-outlined'
   | 'close'
+  | 'close-tiny'
   | 'dropdown-arrow'
   | 'warning-outlined'
   | 'gear'
@@ -82,7 +83,24 @@ export type IconNames =
   | 'tx-progress'
   | 'tx-success'
   | 'tx-failure'
-  | 'burger';
+  | 'burger'
+  | 'hourglass'
+  | 'history'
+  | 'piggybank'
+  | 'add-file'
+  | 'file-added'
+  | 'file-deleted'
+  | 'file-clock'
+  | 'file-times'
+  | 'wallet'
+  | 'handshake'
+  | 'padlock-unlock'
+  | 'stopwatch'
+  | 'judge'
+  | 'certificate'
+  | 'chart-up'
+  | 'apy-up'
+  | 'chart';
 
 export type IconProps = {
   name: IconNames;

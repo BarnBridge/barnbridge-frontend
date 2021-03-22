@@ -1,7 +1,7 @@
 import React from 'react';
 
 import Grid from 'components/custom/grid';
-import Notification from 'components/custom/notification';
+import { Notification } from 'components/custom/notification';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
@@ -29,7 +29,7 @@ const Notifications: React.FC = () => {
 
   return (
     <ul className={s.list}>
-      {notifications.map(n => (
+      {notifications.reverse().map(n => (
         <li key={n.id}>
           <Notification n={n} />
         </li>
