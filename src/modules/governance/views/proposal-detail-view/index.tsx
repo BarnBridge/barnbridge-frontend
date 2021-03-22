@@ -19,6 +19,8 @@ import ProposalVotesCard from './components/proposal-votes-card';
 import QueueForExecutionModal from './components/queue-for-execution-modal';
 import ProposalProvider, { useProposal } from './providers/ProposalProvider';
 
+import s from './s.module.scss';
+
 type ProposalDetailViewInnerState = {
   showQueueForExecution: boolean;
   executing: boolean;
@@ -60,14 +62,14 @@ const ProposalDetailViewInner: React.FC = () => {
   }
 
   return (
-    <Grid flow="row" gap={32} align="center">
-      <Grid flow="col" width={1070}>
+    <div className="mh-auto" style={{ maxWidth: 1070 }}>
+      <div className="mb-32">
         <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Proposals
         </Button>
-      </Grid>
+      </div>
 
-      <Grid flow="col" gap={32} colsTemplate="1fr 1fr" width={1070}>
+      <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
         <Text type="h2" weight="semibold" color="primary">
           PID-{proposalCtx.proposal?.proposalId}: {proposalCtx.proposal?.title}
         </Text>
@@ -93,14 +95,14 @@ const ProposalDetailViewInner: React.FC = () => {
         </Grid>
       </Grid>
 
-      <Grid flow="col" gap={32} colsTemplate="minmax(0, 610px) minmax(0, 428px)" width={1070}>
-        <Grid flow="row" gap={32}>
+      <div className={s.cardsAndSidebarContainer}>
+        <Grid flow="row" gap={32} className={s.cardsContainer}>
           {![APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState as any) && (
             <ProposalVoteResultsCard />
           )}
           <ProposalDetailsCard />
         </Grid>
-        <Grid flow="row" gap={32}>
+        <Grid flow="row" gap={32} className={s.sidebarContainer}>
           <ProposalStatusCard />
           {(APIProposalState.QUEUED === proposalState || proposalCtx.isCanceled) && <ProposalAbrogationCard />}
           {APIProposalState.ACTIVE === proposalState && (
@@ -111,12 +113,12 @@ const ProposalDetailViewInner: React.FC = () => {
             </>
           )}
         </Grid>
-      </Grid>
+      </div>
 
       {state.showQueueForExecution && (
         <QueueForExecutionModal onCancel={() => setState({ showQueueForExecution: false })} />
       )}
-    </Grid>
+    </div>
   );
 };
 
