@@ -1,0 +1,25 @@
+.cardsAndSidebarContainer {
+  display: flex;
+  gap: 32px;
+
+  @media (max-width: 1024px) {
+    flex-direction: column;
+  }
+}
+
+.cardsContainer {
+  flex-grow: 1;
+}
+
+.sidebarContainer {
+  max-width: 428px;
+  width: 100%;
+
+  @media (max-width: 1200px) {
+    max-width: 300px;
+  }
+
+  @media (max-width: 1024px) {
+    max-width: none;
+  }
+}
