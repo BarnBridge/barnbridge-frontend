@@ -104,7 +104,6 @@
       "selector-class-pattern": null,
       "selector-max-compound-selectors": 7,
       "selector-no-qualifying-type": null,
-      "order/order": null,
       "max-nesting-depth": 7,
       "selector-max-id": null
     }

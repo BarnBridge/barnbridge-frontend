@@ -12,9 +12,9 @@
   }
 
   :global(.ant-table-thead .ant-table-cell) {
+    @include font-sm-semi-bold;
     padding: 16px 24px;
     background: var(--theme-card-color);
-    @include font-sm-semi-bold;
     color: var(--theme-default-color);
 
     :global(.ant-table-column-sorters) {
@@ -81,8 +81,8 @@
     border-radius: 0 0 4px 4px;
 
     :global(.ant-pagination-total-text) {
-      width: 100%;
       @include font-p2-semi-bold;
+      width: 100%;
       color: var(--theme-secondary-color);
       display: flex;
       align-items: center;

@@ -11,6 +11,7 @@
     }
 
     :global(.ant-menu-item) {
+      @include font-p1-semi-bold;
       display: grid;
       grid-auto-flow: column;
       grid-template-columns: repeat(auto-fit, minmax(0, max-content));
@@ -18,8 +19,6 @@
       align-items: center;
       justify-content: flex-start;
       margin: 4px;
-
-      @include font-p1-semi-bold;
       color: var(--theme-secondary-color);
 
       &:global(.ant-menu-item-active) {

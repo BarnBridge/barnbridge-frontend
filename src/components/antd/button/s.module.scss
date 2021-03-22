@@ -121,6 +121,7 @@
 }
 
 .component:global(.ant-btn) {
+  @include font-p2-bold;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,20 +129,18 @@
   height: 48px;
   padding: 12px 32px;
   border-radius: 4px;
-
-  @include font-p2-bold;
   text-align: center;
 
   &:global(.ant-btn-lg) {
+    @include font-p1-bold;
     height: 64px;
     padding: 20px;
-    @include font-p1-bold;
   }
 
   &:global(.ant-btn-sm) {
+    @include font-sm-bold;
     height: 34px;
     padding: 9px;
-    @include font-sm-bold;
   }
 
   &:global(.ant-btn-primary) {

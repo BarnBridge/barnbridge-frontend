@@ -10,8 +10,8 @@
 }
 
 div.paragraph:global(.ant-typography) {
-  margin: 0;
   @include font-p1-regular;
+  margin: 0;
 
   &.expanded {
     white-space: pre-wrap;
