@@ -177,21 +177,12 @@
       d="M3.13302 7.99954C3.13302 11.2396 5.75962 13.8662 8.99969 13.8662C10.716 13.8662 12.2602 13.1292 13.333 11.9544"
       stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
   </symbol>
-  <!-- BELL -->
-  <symbol id="icon__bell" viewBox="0 0 24 24" fill="none">
-    <path
-      d="M11.4993 24C13.1549 24 14.4979 22.657 14.4979 21H8.5007C8.5007 22.657 9.84366 24 11.4993 24ZM21.5957 16.9823C20.6901 16.0092 18.9955 14.5453 18.9955 9.75C18.9955 6.10781 16.4418 3.19219 12.9983 2.47688V1.5C12.9983 0.671719 12.3271 0 11.4993 0C10.6715 0 10.0002 0.671719 10.0002 1.5V2.47688C6.55679 3.19219 4.00305 6.10781 4.00305 9.75C4.00305 14.5453 2.30852 16.0092 1.40289 16.9823C1.12164 17.2847 0.996956 17.6461 0.9993 18C1.00446 18.7687 1.60774 19.5 2.50399 19.5H20.4946C21.3908 19.5 21.9946 18.7687 21.9993 18C22.0016 17.6461 21.8769 17.2842 21.5957 16.9823Z"
-      fill="currentColor"/>
-  </symbol>
-  <!-- BELL OUTLINED -->
-  <symbol id="icon__bell-outlined" fill="none" viewBox="0 0 26 26">
-    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9 21a3 3 0 106 0"/>
-    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
-          d="M11.912 6a7.051 7.051 0 00-7.048 6.817l-.094 2.837a4.438 4.438 0 01-.755 2.332l-1.632 2.421a.364.364 0 00.3.57h18.584a.39.39 0 00.322-.61l-1.626-2.415a4.658 4.658 0 01-.782-2.255l-.238-3.172A7.051 7.051 0 0011.911 6v0z"
-          clip-rule="evenodd"/>
-    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6V5 4v2z"
-          clip-rule="evenodd"/>
-  </symbol>
+  <!-- BELL NOTIFICATION -->
+  <svg id="icon__notification" fill="none" viewBox="0 0 24 24">
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M9 19a3 3 0 106 0"/>
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M11.912 4a7.051 7.051 0 00-7.048 6.817l-.094 2.837a4.438 4.438 0 01-.755 2.332l-1.632 2.421a.364.364 0 00.3.57h18.584a.39.39 0 00.322-.61l-1.626-2.415a4.658 4.658 0 01-.782-2.255l-.238-3.172A7.051 7.051 0 0011.912 4v0z" clip-rule="evenodd"/>
+    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4V3 2v2z" clip-rule="evenodd"/>
+  </svg>
   <!-- CHEVRON RIGHT -->
   <symbol id="icon__chevron-right" viewBox="0 0 16 14" fill="none">
     <path

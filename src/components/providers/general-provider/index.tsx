@@ -12,6 +12,8 @@ export type GeneralContextType = {
   isDarkTheme: boolean;
   toggleDarkTheme: () => void;
   notifications: NotificationType[];
+  notificationsReadUntil: number | undefined;
+  setNotificationsReadUntil: (value: number | undefined) => void;
 };
 
 type ProposalBaseType = {
@@ -31,18 +33,11 @@ type ProposalCreatedType = ProposalBaseType & {
   };
 };
 
-type AbrogationProposalCreatedType = ProposalBaseType & {
-  notificationType: 'abrogation-proposal-created';
+type ProposalActivatedSoonType = ProposalBaseType & {
+  notificationType: 'proposal-activating-soon';
   metadata: {
     proposalId: number;
     proposer: string;
-  };
-};
-
-type ProposalExecutedType = ProposalBaseType & {
-  notificationType: 'proposal-executed';
-  metadata: {
-    proposalId: number;
   };
 };
 
@@ -53,11 +48,81 @@ type ProposalCanceledType = ProposalBaseType & {
   };
 };
 
+type ProposalVotingOpenType = ProposalBaseType & {
+  notificationType: 'proposal-voting-open';
+  // ?
+};
+
+type ProposalVotingEndingSoonType = ProposalBaseType & {
+  notificationType: 'proposal-voting-ending-soon';
+  // ?
+};
+
+type ProposalOutcomeType = ProposalBaseType & {
+  notificationType: 'proposal-outcome';
+  // ?
+};
+
+type ProposalAcceptedType = ProposalBaseType & {
+  notificationType: 'proposal-accepted';
+  // ?
+};
+
+type ProposalFailedType = ProposalBaseType & {
+  notificationType: 'proposal-failed';
+  // ?
+};
+
+type ProposalQueuedType = ProposalBaseType & {
+  notificationType: 'proposal-queued';
+  // ?
+};
+
+type ProposalGraceType = ProposalBaseType & {
+  notificationType: 'proposal-grace';
+  // ?
+};
+
+type ProposalExecutedType = ProposalBaseType & {
+  notificationType: 'proposal-executed';
+  metadata: {
+    proposalId: number;
+  };
+};
+
+type ProposalExpiredType = ProposalBaseType & {
+  notificationType: 'proposal-expired';
+  // ?
+};
+
+type AbrogationProposalCreatedType = ProposalBaseType & {
+  notificationType: 'abrogation-proposal-created';
+  metadata: {
+    proposalId: number;
+    proposer: string;
+  };
+};
+
+type ProposalAbrogatedType = ProposalBaseType & {
+  notificationType: 'proposal-abrogated';
+  // ?
+};
+
 export type NotificationType =
   | ProposalCreatedType
-  | AbrogationProposalCreatedType
+  | ProposalActivatedSoonType
+  | ProposalCanceledType
+  | ProposalVotingOpenType
+  | ProposalVotingEndingSoonType
+  | ProposalOutcomeType
+  | ProposalAcceptedType
+  | ProposalFailedType
+  | ProposalQueuedType
+  | ProposalGraceType
   | ProposalExecutedType
-  | ProposalCanceledType;
+  | ProposalExpiredType
+  | AbrogationProposalCreatedType
+  | ProposalAbrogatedType;
 
 const GeneralContext = React.createContext<GeneralContextType>({} as any);
 
@@ -95,7 +160,9 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
   const [navOpen, setNavOpen] = React.useState<boolean>(false);
   const [notifications, setNotifications] = React.useState<NotificationType[]>([]);
   const [toasts, setToasts] = React.useState<NotificationType[]>([]);
+  const [notificationsReadUntil, setNotificationsReadUntil] = React.useState<number | undefined>();
   const [theme, setTheme] = useLocalStorage('bb_theme', defaultTheme);
+  const [storedReadUntil, setStoredReadUntil, removeStoredReadUntil] = useLocalStorage('bb_notifications_read_until');
   const wallet = useWallet();
 
   React.useEffect(() => {
@@ -114,8 +181,24 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
     setToasts(prevNotifications => prevNotifications.filter(n => n.id !== id));
   }, []);
 
+  React.useEffect(() => {
+    if (storedReadUntil) {
+      setNotificationsReadUntil(Number(storedReadUntil));
+    }
+  }, []);
+
+  const setNotificationsReadUntilHandler = React.useCallback((value: number | undefined) => {
+    if (value) {
+      setStoredReadUntil(value);
+      setNotificationsReadUntil(value);
+    } else {
+      removeStoredReadUntil();
+      setNotificationsReadUntil(undefined);
+    }
+  }, []);
+
   const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications.length
-    ? notifications[notifications.length - 1].startsOn
+    ? Math.max(...notifications.map(n => n.startsOn))
     : null;
   const timestampRef = React.useRef(lastNotificationTimestamp);
   timestampRef.current = lastNotificationTimestamp;
@@ -154,6 +237,8 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
           setTheme(theme === 'dark' ? 'light' : 'dark');
         },
         notifications,
+        notificationsReadUntil,
+        setNotificationsReadUntil: setNotificationsReadUntilHandler,
       }}>
       {children}
       {notificationsNode &&

@@ -1,7 +1,8 @@
 import React from 'react';
+import { nanoid } from 'nanoid';
 
 export type IconBubbleProps = {
-  name: string;
+  bubble: boolean;
   className?: string;
   style?: Object;
   width: number;
@@ -12,7 +13,7 @@ export type IconBubbleProps = {
 
 const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
   const {
-    name,
+    bubble,
     style = {},
     width = 24,
     height = 24,
@@ -22,9 +23,11 @@ const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
     ...rest
   } = props;
 
+  const id = React.useMemo(() => nanoid(), []);
+
   return (
     <svg role="none" style={{ width, height, ...style }} {...rest}>
-      <mask id="circle">
+      <mask id={id}>
         <rect width={width} height={height} fill="white" />
         <circle
           cx={width - notificationSize / 2}
@@ -33,13 +36,15 @@ const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
           r={notificationSize / 2 + notificationGap}
         />
       </mask>
-      <g mask="url(#circle)">{children}</g>
-      <circle
-        cx={width - notificationSize / 2}
-        cy={notificationSize / 2}
-        fill="var(--theme-red-color)"
-        r={notificationSize / 2}
-      />
+      <g mask={bubble ? `url(#${id})` : ''}>{children}</g>
+      {bubble && (
+        <circle
+          cx={width - notificationSize / 2}
+          cy={notificationSize / 2}
+          fill="var(--theme-red-color)"
+          r={notificationSize / 2}
+        />
+      )}
     </svg>
   );
 };

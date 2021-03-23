@@ -1,16 +1,10 @@
-.notification {
-  // &:hover svg {
-  //   color: var(--theme-primary-color);
-  // }
+.notificationIcon {
+  color: var(--theme-icon-color);
+  cursor: pointer;
 
-  // :global(.ant-badge-dot) {
-  //   box-shadow: 0 0 0 2px var(--theme-card-color);
-  //   height: 8px;
-  //   min-width: 8px;
-  //   right: 6px;
-  //   top: 6px;
-  //   width: 8px;
-  // }
+  &:hover {
+    color: var(--theme-icon-hover-color);
+  }
 }
 
 .popover {
