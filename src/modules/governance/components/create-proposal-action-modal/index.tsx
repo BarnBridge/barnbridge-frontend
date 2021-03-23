@@ -1,13 +1,13 @@
 import React from 'react';
 import AntdForm, { FormInstance } from 'antd/lib/form';
 import AntdNotification from 'antd/lib/notification';
+import AntdSpin from 'antd/lib/spin';
 import AntdSwitch from 'antd/lib/switch';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
 import Web3Contract from 'web3/contract';
 import { fetchContractABI } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
-import Button from 'components/antd/button';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Modal, { ModalProps } from 'components/antd/modal';
@@ -57,6 +57,7 @@ const InitialFormValues: CreateProposalActionForm = {
 
 export type CreateProposalActionModalProps = ModalProps & {
   edit?: boolean;
+  actions: CreateProposalActionForm[];
   initialValues?: CreateProposalActionForm;
   onSubmit: (values: CreateProposalActionForm) => void;
 };
@@ -208,6 +209,23 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
   }
 
   async function handleSubmit(values: CreateProposalActionForm) {
+    const existsSimilar = props.actions.some(action => {
+      return (
+        action !== values &&
+        action.addFunctionCall &&
+        action.targetAddress === values.targetAddress &&
+        action.functionSignature === values.functionSignature &&
+        action.functionEncodedParams === values.functionEncodedParams
+      );
+    });
+
+    if (existsSimilar) {
+      AntdNotification.error({
+        message: 'Duplicate actions are disallowed!',
+      });
+      return;
+    }
+
     setState({ submitting: true });
 
     let cancel = false;
@@ -517,9 +535,10 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
               className="button-ghost-monochrome">
               {edit ? 'Cancel Changes' : 'Cancel'}
             </button>
-            <Button type="primary" htmlType="submit" loading={state.submitting}>
+            <button className="button-primary" type="submit">
+              {state.submitting && <AntdSpin spinning />}
               {edit ? 'Save Changes' : 'Add Action'}
-            </Button>
+            </button>
           </div>
         </Form>
 
