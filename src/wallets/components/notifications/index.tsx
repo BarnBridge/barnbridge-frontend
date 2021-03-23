@@ -4,13 +4,15 @@ import Grid from 'components/custom/grid';
 import { Notification } from 'components/custom/notification';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
+import { useNotifications } from 'components/providers/notifications-provider';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 
 import s from './s.module.scss';
 
 const Notifications: React.FC = () => {
-  const { isDarkTheme, notifications } = useGeneral();
+  const { isDarkTheme } = useGeneral();
+  const { notifications } = useNotifications();
 
   if (!notifications.length) {
     return (

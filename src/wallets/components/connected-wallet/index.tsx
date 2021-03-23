@@ -13,14 +13,14 @@ import Icon from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { useGeneral } from 'components/providers/general-provider';
+import { useNotifications } from 'components/providers/notifications-provider';
 import Notifications from 'wallets/components/notifications';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
 const NotificationSection: React.FC = () => {
-  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useGeneral();
+  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
 
   const markAllAsRead = () => {
     if (notifications.length) {

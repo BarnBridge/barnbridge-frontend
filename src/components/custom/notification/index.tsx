@@ -7,7 +7,7 @@ import isToday from 'date-fns/isToday';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
-import { NotificationType, useGeneral } from 'components/providers/general-provider';
+import { NotificationType, useNotifications } from 'components/providers/notifications-provider';
 
 import NotificationIcon from './icon';
 
@@ -129,7 +129,7 @@ type Props = {
 };
 
 export const Notification: React.FC<Props> = ({ n }) => {
-  const { notificationsReadUntil } = useGeneral();
+  const { notificationsReadUntil } = useNotifications();
   const date = new Date(n.startsOn * 1000);
   const isUnread = notificationsReadUntil ? notificationsReadUntil < n.startsOn : false;
 
