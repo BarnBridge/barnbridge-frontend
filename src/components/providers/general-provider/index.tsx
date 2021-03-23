@@ -12,8 +12,8 @@ export type GeneralContextType = {
   isDarkTheme: boolean;
   toggleDarkTheme: () => void;
   notifications: NotificationType[];
-  notificationsReadUntil: number | undefined;
-  setNotificationsReadUntil: (value: number | undefined) => void;
+  notificationsReadUntil: number;
+  setNotificationsReadUntil: (value: number) => void;
 };
 
 type ProposalBaseType = {
@@ -158,9 +158,11 @@ type Props = {
 
 const GeneralContextProvider: React.FC<Props> = ({ children }) => {
   const [navOpen, setNavOpen] = React.useState<boolean>(false);
-  const [notifications, setNotifications] = React.useState<NotificationType[]>([]);
+  const [notifications, setNotifications] = React.useState<GeneralContextType['notifications']>([]);
   const [toasts, setToasts] = React.useState<NotificationType[]>([]);
-  const [notificationsReadUntil, setNotificationsReadUntil] = React.useState<number | undefined>();
+  const [notificationsReadUntil, setNotificationsReadUntil] = React.useState<
+    GeneralContextType['notificationsReadUntil']
+  >(1);
   const [theme, setTheme] = useLocalStorage('bb_theme', defaultTheme);
   const [storedReadUntil, setStoredReadUntil, removeStoredReadUntil] = useLocalStorage('bb_notifications_read_until');
   const wallet = useWallet();
@@ -187,13 +189,13 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
     }
   }, []);
 
-  const setNotificationsReadUntilHandler = React.useCallback((value: number | undefined) => {
+  const setNotificationsReadUntilHandler = React.useCallback((value: number) => {
     if (value) {
       setStoredReadUntil(value);
       setNotificationsReadUntil(value);
     } else {
       removeStoredReadUntil();
-      setNotificationsReadUntil(undefined);
+      setNotificationsReadUntil(0);
     }
   }, []);
 

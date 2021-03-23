@@ -29,11 +29,13 @@ const Notifications: React.FC = () => {
 
   return (
     <ul className={s.list}>
-      {notifications.reverse().map(n => (
-        <li key={n.id}>
-          <Notification n={n} />
-        </li>
-      ))}
+      {notifications
+        .sort((a, b) => b.startsOn - a.startsOn)
+        .map(n => (
+          <li key={n.id}>
+            <Notification n={n} />
+          </li>
+        ))}
     </ul>
   );
 };

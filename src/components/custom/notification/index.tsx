@@ -13,20 +13,6 @@ import NotificationIcon from './icon';
 
 import s from './s.module.scss';
 
-// "proposal-created"
-// "proposal-activating-soon"
-// "proposal-canceled"
-// "proposal-voting-open"
-// "proposal-voting-ending-soon"
-// "proposal-outcome"
-// "proposal-accepted"
-// "proposal-failed"
-// "proposal-queued"
-// "proposal-grace"
-// "proposal-executed"
-// "proposal-expired"
-// "abrogation-proposal-created"
-// "proposal-abrogated"
 function getIconName(n: NotificationType): IconNames {
   switch (n.notificationType) {
     case 'proposal-created':
