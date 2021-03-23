@@ -13,10 +13,7 @@
     "start": "react-scripts start",
     "start:prod": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.production.local",
     "lessc": "lessc src/styles/antd.less src/styles/antd.css -js",
-    "lint": "eslint src/**/*.ts{,x}",
-    "lint:fix": "npm run lint -- --fix",
-    "lint:types": "tsc --noEmit",
-    "lint:style": "stylelint --syntax scss 'src/**/*.scss'",
+    "lint": "eslint src/**/*.ts{,x} && tsc --noEmit && stylelint --syntax scss 'src/**/*.scss'",
     "format": "prettier --write src/**/*.ts{,x}",
     "analyze": "source-map-explorer 'build/static/js/*.js'"
   },
@@ -43,8 +40,8 @@
   },
   "eslintConfig": {
     "extends": [
-      "prettier",
-      "react-app"
+      "react-app",
+      "prettier"
     ],
     "plugins": [
       "prettier"
@@ -53,17 +50,10 @@
       "prettier/prettier": [
         "warn",
         {
-          "endOfLine": "auto"
+          "endOfLine": "lf"
         }
       ],
-      "max-len": [
-        "error",
-        140
-      ],
-      "complexity": [
-        "error",
-        14
-      ]
+      "react-hooks/exhaustive-deps": "off"
     }
   },
   "prettier": {

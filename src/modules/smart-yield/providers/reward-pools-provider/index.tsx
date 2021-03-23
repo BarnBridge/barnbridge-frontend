@@ -13,7 +13,6 @@ export type SYRewardPool = APISYRewardPool & {
   pool: SYRewardPoolContract;
   poolToken: SYSmartYieldContract;
   rewardToken: Erc20Contract;
-  priceInUSD?: BigNumber;
 };
 
 type State = {
@@ -45,6 +44,10 @@ const RewardPoolsProvider: React.FC = props => {
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
 
+  const convertInUSD = React.useCallback((value: BigNumber | number): BigNumber | undefined => {
+    return new BigNumber(value).multipliedBy(1);
+  }, []);
+
   React.useEffect(() => {
     setState(prevState => ({
       ...prevState,
@@ -75,17 +78,34 @@ const RewardPoolsProvider: React.FC = props => {
             rewardToken: rewardTokenContract,
             poolToken: poolTokenContract,
             pool: poolContract,
-            priceInUSD: poolTokenContract.price?.multipliedBy(1),
           };
         });
+
+        const totalValueLocked = pools.reduce((a, c) => {
+          if (!c.pool.poolSize) {
+            return a;
+          }
+
+          const tokenValue = c.poolToken.convertInUnderlying(c.pool.poolSize);
+
+          if (!tokenValue) {
+            return a;
+          }
+
+          const usdValue = convertInUSD(tokenValue);
+
+          if (!usdValue) {
+            return a;
+          }
+
+          return a.plus(usdValue);
+        }, ZERO_BIG_NUMBER);
 
         setState(prevState => ({
           ...prevState,
           loading: false,
           pools,
-          totalValueLocked: pools.reduce((a, c) => {
-            return a.plus(c.pool.poolSize?.multipliedBy(c.poolToken.price ?? 1).multipliedBy(1) ?? ZERO_BIG_NUMBER);
-          }, ZERO_BIG_NUMBER),
+          totalValueLocked,
         }));
       } catch {
         setState(prevState => ({

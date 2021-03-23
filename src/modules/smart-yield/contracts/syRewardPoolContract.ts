@@ -125,11 +125,11 @@ class SYRewardPoolContract extends Web3Contract {
   loadClaim(): Promise<void> {
     this.toClaim = undefined;
 
-    if (!this.address) {
+    if (!this.account) {
       return Promise.reject();
     }
 
-    return this.call('claim', [], { from: this.address }).then(value => {
+    return this.call('claim', [], { from: this.account }).then(value => {
       this.toClaim = new BigNumber(value);
     });
   }
@@ -137,7 +137,7 @@ class SYRewardPoolContract extends Web3Contract {
   loadBalance(): Promise<void> {
     this.balance = undefined;
 
-    if (!this.address) {
+    if (!this.account) {
       return Promise.reject();
     }
 

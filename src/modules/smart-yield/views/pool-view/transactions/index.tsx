@@ -1,126 +1,200 @@
 import React from 'react';
+import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { shortenAddr } from 'web3/utils';
+import format from 'date-fns/format';
+import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tabs from 'components/antd/tabs';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import { IconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import {
+  APISYRewardPoolTransaction,
+  Markets,
+  Pools,
+  RewardHistoryShortTypes,
+  fetchSYRewardPoolTransactions,
+} from 'modules/smart-yield/api';
+import { SYRewardPool, useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
-import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 
-type DataType = {
-  meta: {
-    icon: IconNames;
-  };
-  market: {
-    icon: IconNames;
-  };
-  amount: string;
-  date: string;
-  transactionHash: string;
-  from: string;
+type TableEntity = APISYRewardPoolTransaction & {
+  pool?: SYRewardPool;
 };
 
-const dataMock: DataType[] = [
-  {
-    meta: {
-      icon: 'usdc-token',
-    },
-    market: {
-      icon: 'bond-token',
-    },
-    amount: '2,132.3321',
-    date: 'Jan 1, 2021 16:35:22',
-    transactionHash: '0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c',
-    from: '0x5a0b54d5dc17e0aadc383d2db43b0a0d3e029c4c',
-  },
-];
+type State = {
+  transactions: TableEntity[];
+  total: number;
+  page: number;
+  pageSize: number;
+  loading: boolean;
+  filters: {
+    type: string;
+  };
+};
 
-function getTableColumns(all: boolean = false): ColumnsType<DataType> {
-  return [
-    {
-      title: 'Transaction',
-      render: (_, entity) => (
+const InitialState: State = {
+  transactions: [],
+  total: 0,
+  page: 1,
+  pageSize: 10,
+  loading: false,
+  filters: {
+    type: 'all',
+  },
+};
+
+const Columns: ColumnsType<TableEntity> = [
+  {
+    title: 'Transaction',
+    render: (_, entity) => {
+      const market = Markets.get(entity.pool?.protocolId ?? '');
+      const meta = Pools.get(entity.pool?.underlyingSymbol ?? '');
+
+      return (
         <div className="flex flow-col col-gap-16 align-center">
-          <IconBubble name={entity.meta.icon} bubbleName={entity.market.icon} secondBubbleName="compound" />
+          {market && meta && <IconBubble name={meta.icon} bubbleName="bond-token" secondBubbleName={market.icon} />}
           <div>
             <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-              Deposit
+              {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
             </Text>
             <Text type="small" weight="semibold" wrap={false}>
-              bbcUSDC
+              {entity.pool?.poolToken.symbol}
             </Text>
           </div>
         </div>
-      ),
+      );
     },
-    {
-      title: 'Amount/Date',
-      render: (_, entity) => (
-        <>
+  },
+  {
+    title: 'Amount',
+    render: (_, entity) => (
+      <>
+        <Tooltip
+          title={formatToken(entity.amount, {
+            decimals: entity.pool?.poolTokenDecimals,
+          })}>
           <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-            {entity.amount}
+            {formatToken(entity.amount, {
+              tokenName: entity.pool?.poolToken.symbol,
+            })}
           </Text>
-          <Text type="small" weight="semibold" wrap={false}>
-            {entity.date}
-          </Text>
-        </>
-      ),
-    },
-    ...(all
-      ? ([
-          {
-            title: 'Transaction hash',
-            render: (_, entity) => (
-              <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-                {shortenAddr(entity.from, 6, 4)}
-              </Text>
-            ),
-          },
-        ] as ColumnsType<DataType>)
-      : []),
-    {
-      title: 'Transaction hash',
-      render: (_, entity) => (
-        <ExternalLink href="https://etherscan.com" className="link-blue">
-          {shortenAddr(entity.transactionHash, 6, 4)}
+        </Tooltip>
+        <Text type="small" weight="semibold" wrap={false}>
+          {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
+        </Text>
+      </>
+    ),
+  },
+  {
+    title: 'Transaction hash/timestamp',
+    render: (_, entity) => (
+      <>
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+          {shortenAddr(entity.transactionHash)}
         </ExternalLink>
-      ),
-    },
-  ];
-}
+        <Text type="small" weight="semibold" color="secondary">
+          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+        </Text>
+      </>
+    ),
+  },
+];
 
 const Transactions: React.FC = () => {
-  const [activeTab, setActiveTab] = React.useState('my');
-  const [transactionFilter, setTransactionFilter] = React.useState('all');
+  const wallet = useWallet();
+  const rewardPool = useRewardPool();
 
-  const transactionOpts = React.useMemo<SelectOption[]>(() => {
+  const [state, setState] = React.useState<State>(InitialState);
+  const [activeTab, setActiveTab] = React.useState('own');
+
+  const txOpts = React.useMemo<SelectOption[]>(() => {
     return [
       {
         label: 'All transactions',
         value: 'all',
       },
-      {
-        label: 'Transaction 1',
-        value: '1',
-      },
-      {
-        label: 'Transaction 2',
-        value: '2',
-      },
+      ...Array.from(RewardHistoryShortTypes).map(([value, label]) => ({ label, value })),
     ];
   }, []);
 
-  const rewardPool = useRewardPool();
+  React.useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      page: 1,
+      filters: {
+        ...prevState.filters,
+        type: 'all',
+      },
+    }));
+  }, [activeTab]);
 
   React.useEffect(() => {
-    rewardPool.transactions
-  }, []);
+    if (!rewardPool.pool) {
+      return;
+    }
+
+    const { poolAddress } = rewardPool.pool;
+
+    setState(prevState => ({
+      ...prevState,
+      loading: true,
+      transactions: [],
+      total: 0,
+    }));
+
+    (async () => {
+      try {
+        const {
+          data: transactions,
+          meta: { count },
+        } = await fetchSYRewardPoolTransactions(
+          poolAddress,
+          state.page,
+          state.pageSize,
+          activeTab === 'own' ? wallet.account : 'all',
+          state.filters.type,
+        );
+
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          transactions: transactions.map(transaction => ({
+            ...transaction,
+            pool: rewardPool.pool,
+          })),
+          total: count,
+        }));
+      } catch {
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+        }));
+      }
+    })();
+  }, [rewardPool.pool, wallet, activeTab, state.page, state.pageSize, state.filters]);
+
+  function handleTypeFilterChange(value: SelectValue) {
+    setState(prevState => ({
+      ...prevState,
+      filters: {
+        ...prevState.filters,
+        type: String(value),
+      },
+    }));
+  }
+
+  function handlePageChange(page: number) {
+    setState(prevState => ({
+      ...prevState,
+      page,
+    }));
+  }
 
   return (
     <div className="card mb-32">
@@ -130,21 +204,33 @@ const Transactions: React.FC = () => {
         onChange={setActiveTab}
         tabBarExtraContent={
           <Select
-            options={transactionOpts}
             className="full-width"
-            value={transactionFilter}
-            onChange={value => setTransactionFilter(String(value))}
+            options={txOpts}
+            value={state.filters.type}
+            onChange={handleTypeFilterChange}
           />
         }>
-        <Tabs.Tab key="my" tab="My transactions" />
+        <Tabs.Tab key="own" tab="My transactions" />
         <Tabs.Tab key="all" tab="All transactions" />
       </Tabs>
 
-      <Table<DataType>
-        columns={getTableColumns()}
-        dataSource={dataMock}
-        loading={false}
+      <Table<TableEntity>
+        columns={Columns}
+        dataSource={state.transactions}
+        loading={state.loading}
         rowKey="transactionHash"
+        pagination={{
+          total: state.total,
+          current: state.page,
+          pageSize: state.pageSize,
+          position: ['bottomRight'],
+          showTotal: (total: number, [from, to]: [number, number]) => (
+            <Text type="p2" weight="semibold" color="secondary">
+              Showing {from} to {to} out of {total} transactions
+            </Text>
+          ),
+          onChange: handlePageChange,
+        }}
         scroll={{
           x: true,
         }}

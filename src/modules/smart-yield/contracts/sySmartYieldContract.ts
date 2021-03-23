@@ -284,9 +284,25 @@ class SYSmartYieldContract extends Erc20Contract {
       this.symbol = symbol;
       this.decimals = decimals;
       this.totalSupply = totalSupply.dividedBy(10 ** decimals);
-      this.price = price;
+      this.price = price.dividedBy(1e18);
       this.abond = abond;
     });
+  }
+
+  convertInUnderlying(value: BigNumber | number): BigNumber | undefined {
+    if (!this.price) {
+      return undefined;
+    }
+
+    return new BigNumber(value).multipliedBy(this.price);
+  }
+
+  convertFromUnderlying(value: BigNumber | number): BigNumber | undefined {
+    if (!this.price) {
+      return undefined;
+    }
+
+    return new BigNumber(value).dividedBy(this.price);
   }
 
   async loadBalance(): Promise<void> {

@@ -400,6 +400,16 @@ export function fetchSYRewardPools(
     .then(result => result.data);
 }
 
+export enum APISYRewardTxHistoryType {
+  JUNIOR_STAKE = 'JUNIOR_STAKE',
+  JUNIOR_UNSTAKE = 'JUNIOR_UNSTAKE',
+}
+
+export const RewardHistoryShortTypes = new Map<string, string>([
+  [APISYRewardTxHistoryType.JUNIOR_STAKE, 'Stake'],
+  [APISYRewardTxHistoryType.JUNIOR_UNSTAKE, 'Unstake'],
+]);
+
 export type APISYRewardPoolTransaction = {
   userAddress: string;
   transactionType: string;

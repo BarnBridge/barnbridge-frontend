@@ -2,12 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 
 import { useReload } from 'hooks/useReload';
-import {
-  APISYRewardPool,
-  APISYRewardPoolTransaction,
-  fetchSYRewardPoolTransactions,
-  fetchSYRewardPools,
-} from 'modules/smart-yield/api';
+import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
 import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -24,7 +19,6 @@ type State = {
   tokenId?: string;
   loading: boolean;
   pool?: SYRewardPool;
-  transactions: APISYRewardPoolTransaction[];
 };
 
 const InitialState: State = {
@@ -32,7 +26,6 @@ const InitialState: State = {
   tokenId: undefined,
   loading: false,
   pool: undefined,
-  transactions: [],
 };
 
 type ContextType = State;
@@ -122,41 +115,6 @@ const RewardPoolProvider: React.FC = props => {
       }
     })();
   }, [market, token]);
-
-  React.useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      loading: true,
-      transactions: [],
-    }));
-
-    const { pool } = state;
-
-    if (!pool) {
-      return;
-    }
-
-    (async () => {
-      try {
-        const {
-          data: transactions,
-          meta: { count },
-        } = await fetchSYRewardPoolTransactions(pool.poolAddress);
-
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          transactions,
-          totalTransactions: count,
-        }));
-      } catch {
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-        }));
-      }
-    })();
-  }, [state.pool]);
 
   React.useEffect(() => {
     const { pool } = state;
