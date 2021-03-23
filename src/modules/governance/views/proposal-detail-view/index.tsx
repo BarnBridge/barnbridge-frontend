@@ -105,9 +105,9 @@ const ProposalDetailViewInner: React.FC = () => {
         <Grid flow="row" gap={32} className={s.sidebarContainer}>
           <ProposalStatusCard />
           {(APIProposalState.QUEUED === proposalState || proposalCtx.isCanceled) && <ProposalAbrogationCard />}
+          {[APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalState!) && <ProposalVotesCard />}
           {APIProposalState.ACTIVE === proposalState && (
             <>
-              <ProposalVotesCard />
               <ProposalQuorumCard />
               <ProposalApprovalCard />
             </>

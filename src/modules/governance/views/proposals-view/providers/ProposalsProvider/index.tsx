@@ -3,8 +3,12 @@ import React from 'react';
 import useMergeState from 'hooks/useMergeState';
 import { APILiteProposalEntity, fetchProposals } from 'modules/governance/api';
 
+export type LiteProposalEntity = APILiteProposalEntity & {
+  stateTimeLeftTs: number;
+};
+
 export type ProposalsProviderState = {
-  proposals: APILiteProposalEntity[];
+  proposals: LiteProposalEntity[];
   total: number;
   page: number;
   pageSize: number;
@@ -67,7 +71,10 @@ const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
       .then(data => {
         setState({
           loading: false,
-          proposals: data.data,
+          proposals: data.data.map(item => ({
+            ...item,
+            stateTimeLeftTs: Date.now() + (item.stateTimeLeft ?? 0) * 1_000,
+          })),
           total: data.meta.count,
         });
       })

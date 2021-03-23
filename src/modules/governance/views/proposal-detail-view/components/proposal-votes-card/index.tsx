@@ -7,6 +7,7 @@ import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import { APIProposalState } from 'modules/governance/api';
 
 import { useProposal } from '../../providers/ProposalProvider';
 import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
@@ -83,6 +84,22 @@ const ProposalVotesCard: React.FC = () => {
       showVoteModal: false,
       voteState: VoteState.None,
     }));
+  }
+
+  if (proposalCtx.proposal?.state === APIProposalState.WARMUP) {
+    return (
+      <Card
+        className={s.component}
+        title={
+          <Text type="p1" weight="semibold" color="primary">
+            Votes
+          </Text>
+        }>
+        <div className="p-24">
+          <Alert type="info" message="Voting on this proposal will start after the Warm-Up period ends." />
+        </div>
+      </Card>
+    );
   }
 
   return (
