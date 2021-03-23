@@ -62,7 +62,7 @@ const ProposalDetailViewInner: React.FC = () => {
   }
 
   return (
-    <div className="mh-auto" style={{ maxWidth: 1070 }}>
+    <div className="mh-auto" style={{ maxWidth: 1070, width: '100%' }}>
       <div className="mb-32">
         <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Proposals
