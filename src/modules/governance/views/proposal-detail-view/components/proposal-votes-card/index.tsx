@@ -95,7 +95,9 @@ const ProposalVotesCard: React.FC = () => {
             Votes
           </Text>
         }>
-        <Alert type="info" message="Alabalabala" />
+        <div className="p-24">
+          <Alert type="info" message="Voting on this proposal will start after the Warm-Up period ends." />
+        </div>
       </Card>
     );
   }
