@@ -47,6 +47,10 @@ body.mobile-menu-open {
 
 .ant-notification-notice {
   word-break: break-word;
+
+  .ant-notification-notice-message {
+    min-height: 24px;
+  }
 }
 
 :root {

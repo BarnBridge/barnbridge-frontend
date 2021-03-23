@@ -40,6 +40,7 @@ const Select: React.FC<SelectProps<AntdSelectValue>> = <T extends AntdSelectValu
       {options.map(option => (
         <AntdSelect.Option
           {...option}
+          className={s.option}
           key={option.value}
           label={
             <Grid flow="col" gap={12}>

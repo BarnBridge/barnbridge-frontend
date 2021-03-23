@@ -11,40 +11,37 @@ export type UseLeftTimeOptions = {
 };
 
 export function useLeftTime(options: UseLeftTimeOptions): [() => void, () => void] {
-  function getLeftTime() {
-    return Math.max(options.end.valueOf() - Date.now(), 0);
-  }
+  const optsRef = React.useRef(options);
+  optsRef.current = options;
+
+  const getLeftTime = React.useCallback(() => {
+    return Math.max(optsRef.current.end.valueOf() - Date.now(), 0);
+  }, []);
 
   const [start, stop] = useInterval(
     () => {
       const leftTime = getLeftTime();
 
-      options.onTick?.(leftTime);
+      optsRef.current.onTick?.(leftTime);
 
       if (leftTime === 0) {
         stop();
-        options.onEnd?.();
+        optsRef.current.onEnd?.();
       }
     },
     options.delay ?? 1_000,
     false,
   );
 
-  function startFn() {
+  const startFn = React.useCallback(() => {
     start();
-    options.onStart?.(getLeftTime());
-  }
+    optsRef.current.onStart?.(getLeftTime());
+  }, [start]);
 
-  function stopFn() {
+  const stopFn = React.useCallback(() => {
     stop();
-    options.onStop?.(getLeftTime());
-  }
-
-  React.useEffect(() => {
-    return () => {
-      stop();
-    };
-  }, []);
+    optsRef.current.onStop?.(getLeftTime());
+  }, [stop]);
 
   React.useEffect(() => {
     stopFn();
@@ -54,11 +51,17 @@ export function useLeftTime(options: UseLeftTimeOptions): [() => void, () => voi
     }
   }, [options.end]);
 
-  return [startFn, stopFn];
+  React.useEffect(() => {
+    return () => {
+      stop();
+    };
+  }, []);
+
+  return React.useMemo(() => [startFn, stopFn], [startFn, stopFn]);
 }
 
 export type UseLeftTimeProps = UseLeftTimeOptions & {
-  children: (leftTime: number) => React.ReactNode;
+  children: React.ReactNode | ((leftTime: number) => React.ReactNode);
 };
 
 export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
@@ -67,8 +70,7 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
   const [leftTime, setLeftTime] = React.useState<number>(0);
 
   useLeftTime({
-    end: props.end,
-    delay: props.delay,
+    ...props,
     onStart: value => {
       setLeftTime(value);
       props.onStart?.(value);
@@ -81,8 +83,7 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
       setLeftTime(value);
       props.onTick?.(value);
     },
-    onEnd: props.onEnd,
   });
 
-  return <>{children(leftTime)}</>;
+  return <>{typeof children === 'function' ? (children as Function)(leftTime) : children}</>;
 };

@@ -135,11 +135,9 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </Hint>
           <Grid flow="row" gap={4}>
             <UseLeftTime end={(web3c.daoReward.poolFeature?.endTs ?? 0) * 1000} delay={5_000}>
-              {() => (
-                <Text type="h2" weight="bold" color="primary">
-                  {formatBONDValue(web3c.daoReward.actions.getBondRewards())}
-                </Text>
-              )}
+              <Text type="h2" weight="bold" color="primary">
+                {formatBONDValue(web3c.daoReward.actions.getBondRewards())}
+              </Text>
             </UseLeftTime>
             <Text type="p1" color="secondary">
               out of {formatBONDValue(web3c.daoReward.poolFeature?.totalAmount)}
