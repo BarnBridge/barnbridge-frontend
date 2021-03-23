@@ -115,7 +115,7 @@ const ProposalCreateView: React.FC = () => {
 
             if (c.addFunctionCall) {
               a.signatures.push(c.functionSignature!);
-              a.calldatas.push(c.functionEncodedParams!);
+              a.calldatas.push(c.functionEncodedParams || '0x');
             } else {
               a.signatures.push('');
               a.calldatas.push('0x');
@@ -145,7 +145,9 @@ const ProposalCreateView: React.FC = () => {
 
       form.setFieldsValue(InitialFormValues);
       history.push(`/governance/proposals/${proposalId}`);
-    } catch (e) {}
+    } catch (e) {
+      console.error(e);
+    }
 
     setState({ submitting: false });
   }
@@ -301,6 +303,7 @@ const ProposalCreateView: React.FC = () => {
       {state.showCreateActionModal && (
         <CreateProposalActionModal
           edit={state.selectedAction !== undefined}
+          actions={form.getFieldValue('actions')}
           initialValues={state.selectedAction}
           onCancel={() =>
             setState({

@@ -66,54 +66,52 @@ const ProposalDetailsCard: React.FC = () => {
         </Text>
       }
       noPaddingBody>
-      <Grid flow="col" gap={32} justify="space-between" padding={24}>
-        <Grid flow="col" gap={32}>
-          <Grid flow="row" gap={4}>
-            <Text type="small" weight="semibold" color="secondary">
-              Created by
-            </Text>
-            <Grid flow="col" gap={8}>
-              <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
-              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
-                <Text type="p1" weight="semibold" color="blue">
-                  {shortenAddr(proposalCtx.proposal?.proposer)}
-                </Text>
-              </ExternalLink>
-            </Grid>
-          </Grid>
-          <Grid flow="row" gap={4}>
-            <Hint
-              text={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
-              <Text type="small" weight="semibold" color="secondary">
-                Creator threshold
+      <div className="p-24 flexbox-list" style={{ '--gap': '32px' } as React.CSSProperties}>
+        <div>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Created by
+          </Text>
+          <Grid flow="col" gap={8}>
+            <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
+            <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
+              <Text type="p1" weight="semibold" color="blue">
+                {shortenAddr(proposalCtx.proposal?.proposer)}
               </Text>
-            </Hint>
-            <Grid flow="col" gap={8}>
-              {proposalCtx.thresholdRate !== undefined && (
-                <>
-                  <Icon
-                    name={
-                      proposalCtx.thresholdRate > proposalCtx.minThreshold
-                        ? 'check-circle-outlined'
-                        : 'close-circle-outlined'
-                    }
-                  />
-                  <Skeleton loading={proposalCtx.proposal === undefined}>
-                    <Text type="p1" weight="semibold" color="primary">
-                      {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
-                    </Text>
-                  </Skeleton>
-                </>
-              )}
-            </Grid>
+            </ExternalLink>
           </Grid>
-          {canCancel && (
-            <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
-              Cancel proposal
-            </Button>
-          )}
-        </Grid>
-      </Grid>
+        </div>
+        <div>
+          <Hint
+            text={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              Creator threshold
+            </Text>
+          </Hint>
+          <Grid flow="col" gap={8}>
+            {proposalCtx.thresholdRate !== undefined && (
+              <>
+                <Icon
+                  name={
+                    proposalCtx.thresholdRate > proposalCtx.minThreshold
+                      ? 'check-circle-outlined'
+                      : 'close-circle-outlined'
+                  }
+                />
+                <Skeleton loading={proposalCtx.proposal === undefined}>
+                  <Text type="p1" weight="semibold" color="primary">
+                    {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
+                  </Text>
+                </Skeleton>
+              </>
+            )}
+          </Grid>
+        </div>
+        {canCancel && (
+          <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
+            Cancel proposal
+          </Button>
+        )}
+      </div>
       <Divider />
       <Grid flow="row" gap={16} padding={24}>
         <Text type="small" weight="semibold" color="secondary">

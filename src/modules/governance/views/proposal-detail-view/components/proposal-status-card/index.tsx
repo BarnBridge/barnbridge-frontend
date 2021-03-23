@@ -1,4 +1,5 @@
 import React from 'react';
+import { waitUntil } from 'async-wait-until';
 import format from 'date-fns/format';
 import formatDistance from 'date-fns/formatDistance';
 import { getEtherscanTxUrl } from 'web3/utils';
@@ -73,6 +74,23 @@ function formatEventTime(name: string, start: number, end: number): string {
 const ProposalStatusCard: React.FC = () => {
   const proposalCtx = useProposal();
 
+  let currentState: APIProposalState | undefined;
+
+  async function handleLeftTimeEnd() {
+    await waitUntil(
+      () => {
+        if (currentState !== proposalCtx.proposal?.state) {
+          return Promise.resolve();
+        }
+
+        currentState = proposalCtx.proposal?.state;
+        proposalCtx.reload();
+        return Promise.reject();
+      },
+      { intervalBetweenAttempts: 3_000, timeout: Infinity },
+    );
+  }
+
   return (
     <Card>
       <Grid flow="row" gap={24}>
@@ -95,10 +113,10 @@ const ProposalStatusCard: React.FC = () => {
                 </Text>
               )}
 
-              <UseLeftTime end={(event.endTimestamp ?? 0) * 1_000} delay={10_000} onEnd={() => proposalCtx.reload()}>
-                {() => (
+              <UseLeftTime end={(event.endTimestamp ?? 0) * 1_000} delay={10_000} onEnd={handleLeftTimeEnd}>
+                {leftTime => (
                   <Text type="p2" weight="semibold" color="secondary">
-                    {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
+                    {leftTime > 0 ? formatEventTime(event.name, event.startTimestamp, event.endTimestamp) : ''}
                   </Text>
                 )}
               </UseLeftTime>
