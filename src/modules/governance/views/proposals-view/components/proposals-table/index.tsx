@@ -7,20 +7,20 @@ import Progress from 'components/antd/progress';
 import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import { APILiteProposalEntity } from 'modules/governance/api';
+import { UseLeftTime } from 'hooks/useLeftTime';
 
-import { useProposals } from '../../providers/ProposalsProvider';
+import { LiteProposalEntity, useProposals } from '../../providers/ProposalsProvider';
 import ProposalStatusTag from '../proposal-status-tag';
 
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
 
-const Columns: ColumnsType<APILiteProposalEntity> = [
+const Columns: ColumnsType<LiteProposalEntity> = [
   {
     title: 'Proposal',
     width: '70%',
-    render: (_, data: APILiteProposalEntity) => (
+    render: (_, data: LiteProposalEntity) => (
       <Grid flow="row" gap={8}>
         <Link to={`proposals/${data.proposalId}`}>
           <Text type="p1" weight="semibold" color="primary">
@@ -29,9 +29,13 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
         </Link>
         <Grid flow="col" gap={16} align="center">
           <ProposalStatusTag state={data.state} />
-          <Text type="p2" weight="semibold" color="secondary">
-            {data.stateTimeLeft ? `${getFormattedDuration(data.stateTimeLeft)} left` : ''}
-          </Text>
+          <UseLeftTime end={data.stateTimeLeftTs} delay={1_000}>
+            {leftTime => (
+              <Text type="p2" weight="semibold" color="secondary">
+                {leftTime > 0 ? getFormattedDuration(0, data.stateTimeLeftTs) : ''}
+              </Text>
+            )}
+          </UseLeftTime>
         </Grid>
       </Grid>
     ),
@@ -39,7 +43,7 @@ const Columns: ColumnsType<APILiteProposalEntity> = [
   {
     title: 'Votes',
     width: '30%',
-    render: (_, data: APILiteProposalEntity) => {
+    render: (_, data: LiteProposalEntity) => {
       const total = data.forVotes.plus(data.againstVotes);
 
       let forRate = ZERO_BIG_NUMBER;
@@ -86,7 +90,7 @@ const ProposalsTable: React.FC = () => {
   }
 
   return (
-    <Table<APILiteProposalEntity>
+    <Table<LiteProposalEntity>
       className={s.table}
       title={() => ''}
       columns={Columns}

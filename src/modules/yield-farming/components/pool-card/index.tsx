@@ -1,6 +1,9 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import addMinutes from 'date-fns/addMinutes';
+import format from 'date-fns/format';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
@@ -9,7 +12,6 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { formatBONDValue, formatBigValue, formatUSDValue } from 'web3/utils';
 
-import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
@@ -30,6 +32,7 @@ export type PoolCardProps = {
 type State = {
   enabled?: boolean;
   isEnded?: boolean;
+  endDate?: number;
   currentEpoch?: number;
   totalEpochs?: number;
   epochReward?: BigNumber;
@@ -56,6 +59,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
       setState({
         enabled: true,
         isEnded: web3c.yf.isEnded,
+        endDate: web3c.yf.endDate,
         currentEpoch: web3c.yf.currentEpoch,
         totalEpochs: web3c.yf.totalEpochs,
         epochReward: web3c.yf.epochReward,
@@ -133,6 +137,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
       setState({
         enabled: web3c.yfLP.currentEpoch! > 0,
         isEnded: web3c.yfLP.isEnded,
+        endDate: web3c.yfLP.endDate,
         currentEpoch: web3c.yfLP.currentEpoch,
         totalEpochs: web3c.yfLP.totalEpochs,
         epochReward: web3c.yfLP.epochReward,
@@ -172,6 +177,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
       setState({
         enabled: true,
         isEnded: web3c.yfBOND.isEnded,
+        endDate: web3c.yfBOND.endDate,
         currentEpoch: web3c.yfBOND.currentEpoch,
         totalEpochs: web3c.yfBOND.totalEpochs,
         epochReward: web3c.yfBOND.epochReward,
@@ -225,9 +231,16 @@ const PoolCard: React.FC<PoolCardProps> = props => {
     }
   }
 
-  function handleDaoStaking() {
-    history.push('/governance/wallet');
-  }
+  const endDateFormatted = React.useMemo(() => {
+    if (!state.endDate) {
+      return '-';
+    }
+
+    const dt = new Date(state.endDate);
+    const fdt = format(addMinutes(dt, dt.getTimezoneOffset()), 'MMM dd yyyy, HH:mm');
+
+    return `${fdt} UTC`;
+  }, [state.endDate]);
 
   const CardTitle = (
     <div className={s.cardTitleContainer}>
@@ -344,16 +357,40 @@ const PoolCard: React.FC<PoolCardProps> = props => {
           )}
         </Grid>
       )}
-      {state.isEnded && (
+      {state.isEnded && pool === PoolTypes.STABLE && (
         <div className={s.box}>
           <Grid flow="row" align="start">
             <Text type="p2" weight="semibold" color="secondary">
-              The $BOND staking pool ended after 12 epochs on Feb 08, 00:00 UTC. Deposits are now disabled, but you can
-              still withdraw your tokens and collect any unclaimed rewards. To continue to stake $BOND
+              The stablecoin staking pool ended after {state.totalEpochs} epochs on {endDateFormatted}. Deposits are now
+              disabled but you can still withdraw your tokens and collect any unclaimed rewards.
             </Text>
-            <Button type="link" onClick={handleDaoStaking}>
+            <Link to="/smart-yield" className="link-blue">
+              Go to SMART yield
+            </Link>
+          </Grid>
+        </div>
+      )}
+      {state.isEnded && pool === PoolTypes.UNILP && (
+        <div className={s.box}>
+          <Grid flow="row" align="start">
+            <Text type="p2" weight="semibold" color="secondary">
+              The unilp staking pool ended after {state.totalEpochs} epochs on {endDateFormatted}. Deposits are now
+              disabled but you can still withdraw your tokens and collect any unclaimed rewards.
+            </Text>
+          </Grid>
+        </div>
+      )}
+      {state.isEnded && pool === PoolTypes.BOND && (
+        <div className={s.box}>
+          <Grid flow="row" align="start">
+            <Text type="p2" weight="semibold" color="secondary">
+              The $BOND staking pool ended after {state.totalEpochs} epochs on {endDateFormatted}. Deposits are now
+              disabled, but you can still withdraw your tokens and collect any unclaimed rewards. To continue to stake
+              $BOND
+            </Text>
+            <Link to="/governance" className="link-blue">
               Go to governance staking
-            </Button>
+            </Link>
           </Grid>
         </div>
       )}

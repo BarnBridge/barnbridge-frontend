@@ -55,10 +55,10 @@ const PoolStats: React.FC<Props> = ({ className }) => {
           </Grid>
           <Grid flow="row" gap={4}>
             <Text type="h2" weight="bold" color="primary">
-              {formatUSDValue(aggregated.totalStaked)}
+              {formatUSDValue(aggregated.totalStaked, 0)}
             </Text>
             <Text type="p1" color="secondary">
-              {formatUSDValue(aggregated.totalEffectiveStaked)} effective locked
+              {formatUSDValue(aggregated.totalEffectiveStaked, 0)} effective locked
             </Text>
           </Grid>
         </Grid>

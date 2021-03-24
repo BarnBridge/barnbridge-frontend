@@ -150,13 +150,15 @@ const AbrogationProvider: React.FC = props => {
 
   function abrogationProposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? web3c.daoGovernance.actions.abrogationProposalCastVote(proposal?.proposalId, support, gasPrice)
+      ? web3c.daoGovernance.actions
+          .abrogationProposalCastVote(proposal?.proposalId, support, gasPrice)
+          .then(() => reload())
       : Promise.reject();
   }
 
   function abrogationProposalCancelVote(gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? web3c.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice)
+      ? web3c.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice).then(() => reload())
       : Promise.reject();
   }
 

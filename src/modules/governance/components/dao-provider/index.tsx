@@ -104,6 +104,7 @@ const DAOProvider: React.FC = props => {
           APIProposalStateId.EXECUTED,
           APIProposalStateId.FAILED,
           APIProposalStateId.EXPIRED,
+          APIProposalStateId.ABROGATED,
         ].includes(proposalState as any);
       });
     });

@@ -32,10 +32,10 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   const [state, setState] = useMergeState<VotingDetailedModalState>(InitialState);
 
   const isDelegated = isValidAddress(userDelegatedTo);
-  const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
+  const loadedUserLockedUntil = React.useMemo(() => (userLockedUntil ?? Date.now()) - Date.now(), [userLockedUntil]);
 
-  const [startLeftTime] = useLeftTime({
-    end: userLockedUntil ?? 0,
+  useLeftTime({
+    end: !isDelegated ? userLockedUntil ?? 0 : 0,
     delay: 1_000,
     onTick: leftTime => {
       let bonus = votingPower?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
@@ -61,10 +61,6 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
         : votingPower?.minus(myBondBalance ?? ZERO_BIG_NUMBER).minus(delegatedPower ?? ZERO_BIG_NUMBER),
       leftTotalVotingPower: votingPower,
     });
-
-    if (!isDelegated) {
-      startLeftTime();
-    }
   }, [isDelegated]);
 
   return (
