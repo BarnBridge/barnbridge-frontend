@@ -9,13 +9,11 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
-import { useTheme } from 'components/providers/theme-provider';
 
 import s from './s.module.scss';
 
 const LayoutSideNav: React.FC = () => {
-  const { toggleDarkTheme, isDarkTheme } = useTheme();
-  const { navOpen, setNavOpen } = useGeneral();
+  const { navOpen, setNavOpen, toggleDarkTheme, isDarkTheme } = useGeneral();
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 

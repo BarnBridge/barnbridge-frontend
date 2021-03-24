@@ -55,7 +55,6 @@ const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
       await form.validateFields();
       await proposalCtx.queueProposalForExecution(gasPrice.value);
 
-      proposalCtx.reload();
       props.onCancel?.();
     } catch {}
 

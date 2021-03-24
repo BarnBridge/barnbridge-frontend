@@ -6,6 +6,8 @@ import Button from 'components/antd/button';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import { APIProposalState } from 'modules/governance/api';
+import { useWallet } from 'wallets/wallet';
 
 import { useProposal } from '../../providers/ProposalProvider';
 import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';
@@ -24,6 +26,7 @@ const InitialState: ProposalVotesCardState = {
 };
 
 const ProposalVotesCard: React.FC = () => {
+  const wallet = useWallet();
   const proposalCtx = useProposal();
 
   const [state, setState] = React.useState<ProposalVotesCardState>(InitialState);
@@ -82,6 +85,22 @@ const ProposalVotesCard: React.FC = () => {
     }));
   }
 
+  if (proposalCtx.proposal?.state === APIProposalState.WARMUP) {
+    return (
+      <Card
+        className={s.component}
+        title={
+          <Text type="p1" weight="semibold" color="primary">
+            Votes
+          </Text>
+        }>
+        <div className="p-24">
+          <Alert type="info" message="Voting on this proposal will start after the Warm-Up period ends." />
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <>
       <div className="card">
@@ -135,6 +154,7 @@ const ProposalVotesCard: React.FC = () => {
             />
           </Grid>
         </Grid>
+        {wallet.isActive && (
         <Grid className="card-row p-24" flow="row" gap={24}>
           <Grid flow="row" gap={8}>
             <Text type="p1" color="secondary">
@@ -169,6 +189,7 @@ const ProposalVotesCard: React.FC = () => {
             )}
           </Grid>
         </Grid>
+        )}
       </div>
 
       {state.showVotersModal && <ProposalVotersModal onCancel={handleHideVotersModal} />}

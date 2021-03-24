@@ -79,7 +79,6 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
         await proposalCtx.proposalCancelVote(gasPrice.value);
       }
 
-      proposalCtx.reload();
       props.onCancel?.();
     } catch {}
 
