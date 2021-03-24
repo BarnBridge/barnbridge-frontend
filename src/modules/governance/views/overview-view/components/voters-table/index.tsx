@@ -1,12 +1,11 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, getEtherscanAddressUrl } from 'web3/utils';
+import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
-import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
@@ -16,14 +15,17 @@ const Columns: ColumnsType<APIVoterEntity> = [
     title: 'Address',
     dataIndex: 'address',
     render: (value: string) => (
-      <Grid flow="col" gap={16} align="center">
+      <div className="flex col-gap-16 align-center">
         <Identicon address={value} width={32} height={32} />
         <ExternalLink href={getEtherscanAddressUrl(value)} className="link-blue">
-          <Text type="p1" weight="semibold" ellipsis>
+          <Text type="p1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
             {value}
           </Text>
+          <Text type="p1" weight="semibold" wrap={false} className="hidden-desktop">
+            {shortenAddr(value)}
+          </Text>
         </ExternalLink>
-      </Grid>
+      </div>
     ),
   },
   {

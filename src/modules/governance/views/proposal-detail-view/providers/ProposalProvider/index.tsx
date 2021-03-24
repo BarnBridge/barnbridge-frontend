@@ -142,6 +142,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
     });
 
     const { bondStaked } = web3c.daoBarn;
+
     if (!state.proposal || !bondStaked || bondStaked.isEqualTo(ZERO_BIG_NUMBER)) {
       return;
     }
@@ -151,7 +152,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
     web3c.daoBarn.actions.votingPower(proposer).then(votingPower => {
       if (votingPower) {
         setState({
-          thresholdRate: votingPower.multipliedBy(100).div(bondStaked).toNumber(),
+          thresholdRate: votingPower.div(bondStaked).multipliedBy(100).toNumber(),
         });
       }
     });
@@ -179,28 +180,34 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
   }, [state.proposal, wallet.account]);
 
   function cancelProposal(): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.cancelProposal(proposalId) : Promise.reject();
+    return proposalId ? web3c.daoGovernance.actions.cancelProposal(proposalId).then(() => reload()) : Promise.reject();
   }
 
   function queueProposalForExecution(gasPrice: number): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.queueProposalForExecution(proposalId, gasPrice) : Promise.reject();
+    return proposalId
+      ? web3c.daoGovernance.actions.queueProposalForExecution(proposalId, gasPrice).then(() => reload())
+      : Promise.reject();
   }
 
   function executeProposal(): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.executeProposal(proposalId) : Promise.reject();
+    return proposalId ? web3c.daoGovernance.actions.executeProposal(proposalId).then(() => reload()) : Promise.reject();
   }
 
   function proposalCastVote(support: boolean, gasPrice: number): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.proposalCastVote(proposalId, support, gasPrice) : Promise.reject();
+    return proposalId
+      ? web3c.daoGovernance.actions.proposalCastVote(proposalId, support, gasPrice).then(() => reload())
+      : Promise.reject();
   }
 
   function proposalCancelVote(gasPrice: number): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.proposalCancelVote(proposalId, gasPrice) : Promise.reject();
+    return proposalId
+      ? web3c.daoGovernance.actions.proposalCancelVote(proposalId, gasPrice).then(() => reload())
+      : Promise.reject();
   }
 
   function startAbrogationProposal(description: string, gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.startAbrogationProposal(proposalId, description, gasPrice)
+      ? web3c.daoGovernance.actions.startAbrogationProposal(proposalId, description, gasPrice).then(() => reload())
       : Promise.reject();
   }
 

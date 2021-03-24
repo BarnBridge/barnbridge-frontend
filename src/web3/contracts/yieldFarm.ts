@@ -14,6 +14,7 @@ const Contract = new Web3Contract(YF_ABI as Web3ContractAbiItem[], CONTRACT_YIEL
 
 type YieldFarmContractData = {
   isEnded?: boolean;
+  endDate?: number;
   totalEpochs?: number;
   totalReward?: BigNumber;
   epochReward?: BigNumber;
@@ -36,6 +37,7 @@ export type YieldFarmContract = YieldFarmContractData & {
 
 const InitialData: YieldFarmContractData = {
   isEnded: undefined,
+  endDate: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
   epochReward: undefined,
@@ -58,7 +60,7 @@ export function useYieldFarmContract(): YieldFarmContract {
 
   React.useEffect(() => {
     (async () => {
-      let [totalEpochs, totalReward, currentEpoch] = await Contract.batch([
+      let [totalEpochs, totalReward, epochStart, epochDuration, currentEpoch] = await Contract.batch([
         {
           method: 'NR_OF_EPOCHS',
           transform: (value: string) => Number(value),
@@ -68,6 +70,14 @@ export function useYieldFarmContract(): YieldFarmContract {
           transform: (value: string) => new BigNumber(value),
         },
         {
+          method: 'epochStart',
+          transform: (value: string) => Number(value),
+        },
+        {
+          method: 'epochDuration',
+          transform: (value: string) => Number(value),
+        },
+        {
           method: 'getCurrentEpoch',
           transform: (value: string) => Number(value),
         },
@@ -75,6 +85,7 @@ export function useYieldFarmContract(): YieldFarmContract {
 
       const nextCurrentEpoch = currentEpoch;
       const isEnded = currentEpoch > totalEpochs;
+      const endDate = (epochStart + totalEpochs * epochDuration) * 1_000;
 
       currentEpoch = Math.min(currentEpoch, totalEpochs);
 
@@ -90,6 +101,7 @@ export function useYieldFarmContract(): YieldFarmContract {
       setData(prevState => ({
         ...prevState,
         isEnded,
+        endDate,
         totalEpochs,
         totalReward,
         epochReward,

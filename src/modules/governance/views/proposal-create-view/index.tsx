@@ -32,12 +32,6 @@ type NewProposalForm = {
   actions: CreateProposalActionForm[];
 };
 
-const InitialFormValues: NewProposalForm = {
-  title: '',
-  description: '',
-  actions: [],
-};
-
 type ProposalCreateViewState = {
   hasActiveProposal?: boolean;
   showCreateActionModal: boolean;
@@ -143,7 +137,7 @@ const ProposalCreateView: React.FC = () => {
 
       await waitUntil(() => fetchProposal(proposalId), { intervalBetweenAttempts: 3_000, timeout: Infinity });
 
-      form.setFieldsValue(InitialFormValues);
+      form.resetFields();
       history.push(`/governance/proposals/${proposalId}`);
     } catch (e) {
       console.error(e);
@@ -192,7 +186,11 @@ const ProposalCreateView: React.FC = () => {
       </Text>
       <Form
         form={form}
-        initialValues={InitialFormValues}
+        initialValues={{
+          title: '',
+          description: '',
+          actions: [],
+        }}
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <div className={cn(s.cardsContainer, 'mb-40')}>

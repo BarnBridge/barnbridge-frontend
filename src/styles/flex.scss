@@ -4,6 +4,10 @@ $gaps: 4, 8, 12, 16, 24, 32, 48, 64;
   display: flex;
   flex-wrap: nowrap;
 
+  &.inline {
+    display: inline-flex;
+  }
+
   &.flow-row {
     flex-direction: column;
   }

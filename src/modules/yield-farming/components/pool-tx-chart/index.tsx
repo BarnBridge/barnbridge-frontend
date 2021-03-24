@@ -147,7 +147,7 @@ const PoolTxChartInner: React.FC = props => {
         {chartData.length ? (
           <ReCharts.ResponsiveContainer width="100%" height={350}>
             <ReCharts.BarChart
-              data={chartData}
+              data={chartData.slice(0, 5)}
               stackOffset="sign"
               margin={{
                 top: 20,

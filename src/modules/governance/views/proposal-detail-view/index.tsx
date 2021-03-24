@@ -53,7 +53,6 @@ const ProposalDetailViewInner: React.FC = () => {
       .executeProposal()
       .catch(Error)
       .then(() => {
-        proposalCtx.reload();
         setState(prevState => ({
           ...prevState,
           executing: false,

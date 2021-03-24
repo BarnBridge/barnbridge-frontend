@@ -8,9 +8,9 @@
       height: 80px;
       margin-bottom: 0;
       padding: 0 24px;
-      background: #fff;
+      background: var(--theme-card-color);
       box-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
-      border: 1px solid #e3e4e6;
+      border: 1px solid var(--theme-border-color);
       border-radius: 4px 4px 0 0;
     }
   }
