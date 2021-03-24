@@ -105,7 +105,14 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
     },
   });
 
+  const isInitiatedRef = React.useRef<boolean | undefined>();
+
   React.useEffect(() => {
+    if (isInitiatedRef.current === undefined) {
+      isInitiatedRef.current = true;
+      return;
+    }
+
     if (!isRunning && windowState.isVisible) {
       resume();
     }
