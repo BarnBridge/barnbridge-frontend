@@ -242,17 +242,6 @@ const PoolCard: React.FC<PoolCardProps> = props => {
     return `${fdt} UTC`;
   }, [state.endDate]);
 
-  const endDateFormatted = React.useMemo(() => {
-    if (!state.endDate) {
-      return '-';
-    }
-
-    const dt = new Date(state.endDate);
-    const fdt = format(addMinutes(dt, dt.getTimezoneOffset()), 'MMM dd yyyy, HH:mm');
-
-    return `${fdt} UTC`;
-  }, [state.endDate]);
-
   const CardTitle = (
     <div className={s.cardTitleContainer}>
       <IconsSet icons={getPoolIcons(pool)} />
