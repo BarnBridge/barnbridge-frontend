@@ -8,7 +8,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, getHumanValue, getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
@@ -141,7 +141,8 @@ const SeniorTranche: React.FC = () => {
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();
-    } catch {}
+    } catch {
+    }
 
     setState(
       mergeState<State>({
