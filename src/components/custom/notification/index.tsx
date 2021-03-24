@@ -52,7 +52,7 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
           <Text type="p2" weight="semibold" color="secondary" className="mb-16">
             Proposal {getProposalLink(n.metadata.proposalId)} has been created by{' '}
             {getStrongText(shortenAddr(n.metadata.proposer))} and entered the warm-up phase. You have{' '}
-            {getStrongText('%s')} to stake your BOND
+            {getStrongText(getRelativeTime(n.metadata.displayDuration))} to stake your BOND
           </Text>
           <Link to="https://app.barnbridge.com/governance/wallet/deposit" className="button-primary">
             Deposit now
@@ -81,7 +81,7 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has entered the voting period. You have{' '}
-          {getStrongText('%s')} to cast your vote
+          {getStrongText(getRelativeTime(n.metadata.displayDuration))} to cast your vote
         </Text>,
       ];
     case 'proposal-voting-ending-soon':

@@ -25,6 +25,7 @@ type ProposalCreatedType = ProposalBaseType & {
   metadata: {
     proposalId: number;
     proposer: string;
+    displayDuration: number;
   };
 };
 
@@ -47,6 +48,7 @@ type ProposalVotingOpenType = ProposalBaseType & {
   notificationType: 'proposal-voting-open';
   metadata: {
     proposalId: number;
+    displayDuration: number;
   };
 };
 
