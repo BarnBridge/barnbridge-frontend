@@ -8,7 +8,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, getHumanValue, getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
@@ -26,14 +26,7 @@ import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldCont
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
-import {
-  DURATION_1_DAY,
-  DURATION_1_WEEK,
-  DURATION_2_WEEKS,
-  DURATION_30_DAYS,
-  DURATION_3_WEEKS,
-  getDurationDate,
-} from 'utils/date';
+import { DURATION_1_MONTH, DURATION_1_YEAR, DURATION_3_MONTHS, DURATION_6_MONTHS, getDurationDate } from 'utils/date';
 
 type FormData = {
   amount?: BigNumber;
@@ -49,7 +42,7 @@ const InitialFormValues: FormData = {
   deadline: 20,
 };
 
-const DURATION_OPTIONS = [DURATION_1_DAY, DURATION_1_WEEK, DURATION_2_WEEKS, DURATION_3_WEEKS, DURATION_30_DAYS];
+const DURATION_OPTIONS = [DURATION_1_MONTH, DURATION_3_MONTHS, DURATION_6_MONTHS, DURATION_1_YEAR];
 
 type State = {
   isSaving: boolean;
@@ -148,7 +141,8 @@ const SeniorTranche: React.FC = () => {
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();
-    } catch {}
+    } catch {
+    }
 
     setState(
       mergeState<State>({
@@ -248,7 +242,7 @@ const SeniorTranche: React.FC = () => {
           <DatePicker
             showNow={false}
             disabledDate={(date: Date) =>
-              isBefore(date, new Date()) || isAfter(date, getDurationDate(new Date(), DURATION_30_DAYS)!)
+              isBefore(date, new Date()) || isAfter(date, getDurationDate(new Date(), DURATION_1_YEAR)!)
             }
             format="DD/MM/YYYY"
             size="large"
