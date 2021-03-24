@@ -63,7 +63,7 @@
   grid-template-columns: repeat(auto-fit, minmax(var(--min), 1fr));
 
   @media (max-width: 768px) {
-    grid-gap: var(--sm-gap, --gap);
+    grid-gap: var(--sm-gap, var(--gap));
     grid-template-columns: repeat(auto-fit, minmax(var(--sm-min, --min), 1fr));
   }
 }
@@ -79,7 +79,7 @@
   gap: var(--gap);
 
   @media (max-width: 768px) {
-    gap: var(--sm-gap, --gap);
+    gap: var(--sm-gap, var(--gap));
   }
 }
 
@@ -87,7 +87,7 @@
   flex: 1 1 var(--min);
 
   @media (max-width: 768px) {
-    gap: var(--sm-min, --min) !important;
+    gap: var(--sm-min, var(--min)) !important;
   }
 }
 
@@ -99,7 +99,7 @@
   gap: var(--gap);
 
   @media (max-width: 768px) {
-    gap: var(--sm-gap, --gap);
+    gap: var(--sm-gap, var(--gap));
   }
 }
 

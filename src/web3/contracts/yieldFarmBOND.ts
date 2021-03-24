@@ -19,6 +19,7 @@ const Contract = new Web3Contract(
 
 type State = {
   isEnded?: boolean;
+  endDate?: number;
   totalEpochs?: number;
   totalReward?: BigNumber;
   epochReward?: BigNumber;
@@ -35,6 +36,7 @@ type State = {
 
 const InitialState: State = {
   isEnded: undefined,
+  endDate: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
   epochReward: undefined,
@@ -66,6 +68,20 @@ function totalDistributedAmountAction(): BatchContractMethod {
   return {
     method: 'TOTAL_DISTRIBUTED_AMOUNT',
     transform: (value: string) => new BigNumber(value),
+  };
+}
+
+function totalEpochStartAction(): BatchContractMethod {
+  return {
+    method: 'epochStart',
+    transform: (value: string) => Number(value),
+  };
+}
+
+function totalEpochDurationAction(): BatchContractMethod {
+  return {
+    method: 'epochDuration',
+    transform: (value: string) => Number(value),
   };
 }
 
@@ -107,10 +123,16 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
   const [state, setState] = useMergeState<State>(InitialState);
 
   React.useEffect(() => {
-    const actions: BatchContractMethod[] = [nrOfEpochsAction(), totalDistributedAmountAction(), getCurrentEpoch()];
+    const actions: BatchContractMethod[] = [
+      nrOfEpochsAction(),
+      totalDistributedAmountAction(),
+      totalEpochStartAction(),
+      totalEpochDurationAction(),
+      getCurrentEpoch(),
+    ];
 
     Contract.batch(actions)
-      .then(([totalEpochs, totalReward, currentEpoch]) => {
+      .then(([totalEpochs, totalReward, epochStart, epochDuration, currentEpoch]) => {
         let epochReward: BigNumber | undefined;
 
         if (totalReward && totalEpochs > 0) {
@@ -123,12 +145,15 @@ export function useYieldFarmBONDContract(): YieldFarmBONDContract {
           bondReward = BigNumber.min(epochReward.multipliedBy(currentEpoch - 1), totalReward);
         }
 
+        const endDate = (epochStart + totalEpochs * epochDuration) * 1_000;
+
         setState({
           totalEpochs,
           totalReward,
           nextCurrentEpoch: currentEpoch,
           currentEpoch: Math.min(currentEpoch, totalEpochs),
           isEnded: currentEpoch > totalEpochs,
+          endDate,
           epochReward,
           bondReward,
         });

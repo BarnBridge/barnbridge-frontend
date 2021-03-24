@@ -28,10 +28,11 @@ const PoolStakeShareBar: React.FC<PoolStakeShareBarProps> = props => {
       {shares?.map((tokenShare, index) => (
         <Tooltip
           key={index}
+          overlayStyle={{ maxWidth: 'none' }}
           overlayInnerStyle={{ maxWidth: '520px' }}
           placement="top"
           title={
-            <Grid flow="col" gap={8} align="center" padding={[10, 16]}>
+            <div className="flex col-gap-8 align-center">
               {tokenShare.icon}
               <Text type="p1" color="secondary">
                 {tokenShare.name}:
@@ -39,7 +40,7 @@ const PoolStakeShareBar: React.FC<PoolStakeShareBarProps> = props => {
               <Text type="p1" weight="semibold" color="primary">
                 {tokenShare.value}
               </Text>
-            </Grid>
+            </div>
           }>
           <div
             className={s.item}
