@@ -32,7 +32,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   const [state, setState] = useMergeState<VotingDetailedModalState>(InitialState);
 
   const isDelegated = isValidAddress(userDelegatedTo);
-  const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
+  const loadedUserLockedUntil = React.useMemo(() => (userLockedUntil ?? Date.now()) - Date.now(), [userLockedUntil]);
 
   useLeftTime({
     end: !isDelegated ? userLockedUntil ?? 0 : 0,

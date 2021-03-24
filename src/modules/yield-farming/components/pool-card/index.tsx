@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import addMinutes from 'date-fns/addMinutes';
 import format from 'date-fns/format';
@@ -11,7 +12,6 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { formatBONDValue, formatBigValue, formatUSDValue } from 'web3/utils';
 
-import Button from 'components/antd/button';
 import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
@@ -231,10 +231,6 @@ const PoolCard: React.FC<PoolCardProps> = props => {
     }
   }
 
-  function handleDaoStaking() {
-    history.push('/governance/wallet');
-  }
-
   const endDateFormatted = React.useMemo(() => {
     if (!state.endDate) {
       return '-';
@@ -368,6 +364,9 @@ const PoolCard: React.FC<PoolCardProps> = props => {
               The stablecoin staking pool ended after {state.totalEpochs} epochs on {endDateFormatted}. Deposits are now
               disabled but you can still withdraw your tokens and collect any unclaimed rewards.
             </Text>
+            <Link to="/smart-yield" className="link-blue">
+              Go to SMART yield
+            </Link>
           </Grid>
         </div>
       )}
@@ -389,9 +388,9 @@ const PoolCard: React.FC<PoolCardProps> = props => {
               disabled, but you can still withdraw your tokens and collect any unclaimed rewards. To continue to stake
               $BOND
             </Text>
-            <Button type="link" onClick={handleDaoStaking}>
+            <Link to="/governance" className="link-blue">
               Go to governance staking
-            </Button>
+            </Link>
           </Grid>
         </div>
       )}
