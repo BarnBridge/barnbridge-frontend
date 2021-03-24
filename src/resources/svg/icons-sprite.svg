@@ -1167,6 +1167,11 @@
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M23.166 12.8S22.906 14 21.6 14"/>
   </symbol>
   <!-- ADD FILE -->
+  <symbol id="icon__file" fill="none" viewBox="0 0 24 24">
+    <path stroke="#FF4339" stroke-linecap="round" stroke-width="1.5" d="M10.4.8h7.4a3 3 0 013 3v16.4a3 3 0 01-3 3H6.2a3 3 0 01-3-3V8L10.4.8z" clip-rule="evenodd"/>
+    <path stroke="#FF4339" stroke-linecap="round" stroke-width="1.5" d="M3.2 8h5.2a2 2 0 002-2V.8M8.8 12.8h6.4M8.8 15.2h6.4"/>
+  </symbol>
+  <!-- ADD FILE -->
   <symbol id="icon__add-file" fill="none" viewBox="0 0 24 24">
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M17.6 23.2H6.2a3 3 0 01-3-3V8L10.4.8h7.4a3 3 0 013 3v9"/>
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.2 8h5.2a2 2 0 002-2V.8"/>
@@ -1241,5 +1246,10 @@
   <symbol id="icon__chart" fill="none" viewBox="0 0 24 24">
     <rect width="20.8" height="20.8" x="1.6" y="1.6" stroke="#00D395" stroke-linecap="round" stroke-width="1.5" rx="3"/>
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M16.8 6.4v11.2M7.2 12.8v4.8M12 9.6v8"/>
+  </symbol>
+  <!-- CHART -->
+  <symbol id="icon__queue" fill="none" viewBox="0 0 24 24">
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M4.4 10.4a3.6 3.6 0 100-7.2 3.6 3.6 0 000 7.2zM4.4 20.8a3.6 3.6 0 100-7.2 3.6 3.6 0 000 7.2z" clip-rule="evenodd"/>
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M12 3.2h11.2M12 6.4h11.2M12 9.6h5.6M12 14.4h11.2M12 17.6h11.2M12 20.8h5.6"/>
   </symbol>
 </svg>

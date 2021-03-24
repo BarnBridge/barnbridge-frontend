@@ -24,11 +24,11 @@ const App: React.FC = () => {
           <Web3WalletProvider>
             <Web3ContractsProvider>
               <GeneralContextProvider>
-                <NotificationsContextProvider>
-                  <Router>
+                <Router>
+                  <NotificationsContextProvider>
                     <LayoutView />
-                  </Router>
-                </NotificationsContextProvider>
+                  </NotificationsContextProvider>
+                </Router>
               </GeneralContextProvider>
             </Web3ContractsProvider>
           </Web3WalletProvider>

@@ -86,6 +86,7 @@ export type IconNames =
   | 'hourglass'
   | 'history'
   | 'piggybank'
+  | 'file'
   | 'add-file'
   | 'file-added'
   | 'file-deleted'
@@ -99,7 +100,8 @@ export type IconNames =
   | 'certificate'
   | 'chart-up'
   | 'apy-up'
-  | 'chart';
+  | 'chart'
+  | 'queue';
 
 export type IconProps = {
   name: IconNames;

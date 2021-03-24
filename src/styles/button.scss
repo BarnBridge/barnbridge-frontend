@@ -23,16 +23,19 @@
   &:hover {
     background: #ff6961;
     box-shadow: 0 8px 16px rgba(255, 105, 97, 0.24);
+    color: #ffffff;
   }
 
   &:active {
     background: #cc362e;
     box-shadow: 0 4px 8px rgba(204, 54, 46, 0.16);
+    color: #ffffff;
   }
 
   &:disabled,
   &[disabled] {
     background: #c6c9cc;
+    color: #ffffff;
     box-shadow: none;
     cursor: not-allowed;
   }

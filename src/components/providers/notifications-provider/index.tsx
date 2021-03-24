@@ -45,12 +45,16 @@ type ProposalCanceledType = ProposalBaseType & {
 
 type ProposalVotingOpenType = ProposalBaseType & {
   notificationType: 'proposal-voting-open';
-  // ?
+  metadata: {
+    proposalId: number;
+  };
 };
 
 type ProposalVotingEndingSoonType = ProposalBaseType & {
   notificationType: 'proposal-voting-ending-soon';
-  // ?
+  metadata: {
+    proposalId: number;
+  };
 };
 
 type ProposalOutcomeType = ProposalBaseType & {
@@ -60,26 +64,56 @@ type ProposalOutcomeType = ProposalBaseType & {
 
 type ProposalAcceptedType = ProposalBaseType & {
   notificationType: 'proposal-accepted';
-  // ?
+  metadata: {
+    proposalId: number;
+    displayDuration: number;
+    proposer: string;
+  };
 };
 
 type ProposalFailedType = ProposalBaseType & {
   notificationType: 'proposal-failed';
-  // ?
+  metadata: {
+    proposalId: number;
+  };
 };
 
 type ProposalQueuedType = ProposalBaseType & {
   notificationType: 'proposal-queued';
-  // ?
+  metadata: {
+    proposalId: number;
+    caller: string;
+    displayDuration: number;
+  };
+};
+
+type ProposalQueueEndingSoonType = ProposalBaseType & {
+  notificationType: 'proposal-queue-ending-soon';
+  metadata: {
+    proposalId: number;
+  };
 };
 
 type ProposalGraceType = ProposalBaseType & {
   notificationType: 'proposal-grace';
-  // ?
+  metadata: {
+    proposalId: number;
+    displayDuration: number;
+    proposer: string;
+  };
 };
 
 type ProposalExecutedType = ProposalBaseType & {
   notificationType: 'proposal-executed';
+  metadata: {
+    proposalId: number;
+    caller: string;
+    displayDuration: number;
+  };
+};
+
+type ProposalExpiresSoonType = ProposalBaseType & {
+  notificationType: 'proposal-expires-soon';
   metadata: {
     proposalId: number;
   };
@@ -87,7 +121,9 @@ type ProposalExecutedType = ProposalBaseType & {
 
 type ProposalExpiredType = ProposalBaseType & {
   notificationType: 'proposal-expired';
-  // ?
+  metadata: {
+    proposalId: number;
+  };
 };
 
 type AbrogationProposalCreatedType = ProposalBaseType & {
@@ -95,12 +131,15 @@ type AbrogationProposalCreatedType = ProposalBaseType & {
   metadata: {
     proposalId: number;
     proposer: string;
+    displayDuration: number;
   };
 };
 
 type ProposalAbrogatedType = ProposalBaseType & {
   notificationType: 'proposal-abrogated';
-  // ?
+  metadata: {
+    proposalId: number;
+  };
 };
 
 export type NotificationType =
@@ -113,8 +152,10 @@ export type NotificationType =
   | ProposalAcceptedType
   | ProposalFailedType
   | ProposalQueuedType
+  | ProposalQueueEndingSoonType
   | ProposalGraceType
   | ProposalExecutedType
+  | ProposalExpiresSoonType
   | ProposalExpiredType
   | AbrogationProposalCreatedType
   | ProposalAbrogatedType;
