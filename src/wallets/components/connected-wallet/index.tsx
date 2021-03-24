@@ -107,35 +107,6 @@ const ConnectedWallet: React.FC = () => {
     ) : null;
   }
 
-  const NotificationSection = (
-    <Popover
-      className={s.notification}
-      placement="bottomRight"
-      trigger="click"
-      noPadding
-      content={
-        <div className="card">
-          <div className="card-header">
-            <Text type="p1" weight="semibold" color="primary">
-              Notifications
-            </Text>
-          </div>
-          <Grid flow="row" gap={24} align="center" padding={48}>
-            {isDarkTheme ? (
-              <ZeroNotificationsDarkSvg width={138} height={128} />
-            ) : (
-              <ZeroNotificationsSvg width={138} height={128} />
-            )}
-            <Text type="p1" color="secondary" align="center">
-              There are no notifications to show
-            </Text>
-          </Grid>
-        </div>
-      }>
-      <Icon name="bell-outlined" width={26} height={26} style={{ cursor: 'pointer' }} />
-    </Popover>
-  );
-
   const AccountSection = (
     <Popover
       placement="bottomRight"

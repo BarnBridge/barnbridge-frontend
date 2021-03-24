@@ -65,17 +65,17 @@ const ProposalDetailsCard: React.FC = () => {
       </div>
       <div className="p-24 flexbox-list" style={{ '--gap': '32px' } as React.CSSProperties}>
         <div>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
-              Created by
-            </Text>
-            <Grid flow="col" gap={8}>
-              <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
-              <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
-                <Text type="p1" weight="semibold" color="blue">
-                  {shortenAddr(proposalCtx.proposal?.proposer)}
-                </Text>
-              </ExternalLink>
-            </Grid>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Created by
+          </Text>
+          <Grid flow="col" gap={8}>
+            <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
+            <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
+              <Text type="p1" weight="semibold" color="blue">
+                {shortenAddr(proposalCtx.proposal?.proposer)}
+              </Text>
+            </ExternalLink>
+          </Grid>
         </div>
         <div>
           <Hint
@@ -101,8 +101,8 @@ const ProposalDetailsCard: React.FC = () => {
               Cancel proposal
             </Button>
           )}
-        </Grid>
-      </Grid>
+        </div>
+      </div>
       <Grid className="card-row p-24" flow="row" gap={16}>
         <Text type="small" weight="semibold" color="secondary">
           Description
