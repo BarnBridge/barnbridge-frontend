@@ -54,12 +54,16 @@ function formatEventTime(name: string, start: number, end: number): string {
   if (end > 0) {
     const mEnd = new Date(end * 1_000);
 
+    if (mEnd <= now) {
+      return `Ended at ${format(mStart, 'dd MMM yyyy - HH:mm')}`;
+    }
+
     const dist = formatDistance(mEnd, now, {
       addSuffix: true,
       includeSeconds: true,
     });
 
-    return mEnd > now ? `Ends ${dist}` : `Ended ${dist}`;
+    return `Ends ${dist}`;
   }
 
   const dist = formatDistance(mStart, now, {
