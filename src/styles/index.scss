@@ -84,6 +84,7 @@ body.mobile-menu-open {
   --theme-mask-color: rgba(19, 32, 43, 0.8);
   --theme-border-color: #e3e4e6; // grey100
   --theme-icon-color: #aaafb3; // grey300
+  --theme-icon-hover-color: #060a0d; // grey900
 
   --theme-primary-color: #060a0d; // grey900
   --theme-secondary-color: #717980; // grey500
@@ -128,6 +129,7 @@ body.mobile-menu-open {
   --theme-mask-color: rgba(32, 37, 41, 0.8);
   --theme-border-color: #43484d;
   --theme-icon-color: #606268;
+  --theme-icon-hover-color: #fff;
 
   --theme-primary-color: #fff;
   --theme-secondary-color: #939496;
@@ -153,4 +155,15 @@ button {
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+#notifications-root {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 1000;
+
+  &:empty {
+    display: none;
+  }
 }

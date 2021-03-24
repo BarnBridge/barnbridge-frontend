@@ -10,17 +10,53 @@ import Popover from 'components/antd/popover';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
+import IconNotification from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { useTheme } from 'components/providers/theme-provider';
-import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
-import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
+import { useNotifications } from 'components/providers/notifications-provider';
+import Notifications from 'wallets/components/notifications';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
+const NotificationSection: React.FC = () => {
+  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
+
+  const markAllAsRead = () => {
+    if (notifications.length) {
+      setNotificationsReadUntil(Math.max(...notifications.map(n => n.startsOn)));
+    }
+  };
+  const hasUnread = notificationsReadUntil ? notifications.some(n => n.startsOn > notificationsReadUntil) : false;
+
+  return (
+    <Popover
+      placement="bottomRight"
+      trigger="click"
+      noPadding
+      content={
+        <div className={cn('card', s.notifications)}>
+          <div className="card-header flex">
+            <Text type="p1" weight="semibold" color="primary">
+              Notifications
+            </Text>
+            {hasUnread && (
+              <button className="link-blue ml-auto" onClick={markAllAsRead}>
+                Mark all as read
+              </button>
+            )}
+          </div>
+          <Notifications />
+        </div>
+      }>
+      <IconNotification width={24} height={24} notificationSize={8} bubble={hasUnread} className={s.notificationIcon}>
+        <Icon name="notification" width={24} height={24} color="inherit" />
+      </IconNotification>
+    </Popover>
+  );
+};
+
 const ConnectedWallet: React.FC = () => {
-  const { isDarkTheme } = useTheme();
   const wallet = useWallet();
 
   if (wallet.connecting) {
@@ -71,36 +107,6 @@ const ConnectedWallet: React.FC = () => {
       </Button>
     ) : null;
   }
-
-  const NotificationSection = (
-    <Popover
-      className={s.notification}
-      placement="bottomRight"
-      trigger="click"
-      noPadding
-      content={
-        <Card
-          title={
-            <Text type="p1" weight="semibold" color="primary">
-              Notifications
-            </Text>
-          }
-          noPaddingBody>
-          <Grid flow="row" gap={24} align="center" padding={48}>
-            {isDarkTheme ? (
-              <ZeroNotificationsDarkSvg width={138} height={128} />
-            ) : (
-              <ZeroNotificationsSvg width={138} height={128} />
-            )}
-            <Text type="p1" color="secondary" align="center">
-              There are no notifications to show
-            </Text>
-          </Grid>
-        </Card>
-      }>
-      <Icon name="bell-outlined" width={26} height={26} style={{ cursor: 'pointer' }} />
-    </Popover>
-  );
 
   const AccountSection = (
     <Popover
@@ -172,7 +178,7 @@ const ConnectedWallet: React.FC = () => {
 
   return (
     <Grid flow="col" gap={24} justify="center">
-      {NotificationSection}
+      <NotificationSection />
       <Divider type="vertical" />
       {AccountSection}
     </Grid>
