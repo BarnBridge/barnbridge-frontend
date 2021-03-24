@@ -96,10 +96,12 @@ const ProposalStatusCard: React.FC = () => {
                 )}
               </div>
 
-              <UseLeftTime end={event.endTimestamp * 1_000} delay={10_000} onEnd={() => reload()}>
-                <Text type="p2" weight="semibold" color="secondary">
-                  {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
-                </Text>
+              <UseLeftTime end={event.endTimestamp * 1_000} delay={5_000} onEnd={() => reload()}>
+                {() => (
+                  <Text type="p2" weight="semibold" color="secondary">
+                    {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
+                  </Text>
+                )}
               </UseLeftTime>
             </div>
           </div>

@@ -1,6 +1,8 @@
 import React from 'react';
 import useInterval from '@rooks/use-interval';
 
+import { useWindowState } from 'components/providers/window-state';
+
 export type UseLeftTimeOptions = {
   end: number | Date;
   delay?: number;
@@ -10,22 +12,32 @@ export type UseLeftTimeOptions = {
   onEnd?: () => void;
 };
 
-export function useLeftTime(options: UseLeftTimeOptions): [() => void, () => void] {
+export type UseLeftTimeReturn = {
+  isRunning: boolean;
+  start: () => void;
+  stop: () => void;
+  pause: () => void;
+  resume: () => void;
+};
+
+export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
   const optsRef = React.useRef(options);
   optsRef.current = options;
+
+  const [isRunning, setRunning] = React.useState(false);
 
   const getLeftTime = React.useCallback(() => {
     return Math.max(optsRef.current.end.valueOf() - Date.now(), 0);
   }, []);
 
-  const [start, stop] = useInterval(
+  const [startInterval, stopInterval] = useInterval(
     () => {
       const leftTime = getLeftTime();
 
       optsRef.current.onTick?.(leftTime);
 
       if (leftTime === 0) {
-        stop();
+        stopInterval();
         optsRef.current.onEnd?.();
       }
     },
@@ -33,43 +45,51 @@ export function useLeftTime(options: UseLeftTimeOptions): [() => void, () => voi
     false,
   );
 
-  const startFn = React.useCallback(() => {
-    start();
-    optsRef.current.onStart?.(getLeftTime());
-  }, [start]);
-
-  const stopFn = React.useCallback(() => {
-    stop();
-    optsRef.current.onStop?.(getLeftTime());
-  }, [stop]);
-
   React.useEffect(() => {
-    stopFn();
-
     if (Date.now() < options.end) {
-      startFn();
+      startInterval();
+      optsRef.current.onStart?.(getLeftTime());
     }
+
+    return () => {
+      stopInterval();
+    };
   }, [options.end]);
 
-  React.useEffect(() => {
-    return () => {
-      stop();
+  return React.useMemo(() => {
+    return {
+      isRunning,
+      start: () => {
+        setRunning(true);
+        startInterval();
+        optsRef.current.onStart?.(getLeftTime());
+      },
+      stop: () => {
+        setRunning(false);
+        stopInterval();
+        optsRef.current.onStop?.(getLeftTime());
+      },
+      pause: () => {
+        setRunning(false);
+        stopInterval();
+      },
+      resume: () => {
+        setRunning(true);
+        startInterval();
+      },
     };
-  }, []);
-
-  return React.useMemo(() => [startFn, stopFn], [startFn, stopFn]);
+  }, [isRunning, stopInterval, startInterval]);
 }
 
 export type UseLeftTimeProps = UseLeftTimeOptions & {
-  children: React.ReactNode | ((leftTime: number) => React.ReactNode);
+  children: (leftTime: number) => React.ReactNode;
 };
 
 export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
-  const { children } = props;
-
+  const windowState = useWindowState();
   const [leftTime, setLeftTime] = React.useState<number>(0);
 
-  useLeftTime({
+  const { isRunning, pause, resume } = useLeftTime({
     ...props,
     onStart: value => {
       setLeftTime(value);
@@ -85,5 +105,15 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
     },
   });
 
-  return <>{typeof children === 'function' ? (children as Function)(leftTime) : children}</>;
+  React.useEffect(() => {
+    if (!isRunning && windowState.isVisible) {
+      resume();
+    }
+
+    if (isRunning && !windowState.isVisible) {
+      pause();
+    }
+  }, [windowState.isVisible, isRunning]);
+
+  return <>{props.children(leftTime)}</>;
 };
