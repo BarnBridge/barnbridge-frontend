@@ -262,9 +262,11 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       form.resetFields();
       cancel = true;
     } catch (e) {
-      AntdNotification.error({
-        message: e?.message,
-      });
+      if (e?.message) {
+        AntdNotification.error({
+          message: e?.message,
+        });
+      }
     }
 
     setState({ submitting: false });
@@ -327,7 +329,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                 Is this a proxy address?
               </Text>
             </Hint>
-            <Form.Item name="isProxyAddress">
+            <Form.Item name="isProxyAddress" noStyle>
               <AntdSwitch disabled={state.submitting} />
             </Form.Item>
           </Grid>

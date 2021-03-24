@@ -27,13 +27,14 @@ const InitialState: ProposalDetailsCardState = {
 const ProposalDetailsCard: React.FC = () => {
   const wallet = useWallet();
   const proposalCtx = useProposal();
+  const { proposal, thresholdRate, minThreshold } = proposalCtx;
 
   const [state, setState] = React.useState<ProposalDetailsCardState>(InitialState);
 
-  const canCancel =
-    ((proposalCtx.thresholdRate && proposalCtx.thresholdRate < proposalCtx.minThreshold) ||
-      proposalCtx.proposal?.proposer === wallet.account) &&
-    [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposalCtx.proposal?.state as any);
+  const ownProposal = proposal?.proposer === wallet.account;
+  const isThresholdBelow = thresholdRate !== undefined && thresholdRate < minThreshold;
+  const isValidStateForCancel = [APIProposalState.WARMUP, APIProposalState.ACTIVE].includes(proposal?.state as any);
+  const canBeCancelled = isValidStateForCancel && (ownProposal || isThresholdBelow);
 
   function handleProposalCancel() {
     setState(prevState => ({
@@ -48,7 +49,6 @@ const ProposalDetailsCard: React.FC = () => {
           ...prevState,
           cancelling: false,
         }));
-        proposalCtx.reload();
       })
       .catch(() => {
         setState(prevState => ({
@@ -72,41 +72,35 @@ const ProposalDetailsCard: React.FC = () => {
             Created by
           </Text>
           <Grid flow="col" gap={8}>
-            <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
-            <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
+            <Identicon address={proposal?.proposer} width={24} height={24} />
+            <ExternalLink href={`${getEtherscanAddressUrl(proposal?.proposer)}`}>
               <Text type="p1" weight="semibold" color="blue">
-                {shortenAddr(proposalCtx.proposal?.proposer)}
+                {shortenAddr(proposal?.proposer)}
               </Text>
             </ExternalLink>
           </Grid>
         </div>
         <div>
           <Hint
-            text={`If the creator’s vBOND balance falls below ${proposalCtx.minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
+            text={`If the creator’s vBOND balance falls below ${minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
             <Text type="small" weight="semibold" color="secondary" className="mb-4">
               Creator threshold
             </Text>
           </Hint>
           <Grid flow="col" gap={8}>
-            {proposalCtx.thresholdRate !== undefined && (
+            {thresholdRate !== undefined && (
               <>
-                <Icon
-                  name={
-                    proposalCtx.thresholdRate > proposalCtx.minThreshold
-                      ? 'check-circle-outlined'
-                      : 'close-circle-outlined'
-                  }
-                />
-                <Skeleton loading={proposalCtx.proposal === undefined}>
+                <Icon name={isThresholdBelow ? 'close-circle-outlined' : 'check-circle-outlined'} />
+                <Skeleton loading={proposal === undefined}>
                   <Text type="p1" weight="semibold" color="primary">
-                    {proposalCtx.thresholdRate >= proposalCtx.minThreshold ? 'Above 1%' : 'Below 1%'}
+                    {isThresholdBelow ? 'Below 1%' : 'Above 1%'}
                   </Text>
                 </Skeleton>
               </>
             )}
           </Grid>
         </div>
-        {canCancel && (
+        {canBeCancelled && (
           <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
             Cancel proposal
           </Button>
@@ -118,7 +112,7 @@ const ProposalDetailsCard: React.FC = () => {
           Description
         </Text>
         <Text type="p1" color="primary" wrap>
-          {proposalCtx.proposal?.description}
+          {proposal?.description}
         </Text>
       </Grid>
       <Divider />
@@ -126,13 +120,13 @@ const ProposalDetailsCard: React.FC = () => {
         <Text type="small" weight="semibold" color="secondary">
           Actions
         </Text>
-        {proposalCtx.proposal?.targets.map((target: string, index: number) => (
+        {proposal?.targets.map((target: string, index: number) => (
           <ProposalActionCard
             key={index}
             title={`Action ${index + 1}`}
-            target={proposalCtx.proposal!.targets[index]}
-            signature={proposalCtx.proposal!.signatures[index]}
-            callData={proposalCtx.proposal!.calldatas[index]}
+            target={proposal?.targets[index]}
+            signature={proposal?.signatures[index]}
+            callData={proposal?.calldatas[index]}
           />
         ))}
       </Grid>

@@ -91,7 +91,6 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
         await abrogationCtx.abrogationProposalCancelVote(gasPrice.value);
       }
 
-      abrogationCtx.reload();
       props.onCancel?.();
     } catch {}
 
