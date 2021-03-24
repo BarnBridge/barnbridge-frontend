@@ -7,19 +7,19 @@
     background: var(--theme-card-color);
     border: 1px solid var(--theme-border-color);
 
-    &:before {
-      border: none;
+    &::before {
+      border: 0;
     }
 
     > :global(.ant-tabs-nav-wrap) {
       > :global(.ant-tabs-nav-list) {
         > :global(.ant-tabs-tab) {
           > :global(.ant-tabs-tab-btn) {
+            @include font-p1-semi-bold;
             display: flex;
             flex-direction: row;
             column-gap: 8px;
             align-items: center;
-            @include font-p1-semi-bold;
             color: var(--theme-secondary-color);
 
             &:hover {
@@ -55,7 +55,7 @@
     > :global(.ant-tabs-nav) {
       padding: 0;
       background: transparent;
-      border: none;
+      border: 0;
     }
   }
 }

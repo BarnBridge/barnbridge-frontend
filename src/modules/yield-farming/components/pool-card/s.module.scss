@@ -1,9 +1,3 @@
-.card {
-  :global(.ant-card-body) > div:not(:last-of-type) {
-    border-bottom: 1px solid var(--theme-border-color);
-  }
-}
-
 .cardTitleContainer {
   display: grid;
   grid-template-columns: min-content auto min-content;

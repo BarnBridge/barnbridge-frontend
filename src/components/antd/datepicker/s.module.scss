@@ -19,7 +19,7 @@
 
   &:global(.ant-picker-disabled) {
     background: var(--theme-overlay-color);
-    border: none;
+    border: 0;
 
     &::placeholder {
       color: var(--theme-secondary-color);
@@ -52,7 +52,7 @@
     background: var(--theme-overlay-color);
 
     :global(.ant-picker-panel) {
-      border: none;
+      border: 0;
     }
 
     :global(.ant-picker-cell-inner) {

@@ -5,6 +5,8 @@
   border-radius: 100%;
   margin-right: 8px;
 
+  background: var(--bg-color);
+
   &.red {
     --bg-color: var(--theme-red-color);
   }
@@ -20,6 +22,4 @@
   &.purple {
     --bg-color: var(--theme-purple-color);
   }
-
-  background: var(--bg-color);
 }

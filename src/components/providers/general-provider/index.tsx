@@ -1,8 +1,6 @@
 import React from 'react';
 import { useLocalStorage } from 'react-use-storage';
 
-import { useWallet } from 'wallets/wallet';
-
 export type GeneralContextType = {
   navOpen: boolean;
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>;

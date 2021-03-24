@@ -80,3 +80,11 @@ $paddings: 4, 8, 12, 16, 24, 32, 48, 64;
 .full-height {
   height: 100%;
 }
+
+.absolute-center {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
+}

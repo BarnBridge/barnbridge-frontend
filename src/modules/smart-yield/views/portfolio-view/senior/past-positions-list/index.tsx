@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
 import { formatBigValue, formatPercent, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
@@ -113,8 +112,8 @@ const PastPositionsList: React.FC<Props> = props => {
         {state.data.length === 0 && !state.loading && <AntdEmpty image={AntdEmpty.PRESENTED_IMAGE_SIMPLE} />}
         <div className={s.cards}>
           {state.data.map(entity => (
-            <Card key={entity.seniorBondId} noPaddingBody>
-              <div className="flex p-24">
+            <div className="card" key={entity.seniorBondId}>
+              <div className="card-header flex">
                 <IconBubble name={entity.pool?.meta?.icon} bubbleName={entity.pool?.market?.icon} className="mr-16" />
                 <div>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -127,7 +126,6 @@ const PastPositionsList: React.FC<Props> = props => {
 
                 <StatusTag text="REDEEMED" color="blue" className="ml-auto" />
               </div>
-              <Divider />
               <div className="p-24">
                 <Text type="small" weight="semibold" color="secondary">
                   Deposited
@@ -183,7 +181,7 @@ const PastPositionsList: React.FC<Props> = props => {
                   )}
                 </Text>
               </div>
-            </Card>
+            </div>
           ))}
         </div>
       </AntdSpin>

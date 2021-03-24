@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
 import addMinutes from 'date-fns/addMinutes';
 import format from 'date-fns/format';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -12,7 +13,6 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { formatBONDValue, formatBigValue, formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
 import { Hint, Text } from 'components/custom/typography';
@@ -242,35 +242,33 @@ const PoolCard: React.FC<PoolCardProps> = props => {
     return `${fdt} UTC`;
   }, [state.endDate]);
 
-  const CardTitle = (
-    <div className={s.cardTitleContainer}>
-      <IconsSet icons={getPoolIcons(pool)} />
-      <div className={s.cardTitleTexts}>
-        <Text type="p1" weight="semibold" color="primary" ellipsis title={getPoolNames(pool).join('/')}>
-          {getPoolNames(pool).join('/')}
-        </Text>
-        <Text
-          type="lb2"
-          weight="semibold"
-          color="red"
-          ellipsis
-          title={`EPOCH ${state.currentEpoch ?? '-'}/${state.totalEpochs ?? '-'}`}>
-          EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
-        </Text>
-      </div>
-      {wallet.isActive && (
-        <button type="button" disabled={!state.enabled} onClick={handleStaking} className="button-primary">
-          Staking
-        </button>
-      )}
-    </div>
-  );
-
   return (
-    <Card title={CardTitle} noPaddingBody className={s.card}>
+    <div className="card">
+      <div className={cn('card-header', s.cardTitleContainer)}>
+        <IconsSet icons={getPoolIcons(pool)} />
+        <div className={s.cardTitleTexts}>
+          <Text type="p1" weight="semibold" color="primary" ellipsis title={getPoolNames(pool).join('/')}>
+            {getPoolNames(pool).join('/')}
+          </Text>
+          <Text
+            type="lb2"
+            weight="semibold"
+            color="red"
+            ellipsis
+            title={`EPOCH ${state.currentEpoch ?? '-'}/${state.totalEpochs ?? '-'}`}>
+            EPOCH {state.currentEpoch ?? '-'}/{state.totalEpochs ?? '-'}
+          </Text>
+        </div>
+        {wallet.isActive && (
+          <button type="button" disabled={!state.enabled} onClick={handleStaking} className="button-primary">
+            Staking
+          </button>
+        )}
+      </div>
+
       {!state.isEnded && (
         <>
-          <Grid flow="row" gap={4} padding={24}>
+          <Grid className="card-row" flow="row" gap={4} padding={24}>
             <Text type="lb2" weight="semibold" color="secondary">
               Reward
             </Text>
@@ -284,7 +282,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
             </Grid>
           </Grid>
           {wallet.isActive && (
-            <Grid flow="row" gap={4} padding={24}>
+            <Grid className="card-row" flow="row" gap={4} padding={24}>
               <Text type="lb2" weight="semibold" color="secondary">
                 My Potential Reward
               </Text>
@@ -298,7 +296,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
               </Grid>
             </Grid>
           )}
-          <Grid flow="row" gap={4} padding={24}>
+          <Grid className="card-row" flow="row" gap={4} padding={24}>
             <Hint
               text={
                 <span>
@@ -327,7 +325,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
         </>
       )}
       {wallet.isActive && (
-        <Grid flow="row" gap={4} padding={24}>
+        <Grid className="card-row" flow="row" gap={4} padding={24}>
           <Hint
             text={
               <span>
@@ -382,7 +380,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
       )}
       {state.isEnded && pool === PoolTypes.BOND && (
         <div className={s.box}>
-          <Grid flow="row" align="start">
+          <Grid className="card-row" flow="row" align="start">
             <Text type="p2" weight="semibold" color="secondary">
               The $BOND staking pool ended after {state.totalEpochs} epochs on {endDateFormatted}. Deposits are now
               disabled, but you can still withdraw your tokens and collect any unclaimed rewards. To continue to stake
@@ -394,7 +392,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
           </Grid>
         </div>
       )}
-    </Card>
+    </div>
   );
 };
 

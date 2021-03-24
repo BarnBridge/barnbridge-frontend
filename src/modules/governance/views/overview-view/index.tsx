@@ -10,7 +10,7 @@ const OverviewView: React.FC = () => {
 
   return (
     <>
-      {dao.isActive === false && <ActivationThreshold className="mb-32" />}
+      {dao.isActive === false && <ActivationThreshold className="full-width mb-32" />}
       <VotingStatList className="mb-32" />
       <VotersTable />
     </>

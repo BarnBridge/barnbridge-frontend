@@ -7,7 +7,6 @@ import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
@@ -67,40 +66,42 @@ const WalletWithdrawView: React.FC = () => {
     setState({ saving: false });
   }
 
-  const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
-      <Grid flow="col" gap={12}>
-        <Icon name="bond-token" width={40} height={40} />
-        <Text type="p1" weight="semibold" color="primary">
-          BOND
-        </Text>
-      </Grid>
-
-      <Grid flow="row" gap={4}>
-        <Text type="small" weight="semibold" color="secondary">
-          Staked Balance
-        </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBONDValue(stakedBalance)}
-        </Text>
-      </Grid>
-
-      <Grid flow="row" gap={4}>
-        <Text type="small" weight="semibold" color="secondary">
-          Wallet Balance
-        </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBONDValue(bondBalance)}
-        </Text>
-      </Grid>
-
-      <div />
-    </Grid>
-  );
-
   return (
-    <Card title={CardTitle}>
-      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
+    <div className="card">
+      <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
+        <Grid flow="col" gap={12}>
+          <Icon name="bond-token" width={40} height={40} />
+          <Text type="p1" weight="semibold" color="primary">
+            BOND
+          </Text>
+        </Grid>
+
+        <Grid flow="row" gap={4}>
+          <Text type="small" weight="semibold" color="secondary">
+            Staked Balance
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBONDValue(stakedBalance)}
+          </Text>
+        </Grid>
+
+        <Grid flow="row" gap={4}>
+          <Text type="small" weight="semibold" color="secondary">
+            Wallet Balance
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBONDValue(bondBalance)}
+          </Text>
+        </Grid>
+
+        <div />
+      </Grid>
+      <Form
+        className="p-24"
+        form={form}
+        initialValues={InitialFormValues}
+        validateTrigger={['onSubmit']}
+        onFinish={handleSubmit}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
@@ -136,7 +137,7 @@ const WalletWithdrawView: React.FC = () => {
           </Button>
         </Grid>
       </Form>
-    </Card>
+    </div>
   );
 };
 

@@ -1,11 +1,11 @@
 import React from 'react';
 import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
+import cn from 'classnames';
 import * as ReCharts from 'recharts';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatUSDValue } from 'web3/utils';
 
-import Card, { CardProps } from 'components/antd/card';
 import Select, { SelectOption } from 'components/antd/select';
 import Grid from 'components/custom/grid';
 import IconsSet from 'components/custom/icons-set';
@@ -38,7 +38,11 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const PoolTxChartInner: React.FC = props => {
+type Props = {
+  className?: string;
+};
+
+const PoolTxChartInner: React.FC<Props> = props => {
   const web3c = useWeb3Contracts();
   const poolTxChart = usePoolTxChart();
 
@@ -97,41 +101,6 @@ const PoolTxChartInner: React.FC = props => {
     poolTxChart.changeTypeFilter(undefined);
   }, []);
 
-  const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between" className={s.chartTitleContainer}>
-      <Grid flow="col" gap={8}>
-        <IconsSet icons={getPoolIcons(poolTxChart.poolFilter as PoolTypes)} />
-        <Select
-          options={PoolFilters}
-          value={poolTxChart.poolFilter}
-          onSelect={value => {
-            poolTxChart.changePoolFilter(value as string);
-          }}
-        />
-      </Grid>
-      <Grid flow="col" gap={8} className={s.chartTitleFilters}>
-        <Select
-          label="Period"
-          options={PeriodFilters}
-          value={poolTxChart.periodFilter ?? 'all'}
-          disabled={poolTxChart.loading}
-          onSelect={value => {
-            poolTxChart.changePeriodFilter(value !== 'all' ? (value as string) : undefined);
-          }}
-        />
-        <Select
-          label="Show"
-          options={TypeFilters}
-          value={poolTxChart.typeFilter ?? 'all'}
-          disabled={poolTxChart.loading}
-          onSelect={value => {
-            poolTxChart.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
-          }}
-        />
-      </Grid>
-    </Grid>
-  );
-
   const ChartEmpty = (
     <Grid flow="row" gap={24} align="center" justify="center" padding={[54, 0]}>
       <EmptyChartSvg />
@@ -142,61 +111,104 @@ const PoolTxChartInner: React.FC = props => {
   );
 
   return (
-    <Card title={CardTitle} style={{ overflowX: 'auto' }} {...props}>
-      <Spin spinning={poolTxChart.loading}>
-        {chartData.length ? (
-          <ReCharts.ResponsiveContainer width="100%" height={350}>
-            <ReCharts.BarChart
-              data={chartData}
-              stackOffset="sign"
-              margin={{
-                top: 20,
-                right: 0,
-                left: 60,
-                bottom: 12,
-              }}>
-              <ReCharts.CartesianGrid vertical={false} stroke="var(--theme-border-color)" strokeDasharray="3 3" />
-              <ReCharts.XAxis dataKey="timestamp" stroke="var(--theme-border-color)" />
-              <ReCharts.YAxis
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={(value: any) => formatUSDValue(value, 2, 0)}
-              />
-              <ReCharts.Tooltip wrapperClassName={s.chart_tooltip} formatter={(value: any) => formatUSDValue(value)} />
-              <ReCharts.Legend
-                align="right"
-                verticalAlign="top"
-                iconType="circle"
-                wrapperStyle={{
-                  top: 0,
-                  right: 12,
-                  color: 'var(--theme-secondary-color)',
-                }}
-              />
-              <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
-              {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
-                <ReCharts.Bar
-                  dataKey="deposits"
-                  name="Deposits"
-                  stackId="stack"
-                  fill="var(--theme-red-color)"
-                  fontSize={23}
+    <div className={cn('card', props.className)} style={{ overflowX: 'auto' }}>
+      <Grid className={cn('card-header', s.chartTitleContainer)} flow="col" align="center" justify="space-between">
+        <Grid flow="col" gap={8}>
+          <IconsSet icons={getPoolIcons(poolTxChart.poolFilter as PoolTypes)} />
+          <Select
+            options={PoolFilters}
+            value={poolTxChart.poolFilter}
+            onSelect={value => {
+              poolTxChart.changePoolFilter(value as string);
+            }}
+          />
+        </Grid>
+        <Grid flow="col" gap={8} className={s.chartTitleFilters}>
+          <Select
+            label="Period"
+            options={PeriodFilters}
+            value={poolTxChart.periodFilter ?? 'all'}
+            disabled={poolTxChart.loading}
+            onSelect={value => {
+              poolTxChart.changePeriodFilter(value !== 'all' ? (value as string) : undefined);
+            }}
+          />
+          <Select
+            label="Show"
+            options={TypeFilters}
+            value={poolTxChart.typeFilter ?? 'all'}
+            disabled={poolTxChart.loading}
+            onSelect={value => {
+              poolTxChart.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
+            }}
+          />
+        </Grid>
+      </Grid>
+
+      <div className="p-24">
+        <Spin spinning={poolTxChart.loading}>
+          {chartData.length ? (
+            <ReCharts.ResponsiveContainer width="100%" height={350}>
+              <ReCharts.BarChart
+                data={chartData}
+                stackOffset="sign"
+                margin={{
+                  top: 20,
+                  right: 0,
+                  left: 60,
+                  bottom: 12,
+                }}>
+                <ReCharts.CartesianGrid vertical={false} stroke="var(--theme-border-color)" strokeDasharray="3 3" />
+                <ReCharts.XAxis dataKey="timestamp" stroke="var(--theme-border-color)" />
+                <ReCharts.YAxis
+                  axisLine={false}
+                  tickLine={false}
+                  tickFormatter={(value: any) => formatUSDValue(value, 2, 0)}
                 />
-              )}
-              {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
-                <ReCharts.Bar dataKey="withdrawals" name="Withdrawals" stackId="stack" fill="var(--theme-blue-color)" />
-              )}
-            </ReCharts.BarChart>
-          </ReCharts.ResponsiveContainer>
-        ) : (
-          !poolTxChart.loading && ChartEmpty
-        )}
-      </Spin>
-    </Card>
+                <ReCharts.Tooltip
+                  wrapperClassName={s.chart_tooltip}
+                  formatter={(value: any) => formatUSDValue(value)}
+                />
+                <ReCharts.Legend
+                  align="right"
+                  verticalAlign="top"
+                  iconType="circle"
+                  wrapperStyle={{
+                    top: 0,
+                    right: 12,
+                    color: 'var(--theme-secondary-color)',
+                  }}
+                />
+                <ReCharts.ReferenceLine y={0} stroke="var(--theme-border-color)" />
+                {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'deposits') && (
+                  <ReCharts.Bar
+                    dataKey="deposits"
+                    name="Deposits"
+                    stackId="stack"
+                    fill="var(--theme-red-color)"
+                    fontSize={23}
+                  />
+                )}
+                {(poolTxChart.typeFilter === undefined || poolTxChart.typeFilter === 'withdrawals') && (
+                  <ReCharts.Bar
+                    dataKey="withdrawals"
+                    name="Withdrawals"
+                    stackId="stack"
+                    fill="var(--theme-blue-color)"
+                  />
+                )}
+              </ReCharts.BarChart>
+            </ReCharts.ResponsiveContainer>
+          ) : (
+            !poolTxChart.loading && ChartEmpty
+          )}
+        </Spin>
+      </div>
+    </div>
   );
 };
 
-const PoolTxChart: React.FC<CardProps> = props => (
+const PoolTxChart: React.FC<Props> = props => (
   <PoolTxChartProvider>
     <PoolTxChartInner {...props} />
   </PoolTxChartProvider>

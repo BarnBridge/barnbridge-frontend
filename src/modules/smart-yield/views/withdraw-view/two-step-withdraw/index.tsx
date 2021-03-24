@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
@@ -96,7 +95,7 @@ const TwoStepWithdraw: React.FC = () => {
   }
 
   return (
-    <Card>
+    <div className="card p-24">
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         2 step withdraw
       </Text>
@@ -221,7 +220,7 @@ const TwoStepWithdraw: React.FC = () => {
           onConfirm={handleWithdrawConfirm}
         />
       )}
-    </Card>
+    </div>
   );
 };
 

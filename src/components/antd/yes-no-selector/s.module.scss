@@ -9,6 +9,7 @@
   height: 64px;
 
   label:global(.ant-radio-button-wrapper) {
+    @include font-p1-semi-bold;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -16,10 +17,9 @@
     background: var(--theme-card-color);
     border: 1px solid var(--theme-border-color);
     border-radius: 4px;
-    @include font-p1-semi-bold;
     color: var(--theme-primary-color);
 
-    &:before {
+    &::before {
       display: none;
     }
 

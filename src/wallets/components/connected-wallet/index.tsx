@@ -4,7 +4,6 @@ import cn from 'classnames';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Popover from 'components/antd/popover';
 import ExternalLink from 'components/custom/externalLink';
@@ -65,7 +64,7 @@ const ConnectedWallet: React.FC = () => {
         placement="bottomRight"
         noPadding
         content={
-          <Card noPaddingBody>
+          <div className="card">
             <Grid flow="row" gap={32} padding={[32, 24]}>
               <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
                 <Icon name="node-status" />
@@ -92,7 +91,7 @@ const ConnectedWallet: React.FC = () => {
                 Disconnect
               </Button>
             </Grid>
-          </Card>
+          </div>
         }
         trigger="click">
         <Button type="primary">Connecting...</Button>
@@ -115,18 +114,15 @@ const ConnectedWallet: React.FC = () => {
       noPadding
       className={s.popover}
       content={
-        <Card
-          title={
-            <Grid flow="col" gap={16} align="center" justify="start">
-              <Identicon address={wallet.account} width={40} height={40} />
-              <ExternalLink href={getEtherscanAddressUrl(wallet.account!)}>
-                <Text type="p1" weight="semibold" color="blue">
-                  {shortenAddr(wallet.account, 8, 8)}
-                </Text>
-              </ExternalLink>
-            </Grid>
-          }
-          noPaddingBody>
+        <div className="card">
+          <Grid className="card-header" flow="col" gap={16} align="center" justify="start">
+            <Identicon address={wallet.account} width={40} height={40} />
+            <ExternalLink href={getEtherscanAddressUrl(wallet.account!)}>
+              <Text type="p1" weight="semibold" color="blue">
+                {shortenAddr(wallet.account, 8, 8)}
+              </Text>
+            </ExternalLink>
+          </Grid>
           <Grid flow="row" gap={32} padding={[32, 24]}>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
               <Icon name="node-status" />
@@ -162,7 +158,7 @@ const ConnectedWallet: React.FC = () => {
               Disconnect
             </Button>
           </Grid>
-        </Card>
+        </div>
       }>
       <Button type="link" className={s.accountLink}>
         <Grid flow="col" align="center">

@@ -2,6 +2,8 @@ import addDays from 'date-fns/addDays';
 import addMonths from 'date-fns/addMonths';
 import addWeeks from 'date-fns/addWeeks';
 
+export const DAY_IN_SECONDS = 24 * 60 * 60;
+
 export const DURATION_1_DAY = '1 day';
 export const DURATION_30_DAYS = '30 days';
 export const DURATION_1_WEEK = '1 week';

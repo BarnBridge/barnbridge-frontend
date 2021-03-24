@@ -3,10 +3,19 @@ import QueryString from 'query-string';
 
 const GOV_API_URL = process.env.REACT_APP_GOV_API_URL;
 
+function queryfy(obj: Record<string, any>): string {
+  return QueryString.stringify(obj, {
+    skipNull: true,
+    skipEmptyString: true,
+    encode: true,
+  });
+}
+
 type PaginatedResult<T extends Record<string, any>> = {
   data: T[];
   meta: {
     count: number;
+    block: number;
   };
 };
 
@@ -199,26 +208,19 @@ export function fetchSYUserTxHistory(
   token = 'all',
   transactionType = 'all',
 ): Promise<PaginatedResult<APISYUserTxHistory>> {
-  const query = QueryString.stringify(
-    {
-      page: String(page),
-      limit: String(limit),
-      originator,
-      token,
-      transactionType,
-    },
-    {
-      skipNull: true,
-      skipEmptyString: true,
-      encode: true,
-    },
-  );
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    originator,
+    token,
+    transactionType,
+  });
 
   const url = new URL(`/api/smartyield/users/${address}/history?${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYUserTxHistory>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYUserTxHistory) => ({
         ...item,
@@ -247,25 +249,18 @@ export function fetchSYSeniorRedeems(
   originator = 'all',
   token = 'all',
 ): Promise<PaginatedResult<APISYSeniorRedeem>> {
-  const query = QueryString.stringify(
-    {
-      page: String(page),
-      limit: String(limit),
-      originator,
-      token,
-    },
-    {
-      skipNull: true,
-      skipEmptyString: true,
-      encode: true,
-    },
-  );
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    originator,
+    token,
+  });
 
   const url = new URL(`/api/smartyield/users/${address}/redeems/senior?=${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYSeniorRedeem>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYSeniorRedeem) => ({
         ...item,
@@ -304,26 +299,19 @@ export function fetchSYJuniorPastPositions(
   token = 'all',
   transactionType = 'all',
 ): Promise<PaginatedResult<APISYJuniorPastPosition>> {
-  const query = QueryString.stringify(
-    {
-      page: String(page),
-      limit: String(limit),
-      originator,
-      token,
-      transactionType,
-    },
-    {
-      skipNull: true,
-      skipEmptyString: true,
-      encode: true,
-    },
-  );
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    originator,
+    token,
+    transactionType,
+  });
 
   const url = new URL(`/api/smartyield/users/${address}/junior-past-positions?${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APISYJuniorPastPosition>) => ({
       ...result,
       data: (result.data ?? []).map((item: APISYJuniorPastPosition) => ({
         ...item,
@@ -387,4 +375,73 @@ export function fetchSYJuniorPortfolioValues(address: string): Promise<APISYJuni
         timestamp: new Date(item.timestamp),
       })),
     );
+}
+
+export type APISYRewardPool = {
+  poolAddress: string;
+  poolTokenAddress: string;
+  poolTokenDecimals: number;
+  rewardTokenAddress: string;
+  protocolId: string;
+  underlyingSymbol: string;
+};
+
+export function fetchSYRewardPools(
+  protocolId: string = 'all',
+  underlyingSymbol: string = 'all',
+): Promise<APISYRewardPool[]> {
+  const url = new URL(
+    `/api/smartyield/rewards/pools?protocolId=${protocolId}&underlyingSymbol=${underlyingSymbol}`,
+    GOV_API_URL,
+  );
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => result.data);
+}
+
+export enum APISYRewardTxHistoryType {
+  JUNIOR_STAKE = 'JUNIOR_STAKE',
+  JUNIOR_UNSTAKE = 'JUNIOR_UNSTAKE',
+}
+
+export const RewardHistoryShortTypes = new Map<string, string>([
+  [APISYRewardTxHistoryType.JUNIOR_STAKE, 'Stake'],
+  [APISYRewardTxHistoryType.JUNIOR_UNSTAKE, 'Unstake'],
+]);
+
+export type APISYRewardPoolTransaction = {
+  userAddress: string;
+  transactionType: string;
+  amount: BigNumber;
+  blockNumber: number;
+  blockTimestamp: number;
+  transactionHash: string;
+};
+
+export function fetchSYRewardPoolTransactions(
+  poolAddress: string,
+  page = 1,
+  limit = 10,
+  userAddress: string = 'all',
+  transactionType: string = 'all',
+): Promise<PaginatedResult<APISYRewardPoolTransaction>> {
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    userAddress,
+    transactionType,
+  });
+
+  const url = new URL(`/api/smartyield/rewards/pools/${poolAddress}/transactions?${query}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then((result: PaginatedResult<APISYRewardPoolTransaction>) => ({
+      ...result,
+      data: (result.data ?? []).map((item: APISYRewardPoolTransaction) => ({
+        ...item,
+        amount: new BigNumber(item.amount),
+      })),
+    }));
 }

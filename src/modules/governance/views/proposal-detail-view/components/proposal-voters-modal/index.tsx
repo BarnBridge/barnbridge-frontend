@@ -90,7 +90,6 @@ const ProposalVotersModalInner: React.FC<ProposalVotersModalProps> = props => {
       </Tabs>
       <Table<APIVoteEntity>
         className={s.table}
-        title={() => ''}
         columns={Columns}
         dataSource={proposalVotesCtx.votes}
         rowKey="address"
