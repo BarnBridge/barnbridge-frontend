@@ -1,6 +1,6 @@
 $gaps: 4, 8, 12, 16, 24, 32, 48, 64;
-$alignItems: start, center, end;
-$justifyContents: start, center, end, space-between;
+$align-items: start, center, end;
+$justify-contents: start, center, end, space-between;
 
 .grid {
   display: grid;
@@ -9,7 +9,7 @@ $justifyContents: start, center, end, space-between;
     grid-auto-flow: row;
     grid-template-rows: repeat(auto-fit, minmax(0, max-content));
 
-    @each $align in $alignItems {
+    @each $align in $align-items {
       &.align-#{$align} {
         justify-items: #{$align};
       }
@@ -19,7 +19,7 @@ $justifyContents: start, center, end, space-between;
       }
     }
 
-    @each $justify in $justifyContents {
+    @each $justify in $justify-contents {
       &.justify-#{$justify} {
         align-content: #{$justify};
       }
@@ -34,7 +34,7 @@ $justifyContents: start, center, end, space-between;
     grid-auto-flow: column;
     grid-template-columns: repeat(auto-fit, minmax(0, max-content));
 
-    @each $align in $alignItems {
+    @each $align in $align-items {
       &.align-#{$align} {
         align-items: #{$align};
       }
@@ -44,7 +44,7 @@ $justifyContents: start, center, end, space-between;
       }
     }
 
-    @each $justify in $justifyContents {
+    @each $justify in $justify-contents {
       &.justify-#{$justify} {
         justify-content: #{$justify};
       }

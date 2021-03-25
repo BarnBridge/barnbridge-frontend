@@ -13,6 +13,7 @@ export type UseLeftTimeOptions = {
 };
 
 export type UseLeftTimeReturn = {
+  isStarted: boolean;
   isRunning: boolean;
   start: () => void;
   stop: () => void;
@@ -24,6 +25,7 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
   const optsRef = React.useRef(options);
   optsRef.current = options;
 
+  const [isStarted, setStarted] = React.useState(false);
   const [isRunning, setRunning] = React.useState(false);
 
   const getLeftTime = React.useCallback(() => {
@@ -37,6 +39,7 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
       optsRef.current.onTick?.(leftTime);
 
       if (leftTime === 0) {
+        setStarted(false);
         stopInterval();
         optsRef.current.onEnd?.();
       }
@@ -47,25 +50,30 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
 
   React.useEffect(() => {
     if (Date.now() < options.end) {
+      setStarted(true);
       startInterval();
       optsRef.current.onStart?.(getLeftTime());
     }
 
     return () => {
+      setStarted(false);
       stopInterval();
     };
   }, [options.end]);
 
   return React.useMemo(() => {
     return {
+      isStarted,
       isRunning,
       start: () => {
+        setStarted(true);
         setRunning(true);
         startInterval();
         optsRef.current.onStart?.(getLeftTime());
       },
       stop: () => {
         setRunning(false);
+        setStarted(false);
         stopInterval();
         optsRef.current.onStop?.(getLeftTime());
       },
@@ -89,7 +97,7 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
   const windowState = useWindowState();
   const [leftTime, setLeftTime] = React.useState<number>(0);
 
-  const { isRunning, pause, resume } = useLeftTime({
+  const { isStarted, isRunning, pause, resume } = useLeftTime({
     ...props,
     onStart: value => {
       setLeftTime(value);
@@ -106,6 +114,10 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
   });
 
   React.useEffect(() => {
+    if (!isStarted) {
+      return;
+    }
+
     if (!isRunning && windowState.isVisible) {
       resume();
     }
@@ -113,7 +125,7 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
     if (isRunning && !windowState.isVisible) {
       pause();
     }
-  }, [windowState.isVisible, isRunning]);
+  }, [windowState.isVisible, isStarted, isRunning]);
 
   return <>{props.children(leftTime)}</>;
 };

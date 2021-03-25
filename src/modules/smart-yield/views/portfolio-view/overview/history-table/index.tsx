@@ -5,7 +5,6 @@ import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
 import { formatBigValue, formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
@@ -25,8 +24,6 @@ import HistoryTableFilter, {
   HistoryTableFilterValues,
 } from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
 import { useWallet } from 'wallets/wallet';
-
-import s from './s.module.scss';
 
 type TableEntity = APISYUserTxHistory & {
   poolEntity?: SYPool;
@@ -267,18 +264,17 @@ const HistoryTable: React.FC = () => {
   }
 
   return (
-    <Card
-      className={s.card}
-      noPaddingBody
-      title={
+    <div className="card">
+      <div className="card-header pv-12">
         <Grid flow="col" colsTemplate="1fr max-content" align="center">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
           <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
         </Grid>
-      }>
+      </div>
       <Table<TableEntity>
+        inCard
         columns={Columns}
         dataSource={mappedData}
         rowKey="transactionHash"
@@ -299,7 +295,7 @@ const HistoryTable: React.FC = () => {
           x: true,
         }}
       />
-    </Card>
+    </div>
   );
 };
 

@@ -17,7 +17,7 @@
     background: var(--theme-body-color);
     border: 2px solid var(--theme-icon-color);
 
-    &:after {
+    &::after {
       display: none;
     }
   }

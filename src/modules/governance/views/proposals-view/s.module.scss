@@ -1,22 +1,19 @@
-.tabs:global > {
-  .ant-tabs-nav {
-    height: 80px;
-    margin-bottom: 0;
-    padding: 0 24px;
-    background: var(--theme-card-color);
-    box-shadow: var(--theme-card-shadow);
-    border: 1px solid;
-    border-color: var(--theme-border-color);
-    border-radius: 4px 4px 0 0;
+.tabs {
+  :global(.ant-tabs-nav) {
+    padding: 12px 24px 0 !important;
+  }
+
+  :global(.ant-tabs-tab) {
+    padding-bottom: 24px;
   }
 }
 
-.activationThreshold {
-  width: 100%;
-}
+.search:global(.ant-input-affix-wrapper) {
+  width: 300px;
+  height: 48px;
+  margin: 12px 24px;
 
-.search {
   input {
-    height: 38px !important;
+    height: 100%;
   }
 }

@@ -5,16 +5,16 @@ const ABI: any[] = [
   {
     name: 'FEE_BUY_JUNIOR_TOKEN',
     type: 'function',
+    stateMutability: 'view',
     inputs: [],
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
   },
   {
     name: 'FEE_REDEEM_SENIOR_BOND',
     type: 'function',
+    stateMutability: 'view',
     inputs: [],
     outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
-    stateMutability: 'view',
   },
 ];
 

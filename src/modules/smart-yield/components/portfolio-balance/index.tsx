@@ -1,7 +1,6 @@
 import React from 'react';
 import { formatPercent, formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Progress from 'components/antd/progress';
 import { Hint, Text, TextProps } from 'components/custom/typography';
@@ -30,11 +29,12 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
   const progress = ((value1 ?? 0) * 100) / ((value1 ?? 0) + (value2 ?? 0));
 
   return (
-    <Card noPaddingBody>
-      <Text type="p1" weight="semibold" color="primary" className="p-24">
-        Portfolio balance
-      </Text>
-      <Divider />
+    <div className="card">
+      <div className="card-header">
+        <Text type="p1" weight="semibold" color="primary">
+          Portfolio balance
+        </Text>
+      </div>
       <div className="p-24 flexbox-grid flow-col gap-16">
         <div>
           <Hint text={totalHint}>
@@ -86,7 +86,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
           </Text>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

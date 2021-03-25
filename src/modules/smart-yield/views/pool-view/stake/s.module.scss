@@ -1,0 +1,14 @@
+.tabs {
+  > :global(.ant-tabs-nav) {
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    height: 74px;
+    background-color: transparent;
+
+    @media (max-width: 480px) {
+      padding-left: 8px;
+      padding-right: 8px;
+    }
+  }
+}

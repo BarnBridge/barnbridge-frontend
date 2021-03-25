@@ -90,7 +90,6 @@ const AbrogationVotersModalInner: React.FC<AbrogationVotersModalProps> = props =
       </Tabs>
       <Table<APIVoteEntity>
         className={s.table}
-        title={() => ''}
         columns={Columns}
         dataSource={abrogationVotesCtx.votes}
         rowKey="address"

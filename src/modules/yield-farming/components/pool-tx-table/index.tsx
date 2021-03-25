@@ -190,36 +190,6 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
     });
   }, [web3c, poolTxList.transactions]);
 
-  const CardTitle = (
-    <Grid flow="col" align="center" justify="space-between" className={cn(s.chartTitleContainer, 'pv-12 ph-24')}>
-      <Text type="p1" weight="semibold" color="primary">
-        {label}
-      </Text>
-      <Grid flow="col" gap={24} className={s.chartTitleFilters}>
-        <Select
-          label="Tokens"
-          options={tokenFilterOptions}
-          value={poolTxList.tokenFilter ?? 'all'}
-          disabled={poolTxList.loading}
-          onSelect={value => {
-            poolTxList.changeTokenFilter(value !== 'all' ? (value as string) : undefined);
-          }}
-          className={s.chartTitleFilter}
-        />
-        <Select
-          label="Show"
-          options={TypeFilters}
-          value={poolTxList.typeFilter ?? 'all'}
-          disabled={poolTxList.loading}
-          onSelect={value => {
-            poolTxList.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
-          }}
-          className={s.chartTitleFilter}
-        />
-      </Grid>
-    </Grid>
-  );
-
   const CardEmptyText = (
     <Grid flow="row" gap={16} align="center" padding={[54, 0]}>
       <EmptyBoxSvg />
@@ -239,8 +209,39 @@ const PoolTxTableInner: React.FC<PoolTxTableProps> = props => {
 
   return (
     <div className={cn(s.table, 'card')}>
-      {CardTitle}
+      <Grid
+        flow="col"
+        align="center"
+        justify="space-between"
+        className={cn(s.chartTitleContainer, 'card-header pv-12 ph-24')}>
+        <Text type="p1" weight="semibold" color="primary">
+          {label}
+        </Text>
+        <Grid flow="col" gap={24} className={s.chartTitleFilters}>
+          <Select
+            label="Tokens"
+            options={tokenFilterOptions}
+            value={poolTxList.tokenFilter ?? 'all'}
+            disabled={poolTxList.loading}
+            onSelect={value => {
+              poolTxList.changeTokenFilter(value !== 'all' ? (value as string) : undefined);
+            }}
+            className={s.chartTitleFilter}
+          />
+          <Select
+            label="Show"
+            options={TypeFilters}
+            value={poolTxList.typeFilter ?? 'all'}
+            disabled={poolTxList.loading}
+            onSelect={value => {
+              poolTxList.changeTypeFilter(value !== 'all' ? (value as string) : undefined);
+            }}
+            className={s.chartTitleFilter}
+          />
+        </Grid>
+      </Grid>
       <Table<PoolTxListItem>
+        inCard
         columns={Columns}
         rowKey="txHash"
         dataSource={tableData}

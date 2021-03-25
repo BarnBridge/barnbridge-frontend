@@ -8,7 +8,6 @@ import { useWeb3Contracts } from 'web3/contracts';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Textarea from 'components/antd/textarea';
@@ -194,12 +193,12 @@ const ProposalCreateView: React.FC = () => {
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <div className={cn(s.cardsContainer, 'mb-40')}>
-          <Card
-            title={
+          <div className="card">
+            <div className="card-header">
               <Text type="p1" weight="semibold" color="primary">
                 Proposal description
               </Text>
-            }>
+            </div>
             <Grid flow="row" gap={24}>
               <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Required' }]}>
                 <Input placeholder="Proposal title" disabled={state.submitting} />
@@ -216,14 +215,14 @@ const ProposalCreateView: React.FC = () => {
                 />
               </Form.Item>
             </Grid>
-          </Card>
+          </div>
 
-          <Card
-            title={
+          <div className="card">
+            <div className="card-header">
               <Text type="p1" weight="semibold" color="primary">
                 Actions
               </Text>
-            }>
+            </div>
             <Form.List
               name="actions"
               rules={[
@@ -289,7 +288,7 @@ const ProposalCreateView: React.FC = () => {
                 </>
               )}
             </Form.List>
-          </Card>
+          </div>
         </div>
         <div>
           <Button type="primary" htmlType="submit" size="large" loading={state.submitting}>

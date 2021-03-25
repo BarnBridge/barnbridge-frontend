@@ -1,0 +1,39 @@
+@import 'src/styles/text';
+
+.headerTerms {
+  display: flex;
+  column-gap: 80px;
+  row-gap: 32px;
+  margin: 0;
+}
+
+.headerTermRow {
+  dt {
+    @include font-sm-semi-bold;
+    color: var(--theme-secondary-color);
+    margin-bottom: 8px;
+  }
+
+  dd {
+    @include font-p1-semi-bold;
+    margin: 0;
+    color: var(--theme-primary-color);
+    display: flex;
+    align-items: center;
+  }
+}
+
+.stakeStatisticsContainer {
+  display: flex;
+  margin-bottom: 32px;
+}
+
+.stake {
+  flex-grow: 1;
+  margin-right: 32px;
+}
+
+.statistics {
+  max-width: 384px;
+  flex-basis: 384px;
+}

@@ -4,7 +4,6 @@ import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
 import { formatPercent } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import StatusDot from 'components/custom/status-dot';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
@@ -71,73 +70,77 @@ const PoolAPYTrend: React.FC = () => {
   }, [poolCtx.pool]);
 
   return (
-    <Card
-      title={
-        <div className="grid flow-col align-center justify-space-between">
-          <Text type="p1" weight="semibold" color="primary">
-            APY trend
+    <div className="card">
+      <div className="card-header grid flow-col align-center justify-space-between">
+        <Text type="p1" weight="semibold" color="primary">
+          APY trend
+        </Text>
+        <div className="grid flow-col col-gap-32">
+          <Text type="small" weight="semibold" color="secondary">
+            <StatusDot color="green" className="mr-8" />
+            Senior
           </Text>
-          <div className="grid flow-col col-gap-32">
-            <Text type="small" weight="semibold" color="secondary">
-              <StatusDot color="green" className="mr-8" />
-              Senior
-            </Text>
-            <Text type="small" weight="semibold" color="secondary">
-              <StatusDot color="purple" className="mr-8" />
-              Junior
-            </Text>
-          </div>
+          <Text type="small" weight="semibold" color="secondary">
+            <StatusDot color="purple" className="mr-8" />
+            Junior
+          </Text>
         </div>
-      }>
-      <Spin spinning={state.loading}>
-        <ReCharts.ResponsiveContainer width="100%" height={225}>
-          <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
-            <defs>
-              <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
-                <stop offset="0%" stopColor="rgba(var(--theme-green-color-rgb), 0.08)" />
-                <stop offset="100%" stopColor="rgba(var(--theme-green-color-rgb), 0)" />
-              </linearGradient>
-              <linearGradient id="chart-purple-gradient" gradientTransform="rotate(180)">
-                <stop offset="0%" stopColor="rgba(var(--theme-purple-color-rgb), 0.08)" />
-                <stop offset="100%" stopColor="rgba(var(--theme-purple-color-rgb), 0)" />
-              </linearGradient>
-            </defs>
-            <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
-            <ReCharts.XAxis dataKey="point" hide />
-            <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value, 0) ?? ''} />
-            <ReCharts.Tooltip
-              separator=""
-              labelFormatter={value => (
-                <Text type="p2" tag="span" weight="semibold" color="primary">
-                  {value instanceof Date ? format(value, 'MM.dd.yyyy HH:mm') : ''}
-                </Text>
-              )}
-              formatter={(value: number, _: any, { dataKey }: any) => (
-                <Text type="p2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
-                  {formatPercent(value)}
-                </Text>
-              )}
-            />
-            <ReCharts.Area
-              name="Senior APY "
-              dataKey="seniorApy"
-              type="monotone"
-              fill="url(#chart-green-gradient)"
-              stroke="var(--theme-green-color)"
-              strokeWidth={2}
-            />
-            <ReCharts.Area
-              name="Junior APY "
-              dataKey="juniorApy"
-              type="monotone"
-              fill="url(#chart-purple-gradient)"
-              stroke="var(--theme-purple-color)"
-              strokeWidth={2}
-            />
-          </ReCharts.AreaChart>
-        </ReCharts.ResponsiveContainer>
-      </Spin>
-    </Card>
+      </div>
+      <div className="p-24">
+        <Spin spinning={state.loading}>
+          <ReCharts.ResponsiveContainer width="100%" height={225}>
+            <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
+              <defs>
+                <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
+                  <stop offset="0%" stopColor="rgba(var(--theme-green-color-rgb), 0.08)" />
+                  <stop offset="100%" stopColor="rgba(var(--theme-green-color-rgb), 0)" />
+                </linearGradient>
+                <linearGradient id="chart-purple-gradient" gradientTransform="rotate(180)">
+                  <stop offset="0%" stopColor="rgba(var(--theme-purple-color-rgb), 0.08)" />
+                  <stop offset="100%" stopColor="rgba(var(--theme-purple-color-rgb), 0)" />
+                </linearGradient>
+              </defs>
+              <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
+              <ReCharts.XAxis dataKey="point" hide />
+              <ReCharts.YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={value => formatPercent(value, 0) ?? ''}
+              />
+              <ReCharts.Tooltip
+                separator=""
+                labelFormatter={value => (
+                  <Text type="p2" tag="span" weight="semibold" color="primary">
+                    {value instanceof Date ? format(value, 'MM.dd.yyyy HH:mm') : ''}
+                  </Text>
+                )}
+                formatter={(value: number, _: any, { dataKey }: any) => (
+                  <Text type="p2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
+                    {formatPercent(value)}
+                  </Text>
+                )}
+              />
+              <ReCharts.Area
+                name="Senior APY "
+                dataKey="seniorApy"
+                type="monotone"
+                fill="url(#chart-green-gradient)"
+                stroke="var(--theme-green-color)"
+                strokeWidth={2}
+              />
+              <ReCharts.Area
+                name="Junior APY "
+                dataKey="juniorApy"
+                type="monotone"
+                fill="url(#chart-purple-gradient)"
+                stroke="var(--theme-purple-color)"
+                strokeWidth={2}
+              />
+            </ReCharts.AreaChart>
+          </ReCharts.ResponsiveContainer>
+        </Spin>
+      </div>
+    </div>
   );
 };
 

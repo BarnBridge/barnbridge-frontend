@@ -50,13 +50,13 @@ export function fetchVoters(page = 1, limit = 10): Promise<PaginatedResult<APIVo
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => ({
+    .then((result: PaginatedResult<APIVoterEntity>) => ({
       ...result,
       data: (result.data ?? []).map((item: APIVoterEntity) => ({
         ...item,
-        bondStaked: getHumanValue(new BigNumber(item.bondStaked), BONDTokenMeta.decimals),
-        delegatedPower: getHumanValue(new BigNumber(item.delegatedPower), 18),
-        votingPower: getHumanValue(new BigNumber(item.votingPower), 18),
+        bondStaked: getHumanValue(new BigNumber(item.bondStaked), BONDTokenMeta.decimals)!,
+        delegatedPower: getHumanValue(new BigNumber(item.delegatedPower), 18)!,
+        votingPower: getHumanValue(new BigNumber(item.votingPower), 18)!,
       })),
     }));
 }
@@ -145,9 +145,9 @@ export function fetchProposals(
 
       return data;
     })
-    .then((data: PaginatedResult<APILiteProposalEntity>) => ({
-      ...data,
-      data: (data.data ?? []).map(proposal => ({
+    .then((result: PaginatedResult<APILiteProposalEntity>) => ({
+      ...result,
+      data: (result.data ?? []).map(proposal => ({
         ...proposal,
         forVotes: getHumanValue(new BigNumber(proposal.forVotes), 18)!,
         againstVotes: getHumanValue(new BigNumber(proposal.againstVotes), 18)!,
@@ -233,9 +233,9 @@ export function fetchProposalVoters(
 
       return data;
     })
-    .then((data: PaginatedResult<APIVoteEntity>) => ({
-      ...data,
-      data: (data.data ?? []).map(vote => ({
+    .then((result: PaginatedResult<APIVoteEntity>) => ({
+      ...result,
+      data: (result.data ?? []).map(vote => ({
         ...vote,
         power: getHumanValue(new BigNumber(vote.power), 18)!,
       })),
@@ -307,9 +307,9 @@ export function fetchAbrogationVoters(
 
       return data;
     })
-    .then((data: PaginatedResult<APIVoteEntity>) => ({
-      ...data,
-      data: (data.data ?? []).map(vote => ({
+    .then((result: PaginatedResult<APIVoteEntity>) => ({
+      ...result,
+      data: (result.data ?? []).map(vote => ({
         ...vote,
         power: getHumanValue(new BigNumber(vote.power), 18)!,
       })),

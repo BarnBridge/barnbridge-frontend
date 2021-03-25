@@ -1,13 +1,12 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
-import { CardTabListType } from 'antd/lib/card';
 import AntdSpin from 'antd/lib/spin';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
+import Tabs from 'components/antd/tabs';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
@@ -21,41 +20,6 @@ import ActivationThreshold from '../overview-view/components/activation-threshol
 import ProposalsTable from './components/proposals-table';
 
 import s from './s.module.scss';
-
-const TABS: CardTabListType[] = [
-  {
-    key: 'all',
-    tab: (
-      <Text type="p1" weight="semibold" color="primary">
-        All proposals
-      </Text>
-    ),
-  },
-  {
-    key: 'active',
-    tab: (
-      <Text type="p1" weight="semibold" color="primary">
-        Active
-      </Text>
-    ),
-  },
-  {
-    key: 'executed',
-    tab: (
-      <Text type="p1" weight="semibold" color="primary">
-        Executed
-      </Text>
-    ),
-  },
-  {
-    key: 'failed',
-    tab: (
-      <Text type="p1" weight="semibold" color="primary">
-        Failed
-      </Text>
-    ),
-  },
-];
 
 type ProposalsViewState = {
   hasActiveProposal?: boolean;
@@ -149,21 +113,23 @@ const ProposalsViewInner: React.FC = () => {
         )}
       </Grid>
 
-      <Card
-        noPaddingBody
-        tabList={TABS}
-        activeTabKey={proposalsCtx.stateFilter}
-        tabBarExtraContent={
+      <div className="card">
+        <div className="card-header flex justify-space-between" style={{ padding: 0 }}>
+          <Tabs className={s.tabs} simple activeKey={proposalsCtx.stateFilter} onChange={handleStateChange}>
+            <Tabs.Tab key="all" tab="All proposals" />
+            <Tabs.Tab key="active" tab="Active" />
+            <Tabs.Tab key="executed" tab="Executed" />
+            <Tabs.Tab key="failed" tab="Failed" />
+          </Tabs>
           <Input
             className={s.search}
             prefix={<Icon name="search-outlined" width={16} height={16} />}
             placeholder="Search proposal"
             onChange={ev => handleSearchChange(ev)}
           />
-        }
-        onTabChange={handleStateChange}>
+        </div>
         <ProposalsTable />
-      </Card>
+      </div>
     </Grid>
   );
 };
@@ -186,7 +152,7 @@ const ProposalsView: React.FC = () => {
         <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
           Overview
         </Button>
-        <ActivationThreshold className={s.activationThreshold} />
+        <ActivationThreshold className="full-width" />
       </Grid>
     );
   }
