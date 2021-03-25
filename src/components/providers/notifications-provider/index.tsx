@@ -234,7 +234,11 @@ const NotificationsContextProvider: React.FC<Props> = ({ children }) => {
     let intervalId: NodeJS.Timeout;
 
     if (wallet.initialized) {
-      fetchNotifications({ target: wallet.account }).then(setNotifications).catch(console.error);
+      fetchNotifications({ target: wallet.account })
+        .then(result => {
+          setNotifications(result ?? []);
+        })
+        .catch(console.error);
 
       intervalId = setInterval(() => {
         fetchNotifications({ target: wallet.account, timestamp: timestampRef.current })
