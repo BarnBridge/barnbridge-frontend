@@ -53,14 +53,6 @@ const LayoutSideNav: React.FC = () => {
           <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
         </div>
         <nav className={s.top}>
-          <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
-            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-              <Icon name="paper-bill-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Yield
-              </Text>
-            </NavLink>
-          </Tooltip>
           <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
             <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
               <Icon name="tractor-outlined" />
@@ -74,6 +66,14 @@ const LayoutSideNav: React.FC = () => {
               <Icon name="bank-outlined" />
               <Text type="p2" weight="semibold" className={s.buttonLabel}>
                 Governance
+              </Text>
+            </NavLink>
+          </Tooltip>
+          <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
+            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+              <Icon name="paper-bill-outlined" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                SMART Yield
               </Text>
             </NavLink>
           </Tooltip>
