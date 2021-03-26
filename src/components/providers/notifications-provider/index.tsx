@@ -41,6 +41,7 @@ type ProposalCanceledType = ProposalBaseType & {
   notificationType: 'proposal-canceled';
   metadata: {
     proposalId: number;
+    caller: string;
   };
 };
 
@@ -70,13 +71,22 @@ type ProposalAcceptedType = ProposalBaseType & {
     proposalId: number;
     displayDuration: number;
     proposer: string;
+    votedRatio: string;
   };
 };
 
-type ProposalFailedType = ProposalBaseType & {
-  notificationType: 'proposal-failed';
+type ProposalFailedQuorumType = ProposalBaseType & {
+  notificationType: 'proposal-failed-quorum';
   metadata: {
     proposalId: number;
+  };
+};
+
+type ProposalFailedVotesType = ProposalBaseType & {
+  notificationType: 'proposal-failed-votes';
+  metadata: {
+    proposalId: number;
+    votedRatio: string;
   };
 };
 
@@ -144,6 +154,13 @@ type ProposalAbrogatedType = ProposalBaseType & {
   };
 };
 
+type DelegateStartType = ProposalBaseType & {
+  notificationType: 'delegate-start';
+  metadata: {
+    from: string;
+  };
+};
+
 export type NotificationType =
   | ProposalCreatedType
   | ProposalActivatedSoonType
@@ -152,7 +169,8 @@ export type NotificationType =
   | ProposalVotingEndingSoonType
   | ProposalOutcomeType
   | ProposalAcceptedType
-  | ProposalFailedType
+  | ProposalFailedQuorumType
+  | ProposalFailedVotesType
   | ProposalQueuedType
   | ProposalQueueEndingSoonType
   | ProposalGraceType
@@ -160,7 +178,8 @@ export type NotificationType =
   | ProposalExpiresSoonType
   | ProposalExpiredType
   | AbrogationProposalCreatedType
-  | ProposalAbrogatedType;
+  | ProposalAbrogatedType
+  | DelegateStartType;
 
 const NotificationsContext = React.createContext<NotificationsContextType>({} as any);
 
