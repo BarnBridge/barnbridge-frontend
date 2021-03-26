@@ -239,7 +239,7 @@ const PoolProvider: React.FC = props => {
       contract.setAccount(wallet.account);
 
       contract
-        .on('tx:transactionHash', (txHash: string) => {
+        .on('tx:hash', (txHash: string) => {
           setState(prevState => ({
             ...prevState,
             statusModal: {
@@ -250,7 +250,7 @@ const PoolProvider: React.FC = props => {
             },
           }));
         })
-        .on('tx:complete', () => {
+        .on('tx:success', () => {
           setState(prevState => ({
             ...prevState,
             statusModal: {
@@ -259,7 +259,7 @@ const PoolProvider: React.FC = props => {
             },
           }));
         })
-        .on('tx:failure', () => {
+        .on('tx:fail', () => {
           setState(prevState => ({
             ...prevState,
             statusModal: {
@@ -402,7 +402,6 @@ const PoolProvider: React.FC = props => {
       <Context.Provider value={value}>{children}</Context.Provider>
       {state.statusModal.visible && (
         <TxStatusModal
-          visible
           type={state.statusModal.type}
           state={state.statusModal.state}
           txLink={state.statusModal.txHash && getEtherscanTxUrl(state.statusModal.txHash)}

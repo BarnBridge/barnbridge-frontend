@@ -27,7 +27,7 @@ const colorPairs: Record<'green' | 'red' | 'blue', [string, string]> = {
 };
 
 function getProposalLink(id: number): React.ReactNode {
-  return <Link className="link-blue" to={`/governance/proposals/${id}`} target="_blank">{`PID-${id}`}</Link>;
+  return <Link className="link-blue" to={`/governance/proposals/${id}`}>{`PID-${id}`}</Link>;
 }
 
 function getStrongText(text: string = ''): React.ReactNode {
@@ -54,7 +54,7 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
             {getStrongText(shortenAddr(n.metadata.proposer))} and entered the warm-up phase. You have{' '}
             {getStrongText(getRelativeTime(n.metadata.displayDuration))} to stake your BOND
           </Text>
-          <Link to="https://app.barnbridge.com/governance/wallet/deposit" className="button-primary">
+          <Link to="/governance/wallet/deposit" className="button-primary">
             Deposit now
           </Link>
         </>,

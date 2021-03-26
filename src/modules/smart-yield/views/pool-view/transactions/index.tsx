@@ -13,6 +13,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import {
   APISYRewardPoolTransaction,
+  APISYRewardTxHistoryType,
   Markets,
   Pools,
   RewardHistoryShortTypes,
@@ -72,24 +73,38 @@ const Columns: ColumnsType<TableEntity> = [
     },
   },
   {
-    title: 'Amount',
+    title: 'From',
+    dataIndex: 'from',
     render: (_, entity) => (
-      <>
-        <Tooltip
-          title={formatToken(entity.amount, {
-            decimals: entity.pool?.poolTokenDecimals,
-          })}>
-          <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-            {formatToken(entity.amount, {
-              tokenName: entity.pool?.poolToken.symbol,
-            })}
-          </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" wrap={false}>
-          {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
-        </Text>
-      </>
+      <Text type="p1" weight="semibold" color="primary">
+        {shortenAddr(entity.userAddress)}
+      </Text>
     ),
+  },
+  {
+    title: 'Amount',
+    render: (_, entity) => {
+      const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
+
+      return (
+        <>
+          <Tooltip
+            title={formatToken(entity.amount, {
+              decimals: entity.pool?.poolTokenDecimals,
+            })}>
+            <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+              {isStake ? '+' : '-'}
+              {formatToken(entity.amount, {
+                tokenName: entity.pool?.poolToken.symbol,
+              })}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" wrap={false}>
+            {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
+          </Text>
+        </>
+      );
+    },
   },
   {
     title: 'Transaction hash/timestamp',
@@ -111,7 +126,7 @@ const Transactions: React.FC = () => {
   const rewardPool = useRewardPool();
 
   const [state, setState] = React.useState<State>(InitialState);
-  const [activeTab, setActiveTab] = React.useState('own');
+  const [activeTab, setActiveTab] = React.useState(wallet.isActive ? 'own' : 'all');
 
   const txOpts = React.useMemo<SelectOption[]>(() => {
     return [
@@ -135,11 +150,11 @@ const Transactions: React.FC = () => {
   }, [activeTab]);
 
   React.useEffect(() => {
-    if (!rewardPool.pool) {
+    if (!rewardPool.rewardPool) {
       return;
     }
 
-    const { poolAddress } = rewardPool.pool;
+    const { poolAddress } = rewardPool.rewardPool;
 
     setState(prevState => ({
       ...prevState,
@@ -166,7 +181,7 @@ const Transactions: React.FC = () => {
           loading: false,
           transactions: transactions.map(transaction => ({
             ...transaction,
-            pool: rewardPool.pool,
+            pool: rewardPool.rewardPool,
           })),
           total: count,
         }));
@@ -177,7 +192,11 @@ const Transactions: React.FC = () => {
         }));
       }
     })();
-  }, [rewardPool.pool, wallet, activeTab, state.page, state.pageSize, state.filters]);
+  }, [rewardPool.rewardPool, wallet, activeTab, state.page, state.pageSize, state.filters]);
+
+  React.useEffect(() => {
+    setActiveTab(wallet.isActive ? 'own' : 'all');
+  }, [wallet.isActive]);
 
   function handleTypeFilterChange(value: SelectValue) {
     setState(prevState => ({
@@ -196,6 +215,14 @@ const Transactions: React.FC = () => {
     }));
   }
 
+  const tableColumns = React.useMemo(() => {
+    if (activeTab === 'own') {
+      return Columns.filter(column => column.title !== 'From');
+    }
+
+    return Columns;
+  }, [activeTab]);
+
   return (
     <div className="card mb-32">
       <Tabs
@@ -210,12 +237,12 @@ const Transactions: React.FC = () => {
             onChange={handleTypeFilterChange}
           />
         }>
-        <Tabs.Tab key="own" tab="My transactions" />
+        {wallet.isActive && <Tabs.Tab key="own" tab="My transactions" />}
         <Tabs.Tab key="all" tab="All transactions" />
       </Tabs>
 
       <Table<TableEntity>
-        columns={Columns}
+        columns={tableColumns}
         dataSource={state.transactions}
         loading={state.loading}
         rowKey="transactionHash"

@@ -315,7 +315,6 @@ const JuniorPortfolio: React.FC = () => {
             <LockedPositionsTable loading={state.loadingLocked} data={dataLockedFilters} />
             {redeemModal && (
               <TxConfirmModal
-                visible
                 title="Redeem your junior bond"
                 header={
                   <div className="grid flow-col col-gap-32">

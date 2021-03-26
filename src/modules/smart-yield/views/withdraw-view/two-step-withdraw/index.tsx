@@ -185,7 +185,6 @@ const TwoStepWithdraw: React.FC = () => {
 
       {withdrawModalVisible && (
         <TxConfirmModal
-          visible
           title="Confirm your withdrawal"
           header={
             <div className="grid flow-col col-gap-32">

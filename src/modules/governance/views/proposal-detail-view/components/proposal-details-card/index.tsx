@@ -63,7 +63,7 @@ const ProposalDetailsCard: React.FC = () => {
           Details
         </Text>
       </div>
-      <div className="p-24 flexbox-list" style={{ '--gap': '32px' } as React.CSSProperties}>
+      <div className="card-row flexbox-list p-24" style={{ '--gap': '32px' } as React.CSSProperties}>
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Created by
@@ -96,6 +96,8 @@ const ProposalDetailsCard: React.FC = () => {
               </>
             )}
           </Grid>
+        </div>
+        <div>
           {canBeCancelled && (
             <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
               Cancel proposal

@@ -64,19 +64,19 @@ const SmartYieldView: React.FC = () => {
           }
         />
         <Tabs.Tab
-          key="pools"
-          tab={
-            <>
-              <Icon name="savings-outlined" /> Pools
-            </>
-          }
-        />
-        <Tabs.Tab
           key="portfolio"
           disabled={!wallet.account}
           tab={
             <>
               <Icon name="wallet-outlined" /> Portfolio
+            </>
+          }
+        />
+        <Tabs.Tab
+          key="pools"
+          tab={
+            <>
+              <Icon name="savings-outlined" /> Pools
             </>
           }
         />

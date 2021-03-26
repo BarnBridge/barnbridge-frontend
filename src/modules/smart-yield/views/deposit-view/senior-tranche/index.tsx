@@ -328,7 +328,6 @@ const SeniorTranche: React.FC = () => {
 
       {state.depositModalVisible && (
         <TxConfirmModal
-          visible
           title="Confirm your deposit"
           header={
             <div className="grid flow-col col-gap-32">
