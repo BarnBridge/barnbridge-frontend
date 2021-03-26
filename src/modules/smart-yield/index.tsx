@@ -80,6 +80,14 @@ const SmartYieldView: React.FC = () => {
             </>
           }
         />
+        <Tabs.Tab
+          key="pools"
+          tab={
+            <>
+              <Icon name="savings-outlined" /> Pools
+            </>
+          }
+        />
       </Tabs>
       <div className="content-container">
         <Suspense fallback={<AntdSpin />}>

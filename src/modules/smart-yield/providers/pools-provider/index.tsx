@@ -135,7 +135,7 @@ const PoolsProvider: React.FC = props => {
       smartYieldContract.setAccount(wallet.account);
 
       smartYieldContract
-        .on('tx:transactionHash', (txHash: string) => {
+        .on('tx:hash', (txHash: string) => {
           setStatusModal(prevState => ({
             ...prevState,
             visible: true,
@@ -144,13 +144,13 @@ const PoolsProvider: React.FC = props => {
             txHash,
           }));
         })
-        .on('tx:complete', () => {
+        .on('tx:success', () => {
           setStatusModal(prevState => ({
             ...prevState,
             state: 'success',
           }));
         })
-        .on('tx:failure', () => {
+        .on('tx:fail', () => {
           setStatusModal(prevState => ({
             ...prevState,
             state: 'failure',
@@ -169,7 +169,7 @@ const PoolsProvider: React.FC = props => {
       smartYieldContract.setAccount(wallet.account);
 
       smartYieldContract
-        .on('tx:transactionHash', (txHash: string) => {
+        .on('tx:hash', (txHash: string) => {
           setStatusModal(prevState => ({
             ...prevState,
             visible: true,
@@ -178,13 +178,13 @@ const PoolsProvider: React.FC = props => {
             txHash,
           }));
         })
-        .on('tx:complete', () => {
+        .on('tx:success', () => {
           setStatusModal(prevState => ({
             ...prevState,
             state: 'success',
           }));
         })
-        .on('tx:failure', () => {
+        .on('tx:fail', () => {
           setStatusModal(prevState => ({
             ...prevState,
             state: 'failure',
@@ -203,7 +203,7 @@ const PoolsProvider: React.FC = props => {
       seniorBondContract.setAccount(wallet.account);
 
       seniorBondContract
-        .on('tx:transactionHash', (txHash: string) => {
+        .on('tx:hash', (txHash: string) => {
           setStatusModal(prevState => ({
             ...prevState,
             visible: true,
@@ -212,13 +212,13 @@ const PoolsProvider: React.FC = props => {
             txHash,
           }));
         })
-        .on('tx:complete', () => {
+        .on('tx:success', () => {
           setStatusModal(prevState => ({
             ...prevState,
             state: 'success',
           }));
         })
-        .on('tx:failure', () => {
+        .on('tx:fail', () => {
           setStatusModal(prevState => ({
             ...prevState,
             state: 'failure',
@@ -268,7 +268,6 @@ const PoolsProvider: React.FC = props => {
       <Context.Provider value={value}>{children}</Context.Provider>
       {statusModal.visible && (
         <TxStatusModal
-          visible
           type={statusModal.type}
           state={statusModal.state}
           txLink={statusModal.txHash && getEtherscanTxUrl(statusModal.txHash)}

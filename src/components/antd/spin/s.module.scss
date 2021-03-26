@@ -1,0 +1,11 @@
+button {
+  .spin {
+    margin-right: 8px;
+  }
+}
+
+button:global(.button-primary) {
+  .spin {
+    color: #fff;
+  }
+}
