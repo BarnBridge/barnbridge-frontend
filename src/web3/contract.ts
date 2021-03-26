@@ -16,6 +16,19 @@ export type BatchContractMethod = {
   onError?: (err: Error) => any;
 };
 
+export type Web3SendState = 'progress' | 'success' | 'fail';
+
+export type Web3SendMeta = {
+  sender: Web3Contract;
+  method: string;
+  methodArgs: any[];
+  sendArgs: Record<string, any>;
+  state?: Web3SendState;
+  txHash?: string;
+  result?: any;
+  error?: Error;
+};
+
 class Web3Contract extends EventEmitter {
   static requestsPool: any[] = [];
 
@@ -86,16 +99,7 @@ class Web3Contract extends EventEmitter {
     const promises = methods.map((batchMethod: BatchContractMethod) => {
       return new Promise(resolve => {
         this.call(batchMethod.method, batchMethod.methodArgs ?? [], batchMethod.callArgs ?? {})
-          .then(value => {
-            if (+value === WEB3_ERROR_VALUE) {
-              const err = new Error(`Contract call failure. (${this.name}.${batchMethod.method})`);
-              console.error(err);
-
-              return Promise.reject(err);
-            }
-
-            resolve((batchMethod.transform ?? (x => x))(value));
-          })
+          .then(value => resolve((batchMethod.transform ?? (x => x))(value)))
           .catch(err => {
             if (batchMethod.onError instanceof Function) {
               return resolve(batchMethod.onError(err));
@@ -122,6 +126,10 @@ class Web3Contract extends EventEmitter {
           return reject(err);
         }
 
+        if (+value === WEB3_ERROR_VALUE) {
+          return Promise.reject(new Error(`Contract call failure. (${this.name}.${method})`));
+        }
+
         resolve(value);
       });
 
@@ -136,30 +144,36 @@ class Web3Contract extends EventEmitter {
       return Promise.reject(new Error(`Unknown method "${method}" in contract.`));
     }
 
+    const meta: Web3SendMeta = {
+      sender: this,
+      method,
+      methodArgs,
+      sendArgs,
+    };
+
     return contractMethod(...methodArgs)
       .send(sendArgs, async (err: Error, transactionHash: string) => {
-        this.emit('tx:transactionHash', transactionHash, this, {
-          method,
-          methodArgs,
-          sendArgs,
-        });
+        if (err) {
+          return;
+        }
+
+        meta.state = 'progress';
+        meta.txHash = transactionHash;
+
+        this.emit('tx:hash', transactionHash, meta);
       })
       .then((result: any) => {
-        this.emit('tx:complete', result, this, {
-          method,
-          methodArgs,
-          sendArgs,
-        });
+        meta.state = 'success';
+        meta.result = result;
 
+        this.emit('tx:success', result, meta);
         return result;
       })
       .catch((error: Error) => {
-        this.emit('tx:failure', error, this, {
-          method,
-          methodArgs,
-          sendArgs,
-        });
+        meta.state = 'fail';
+        meta.error = error;
 
+        this.emit('tx:fail', error, meta);
         return Promise.reject(error);
       });
   }

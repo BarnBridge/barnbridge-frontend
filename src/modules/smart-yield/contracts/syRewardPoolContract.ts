@@ -154,6 +154,8 @@ class SYRewardPoolContract extends Web3Contract {
     return this.send('claim', [], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
+    }).then(() => {
+      this.loadClaim().catch(Error);
     });
   }
 
@@ -165,6 +167,8 @@ class SYRewardPoolContract extends Web3Contract {
     return this.send('deposit', [amount], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
+    }).then(() => {
+      this.loadBalance().catch(Error);
     });
   }
 
@@ -176,6 +180,8 @@ class SYRewardPoolContract extends Web3Contract {
     return this.send('withdraw', [amount], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
+    }).then(() => {
+      this.loadBalance().catch(Error);
     });
   }
 
@@ -187,6 +193,9 @@ class SYRewardPoolContract extends Web3Contract {
     return this.send('withdrawAndClaim', [amount], {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
+    }).then(() => {
+      this.loadBalance().catch(Error);
+      this.loadClaim().catch(Error);
     });
   }
 }

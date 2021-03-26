@@ -112,12 +112,12 @@ const Web3ContractsProvider: React.FC = props => {
     }
 
     contracts.forEach((contract: Web3Contract) => {
-      contract.on('tx:failure', handleError);
+      contract.on('tx:fail', handleError);
     });
 
     return () => {
       contracts.forEach((contract: Web3Contract) => {
-        contract.off('tx:failure', handleError);
+        contract.off('tx:fail', handleError);
       });
     };
   }, [

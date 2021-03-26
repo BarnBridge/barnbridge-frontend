@@ -1,6 +1,8 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
+import ContractListener from 'web3/components/contract-listener';
 
+import { Text } from 'components/custom/typography';
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
 import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
@@ -18,14 +20,14 @@ type State = {
   marketId?: string;
   tokenId?: string;
   loading: boolean;
-  pool?: SYRewardPool;
+  rewardPool?: SYRewardPool;
 };
 
 const InitialState: State = {
   marketId: undefined,
   tokenId: undefined,
   loading: false,
-  pool: undefined,
+  rewardPool: undefined,
 };
 
 type ContextType = State;
@@ -68,7 +70,7 @@ const RewardPoolProvider: React.FC = props => {
     setState(prevState => ({
       ...prevState,
       loading: true,
-      pool: undefined,
+      rewardPool: undefined,
     }));
 
     if (!market || !token) {
@@ -100,7 +102,7 @@ const RewardPoolProvider: React.FC = props => {
         setState(prevState => ({
           ...prevState,
           loading: false,
-          pool: {
+          rewardPool: {
             ...pool,
             rewardToken: rewardTokenContract,
             poolToken: poolTokenContract,
@@ -117,30 +119,31 @@ const RewardPoolProvider: React.FC = props => {
   }, [market, token]);
 
   React.useEffect(() => {
-    const { pool } = state;
+    const { rewardPool } = state;
 
-    if (pool) {
-      pool.rewardToken.setProvider(wallet.provider);
-      pool.poolToken.setProvider(wallet.provider);
-      pool.pool.setProvider(wallet.provider);
+    if (rewardPool) {
+      rewardPool.rewardToken.setProvider(wallet.provider);
+      rewardPool.poolToken.setProvider(wallet.provider);
+      rewardPool.pool.setProvider(wallet.provider);
     }
-  }, [state.pool, wallet.provider]);
+  }, [state.rewardPool, wallet.provider]);
 
   React.useEffect(() => {
-    const { pool } = state;
+    const { rewardPool } = state;
 
-    if (pool) {
-      pool.rewardToken.setAccount(wallet.account);
+    if (rewardPool) {
+      rewardPool.rewardToken.setAccount(wallet.account);
+      rewardPool.rewardToken.loadBalance().then(reload);
 
-      pool.poolToken.setAccount(wallet.account);
-      pool.poolToken.loadBalance().then(reload);
-      pool.poolToken.loadAllowance(pool.poolAddress).then(reload);
+      rewardPool.poolToken.setAccount(wallet.account);
+      rewardPool.poolToken.loadBalance().then(reload);
+      rewardPool.poolToken.loadAllowance(rewardPool.poolAddress).then(reload);
 
-      pool.pool.setAccount(wallet.account);
-      pool.pool.loadClaim().then(reload);
-      pool.pool.loadBalance().then(reload);
+      rewardPool.pool.setAccount(wallet.account);
+      rewardPool.pool.loadClaim().then(reload);
+      rewardPool.pool.loadBalance().then(reload);
     }
-  }, [state.pool, wallet.account]);
+  }, [state.rewardPool, wallet.account]);
 
   const value = React.useMemo<ContextType>(() => {
     return {
@@ -148,7 +151,24 @@ const RewardPoolProvider: React.FC = props => {
     };
   }, [state, version]);
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      {children}
+      <ContractListener
+        contract={state.rewardPool?.pool}
+        renderSuccess={meta => (
+          <>
+            <Text type="small" weight="semibold" color="secondary" className="mb-64 text-center">
+              You can see your new position in your portfolio
+            </Text>
+            <Link className="button-primary" to="/smart-yield/portfolio/senior">
+              See your portfolio
+            </Link>
+          </>
+        )}
+      />
+    </Context.Provider>
+  );
 };
 
 export default RewardPoolProvider;

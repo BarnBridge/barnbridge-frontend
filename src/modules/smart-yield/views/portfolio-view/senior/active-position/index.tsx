@@ -210,7 +210,6 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
 
       {redeemModalVisible && (
         <TxConfirmModal
-          visible
           title="Redeem your senior bond"
           header={
             <div className="grid flow-col col-gap-32">
@@ -251,7 +250,6 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       )}
       {transferModalVisible && (
         <TxConfirmModal
-          visible
           title="Transfer your bond"
           width={680}
           header={
