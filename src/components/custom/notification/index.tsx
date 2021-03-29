@@ -109,8 +109,9 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         'file-clock',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
-          Proposal {getProposalLink(n.metadata.proposalId)} has been accepted with {n.metadata.votedRatio}% votes for.
-          You have {n.metadata.displayDuration} days to queue it for execution (proposalId, votedRatio, displayDuration)
+          Proposal {getProposalLink(n.metadata.proposalId)} has been accepted with{' '}
+          {getStrongText(`${n.metadata.votedRatio}%`)} votes for. You have{' '}
+          {getStrongText(getRelativeTime(n.metadata.displayDuration))} to queue it for execution
         </Text>,
       ];
     case 'proposal-failed-quorum':
