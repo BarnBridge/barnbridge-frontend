@@ -1,7 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AntdSwitch from 'antd/lib/switch';
-import { formatBigValue, formatPercent, getHumanValue } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { ZERO_BIG_NUMBER, formatPercent, formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
@@ -17,13 +19,47 @@ import s from './s.module.scss';
 
 const PoolView: React.FC = () => {
   const wallet = useWallet();
+  const web3c = useWeb3Contracts();
   const { rewardPool } = useRewardPool();
 
   const [enabling, setEnabling] = React.useState(false);
 
+  const apr = React.useMemo(() => {
+    if (!rewardPool) {
+      return undefined;
+    }
+
+    const { poolSize, dailyReward } = rewardPool.pool;
+
+    if (!poolSize || !dailyReward) {
+      return undefined;
+    }
+
+    const bondPrice = web3c.uniswap.bondPrice ?? 1;
+    const jTokenPrice = rewardPool.poolToken.price ?? 1;
+
+    const yearlyReward = dailyReward
+      .dividedBy(10 ** BONDTokenMeta.decimals)
+      .multipliedBy(bondPrice)
+      .multipliedBy(365);
+    const poolBalance = poolSize
+      .dividedBy(10 ** (rewardPool.poolToken.decimals ?? 0))
+      .multipliedBy(jTokenPrice)
+      .multipliedBy(1);
+
+    if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
+      return ZERO_BIG_NUMBER;
+    }
+
+    return yearlyReward.dividedBy(poolBalance);
+  }, [rewardPool?.pool.poolSize, rewardPool?.pool.dailyReward]);
+
   if (!rewardPool) {
     return null;
   }
+
+  const market = Markets.get(rewardPool?.protocolId ?? '');
+  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
 
   async function handleSwitchChange(value: boolean) {
     setEnabling(true);
@@ -34,9 +70,6 @@ const PoolView: React.FC = () => {
 
     setEnabling(false);
   }
-
-  const market = Markets.get(rewardPool?.protocolId ?? '');
-  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
 
   return (
     <div className="container-limit">
@@ -72,25 +105,31 @@ const PoolView: React.FC = () => {
                 height={16}
                 className="mr-8"
               />
-              {formatBigValue(getHumanValue(rewardPool.pool.poolSize, rewardPool.poolToken.decimals)?.multipliedBy(1))}
+              {formatToken(rewardPool.pool.poolSize, {
+                scale: rewardPool.poolToken.decimals,
+              }) ?? '-'}
             </dd>
           </div>
           <div className={s.headerTermRow}>
             <dt>APR</dt>
-            <dd>{formatPercent(getHumanValue(rewardPool.pool.apr, rewardPool.rewardToken.decimals))}</dd>
+            <dd>{formatPercent(apr) ?? '-'}</dd>
           </div>
           <div className={s.headerTermRow}>
             <dt>Daily rewards</dt>
             <dd>
               <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-              {formatBigValue(getHumanValue(rewardPool.pool.dailyReward, rewardPool.rewardToken.decimals))}
+              {formatToken(rewardPool.pool.dailyReward, {
+                scale: rewardPool.rewardToken.decimals,
+              }) ?? '-'}
             </dd>
           </div>
           <div className={s.headerTermRow}>
             <dt>Rewards left</dt>
             <dd>
               <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-              {formatBigValue(getHumanValue(rewardPool.pool.rewardLeft, rewardPool.rewardToken.decimals))}
+              {formatToken(rewardPool.pool.rewardLeft, {
+                scale: rewardPool.rewardToken.decimals,
+              }) ?? '-'}
             </dd>
           </div>
           {wallet.isActive && (

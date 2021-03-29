@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import { useWeb3Contracts } from 'web3/contracts';
@@ -29,6 +30,7 @@ export type PoolTokenWithdrawProps = {
 type State = {
   enabling: boolean;
   enabled?: boolean;
+  isEnded?: boolean;
   formDisabled: boolean;
   saving: boolean;
   expanded: boolean;
@@ -41,6 +43,7 @@ type State = {
 const InitialState: State = {
   enabling: false,
   enabled: undefined,
+  isEnded: undefined,
   formDisabled: false,
   saving: false,
   expanded: false,
@@ -90,6 +93,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
     let allowance: BigNumber | undefined;
     let stakedBalance: BigNumber | undefined;
     let effectiveStakedBalance: BigNumber | undefined;
+    let isEnded: boolean | undefined;
 
     switch (token) {
       case USDCTokenMeta:
@@ -97,30 +101,35 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
         allowance = web3c.usdc.allowance;
         stakedBalance = web3c.staking.usdc.balance;
         effectiveStakedBalance = web3c.staking.usdc.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case DAITokenMeta:
         walletBalance = web3c.dai.balance;
         allowance = web3c.dai.allowance;
         stakedBalance = web3c.staking.dai.balance;
         effectiveStakedBalance = web3c.staking.dai.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case SUSDTokenMeta:
         walletBalance = web3c.susd.balance;
         allowance = web3c.susd.allowance;
         stakedBalance = web3c.staking.susd.balance;
         effectiveStakedBalance = web3c.staking.susd.epochUserBalance;
+        isEnded = web3c.yf.isEnded;
         break;
       case UNISWAPTokenMeta:
         walletBalance = web3c.uniswap.balance;
         allowance = web3c.uniswap.allowance;
         stakedBalance = web3c.staking.uniswap.balance;
         effectiveStakedBalance = web3c.staking.uniswap.epochUserBalance;
+        isEnded = web3c.yfLP.isEnded;
         break;
       case BONDTokenMeta:
         walletBalance = web3c.bond.balance;
         allowance = web3c.bond.allowance;
         stakedBalance = web3c.staking.bond.balance;
         effectiveStakedBalance = web3c.staking.bond.epochUserBalance;
+        isEnded = web3c.yfBOND.isEnded;
         break;
       default:
         return;
@@ -132,6 +141,7 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
       effectiveStakedBalance,
       maxAllowance: BigNumber.min(allowance ?? ZERO_BIG_NUMBER, walletBalance ?? ZERO_BIG_NUMBER),
       enabled: allowance?.gt(ZERO_BIG_NUMBER) ?? false,
+      isEnded,
       formDisabled: false,
       expanded,
     });
@@ -272,7 +282,26 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
                     slider
                   />
                 </Form.Item>
-                <Alert message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+                {!state.isEnded && (
+                  <Alert message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch." />
+                )}
+                {state.isEnded && token === USDCTokenMeta && (
+                  <Alert
+                    message={
+                      <div className="flex flow-row row-gap-16 align-start">
+                        <Text type="p2" weight="semibold" color="blue">
+                          You can still deposit USDC in SMART Yield's Junior or Senior Tranches and earn interest for
+                          your funds.
+                        </Text>
+                        <Link to="/smart-yield" className="link-blue">
+                          <Text type="p2" weight="bold" style={{ textDecoration: 'underline' }}>
+                            Go to SMART yield
+                          </Text>
+                        </Link>
+                      </div>
+                    }
+                  />
+                )}
               </Grid>
               <Grid flow="row">
                 <Form.Item

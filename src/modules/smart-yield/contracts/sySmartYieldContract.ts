@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import { BatchContractMethod } from 'web3/contract';
+import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { getGasValue } from 'web3/utils';
 
 import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
@@ -78,16 +78,11 @@ const ABI: any[] = [
   {
     name: 'bondGain',
     type: 'function',
-    stateMutability: 'nonpayable',
     inputs: [
-      {
-        internalType: 'uint256',
-        name: 'principalAmount_',
-        type: 'uint256',
-      },
-      { internalType: 'uint16', name: 'forDays_', type: 'uint16' },
+      { name: 'principalAmount', type: 'uint256' },
+      { name: 'forDays', type: 'uint16' },
     ],
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256' }],
   },
   {
     name: 'juniorBonds',
@@ -286,6 +281,7 @@ class SYSmartYieldContract extends Erc20Contract {
       this.totalSupply = totalSupply.dividedBy(10 ** decimals);
       this.price = price.dividedBy(1e18);
       this.abond = abond;
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
@@ -313,6 +309,7 @@ class SYSmartYieldContract extends Erc20Contract {
 
     return this.call('balanceOf', [this.account]).then(value => {
       this.balance = new BigNumber(value);
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 

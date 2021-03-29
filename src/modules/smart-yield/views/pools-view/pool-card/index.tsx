@@ -2,17 +2,19 @@ import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, formatToken, getHumanValue } from 'web3/utils';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { ZERO_BIG_NUMBER, formatPercent, formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import { Text } from 'components/custom/typography';
+import { Hint, Text } from 'components/custom/typography';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPool } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/wallet';
 
-import s from './s.module.scss';
+import s from 'modules/smart-yield/views/pools-view/pool-card/s.module.scss';
 
 export type PoolsCardProps = {
   rewardPool: SYRewardPool;
@@ -23,6 +25,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
   const { rewardPool, className } = props;
 
   const wallet = useWallet();
+  const web3c = useWeb3Contracts();
   const [activeTab, setActiveTab] = useState<'pool' | 'my'>('pool');
   const [confirmClaimVisible, setConfirmClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
@@ -30,6 +33,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
   const ended = false;
 
   function handleClaim() {
+    rewardPool.pool.loadClaim();
     setConfirmClaim(true);
   }
 
@@ -38,7 +42,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
     setClaiming(true);
 
     try {
-      await rewardPool.pool.sentClaim(args.gasPrice);
+      await rewardPool.pool.sendClaim(args.gasPrice);
     } catch {}
 
     setClaiming(false);
@@ -46,6 +50,32 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
 
   const market = Markets.get(rewardPool?.protocolId ?? '');
   const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
+
+  const apr = React.useMemo(() => {
+    const { poolSize, dailyReward } = rewardPool.pool;
+
+    if (!poolSize || !dailyReward) {
+      return undefined;
+    }
+
+    const bondPrice = web3c.uniswap.bondPrice ?? 1;
+    const jTokenPrice = rewardPool.poolToken.price ?? 1;
+
+    const yearlyReward = dailyReward
+      .dividedBy(10 ** BONDTokenMeta.decimals)
+      .multipliedBy(bondPrice)
+      .multipliedBy(365);
+    const poolBalance = poolSize
+      .dividedBy(10 ** (rewardPool.poolToken.decimals ?? 0))
+      .multipliedBy(jTokenPrice)
+      .multipliedBy(1);
+
+    if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
+      return ZERO_BIG_NUMBER;
+    }
+
+    return yearlyReward.dividedBy(poolBalance);
+  }, [rewardPool.pool.poolSize, rewardPool.pool.dailyReward]);
 
   return (
     <>
@@ -66,15 +96,16 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
         </header>
         {!ended && (
           <div className={s.tabs}>
+            <div className={cn(s.tabSelection, activeTab === 'my' && s.toggled)} />
             <button
               type="button"
-              className={cn(s.tab, { [s.active]: activeTab === 'pool' })}
+              className={cn(s.tab, activeTab === 'pool' && s.active)}
               onClick={() => setActiveTab('pool')}>
               Pool statistics
             </button>
             <button
               type="button"
-              className={cn(s.tab, { [s.active]: activeTab === 'my' })}
+              className={cn(s.tab, activeTab === 'my' && s.active)}
               disabled={!wallet.isActive}
               onClick={() => setActiveTab('my')}>
               My statistics
@@ -94,20 +125,28 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
           <dl>
             <div className={s.defRow}>
               <dt>APR</dt>
-              <dd>{formatPercent(getHumanValue(rewardPool.pool.apr, rewardPool.rewardToken.decimals))}</dd>
+              <dd>{formatPercent(apr)}</dd>
             </div>
             <div className={s.defRow}>
-              <dt>Daily reward</dt>
+              <dt>
+                <Hint text="This number shows the $BOND token rewards distributed per day.">Daily reward</Hint>
+              </dt>
               <dd>
                 <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-                {formatBigValue(getHumanValue(rewardPool.pool.dailyReward, rewardPool.rewardToken.decimals))}
+                {formatToken(rewardPool.pool.dailyReward, {
+                  scale: rewardPool.rewardToken.decimals,
+                }) ?? '-'}
               </dd>
             </div>
             <div className={s.defRow}>
-              <dt>Reward left</dt>
+              <dt>
+                <Hint text="This number shows the $BOND token rewards remaining.">Reward left</Hint>
+              </dt>
               <dd>
                 <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-                {formatBigValue(getHumanValue(rewardPool.pool.rewardLeft, rewardPool.rewardToken.decimals))}
+                {formatToken(rewardPool.pool.rewardLeft, {
+                  scale: rewardPool.rewardToken.decimals,
+                }) ?? '-'}
               </dd>
             </div>
             <div className={s.defRow}>
@@ -121,9 +160,9 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
                   height={16}
                   className="mr-8"
                 />
-                {formatBigValue(
-                  getHumanValue(rewardPool.pool.poolSize, rewardPool.poolToken.decimals)?.multipliedBy(1),
-                )}
+                {formatToken(rewardPool.pool.poolSize, {
+                  scale: rewardPool.poolToken.decimals,
+                }) ?? '-'}
               </dd>
             </div>
           </dl>
@@ -132,20 +171,28 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
           <dl>
             <div className={s.defRow}>
               <dt>APR</dt>
-              <dd>{formatPercent(getHumanValue(rewardPool.pool.apr, rewardPool.rewardToken.decimals))}</dd>
+              <dd>{formatPercent(apr)}</dd>
             </div>
             <div className={s.defRow}>
-              <dt>Your daily reward</dt>
+              <dt>
+                <Hint text="This number shows the $BOND rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.">
+                  Your daily reward
+                </Hint>
+              </dt>
               <dd>
                 <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-                {formatBigValue(getHumanValue(rewardPool.pool.myDailyReward, rewardPool.rewardToken.decimals))}
+                {formatToken(rewardPool.pool.myDailyReward, {
+                  scale: rewardPool.rewardToken.decimals,
+                }) ?? '-'}
               </dd>
             </div>
             <div className={s.defRow}>
               <dt>Your current reward</dt>
               <dd>
                 <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
-                {formatBigValue(getHumanValue(rewardPool.pool.toClaim, rewardPool.rewardToken.decimals))}
+                {formatToken(rewardPool.pool.toClaim, {
+                  scale: rewardPool.rewardToken.decimals,
+                }) ?? '-'}
               </dd>
             </div>
             <div className={s.defRow}>
@@ -159,9 +206,9 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
                   height={16}
                   className="mr-8"
                 />
-                {formatToken(getHumanValue(rewardPool.pool.balance, rewardPool.poolToken.decimals), {
-                  decimals: 4,
-                })}
+                {formatToken(rewardPool.pool.balance, {
+                  scale: rewardPool.poolToken.decimals,
+                }) ?? '-'}
               </dd>
             </div>
           </dl>
@@ -190,7 +237,9 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
           header={
             <div className="flex col-gap-8 align-center justify-center">
               <Text type="h2" weight="semibold" color="primary">
-                {formatBigValue(getHumanValue(rewardPool.pool.toClaim, rewardPool.rewardToken.decimals))}
+                {formatToken(rewardPool.pool.toClaim, {
+                  scale: rewardPool.rewardToken.decimals,
+                }) ?? '-'}
               </Text>
               <Icon name="bond-circle-token" width={32} height={32} />
             </div>

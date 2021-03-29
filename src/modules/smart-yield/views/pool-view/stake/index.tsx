@@ -7,8 +7,11 @@ import { formatToken, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Form from 'components/antd/form';
 import Spin from 'components/antd/spin';
 import Tabs from 'components/antd/tabs';
+import Icon from 'components/custom/icon';
+import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import { Markets, Pools } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 
 import s from './s.module.scss';
@@ -17,16 +20,25 @@ type FormStateType = {
   amount: number;
 };
 
-const InitialFormValues: FormStateType = {
-  amount: 0,
-};
-
 const StakeForm: React.FC = () => {
   const [form] = Antd.Form.useForm<FormStateType>();
-  const { rewardPool } = useRewardPool();
+  const { rewardPool, sendDeposit } = useRewardPool();
 
+  const [values, setValues] = useState<FormStateType>({
+    amount: 0,
+  });
   const [confirmVisible, setConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const enabled = rewardPool?.poolToken.isAllowed === true;
+  const canStake = values.amount > 0;
+
+  const market = Markets.get(rewardPool?.protocolId ?? '');
+  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
+
+  function handleValuesChange(_: any, formValues: FormStateType) {
+    setValues(formValues);
+  }
 
   function submitHandler() {
     setConfirm(true);
@@ -37,20 +49,24 @@ const StakeForm: React.FC = () => {
     setSaving(true);
 
     try {
-      const values = form.getFieldsValue();
-      const value = getNonHumanValue(values.amount, rewardPool?.poolToken.decimals!);
-      await rewardPool?.pool.sendDeposit(value, args.gasPrice).then(() => rewardPool?.poolToken.loadBalance());
+      const amount = getNonHumanValue(values.amount, rewardPool?.poolToken.decimals!);
+      await sendDeposit(amount, args.gasPrice);
       form.resetFields();
     } catch {}
 
     setSaving(false);
   };
 
-  const canStake = rewardPool?.poolToken.isAllowed === true;
-
   return (
     <>
-      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={submitHandler}>
+      <Form
+        form={form}
+        initialValues={{
+          amount: 0,
+        }}
+        validateTrigger={['onSubmit']}
+        onValuesChange={handleValuesChange}
+        onFinish={submitHandler}>
         <Form.Item
           name="amount"
           label="Amount"
@@ -59,9 +75,10 @@ const StakeForm: React.FC = () => {
           extra={
             <Text type="small" weight="semibold" color="secondary">
               Portfolio balance:{' '}
-              {formatToken(getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals), {
+              {formatToken(rewardPool?.poolToken.balance, {
+                scale: rewardPool?.poolToken.decimals,
                 tokenName: rewardPool?.poolToken.symbol,
-              })}
+              }) ?? '-'}
             </Text>
           }>
           <TokenAmount
@@ -69,7 +86,7 @@ const StakeForm: React.FC = () => {
             max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)?.toNumber()}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
-            disabled={saving || !canStake}
+            disabled={saving || !enabled}
             slider
           />
         </Form.Item>
@@ -86,8 +103,16 @@ const StakeForm: React.FC = () => {
           header={
             <div className="flex col-gap-8 align-center justify-center">
               <Text type="h2" weight="semibold" color="primary">
-                -
+                {formatToken(values.amount, {}) ?? '-'}
               </Text>
+              <IconBubble
+                name={meta?.icon}
+                bubbleName="bond-circle-token"
+                secondBubbleName={market?.icon}
+                width={32}
+                height={32}
+                className="mr-8"
+              />
             </div>
           }
           submitText="Stake"
@@ -101,11 +126,23 @@ const StakeForm: React.FC = () => {
 
 const UnstakeForm: React.FC = () => {
   const [form] = Antd.Form.useForm<FormStateType>();
-  const { rewardPool } = useRewardPool();
+  const { rewardPool, sendWithdraw, sendWithdrawAndClaim } = useRewardPool();
 
+  const [values, setValues] = useState<FormStateType>({
+    amount: 0,
+  });
   const [isClaimUnstake, setClaimUnstake] = useState(false);
   const [confirmVisible, setConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const canUnstake = values.amount > 0;
+
+  const market = Markets.get(rewardPool?.protocolId ?? '');
+  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
+
+  function handleValuesChange(_: any, formValues: FormStateType) {
+    setValues(formValues);
+  }
 
   function handleUnstake() {
     setClaimUnstake(false);
@@ -122,15 +159,12 @@ const UnstakeForm: React.FC = () => {
     setSaving(true);
 
     try {
-      const values = form.getFieldsValue();
-      const value = getNonHumanValue(values.amount, rewardPool?.poolToken.decimals!);
+      const amount = getNonHumanValue(values.amount, rewardPool?.poolToken.decimals!);
 
       if (isClaimUnstake) {
-        await rewardPool?.pool
-          .sendWithdrawAndClaim(value, args.gasPrice)
-          .then(() => rewardPool?.poolToken.loadBalance());
+        await sendWithdrawAndClaim(amount, args.gasPrice);
       } else {
-        await rewardPool?.pool.sendWithdraw(value, args.gasPrice).then(() => rewardPool?.poolToken.loadBalance());
+        await sendWithdraw(amount, args.gasPrice);
       }
 
       form.resetFields();
@@ -141,7 +175,13 @@ const UnstakeForm: React.FC = () => {
 
   return (
     <>
-      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']}>
+      <Form
+        form={form}
+        initialValues={{
+          amount: 0,
+        }}
+        onValuesChange={handleValuesChange}
+        validateTrigger={['onSubmit']}>
         <Form.Item
           name="amount"
           label="Amount"
@@ -150,9 +190,10 @@ const UnstakeForm: React.FC = () => {
           extra={
             <Text type="small" weight="semibold" color="secondary">
               Staked balance:{' '}
-              {formatToken(getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals), {
+              {formatToken(rewardPool?.pool.balance, {
+                scale: rewardPool?.poolToken.decimals,
                 tokenName: rewardPool?.poolToken.symbol,
-              })}
+              }) ?? '-'}
             </Text>
           }>
           <TokenAmount
@@ -165,11 +206,11 @@ const UnstakeForm: React.FC = () => {
           />
         </Form.Item>
         <div className="flex col-gap-24">
-          <button type="button" className="button-primary" disabled={saving} onClick={handleUnstake}>
+          <button type="button" className="button-primary" disabled={saving || !canUnstake} onClick={handleUnstake}>
             {saving && !isClaimUnstake && <Spin type="circle" />}
             Unstake
           </button>
-          <button type="button" className="button-ghost" disabled={saving} onClick={handleClaimUnstake}>
+          <button type="button" className="button-ghost" disabled={saving || !canUnstake} onClick={handleClaimUnstake}>
             {saving && isClaimUnstake && <Spin type="circle" />}
             Claim & Unstake
           </button>
@@ -180,10 +221,41 @@ const UnstakeForm: React.FC = () => {
         <TxConfirmModal
           title={isClaimUnstake ? 'Confirm your claim and unstake' : 'Confirm your unstake'}
           header={
-            <div className="flex col-gap-8 align-center justify-center">
-              <Text type="h2" weight="semibold" color="primary">
-                -
-              </Text>
+            <div className="flex col-gap-64 align-center justify-center">
+              <div>
+                <Text type="p1" weight="semibold" color="secondary">
+                  Unstake
+                </Text>
+                <div className="flex col-gap-8 align-center justify-center">
+                  <Text type="h2" weight="semibold" color="primary">
+                    {formatToken(values.amount, {}) ?? '-'}
+                  </Text>
+                  <IconBubble
+                    name={meta?.icon}
+                    bubbleName="bond-circle-token"
+                    secondBubbleName={market?.icon}
+                    width={32}
+                    height={32}
+                    className="mr-8"
+                  />
+                </div>
+              </div>
+
+              {isClaimUnstake && (
+                <div>
+                  <Text type="p1" weight="semibold" color="secondary">
+                    Claim
+                  </Text>
+                  <div className="flex col-gap-8 align-center justify-center">
+                    <Text type="h2" weight="semibold" color="primary">
+                      {formatToken(rewardPool?.pool.toClaim, {
+                        scale: rewardPool?.rewardToken.decimals,
+                      }) ?? '-'}
+                    </Text>
+                    <Icon name="bond-circle-token" width={32} height={32} />
+                  </div>
+                </div>
+              )}
             </div>
           }
           submitText={isClaimUnstake ? 'Claim and unstake' : 'Unstake'}
