@@ -39,7 +39,7 @@ const PoolView: React.FC = () => {
   const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
 
   return (
-    <>
+    <div className="container-limit">
       <div className="mb-16">
         <Link to="/smart-yield/pools" className="button-text" style={{ display: 'inline-flex' }}>
           <Icon name="left-arrow" width={14} height={12} className="mr-12" color="inherit" />
@@ -115,7 +115,7 @@ const PoolView: React.FC = () => {
         </div>
       )}
       <Transactions />
-    </>
+    </div>
   );
 };
 

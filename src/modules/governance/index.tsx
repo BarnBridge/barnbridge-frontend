@@ -104,7 +104,7 @@ const GovernanceViewInternal: React.FC = () => {
           }
         />
       </Tabs>
-      <div className="content-container">
+      <div className="content-container-fix content-container">
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
           <Route path="/governance/wallet/:action(\w+)" component={WalletView} />

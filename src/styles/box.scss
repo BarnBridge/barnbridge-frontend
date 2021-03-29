@@ -59,14 +59,14 @@ $paddings: 4, 8, 12, 16, 24, 32, 48, 64;
 
 @media (max-width: 768px) {
   @each $padding in $paddings {
-    .sm-p-#{$padding} {
+    .sm-p-#{$padding}.sm-p-#{$padding} {
       padding: #{$padding}px;
     }
-    .sm-pv-#{$padding} {
+    .sm-pv-#{$padding}.sm-pv-#{$padding} {
       padding-top: #{$padding}px;
       padding-bottom: #{$padding}px;
     }
-    .sm-ph-#{$padding} {
+    .sm-ph-#{$padding}.sm-ph-#{$padding} {
       padding-left: #{$padding}px;
       padding-right: #{$padding}px;
     }

@@ -89,7 +89,7 @@ const SmartYieldView: React.FC = () => {
           }
         />
       </Tabs>
-      <div className="content-container">
+      <div className="content-container-fix content-container">
         <Suspense fallback={<AntdSpin />}>
           <Switch>
             <Route
