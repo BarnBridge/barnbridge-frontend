@@ -7,13 +7,14 @@ import formatDuration from 'date-fns/formatDuration';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
-import { shortenAddr } from 'web3/utils';
+import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { NotificationType, useNotifications } from 'components/providers/notifications-provider';
 
+import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';
 
 import s from './s.module.scss';
@@ -72,7 +73,10 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         'file-deleted',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
-          Proposal {getProposalLink(n.metadata.proposalId)} has been canceled
+          Proposal {getProposalLink(n.metadata.proposalId)} has been cancelled by{' '}
+          <ExternalLink href={getEtherscanAddressUrl(n.metadata.caller)} className="link-blue">
+            {shortenAddr(n.metadata.caller)}
+          </ExternalLink>
         </Text>,
       ];
     case 'proposal-voting-open':
@@ -105,15 +109,26 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         'file-clock',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
-          Proposal {getProposalLink(n.metadata.proposalId)} has been accepted and is awaiting queuing for execution
+          Proposal {getProposalLink(n.metadata.proposalId)} has been accepted with{' '}
+          {getStrongText(`${n.metadata.votedRatio}%`)} votes for. You have{' '}
+          {getStrongText(getRelativeTime(n.metadata.displayDuration))} to queue it for execution
         </Text>,
       ];
-    case 'proposal-failed':
+    case 'proposal-failed-quorum':
       return [
         'file-deleted',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
-          Proposal {getProposalLink(n.metadata.proposalId)} failed to pass
+          Proposal {getProposalLink(n.metadata.proposalId)} has not met quorum and has been rejected
+        </Text>,
+      ];
+    case 'proposal-failed-votes':
+      return [
+        'file-deleted',
+        colorPairs.red,
+        <Text type="p2" weight="semibold" color="secondary">
+          Proposal {getProposalLink(n.metadata.proposalId)} has been rejected with {n.metadata.votedRatio}% votes
+          against
         </Text>,
       ];
     case 'proposal-queued':
@@ -184,6 +199,17 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been abrogated
+        </Text>,
+      ];
+    case 'delegate-start':
+      return [
+        'handshake',
+        colorPairs.blue,
+        <Text type="p2" weight="semibold" color="secondary">
+          $BOND has been delegate to you from{' '}
+          <ExternalLink href={getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
+            {shortenAddr(n.metadata.from)}
+          </ExternalLink>
         </Text>,
       ];
     default:
