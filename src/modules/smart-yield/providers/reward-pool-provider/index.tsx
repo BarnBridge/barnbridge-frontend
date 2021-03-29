@@ -1,8 +1,8 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
-
-import { Text } from 'components/custom/typography';
+import Web3Contract from 'web3/contract';
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
 import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
@@ -30,10 +30,21 @@ const InitialState: State = {
   rewardPool: undefined,
 };
 
-type ContextType = State;
+type Actions = {
+  sendClaim: (gasPrice: number) => Promise<void>;
+  sendDeposit: (amount: BigNumber, gasPrice: number) => Promise<void>;
+  sendWithdraw: (amount: BigNumber, gasPrice: number) => Promise<void>;
+  sendWithdrawAndClaim: (amount: BigNumber, gasPrice: number) => Promise<void>;
+};
+
+type ContextType = State & Actions;
 
 const Context = React.createContext<ContextType>({
   ...InitialState,
+  sendClaim: () => Promise.reject(),
+  sendDeposit: () => Promise.reject(),
+  sendWithdraw: () => Promise.reject(),
+  sendWithdrawAndClaim: () => Promise.reject(),
 });
 
 export function useRewardPool(): ContextType {
@@ -89,15 +100,18 @@ const RewardPoolProvider: React.FC = props => {
 
         const rewardTokenContract = new Erc20Contract([], pool.rewardTokenAddress);
         rewardTokenContract.setProvider(wallet.provider);
-        rewardTokenContract.loadCommon().then(reload);
+        rewardTokenContract.on(Web3Contract.UPDATE_DATA, reload);
+        rewardTokenContract.loadCommon();
 
         const poolTokenContract = new SYSmartYieldContract(pool.poolTokenAddress);
         poolTokenContract.setProvider(wallet.provider);
-        poolTokenContract.loadCommon().then(reload);
+        poolTokenContract.on(Web3Contract.UPDATE_DATA, reload);
+        poolTokenContract.loadCommon();
 
         const poolContract = new SYRewardPoolContract(pool.poolAddress);
         poolContract.setProvider(wallet.provider);
-        poolContract.loadCommon().then(reload);
+        poolContract.on(Web3Contract.UPDATE_DATA, reload);
+        poolContract.loadCommon();
 
         setState(prevState => ({
           ...prevState,
@@ -145,28 +159,73 @@ const RewardPoolProvider: React.FC = props => {
     }
   }, [state.rewardPool, wallet.account]);
 
+  const sendClaim = React.useCallback(
+    (gasPrice: number) => {
+      if (!state.rewardPool) {
+        return Promise.reject();
+      }
+
+      return state.rewardPool.pool.sendClaim(gasPrice).then(() => {
+        state.rewardPool?.rewardToken.loadBalance();
+      });
+    },
+    [state.rewardPool],
+  );
+
+  const sendDeposit = React.useCallback(
+    (amount: BigNumber, gasPrice: number) => {
+      if (!state.rewardPool) {
+        return Promise.reject();
+      }
+
+      return state.rewardPool.pool.sendDeposit(amount, gasPrice).then(() => {
+        state.rewardPool?.poolToken.loadBalance();
+      });
+    },
+    [state.rewardPool],
+  );
+
+  const sendWithdraw = React.useCallback(
+    (amount: BigNumber, gasPrice: number) => {
+      if (!state.rewardPool) {
+        return Promise.reject();
+      }
+
+      return state.rewardPool.pool.sendWithdraw(amount, gasPrice).then(() => {
+        state.rewardPool?.poolToken.loadBalance();
+      });
+    },
+    [state.rewardPool],
+  );
+
+  const sendWithdrawAndClaim = React.useCallback(
+    (amount: BigNumber, gasPrice: number) => {
+      if (!state.rewardPool) {
+        return Promise.reject();
+      }
+
+      return state.rewardPool.pool.sendWithdrawAndClaim(amount, gasPrice).then(() => {
+        state.rewardPool?.rewardToken.loadBalance();
+        state.rewardPool?.poolToken.loadBalance();
+      });
+    },
+    [state.rewardPool],
+  );
+
   const value = React.useMemo<ContextType>(() => {
     return {
       ...state,
+      sendClaim,
+      sendDeposit,
+      sendWithdraw,
+      sendWithdrawAndClaim,
     };
   }, [state, version]);
 
   return (
     <Context.Provider value={value}>
       {children}
-      <ContractListener
-        contract={state.rewardPool?.pool}
-        renderSuccess={meta => (
-          <>
-            <Text type="small" weight="semibold" color="secondary" className="mb-64 text-center">
-              You can see your new position in your portfolio
-            </Text>
-            <Link className="button-primary" to="/smart-yield/portfolio/senior">
-              See your portfolio
-            </Link>
-          </>
-        )}
-      />
+      <ContractListener contract={state.rewardPool?.pool} />
     </Context.Provider>
   );
 };
