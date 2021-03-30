@@ -51,6 +51,7 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Tranche / Transaction',
+    align: 'right',
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -64,19 +65,7 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Amount',
-    sorter: (a, b) => {
-      const diff = a.amount - b.amount;
-
-      if (diff < 0) {
-        return -1;
-      }
-
-      if (diff > 0) {
-        return 1;
-      }
-
-      return 0;
-    },
+    align: 'right',
     render: (_, entity) => {
       const isPositive = isPositiveHistoryType(entity.transactionType as APISYTxHistoryType);
 
@@ -85,7 +74,7 @@ const Columns: ColumnsType<TableEntity> = [
           title={
             <Text type="small" weight="semibold" color="primary">
               {formatToken(entity.amount, {
-                tokenName: entity.underlyingTokenSymbol,
+                tokenName: entity.poolEntity?.contracts.smartYield.symbol,
                 decimals: entity.poolEntity?.underlyingDecimals,
               })}
             </Text>
@@ -119,7 +108,6 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Date',
-    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
     align: 'right',
     render: (_, entity) => (
       <>

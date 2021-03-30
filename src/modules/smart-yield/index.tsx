@@ -46,6 +46,10 @@ const SmartYieldView: React.FC = () => {
       setActiveTab('portfolio');
       return;
     }
+    if (vt === 'pool') {
+      setActiveTab('pools');
+      return;
+    }
 
     if (vt !== activeTab) {
       setActiveTab(vt);
