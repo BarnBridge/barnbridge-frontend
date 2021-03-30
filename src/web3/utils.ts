@@ -119,6 +119,7 @@ type FormatTokenOptions = {
   decimals?: number;
   minDecimals?: number;
   maxDecimals?: number;
+  scale?: number;
   compact?: boolean;
 };
 
@@ -132,14 +133,21 @@ export function formatToken(value: number | BigNumber | undefined, options: Form
     compact = false,
     decimals = compact && value >= 1000 ? 0 : 4,
     minDecimals = decimals,
-    maxDecimals = decimals,
+    maxDecimals = Math.max(decimals, minDecimals),
+    scale = 0,
   } = options;
+
+  let val = new BigNumber(value);
+
+  if (scale > 0) {
+    val = val.dividedBy(10 ** scale);
+  }
 
   const str = Intl.NumberFormat('en', {
     notation: compact ? 'compact' : undefined,
     minimumFractionDigits: minDecimals,
     maximumFractionDigits: maxDecimals,
-  }).format(BigNumber.isBigNumber(value) ? value.toNumber() : value);
+  }).format(val.toNumber());
 
   return tokenName ? `${str} ${tokenName}` : str;
 }

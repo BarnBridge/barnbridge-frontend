@@ -3,24 +3,35 @@ import Web3Contract from 'web3/contract';
 
 const ABI: any[] = [
   {
+    name: 'BOND_LIFE_MAX',
+    type: 'function',
+    stateMutability: 'view',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
     name: 'FEE_BUY_JUNIOR_TOKEN',
     type: 'function',
     stateMutability: 'view',
     inputs: [],
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256' }],
   },
   {
     name: 'FEE_REDEEM_SENIOR_BOND',
     type: 'function',
     stateMutability: 'view',
     inputs: [],
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256' }],
   },
 ];
 
 class SYControllerContract extends Web3Contract {
   constructor(address: string) {
     super(ABI, address, '');
+  }
+
+  getBondLifeMax(): Promise<number> {
+    return this.call('BOND_LIFE_MAX').then(value => Number(value));
   }
 
   getJuniorBuyFee(): Promise<BigNumber> {

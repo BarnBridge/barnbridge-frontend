@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract from 'web3/contract';
-import { getGasValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, getGasValue } from 'web3/utils';
 
 import { DAY_IN_SECONDS } from 'utils/date';
 
@@ -69,20 +69,6 @@ class SYRewardPoolContract extends Web3Contract {
 
   dailyReward?: BigNumber;
 
-  get apr(): BigNumber | undefined {
-    if (!this.poolSize || !this.dailyReward) {
-      return undefined;
-    }
-
-    const bondPrice = 195;
-    const jTokenPrice = 1;
-
-    const yearlyReward = this.dailyReward!.multipliedBy(bondPrice).multipliedBy(365);
-    const poolBalance = this.poolSize.multipliedBy(jTokenPrice).multipliedBy(1);
-
-    return yearlyReward.dividedBy(poolBalance);
-  }
-
   toClaim?: BigNumber;
 
   balance?: BigNumber;
@@ -118,7 +104,14 @@ class SYRewardPoolContract extends Web3Contract {
       this.poolSize = poolSize;
       this.rewardRatePerSecond = rewardRatePerSecond;
       this.rewardLeft = rewardLeft;
-      this.dailyReward = rewardRatePerSecond.multipliedBy(DAY_IN_SECONDS);
+
+      if (rewardLeft.gt(ZERO_BIG_NUMBER)) {
+        this.dailyReward = rewardRatePerSecond.multipliedBy(DAY_IN_SECONDS);
+      } else {
+        this.dailyReward = ZERO_BIG_NUMBER;
+      }
+
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
@@ -131,6 +124,7 @@ class SYRewardPoolContract extends Web3Contract {
 
     return this.call('claim', [], { from: this.account }).then(value => {
       this.toClaim = new BigNumber(value);
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
@@ -143,10 +137,11 @@ class SYRewardPoolContract extends Web3Contract {
 
     return this.call('balances', [this.account]).then(value => {
       this.balance = new BigNumber(value);
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
-  sentClaim(gasPrice: number): Promise<void> {
+  sendClaim(gasPrice: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }
@@ -155,7 +150,7 @@ class SYRewardPoolContract extends Web3Contract {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
     }).then(() => {
-      this.loadClaim().catch(Error);
+      this.loadClaim();
     });
   }
 
@@ -168,7 +163,8 @@ class SYRewardPoolContract extends Web3Contract {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
     }).then(() => {
-      this.loadBalance().catch(Error);
+      this.loadCommon();
+      this.loadBalance();
     });
   }
 
@@ -181,7 +177,8 @@ class SYRewardPoolContract extends Web3Contract {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
     }).then(() => {
-      this.loadBalance().catch(Error);
+      this.loadCommon();
+      this.loadBalance();
     });
   }
 
@@ -194,8 +191,9 @@ class SYRewardPoolContract extends Web3Contract {
       from: this.account,
       gasPrice: getGasValue(gasPrice),
     }).then(() => {
-      this.loadBalance().catch(Error);
-      this.loadClaim().catch(Error);
+      this.loadCommon();
+      this.loadBalance();
+      this.loadClaim();
     });
   }
 }

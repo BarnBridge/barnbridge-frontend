@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
+import Web3Contract from 'web3/contract';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
@@ -63,15 +64,18 @@ const RewardPoolsProvider: React.FC = props => {
         const pools = result.map(pool => {
           const rewardTokenContract = new Erc20Contract([], pool.rewardTokenAddress);
           rewardTokenContract.setProvider(wallet.provider);
-          rewardTokenContract.loadCommon().then(reload);
+          rewardTokenContract.on(Web3Contract.UPDATE_DATA, reload);
+          rewardTokenContract.loadCommon();
 
           const poolTokenContract = new SYSmartYieldContract(pool.poolTokenAddress);
           poolTokenContract.setProvider(wallet.provider);
-          poolTokenContract.loadCommon().then(reload);
+          poolTokenContract.on(Web3Contract.UPDATE_DATA, reload);
+          poolTokenContract.loadCommon();
 
           const poolContract = new SYRewardPoolContract(pool.poolAddress);
           poolContract.setProvider(wallet.provider);
-          poolContract.loadCommon().then(reload);
+          poolContract.on(Web3Contract.UPDATE_DATA, reload);
+          poolContract.loadCommon();
 
           return {
             ...pool,
@@ -108,11 +112,11 @@ const RewardPoolsProvider: React.FC = props => {
       pool.rewardToken.setAccount(wallet.account);
 
       pool.poolToken.setAccount(wallet.account);
-      pool.poolToken.loadBalance().then(reload);
+      pool.poolToken.loadBalance();
 
       pool.pool.setAccount(wallet.account);
-      pool.pool.loadClaim().then(reload);
-      pool.pool.loadBalance().then(reload);
+      pool.pool.loadClaim();
+      pool.pool.loadBalance();
     });
   }, [state.rewardPools, wallet.account]);
 

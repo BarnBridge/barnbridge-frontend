@@ -89,14 +89,17 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <>
           <Tooltip
-            title={formatToken(entity.amount, {
-              decimals: entity.pool?.poolTokenDecimals,
-            })}>
+            placement="bottomLeft"
+            title={
+              formatToken(entity.amount, {
+                decimals: entity.pool?.poolTokenDecimals,
+              }) ?? '-'
+            }>
             <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
               {isStake ? '+' : '-'}
               {formatToken(entity.amount, {
                 tokenName: entity.pool?.poolToken.symbol,
-              })}
+              }) ?? '-'}
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" wrap={false}>

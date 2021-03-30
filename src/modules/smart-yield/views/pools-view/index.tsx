@@ -7,8 +7,8 @@ import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
-import { PoolsCard } from 'modules/smart-yield/components/pool-card';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
+import { PoolsCard } from 'modules/smart-yield/views/pools-view/pool-card';
 
 type State = {
   activeMarket?: SYMarketMeta;
@@ -61,13 +61,13 @@ const PoolsView: React.FC = () => {
           </Text>
         </div>
       </div>
-      <div className="flex row-gap-32 col-gap-32">
-        <AntdSpin spinning={loading}>
+      <AntdSpin spinning={loading}>
+        <div className="flex row-gap-32 col-gap-32">
           {rewardPools.map(rewardPool => (
             <PoolsCard key={rewardPool.poolAddress} rewardPool={rewardPool} />
           ))}
-        </AntdSpin>
-      </div>
+        </div>
+      </AntdSpin>
     </>
   );
 };
