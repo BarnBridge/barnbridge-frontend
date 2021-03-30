@@ -383,7 +383,3 @@ const SeniorTranche: React.FC = () => {
 };
 
 export default SeniorTranche;
-
-function getShortRelativeDate() {
-
-}
