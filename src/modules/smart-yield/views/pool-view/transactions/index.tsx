@@ -11,6 +11,7 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { useReload } from 'hooks/useReload';
 import {
   APISYRewardPoolTransaction,
   APISYRewardTxHistoryType,
@@ -138,6 +139,7 @@ const Transactions: React.FC = () => {
   const wallet = useWallet();
   const rewardPool = useRewardPool();
 
+  const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
   const [activeTab, setActiveTab] = React.useState(wallet.isActive ? 'own' : 'all');
 
@@ -161,6 +163,20 @@ const Transactions: React.FC = () => {
       },
     }));
   }, [activeTab]);
+
+  React.useEffect(() => {
+    function onPoolTx() {
+      if (activeTab === 'own') {
+        reload();
+      }
+    }
+
+    rewardPool.rewardPool?.pool.on('tx:success', onPoolTx);
+
+    return () => {
+      rewardPool.rewardPool?.pool.off('tx:success', onPoolTx);
+    };
+  }, [rewardPool.rewardPool]);
 
   React.useEffect(() => {
     if (!rewardPool.rewardPool) {
@@ -205,7 +221,7 @@ const Transactions: React.FC = () => {
         }));
       }
     })();
-  }, [rewardPool.rewardPool, wallet, activeTab, state.page, state.pageSize, state.filters]);
+  }, [rewardPool.rewardPool, wallet, activeTab, state.page, state.pageSize, state.filters, version]);
 
   React.useEffect(() => {
     setActiveTab(wallet.isActive ? 'own' : 'all');
@@ -214,6 +230,7 @@ const Transactions: React.FC = () => {
   function handleTypeFilterChange(value: SelectValue) {
     setState(prevState => ({
       ...prevState,
+      page: 1,
       filters: {
         ...prevState.filters,
         type: String(value),

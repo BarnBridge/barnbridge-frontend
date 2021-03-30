@@ -128,6 +128,12 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
     return undefined;
   }
 
+  if (options) {
+    if (options.hasOwnProperty('scale') && options.scale === undefined) {
+      return undefined;
+    }
+  }
+
   const { tokenName, compact = false, decimals = 4, minDecimals, scale = 0 } = options ?? {};
 
   let val = new BigNumber(value);
