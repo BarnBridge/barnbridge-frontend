@@ -1,5 +1,5 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import addMinutes from 'date-fns/addMinutes';
