@@ -133,7 +133,7 @@ const PoolView: React.FC = () => {
             </dd>
           </div>
           {wallet.isActive && (
-            <div>
+            <div className={s.headerTermRow}>
               <dt>Enable Token</dt>
               <dd>
                 <AntdSwitch
