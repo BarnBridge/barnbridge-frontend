@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import * as dateFns from 'date-fns';
 import format from 'date-fns/format';
@@ -7,7 +8,8 @@ import formatDuration from 'date-fns/formatDuration';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { BONDTokenMeta } from 'web3/contracts/bond';
+import { getEtherscanAddressUrl, getHumanValue, shortenAddr } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
@@ -206,7 +208,8 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         'handshake',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
-          $BOND has been delegate to you from{' '}
+          {getStrongText(`${getHumanValue(new BigNumber(n.metadata.amount), BONDTokenMeta.decimals)?.toFixed()} vBOND`)}{' '}
+          has been delegated to you from{' '}
           <ExternalLink href={getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
             {shortenAddr(n.metadata.from)}
           </ExternalLink>
