@@ -62,7 +62,7 @@ const VotingHeader: React.FC = () => {
   }
 
   return (
-    <div className={cn(s.component, 'pv-24 ph-64 sm-ph-24')}>
+    <div className={cn(s.component, 'pv-24 ph-64 sm-ph-16')}>
       <Text type="lb2" weight="semibold" color="red" className="mb-16">
         My Voting Power
       </Text>

@@ -171,7 +171,7 @@ const ProposalCreateView: React.FC = () => {
   }
 
   return (
-    <div className="mh-auto" style={{ maxWidth: 952, width: '100%' }}>
+    <div className="container-limit">
       <div className="mb-16">
         <button type="button" onClick={handleBackClick} className="button-text">
           <Icon name="arrow-back" width={24} height={24} className="mr-8" color="inherit" />

@@ -30,6 +30,8 @@ export type Web3SendMeta = {
 };
 
 class Web3Contract extends EventEmitter {
+  static UPDATE_DATA = 'update:data';
+
   static requestsPool: any[] = [];
 
   static addRequest(request: any) {

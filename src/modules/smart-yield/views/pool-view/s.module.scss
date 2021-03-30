@@ -2,6 +2,7 @@
 
 .headerTerms {
   display: flex;
+  flex-wrap: wrap;
   column-gap: 80px;
   row-gap: 32px;
   margin: 0;
@@ -25,15 +26,25 @@
 
 .stakeStatisticsContainer {
   display: flex;
+  align-items: flex-start;
   margin-bottom: 32px;
+  gap: 32px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .stake {
   flex-grow: 1;
-  margin-right: 32px;
+  width: 100%;
 }
 
 .statistics {
   max-width: 384px;
-  flex-basis: 384px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    max-width: none;
+  }
 }
