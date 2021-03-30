@@ -158,6 +158,7 @@ type DelegateStartType = ProposalBaseType & {
   notificationType: 'delegate-start';
   metadata: {
     from: string;
+    amount: string;
   };
 };
 
