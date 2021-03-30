@@ -123,19 +123,12 @@ type FormatTokenOptions = {
   compact?: boolean;
 };
 
-export function formatToken(value: number | BigNumber | undefined, options: FormatTokenOptions): string | undefined {
-  if (value === undefined) {
+export function formatToken(value: number | BigNumber | undefined, options?: FormatTokenOptions): string | undefined {
+  if (value === undefined || value === null || Number.isNaN(value)) {
     return undefined;
   }
 
-  const {
-    tokenName,
-    compact = false,
-    decimals = compact && value >= 1000 ? 0 : 4,
-    minDecimals = decimals,
-    maxDecimals = Math.max(decimals, minDecimals),
-    scale = 0,
-  } = options;
+  const { tokenName, compact = false, decimals = 4, minDecimals, scale = 0 } = options ?? {};
 
   let val = new BigNumber(value);
 
@@ -143,17 +136,21 @@ export function formatToken(value: number | BigNumber | undefined, options: Form
     val = val.dividedBy(10 ** scale);
   }
 
-  const str = Intl.NumberFormat('en', {
-    notation: compact ? 'compact' : undefined,
-    minimumFractionDigits: minDecimals,
-    maximumFractionDigits: maxDecimals,
-  }).format(val.toNumber());
+  let str = '';
+
+  if (compact) {
+    str = Intl.NumberFormat('en', {
+      notation: 'compact',
+    }).format(val.toNumber());
+  } else {
+    str = new BigNumber(val.toFixed(decimals)).toFormat(minDecimals);
+  }
 
   return tokenName ? `${str} ${tokenName}` : str;
 }
 
 export function formatUSD(value: number | BigNumber | undefined, compact?: boolean): string | undefined {
-  if (value === undefined) {
+  if (value === undefined || value === null || Number.isNaN(value)) {
     return undefined;
   }
 

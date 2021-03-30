@@ -74,7 +74,7 @@ class SYRewardPoolContract extends Web3Contract {
   balance?: BigNumber;
 
   get myDailyReward(): BigNumber | undefined {
-    if (!this.dailyReward || !this.balance || !this.poolSize) {
+    if (!this.dailyReward || !this.balance || !this.poolSize || this.poolSize.eq(ZERO_BIG_NUMBER)) {
       return undefined;
     }
 
@@ -105,7 +105,7 @@ class SYRewardPoolContract extends Web3Contract {
       this.rewardRatePerSecond = rewardRatePerSecond;
       this.rewardLeft = rewardLeft;
 
-      if (rewardLeft.gt(ZERO_BIG_NUMBER)) {
+      if (rewardLeft?.gt(ZERO_BIG_NUMBER)) {
         this.dailyReward = rewardRatePerSecond.multipliedBy(DAY_IN_SECONDS);
       } else {
         this.dailyReward = ZERO_BIG_NUMBER;

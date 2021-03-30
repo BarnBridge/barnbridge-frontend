@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatBigValue, formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -17,6 +17,7 @@ import {
   APISYUserTxHistory,
   HistoryShortTypes,
   fetchSYUserTxHistory,
+  isPositiveHistoryType,
 } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -49,27 +50,14 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
-    title: 'Transaction Hash',
-    render: (_, entity) => (
-      <Grid flow="row" gap={4}>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
-          </Text>
-        </ExternalLink>
-      </Grid>
-    ),
-  },
-  {
-    title: 'Date',
-    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
+    title: 'Tranche / Transaction',
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
+          {capitalize(entity.tranche)}
         </Text>
         <Text type="small" weight="semibold">
-          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
+          {HistoryShortTypes.get(entity.transactionType)}
         </Text>
       </>
     ),
@@ -89,32 +77,57 @@ const Columns: ColumnsType<TableEntity> = [
 
       return 0;
     },
-    render: (_, entity) => (
-      <Grid flow="row" gap={4}>
-        <Tooltip title={formatBigValue(entity.amount, 18)}>
-          <Text type="p1" weight="semibold" color="primary">
+    render: (_, entity) => {
+      const isPositive = isPositiveHistoryType(entity.transactionType as APISYTxHistoryType);
+
+      return (
+        <Tooltip
+          title={
+            <Text type="small" weight="semibold" color="primary">
+              {formatToken(entity.amount, {
+                tokenName: entity.underlyingTokenSymbol,
+                decimals: entity.poolEntity?.underlyingDecimals,
+              })}
+            </Text>
+          }>
+          <Text type="p1" weight="semibold" color={isPositive ? 'green' : 'red'}>
+            {isPositive ? '+' : '-'}{' '}
             {formatToken(entity.amount, {
               tokenName: entity.isTokenAmount
                 ? entity.poolEntity?.contracts.smartYield.symbol
                 : entity.underlyingTokenSymbol,
             })}
           </Text>
+          <Text type="small" weight="semibold">
+            {formatUSD(entity.computedAmount)}
+          </Text>
         </Tooltip>
-        <Text type="small" weight="semibold">
-          {formatUSD(entity.computedAmount)}
-        </Text>
+      );
+    },
+  },
+  {
+    title: 'Transaction Hash',
+    render: (_, entity) => (
+      <Grid flow="row" gap={4}>
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.transactionHash)}
+          </Text>
+        </ExternalLink>
       </Grid>
     ),
   },
   {
-    title: 'Transaction type',
+    title: 'Date',
+    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
+    align: 'right',
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {capitalize(entity.tranche)}
+          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
         </Text>
         <Text type="small" weight="semibold">
-          {HistoryShortTypes.get(entity.transactionType)}
+          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
         </Text>
       </>
     ),

@@ -206,18 +206,15 @@ export function fetchNotifications({
 
 const notificationsNode = document.querySelector('#notifications-root');
 
-type Props = {
-  children: React.ReactNode;
-};
+const NotificationsProvider: React.FC = ({ children }) => {
+  const wallet = useWallet();
 
-const NotificationsContextProvider: React.FC<Props> = ({ children }) => {
-  const [notifications, setNotifications] = React.useState<NotificationsContextType['notifications']>([]);
+  const [notifications, setNotifications] = React.useState<NotificationType[]>([]);
   const [toasts, setToasts] = React.useState<NotificationType[]>([]);
   const [notificationsReadUntil, setNotificationsReadUntil] = React.useState<
     NotificationsContextType['notificationsReadUntil']
   >(1);
   const [storedReadUntil, setStoredReadUntil, removeStoredReadUntil] = useLocalStorage('bb_notifications_read_until');
-  const wallet = useWallet();
 
   const addToast = React.useCallback((notification: NotificationType) => {
     setToasts(ns => [...ns, notification]);
@@ -246,6 +243,7 @@ const NotificationsContextProvider: React.FC<Props> = ({ children }) => {
   const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications.length
     ? Math.max(...notifications.map(n => n.startsOn))
     : null;
+
   const timestampRef = React.useRef(lastNotificationTimestamp);
   timestampRef.current = lastNotificationTimestamp;
 
@@ -297,7 +295,7 @@ const NotificationsContextProvider: React.FC<Props> = ({ children }) => {
   );
 };
 
-export default NotificationsContextProvider;
+export default NotificationsProvider;
 
 export function useNotifications(): NotificationsContextType {
   return React.useContext<NotificationsContextType>(NotificationsContext);
