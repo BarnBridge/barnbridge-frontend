@@ -2,7 +2,7 @@ import React from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -50,79 +50,89 @@ const InitialState: State = {
   },
 };
 
-const Columns: ColumnsType<TableEntity> = [
-  {
-    title: 'Transaction',
-    render: (_, entity) => {
-      const market = Markets.get(entity.pool?.protocolId ?? '');
-      const meta = Pools.get(entity.pool?.underlyingSymbol ?? '');
+function getColumns(isAll: boolean): ColumnsType<TableEntity> {
+  return [
+    {
+      title: 'Transaction',
+      width: '25%',
+      render: (_, entity) => {
+        const market = Markets.get(entity.pool?.protocolId ?? '');
+        const meta = Pools.get(entity.pool?.underlyingSymbol ?? '');
 
-      return (
-        <div className="flex flow-col col-gap-16 align-center">
-          {market && meta && <IconBubble name={meta.icon} bubbleName="bond-token" secondBubbleName={market.icon} />}
-          <div>
-            <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-              {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
-            </Text>
-            <Text type="small" weight="semibold" wrap={false}>
-              {entity.pool?.poolToken.symbol}
-            </Text>
+        return (
+          <div className="flex flow-col col-gap-16 align-center">
+            {market && meta && <IconBubble name={meta.icon} bubbleName="bond-token" secondBubbleName={market.icon} />}
+            <div>
+              <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
+                {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
+              </Text>
+              <Text type="small" weight="semibold" wrap={false}>
+                {entity.pool?.poolToken.symbol}
+              </Text>
+            </div>
           </div>
-        </div>
-      );
+        );
+      },
     },
-  },
-  {
-    title: 'From',
-    dataIndex: 'from',
-    render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {shortenAddr(entity.userAddress)}
-      </Text>
-    ),
-  },
-  {
-    title: 'Amount',
-    render: (_, entity) => {
-      const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
+    {
+      title: 'Amount',
+      width: '25%',
+      render: (_, entity) => {
+        const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
 
-      return (
-        <>
-          <Tooltip
-            placement="bottomLeft"
-            title={
-              formatToken(entity.amount, {
-                decimals: entity.pool?.poolTokenDecimals,
-              }) ?? '-'
-            }>
-            <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
-              {isStake ? '+' : '-'}
-              {formatToken(entity.amount, {
-                tokenName: entity.pool?.poolToken.symbol,
-              }) ?? '-'}
+        return (
+          <>
+            <Tooltip
+              placement="bottomLeft"
+              title={
+                formatToken(entity.amount, {
+                  decimals: entity.pool?.poolTokenDecimals,
+                }) ?? '-'
+              }>
+              <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+                {isStake ? '+' : '-'}
+                {formatToken(entity.amount, {
+                  tokenName: entity.pool?.poolToken.symbol,
+                }) ?? '-'}
+              </Text>
+            </Tooltip>
+            <Text type="small" weight="semibold" wrap={false}>
+              {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
             </Text>
-          </Tooltip>
-          <Text type="small" weight="semibold" wrap={false}>
-            {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
+          </>
+        );
+      },
+    },
+    isAll
+      ? {
+          title: 'Address',
+          dataIndex: 'from',
+          width: '25%',
+          render: (_, entity) => (
+            <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)}>
+              <Text type="p1" weight="semibold" color="primary">
+                {shortenAddr(entity.userAddress)}
+              </Text>
+            </ExternalLink>
+          ),
+        }
+      : {},
+    {
+      title: 'Transaction hash/timestamp',
+      width: '25%',
+      render: (_, entity) => (
+        <>
+          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+            {shortenAddr(entity.transactionHash)}
+          </ExternalLink>
+          <Text type="small" weight="semibold" color="secondary">
+            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
           </Text>
         </>
-      );
+      ),
     },
-  },
-  {
-    title: 'Transaction hash/timestamp',
-    render: (_, entity) => (
-      <>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-          {shortenAddr(entity.transactionHash)}
-        </ExternalLink>
-        <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-        </Text>
-      </>
-    ),
-  },
-];
+  ];
+}
 
 const Transactions: React.FC = () => {
   const wallet = useWallet();
@@ -219,11 +229,7 @@ const Transactions: React.FC = () => {
   }
 
   const tableColumns = React.useMemo(() => {
-    if (activeTab === 'own') {
-      return Columns.filter(column => column.title !== 'From');
-    }
-
-    return Columns;
+    return getColumns(activeTab === 'all');
   }, [activeTab]);
 
   return (
