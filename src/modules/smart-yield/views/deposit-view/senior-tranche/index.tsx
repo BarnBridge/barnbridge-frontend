@@ -284,7 +284,7 @@ const SeniorTranche: React.FC = () => {
                         );
                         setBondGain(undefined);
                       }}>
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="p2" weight="semibold" color="primary">
                         {opt}
                       </Text>
                     </button>
@@ -383,3 +383,7 @@ const SeniorTranche: React.FC = () => {
 };
 
 export default SeniorTranche;
+
+function getShortRelativeDate() {
+
+}
