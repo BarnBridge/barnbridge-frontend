@@ -121,6 +121,7 @@ const LockedPositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<LockedPositionsTableEntity>
+      inCard
       columns={Columns}
       dataSource={data}
       rowKey={row => `${row.pool.protocolId}:${row.jBond.jBondId}`}

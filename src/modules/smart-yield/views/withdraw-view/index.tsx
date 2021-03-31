@@ -21,7 +21,7 @@ const WithdrawView: React.FC = () => {
   }
 
   return (
-    <>
+    <div className="container-limit">
       <WithdrawHeader />
       <div className="mh-auto" style={{ maxWidth: '640px' }}>
         <Suspense fallback={<AntdSpin />}>
@@ -32,7 +32,7 @@ const WithdrawView: React.FC = () => {
           </Switch>
         </Suspense>
       </div>
-    </>
+    </div>
   );
 };
 

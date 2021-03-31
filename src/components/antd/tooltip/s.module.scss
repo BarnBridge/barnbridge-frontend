@@ -2,12 +2,12 @@
 
 .overlay:global(.ant-tooltip) {
   :global(.ant-tooltip-inner) {
+    @include font-p1-regular;
     max-width: 360px;
     padding: 16px;
     background: var(--theme-card-color);
     box-shadow: var(--theme-overlay-shadow);
     border-radius: 4px;
-    @include font-p1-regular;
     color: var(--theme-primary-color);
   }
 

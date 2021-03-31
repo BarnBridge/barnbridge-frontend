@@ -3,6 +3,7 @@ import AntdSpin from 'antd/lib/spin';
 import format from 'date-fns/format';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
+import Divider from 'components/antd/divider';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
 import Badge from 'components/custom/badge';
@@ -299,6 +300,7 @@ const JuniorPortfolio: React.FC = () => {
             />
           }>
           <Tabs.Tab key="active" tab="Active">
+            <Divider />
             <ActivePositionsTable loading={state.loadingActive} data={dataActiveFilters} />
           </Tabs.Tab>
           <Tabs.Tab
@@ -309,10 +311,10 @@ const JuniorPortfolio: React.FC = () => {
                 <Badge>{state.dataLocked.length}</Badge>
               </>
             }>
+            <Divider />
             <LockedPositionsTable loading={state.loadingLocked} data={dataLockedFilters} />
             {redeemModal && (
               <TxConfirmModal
-                visible
                 title="Redeem your junior bond"
                 header={
                   <div className="grid flow-col col-gap-32">
@@ -348,6 +350,7 @@ const JuniorPortfolio: React.FC = () => {
             )}
           </Tabs.Tab>
           <Tabs.Tab key="past" tab="Past">
+            <Divider />
             <PastPositionsTable
               originatorFilter={filtersMap.past.originator}
               tokenFilter={filtersMap.past.token}

@@ -4,7 +4,7 @@
 :root .component {
   // primary regular
   --btn-primary-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
-  --btn-primary-border: none;
+  --btn-primary-border: 0;
   --btn-primary-bg: #{$color-red500};
   --btn-primary-text: #fff;
 
@@ -28,7 +28,7 @@
 
   // default regular
   --btn-default-shadow: none;
-  --btn-default-border: none;
+  --btn-default-border: 0;
   --btn-default-bg: rgba(255, 67, 57, 0.1);
   --btn-default-text: #{$color-red500};
 
@@ -121,6 +121,7 @@
 }
 
 .component:global(.ant-btn) {
+  @include font-p2-bold;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -128,20 +129,18 @@
   height: 48px;
   padding: 12px 32px;
   border-radius: 4px;
-
-  @include font-p2-bold;
   text-align: center;
 
   &:global(.ant-btn-lg) {
+    @include font-p1-bold;
     height: 64px;
     padding: 20px;
-    @include font-p1-bold;
   }
 
   &:global(.ant-btn-sm) {
+    @include font-sm-bold;
     height: 34px;
     padding: 9px;
-    @include font-sm-bold;
   }
 
   &:global(.ant-btn-primary) {
@@ -251,7 +250,7 @@
   &:global(.ant-btn-link) {
     height: auto;
     padding: 0;
-    border: none;
+    border: 0;
     color: var(--btn-link-text);
 
     &:hover {

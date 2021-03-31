@@ -3,7 +3,6 @@ import format from 'date-fns/format';
 import formatDistance from 'date-fns/formatDistance';
 import { getEtherscanTxUrl } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
@@ -44,6 +43,7 @@ function formatEventTime(name: string, start: number, end: number): string {
       APIProposalState.FAILED,
       APIProposalState.CANCELED,
       APIProposalState.EXECUTED,
+      APIProposalState.QUEUED,
       APIProposalState.ACCEPTED,
       APIProposalState.ABROGATED,
     ].includes(name as any)
@@ -55,7 +55,7 @@ function formatEventTime(name: string, start: number, end: number): string {
     const mEnd = new Date(end * 1_000);
 
     if (mEnd <= now) {
-      return `Ended at ${format(mStart, 'dd MMM yyyy - HH:mm')}`;
+      return `Ended at ${format(mEnd, 'dd MMM yyyy - HH:mm')}`;
     }
 
     const dist = formatDistance(mEnd, now, {
@@ -82,7 +82,7 @@ const ProposalStatusCard: React.FC = () => {
   }
 
   return (
-    <Card>
+    <div className="card p-24">
       <Grid flow="row" gap={24}>
         {proposal.history.map((event, index: number) => (
           <div key={event.name} className="flex col-gap-12 align-center">
@@ -111,7 +111,7 @@ const ProposalStatusCard: React.FC = () => {
           </div>
         ))}
       </Grid>
-    </Card>
+    </div>
   );
 };
 

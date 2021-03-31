@@ -4,11 +4,12 @@ import useDebounce from '@rooks/use-debounce';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
+import addDays from 'date-fns/addDays';
 import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { formatBigValue, formatPercent, getHumanValue, getNonHumanValue, ZERO_BIG_NUMBER } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
@@ -66,6 +67,7 @@ const SeniorTranche: React.FC = () => {
   const [bondGain, setBondGain] = React.useState<BigNumber | undefined>();
 
   const [formState, setFormState] = React.useState<FormData>(InitialFormValues);
+  const [bondMaxLife, setBondMaxLife] = React.useState<number | undefined>();
   const [seniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
 
   React.useEffect(() => {
@@ -75,6 +77,7 @@ const SeniorTranche: React.FC = () => {
 
     const controllerContract = new SYControllerContract(pool.controllerAddress);
     controllerContract.setProvider(wallet.provider);
+    controllerContract.getBondLifeMax().then(setBondMaxLife);
     controllerContract.getSeniorRedeemFee().then(setSeniorRedeemFee);
   }, [pool?.controllerAddress]);
 
@@ -141,8 +144,7 @@ const SeniorTranche: React.FC = () => {
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();
-    } catch {
-    }
+    } catch {}
 
     setState(
       mergeState<State>({
@@ -237,12 +239,13 @@ const SeniorTranche: React.FC = () => {
         <Form.Item
           name="maturityDate"
           label="Maturity date"
+          extra={`Max ${bondMaxLife} days`}
           hint="You can select a maturity date between 1 and 30 days, in increments of 1 day."
           rules={[{ required: true, message: 'Required' }]}>
           <DatePicker
             showNow={false}
             disabledDate={(date: Date) =>
-              isBefore(date, new Date()) || isAfter(date, getDurationDate(new Date(), DURATION_1_YEAR)!)
+              isBefore(date, new Date()) || isAfter(date, addDays(new Date(), bondMaxLife ?? 0))
             }
             format="DD/MM/YYYY"
             size="large"
@@ -257,6 +260,10 @@ const SeniorTranche: React.FC = () => {
                   const today = startOfDay(new Date());
                   const date = getDurationDate(today, opt);
                   const { maturityDate } = form.getFieldsValue();
+
+                  if ((date ?? today) > addDays(today, bondMaxLife ?? 0)) {
+                    return undefined;
+                  }
 
                   return (
                     <button
@@ -277,7 +284,7 @@ const SeniorTranche: React.FC = () => {
                         );
                         setBondGain(undefined);
                       }}>
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="p2" weight="semibold" color="primary">
                         {opt}
                       </Text>
                     </button>
@@ -329,7 +336,6 @@ const SeniorTranche: React.FC = () => {
 
       {state.depositModalVisible && (
         <TxConfirmModal
-          visible
           title="Confirm your deposit"
           header={
             <div className="grid flow-col col-gap-32">

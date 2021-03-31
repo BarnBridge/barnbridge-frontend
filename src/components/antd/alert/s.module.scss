@@ -4,6 +4,9 @@
   padding: 16px 24px;
   border-radius: 4px;
 
+  background: rgba(var(--alert-bg-color), 0.04);
+  border: 1px solid rgba(var(--alert-bg-color), 0.32);
+
   > :global(.ant-alert-icon) {
     margin-right: 12px;
     width: 24px;
@@ -38,9 +41,6 @@
     --alert-bg-color: var(--theme-red-color-rgb);
     --alert-text-color: var(--theme-red-color);
   }
-
-  background: rgba(var(--alert-bg-color), 0.04);
-  border: 1px solid rgba(var(--alert-bg-color), 0.32);
 
   > :global(.ant-alert-icon),
   > :global(.ant-alert-content .ant-alert-message),

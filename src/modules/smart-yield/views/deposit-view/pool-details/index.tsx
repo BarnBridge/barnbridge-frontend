@@ -2,7 +2,6 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import { formatBigValue, formatPercent, formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
 import { Hint, Text } from 'components/custom/typography';
@@ -19,13 +18,12 @@ const PoolDetails: React.FC = () => {
   }
 
   return (
-    <Card noPaddingBody>
-      <div className="p-24">
+    <div className="card">
+      <div className="card-header">
         <Text type="p1" weight="semibold" color="primary">
           Pool details
         </Text>
       </div>
-      <Divider />
       <div className="flexbox-grid p-24">
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
@@ -176,7 +174,7 @@ const PoolDetails: React.FC = () => {
           </Tooltip>
         </div>
       </div>
-    </Card>
+    </div>
   );
 };
 

@@ -8,11 +8,9 @@ import { useWeb3Contracts } from 'web3/contracts';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Textarea from 'components/antd/textarea';
-import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
@@ -173,7 +171,7 @@ const ProposalCreateView: React.FC = () => {
   }
 
   return (
-    <div className="mh-auto" style={{ maxWidth: 952, width: '100%' }}>
+    <div className="container-limit">
       <div className="mb-16">
         <button type="button" onClick={handleBackClick} className="button-text">
           <Icon name="arrow-back" width={24} height={24} className="mr-8" color="inherit" />
@@ -194,13 +192,13 @@ const ProposalCreateView: React.FC = () => {
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <div className={cn(s.cardsContainer, 'mb-40')}>
-          <Card
-            title={
+          <div className="card">
+            <div className="card-header">
               <Text type="p1" weight="semibold" color="primary">
                 Proposal description
               </Text>
-            }>
-            <Grid flow="row" gap={24}>
+            </div>
+            <div className="flex flow-row row-gap-24 p-24">
               <Form.Item name="title" label="Title" rules={[{ required: true, message: 'Required' }]}>
                 <Input placeholder="Proposal title" disabled={state.submitting} />
               </Form.Item>
@@ -215,81 +213,83 @@ const ProposalCreateView: React.FC = () => {
                   disabled={state.submitting}
                 />
               </Form.Item>
-            </Grid>
-          </Card>
+            </div>
+          </div>
 
-          <Card
-            title={
+          <div className="card">
+            <div className="card-header">
               <Text type="p1" weight="semibold" color="primary">
                 Actions
               </Text>
-            }>
-            <Form.List
-              name="actions"
-              rules={[
-                {
-                  validator: (_, value: StoreValue) => {
-                    return value.length === 0 ? Promise.reject() : Promise.resolve();
+            </div>
+            <div className="p-24">
+              <Form.List
+                name="actions"
+                rules={[
+                  {
+                    validator: (_, value: StoreValue) => {
+                      return value.length === 0 ? Promise.reject() : Promise.resolve();
+                    },
+                    message: 'At least one action is required!',
                   },
-                  message: 'At least one action is required!',
-                },
-                {
-                  validator: (_, value: StoreValue) => {
-                    return value.length > 10 ? Promise.reject() : Promise.resolve();
+                  {
+                    validator: (_, value: StoreValue) => {
+                      return value.length > 10 ? Promise.reject() : Promise.resolve();
+                    },
+                    message: 'Maximum 10 actions are allowed!',
                   },
-                  message: 'Maximum 10 actions are allowed!',
-                },
-              ]}>
-              {(fields, _, { errors }) => (
-                <>
-                  {fields.map((field, index) => {
-                    const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
-                    const { targetAddress, functionSignature, functionEncodedParams } = fieldData;
+                ]}>
+                {(fields, _, { errors }) => (
+                  <>
+                    {fields.map((field, index) => {
+                      const fieldData: CreateProposalActionForm = form.getFieldValue(['actions', index]);
+                      const { targetAddress, functionSignature, functionEncodedParams } = fieldData;
 
-                    return (
-                      <Form.Item key={field.key} noStyle>
-                        <ProposalActionCard
-                          className="mb-24"
-                          title={`Action ${index + 1}`}
-                          target={targetAddress}
-                          signature={functionSignature!}
-                          callData={functionEncodedParams!}
-                          showSettings
-                          onDeleteAction={() => {
-                            setState({
-                              showDeleteActionModal: true,
-                              selectedAction: fieldData,
-                            });
-                          }}
-                          onEditAction={() => {
-                            setState({
-                              showCreateActionModal: true,
-                              selectedAction: fieldData,
-                            });
-                          }}
-                        />
-                      </Form.Item>
-                    );
-                  })}
+                      return (
+                        <Form.Item key={field.key} noStyle>
+                          <ProposalActionCard
+                            className="mb-24"
+                            title={`Action ${index + 1}`}
+                            target={targetAddress}
+                            signature={functionSignature!}
+                            callData={functionEncodedParams!}
+                            showSettings
+                            onDeleteAction={() => {
+                              setState({
+                                showDeleteActionModal: true,
+                                selectedAction: fieldData,
+                              });
+                            }}
+                            onEditAction={() => {
+                              setState({
+                                showCreateActionModal: true,
+                                selectedAction: fieldData,
+                              });
+                            }}
+                          />
+                        </Form.Item>
+                      );
+                    })}
 
-                  {fields.length < 10 && (
-                    <Button
-                      type="ghost"
-                      icon={<Icon name="plus-circle-outlined" color="inherit" />}
-                      disabled={state.submitting}
-                      className={s.addActionBtn}
-                      onClick={() => setState({ showCreateActionModal: true })}>
-                      Add new action
-                    </Button>
-                  )}
+                    {fields.length < 10 && (
+                      <Button
+                        type="ghost"
+                        icon={<Icon name="plus-circle-outlined" color="inherit" />}
+                        disabled={state.submitting}
+                        className={s.addActionBtn}
+                        onClick={() => setState({ showCreateActionModal: true })}>
+                        Add new action
+                      </Button>
+                    )}
 
-                  {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
+                    {fields.length >= 10 && <Alert type="info" message="Maximum 10 actions are allowed." />}
 
-                  <AntdForm.ErrorList errors={errors} />
-                </>
-              )}
-            </Form.List>
-          </Card>
+                    <AntdForm.ErrorList errors={errors} />
+                  </>
+                )}
+              </Form.List>
+            </div>
+          </div>
         </div>
         <div>
           <Button type="primary" htmlType="submit" size="large" loading={state.submitting}>

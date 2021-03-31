@@ -2,7 +2,6 @@ import React from 'react';
 import cn from 'classnames';
 import { formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
@@ -65,9 +64,9 @@ const MarketsView: React.FC = () => {
           </Text>
         </>
       )}
-      <Card noPaddingBody>
+      <div className="card">
         <PoolsTable activeMarket={state.activeMarket} />
-      </Card>
+      </div>
     </>
   );
 };

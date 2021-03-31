@@ -5,7 +5,6 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { formatBONDValue, formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
@@ -32,7 +31,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
 
   return (
     <div className={cn(s.component, className)}>
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
             <Hint
@@ -62,9 +61,9 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
             <Hint
@@ -88,9 +87,9 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
             <Text type="lb2" weight="semibold" color="red">
@@ -108,9 +107,9 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </ExternalLink>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Grid flow="col" align="center" justify="space-between">
             <Hint
@@ -140,7 +139,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
     </div>
   );
 };

@@ -3,9 +3,8 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatBigValue, formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
@@ -18,6 +17,7 @@ import {
   APISYUserTxHistory,
   HistoryShortTypes,
   fetchSYUserTxHistory,
+  isPositiveHistoryType,
 } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -25,8 +25,6 @@ import HistoryTableFilter, {
   HistoryTableFilterValues,
 } from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
 import { useWallet } from 'wallets/wallet';
-
-import s from './s.module.scss';
 
 type TableEntity = APISYUserTxHistory & {
   poolEntity?: SYPool;
@@ -52,6 +50,51 @@ const Columns: ColumnsType<TableEntity> = [
     ),
   },
   {
+    title: 'Tranche / Transaction',
+    align: 'right',
+    render: (_, entity) => (
+      <>
+        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          {capitalize(entity.tranche)}
+        </Text>
+        <Text type="small" weight="semibold">
+          {HistoryShortTypes.get(entity.transactionType)}
+        </Text>
+      </>
+    ),
+  },
+  {
+    title: 'Amount',
+    align: 'right',
+    render: (_, entity) => {
+      const isPositive = isPositiveHistoryType(entity.transactionType as APISYTxHistoryType);
+
+      return (
+        <Tooltip
+          title={
+            <Text type="small" weight="semibold" color="primary">
+              {formatToken(entity.amount, {
+                tokenName: entity.poolEntity?.contracts.smartYield.symbol,
+                decimals: entity.poolEntity?.underlyingDecimals,
+              })}
+            </Text>
+          }>
+          <Text type="p1" weight="semibold" color={isPositive ? 'green' : 'red'}>
+            {isPositive ? '+' : '-'}{' '}
+            {formatToken(entity.amount, {
+              tokenName: entity.isTokenAmount
+                ? entity.poolEntity?.contracts.smartYield.symbol
+                : entity.underlyingTokenSymbol,
+            })}
+          </Text>
+          <Text type="small" weight="semibold">
+            {formatUSD(entity.computedAmount)}
+          </Text>
+        </Tooltip>
+      );
+    },
+  },
+  {
     title: 'Transaction Hash',
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
@@ -65,7 +108,7 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Date',
-    sorter: (a, b) => a.blockTimestamp - b.blockTimestamp,
+    align: 'right',
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -73,51 +116,6 @@ const Columns: ColumnsType<TableEntity> = [
         </Text>
         <Text type="small" weight="semibold">
           {format(entity.blockTimestamp * 1_000, 'HH:mm')}
-        </Text>
-      </>
-    ),
-  },
-  {
-    title: 'Amount',
-    sorter: (a, b) => {
-      const diff = a.amount - b.amount;
-
-      if (diff < 0) {
-        return -1;
-      }
-
-      if (diff > 0) {
-        return 1;
-      }
-
-      return 0;
-    },
-    render: (_, entity) => (
-      <Grid flow="row" gap={4}>
-        <Tooltip title={formatBigValue(entity.amount, 18)}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatToken(entity.amount, {
-              tokenName: entity.isTokenAmount
-                ? entity.poolEntity?.contracts.smartYield.symbol
-                : entity.underlyingTokenSymbol,
-            })}
-          </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold">
-          {formatUSD(entity.computedAmount)}
-        </Text>
-      </Grid>
-    ),
-  },
-  {
-    title: 'Transaction type',
-    render: (_, entity) => (
-      <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {capitalize(entity.tranche)}
-        </Text>
-        <Text type="small" weight="semibold">
-          {HistoryShortTypes.get(entity.transactionType)}
         </Text>
       </>
     ),
@@ -267,18 +265,17 @@ const HistoryTable: React.FC = () => {
   }
 
   return (
-    <Card
-      className={s.card}
-      noPaddingBody
-      title={
+    <div className="card">
+      <div className="card-header pv-12">
         <Grid flow="col" colsTemplate="1fr max-content" align="center">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
           <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
         </Grid>
-      }>
+      </div>
       <Table<TableEntity>
+        inCard
         columns={Columns}
         dataSource={mappedData}
         rowKey="transactionHash"
@@ -299,7 +296,7 @@ const HistoryTable: React.FC = () => {
           x: true,
         }}
       />
-    </Card>
+    </div>
   );
 };
 

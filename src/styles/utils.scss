@@ -1,11 +1,26 @@
 .content-container {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  padding: 64px;
+  --content-container-v-padding: 40px;
+  --content-container-h-padding: 64px;
+
+  padding: var(--content-container-v-padding) var(--content-container-h-padding);
+  width: 100%;
 
   @media (max-width: 768px) {
-    padding: 24px 8px;
+    --content-container-v-padding: 24px;
+    --content-container-h-padding: 16px;
   }
+}
+
+.content-container-fix {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.container-limit {
+  max-width: 1070px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .tab-cards {
@@ -45,6 +60,10 @@
   background-color: var(--theme-card-color);
   border-radius: 4px;
   box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+
+  .card-row:not(:last-of-type) {
+    border-bottom: 1px solid var(--theme-border-color);
+  }
 }
 
 .card-header {

@@ -7,7 +7,7 @@
   justify-content: center;
   padding: 12px 32px;
 
-  border: none;
+  border: 0;
   background: #ff4339;
   box-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
   border-radius: 4px;
@@ -18,21 +18,25 @@
 
   text-align: center;
 
-  color: #ffffff;
+  color: #fff;
 
   &:hover {
     background: #ff6961;
+    color: #fff;
     box-shadow: 0 8px 16px rgba(255, 105, 97, 0.24);
+    color: #ffffff;
   }
 
   &:active {
     background: #cc362e;
     box-shadow: 0 4px 8px rgba(204, 54, 46, 0.16);
+    color: #ffffff;
   }
 
   &:disabled,
   &[disabled] {
     background: #c6c9cc;
+    color: #ffffff;
     box-shadow: none;
     cursor: not-allowed;
   }
@@ -45,7 +49,7 @@
   justify-content: center;
   padding: 12px 32px;
 
-  border: none;
+  border: 0;
   background: rgba(255, 67, 57, 0.1);
   border-radius: 4px;
 
@@ -80,7 +84,7 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 12px 32px;
+  padding: 11px 32px;
 
   border: 1px solid #ff4339;
   background-color: transparent;
@@ -131,7 +135,7 @@
 .button-text {
   @include font-p1-semi-bold;
   color: var(--theme-secondary-color);
-  border: none;
+  border: 0;
   background-color: transparent;
   padding: 0;
 
@@ -178,6 +182,9 @@
   font-size: 14px;
   font-weight: 600;
   line-height: 24px;
+  background-color: transparent;
+  border: none;
+  padding: 0;
 
   &:hover,
   &:active {

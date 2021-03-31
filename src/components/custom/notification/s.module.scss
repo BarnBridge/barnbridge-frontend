@@ -1,0 +1,49 @@
+@import 'src/styles/text';
+
+.n {
+  display: flex;
+  align-items: flex-start;
+  word-break: break-word;
+  color: var(--theme-secondary-color);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  &.toast {
+    background-color: var(--theme-card-color);
+    box-shadow: var(--theme-overlay-shadow);
+    border-radius: 4px;
+
+    & + & {
+      margin-top: 16px;
+    }
+  }
+}
+
+.close {
+  margin-left: 16px;
+  padding: 8px;
+  border: none;
+  background-color: transparent;
+  display: flex;
+  color: var(--theme-icon-color);
+
+  &:hover {
+    color: var(--theme-icon-hover-color);
+  }
+}
+
+.time {
+  @include font-sm-semi-bold;
+  color: var(--theme-icon-color);
+  margin-left: auto;
+  padding-left: 8px;
+  flex-shrink: 0;
+  white-space: pre;
+  text-align: end;
+  min-width: 6ch;
+}

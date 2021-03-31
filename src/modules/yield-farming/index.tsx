@@ -45,7 +45,7 @@ const YieldFarmingView: React.FC = () => {
     <>
       {!isMobile && wallet.isActive && <PoolRewards />}
 
-      <div className="content-container">
+      <div className="content-container-fix content-container">
         <PoolStats className="mb-64" />
         <Switch>
           <Route path="/yield-farming" exact component={PoolsOverviewView} />

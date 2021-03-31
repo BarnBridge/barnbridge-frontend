@@ -5,9 +5,10 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import Web3ContractsProvider from 'web3/contracts';
 
+import ErrorBoundary from 'components/custom/error-boundary';
 import EthWeb3Provider from 'components/providers/eth-web3-provider';
 import GeneralContextProvider from 'components/providers/general-provider';
-import ThemeProvider from 'components/providers/theme-provider';
+import NotificationsProvider from 'components/providers/notifications-provider';
 import WindowStateProvider from 'components/providers/window-state';
 import LayoutView from 'layout';
 import { ReactComponent as StaticSprite } from 'resources/svg/static-sprite.svg';
@@ -17,24 +18,24 @@ import * as sw from './serviceWorker';
 
 const App: React.FC = () => {
   return (
-    <>
+    <ErrorBoundary>
       <StaticSprite />
       <WindowStateProvider>
-        <ThemeProvider>
-          <EthWeb3Provider>
-            <Web3WalletProvider>
-              <Web3ContractsProvider>
-                <GeneralContextProvider>
-                  <Router>
+        <EthWeb3Provider>
+          <Web3WalletProvider>
+            <Web3ContractsProvider>
+              <GeneralContextProvider>
+                <Router>
+                  <NotificationsProvider>
                     <LayoutView />
-                  </Router>
-                </GeneralContextProvider>
-              </Web3ContractsProvider>
-            </Web3WalletProvider>
-          </EthWeb3Provider>
-        </ThemeProvider>
+                  </NotificationsProvider>
+                </Router>
+              </GeneralContextProvider>
+            </Web3ContractsProvider>
+          </Web3WalletProvider>
+        </EthWeb3Provider>
       </WindowStateProvider>
-    </>
+    </ErrorBoundary>
   );
 };
 

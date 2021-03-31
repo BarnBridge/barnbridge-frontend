@@ -12,7 +12,6 @@ import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
 import GasFeeList from 'components/custom/gas-fee-list';
@@ -27,14 +26,14 @@ import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
 
 import { getFormattedDuration, isValidAddress } from 'utils';
 
-import s from './s.module.scss';
-
 type WalletLockViewState = {
+  lockDurationOption?: string;
   showLockConfirmModal: boolean;
   saving: boolean;
 };
 
 const InitialState: WalletLockViewState = {
+  lockDurationOption: undefined,
   showLockConfirmModal: false,
   saving: false,
 };
@@ -102,6 +101,14 @@ const WalletLockView: React.FC = () => {
 
   const maxAllowedDate = addSeconds(addDays(Date.now(), 365), 1);
 
+  function handleValuesChange(changedValues: Partial<LockFormData>) {
+    if (changedValues.lockEndDate !== undefined) {
+      setState({
+        lockDurationOption: undefined,
+      });
+    }
+  }
+
   function handleFinish() {
     setState({ showLockConfirmModal: true });
   }
@@ -130,74 +137,80 @@ const WalletLockView: React.FC = () => {
     });
   }, [userLockedUntil]);
 
-  const CardTitle = (
-    <Grid flow="col" gap={24} colsTemplate="auto" align="start">
-      <Grid flow="col" gap={12}>
-        <Icon name="bond-token" width={40} height={40} />
-        <Text type="p1" weight="semibold" color="primary">
-          BOND
-        </Text>
-      </Grid>
-
-      <Grid flow="row" gap={4}>
-        <Text type="small" weight="semibold" color="secondary">
-          Staked Balance
-        </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatBONDValue(stakedBalance)}
-        </Text>
-      </Grid>
-
-      <Grid flow="row" gap={4}>
-        <Text type="small" weight="semibold" color="secondary">
-          Lock Duration
-        </Text>
-        <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
-          {leftTime => (
-            <Text type="p1" weight="semibold" color="primary">
-              {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
-            </Text>
-          )}
-        </UseLeftTime>
-      </Grid>
-
-      <div />
-    </Grid>
-  );
-
   return (
-    <Card title={CardTitle}>
-      <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleFinish}>
+    <div className="card">
+      <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
+        <Grid flow="col" gap={12}>
+          <Icon name="bond-token" width={40} height={40} />
+          <Text type="p1" weight="semibold" color="primary">
+            BOND
+          </Text>
+        </Grid>
+
+        <Grid flow="row" gap={4}>
+          <Text type="small" weight="semibold" color="secondary">
+            Staked Balance
+          </Text>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatBONDValue(stakedBalance)}
+          </Text>
+        </Grid>
+
+        <Grid flow="row" gap={4}>
+          <Text type="small" weight="semibold" color="secondary">
+            Lock Duration
+          </Text>
+          <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
+            {leftTime => (
+              <Text type="p1" weight="semibold" color="primary">
+                {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
+              </Text>
+            )}
+          </UseLeftTime>
+        </Grid>
+
+        <div />
+      </Grid>
+
+      <Form
+        className="p-24"
+        form={form}
+        initialValues={InitialFormValues}
+        validateTrigger={['onSubmit']}
+        onValuesChange={handleValuesChange}
+        onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
           <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
             <Grid flow="row" gap={32}>
               <Form.Item label="Add lock duration" dependencies={['lockEndDate']}>
                 {() => (
-                  <Grid flow="col" gap={16} colsTemplate={`repeat(${DURATION_OPTIONS.length}, 1fr)`}>
-                    {DURATION_OPTIONS.map(opt => {
-                      const targetDate = getLockEndDate(new Date(), opt)!;
-                      const { lockEndDate } = form.getFieldsValue();
-                      const isActive = lockEndDate?.valueOf() === targetDate?.valueOf();
-
-                      return (
-                        <Button
-                          key={opt}
-                          type="select"
-                          className={cn(isActive && s.activeOption)}
-                          disabled={formDisabled || state.saving || targetDate > maxAllowedDate}
-                          onClick={() => {
-                            form.setFieldsValue({
-                              lockEndDate: getLockEndDate(new Date(), opt),
-                            });
-                            setState({});
-                          }}>
-                          <Text type="p1" weight="semibold" color="primary">
-                            {opt}
-                          </Text>
-                        </Button>
-                      );
-                    })}
-                  </Grid>
+                  <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
+                    {DURATION_OPTIONS.map(opt => (
+                      <button
+                        key={opt}
+                        type="button"
+                        className={cn('button-ghost-monochrome ph-24 pv-16', {
+                          selected: state.lockDurationOption === opt,
+                        })}
+                        disabled={
+                          formDisabled ||
+                          state.saving ||
+                          (getLockEndDate(minAllowedDate, opt) ?? new Date()) > maxAllowedDate
+                        }
+                        onClick={() => {
+                          form.setFieldsValue({
+                            lockEndDate: getLockEndDate(new Date(), opt),
+                          });
+                          setState({
+                            lockDurationOption: opt,
+                          });
+                        }}>
+                        <Text type="p1" weight="semibold" color="primary">
+                          {opt}
+                        </Text>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </Form.Item>
               <Text type="p1">OR</Text>
@@ -256,7 +269,7 @@ const WalletLockView: React.FC = () => {
           }}
         />
       )}
-    </Card>
+    </div>
   );
 };
 

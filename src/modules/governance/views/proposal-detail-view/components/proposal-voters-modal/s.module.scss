@@ -19,11 +19,11 @@
     .ant-table-thead .ant-table-cell {
       border-top-left-radius: 0;
       border-bottom-right-radius: 0;
-      border-top: none;
+      border-top: 0;
     }
 
     .ant-table-tbody:last-child .ant-table-row:last-child .ant-table-cell {
-      border-bottom: none;
+      border-bottom: 0;
     }
   }
 

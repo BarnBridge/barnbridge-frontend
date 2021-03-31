@@ -3,7 +3,6 @@ import cn from 'classnames';
 import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue, formatUSDValue } from 'web3/utils';
 
-import Card from 'components/antd/card';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
@@ -30,7 +29,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
 
   return (
     <div className={cn(s.cards, className)}>
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
@@ -56,9 +55,9 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
@@ -85,9 +84,9 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
@@ -117,9 +116,9 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
@@ -146,9 +145,9 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
@@ -175,9 +174,9 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
 
-      <Card>
+      <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
@@ -204,7 +203,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Grid>
         </Grid>
-      </Card>
+      </div>
     </div>
   );
 };

@@ -2,8 +2,6 @@ import React from 'react';
 import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
-import Divider from 'components/antd/divider';
 import Skeleton from 'components/antd/skeleton';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -59,23 +57,22 @@ const ProposalDetailsCard: React.FC = () => {
   }
 
   return (
-    <Card
-      title={
+    <div className="card">
+      <div className="card-header">
         <Text type="p1" weight="semibold" color="primary">
           Details
         </Text>
-      }
-      noPaddingBody>
-      <div className="p-24 flexbox-list" style={{ '--gap': '32px' } as React.CSSProperties}>
+      </div>
+      <div className="card-row flexbox-list p-24" style={{ '--gap': '32px' } as React.CSSProperties}>
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Created by
           </Text>
           <Grid flow="col" gap={8}>
-            <Identicon address={proposal?.proposer} width={24} height={24} />
-            <ExternalLink href={`${getEtherscanAddressUrl(proposal?.proposer)}`}>
+            <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
+            <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
               <Text type="p1" weight="semibold" color="blue">
-                {shortenAddr(proposal?.proposer)}
+                {shortenAddr(proposalCtx.proposal?.proposer)}
               </Text>
             </ExternalLink>
           </Grid>
@@ -100,14 +97,15 @@ const ProposalDetailsCard: React.FC = () => {
             )}
           </Grid>
         </div>
-        {canBeCancelled && (
-          <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
-            Cancel proposal
-          </Button>
-        )}
+        <div>
+          {canBeCancelled && (
+            <Button type="default" loading={state.cancelling} onClick={handleProposalCancel}>
+              Cancel proposal
+            </Button>
+          )}
+        </div>
       </div>
-      <Divider />
-      <Grid flow="row" gap={16} padding={24}>
+      <Grid className="card-row p-24" flow="row" gap={16}>
         <Text type="small" weight="semibold" color="secondary">
           Description
         </Text>
@@ -115,8 +113,7 @@ const ProposalDetailsCard: React.FC = () => {
           {proposal?.description}
         </Text>
       </Grid>
-      <Divider />
-      <Grid flow="row" gap={16} padding={24}>
+      <Grid className="card-row p-24" flow="row" gap={16}>
         <Text type="small" weight="semibold" color="secondary">
           Actions
         </Text>
@@ -130,7 +127,7 @@ const ProposalDetailsCard: React.FC = () => {
           />
         ))}
       </Grid>
-    </Card>
+    </div>
   );
 };
 

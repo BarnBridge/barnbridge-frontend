@@ -1,8 +1,8 @@
 import React from 'react';
+import cn from 'classnames';
 import { formatBONDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Card from 'components/antd/card';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
@@ -15,8 +15,6 @@ export type ActivationThresholdProps = {
 };
 
 const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
-  const { className } = props;
-
   const dao = useDAO();
   const [activating, setActivating] = React.useState<boolean>(false);
 
@@ -31,7 +29,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
   }
 
   return (
-    <Card className={className}>
+    <div className={cn('card p-24', props.className)}>
       <Grid flow="row" gap={24} align="start">
         <Hint
           text={
@@ -71,7 +69,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           </Button>
         )}
       </Grid>
-    </Card>
+    </div>
   );
 };
 

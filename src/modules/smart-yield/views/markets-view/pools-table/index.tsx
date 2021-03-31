@@ -116,9 +116,12 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         <Hint
           text={
             <>
-              <Text type="p2" className="mb-8">
+              <Text type="p2" className="mb-16">
                 The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
                 positions might differ.
+              </Text>
+              <Text type="p2" className="mb-8">
+                The number below is the SMART Yield junior rewards APY. You can add that by staking tokens in Pools
               </Text>
               <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">
                 Learn more
@@ -130,9 +133,14 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
       ),
       sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
       render: (_, entity) => (
-        <Text type="p1" weight="semibold" color="purple">
-          {formatPercent(entity.state.juniorApy)}
-        </Text>
+        <div>
+          <Text type="p1" weight="semibold" color="purple">
+            {formatPercent(entity.state.juniorApy)}
+          </Text>
+          <Text type="small" weight="semibold" color="purple">
+            {entity.rewardAPR && `+${formatPercent(entity.rewardAPR)}`}
+          </Text>
+        </div>
       ),
     },
     {
@@ -239,6 +247,7 @@ const PoolsTable: React.FC<Props> = props => {
 
   return (
     <Table<PoolEntity>
+      inCard
       columns={columns}
       dataSource={entities}
       rowKey={entity => entity.smartYieldAddress}

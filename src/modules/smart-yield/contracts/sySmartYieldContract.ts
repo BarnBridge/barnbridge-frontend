@@ -2,6 +2,8 @@ import BigNumber from 'bignumber.js';
 import Web3Contract, { BatchContractMethod } from 'web3/contract';
 import { getGasValue } from 'web3/utils';
 
+import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
+
 const ABI: any[] = [
   {
     name: 'name',
@@ -76,16 +78,11 @@ const ABI: any[] = [
   {
     name: 'bondGain',
     type: 'function',
-    stateMutability: 'nonpayable',
     inputs: [
-      {
-        internalType: 'uint256',
-        name: 'principalAmount_',
-        type: 'uint256',
-      },
-      { internalType: 'uint16', name: 'forDays_', type: 'uint16' },
+      { name: 'principalAmount', type: 'uint256' },
+      { name: 'forDays', type: 'uint16' },
     ],
-    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256' }],
   },
   {
     name: 'juniorBonds',
@@ -230,9 +227,9 @@ export type SYAbond = {
   liquidated: boolean;
 };
 
-class SYSmartYieldContract extends Web3Contract {
+class SYSmartYieldContract extends Erc20Contract {
   constructor(address: string) {
-    super(ABI, address, '');
+    super(ABI, address);
   }
 
   symbol?: string;
@@ -240,6 +237,8 @@ class SYSmartYieldContract extends Web3Contract {
   decimals?: number;
 
   totalSupply?: BigNumber;
+
+  price?: BigNumber;
 
   balance?: BigNumber;
 
@@ -262,22 +261,44 @@ class SYSmartYieldContract extends Web3Contract {
         transform: value => new BigNumber(value),
       },
       {
+        method: 'price',
+        transform: value => new BigNumber(value),
+      },
+      {
         method: 'abond',
         transform: (value: SYAbond) => ({
-          ...value,
           principal: new BigNumber(value.principal),
           gain: new BigNumber(value.gain),
           issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
           maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+          liquidated: value.liquidated,
         }),
       },
-    ]).then(([name, symbol, decimals, totalSupply, abond]) => {
+    ]).then(([name, symbol, decimals, totalSupply, price, abond]) => {
       this.name = name;
       this.symbol = symbol;
       this.decimals = decimals;
       this.totalSupply = totalSupply.dividedBy(10 ** decimals);
+      this.price = price.dividedBy(1e18);
       this.abond = abond;
+      this.emit(Web3Contract.UPDATE_DATA);
     });
+  }
+
+  convertInUnderlying(value: BigNumber | number): BigNumber | undefined {
+    if (!this.price) {
+      return undefined;
+    }
+
+    return new BigNumber(value).multipliedBy(this.price);
+  }
+
+  convertFromUnderlying(value: BigNumber | number): BigNumber | undefined {
+    if (!this.price) {
+      return undefined;
+    }
+
+    return new BigNumber(value).dividedBy(this.price);
   }
 
   async loadBalance(): Promise<void> {
@@ -288,6 +309,7 @@ class SYSmartYieldContract extends Web3Contract {
 
     return this.call('balanceOf', [this.account]).then(value => {
       this.balance = new BigNumber(value);
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
@@ -313,11 +335,11 @@ class SYSmartYieldContract extends Web3Contract {
 
   async getAbond(): Promise<SYAbond> {
     return this.call('abond').then(value => ({
-      ...value,
       principal: new BigNumber(value.principal),
       gain: new BigNumber(value.gain),
       issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
       maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+      liquidated: value.liquidated,
     }));
   }
 
