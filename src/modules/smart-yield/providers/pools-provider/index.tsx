@@ -172,6 +172,7 @@ const PoolsProvider: React.FC = props => {
         }
 
         pool.rewardAPR = yearlyReward.dividedBy(poolBalance);
+        reload();
       }
     });
   }, [state.pools, web3c.uniswap.bondPrice, version]);
