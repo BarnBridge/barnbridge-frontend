@@ -110,8 +110,8 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           dataIndex: 'from',
           width: '25%',
           render: (_, entity) => (
-            <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)}>
-              <Text type="p1" weight="semibold" color="primary">
+            <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
+              <Text type="p1" weight="semibold">
                 {shortenAddr(entity.userAddress)}
               </Text>
             </ExternalLink>
@@ -124,7 +124,9 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       render: (_, entity) => (
         <>
           <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-            {shortenAddr(entity.transactionHash)}
+            <Text type="p1" weight="semibold">
+              {shortenAddr(entity.transactionHash)}
+            </Text>
           </ExternalLink>
           <Text type="small" weight="semibold" color="secondary">
             {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
@@ -188,7 +190,6 @@ const Transactions: React.FC = () => {
     setState(prevState => ({
       ...prevState,
       loading: true,
-      transactions: [],
       total: 0,
     }));
 
@@ -218,6 +219,7 @@ const Transactions: React.FC = () => {
         setState(prevState => ({
           ...prevState,
           loading: false,
+          transactions: [],
         }));
       }
     })();

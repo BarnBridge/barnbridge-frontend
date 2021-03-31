@@ -138,7 +138,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             {formatPercent(entity.state.juniorApy)}
           </Text>
           <Text type="small" weight="semibold" color="purple">
-            + {formatPercent(entity.rewardAPR)}
+            {entity.rewardAPR && `+${formatPercent(entity.rewardAPR)}`}
           </Text>
         </div>
       ),
