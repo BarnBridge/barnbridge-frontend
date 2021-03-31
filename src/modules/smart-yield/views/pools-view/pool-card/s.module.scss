@@ -40,7 +40,7 @@
   left: 4px;
   z-index: 0;
   width: 50%;
-  height: 38px;
+  height: 32px;
   background-color: var(--theme-card-color);
   color: var(--theme-primary-color);
   box-shadow: var(--theme-card-shadow);
@@ -53,6 +53,7 @@
 }
 
 .tab {
+  @include font-sm-semi-bold;
   width: 50%;
   background-color: transparent;
   color: var(--theme-secondary-color);

@@ -111,7 +111,11 @@ export function formatPercent(value: number | BigNumber | undefined, decimals: n
 
   const rate = BigNumber.isBigNumber(value) ? value.toNumber() : value;
 
-  return `${(rate * 100).toFixed(decimals)}%`;
+  return (
+    Intl.NumberFormat('en', {
+      maximumFractionDigits: decimals,
+    }).format(rate * 100) + '%'
+  );
 }
 
 type FormatTokenOptions = {
@@ -147,6 +151,7 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
   if (compact) {
     str = Intl.NumberFormat('en', {
       notation: 'compact',
+      maximumFractionDigits: 2,
     }).format(val.toNumber());
   } else {
     str = new BigNumber(val.toFixed(decimals)).toFormat(minDecimals);
@@ -162,6 +167,7 @@ export function formatUSD(value: number | BigNumber | undefined, compact?: boole
 
   return Intl.NumberFormat('en', {
     notation: compact ? 'compact' : undefined,
+    maximumFractionDigits: compact ? 2 : undefined,
     style: 'currency',
     currency: 'USD',
   }).format(BigNumber.isBigNumber(value) ? value.toNumber() : value);
