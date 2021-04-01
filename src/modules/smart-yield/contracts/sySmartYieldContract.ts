@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js';
-import Web3Contract, { BatchContractMethod } from 'web3/contract';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import Web3Contract, { BatchContractMethod } from 'web3/contracts/web3Contract';
 import { getGasValue } from 'web3/utils';
-
-import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 
 const ABI: any[] = [
   {

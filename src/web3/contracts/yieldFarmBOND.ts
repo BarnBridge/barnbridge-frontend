@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import YF_BOND_ABI from 'web3/abi/yield_farm_bond.json';
-import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';

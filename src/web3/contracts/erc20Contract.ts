@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import Web3Contract from 'web3/contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
 
 const ABI: AbiItem[] = [
@@ -89,14 +89,26 @@ export default class Erc20Contract extends Web3Contract {
 
   constructor(abi: AbiItem[], address: string) {
     super([...ABI, ...abi], address, '');
-  }
 
-  get maxAllowed(): BigNumber {
-    return BigNumber.min(this.allowance ?? ZERO_BIG_NUMBER, this.balance ?? ZERO_BIG_NUMBER);
+    this.on(Web3Contract.UPDATE_ACCOUNT, () => {
+      if (!this.account) {
+        this.balance = undefined;
+        this.allowance = undefined;
+        this.emit(Web3Contract.UPDATE_DATA);
+      }
+    });
   }
 
   get isAllowed(): boolean | undefined {
     return this.allowance?.gt(ZERO_BIG_NUMBER);
+  }
+
+  get maxAllowed(): BigNumber | undefined {
+    if (!this.allowance || !this.balance) {
+      return undefined;
+    }
+
+    return BigNumber.min(this.allowance, this.balance);
   }
 
   loadCommon(): Promise<void> {
@@ -124,22 +136,18 @@ export default class Erc20Contract extends Web3Contract {
     });
   }
 
-  async loadBalance(): Promise<void> {
-    this.balance = undefined;
-
+  async loadBalance(address?: string): Promise<void> {
     if (!this.account) {
       return;
     }
 
-    return this.call('balanceOf', [this.account]).then(value => {
+    return this.call('balanceOf', [address ?? this.account]).then(value => {
       this.balance = new BigNumber(value);
       this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
   async loadAllowance(spenderAddress: string): Promise<void> {
-    this.allowance = undefined;
-
     if (!this.account) {
       return;
     }
@@ -159,8 +167,6 @@ export default class Erc20Contract extends Web3Contract {
 
     return this.send('approve', [spenderAddress, value], {
       from: this.account,
-    }).then(() => {
-      this.loadAllowance(spenderAddress);
-    });
+    }).then(() => this.loadAllowance(spenderAddress));
   }
 }

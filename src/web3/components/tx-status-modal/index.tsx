@@ -1,5 +1,5 @@
 import React from 'react';
-import { Web3SendState } from 'web3/contract';
+import { Web3SendState } from 'web3/contracts/web3Contract';
 import { getEtherscanTxUrl } from 'web3/utils';
 
 import Button from 'components/antd/button';

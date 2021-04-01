@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import DAO_REWARD_ABI from 'web3/abi/dao_reward.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
