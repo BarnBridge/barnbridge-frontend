@@ -18,17 +18,15 @@
             @include font-p1-semi-bold;
             display: flex;
             flex-direction: row;
+            column-gap: 8px;
             align-items: center;
             color: var(--theme-secondary-color);
 
-
-            svg {
-              margin-right: 8px;
-            }
-
             &:hover {
               color: var(--theme-primary-color);
+            }
 
+            :global(.no-flexbox-gap) & {
               svg {
                 margin-right: 8px;
               }

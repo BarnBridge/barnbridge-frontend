@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Web3Contract from 'web3/contract';
+
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
 import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
