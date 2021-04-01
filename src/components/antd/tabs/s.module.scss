@@ -24,10 +24,14 @@
 
             &:hover {
               color: var(--theme-primary-color);
+
+              svg {
+                color: var(--theme-red-color);
+              }
             }
 
-            :global(.no-flexbox-gap) & {
-              svg {
+            svg {
+              :global(.no-flexbox-gap) & {
                 margin-right: 8px;
               }
             }
