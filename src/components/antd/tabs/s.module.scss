@@ -29,6 +29,12 @@
                 color: var(--theme-red-color);
               }
             }
+
+            svg {
+              :global(.no-flexbox-gap) & {
+                margin-right: 8px;
+              }
+            }
           }
 
           &:global(.ant-tabs-tab-active) {

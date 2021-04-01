@@ -6,9 +6,17 @@
   column-gap: 80px;
   row-gap: 32px;
   margin: 0;
+
+  :global(.no-flexbox-gap) & {
+    margin: -16px -40px;
+  }
 }
 
 .headerTermRow {
+  :global(.no-flexbox-gap) & {
+    margin: 16px 40px;
+  }
+
   dt {
     @include font-sm-semi-bold;
     color: var(--theme-secondary-color);

@@ -174,7 +174,7 @@ const ProposalCreateView: React.FC = () => {
     <div className="container-limit">
       <div className="mb-16">
         <button type="button" onClick={handleBackClick} className="button-text">
-          <Icon name="arrow-back" width={24} height={24} className="mr-8" color="inherit" />
+          <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Proposals
         </button>
       </div>
