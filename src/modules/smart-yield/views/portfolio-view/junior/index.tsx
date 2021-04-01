@@ -93,13 +93,16 @@ const JuniorPortfolio: React.FC = () => {
 
         return new Promise<any>(resolve => {
           (async () => {
-            const smartYieldBalance = await smartYieldContract.getBalance();
-            const smartYieldAbond = await smartYieldContract.getAbond();
+            const [, , smartYieldAbond] = await Promise.all([
+              smartYieldContract.loadCommon(),
+              smartYieldContract.loadBalance(),
+              smartYieldContract.getAbond(),
+            ]);
 
-            if (smartYieldBalance.isGreaterThan(ZERO_BIG_NUMBER)) {
+            if (smartYieldContract.balance?.isGreaterThan(ZERO_BIG_NUMBER)) {
               resolve({
                 ...pool,
-                smartYieldBalance,
+                smartYieldBalance: smartYieldContract.balance,
                 smartYieldAbond,
               });
             } else {

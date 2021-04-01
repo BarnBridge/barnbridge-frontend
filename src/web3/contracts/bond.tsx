@@ -2,6 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import BOND_ABI from 'web3/abi/bond.json';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import Erc20Contract from 'web3/contracts/erc20Contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
@@ -129,4 +130,10 @@ export function useBONDContract(): BONDContract {
     }),
     [data, reload, approveSend],
   );
+}
+
+export class BondContract extends Erc20Contract {
+  constructor() {
+    super([], CONTRACT_BOND_ADDR);
+  }
 }

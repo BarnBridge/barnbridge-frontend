@@ -6,6 +6,25 @@ import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import { TokenMeta } from 'web3/types';
 
+BigNumber.prototype.scaleBy = function (decimals?: number): BigNumber | undefined {
+  if (decimals === undefined) {
+    return undefined;
+  }
+
+  return this.multipliedBy(10 ** decimals);
+};
+
+BigNumber.prototype.unscaleBy = function (decimals?: number): BigNumber | undefined {
+  if (decimals === undefined) {
+    return undefined;
+  }
+
+  return this.dividedBy(10 ** decimals);
+};
+
+BigNumber.ZERO = new BigNumber(0);
+BigNumber.MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
+
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
