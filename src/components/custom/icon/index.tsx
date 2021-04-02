@@ -41,7 +41,6 @@ export type IconNames =
   | NavIconNames
   | ThemeIconNames
   | 'right-arrow-circle-outlined'
-  | 'left-arrow'
   | 'arrow-back'
   | 'down-arrow-circle'
   | 'refresh'

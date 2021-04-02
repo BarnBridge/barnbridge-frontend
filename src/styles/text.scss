@@ -156,3 +156,55 @@ $text-aligns: left, center, right;
     text-align: #{$textAlign};
   }
 }
+
+.text-h1 {
+  font-size: var(--font-size-h1);
+  line-height: calc(var(--font-size-h1) + 8px);
+}
+
+.text-h2 {
+  font-size: var(--font-size-h2);
+  line-height: calc(var(--font-size-h2) + 8px);
+}
+
+.text-h3 {
+  font-size: var(--font-size-h3);
+  line-height: calc(var(--font-size-h3) + 6px);
+}
+
+.text-p1 {
+  font-size: var(--font-size-p1);
+  line-height: calc(var(--font-size-p1) + 8px);
+}
+
+.text-p2 {
+  font-size: var(--font-size-p2);
+  line-height: calc(var(--font-size-p2) + 10px);
+}
+
+.text-lb1 {
+  font-size: var(--font-size-lb1);
+  line-height: calc(var(--font-size-lb1) + 10px);
+}
+
+.text-lb2 {
+  font-size: var(--font-size-lb2);
+  line-height: calc(var(--font-size-lb2) + 4px);
+}
+
+.text-sm {
+  font-size: var(--font-size-sm);
+  line-height: calc(var(--font-size-sm) + 4px);
+}
+
+.fw-bold {
+  font-weight: bold;
+}
+
+.fw-semibold {
+  font-weight: 600;
+}
+
+.fw-normal {
+  font-weight: normal;
+}
