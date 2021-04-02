@@ -178,11 +178,11 @@ export default class Erc20Contract extends Web3Contract {
   }
 
   async loadBalance(address?: string): Promise<void> {
-    if (!this.account) {
+    const addr = address ?? this.account;
+
+    if (!addr) {
       return;
     }
-
-    const addr = address ?? this.account;
 
     return this.call('balanceOf', [addr]).then(value => {
       this.balances.set(addr, new BigNumber(value));

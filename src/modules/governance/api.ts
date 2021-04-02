@@ -4,6 +4,7 @@ import { BONDTokenMeta } from 'web3/contracts/bond';
 import { getHumanValue } from 'web3/utils';
 
 const GOVERNANCE_API_URL = String(process.env.REACT_APP_GOV_API_URL);
+const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
 type PaginatedResult<T extends Record<string, any>> = {
   data: T[];
@@ -312,6 +313,75 @@ export function fetchAbrogationVoters(
       data: (result.data ?? []).map(vote => ({
         ...vote,
         power: getHumanValue(new BigNumber(vote.power), 18)!,
+      })),
+    }));
+}
+
+export type APITreasuryToken = {
+  tokenAddress: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
+};
+
+export function fetchTreasuryTokens(): Promise<APITreasuryToken[]> {
+  const url = new URL(`/api/governance/treasury/tokens?address=${CONTRACT_DAO_GOVERNANCE_ADDR}`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(({ status, data }) => {
+      if (status !== 200) {
+        return Promise.reject(status);
+      }
+
+      return data;
+    });
+}
+
+export type APITreasuryHistory = {
+  accountAddress: string;
+  accountLabel: string;
+  counterpartyAddress: string;
+  counterpartyLabel: string;
+  amount: number;
+  transactionDirection: string;
+  tokenAddress: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
+  transactionHash: string;
+  blockTimestamp: number;
+  blockNumber: number;
+};
+
+export function fetchTreasuryHistory(page = 1, limit = 10): Promise<PaginatedResult<APITreasuryHistory>> {
+  const query = QueryString.stringify(
+    {
+      address: CONTRACT_DAO_GOVERNANCE_ADDR,
+      page: String(page),
+      limit: String(limit),
+    },
+    {
+      skipNull: true,
+      skipEmptyString: true,
+      encode: true,
+    },
+  );
+
+  const url = new URL(`/api/governance/treasury/transactions?${query}`, GOVERNANCE_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(({ status, ...data }) => {
+      if (status !== 200) {
+        return Promise.reject(status);
+      }
+
+      return data;
+    })
+    .then((result: PaginatedResult<APITreasuryHistory>) => ({
+      ...result,
+      data: (result.data ?? []).map(item => ({
+        ...item,
+        amount: Number(item.amount),
       })),
     }));
 }

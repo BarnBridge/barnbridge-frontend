@@ -1,6 +1,10 @@
 import React from 'react';
 import AntdSpin from 'antd/lib/spin';
+import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
+import { useWeb3Contracts } from 'web3/contracts';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -12,12 +16,17 @@ import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
+import { Markets, Pools, fetchSYRewardPools } from 'modules/smart-yield/api';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
+import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
+import StakedPositionsTable, {
+  StakedPositionsTableEntity,
+} from 'modules/smart-yield/views/portfolio-view/junior/staked-positions-table';
 import { useWallet } from 'wallets/wallet';
 
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
@@ -34,6 +43,8 @@ type State = {
   dataActive: ActivePositionsTableEntity[];
   loadingLocked: boolean;
   dataLocked: LockedPositionsTableEntity[];
+  loadingStaked: boolean;
+  dataStaked: StakedPositionsTableEntity[];
 };
 
 const InitialState: State = {
@@ -41,10 +52,17 @@ const InitialState: State = {
   dataActive: [],
   loadingLocked: false,
   dataLocked: [],
+  loadingStaked: false,
+  dataStaked: [],
 };
 
 const InitialFiltersMap: Record<string, PositionsFilterValues> = {
   active: {
+    originator: 'all',
+    token: 'all',
+    withdrawType: 'all',
+  },
+  staked: {
     originator: 'all',
     token: 'all',
     withdrawType: 'all',
@@ -62,8 +80,10 @@ const InitialFiltersMap: Record<string, PositionsFilterValues> = {
 };
 
 const JuniorPortfolio: React.FC = () => {
+  const [reload] = useReload();
   const [activeTab, setActiveTab] = React.useState('active');
 
+  const web3c = useWeb3Contracts();
   const wallet = useWallet();
   const poolsCtx = usePools();
 
@@ -181,6 +201,82 @@ const JuniorPortfolio: React.FC = () => {
     })();
   }, [wallet.account, pools, versionLocked]);
 
+  React.useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      loadingStaked: true,
+    }));
+
+    (async () => {
+      try {
+        const result = await fetchSYRewardPools();
+
+        let pools = await Promise.all(
+          result.map(rewardPool => {
+            const poolContract = new SYRewardPoolContract(rewardPool.poolAddress);
+            poolContract.setProvider(wallet.provider);
+            poolContract.setAccount(wallet.account);
+            poolContract.on(Web3Contract.UPDATE_DATA, reload);
+
+            return Promise.all([poolContract.loadCommon(), poolContract.loadBalance(), poolContract.loadClaim()]).then(
+              () =>
+                ({
+                  ...rewardPool,
+                  pool: poolContract,
+                } as StakedPositionsTableEntity),
+            );
+          }),
+        );
+
+        pools = await Promise.all(
+          pools
+            .filter(
+              rewardPool => rewardPool.pool.balance?.gt(BigNumber.ZERO) || rewardPool.pool.toClaim?.gt(BigNumber.ZERO),
+            )
+            .map(rewardPool => {
+              const rewardTokenContract = new Erc20Contract([], rewardPool.rewardTokenAddress);
+              rewardTokenContract.setProvider(wallet.provider);
+              rewardTokenContract.on(Web3Contract.UPDATE_DATA, reload);
+              rewardTokenContract.loadCommon();
+
+              const poolTokenContract = new SYSmartYieldContract(rewardPool.poolTokenAddress);
+              poolTokenContract.setProvider(wallet.provider);
+              poolTokenContract.on(Web3Contract.UPDATE_DATA, reload);
+              poolTokenContract.loadCommon();
+
+              return {
+                ...rewardPool,
+                rewardToken: rewardTokenContract,
+                poolToken: poolTokenContract,
+              };
+            }),
+        );
+
+        setState(prevState => ({
+          ...prevState,
+          loadingStaked: false,
+          dataStaked: pools,
+        }));
+      } catch {
+        setState(prevState => ({
+          ...prevState,
+          loadingStaked: false,
+          dataStaked: [],
+        }));
+      }
+    })();
+  }, [wallet.account]);
+
+  React.useEffect(() => {
+    setState(prevState => ({
+      ...prevState,
+      dataStaked: prevState.dataStaked.map(data => ({
+        ...data,
+        rewardPrice: web3c.uniswap.bondPrice,
+      })),
+    }));
+  }, [state.dataStaked.length, web3c.uniswap.bondPrice]);
+
   function handleFiltersApply(values: PositionsFilterValues) {
     setFiltersMap(prevState => ({
       ...prevState,
@@ -257,6 +353,14 @@ const JuniorPortfolio: React.FC = () => {
     );
   }, [state.dataLocked, filtersMap, activeTab]);
 
+  const dataStakedFilters = React.useMemo(() => {
+    const filter = filtersMap.staked;
+
+    return state.dataStaked.filter(
+      item => ['all', item.protocolId].includes(filter.originator) && ['all'].includes(filter.token),
+    );
+  }, [state.dataStaked, filtersMap, activeTab]);
+
   return (
     <>
       <div className={s.portfolioContainer}>
@@ -305,6 +409,17 @@ const JuniorPortfolio: React.FC = () => {
           <Tabs.Tab key="active" tab="Active">
             <Divider />
             <ActivePositionsTable loading={state.loadingActive} data={dataActiveFilters} />
+          </Tabs.Tab>
+          <Tabs.Tab
+            key="staked"
+            tab={
+              <>
+                Staked
+                <Badge>{state.dataStaked.length}</Badge>
+              </>
+            }>
+            <Divider />
+            <StakedPositionsTable loading={state.loadingStaked} data={dataStakedFilters} />
           </Tabs.Tab>
           <Tabs.Tab
             key="locked"

@@ -27,6 +27,7 @@ export type NavIconNames =
   | 'bar-charts-outlined'
   | 'savings-outlined'
   | 'proposal-outlined'
+  | 'treasury-outlined'
   | 'bank-outlined'
   | 'tractor-outlined'
   | 'wallet-outlined'
