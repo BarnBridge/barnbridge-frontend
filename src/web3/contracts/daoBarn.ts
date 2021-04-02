@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import DAO_BARN_ABI from 'web3/abi/dao_barn.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta, VBONDTokenMeta } from 'web3/contracts/bond';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';

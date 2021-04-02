@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import Web3Contract from 'web3/contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, getGasValue } from 'web3/utils';
 
 import { DAY_IN_SECONDS } from 'utils/date';

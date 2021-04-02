@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 
 const ABI: any[] = [
   {

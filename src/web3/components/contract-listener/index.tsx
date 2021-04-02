@@ -1,7 +1,7 @@
 import React from 'react';
 import TxStatusModal from 'web3/components/tx-status-modal';
 import UserRejectedModal from 'web3/components/user-rejected-modal';
-import Web3Contract, { Web3SendMeta, Web3SendState } from 'web3/contract';
+import Web3Contract, { Web3SendMeta, Web3SendState } from 'web3/contracts/web3Contract';
 
 type Props = {
   contract?: Web3Contract;

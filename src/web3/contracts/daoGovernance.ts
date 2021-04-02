@@ -1,6 +1,6 @@
 import React from 'react';
 import DAO_GOVERNANCE_ABI from 'web3/abi/dao_governance.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { Web3EventType } from 'web3/types';
 import { getGasValue } from 'web3/utils';
 

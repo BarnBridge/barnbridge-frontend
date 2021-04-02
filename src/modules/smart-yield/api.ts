@@ -71,6 +71,14 @@ export const Pools = new Map<string, SYPoolMeta>([
       icon: 'usdc-token',
     },
   ],
+  [
+    'DAI',
+    {
+      id: 'DAI',
+      name: 'Dai',
+      icon: 'dai-token',
+    },
+  ],
 ]);
 
 export type APISYPool = {
