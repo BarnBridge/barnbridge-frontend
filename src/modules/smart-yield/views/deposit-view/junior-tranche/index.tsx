@@ -327,8 +327,8 @@ const JuniorTranche: React.FC = () => {
           </div>
         </div>
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
-          <button type="button" className="button-text" disabled={state.isSaving} onClick={handleCancel}>
-            <Icon name="left-arrow" width={9} height={8} className="mr-12" color="inherit" />
+          <button type="button" className="button-back" disabled={state.isSaving} onClick={handleCancel}>
+            <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
             Cancel
           </button>
           <Button type="primary" htmlType="submit" disabled={formDisabled} loading={state.isSaving}>

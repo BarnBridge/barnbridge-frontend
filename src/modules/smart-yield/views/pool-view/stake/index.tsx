@@ -60,6 +60,7 @@ const StakeForm: React.FC = () => {
   return (
     <>
       <Form
+        className={s.form}
         form={form}
         initialValues={{
           amount: 0,
@@ -82,7 +83,16 @@ const StakeForm: React.FC = () => {
             </Text>
           }>
           <TokenAmount
-            tokenIcon="bond-token"
+            tokenIcon={
+              <IconBubble
+                name={meta?.icon}
+                bubbleName="bond-circle-token"
+                secondBubbleName={market?.icon}
+                width={32}
+                height={32}
+                className="mr-8"
+              />
+            }
             max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)?.toNumber()}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
@@ -90,7 +100,7 @@ const StakeForm: React.FC = () => {
             slider
           />
         </Form.Item>
-        <div className="flex col-gap-24">
+        <div className="flex col-gap-24 mt-auto">
           <button type="submit" className="button-primary" disabled={saving || !canStake}>
             {saving && <Spin type="circle" />}
             Stake
@@ -176,6 +186,7 @@ const UnstakeForm: React.FC = () => {
   return (
     <>
       <Form
+        className={s.form}
         form={form}
         initialValues={{
           amount: 0,
@@ -197,7 +208,16 @@ const UnstakeForm: React.FC = () => {
             </Text>
           }>
           <TokenAmount
-            tokenIcon="bond-token"
+            tokenIcon={
+              <IconBubble
+                name={meta?.icon}
+                bubbleName="bond-circle-token"
+                secondBubbleName={market?.icon}
+                width={32}
+                height={32}
+                className="mr-8"
+              />
+            }
             max={getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals)?.toNumber()}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
@@ -205,7 +225,7 @@ const UnstakeForm: React.FC = () => {
             slider
           />
         </Form.Item>
-        <div className="flex col-gap-24">
+        <div className="flex col-gap-24 mt-auto">
           <button type="button" className="button-primary" disabled={saving || !canUnstake} onClick={handleUnstake}>
             {saving && !isClaimUnstake && <Spin type="circle" />}
             Unstake
@@ -286,7 +306,7 @@ const Stake: React.FC<Props> = ({ className }) => {
         <Tabs.Tab key="stake" tab="Stake" />
         <Tabs.Tab key="unstake" tab="Unstake" />
       </Tabs>
-      <div className="p-24">{activeTab === 'stake' ? <StakeForm /> : <UnstakeForm />}</div>
+      <div className="p-24 full-height">{activeTab === 'stake' ? <StakeForm /> : <UnstakeForm />}</div>
     </div>
   );
 };

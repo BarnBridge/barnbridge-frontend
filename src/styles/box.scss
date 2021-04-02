@@ -41,6 +41,10 @@ $margins: 4, 8, 12, 16, 24, 32, 40, 48, 64;
   margin-right: auto;
 }
 
+.mt-auto {
+  margin-top: auto;
+}
+
 $paddings: 4, 8, 12, 16, 24, 32, 48, 64;
 
 @each $padding in $paddings {

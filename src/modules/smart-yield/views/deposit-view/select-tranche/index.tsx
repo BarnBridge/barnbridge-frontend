@@ -143,8 +143,8 @@ const SelectTranche: React.FC = () => {
         />
       )}
       <Grid flow="col" gap={64} align="center" justify="space-between">
-        <button type="button" onClick={handleCancel} className="button-text">
-          <Icon name="left-arrow" width={9} height={8} className="mr-12" color="inherit" />
+        <button type="button" onClick={handleCancel} className="button-back">
+          <Icon name="arrow-back" width={16} height={16} className="mr-12" color="inherit" />
           Cancel
         </button>
         <button type="button" disabled={!tranche} onClick={handleNextStep} className="button-primary">

@@ -7,6 +7,11 @@
 @import 'button';
 @import 'rechart';
 
+html {
+  block-size: 100%;
+  inline-size: 100%;
+}
+
 body {
   background: var(--theme-body-color);
   color: var(--theme-secondary-color);
@@ -14,12 +19,13 @@ body {
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-weight: normal;
-  margin: 0;
+  min-block-size: 100%;
+  min-inline-size: 100%;
 }
 
 * {
   box-sizing: border-box;
+  margin: unset;
 }
 
 svg,
@@ -62,22 +68,7 @@ body.mobile-menu-open {
   --font-size-lb1: 14px;
   --font-size-lb2: 12px;
   --font-size-sm: 12px;
-}
 
-@media (max-width: 1024px) {
-  :root {
-    --font-size-h1: 24px;
-    --font-size-h2: 18px;
-    --font-size-h3: 14px;
-    --font-size-p1: 12px;
-    --font-size-p2: 11px;
-    --font-size-lb1: 11px;
-    --font-size-lb2: 9px;
-    --font-size-sm: 9px;
-  }
-}
-
-:root {
   --theme-body-color: #f8f8f9; // grey50
   --theme-card-color: #fff;
   --theme-overlay-color: #fff;
@@ -120,6 +111,28 @@ body.mobile-menu-open {
   --theme-grey900-color: #060a0d;
 
   --theme-white-color: #fff;
+
+  --horizontal-padding: 64px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --font-size-h1: 24px;
+    --font-size-h2: 18px;
+    --font-size-h3: 14px;
+    --font-size-p1: 12px;
+    --font-size-p2: 11px;
+    --font-size-lb1: 11px;
+    --font-size-lb2: 9px;
+    --font-size-sm: 9px;
+  }
+}
+
+
+@media (max-width: 768px) {
+  :root {
+    --horizontal-padding: 24px;
+  }
 }
 
 [data-theme='dark'] {

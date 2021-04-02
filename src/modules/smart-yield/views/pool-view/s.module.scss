@@ -6,9 +6,17 @@
   column-gap: 80px;
   row-gap: 32px;
   margin: 0;
+
+  :global(.no-flexbox-gap) & {
+    margin: -16px -40px;
+  }
 }
 
 .headerTermRow {
+  :global(.no-flexbox-gap) & {
+    margin: 16px 40px;
+  }
+
   dt {
     @include font-sm-semi-bold;
     color: var(--theme-secondary-color);
@@ -26,7 +34,7 @@
 
 .stakeStatisticsContainer {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   margin-bottom: 32px;
   gap: 32px;
 
@@ -36,6 +44,8 @@
 }
 
 .stake {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   width: 100%;
 }

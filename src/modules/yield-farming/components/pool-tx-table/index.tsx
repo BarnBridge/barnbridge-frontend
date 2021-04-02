@@ -10,7 +10,14 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBigValue, formatUSDValue, getEtherscanTxUrl, getTokenMeta, shortenAddr } from 'web3/utils';
+import {
+  formatToken,
+  formatUSD,
+  getEtherscanAddressUrl,
+  getEtherscanTxUrl,
+  getTokenMeta,
+  shortenAddr,
+} from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Select, { SelectOption } from 'components/antd/select';
@@ -36,24 +43,73 @@ const TypeFilters: SelectOption[] = [
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
 
-const Columns: ColumnsType<any> = [
+const Columns: ColumnsType<PoolTxListItem> = [
   {
-    title: '',
-    dataIndex: 'token',
-    width: 24,
-    render: (value: string) => getTokenMeta(value)?.icon,
-  },
-  {
-    title: 'From',
-    dataIndex: 'user',
-    render: (value: string) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {shortenAddr(value)}
-      </Text>
+    title: 'Transaction type',
+    render: (_: any, record) => (
+      <div className="flex flow-col col-gap-16 align-center">
+        <div className={s.icon}>{getTokenMeta(record.token)?.icon}</div>
+        <div>
+          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+            {capitalize(record.type)}
+          </Text>
+          <Text type="small" weight="semibold" color="secondary">
+            {getTokenMeta(record.token)?.name}
+          </Text>
+        </div>
+      </div>
     ),
   },
   {
-    title: 'TX Hash',
+    title: 'Amount',
+    dataIndex: 'usdAmount',
+    align: 'right',
+    render: (value: BigNumber, record: PoolTxListItem) => {
+      const tokenMeta = getTokenMeta(record.token);
+
+      return (
+        <Tooltip
+          placement="bottomRight"
+          title={
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {formatToken(record.amount, {
+                tokenName: tokenMeta?.name,
+                decimals: tokenMeta?.decimals,
+              })}
+            </Text>
+          }>
+          <div className="full-width">
+            {record.type === 'DEPOSIT' && (
+              <Text type="p1" weight="semibold" color="green">
+                + {formatToken(record.amount)}
+              </Text>
+            )}
+            {record.type === 'WITHDRAW' && (
+              <Text type="p1" weight="semibold" color="red">
+                - {formatToken(record.amount)}
+              </Text>
+            )}
+            <Text type="small" weight="semibold" color="secondary">
+              {formatUSD(value)}
+            </Text>
+          </div>
+        </Tooltip>
+      );
+    },
+  },
+  {
+    title: 'Address',
+    dataIndex: 'user',
+    render: (value: string) => (
+      <ExternalLink href={getEtherscanAddressUrl(value)}>
+        <Text type="p1" weight="semibold" color="blue">
+          {shortenAddr(value)}
+        </Text>
+      </ExternalLink>
+    ),
+  },
+  {
+    title: 'Transaction hash',
     dataIndex: 'txHash',
     render: (value: string) => (
       <ExternalLink href={getEtherscanTxUrl(value)}>
@@ -66,42 +122,12 @@ const Columns: ColumnsType<any> = [
   {
     title: 'Time',
     dataIndex: 'blockTimestamp',
+    align: 'right',
     render: (value: number) => (
       <Text type="p1" weight="semibold" color="primary">
         {formatDistance(new Date(value * 1_000), new Date(), {
           addSuffix: true,
         })}
-      </Text>
-    ),
-  },
-  {
-    title: 'Amount',
-    dataIndex: 'usdAmount',
-    align: 'right',
-    render: (value: BigNumber, record: PoolTxListItem) => {
-      const tokenMeta = getTokenMeta(record.token);
-
-      return (
-        <Tooltip
-          title={
-            <span>
-              <strong>{formatBigValue(record.amount)}</strong>&nbsp;
-              {tokenMeta?.name}
-            </span>
-          }>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatUSDValue(value)}
-          </Text>
-        </Tooltip>
-      );
-    },
-  },
-  {
-    title: 'Type',
-    dataIndex: 'type',
-    render: (value: string) => (
-      <Text type="p1" weight="semibold" color="primary">
-        {capitalize(value)}
       </Text>
     ),
   },

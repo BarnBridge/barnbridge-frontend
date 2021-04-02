@@ -1,13 +1,11 @@
 .content-container {
   --content-container-v-padding: 40px;
-  --content-container-h-padding: 64px;
 
-  padding: var(--content-container-v-padding) var(--content-container-h-padding);
+  padding: var(--content-container-v-padding) var(--horizontal-padding);
   width: 100%;
 
   @media (max-width: 768px) {
     --content-container-v-padding: 24px;
-    --content-container-h-padding: 16px;
   }
 }
 

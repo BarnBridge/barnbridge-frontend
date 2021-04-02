@@ -1,11 +1,15 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import Web3Contract from 'web3/contract';
+import { useWeb3Contracts } from 'web3/contracts';
+import { BONDTokenMeta } from 'web3/contracts/bond';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
+import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
@@ -17,7 +21,9 @@ export type PoolsSYPool = APISYPool & {
   contracts: {
     smartYield?: SYSmartYieldContract;
     underlying?: SYUnderlyingContract;
+    rewardPool?: SYRewardPoolContract;
   };
+  rewardAPR?: BigNumber;
 };
 
 type State = {
@@ -60,6 +66,7 @@ const PoolsProvider: React.FC = props => {
   const { children } = props;
 
   const history = useHistory();
+  const web3c = useWeb3Contracts();
   const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
@@ -91,10 +98,15 @@ const PoolsProvider: React.FC = props => {
           loading: false,
           pools: pools.map(pool => {
             const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
+            smartYield.on(Web3Contract.UPDATE_DATA, reload);
             const underlying = new SYUnderlyingContract(pool.underlyingAddress);
+            underlying.on(Web3Contract.UPDATE_DATA, reload);
+            const rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress);
+            rewardPool.on(Web3Contract.UPDATE_DATA, reload);
 
             smartYield.loadCommon();
             underlying.loadCommon();
+            rewardPool.loadCommon();
 
             return {
               ...pool,
@@ -103,6 +115,7 @@ const PoolsProvider: React.FC = props => {
               contracts: {
                 smartYield,
                 underlying,
+                rewardPool,
               },
             };
           }),
@@ -124,9 +137,45 @@ const PoolsProvider: React.FC = props => {
 
       pool.contracts.underlying?.setProvider(wallet.provider);
       pool.contracts.underlying?.setAccount(wallet.account);
-      pool.contracts.underlying?.loadBalance().then(reload);
+      pool.contracts.underlying?.loadBalance();
+
+      pool.contracts.rewardPool?.setProvider(wallet.provider);
+      pool.contracts.rewardPool?.setAccount(wallet.account);
     });
   }, [state.pools, wallet.account]);
+
+  React.useEffect(() => {
+    state.pools.forEach(pool => {
+      const { smartYield, rewardPool } = pool.contracts;
+
+      if (!smartYield || !rewardPool) {
+        return;
+      }
+
+      const { poolSize, dailyReward } = rewardPool;
+
+      if (poolSize && dailyReward) {
+        const bondPrice = web3c.uniswap.bondPrice ?? 1;
+        const jTokenPrice = smartYield.price ?? 1;
+
+        const yearlyReward = dailyReward
+          .dividedBy(10 ** BONDTokenMeta.decimals)
+          .multipliedBy(bondPrice)
+          .multipliedBy(365);
+        const poolBalance = poolSize
+          .dividedBy(10 ** (smartYield.decimals ?? 0))
+          .multipliedBy(jTokenPrice)
+          .multipliedBy(1);
+
+        if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
+          return ZERO_BIG_NUMBER;
+        }
+
+        pool.rewardAPR = yearlyReward.dividedBy(poolBalance);
+        reload();
+      }
+    });
+  }, [state.pools, web3c.uniswap.bondPrice, version]);
 
   const redeemBond = React.useCallback(
     (smartYieldAddress: string, sBondId: number, gasPrice: number) => {
