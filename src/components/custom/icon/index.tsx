@@ -100,7 +100,8 @@ export type IconNames =
   | 'chart-up'
   | 'apy-up'
   | 'chart'
-  | 'queue';
+  | 'queue'
+  | 'stake';
 
 export type IconProps = {
   name: IconNames;

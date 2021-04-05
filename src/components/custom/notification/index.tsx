@@ -208,12 +208,30 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         'handshake',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
-          {getStrongText(`${getHumanValue(new BigNumber(n.metadata.amount), BONDTokenMeta.decimals)?.toFixed()} vBOND`)}{' '}
+          {getStrongText(
+            `${getHumanValue(new BigNumber(n.metadata.amount ?? 0), BONDTokenMeta.decimals)?.toFixed()} vBOND`,
+          )}{' '}
           has been delegated to you from{' '}
           <ExternalLink href={getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
             {shortenAddr(n.metadata.from)}
           </ExternalLink>
         </Text>,
+      ];
+    case 'smart-yield-token-bought':
+      return [
+        'stake',
+        colorPairs.blue,
+        <>
+          <Text type="p2" weight="semibold" color="secondary" className="mb-16">
+            Stake your {getStrongText(`${Intl.NumberFormat('en').format(Number(n.metadata.amount))} ${'j_Tokens'}`)} to
+            earn extra yield
+          </Text>
+          <Link
+            to={`/smart-yield/pool?m=${n.metadata.protocolId}&t=${n.metadata.underlyingSymbol}`}
+            className="button-primary">
+            Stake now
+          </Link>
+        </>,
       ];
     default:
       console.log(`Unsupported notification type: ${JSON.stringify(n)}`);
