@@ -148,14 +148,14 @@ const PoolProvider: React.FC = props => {
 
         const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
         smartYield.setProvider(wallet.provider);
-        await smartYield.loadCommon();
 
         const underlying = new SYUnderlyingContract(pool.underlyingAddress);
         underlying.setProvider(wallet.provider);
-        await underlying.loadCommon();
 
         const controller = new SYControllerContract(pool.controllerAddress);
         controller.setProvider(wallet.provider);
+
+        await Promise.all([smartYield.loadCommon(), underlying.loadCommon()]);
 
         const extPool: SYPool = {
           ...pool,
@@ -218,10 +218,15 @@ const PoolProvider: React.FC = props => {
         return undefined;
       }
 
-      const totalSupply = await pool.contracts.smartYield.getTotalSupply();
+      const { decimals, totalSupply } = pool.contracts.smartYield;
+
+      if (!totalSupply || !decimals) {
+        return undefined;
+      }
+
       const abondDebt = await pool.contracts.smartYield.getAbondDebt();
 
-      return abondDebt.multipliedBy(amount).dividedBy(totalSupply);
+      return abondDebt.multipliedBy(amount).dividedBy(totalSupply.dividedBy(10 ** decimals));
     },
     [state.pool],
   );

@@ -116,7 +116,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
                     }) ?? '-'}
                   </Text>
                 }>
-                <Text type="h2" weight="bold" color="primary">
+                <Text type="h2" weight="bold" color="primary" className="wrap">
                   {formatToken(rewardPool?.pool.toClaim, {
                     scale: rewardPool?.rewardToken.decimals,
                   }) ?? '-'}

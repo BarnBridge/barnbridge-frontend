@@ -71,6 +71,14 @@ export const Pools = new Map<string, SYPoolMeta>([
       icon: 'usdc-token',
     },
   ],
+  [
+    'DAI',
+    {
+      id: 'DAI',
+      name: 'Dai',
+      icon: 'dai-token',
+    },
+  ],
 ]);
 
 export type APISYPool = {
@@ -86,6 +94,7 @@ export type APISYPool = {
   underlyingAddress: string;
   underlyingSymbol: string;
   underlyingDecimals: number;
+  rewardPoolAddress: string;
   state: {
     blockNumber: number;
     blockTimestamp: string;
@@ -186,6 +195,17 @@ export const HistoryTypes = new Map<string, string>([
   [APISYTxHistoryType.SBOND_SEND, 'Senior Bond Send'],
   [APISYTxHistoryType.SBOND_RECEIVE, 'Senior Bond Receive'],
 ]);
+
+export function isPositiveHistoryType(type: APISYTxHistoryType) {
+  return [
+    APISYTxHistoryType.JUNIOR_DEPOSIT,
+    APISYTxHistoryType.JTOKEN_RECEIVE,
+    APISYTxHistoryType.JBOND_RECEIVE,
+    APISYTxHistoryType.JUNIOR_STAKE,
+    APISYTxHistoryType.SENIOR_DEPOSIT,
+    APISYTxHistoryType.SBOND_RECEIVE,
+  ].includes(type);
+}
 
 export type APISYUserTxHistory = {
   protocolId: string;

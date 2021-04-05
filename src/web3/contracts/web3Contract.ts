@@ -30,6 +30,7 @@ export type Web3SendMeta = {
 };
 
 class Web3Contract extends EventEmitter {
+  static UPDATE_ACCOUNT = 'update:account';
   static UPDATE_DATA = 'update:data';
 
   static requestsPool: any[] = [];
@@ -91,6 +92,7 @@ class Web3Contract extends EventEmitter {
 
   setAccount(account?: string): void {
     this.account = account;
+    this.emit(Web3Contract.UPDATE_ACCOUNT, account);
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {

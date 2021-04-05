@@ -34,7 +34,7 @@
 
 .stakeStatisticsContainer {
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   margin-bottom: 32px;
   gap: 32px;
 
@@ -44,6 +44,8 @@
 }
 
 .stake {
+  display: flex;
+  flex-direction: column;
   flex-grow: 1;
   width: 100%;
 }

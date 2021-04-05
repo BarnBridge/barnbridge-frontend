@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import DAI_ABI from 'web3/abi/dai.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 

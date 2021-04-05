@@ -1,12 +1,12 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import STAKING_ABI from 'web3/abi/staking.json';
-import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
+import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 

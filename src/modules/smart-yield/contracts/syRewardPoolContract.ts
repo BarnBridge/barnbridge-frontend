@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import Web3Contract from 'web3/contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, getGasValue } from 'web3/utils';
 
 import { DAY_IN_SECONDS } from 'utils/date';
@@ -74,7 +74,7 @@ class SYRewardPoolContract extends Web3Contract {
   balance?: BigNumber;
 
   get myDailyReward(): BigNumber | undefined {
-    if (!this.dailyReward || !this.balance || !this.poolSize) {
+    if (!this.dailyReward || !this.balance || !this.poolSize || this.poolSize.eq(ZERO_BIG_NUMBER)) {
       return undefined;
     }
 
@@ -105,7 +105,7 @@ class SYRewardPoolContract extends Web3Contract {
       this.rewardRatePerSecond = rewardRatePerSecond;
       this.rewardLeft = rewardLeft;
 
-      if (rewardLeft.gt(ZERO_BIG_NUMBER)) {
+      if (rewardLeft?.gt(ZERO_BIG_NUMBER)) {
         this.dailyReward = rewardRatePerSecond.multipliedBy(DAY_IN_SECONDS);
       } else {
         this.dailyReward = ZERO_BIG_NUMBER;
