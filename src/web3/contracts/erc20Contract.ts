@@ -109,25 +109,25 @@ export default class Erc20Contract extends Web3Contract {
     return this.balances.get(this.account);
   }
 
-  get allowance(): BigNumber | undefined {
-    if (!this.account) {
-      return undefined;
-    }
+  // get allowance(): BigNumber | undefined {
+  //   if (!this.account) {
+  //     return undefined;
+  //   }
+  //
+  //   return this.allowances.get(this.account);
+  // }
 
-    return this.allowances.get(this.account);
-  }
+  // get isAllowed(): boolean | undefined {
+  //   return this.allowance?.gt(BigNumber.ZERO);
+  // }
 
-  get isAllowed(): boolean | undefined {
-    return this.allowance?.gt(BigNumber.ZERO);
-  }
-
-  get maxAllowed(): BigNumber | undefined {
-    if (!this.balance || !this.allowance) {
-      return undefined;
-    }
-
-    return BigNumber.min(this.balance, this.allowance);
-  }
+  // get maxAllowed(): BigNumber | undefined {
+  //   if (!this.balance || !this.allowance) {
+  //     return undefined;
+  //   }
+  //
+  //   return BigNumber.min(this.balance, this.allowance);
+  // }
 
   getBalanceOf(address: string): BigNumber | undefined {
     return this.balances.get(address);

@@ -6,6 +6,7 @@ import Erc20Contract from 'web3/contracts/erc20Contract';
 import Web3Contract from 'web3/contracts/web3Contract';
 import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
+import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
@@ -17,6 +18,7 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
+import TableFilter from 'modules/governance/views/treasury-view/holdings-filter';
 import { Pools } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/wallet';
 
@@ -252,6 +254,36 @@ const TreasuryHoldings: React.FC = () => {
     }, BigNumber.ZERO);
   }, [version]);
 
+  const filters = React.useMemo(() => {
+    const originatorOpts = [
+      {
+        label: 'All originators',
+        value: 'all',
+      },
+    ];
+
+    const tokenOpts = [
+      {
+        label: 'All tokens',
+        value: 'all',
+      },
+    ];
+
+    return [
+      {
+        name: 'originator',
+        label: 'Originator',
+        defaultValue: 'all',
+        itemRender: () => <Select options={originatorOpts} className="full-width" />,
+      },
+      {
+        name: 'token',
+        label: 'Token',
+        defaultValue: 'all',
+        itemRender: () => <Select options={tokenOpts} className="full-width" />,
+      },
+    ];
+  }, []);
   return (
     <>
       <Text type="p1" weight="semibold" color="secondary" className="mb-8">
@@ -281,10 +313,11 @@ const TreasuryHoldings: React.FC = () => {
         ))}
       </div>
       <div className="card">
-        <div className="card-header">
+        <div className="card-header flex flow-col align-center justify-space-between pv-12">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
+          <TableFilter filters={filters} value={{}} onChange={() => null} />
         </div>
         <Table<APITreasuryHistory>
           inCard

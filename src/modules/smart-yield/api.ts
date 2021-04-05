@@ -403,6 +403,7 @@ export type APISYRewardPool = {
   poolTokenDecimals: number;
   rewardTokenAddress: string;
   protocolId: string;
+  underlyingAddress: string;
   underlyingSymbol: string;
 };
 

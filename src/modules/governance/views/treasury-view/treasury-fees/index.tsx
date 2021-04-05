@@ -2,6 +2,7 @@ import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
+import ContractListener from 'web3/components/contract-listener';
 import Web3Contract from 'web3/contracts/web3Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
@@ -92,14 +93,17 @@ const Columns: ColumnsType<SYPoolEntity> = [
     width: '30%',
     render: (_, entity) =>
       entity.canTransfer ? (
-        <button
-          type="button"
-          className="button-ghost ml-auto"
-          disabled={entity.provider.underlyingFees?.eq(BigNumber.ZERO)}
-          onClick={() => entity.harvest()}>
-          {entity.harvesting && <AntdSpin spinning />}
-          Transfer fees
-        </button>
+        <>
+          <button
+            type="button"
+            className="button-ghost ml-auto"
+            disabled={!entity.provider.underlyingFees?.gt(BigNumber.ZERO) || entity.harvesting}
+            onClick={() => entity.harvest()}>
+            {entity.harvesting && <AntdSpin spinning className="mr-8" />}
+            Transfer fees
+          </button>
+          <ContractListener contract={entity.provider} />
+        </>
       ) : null,
   },
 ];
@@ -133,39 +137,28 @@ const TreasuryFees: React.FC = () => {
               providerContract.on(Web3Contract.UPDATE_DATA, reload);
               providerContract.loadUnderlyingFees();
 
-              return {
+              const result = {
                 ...item,
                 provider: providerContract,
                 canTransfer: walletRef.current.isActive,
                 harvesting: false,
                 harvest: () => {
-                  setState(prevState1 => ({
-                    ...prevState1,
-                    fees: {
-                      ...prevState1.fees,
-                      items: prevState1.fees.items.map(item1 => ({
-                        ...item1,
-                        harvesting: item1 === item ? true : item1.harvesting,
-                      })),
-                    },
-                  }));
+                  result.harvesting = true;
+                  reload();
 
                   providerContract.setAccount(walletRef.current.account);
 
-                  return providerContract.transferFeesSend().then(() => {
-                    setState(prevState1 => ({
-                      ...prevState1,
-                      fees: {
-                        ...prevState1.fees,
-                        items: prevState1.fees.items.map(item1 => ({
-                          ...item1,
-                          harvesting: item1 === item ? false : item1.harvesting,
-                        })),
-                      },
-                    }));
-                  });
+                  return providerContract
+                    .transferFeesSend()
+                    .catch(Boolean)
+                    .then(() => {
+                      result.harvesting = false;
+                      reload();
+                    });
                 },
               };
+
+              return result;
             }),
             loading: false,
           },
