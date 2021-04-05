@@ -17,7 +17,12 @@ type TabProps = React.HTMLProps<HTMLAnchorElement> & {
 type TabsProps = {
   tabs: TabProps[];
   className?: string;
-  shadows?: boolean | string; // in case of string, place background color variable
+  /**
+   * @example
+   * <Tabs shadows="--theme-card-color" /> in case of string, place background color variable,
+   * <Tabs shadows /> `--theme-body-color` will be used in case of `true`
+   */
+  shadows?: boolean | string;
 };
 
 export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
