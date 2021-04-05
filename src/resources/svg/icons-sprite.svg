@@ -1251,4 +1251,12 @@
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M4.4 10.4a3.6 3.6 0 100-7.2 3.6 3.6 0 000 7.2zM4.4 20.8a3.6 3.6 0 100-7.2 3.6 3.6 0 000 7.2z" clip-rule="evenodd"/>
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M12 3.2h11.2M12 6.4h11.2M12 9.6h5.6M12 14.4h11.2M12 17.6h11.2M12 20.8h5.6"/>
   </symbol>
+  <!-- STAKE -->
+  <symbol id="icon__stake" fill="none" viewBox="0 0 24 24">
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M8 6.4c3.535 0 6.4-1.074 6.4-2.4 0-1.325-2.865-2.4-6.4-2.4-3.534 0-6.4 1.075-6.4 2.4 0 1.326 2.866 2.4 6.4 2.4z" clip-rule="evenodd"/>
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M1.6 20c0 1.326 2.866 2.4 6.4 2.4 1.773 0 3.377-.27 4.535-.706M1.6 15.2c0 1.326 2.866 2.4 6.4 2.4.803 0 1.57-.055 2.278-.156M1.6 9.6C1.6 10.926 4.467 12 8 12c3.535 0 6.4-1.074 6.4-2.4M1.6 4v16M14.4 4v6.8"/>
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M16.8 23.2a6.4 6.4 0 100-12.8 6.4 6.4 0 000 12.8z" clip-rule="evenodd"/>
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M16.8 19.2a2.4 2.4 0 100-4.8 2.4 2.4 0 000 4.8z" clip-rule="evenodd"/>
+  </symbol>
+
 </svg>
