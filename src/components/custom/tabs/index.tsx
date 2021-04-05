@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import React, { FC } from 'react';
 import { NavLink } from 'react-router-dom';
 import cn from 'classnames';
 
@@ -17,7 +17,7 @@ type TabProps = React.HTMLProps<HTMLAnchorElement> & {
 type TabsProps = {
   tabs: TabProps[];
   className?: string;
-  shadows?: boolean;
+  shadows?: boolean | string; // in case of string, place background color variable
 };
 
 export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
@@ -25,7 +25,12 @@ export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
     <div
       className={cn(s.tabs, className, {
         [s.shadows]: shadows,
-      })}>
+      })}
+      style={
+        {
+          '--tabs-bg': `var(${typeof shadows === 'string' ? shadows : '--theme-body-color'})`,
+        } as React.CSSProperties
+      }>
       {tabs.map(({ href, className, children, ...restTab }, idx) => {
         if (isExternal(href)) {
           return (
