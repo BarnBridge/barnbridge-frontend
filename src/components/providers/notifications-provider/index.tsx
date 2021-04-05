@@ -263,27 +263,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
     let intervalId: NodeJS.Timeout;
 
     if (wallet.initialized) {
-      fetchNotifications({ target: wallet.account })
-        .then(result => {
-          setNotifications(
-            // @ts-ignore
-            [
-              ...result,
-              {
-                notificationType: 'smart-yield-token-bought',
-                startsOn: 1616773924,
-                expiresOn: 139689267033600,
-                metadata: {
-                  amount: '296843877',
-                  protocolId: 'compound/v2',
-                  syPoolAddress: '0x2327c862e8770e10f63eef470686ffd2684a0092',
-                  underlyingSymbol: 'USDC',
-                },
-              },
-            ] ?? [],
-          );
-        })
-        .catch(console.error);
+      fetchNotifications({ target: wallet.account }).then(setNotifications).catch(console.error);
 
       intervalId = setInterval(() => {
         fetchNotifications({ target: wallet.account, timestamp: timestampRef.current })
