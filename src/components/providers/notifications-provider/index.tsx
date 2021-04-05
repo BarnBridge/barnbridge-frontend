@@ -162,6 +162,16 @@ type DelegateStartType = ProposalBaseType & {
   };
 };
 
+type SmartYieldTokenBoughtType = ProposalBaseType & {
+  notificationType: 'smart-yield-token-bought';
+  metadata: {
+    amount: string;
+    protocolId: string;
+    syPoolAddress: string;
+    underlyingSymbol: string;
+  };
+};
+
 export type NotificationType =
   | ProposalCreatedType
   | ProposalActivatedSoonType
@@ -180,7 +190,8 @@ export type NotificationType =
   | ProposalExpiredType
   | AbrogationProposalCreatedType
   | ProposalAbrogatedType
-  | DelegateStartType;
+  | DelegateStartType
+  | SmartYieldTokenBoughtType;
 
 const NotificationsContext = React.createContext<NotificationsContextType>({} as any);
 
@@ -252,11 +263,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
     let intervalId: NodeJS.Timeout;
 
     if (wallet.initialized) {
-      fetchNotifications({ target: wallet.account })
-        .then(result => {
-          setNotifications(result ?? []);
-        })
-        .catch(console.error);
+      fetchNotifications({ target: wallet.account }).then(setNotifications).catch(console.error);
 
       intervalId = setInterval(() => {
         fetchNotifications({ target: wallet.account, timestamp: timestampRef.current })

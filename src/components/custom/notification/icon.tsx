@@ -13,7 +13,7 @@ const NotificationIcon: React.FC<NotificationIconType> = ({ rgbVarName, children
 
   return (
     <svg role="none" style={{ width, height }}>
-      <circle cx="50%" cy="50%" fill={`rgba(var(${rgbVarName}), 0.3)`} r="20" />
+      <circle cx="50%" cy="50%" fill={`rgba(var(${rgbVarName}), 0.08)`} r="20" />
       {React.isValidElement(children) &&
         React.cloneElement(children, {
           width: childWidth,

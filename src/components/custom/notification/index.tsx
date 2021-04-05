@@ -15,9 +15,13 @@ import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { NotificationType, useNotifications } from 'components/providers/notifications-provider';
+import { useReload } from 'hooks/useReload';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 
 import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';
+
+import { getSessionContractByAddress, setSessionContractByAddress } from 'utils/contracts';
 
 import s from './s.module.scss';
 
@@ -45,7 +49,7 @@ function getRelativeTime(seconds: number) {
   return formatDuration(intervalToDuration({ start: 0, end: seconds * 1000 }));
 }
 
-function getData(n: NotificationType): [IconNames, [string, string], React.ReactNode] {
+function getData(n: NotificationType, reload: Function): [IconNames, [string, string], React.ReactNode] {
   switch (n.notificationType) {
     case 'proposal-created':
       return [
@@ -208,13 +212,45 @@ function getData(n: NotificationType): [IconNames, [string, string], React.React
         'handshake',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
-          {getStrongText(`${getHumanValue(new BigNumber(n.metadata.amount), BONDTokenMeta.decimals)?.toFixed()} vBOND`)}{' '}
+          {getStrongText(
+            `${getHumanValue(new BigNumber(n.metadata.amount ?? 0), BONDTokenMeta.decimals)?.toFixed()} vBOND`,
+          )}{' '}
           has been delegated to you from{' '}
           <ExternalLink href={getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
             {shortenAddr(n.metadata.from)}
           </ExternalLink>
         </Text>,
       ];
+    case 'smart-yield-token-bought': {
+      const contract = getSessionContractByAddress(n.metadata.syPoolAddress);
+      if (!contract || !contract.symbol) {
+        const syPoolContract = new SYSmartYieldContract(n.metadata.syPoolAddress);
+        syPoolContract.loadCommon().then(() => {
+          if (syPoolContract.symbol) {
+            setSessionContractByAddress(n.metadata.syPoolAddress, {
+              symbol: syPoolContract.symbol,
+            });
+            reload();
+          }
+        });
+      }
+      return [
+        'stake',
+        colorPairs.blue,
+        <>
+          <Text type="p2" weight="semibold" color="secondary" className="mb-16">
+            Stake your{' '}
+            {getStrongText(`${Intl.NumberFormat('en').format(Number(n.metadata.amount))} ${contract?.symbol ?? ''}`)} to
+            earn extra yield
+          </Text>
+          <Link
+            to={`/smart-yield/pool?m=${n.metadata.protocolId}&t=${n.metadata.underlyingSymbol}`}
+            className="button-primary">
+            Stake now
+          </Link>
+        </>,
+      ];
+    }
     default:
       console.log(`Unsupported notification type: ${JSON.stringify(n)}`);
       return [
@@ -256,7 +292,8 @@ type Props = {
 
 export const Notification: React.FC<Props> = ({ n }) => {
   const { notificationsReadUntil } = useNotifications();
-  const [iconName, colors, content] = getData(n);
+  const [reload] = useReload();
+  const [iconName, colors, content] = getData(n, reload);
   const date = new Date(n.startsOn * 1000);
   const isUnread = notificationsReadUntil ? notificationsReadUntil < n.startsOn : false;
 
@@ -278,7 +315,8 @@ type ToastProps = {
 };
 
 export const Toast: React.FC<ToastProps> = ({ n, onClose, timeout }) => {
-  const [iconName, colors, content] = getData(n);
+  const [reload] = useReload();
+  const [iconName, colors, content] = getData(n, reload);
   useEffect(() => {
     if (timeout && timeout !== Infinity) {
       setTimeout(onClose, timeout, n.id);
