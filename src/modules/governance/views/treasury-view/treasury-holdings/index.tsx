@@ -20,7 +20,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Pools } from 'modules/smart-yield/api';
 
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
