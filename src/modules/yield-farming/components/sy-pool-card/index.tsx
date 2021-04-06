@@ -129,6 +129,13 @@ const SYPoolCard: React.FC = () => {
     });
 
     state.rewardPools.forEach(rewardPool => {
+      const market = Markets.get(rewardPool.protocolId);
+      const meta = Pools.get(rewardPool.underlyingSymbol);
+
+      if (!meta) {
+        return;
+      }
+
       const { pool, poolToken } = rewardPool;
       const tokenDecimals = poolToken.decimals ?? 0;
       const share = pool.poolSize?.dividedBy(10 ** tokenDecimals).multipliedBy(poolToken.price ?? 0) ?? ZERO_BIG_NUMBER;
@@ -136,8 +143,6 @@ const SYPoolCard: React.FC = () => {
       const myShare =
         pool.balance?.dividedBy(10 ** tokenDecimals).multipliedBy(poolToken.price ?? 0) ?? ZERO_BIG_NUMBER;
       const myShareRate = myShare.multipliedBy(100).dividedBy(myTotalPoolsBalance);
-      const market = Markets.get(rewardPool.protocolId);
-      const meta = Pools.get(rewardPool.underlyingSymbol);
 
       shares.push({
         icon: <IconBubble name={meta?.icon} bubbleName={market?.icon} />,
