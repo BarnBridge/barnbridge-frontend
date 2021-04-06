@@ -46,6 +46,57 @@ const InitialState: State = {
   },
 };
 
+type ActionColumnProps = {
+  entity: SYPoolEntity;
+};
+
+const ActionColumn: React.FC<ActionColumnProps> = props => {
+  const { provider } = props.entity;
+  const wallet = useWallet();
+
+  const [confirmVisible, setConfirmVisible] = React.useState(false);
+  const [harvesting, setHarvesting] = React.useState(false);
+
+  const harvest = React.useCallback(async () => {
+    setConfirmVisible(false);
+    setHarvesting(true);
+
+    try {
+      provider.setProvider(wallet.provider);
+      provider.setAccount(wallet.account);
+      await provider.transferFeesSend();
+    } catch {}
+
+    setHarvesting(false);
+  }, [provider]);
+
+  if (!wallet.isActive) {
+    return null;
+  }
+
+  return (
+    <>
+      <button
+        type="button"
+        className="button-ghost ml-auto"
+        disabled={!provider.underlyingFees?.gt(BigNumber.ZERO) || harvesting}
+        onClick={() => setConfirmVisible(true)}>
+        {harvesting && <AntdSpin spinning className="mr-8" />}
+        Transfer fees
+      </button>
+      {confirmVisible && (
+        <TxConfirmModal
+          title="Confirm transfer fees"
+          submitText="Transfer fees"
+          onCancel={() => setConfirmVisible(false)}
+          onConfirm={harvest}
+        />
+      )}
+      <ContractListener contract={props.entity.provider} />
+    </>
+  );
+};
+
 const Columns: ColumnsType<SYPoolEntity> = [
   {
     title: 'Market / Originator',
@@ -99,53 +150,7 @@ const Columns: ColumnsType<SYPoolEntity> = [
   {
     align: 'right',
     width: '30%',
-    render: (_, entity) =>
-      React.createElement(() => {
-        const { provider } = entity;
-        const wallet = useWallet();
-
-        const [confirmVisible, setConfirmVisible] = React.useState(false);
-        const [harvesting, setHarvesting] = React.useState(false);
-
-        const harvest = React.useCallback(async () => {
-          setConfirmVisible(false);
-          setHarvesting(true);
-
-          try {
-            provider.setProvider(wallet.provider);
-            provider.setAccount(wallet.account);
-            await provider.transferFeesSend();
-          } catch {}
-
-          setHarvesting(false);
-        }, [provider]);
-
-        if (!wallet.isActive) {
-          return null;
-        }
-
-        return (
-          <>
-            <button
-              type="button"
-              className="button-ghost ml-auto"
-              disabled={!provider.underlyingFees?.gt(BigNumber.ZERO) || harvesting}
-              onClick={() => setConfirmVisible(true)}>
-              {harvesting && <AntdSpin spinning className="mr-8" />}
-              Transfer fees
-            </button>
-            {confirmVisible && (
-              <TxConfirmModal
-                title="Confirm transfer fees"
-                submitText="Transfer fees"
-                onCancel={() => setConfirmVisible(false)}
-                onConfirm={harvest}
-              />
-            )}
-            <ContractListener contract={entity.provider} />
-          </>
-        );
-      }),
+    render: (_, entity) => <ActionColumn entity={entity} />,
   },
 ];
 
