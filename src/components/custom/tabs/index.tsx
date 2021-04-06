@@ -74,11 +74,12 @@ type ElasticTabsProps = {
   className?: string;
   active: ElasticTabProps['id'];
   onClick: (id: ElasticTabProps['id']) => void;
+  style?: React.CSSProperties;
 };
 
 export const ElasticTabs: FC<ElasticTabsProps> = props => {
   return (
-    <div className={cn(s.elasticTabs, props.className)}>
+    <div className={cn(s.elasticTabs, props.className)} style={props.style}>
       {props.tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}

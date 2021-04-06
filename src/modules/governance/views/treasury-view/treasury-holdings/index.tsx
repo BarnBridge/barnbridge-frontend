@@ -18,9 +18,8 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-import TableFilter from 'modules/governance/views/treasury-view/holdings-filter';
+import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Pools } from 'modules/smart-yield/api';
-import { useWallet } from 'wallets/wallet';
 
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
@@ -39,6 +38,10 @@ type State = {
     page: number;
     pageSize: number;
     loading: boolean;
+    filters: {
+      token: string;
+      direction: string;
+    };
   };
 };
 
@@ -53,6 +56,10 @@ const InitialState: State = {
     page: 1,
     pageSize: 10,
     loading: false,
+    filters: {
+      token: 'all',
+      direction: 'all',
+    },
   },
 };
 
@@ -100,7 +107,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
-          {entity.transactionDirection === 'IN' ? '+' : '-'} {entity.amount}
+          {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
         </Text>
         <Text type="small" weight="semibold">
           {formatUSD(new BigNumber(entity.amount).multipliedBy(1))}
@@ -156,8 +163,52 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
 ];
 
+const Filters: TableFilterType[] = [
+  {
+    name: 'token',
+    label: 'Token address',
+    defaultValue: 'all',
+    itemRender: () => {
+      const tokenOpts = [
+        {
+          value: 'all',
+          label: 'All tokens',
+        },
+        ...Array.from(Pools.entries()).map(([key, value]) => ({
+          value: key,
+          label: value.name ?? '-',
+        })),
+      ];
+
+      return <Select options={tokenOpts} className="full-width" />;
+    },
+  },
+  {
+    name: 'direction',
+    label: 'Transaction direction',
+    defaultValue: 'all',
+    itemRender: () => {
+      const options = [
+        {
+          value: 'all',
+          label: 'All transactions',
+        },
+        {
+          value: 'in',
+          label: 'In',
+        },
+        {
+          value: 'out',
+          label: 'Out',
+        },
+      ];
+
+      return <Select options={options} className="full-width" />;
+    },
+  },
+];
+
 const TreasuryHoldings: React.FC = () => {
-  const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -167,6 +218,20 @@ const TreasuryHoldings: React.FC = () => {
       history: {
         ...prevState.history,
         page,
+      },
+    }));
+  }
+
+  function handleFilterChange(filters: Record<string, any>) {
+    setState(prevState => ({
+      ...prevState,
+      history: {
+        ...prevState.history,
+        filters: {
+          ...prevState.history.filters,
+          ...filters,
+        },
+        page: 1,
       },
     }));
   }
@@ -188,7 +253,6 @@ const TreasuryHoldings: React.FC = () => {
             ...prevState.tokens,
             items: data.map(item => {
               const tokenContract = new Erc20Contract([], item.tokenAddress);
-              tokenContract.setProvider(wallet);
               tokenContract.on(Web3Contract.UPDATE_DATA, reload);
               tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
 
@@ -214,6 +278,8 @@ const TreasuryHoldings: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
+    const { page, pageSize, filters } = state.history;
+
     setState(prevState => ({
       ...prevState,
       history: {
@@ -222,7 +288,7 @@ const TreasuryHoldings: React.FC = () => {
       },
     }));
 
-    fetchTreasuryHistory(state.history.page)
+    fetchTreasuryHistory(page, pageSize, filters.token, filters.direction)
       .then(data => {
         setState(prevState => ({
           ...prevState,
@@ -245,52 +311,27 @@ const TreasuryHoldings: React.FC = () => {
           },
         }));
       });
-  }, [state.history.page]);
+  }, [state.history.page, state.history.filters]);
 
   const totalHoldings = React.useMemo(() => {
+    if (state.tokens.loading) {
+      return undefined;
+    }
+
     return state.tokens.items.reduce((a, c) => {
-      const value = c.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(c.tokenDecimals)?.multipliedBy(1);
-      return a.plus(value ?? 0);
+      const v = c.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(c.tokenDecimals)?.multipliedBy(1);
+
+      return a.plus(v ?? 0);
     }, BigNumber.ZERO);
-  }, [version]);
+  }, [state.tokens, version]);
 
-  const filters = React.useMemo(() => {
-    const originatorOpts = [
-      {
-        label: 'All originators',
-        value: 'all',
-      },
-    ];
-
-    const tokenOpts = [
-      {
-        label: 'All tokens',
-        value: 'all',
-      },
-    ];
-
-    return [
-      {
-        name: 'originator',
-        label: 'Originator',
-        defaultValue: 'all',
-        itemRender: () => <Select options={originatorOpts} className="full-width" />,
-      },
-      {
-        name: 'token',
-        label: 'Token',
-        defaultValue: 'all',
-        itemRender: () => <Select options={tokenOpts} className="full-width" />,
-      },
-    ];
-  }, []);
   return (
     <>
       <Text type="p1" weight="semibold" color="secondary" className="mb-8">
         Total holdings balance
       </Text>
       <Text type="h2" weight="bold" color="primary" className="mb-40">
-        {formatUSD(totalHoldings)}
+        {formatUSD(totalHoldings) ?? '-'}
       </Text>
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
         {state.tokens.items.map(item => (
@@ -317,7 +358,7 @@ const TreasuryHoldings: React.FC = () => {
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-          <TableFilter filters={filters} value={{}} onChange={() => null} />
+          <TableFilter filters={Filters} value={state.history.filters} onChange={handleFilterChange} />
         </div>
         <Table<APITreasuryHistory>
           inCard

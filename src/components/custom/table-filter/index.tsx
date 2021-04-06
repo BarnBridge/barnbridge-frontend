@@ -6,48 +6,15 @@ import Popover from 'components/antd/popover';
 import Badge from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 
-// const Filter: React.FC<Props2> = props => {
-//   const originatorOpts = React.useMemo<SelectOption[]>(() => {
-//     return [
-//       {
-//         label: 'All originators',
-//         value: 'all',
-//       },
-//       ...uniqBy(
-//         originators.map(originator => ({
-//           label: originator.market?.name ?? '-',
-//           value: originator.protocolId,
-//         })),
-//         'value',
-//       ),
-//     ];
-//   }, [originators]);
-//
-//   const tokenOpts = React.useMemo<SelectOption[]>(() => {
-//     return [
-//       {
-//         label: 'All tokens',
-//         value: 'all',
-//       },
-//       ...uniqBy(
-//         originators.map(originator => ({
-//           label: originator.meta?.name ?? '-',
-//           value: originator.underlyingAddress,
-//         })),
-//         'value',
-//       ),
-//     ];
-//   }, [originators]);
-//
-// };
+export type TableFilterType = {
+  name: string;
+  label: React.ReactNode;
+  itemRender: () => React.ReactNode;
+  defaultValue: any;
+};
 
 type Props = {
-  filters: {
-    name: string;
-    label: string;
-    itemRender: () => React.ReactNode;
-    defaultValue: any;
-  }[];
+  filters: TableFilterType[];
   value?: Record<string, any>;
   onChange: (values: Record<string, any>) => void;
 };
