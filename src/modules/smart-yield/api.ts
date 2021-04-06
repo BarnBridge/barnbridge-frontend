@@ -77,7 +77,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     'DAI',
     {
       id: 'DAI',
-      name: 'DAI Coin',
+      name: 'Dai Stablecoin',
       icon: 'dai-token',
       color: 'var(--theme-yellow-color)',
     },
