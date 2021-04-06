@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import cn from 'classnames';
 import Web3Contract from 'web3/contract';
 import { ZERO_BIG_NUMBER, formatToken, formatUSD } from 'web3/utils';
 
@@ -13,6 +14,8 @@ import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolCont
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import PoolStakeShareBar, { PoolTokenShare } from 'modules/yield-farming/components/pool-stake-share-bar';
 import { useWallet } from 'wallets/wallet';
+
+import s from './s.module.scss';
 
 export type SYRewardPool = APISYRewardPool & {
   pool: SYRewardPoolContract;
@@ -145,8 +148,8 @@ const SYPoolCard: React.FC = () => {
       const myShareRate = myShare.multipliedBy(100).dividedBy(myTotalPoolsBalance);
 
       shares.push({
-        icon: <IconBubble name={meta?.icon} bubbleName={market?.icon} />,
-        name: `${market?.name} ${meta?.id}`,
+        icon: <IconBubble name={meta?.icon} bubbleName="bond-circle-token" secondBubbleName={market?.icon} />,
+        name: poolToken.name,
         color: meta?.color ?? '',
         value: formatUSD(share),
         share: shareRate.toNumber(),
@@ -154,8 +157,8 @@ const SYPoolCard: React.FC = () => {
 
       if (wallet.isActive) {
         myShares.push({
-          icon: <IconBubble name={meta?.icon} bubbleName={market?.icon} />,
-          name: `${market?.name} ${meta?.id}`,
+          icon: <IconBubble name={meta?.icon} bubbleName="bond-circle-token" secondBubbleName={market?.icon} />,
+          name: poolToken.name,
           color: meta?.color ?? '',
           value: formatUSD(myShare),
           share: myShareRate.toNumber(),
@@ -168,7 +171,7 @@ const SYPoolCard: React.FC = () => {
 
   return (
     <div className="card">
-      <div className="card-header flex flow-col align-center justify-space-between pv-20">
+      <div className={cn('card-header', s.cardTitleContainer)}>
         <div className="flex flow-col align-center">
           <StatusTag
             text="NEW"
@@ -220,7 +223,7 @@ const SYPoolCard: React.FC = () => {
         <Text type="lb2" weight="semibold" color="secondary" className="mb-4">
           Total Pools Balance
         </Text>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="p1" weight="semibold" color="primary" style={{ marginBottom: '20px' }}>
           {formatUSD(totalPoolsBalance) ?? '-'}
         </Text>
         <PoolStakeShareBar shares={shares} />
@@ -230,7 +233,7 @@ const SYPoolCard: React.FC = () => {
           <Text type="lb2" weight="semibold" color="secondary" className="mb-4">
             My Pools Balance
           </Text>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          <Text type="p1" weight="semibold" color="primary" style={{ marginBottom: '24px' }}>
             {formatUSD(myTotalPoolsBalance) ?? '-'}
           </Text>
           <PoolStakeShareBar shares={myShares} />
