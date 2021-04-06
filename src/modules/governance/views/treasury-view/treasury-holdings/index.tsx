@@ -8,8 +8,10 @@ import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/uti
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
+import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useReload } from 'hooks/useReload';
 import {
@@ -18,7 +20,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Pools } from 'modules/smart-yield/api';
 
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
@@ -105,14 +106,18 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   {
     title: 'Amount',
     render: (_, entity) => (
-      <>
+      <Tooltip
+        placement="bottomRight"
+        title={formatToken(entity.amount, {
+          decimals: entity.tokenDecimals,
+        })}>
         <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
           {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
         </Text>
         <Text type="small" weight="semibold">
           {formatUSD(new BigNumber(entity.amount).multipliedBy(1))}
         </Text>
-      </>
+      </Tooltip>
     ),
   },
   {
