@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Web3Contract from 'web3/contract';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, formatToken, formatUSD } from 'web3/utils';
 
 import IconBubble from 'components/custom/icon-bubble';
@@ -8,7 +9,6 @@ import StatusTag from 'components/custom/status-tag';
 import { Hint, Text } from 'components/custom/typography';
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, Markets, Pools, fetchSYRewardPools } from 'modules/smart-yield/api';
-import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import PoolStakeShareBar, { PoolTokenShare } from 'modules/yield-farming/components/pool-stake-share-bar';

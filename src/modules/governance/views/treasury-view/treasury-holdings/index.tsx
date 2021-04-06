@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import Web3Contract from 'web3/contracts/web3Contract';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -72,7 +72,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
 
       return (
         <div className="flex flow-col align-center">
-          <Icon name={meta?.icon as TokenIconNames} className="mr-16" />
+          <Icon name={(meta?.icon as TokenIconNames) ?? 'unknown-token'} className="mr-16" />
           <Text type="p1" weight="semibold" color="primary" className="mr-4">
             {entity.tokenSymbol}
           </Text>
@@ -135,7 +135,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
       }
 
       return (
-        <ExternalLink href={getEtherscanTxUrl(address)}>
+        <ExternalLink href={getEtherscanAddressUrl(address)}>
           <Text type="p1" weight="semibold" color="blue">
             {label}
           </Text>
@@ -158,7 +158,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
       }
 
       return (
-        <ExternalLink href={getEtherscanTxUrl(address)}>
+        <ExternalLink href={getEtherscanAddressUrl(address)}>
           <Text type="p1" weight="semibold" color="blue">
             {label}
           </Text>
@@ -342,7 +342,7 @@ const TreasuryHoldings: React.FC = () => {
         {state.tokens.items.map(item => (
           <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
             <div className="flex mb-16">
-              <Icon name={Pools.get(item.tokenSymbol)?.icon as IconNames} className="mr-8" />
+              <Icon name={(Pools.get(item.tokenSymbol)?.icon as IconNames) ?? 'unknown-token'} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {item.tokenSymbol}
               </Text>

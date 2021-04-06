@@ -82,14 +82,6 @@ export const Pools = new Map<string, SYPoolMeta>([
       color: 'var(--theme-yellow-color)',
     },
   ],
-  [
-    'DAI',
-    {
-      id: 'DAI',
-      name: 'Dai',
-      icon: 'dai-token',
-    },
-  ],
 ]);
 
 export type APISYPool = {
