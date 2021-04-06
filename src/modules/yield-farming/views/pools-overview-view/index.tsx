@@ -23,6 +23,7 @@ const PoolsOverviewView: React.FC = () => {
         </Text>
       </Grid>
       <div className={s.poolCards}>
+        <SYPoolCard />
         <PoolCard pool={PoolTypes.STABLE} />
         <PoolCard pool={PoolTypes.UNILP} />
         <SYPoolCard />
