@@ -352,12 +352,14 @@ export type APITreasuryHistory = {
   blockNumber: number;
 };
 
-export function fetchTreasuryHistory(page = 1, limit = 10): Promise<PaginatedResult<APITreasuryHistory>> {
+export function fetchTreasuryHistory(page = 1, limit = 10, tokenFilter: string, directionFilter: string): Promise<PaginatedResult<APITreasuryHistory>> {
   const query = QueryString.stringify(
     {
       address: CONTRACT_DAO_GOVERNANCE_ADDR,
       page: String(page),
       limit: String(limit),
+      tokenAddress: tokenFilter,
+      transactionDirection: directionFilter,
     },
     {
       skipNull: true,

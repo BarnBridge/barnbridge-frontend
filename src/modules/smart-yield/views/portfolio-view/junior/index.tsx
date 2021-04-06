@@ -16,7 +16,7 @@ import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { Markets, Pools, fetchSYRewardPools } from 'modules/smart-yield/api';
+import { fetchSYRewardPools } from 'modules/smart-yield/api';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
@@ -321,6 +321,12 @@ const JuniorPortfolio: React.FC = () => {
     ); /// price
   }, ZERO_BIG_NUMBER);
 
+  const stakedBalance = state.dataStaked?.reduce((a, c) => {
+    const val = c.pool.balance?.unscaleBy(c.poolToken.decimals)?.multipliedBy(c.poolToken.price ?? 0);
+
+    return a.plus(val ?? 0); /// price
+  }, ZERO_BIG_NUMBER);
+
   const apySum = state.dataActive.reduce((a, c) => {
     return a.plus(
       getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
@@ -331,7 +337,7 @@ const JuniorPortfolio: React.FC = () => {
     );
   }, ZERO_BIG_NUMBER);
 
-  const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER);
+  const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER).plus(stakedBalance ?? ZERO_BIG_NUMBER);
   const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).multipliedBy(100).toNumber() : 0; /// calculate by formula
 
   const dataActiveFilters = React.useMemo(() => {
@@ -357,7 +363,8 @@ const JuniorPortfolio: React.FC = () => {
     const filter = filtersMap.staked;
 
     return state.dataStaked.filter(
-      item => ['all', item.protocolId].includes(filter.originator) && ['all'].includes(filter.token),
+      item =>
+        ['all', item.protocolId].includes(filter.originator) && ['all', item.underlyingAddress].includes(filter.token),
     );
   }, [state.dataStaked, filtersMap, activeTab]);
 
@@ -381,7 +388,7 @@ const JuniorPortfolio: React.FC = () => {
               </Grid>
             }
             data={[
-              ['Active balance ', activeBalance?.toNumber(), 'var(--theme-purple-color)'],
+              ['Active balance ', activeBalance?.plus(stakedBalance)?.toNumber(), 'var(--theme-purple-color)'],
               ['Locked balance', lockedBalance?.toNumber(), 'var(--theme-purple700-color)'],
             ]}
           />
