@@ -30,7 +30,7 @@ const StakeForm: React.FC = () => {
   const [confirmVisible, setConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const enabled = rewardPool?.poolToken.isAllowed === true;
+  const enabled = rewardPool?.poolToken.isAllowedOf(rewardPool?.poolAddress) === true;
   const canStake = values.amount > 0;
 
   const market = Markets.get(rewardPool?.protocolId ?? '');

@@ -11,6 +11,7 @@ export type TokenIconNames =
   | 'bond-token'
   | 'bond-circle-token'
   | 'bond-square-token'
+  | 'unknown-token'
   | 'dai-token'
   | 'susd-token'
   | 'usdc-token'
@@ -101,7 +102,8 @@ export type IconNames =
   | 'chart-up'
   | 'apy-up'
   | 'chart'
-  | 'queue';
+  | 'queue'
+  | 'stake';
 
 export type IconProps = {
   name: IconNames;
@@ -116,7 +118,7 @@ export type IconProps = {
 const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style, ...rest } = props;
 
-  const isStatic = name.indexOf('static/') === 0;
+  const isStatic = (name ?? '').indexOf('static/') === 0;
 
   return (
     <svg

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
+import { ElasticTabs } from 'components/custom/tabs';
+
 import TreasuryFees from './treasury-fees';
 import TreasuryHoldings from './treasury-holdings';
 
@@ -29,23 +31,28 @@ const TreasuryView: React.FC = () => {
 
   return (
     <>
-      <div className="flex flow-col col-gap-16">
-        <button
-          className="button-primary"
-          onClick={() => {
-            handleTabChange('holdings');
-          }}>
-          Holdings
-        </button>
-        <button
-          className="button-primary"
-          onClick={() => {
-            handleTabChange('fees');
-          }}>
-          Fees
-        </button>
-      </div>
-
+      <ElasticTabs
+        tabs={[
+          {
+            id: 'holdings',
+            onClick: () => {
+              handleTabChange('holdings');
+            },
+            children: 'Holdings',
+          },
+          {
+            id: 'fees',
+            onClick: () => {
+              handleTabChange('fees');
+            },
+            children: 'Fees',
+          },
+        ]}
+        active={activeTab}
+        onClick={setActiveTab}
+        className="mb-40"
+        style={{ width: 248, height: 40 }}
+      />
       <Switch>
         <Route path="/governance/treasury/holdings" component={TreasuryHoldings} />
         <Route path="/governance/treasury/fees" component={TreasuryFees} />

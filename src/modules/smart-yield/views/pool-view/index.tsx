@@ -138,8 +138,8 @@ const PoolView: React.FC = () => {
               <dd>
                 <AntdSwitch
                   style={{ justifySelf: 'flex-start' }}
-                  checked={rewardPool.poolToken.isAllowed}
-                  loading={rewardPool.poolToken.isAllowed === undefined || enabling}
+                  checked={rewardPool.poolToken.isAllowedOf(rewardPool.poolAddress)}
+                  loading={rewardPool.poolToken.isAllowedOf(rewardPool.poolAddress) === undefined || enabling}
                   onChange={handleSwitchChange}
                 />
               </dd>
