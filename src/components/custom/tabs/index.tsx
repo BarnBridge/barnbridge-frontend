@@ -76,6 +76,7 @@ type TabsProps = {
   onClick: (id: TabProps['id']) => void;
   variation: 'normal' | 'elastic';
   size?: 'normal' | 'small';
+  style?: React.CSSProperties;
 };
 
 export const Tabs: FC<TabsProps> = props => {
@@ -84,7 +85,8 @@ export const Tabs: FC<TabsProps> = props => {
       className={cn(props.className, {
         [s.tabs]: props.variation === 'normal',
         [s.elasticTabs]: props.variation === 'elastic',
-      })}>
+      })}
+      style={props.style}>
       {props.tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}

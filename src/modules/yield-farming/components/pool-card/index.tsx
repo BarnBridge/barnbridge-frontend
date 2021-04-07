@@ -267,35 +267,35 @@ const PoolCard: React.FC<PoolCardProps> = props => {
 
       {!state.isEnded && (
         <>
-          <Grid className="card-row" flow="row" gap={4} padding={24}>
-            <Text type="lb2" weight="semibold" color="secondary">
+          <div className="card-row flex flow-row p-24">
+            <Text type="lb2" weight="semibold" color="secondary" className="mb-4">
               Reward
             </Text>
-            <Grid flow="col" gap={4}>
-              <Text type="p1" weight="semibold" color="primary">
+            <div className="flex flow-col">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {formatBONDValue(state.epochReward)}
               </Text>
               <Text type="p2" color="secondary">
                 BOND
               </Text>
-            </Grid>
-          </Grid>
+            </div>
+          </div>
           {wallet.isActive && (
-            <Grid className="card-row" flow="row" gap={4} padding={24}>
+            <div className="card-row flex flow-row p-24">
               <Text type="lb2" weight="semibold" color="secondary">
                 My Potential Reward
               </Text>
-              <Grid flow="col" gap={4}>
-                <Text type="p1" weight="semibold" color="primary">
+              <div className="flex flow-col">
+                <Text type="p1" weight="semibold" color="primary" className="mr-4">
                   {formatBONDValue(state.potentialReward)}
                 </Text>
                 <Text type="p2" color="secondary">
                   BOND
                 </Text>
-              </Grid>
-            </Grid>
+              </div>
+            </div>
           )}
-          <Grid className="card-row" flow="row" gap={4} padding={24}>
+          <div className="card-row flex flow-row p-24">
             <Hint
               text={
                 <span>
@@ -320,11 +320,11 @@ const PoolCard: React.FC<PoolCardProps> = props => {
               {formatUSDValue(state.effectiveBalance)} effective balance
             </Text>
             <PoolStakeShareBar shares={state.shares} />
-          </Grid>
+          </div>
         </>
       )}
       {wallet.isActive && (
-        <Grid className="card-row" flow="row" gap={4} padding={24}>
+        <div className="card-row flex flow-row p-24">
           <Hint
             text={
               <span>
@@ -352,7 +352,7 @@ const PoolCard: React.FC<PoolCardProps> = props => {
               <PoolStakeShareBar shares={state.myShares} />
             </>
           )}
-        </Grid>
+        </div>
       )}
       {state.isEnded && pool === PoolTypes.STABLE && (
         <div className={s.box}>

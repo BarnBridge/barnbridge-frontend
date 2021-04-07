@@ -81,15 +81,14 @@
 }
 
 .hint.hint {
+  display: flex;
+  flex-direction: row;
   align-items: center;
   column-gap: 8px;
-  display: inline-grid;
-  grid-auto-flow: column;
-  grid-template-columns: max-content 16px;
-  width: auto;
 
   .tooltip {
     align-self: start;
+    line-height: initial;
     cursor: pointer;
   }
 
