@@ -27,7 +27,7 @@ const DepositView: React.FC = () => {
 
   return (
     <div className="container-limit">
-      <DepositHeader />
+      <DepositHeader className="mb-64" />
       <div className={s.container}>
         <div className={cn('card p-32', s.content)}>
           <Suspense fallback={<AntdSpin />}>

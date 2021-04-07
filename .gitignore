@@ -27,6 +27,7 @@ yarn-error.log*
 
 # IDEs
 .idea
+.vscode
 
 # cache
 .eslintcache

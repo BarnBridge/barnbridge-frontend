@@ -1,6 +1,7 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
 import AntdSwitch from 'antd/lib/switch';
+import cn from 'classnames';
 import { formatPercent, formatToken } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
@@ -9,7 +10,11 @@ import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
-const DepositHeader: React.FC = () => {
+type Props = {
+  className?: string;
+};
+
+const DepositHeader: React.FC<Props> = ({ className }) => {
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
 
@@ -40,7 +45,7 @@ const DepositHeader: React.FC = () => {
 
   return (
     <div
-      className="flexbox-list mb-64"
+      className={cn('flexbox-list', className)}
       style={{ '--gap': '64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} />

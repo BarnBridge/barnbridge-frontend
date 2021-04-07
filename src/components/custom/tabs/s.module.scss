@@ -4,7 +4,7 @@
   overflow-x: auto;
   display: flex;
   scroll-snap-type: x proximity;
-  height: 70px;
+  height: 72px;
 
   &.shadows {
     --tabs-bg: var(--theme-body-color);
@@ -130,6 +130,11 @@
       > svg {
         color: var(--theme-red-color);
       }
+    }
+
+    &.small {
+      padding-left: 16px;
+      padding-right: 16px;
     }
   }
 }

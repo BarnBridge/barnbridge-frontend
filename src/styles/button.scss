@@ -139,7 +139,7 @@
   background-color: transparent;
   padding: 0;
 
-  display: flex;
+  display: inline-flex;
   align-items: center;
 
   &:hover {
@@ -162,6 +162,7 @@
   align-items: center;
   padding: 12px 32px;
   color: var(--theme-secondary-color);
+  height: 48px;
 
   &:hover {
     color: var(--theme-primary-color);

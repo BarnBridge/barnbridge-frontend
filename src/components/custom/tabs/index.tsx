@@ -10,12 +10,12 @@ function isExternal(href: string) {
   return window.location.host !== parser.host;
 }
 
-type TabProps = React.HTMLProps<HTMLAnchorElement> & {
+type NavTabProps = React.HTMLProps<HTMLAnchorElement> & {
   href: string;
 };
 
-type TabsProps = {
-  tabs: TabProps[];
+type NavTabsProps = {
+  tabs: NavTabProps[];
   className?: string;
   /**
    * @example
@@ -25,7 +25,7 @@ type TabsProps = {
   shadows?: boolean | string;
 };
 
-export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
+export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) => {
   return (
     <div
       className={cn(s.tabs, className, {
@@ -62,28 +62,35 @@ export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
   );
 };
 
-type ElasticTabProps = {
+type TabProps = {
   children: React.ReactNode;
   id: string;
   className?: string;
   onClick?: Function;
 };
 
-type ElasticTabsProps = {
-  tabs: ElasticTabProps[];
+type TabsProps = {
+  tabs: TabProps[];
   className?: string;
-  active: ElasticTabProps['id'];
-  onClick: (id: ElasticTabProps['id']) => void;
+  active: TabProps['id'];
+  onClick: (id: TabProps['id']) => void;
+  variation: 'normal' | 'elastic';
+  size?: 'normal' | 'small';
 };
 
-export const ElasticTabs: FC<ElasticTabsProps> = props => {
+export const Tabs: FC<TabsProps> = props => {
   return (
-    <div className={cn(s.elasticTabs, props.className)}>
+    <div
+      className={cn(props.className, {
+        [s.tabs]: props.variation === 'normal',
+        [s.elasticTabs]: props.variation === 'elastic',
+      })}>
       {props.tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}
           className={cn(s.tab, className, {
             [s.active]: id === props.active,
+            [s.small]: props.size === 'small',
           })}
           type="button"
           onClick={() => {
