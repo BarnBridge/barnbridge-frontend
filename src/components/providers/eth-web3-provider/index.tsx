@@ -4,16 +4,20 @@ import Web3 from 'web3';
 import { useWindowState } from 'components/providers/window-state';
 
 const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
-export const WEB3_RPC_WSS_URL = String(process.env.REACT_APP_WEB3_RPC_WSS_URL);
 export const WEB3_RPC_HTTPS_URL = String(process.env.REACT_APP_WEB3_RPC_HTTPS_URL);
+export const WEB3_RPC_WSS_URL = String(process.env.REACT_APP_WEB3_RPC_WSS_URL);
 
-export const WEB3_WSS_PROVIDER = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
-export const WEB3_HTTPS_PROVIDER = new Web3.providers.HttpProvider(WEB3_RPC_HTTPS_URL);
-export const DEFAULT_CONTRACT_PROVIDER = WEB3_HTTPS_PROVIDER;
+export const HttpsWeb3Provider = new Web3.providers.HttpProvider(WEB3_RPC_HTTPS_URL);
+export const WssWeb3Provider = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
+export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
+  'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',
+);
+export const DEFAULT_WEB3_PROVIDER = HttpsWeb3Provider;
 
-export const HttpsWeb3 = new Web3(WEB3_HTTPS_PROVIDER);
-export const WssWeb3 = new Web3(WEB3_WSS_PROVIDER);
-export const EthWeb3 = HttpsWeb3;
+export const HttpsWeb3 = new Web3(HttpsWeb3Provider);
+export const WssWeb3 = new Web3(WssWeb3Provider);
+export const DEFAULT_WEB3 = HttpsWeb3;
+
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 
 export function getNetworkName(chainId: number | undefined): string {

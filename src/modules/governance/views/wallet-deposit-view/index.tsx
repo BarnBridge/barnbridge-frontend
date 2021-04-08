@@ -110,7 +110,7 @@ const WalletDepositView: React.FC = () => {
     <div className="card">
       <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
         <Grid flow="col" gap={12}>
-          <Icon name="bond-token" width={40} height={40} />
+          <Icon name="token-bond" width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
             BOND
           </Text>
@@ -173,7 +173,7 @@ const WalletDepositView: React.FC = () => {
               <Grid flow="row" gap={32}>
                 <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                   <TokenAmount
-                    tokenIcon="bond-token"
+                    tokenIcon="token-bond"
                     max={bondBalance}
                     maximumFractionDigits={BONDTokenMeta.decimals}
                     displayDecimals={4}
