@@ -72,7 +72,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
 
       return (
         <div className="flex flow-col align-center">
-          <Icon name={(meta?.icon as TokenIconNames) ?? 'unknown-token'} className="mr-16" />
+          <Icon name={(meta?.icon as TokenIconNames) ?? 'token-unknown'} className="mr-16" />
           <Text type="p1" weight="semibold" color="primary" className="mr-4">
             {entity.tokenSymbol}
           </Text>
@@ -342,7 +342,7 @@ const TreasuryHoldings: React.FC = () => {
         {state.tokens.items.map(item => (
           <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
             <div className="flex mb-16">
-              <Icon name={(Pools.get(item.tokenSymbol)?.icon as IconNames) ?? 'unknown-token'} className="mr-8" />
+              <Icon name={(Pools.get(item.tokenSymbol)?.icon as IconNames) ?? 'token-unknown'} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {item.tokenSymbol}
               </Text>

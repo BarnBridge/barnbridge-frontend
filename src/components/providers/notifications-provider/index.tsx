@@ -252,7 +252,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
     }
   }, []);
 
-  const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications.length
+  const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications?.length
     ? Math.max(...notifications.map(n => n.startsOn))
     : null;
 
