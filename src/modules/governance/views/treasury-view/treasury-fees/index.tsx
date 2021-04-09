@@ -22,6 +22,7 @@ import { useWallet } from 'wallets/wallet';
 
 type SYPoolEntity = APISYPool & {
   provider: SYProviderContract;
+  reloadFees: () => void;
 };
 
 type State = {
@@ -51,7 +52,7 @@ type ActionColumnProps = {
 };
 
 const ActionColumn: React.FC<ActionColumnProps> = props => {
-  const { provider } = props.entity;
+  const { provider, reloadFees } = props.entity;
   const wallet = useWallet();
 
   const [confirmVisible, setConfirmVisible] = React.useState(false);
@@ -65,6 +66,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
       provider.setProvider(wallet.provider);
       provider.setAccount(wallet.account);
       await provider.transferFeesSend();
+      reloadFees();
     } catch {}
 
     setHarvesting(false);
@@ -200,6 +202,7 @@ const TreasuryFees: React.FC = () => {
   const walletRef = React.useRef(wallet);
   walletRef.current = wallet;
 
+  const [reloadFees, versionFees] = useReload();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -234,11 +237,11 @@ const TreasuryFees: React.FC = () => {
             items: data.map(item => {
               const providerContract = new SYProviderContract(item.providerAddress);
               providerContract.on(Web3Contract.UPDATE_DATA, reload);
-              providerContract.loadUnderlyingFees();
 
               const result = {
                 ...item,
                 provider: providerContract,
+                reloadFees,
               };
 
               return result;
@@ -258,6 +261,12 @@ const TreasuryFees: React.FC = () => {
         }));
       });
   }, []);
+
+  React.useEffect(() => {
+    state.fees.items.forEach(fee => {
+      fee.provider.loadUnderlyingFees();
+    });
+  }, [state.fees.items, versionFees]);
 
   React.useEffect(() => {
     setState(prevState => ({

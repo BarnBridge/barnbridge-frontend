@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 
+// import Icon, { IconNames } from 'components/custom/icon';
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import { useReload } from 'hooks/useReload';
 
@@ -16,8 +17,8 @@ export enum KnownTokens {
   USDC = 'USDC',
   DAI = 'DAI',
   SUSD = 'sUSD',
-  bbcUSDC = 'bbcUSDC',
-  bbcDAI = 'bbcDAI',
+  bbcUSDC = 'bb_cUSDC',
+  bbcDAI = 'bb_cDAI',
 }
 
 type TokenMeta = {
@@ -107,21 +108,21 @@ const KNOWN_TOKENS: TokenMeta[] = [
     icon: 'token-susd',
   },
   {
-    address: '0x2327c862e8770e10f63eef470686ffd2684a0092',
+    address: '0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840',
     symbol: KnownTokens.bbcUSDC,
     name: 'BarnBridge cUSDC',
     decimals: 6,
-    priceFeed: '0x2327c862e8770e10f63eef470686ffd2684a0092', // bbcUSDC -> USDC
+    priceFeed: '0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840', // bbcUSDC -> USDC
     pricePath: [KnownTokens.USDC],
     icon: 'token-usdc',
   },
   {
-    address: '0xebf32075b5ee6e9aff265d3ec6c69a2b381b61b1',
+    address: '0x673f9488619821aB4f4155FdFFe06f6139De518F',
     symbol: KnownTokens.bbcDAI,
     name: 'BarnBridge cDAI',
     decimals: 18,
-    priceFeed: '0xebf32075b5ee6e9aff265d3ec6c69a2b381b61b1', // bbcDAI -> USDC
-    pricePath: [KnownTokens.USDC],
+    priceFeed: '0x673f9488619821aB4f4155FdFFe06f6139De518F', // bbcDAI -> USDC
+    pricePath: [KnownTokens.DAI],
     icon: 'token-dai',
   },
 ];
@@ -218,6 +219,7 @@ const KnownTokensProvider: FC = props => {
               token.price = usdcReserve.dividedBy(bondReserve);
             } else if (token.symbol === KnownTokens.bbcUSDC || token.symbol === KnownTokens.bbcDAI) {
               const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
+              priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
 
               const price = await priceFeedContract.call('price');
               token.price = new BigNumber(price).dividedBy(1e18);
