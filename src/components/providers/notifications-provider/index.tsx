@@ -213,7 +213,7 @@ export function fetchNotifications({
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => result.data);
+    .then(result => result.data ?? []);
 }
 
 const notificationsNode = document.querySelector('#notifications-root');

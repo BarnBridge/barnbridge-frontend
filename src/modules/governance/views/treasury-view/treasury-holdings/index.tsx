@@ -13,6 +13,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
+import { KnownTokens, getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -252,11 +253,13 @@ const TreasuryHoldings: React.FC = () => {
 
     fetchTreasuryTokens()
       .then(data => {
+        const items = data.filter(item => Boolean(getTokenBySymbol(item.tokenSymbol as KnownTokens)));
+
         setState(prevState => ({
           ...prevState,
           tokens: {
             ...prevState.tokens,
-            items: data.map(item => {
+            items: items.map(item => {
               const tokenContract = new Erc20Contract([], item.tokenAddress);
               tokenContract.on(Web3Contract.UPDATE_DATA, reload);
               tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
