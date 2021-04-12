@@ -35,19 +35,19 @@ type TokenMeta = {
 const KNOWN_TOKENS: TokenMeta[] = [
   {
     address: '',
-    symbol: KnownTokens.ETH,
-    name: 'Ether',
-    decimals: 0,
-    priceFeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419', // ETH -> $
-    icon: 'token-eth',
-  },
-  {
-    address: '',
     symbol: KnownTokens.BTC,
     name: 'BTC',
     decimals: 0,
     priceFeed: '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c', // BTC -> $
     icon: 'token-wbtc',
+  },
+  {
+    address: '0x',
+    symbol: KnownTokens.ETH,
+    name: 'Ether',
+    decimals: 0,
+    priceFeed: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419', // ETH -> $
+    icon: 'token-eth',
   },
   {
     address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
@@ -127,12 +127,30 @@ const KNOWN_TOKENS: TokenMeta[] = [
   },
 ];
 
+export function getKnownTokens(): TokenMeta[] {
+  return [...KNOWN_TOKENS];
+}
+
 type ContextType = {
   tokens: TokenMeta[];
+  getTokenBySymbol(symbol: KnownTokens | string): TokenMeta | undefined;
+  getTokenByAddress(address: string): TokenMeta | undefined;
+  getTokenPriceIn(source: KnownTokens, target: KnownTokens): BigNumber | undefined;
+  convertTokenIn(
+    amount: BigNumber | undefined,
+    source: KnownTokens | string,
+    target: KnownTokens | string,
+  ): BigNumber | undefined;
+  convertTokenInUSD(amount: BigNumber | undefined, source: KnownTokens | string): BigNumber | undefined;
 };
 
 const Context = createContext<ContextType>({
   tokens: [...KNOWN_TOKENS],
+  getTokenBySymbol: () => undefined,
+  getTokenByAddress: () => undefined,
+  getTokenPriceIn: () => undefined,
+  convertTokenIn: () => undefined,
+  convertTokenInUSD: () => undefined,
 });
 
 export function useKnownTokens(): ContextType {
@@ -186,12 +204,109 @@ const J_PRICE_FEED_ABI: AbiItem[] = [
   },
 ];
 
-export function getTokenBySymbol(symbol: KnownTokens): TokenMeta | undefined {
+export function getTokenBySymbol(symbol: KnownTokens | string): TokenMeta | undefined {
   return KNOWN_TOKENS.find(token => token.symbol === symbol);
 }
 
 export function getTokenByAddress(address: string): TokenMeta | undefined {
   return KNOWN_TOKENS.find(token => token.address === address);
+}
+
+async function getFeedPrice(symbol: KnownTokens): Promise<BigNumber> {
+  const token = getTokenBySymbol(symbol);
+
+  if (!token || !token.priceFeed) {
+    return Promise.reject();
+  }
+
+  const priceFeedContract = new Erc20Contract(PRICE_FEED_ABI, token.priceFeed);
+  priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+
+  const [decimals, latestAnswer] = await priceFeedContract.batch([{ method: 'decimals' }, { method: 'latestAnswer' }]);
+
+  return new BigNumber(latestAnswer).dividedBy(10 ** decimals);
+}
+
+async function getBondPrice(): Promise<BigNumber> {
+  const token = getTokenBySymbol(KnownTokens.BOND);
+
+  if (!token || !token.priceFeed) {
+    return Promise.reject();
+  }
+
+  const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, token.priceFeed);
+  priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+
+  const [decimals, { reserve1, reserve2 }] = await priceFeedContract.batch([
+    { method: 'decimals' },
+    { method: 'getReserves' },
+  ]);
+
+  const bondReserve = new BigNumber(reserve1).dividedBy(10 ** decimals);
+  const usdcReserve = new BigNumber(reserve2).dividedBy(1e6); // usdc decimals
+
+  return usdcReserve.dividedBy(bondReserve);
+}
+
+async function getJTokenPrice(symbol: KnownTokens): Promise<BigNumber> {
+  const token = getTokenBySymbol(symbol);
+
+  if (!token || !token.priceFeed) {
+    return Promise.reject();
+  }
+
+  const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
+  priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+
+  const price = await priceFeedContract.call('price');
+
+  return new BigNumber(price).dividedBy(1e18);
+}
+
+export function getTokenPrice(symbol: KnownTokens): BigNumber | undefined {
+  return getTokenBySymbol(symbol)?.price;
+}
+
+export function getTokenPriceIn(source: KnownTokens, target: KnownTokens): BigNumber | undefined {
+  const sourcePrice = getTokenPrice(source);
+  const targetPrice = getTokenPrice(target);
+
+  if (!sourcePrice || !targetPrice) {
+    return undefined;
+  }
+
+  return sourcePrice.dividedBy(targetPrice);
+}
+
+export function convertTokenIn(
+  amount: BigNumber | number | undefined,
+  source: KnownTokens | string,
+  target: KnownTokens | string,
+): BigNumber | undefined {
+  if (!amount) {
+    return undefined;
+  }
+
+  const bnAmount = new BigNumber(amount);
+
+  if (source === target) {
+    return bnAmount;
+  }
+
+  const price = getTokenPriceIn(source as KnownTokens, target as KnownTokens);
+
+  if (!price) {
+    return undefined;
+  }
+
+  return bnAmount.multipliedBy(price);
+}
+
+export function convertTokenInUSD(
+  amount: BigNumber | number | undefined,
+  source: KnownTokens | string,
+): BigNumber | undefined {
+  return convertTokenIn(amount, source, KnownTokens.USDC);
 }
 
 const KnownTokensProvider: FC = props => {
@@ -203,37 +318,17 @@ const KnownTokensProvider: FC = props => {
     (async () => {
       await Promise.allSettled(
         KNOWN_TOKENS.map(async token => {
-          if (token.priceFeed) {
-            if (token.symbol === KnownTokens.BOND) {
-              const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, token.priceFeed);
-              priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
-
-              const [decimals, { reserve1, reserve2 }] = await priceFeedContract.batch([
-                { method: 'decimals' },
-                { method: 'getReserves' },
-              ]);
-
-              const bondReserve = new BigNumber(reserve1).dividedBy(10 ** decimals);
-              const usdcReserve = new BigNumber(reserve2).dividedBy(1e6); // usdc decimals
-
-              token.price = usdcReserve.dividedBy(bondReserve);
-            } else if (token.symbol === KnownTokens.bbcUSDC || token.symbol === KnownTokens.bbcDAI) {
-              const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
-              priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
-
-              const price = await priceFeedContract.call('price');
-              token.price = new BigNumber(price).dividedBy(1e18);
-            } else {
-              const priceFeedContract = new Erc20Contract(PRICE_FEED_ABI, token.priceFeed);
-              priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
-
-              const [decimals, latestAnswer] = await priceFeedContract.batch([
-                { method: 'decimals' },
-                { method: 'latestAnswer' },
-              ]);
-
-              token.price = new BigNumber(latestAnswer).dividedBy(10 ** decimals);
-            }
+          switch (token.symbol) {
+            case KnownTokens.BOND:
+              token.price = await getBondPrice();
+              break;
+            case KnownTokens.bbcUSDC:
+            case KnownTokens.bbcDAI:
+              token.price = await getJTokenPrice(token.symbol);
+              break;
+            default:
+              token.price = await getFeedPrice(token.symbol);
+              break;
           }
         }),
       );
@@ -259,21 +354,14 @@ const KnownTokensProvider: FC = props => {
 
   const value = {
     tokens: [...KNOWN_TOKENS],
+    getTokenBySymbol,
+    getTokenByAddress,
+    getTokenPriceIn,
+    convertTokenIn,
+    convertTokenInUSD,
   };
 
-  return (
-    <Context.Provider value={value}>
-      {children}
-      {/*<ul>*/}
-      {/*  {KNOWN_TOKENS.map(token => (*/}
-      {/*    <div key={token.symbol}>*/}
-      {/*      <Icon name={token.icon as IconNames} />*/}
-      {/*      {token.name} - {token.price?.toNumber()}*/}
-      {/*    </div>*/}
-      {/*  ))}*/}
-      {/*</ul>*/}
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default KnownTokensProvider;
