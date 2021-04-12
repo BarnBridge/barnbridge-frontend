@@ -75,7 +75,7 @@ const PoolView: React.FC = () => {
     <div className="container-limit">
       <div className="mb-16">
         <Link to="/smart-yield/pools" className="button-text" style={{ display: 'inline-flex' }}>
-          <Icon name="left-arrow" width={14} height={12} className="mr-12" color="inherit" />
+          <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Pools
         </Link>
       </div>
@@ -138,8 +138,8 @@ const PoolView: React.FC = () => {
               <dd>
                 <AntdSwitch
                   style={{ justifySelf: 'flex-start' }}
-                  checked={rewardPool.poolToken.isAllowed}
-                  loading={rewardPool.poolToken.isAllowed === undefined || enabling}
+                  checked={rewardPool.poolToken.isAllowedOf(rewardPool.poolAddress)}
+                  loading={rewardPool.poolToken.isAllowedOf(rewardPool.poolAddress) === undefined || enabling}
                   onChange={handleSwitchChange}
                 />
               </dd>

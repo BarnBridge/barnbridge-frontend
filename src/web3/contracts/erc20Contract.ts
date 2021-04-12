@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import Web3Contract from 'web3/contract';
-import { MAX_UINT_256, ZERO_BIG_NUMBER } from 'web3/utils';
+import Web3Contract from 'web3/contracts/web3Contract';
 
 const ABI: AbiItem[] = [
   {
@@ -83,20 +82,74 @@ export default class Erc20Contract extends Web3Contract {
 
   totalSupply?: BigNumber;
 
-  balance?: BigNumber;
+  private balances: Map<string, BigNumber>;
 
-  allowance?: BigNumber;
+  private allowances: Map<string, BigNumber>;
 
   constructor(abi: AbiItem[], address: string) {
     super([...ABI, ...abi], address, '');
+
+    this.balances = new Map<string, BigNumber>();
+    this.allowances = new Map<string, BigNumber>();
+
+    this.on(Web3Contract.UPDATE_ACCOUNT, () => {
+      if (!this.account) {
+        this.balances.clear();
+        this.allowances.clear();
+        this.emit(Web3Contract.UPDATE_DATA);
+      }
+    });
   }
 
-  get maxAllowed(): BigNumber {
-    return BigNumber.min(this.allowance ?? ZERO_BIG_NUMBER, this.balance ?? ZERO_BIG_NUMBER);
+  get balance(): BigNumber | undefined {
+    if (!this.account) {
+      return undefined;
+    }
+
+    return this.balances.get(this.account);
   }
 
-  get isAllowed(): boolean | undefined {
-    return this.allowance?.gt(ZERO_BIG_NUMBER);
+  // get allowance(): BigNumber | undefined {
+  //   if (!this.account) {
+  //     return undefined;
+  //   }
+  //
+  //   return this.allowances.get(this.account);
+  // }
+
+  // get isAllowed(): boolean | undefined {
+  //   return this.allowance?.gt(BigNumber.ZERO);
+  // }
+
+  // get maxAllowed(): BigNumber | undefined {
+  //   if (!this.balance || !this.allowance) {
+  //     return undefined;
+  //   }
+  //
+  //   return BigNumber.min(this.balance, this.allowance);
+  // }
+
+  getBalanceOf(address: string): BigNumber | undefined {
+    return this.balances.get(address);
+  }
+
+  getAllowanceOf(address: string): BigNumber | undefined {
+    return this.allowances.get(address);
+  }
+
+  isAllowedOf(address: string): boolean | undefined {
+    return this.allowances.get(address)?.gt(BigNumber.ZERO);
+  }
+
+  maxAllowedOf(address: string): BigNumber | undefined {
+    const balance = this.getBalanceOf(address);
+    const allowance = this.getAllowanceOf(address);
+
+    if (!balance || !allowance) {
+      return undefined;
+    }
+
+    return BigNumber.min(balance, allowance);
   }
 
   loadCommon(): Promise<void> {
@@ -124,28 +177,26 @@ export default class Erc20Contract extends Web3Contract {
     });
   }
 
-  async loadBalance(): Promise<void> {
-    this.balance = undefined;
+  async loadBalance(address?: string): Promise<void> {
+    const addr = address ?? this.account;
 
-    if (!this.account) {
+    if (!addr) {
       return;
     }
 
-    return this.call('balanceOf', [this.account]).then(value => {
-      this.balance = new BigNumber(value);
+    return this.call('balanceOf', [addr]).then(value => {
+      this.balances.set(addr, new BigNumber(value));
       this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
   async loadAllowance(spenderAddress: string): Promise<void> {
-    this.allowance = undefined;
-
     if (!this.account) {
       return;
     }
 
     return this.call('allowance', [this.account, spenderAddress]).then(value => {
-      this.allowance = new BigNumber(value);
+      this.allowances.set(spenderAddress, new BigNumber(value));
       this.emit(Web3Contract.UPDATE_DATA);
     });
   }
@@ -155,12 +206,10 @@ export default class Erc20Contract extends Web3Contract {
       return Promise.reject();
     }
 
-    const value = enable ? MAX_UINT_256 : ZERO_BIG_NUMBER;
+    const value = enable ? BigNumber.MAX_UINT_256 : BigNumber.ZERO;
 
     return this.send('approve', [spenderAddress, value], {
       from: this.account,
-    }).then(() => {
-      this.loadAllowance(spenderAddress);
-    });
+    }).then(() => this.loadAllowance(spenderAddress));
   }
 }

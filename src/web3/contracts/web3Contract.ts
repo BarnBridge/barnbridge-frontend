@@ -1,10 +1,12 @@
 import debounce from 'lodash/debounce';
+import Web3 from 'web3';
+import { Method } from 'web3-core-method';
 import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { DEFAULT_CONTRACT_PROVIDER, EthWeb3, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
+import { DEFAULT_WEB3, DEFAULT_WEB3_PROVIDER, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
 
 export type Web3ContractAbiItem = AbiItem;
 
@@ -19,6 +21,7 @@ export type BatchContractMethod = {
 export type Web3SendState = 'progress' | 'success' | 'fail';
 
 export type Web3SendMeta = {
+  id: string;
   sender: Web3Contract;
   method: string;
   methodArgs: any[];
@@ -29,30 +32,50 @@ export type Web3SendMeta = {
   error?: Error;
 };
 
+type EthContract = Contract & Eth;
+
 class Web3Contract extends EventEmitter {
+  static UPDATE_ACCOUNT = 'update:account';
   static UPDATE_DATA = 'update:data';
 
-  static requestsPool: any[] = [];
+  static sendIncNumber: number = 0;
+  static requestsPool: Map<any, Method[]> = new Map();
 
-  static addRequest(request: any) {
-    this.requestsPool.push(request);
+  static addRequest(source: Web3Contract, request: Method) {
+    const provider = source.callContract.currentProvider;
+    const collected = this.requestsPool.get(provider) ?? [];
+
+    this.requestsPool.set(provider, [...collected, request]);
     this.run();
   }
 
   static run = debounce(() => {
-    const requests = [...Web3Contract.requestsPool];
-    Web3Contract.requestsPool.length = 0;
+    Web3Contract.requestsPool.forEach((requests, provider) => {
+      const web3 = new Web3(provider);
+      const batch = new web3.BatchRequest();
 
-    const batch = new EthWeb3.BatchRequest();
-    requests.forEach(request => batch.add(request));
-    batch.execute();
+      requests.forEach(request => batch.add(request));
+      batch.execute();
+
+      Web3Contract.requestsPool.delete(provider);
+    });
   }, 250);
+
+  static tryCall(to: string, from: string, data: string, value: string): any {
+    return DEFAULT_WEB3.eth.call({
+      to,
+      from,
+      data,
+      value,
+    });
+  }
 
   readonly abi: AbiItem[];
 
   readonly address: string;
 
-  readonly ethContract: Contract & Eth;
+  readonly callContract: EthContract;
+  readonly sendContract: EthContract;
 
   name: string;
 
@@ -65,32 +88,25 @@ class Web3Contract extends EventEmitter {
     this.address = address;
     this.name = name;
 
-    this.ethContract = new EthWeb3.eth.Contract(abi, address) as Contract & Eth;
-  }
-
-  get currentProvider(): any {
-    return this.ethContract.currentProvider;
+    this.callContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
+    this.sendContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
   }
 
   get writeFunctions(): AbiItem[] {
     return this.abi.filter(r => r.type === 'function' && !r.constant);
   }
 
-  static tryCall(to: string, from: string, data: string, value: string): any {
-    return EthWeb3.eth.call({
-      to,
-      from,
-      data,
-      value,
-    });
+  setCallProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
+    this.callContract.setProvider(provider);
   }
 
-  setProvider(provider: any = DEFAULT_CONTRACT_PROVIDER): void {
-    this.ethContract.setProvider(provider);
+  setProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
+    this.sendContract.setProvider(provider);
   }
 
   setAccount(account?: string): void {
     this.account = account;
+    this.emit(Web3Contract.UPDATE_ACCOUNT, account);
   }
 
   batch(methods: BatchContractMethod[]): Promise<any[]> {
@@ -102,13 +118,7 @@ class Web3Contract extends EventEmitter {
       return new Promise(resolve => {
         this.call(batchMethod.method, batchMethod.methodArgs ?? [], batchMethod.callArgs ?? {})
           .then(value => resolve((batchMethod.transform ?? (x => x))(value)))
-          .catch(err => {
-            if (batchMethod.onError instanceof Function) {
-              return resolve(batchMethod.onError(err));
-            }
-
-            resolve(undefined);
-          });
+          .catch(err => resolve(batchMethod.onError?.(err) ?? undefined));
       });
     });
 
@@ -116,7 +126,7 @@ class Web3Contract extends EventEmitter {
   }
 
   call(method: string, methodArgs: any[] = [], callArgs: Record<string, any> = {}): Promise<any> {
-    const contractMethod = this.ethContract.methods[method];
+    const contractMethod = this.callContract.methods[method];
 
     if (!contractMethod) {
       return Promise.reject(new Error(`Invalid contract method name [${method}].`));
@@ -135,18 +145,21 @@ class Web3Contract extends EventEmitter {
         resolve(value);
       });
 
-      Web3Contract.addRequest(req);
+      Web3Contract.addRequest(this, req);
     });
   }
 
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
-    const contractMethod = this.ethContract.methods[method];
+    const contractMethod = this.sendContract.methods[method];
 
     if (!contractMethod) {
       return Promise.reject(new Error(`Unknown method "${method}" in contract.`));
     }
 
+    Web3Contract.sendIncNumber += 1;
+
     const meta: Web3SendMeta = {
+      id: `${method}:${Web3Contract.sendIncNumber}`,
       sender: this,
       method,
       methodArgs,
@@ -154,28 +167,31 @@ class Web3Contract extends EventEmitter {
     };
 
     return contractMethod(...methodArgs)
-      .send(sendArgs, async (err: Error, transactionHash: string) => {
+      .send(sendArgs, async (err: Error, txHash: string) => {
         if (err) {
           return;
         }
 
-        meta.state = 'progress';
-        meta.txHash = transactionHash;
-
-        this.emit('tx:hash', transactionHash, meta);
+        this.emit('tx:hash', txHash, {
+          ...meta,
+          state: 'progress',
+          txHash,
+        });
       })
       .then((result: any) => {
-        meta.state = 'success';
-        meta.result = result;
-
-        this.emit('tx:success', result, meta);
+        this.emit('tx:success', result, {
+          ...meta,
+          state: 'success',
+          result,
+        });
         return result;
       })
       .catch((error: Error) => {
-        meta.state = 'fail';
-        meta.error = error;
-
-        this.emit('tx:fail', error, meta);
+        this.emit('tx:fail', error, {
+          ...meta,
+          state: 'fail',
+          error,
+        });
         return Promise.reject(error);
       });
   }

@@ -4,7 +4,7 @@ import AntdNotification from 'antd/lib/notification';
 import AntdSpin from 'antd/lib/spin';
 import AntdSwitch from 'antd/lib/switch';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
-import Web3Contract from 'web3/contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { fetchContractABI } from 'web3/utils';
 
 import Alert from 'components/antd/alert';

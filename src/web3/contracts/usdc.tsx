@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import USDC_ABI from 'web3/abi/usdc.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
@@ -15,7 +15,7 @@ const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLo
 const Contract = new Web3Contract(USDC_ABI as Web3ContractAbiItem[], CONTRACT_USDC_ADDR, 'USDC');
 
 export const USDCTokenMeta: TokenMeta = {
-  icon: <Icon key="usdc" name="usdc-token" />,
+  icon: <Icon key="usdc" name="token-usdc" />,
   name: 'USDC',
   address: CONTRACT_USDC_ADDR,
   decimals: 6,

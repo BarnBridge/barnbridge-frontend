@@ -73,15 +73,15 @@ const PoolTokenDeposit: React.FC<PoolTokenDepositProps> = props => {
   const icon = React.useMemo<TokenIconNames | undefined>(() => {
     switch (token) {
       case USDCTokenMeta:
-        return 'usdc-token';
+        return 'token-usdc';
       case DAITokenMeta:
-        return 'dai-token';
+        return 'token-dai';
       case SUSDTokenMeta:
-        return 'susd-token';
+        return 'token-susd';
       case UNISWAPTokenMeta:
-        return 'uniswap-token';
+        return 'token-uniswap';
       case BONDTokenMeta:
-        return 'bond-token';
+        return 'token-bond';
       default:
         return undefined;
     }

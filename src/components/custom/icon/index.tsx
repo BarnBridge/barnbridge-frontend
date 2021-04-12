@@ -8,17 +8,24 @@ import s from './s.module.scss';
 export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
-  | 'bond-token'
   | 'bond-circle-token'
   | 'bond-square-token'
-  | 'dai-token'
-  | 'susd-token'
-  | 'usdc-token'
-  | 'uniswap-token'
+  | 'token-unknown'
+  | 'token-eth'
+  | 'token-btc'
+  | 'token-weth'
+  | 'token-wbtc'
+  | 'token-renbtc'
+  | 'token-bond'
+  | 'token-usdc'
+  | 'token-dai'
+  | 'token-susd'
+  | 'token-uniswap'
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
   | 'yearn_finance';
+
 export type NavIconNames =
   | 'paper-bill-outlined'
   | 'paper-alpha-outlined'
@@ -27,6 +34,7 @@ export type NavIconNames =
   | 'bar-charts-outlined'
   | 'savings-outlined'
   | 'proposal-outlined'
+  | 'treasury-outlined'
   | 'bank-outlined'
   | 'tractor-outlined'
   | 'wallet-outlined'
@@ -40,7 +48,6 @@ export type IconNames =
   | NavIconNames
   | ThemeIconNames
   | 'right-arrow-circle-outlined'
-  | 'left-arrow'
   | 'arrow-back'
   | 'down-arrow-circle'
   | 'refresh'
@@ -101,7 +108,8 @@ export type IconNames =
   | 'chart-up'
   | 'apy-up'
   | 'chart'
-  | 'queue';
+  | 'queue'
+  | 'stake';
 
 export type IconProps = {
   name: IconNames;
@@ -116,7 +124,7 @@ export type IconProps = {
 const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style, ...rest } = props;
 
-  const isStatic = name.indexOf('static/') === 0;
+  const isStatic = (name ?? '').indexOf('static/') === 0;
 
   return (
     <svg

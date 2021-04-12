@@ -62,7 +62,7 @@ const PoolDetailsView: React.FC = () => {
     <div>
       <Button type="link" onClick={handleBackClick} className="mb-32">
         <Grid flow="col" gap={16} align="center">
-          <Icon name="left-arrow" />
+          <Icon name="arrow-back" width={40} height={40} className="mr-8" />
           <Text type="h1" weight="bold" color="primary">
             {getPoolNames(pool).join('/')}
           </Text>

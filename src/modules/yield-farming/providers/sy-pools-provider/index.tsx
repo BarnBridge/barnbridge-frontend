@@ -1,12 +1,12 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import Web3Contract from 'web3/contract';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
 
 import IconBubble from 'components/custom/icon-bubble';
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, Markets, Pools, fetchSYRewardPools } from 'modules/smart-yield/api';
-import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolTokenShare } from 'modules/yield-farming/components/pool-stake-share-bar';

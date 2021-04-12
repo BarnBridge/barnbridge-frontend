@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import DAI_ABI from 'web3/abi/dai.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
@@ -15,7 +15,7 @@ const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowe
 const Contract = new Web3Contract(DAI_ABI as Web3ContractAbiItem[], CONTRACT_DAI_ADDR, 'DAI');
 
 export const DAITokenMeta: TokenMeta = {
-  icon: <Icon key="dai" name="dai-token" />,
+  icon: <Icon key="dai" name="token-dai" />,
   name: 'DAI',
   address: CONTRACT_DAI_ADDR,
   decimals: 18,

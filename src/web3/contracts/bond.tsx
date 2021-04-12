@@ -1,9 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import BOND_ABI from 'web3/abi/bond.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
+import Erc20Contract from 'web3/contracts/erc20Contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
@@ -16,14 +17,14 @@ const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLo
 const Contract = new Web3Contract(BOND_ABI as Web3ContractAbiItem[], CONTRACT_BOND_ADDR, 'BOND');
 
 export const BONDTokenMeta: TokenMeta = {
-  icon: <Icon key="bond" name="bond-token" />,
+  icon: <Icon key="bond" name="token-bond" />,
   name: 'BOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
 };
 
 export const VBONDTokenMeta: TokenMeta = {
-  icon: <Icon key="vbond" name="bond-token" />,
+  icon: <Icon key="vbond" name="token-bond" />,
   name: 'vBOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
@@ -129,4 +130,10 @@ export function useBONDContract(): BONDContract {
     }),
     [data, reload, approveSend],
   );
+}
+
+export class BondContract extends Erc20Contract {
+  constructor() {
+    super([], CONTRACT_BOND_ADDR);
+  }
 }

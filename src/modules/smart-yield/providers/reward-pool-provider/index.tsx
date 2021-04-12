@@ -2,11 +2,11 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
-import Web3Contract from 'web3/contract';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import Web3Contract from 'web3/contracts/web3Contract';
 
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
-import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useWallet } from 'wallets/wallet';
@@ -148,15 +148,15 @@ const RewardPoolProvider: React.FC = props => {
 
     if (rewardPool) {
       rewardPool.rewardToken.setAccount(wallet.account);
-      rewardPool.rewardToken.loadBalance().then(reload);
+      rewardPool.rewardToken.loadBalance();
 
       rewardPool.poolToken.setAccount(wallet.account);
-      rewardPool.poolToken.loadBalance().then(reload);
-      rewardPool.poolToken.loadAllowance(rewardPool.poolAddress).then(reload);
+      rewardPool.poolToken.loadBalance();
+      rewardPool.poolToken.loadAllowance(rewardPool.poolAddress);
 
       rewardPool.pool.setAccount(wallet.account);
-      rewardPool.pool.loadClaim().then(reload);
-      rewardPool.pool.loadBalance().then(reload);
+      rewardPool.pool.loadClaim();
+      rewardPool.pool.loadBalance();
     }
   }, [state.rewardPool, wallet.account]);
 

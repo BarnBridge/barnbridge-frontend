@@ -69,7 +69,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     {
       id: 'USDC',
       name: 'USD Coin',
-      icon: 'usdc-token',
+      icon: 'token-usdc',
       color: 'var(--theme-blue-color)',
     },
   ],
@@ -78,7 +78,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     {
       id: 'DAI',
       name: 'Dai Stablecoin',
-      icon: 'dai-token',
+      icon: 'token-dai',
       color: 'var(--theme-yellow-color)',
     },
   ],
@@ -406,6 +406,7 @@ export type APISYRewardPool = {
   poolTokenDecimals: number;
   rewardTokenAddress: string;
   protocolId: string;
+  underlyingAddress: string;
   underlyingSymbol: string;
 };
 

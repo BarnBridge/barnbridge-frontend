@@ -1,8 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import SUSD_ABI from 'web3/abi/susd.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
@@ -15,7 +15,7 @@ const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLo
 const Contract = new Web3Contract(SUSD_ABI as Web3ContractAbiItem[], CONTRACT_SUSD_ADDR, 'SUSD');
 
 export const SUSDTokenMeta: TokenMeta = {
-  icon: <Icon key="susd" name="susd-token" />,
+  icon: <Icon key="susd" name="token-susd" />,
   name: 'sUSD',
   address: CONTRACT_SUSD_ADDR,
   decimals: 18,

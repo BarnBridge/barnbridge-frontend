@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js';
-import Web3Contract, { BatchContractMethod } from 'web3/contract';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import Web3Contract, { BatchContractMethod } from 'web3/contracts/web3Contract';
 import { getGasValue } from 'web3/utils';
-
-import Erc20Contract from 'modules/smart-yield/contracts/erc20Contract';
 
 const ABI: any[] = [
   {
@@ -232,34 +231,14 @@ class SYSmartYieldContract extends Erc20Contract {
     super(ABI, address);
   }
 
-  symbol?: string;
-
-  decimals?: number;
-
-  totalSupply?: BigNumber;
-
   price?: BigNumber;
-
-  balance?: BigNumber;
 
   abond?: SYAbond;
 
   async loadCommon(): Promise<void> {
+    super.loadCommon();
+
     return this.batch([
-      {
-        method: 'name',
-      },
-      {
-        method: 'symbol',
-      },
-      {
-        method: 'decimals',
-        transform: value => Number(value),
-      },
-      {
-        method: 'totalSupply',
-        transform: value => new BigNumber(value),
-      },
       {
         method: 'price',
         transform: value => new BigNumber(value),
@@ -274,11 +253,7 @@ class SYSmartYieldContract extends Erc20Contract {
           liquidated: value.liquidated,
         }),
       },
-    ]).then(([name, symbol, decimals, totalSupply, price, abond]) => {
-      this.name = name;
-      this.symbol = symbol;
-      this.decimals = decimals;
-      this.totalSupply = totalSupply.dividedBy(10 ** decimals);
+    ]).then(([price, abond]) => {
       this.price = price.dividedBy(1e18);
       this.abond = abond;
       this.emit(Web3Contract.UPDATE_DATA);
@@ -299,30 +274,6 @@ class SYSmartYieldContract extends Erc20Contract {
     }
 
     return new BigNumber(value).dividedBy(this.price);
-  }
-
-  async loadBalance(): Promise<void> {
-    if (!this.account) {
-      this.balance = undefined;
-      return;
-    }
-
-    return this.call('balanceOf', [this.account]).then(value => {
-      this.balance = new BigNumber(value);
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
-  }
-
-  async getBalance(): Promise<BigNumber> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.call('balanceOf', [this.account]).then(value => new BigNumber(value));
-  }
-
-  async getTotalSupply(): Promise<BigNumber> {
-    return this.call('totalSupply').then(value => new BigNumber(value));
   }
 
   async getPrice(): Promise<BigNumber> {

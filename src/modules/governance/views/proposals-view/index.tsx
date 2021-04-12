@@ -149,9 +149,10 @@ const ProposalsView: React.FC = () => {
   if (!dao.isActive) {
     return (
       <Grid flow="row" gap={24} align="start">
-        <Button type="link" icon={<Icon name="left-arrow" />} onClick={handleBackClick}>
+        <button type="button" onClick={handleBackClick} className="button-text">
+          <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Overview
-        </Button>
+        </button>
         <ActivationThreshold className="full-width" />
       </Grid>
     );

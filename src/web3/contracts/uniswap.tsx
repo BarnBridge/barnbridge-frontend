@@ -1,10 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import UNISWAP_ABI from 'web3/abi/uniswap_v2.json';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/contract';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
+import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getHumanValue } from 'web3/utils';
 
@@ -17,7 +17,7 @@ export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISW
 const Contract = new Web3Contract(UNISWAP_ABI as Web3ContractAbiItem[], CONTRACT_UNISWAP_ADDR, 'UNISWAP');
 
 export const UNISWAPTokenMeta: TokenMeta = {
-  icon: <Icon key="uniswap" name="uniswap-token" />,
+  icon: <Icon key="uniswap" name="token-uniswap" />,
   name: 'USDC_BOND_UNI_LP',
   address: CONTRACT_UNISWAP_ADDR,
   decimals: 18,
