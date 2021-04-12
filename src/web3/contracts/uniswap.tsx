@@ -17,7 +17,7 @@ export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISW
 const Contract = new Web3Contract(UNISWAP_ABI as Web3ContractAbiItem[], CONTRACT_UNISWAP_ADDR, 'UNISWAP');
 
 export const UNISWAPTokenMeta: TokenMeta = {
-  icon: <Icon key="uniswap" name="uniswap-token" />,
+  icon: <Icon key="uniswap" name="token-uniswap" />,
   name: 'USDC_BOND_UNI_LP',
   address: CONTRACT_UNISWAP_ADDR,
   decimals: 18,

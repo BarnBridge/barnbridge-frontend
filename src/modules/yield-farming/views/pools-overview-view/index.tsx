@@ -26,7 +26,6 @@ const PoolsOverviewView: React.FC = () => {
         <SYPoolCard />
         <PoolCard pool={PoolTypes.STABLE} />
         <PoolCard pool={PoolTypes.UNILP} />
-        <SYPoolCard />
         <PoolCard pool={PoolTypes.BOND} />
       </div>
       <PoolTxChart className="mb-32" />

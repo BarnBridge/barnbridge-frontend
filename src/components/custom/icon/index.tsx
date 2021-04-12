@@ -8,18 +8,24 @@ import s from './s.module.scss';
 export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
-  | 'bond-token'
   | 'bond-circle-token'
   | 'bond-square-token'
-  | 'unknown-token'
-  | 'dai-token'
-  | 'susd-token'
-  | 'usdc-token'
-  | 'uniswap-token'
+  | 'token-unknown'
+  | 'token-eth'
+  | 'token-btc'
+  | 'token-weth'
+  | 'token-wbtc'
+  | 'token-renbtc'
+  | 'token-bond'
+  | 'token-usdc'
+  | 'token-dai'
+  | 'token-susd'
+  | 'token-uniswap'
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
   | 'yearn_finance';
+
 export type NavIconNames =
   | 'paper-bill-outlined'
   | 'paper-alpha-outlined'

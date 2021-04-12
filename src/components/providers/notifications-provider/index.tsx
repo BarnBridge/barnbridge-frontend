@@ -213,7 +213,7 @@ export function fetchNotifications({
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => result.data);
+    .then(result => result.data ?? []);
 }
 
 const notificationsNode = document.querySelector('#notifications-root');
@@ -252,7 +252,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
     }
   }, []);
 
-  const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications.length
+  const lastNotificationTimestamp: NotificationType['startsOn'] | null = notifications?.length
     ? Math.max(...notifications.map(n => n.startsOn))
     : null;
 

@@ -93,7 +93,7 @@ const StakeForm: React.FC = () => {
                 className="mr-8"
               />
             }
-            max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)?.toNumber()}
+            max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
             disabled={saving || !enabled}
@@ -218,7 +218,7 @@ const UnstakeForm: React.FC = () => {
                 className="mr-8"
               />
             }
-            max={getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals)?.toNumber()}
+            max={getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals)}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
             disabled={saving}
