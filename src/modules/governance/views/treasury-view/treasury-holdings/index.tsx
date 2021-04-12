@@ -21,7 +21,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-import { Pools } from 'modules/smart-yield/api';
 
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
@@ -69,11 +68,11 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   {
     title: 'Token Name',
     render: (_, entity) => {
-      const meta = Pools.get(entity.tokenSymbol);
+      const tokenMeta = getTokenBySymbol(entity.tokenSymbol);
 
       return (
         <div className="flex flow-col align-center">
-          <Icon name={(meta?.icon as TokenIconNames) ?? 'token-unknown'} className="mr-16" />
+          <Icon name={(tokenMeta?.icon as TokenIconNames) ?? 'token-unknown'} className="mr-16" />
           <Text type="p1" weight="semibold" color="primary" className="mr-4">
             {entity.tokenSymbol}
           </Text>
