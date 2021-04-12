@@ -314,21 +314,7 @@ const Web3ContractsProvider: React.FC = props => {
       return undefined;
     }
 
-    let total = ZERO_BIG_NUMBER;
-
-    if (yfContract.isEnded === false) {
-      total = total.plus(yfStaked);
-    }
-
-    if (yfLPContract.isEnded === false) {
-      total = total.plus(yfLPStaked);
-    }
-
-    if (yfBONDContract.isEnded === false) {
-      total = total.plus(yfBONDStaked);
-    }
-
-    return total;
+    return yfStaked.plus(yfLPStaked).plus(yfBONDStaked);
   }
 
   function totalEffectiveStaked(): BigNumber | undefined {
