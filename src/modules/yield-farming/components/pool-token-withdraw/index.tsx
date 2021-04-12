@@ -213,19 +213,17 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
 
         <div />
 
-        {state.enabled && (
-          <button
-            type="button"
-            className="button-ghost-monochrome p-8"
-            onClick={() =>
-              setState(prevState => ({
-                ...prevState,
-                expanded: !prevState.expanded,
-              }))
-            }>
-            <Icon name="chevron-right" rotate={state.expanded ? 270 : 0} />
-          </button>
-        )}
+        <button
+          type="button"
+          className="button-ghost-monochrome p-8"
+          onClick={() =>
+            setState(prevState => ({
+              ...prevState,
+              expanded: !prevState.expanded,
+            }))
+          }>
+          <Icon name="chevron-right" rotate={state.expanded ? 270 : 0} />
+        </button>
       </Grid>
       {state.expanded && (
         <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>
