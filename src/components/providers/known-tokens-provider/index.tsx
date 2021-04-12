@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 
+// import Icon, { IconNames } from 'components/custom/icon';
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import { useReload } from 'hooks/useReload';
 
