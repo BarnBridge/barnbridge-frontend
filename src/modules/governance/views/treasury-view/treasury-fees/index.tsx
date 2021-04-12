@@ -15,6 +15,7 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
+import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, fetchSYPools } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
@@ -128,26 +129,29 @@ const Columns: ColumnsType<SYPoolEntity> = [
   {
     title: 'Fees Amount',
     align: 'right',
-    render: (_, entity) => (
-      <Tooltip
-        className="flex flow-row row-gap-4"
-        placement="bottomRight"
-        title={formatToken(entity.provider.underlyingFees, {
-          scale: entity.underlyingDecimals,
-          decimals: entity.underlyingDecimals,
-        })}>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatToken(entity.provider.underlyingFees, {
+    render: (_, entity) => {
+      const amount = entity.provider.underlyingFees?.unscaleBy(entity.underlyingDecimals);
+      const amountUSD = convertTokenInUSD(amount, entity.underlyingSymbol);
+
+      return (
+        <Tooltip
+          className="flex flow-row row-gap-4"
+          placement="bottomRight"
+          title={formatToken(entity.provider.underlyingFees, {
             scale: entity.underlyingDecimals,
-            compact: true,
-          }) ?? '-'}
-        </Text>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSD(entity.provider.underlyingFees?.unscaleBy(entity.underlyingDecimals)?.multipliedBy(1), true) ??
-            '-'}
-        </Text>
-      </Tooltip>
-    ),
+            decimals: entity.underlyingDecimals,
+          })}>
+          <Text type="p1" weight="semibold" color="primary">
+            {formatToken(amount, {
+              compact: true,
+            }) ?? '-'}
+          </Text>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(amountUSD) ?? '-'}
+          </Text>
+        </Tooltip>
+      );
+    },
   },
   {
     align: 'right',
@@ -280,7 +284,10 @@ const TreasuryFees: React.FC = () => {
 
   const totalFees = React.useMemo(() => {
     return state.fees.items.reduce((a, c) => {
-      return a.plus(c.provider.underlyingFees?.unscaleBy(c.underlyingDecimals)?.multipliedBy(1) ?? 0);
+      const amount = c.provider.underlyingFees?.unscaleBy(c.underlyingDecimals);
+      const amountUSD = convertTokenInUSD(amount, c.underlyingSymbol);
+
+      return a.plus(amountUSD ?? 0);
     }, BigNumber.ZERO);
   }, [state.fees.items, version]);
 

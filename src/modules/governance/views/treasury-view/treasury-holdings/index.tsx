@@ -13,7 +13,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -116,7 +116,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
           {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSD(new BigNumber(entity.amount).multipliedBy(1))}
+          {formatUSD(convertTokenInUSD(entity.amount, entity.tokenSymbol))}
         </Text>
       </Tooltip>
     ),
@@ -169,50 +169,52 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
 ];
 
-const Filters: TableFilterType[] = [
-  {
-    name: 'token',
-    label: 'Token address',
-    defaultValue: 'all',
-    itemRender: () => {
-      const tokenOpts = [
-        {
-          value: 'all',
-          label: 'All tokens',
-        },
-        ...Array.from(Pools.entries()).map(([key, value]) => ({
-          value: key,
-          label: value.name ?? '-',
-        })),
-      ];
+function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
+  return [
+    {
+      name: 'token',
+      label: 'Token address',
+      defaultValue: 'all',
+      itemRender: () => {
+        const tokenOpts = [
+          {
+            value: 'all',
+            label: 'All tokens',
+          },
+          ...tokens.map(token => ({
+            value: token.tokenAddress,
+            label: token.token.name ?? '-',
+          })),
+        ];
 
-      return <Select options={tokenOpts} className="full-width" />;
+        return <Select options={tokenOpts} className="full-width" />;
+      },
     },
-  },
-  {
-    name: 'direction',
-    label: 'Transaction direction',
-    defaultValue: 'all',
-    itemRender: () => {
-      const options = [
-        {
-          value: 'all',
-          label: 'All transactions',
-        },
-        {
-          value: 'in',
-          label: 'In',
-        },
-        {
-          value: 'out',
-          label: 'Out',
-        },
-      ];
+    {
+      name: 'direction',
+      label: 'Transaction direction',
+      defaultValue: 'all',
+      itemRender: () => {
+        const options = [
+          {
+            value: 'all',
+            label: 'All transactions',
+          },
+          {
+            value: 'in',
+            label: 'In',
+          },
+          {
+            value: 'out',
+            label: 'Out',
+          },
+        ];
 
-      return <Select options={options} className="full-width" />;
+        return <Select options={options} className="full-width" />;
+      },
     },
-  },
-];
+  ];
+}
 
 const TreasuryHoldings: React.FC = () => {
   const [reload, version] = useReload();
@@ -255,20 +257,25 @@ const TreasuryHoldings: React.FC = () => {
       .then(data => {
         const items = data.filter(item => Boolean(getTokenBySymbol(item.tokenSymbol as KnownTokens)));
 
+        const mappedItems = items.map(item => {
+          const tokenContract = new Erc20Contract([], item.tokenAddress);
+          tokenContract.on(Web3Contract.UPDATE_DATA, reload);
+          tokenContract.loadCommon();
+          tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
+
+          return {
+            ...item,
+            token: tokenContract,
+          };
+        });
+
+        mappedItems.sort((a, b) => (a.token.balance?.gt(b.token.balance ?? 0) ? 1 : -1));
+
         setState(prevState => ({
           ...prevState,
           tokens: {
             ...prevState.tokens,
-            items: items.map(item => {
-              const tokenContract = new Erc20Contract([], item.tokenAddress);
-              tokenContract.on(Web3Contract.UPDATE_DATA, reload);
-              tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
-
-              return {
-                ...item,
-                token: tokenContract,
-              };
-            }),
+            items: mappedItems,
             loading: false,
           },
         }));
@@ -326,10 +333,11 @@ const TreasuryHoldings: React.FC = () => {
       return undefined;
     }
 
-    return state.tokens.items.reduce((a, c) => {
-      const v = c.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(c.tokenDecimals)?.multipliedBy(1);
+    return state.tokens.items.reduce((a, item) => {
+      const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+      const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
-      return a.plus(v ?? 0);
+      return a.plus(amountUSD ?? 0);
     }, BigNumber.ZERO);
   }, [state.tokens, version]);
 
@@ -342,31 +350,39 @@ const TreasuryHoldings: React.FC = () => {
         {formatUSD(totalHoldings) ?? '-'}
       </Text>
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
-        {state.tokens.items.map(item => (
-          <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
-            <div className="flex mb-16">
-              <Icon name={(Pools.get(item.tokenSymbol)?.icon as IconNames) ?? 'token-unknown'} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {item.tokenSymbol}
+        {state.tokens.items.map(item => {
+          const tokenMeta = getTokenBySymbol(item.tokenSymbol);
+          const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+          const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
+
+          return (
+            <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
+              <div className="flex mb-16">
+                <Icon name={(tokenMeta?.icon as IconNames) ?? 'token-unknown'} className="mr-8" />
+                <Text type="p1" weight="semibold" color="primary">
+                  {item.tokenSymbol}
+                </Text>
+              </div>
+              <Text type="h3" weight="bold" color="primary" className="mb-4">
+                {formatToken(amount) ?? '-'}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {formatUSD(amountUSD)}
               </Text>
             </div>
-            <Text type="h3" weight="bold" color="primary" className="mb-4">
-              {formatToken(item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals)) ?? '-'}
-            </Text>
-            <Text type="small" weight="semibold" color="secondary">
-              {formatUSD(
-                item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals)?.multipliedBy(1),
-              ) ?? '-'}
-            </Text>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="card">
         <div className="card-header flex flow-col align-center justify-space-between pv-12">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-          <TableFilter filters={Filters} value={state.history.filters} onChange={handleFilterChange} />
+          <TableFilter
+            filters={getFilters(state.tokens.items)}
+            value={state.history.filters}
+            onChange={handleFilterChange}
+          />
         </div>
         <Table<APITreasuryHistory>
           inCard
