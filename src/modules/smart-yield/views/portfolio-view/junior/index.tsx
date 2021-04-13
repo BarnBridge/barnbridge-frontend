@@ -332,13 +332,28 @@ const JuniorPortfolio: React.FC = () => {
       getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
         ?.multipliedBy(c.state.jTokenPrice)
         .multipliedBy(1)
-        .multipliedBy(c.state.juniorApy)
-        .dividedBy(100) ?? ZERO_BIG_NUMBER,
+        .multipliedBy(c.state.juniorApy) ?? ZERO_BIG_NUMBER,
+    );
+  }, ZERO_BIG_NUMBER);
+
+  const stakedApySum = state.dataStaked.reduce((a, c) => {
+    const item = pools.find(p => p.smartYieldAddress === c.poolTokenAddress);
+
+    if (!item) {
+      return a;
+    }
+
+    return a.plus(
+      getHumanValue(c.pool.balance, c.poolToken.decimals)
+        ?.multipliedBy(item.state.jTokenPrice ?? 0)
+        .multipliedBy(1)
+        .multipliedBy(item.state.juniorApy) ?? ZERO_BIG_NUMBER,
     );
   }, ZERO_BIG_NUMBER);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER).plus(stakedBalance ?? ZERO_BIG_NUMBER);
-  const apy = totalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.dividedBy(totalBalance).multipliedBy(100).toNumber() : 0; /// calculate by formula
+  const pTotalBalance = activeBalance?.plus(stakedBalance ?? ZERO_BIG_NUMBER);
+  const apy = pTotalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.plus(stakedApySum).dividedBy(pTotalBalance).toNumber() : 0; /// calculate by formula
 
   const dataActiveFilters = React.useMemo(() => {
     const filter = filtersMap.active;
