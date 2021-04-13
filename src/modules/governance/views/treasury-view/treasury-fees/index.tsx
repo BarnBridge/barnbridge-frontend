@@ -60,7 +60,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [harvesting, setHarvesting] = React.useState(false);
 
-  const amount = provider.underlyingFees?.unscaleBy(underlyingDecimals)?.multipliedBy(100);
+  const amount = provider.underlyingFees?.unscaleBy(underlyingDecimals);
 
   const harvest = React.useCallback(async () => {
     setConfirmVisible(false);
