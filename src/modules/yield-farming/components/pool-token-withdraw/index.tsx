@@ -74,15 +74,15 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
   const icon = React.useMemo<TokenIconNames | undefined>(() => {
     switch (token) {
       case USDCTokenMeta:
-        return 'usdc-token';
+        return 'token-usdc';
       case DAITokenMeta:
-        return 'dai-token';
+        return 'token-dai';
       case SUSDTokenMeta:
-        return 'susd-token';
+        return 'token-susd';
       case UNISWAPTokenMeta:
-        return 'uniswap-token';
+        return 'token-uniswap';
       case BONDTokenMeta:
-        return 'bond-token';
+        return 'token-bond';
       default:
         return undefined;
     }
@@ -213,19 +213,17 @@ const PoolTokenWithdraw: React.FC<PoolTokenWithdrawProps> = props => {
 
         <div />
 
-        {state.enabled && (
-          <button
-            type="button"
-            className="button-ghost-monochrome p-8"
-            onClick={() =>
-              setState(prevState => ({
-                ...prevState,
-                expanded: !prevState.expanded,
-              }))
-            }>
-            <Icon name="chevron-right" rotate={state.expanded ? 270 : 0} />
-          </button>
-        )}
+        <button
+          type="button"
+          className="button-ghost-monochrome p-8"
+          onClick={() =>
+            setState(prevState => ({
+              ...prevState,
+              expanded: !prevState.expanded,
+            }))
+          }>
+          <Icon name="chevron-right" rotate={state.expanded ? 270 : 0} />
+        </button>
       </Grid>
       {state.expanded && (
         <Form form={form} initialValues={InitialFormValues} validateTrigger={['onSubmit']} onFinish={handleSubmit}>

@@ -15,7 +15,7 @@ const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLo
 const Contract = new Web3Contract(USDC_ABI as Web3ContractAbiItem[], CONTRACT_USDC_ADDR, 'USDC');
 
 export const USDCTokenMeta: TokenMeta = {
-  icon: <Icon key="usdc" name="usdc-token" />,
+  icon: <Icon key="usdc" name="token-usdc" />,
   name: 'USDC',
   address: CONTRACT_USDC_ADDR,
   decimals: 6,

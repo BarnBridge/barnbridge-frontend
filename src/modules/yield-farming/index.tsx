@@ -7,6 +7,7 @@ import { useWallet } from 'wallets/wallet';
 
 import PoolRewards from './components/pool-rewards';
 import PoolStats from './components/pool-stats';
+import SyPoolsProvider from './providers/sy-pools-provider';
 import PoolDetailsView from './views/pool-details-view';
 import PoolsOverviewView from './views/pools-overview-view';
 
@@ -42,7 +43,7 @@ const YieldFarmingView: React.FC = () => {
   }, [isMobile]);
 
   return (
-    <>
+    <SyPoolsProvider>
       {!isMobile && wallet.isActive && <PoolRewards />}
 
       <div className="content-container-fix content-container">
@@ -61,7 +62,7 @@ const YieldFarmingView: React.FC = () => {
           <Redirect to="/yield-farming" />
         </Switch>
       </div>
-    </>
+    </SyPoolsProvider>
   );
 };
 

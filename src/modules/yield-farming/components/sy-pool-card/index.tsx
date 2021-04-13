@@ -1,173 +1,19 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
-import Erc20Contract from 'web3/contracts/erc20Contract';
-import Web3Contract from 'web3/contracts/web3Contract';
-import { ZERO_BIG_NUMBER, formatToken, formatUSD } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 
-import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Hint, Text } from 'components/custom/typography';
-import { useReload } from 'hooks/useReload';
-import { APISYRewardPool, Markets, Pools, fetchSYRewardPools } from 'modules/smart-yield/api';
-import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
-import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import PoolStakeShareBar, { PoolTokenShare } from 'modules/yield-farming/components/pool-stake-share-bar';
+import PoolStakeShareBar from 'modules/yield-farming/components/pool-stake-share-bar';
+import { useSyPools } from 'modules/yield-farming/providers/sy-pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-export type SYRewardPool = APISYRewardPool & {
-  pool: SYRewardPoolContract;
-  poolToken: SYSmartYieldContract;
-  rewardToken: Erc20Contract;
-};
-
-type State = {
-  loading: boolean;
-  rewardPools: SYRewardPool[];
-};
-
 const SYPoolCard: React.FC = () => {
   const wallet = useWallet();
-  const [reload, version] = useReload();
-
-  const [state, setState] = React.useState<State>({
-    loading: false,
-    rewardPools: [],
-  });
-
-  React.useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      loading: true,
-      rewardPools: [],
-    }));
-
-    (async () => {
-      try {
-        const result = await fetchSYRewardPools();
-
-        const pools = result.map(rewardPool => {
-          const rewardToken = new Erc20Contract([], rewardPool.rewardTokenAddress);
-          rewardToken.on(Web3Contract.UPDATE_DATA, reload);
-          rewardToken.loadCommon();
-
-          const poolToken = new SYSmartYieldContract(rewardPool.poolTokenAddress);
-          poolToken.on(Web3Contract.UPDATE_DATA, reload);
-          poolToken.loadCommon();
-
-          const pool = new SYRewardPoolContract(rewardPool.poolAddress);
-          pool.on(Web3Contract.UPDATE_DATA, reload);
-          pool.loadCommon();
-
-          return {
-            ...rewardPool,
-            rewardToken,
-            poolToken,
-            pool,
-          };
-        });
-
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          rewardPools: pools,
-        }));
-      } catch {
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-        }));
-      }
-    })();
-  }, []);
-
-  React.useEffect(() => {
-    state.rewardPools.forEach(rewardPool => {
-      rewardPool.pool.setAccount(wallet.account);
-      rewardPool.pool.loadBalance();
-    });
-  }, [state.rewardPools, wallet.account]);
-
-  const [
-    dailyTotalReward,
-    myDailyTotalReward,
-    totalPoolsBalance,
-    myTotalPoolsBalance,
-    shares,
-    myShares,
-  ] = React.useMemo(() => {
-    let dailyTotalReward = ZERO_BIG_NUMBER;
-    let myDailyTotalReward = ZERO_BIG_NUMBER;
-    let totalPoolsBalance = ZERO_BIG_NUMBER;
-    let myTotalPoolsBalance = ZERO_BIG_NUMBER;
-    let shares: PoolTokenShare[] = [];
-    let myShares: PoolTokenShare[] = [];
-
-    state.rewardPools.forEach(rewardPool => {
-      const { pool, poolToken, rewardToken } = rewardPool;
-      const tokenDecimals = poolToken.decimals ?? 0;
-      const rewardDecimals = rewardToken.decimals ?? 0;
-
-      if (pool.dailyReward) {
-        dailyTotalReward = dailyTotalReward.plus(pool.dailyReward.dividedBy(10 ** rewardDecimals) ?? 0);
-      }
-
-      if (wallet.isActive && pool.myDailyReward) {
-        myDailyTotalReward = myDailyTotalReward.plus(pool.myDailyReward.dividedBy(10 ** rewardDecimals) ?? 0);
-      }
-
-      if (pool.poolSize) {
-        totalPoolsBalance = totalPoolsBalance.plus(
-          pool.poolSize.dividedBy(10 ** tokenDecimals).multipliedBy(poolToken.price ?? 0) ?? 0,
-        );
-      }
-
-      if (wallet.isActive && pool.balance) {
-        myTotalPoolsBalance = myTotalPoolsBalance.plus(
-          pool.balance.dividedBy(10 ** tokenDecimals).multipliedBy(poolToken.price ?? 0) ?? 0,
-        );
-      }
-    });
-
-    state.rewardPools.forEach(rewardPool => {
-      const market = Markets.get(rewardPool.protocolId);
-      const meta = Pools.get(rewardPool.underlyingSymbol);
-
-      if (!meta) {
-        return;
-      }
-
-      const { pool, poolToken } = rewardPool;
-      const tokenDecimals = poolToken.decimals ?? 0;
-      const share = pool.poolSize?.dividedBy(10 ** tokenDecimals).multipliedBy(poolToken.price ?? 0) ?? ZERO_BIG_NUMBER;
-      const shareRate = share.multipliedBy(100).dividedBy(totalPoolsBalance);
-      const myShare =
-        pool.balance?.dividedBy(10 ** tokenDecimals).multipliedBy(poolToken.price ?? 0) ?? ZERO_BIG_NUMBER;
-      const myShareRate = myShare.multipliedBy(100).dividedBy(myTotalPoolsBalance);
-
-      shares.push({
-        icon: <IconBubble name={meta?.icon} bubbleName="bond-circle-token" secondBubbleName={market?.icon} />,
-        name: poolToken.name,
-        color: meta?.color ?? '',
-        value: formatUSD(share),
-        share: shareRate.toNumber(),
-      });
-
-      if (wallet.isActive) {
-        myShares.push({
-          icon: <IconBubble name={meta?.icon} bubbleName="bond-circle-token" secondBubbleName={market?.icon} />,
-          name: poolToken.name,
-          color: meta?.color ?? '',
-          value: formatUSD(myShare),
-          share: myShareRate.toNumber(),
-        });
-      }
-    });
-
-    return [dailyTotalReward, myDailyTotalReward, totalPoolsBalance, myTotalPoolsBalance, shares, myShares];
-  }, [state.rewardPools, wallet.account, version]);
+  const syPoolsCtx = useSyPools();
 
   return (
     <div className="card">
@@ -195,7 +41,7 @@ const SYPoolCard: React.FC = () => {
         </Hint>
         <div className="flex flow-col align-center">
           <Text type="p1" weight="semibold" color="primary" className="mr-4">
-            {formatToken(dailyTotalReward) ?? '-'}
+            {formatToken(syPoolsCtx.dailyTotalReward) ?? '-'}
           </Text>
           <Text type="p2" color="secondary">
             BOND / DAY
@@ -211,7 +57,7 @@ const SYPoolCard: React.FC = () => {
           </Hint>
           <div className="flex flow-col align-center">
             <Text type="p1" weight="semibold" color="primary" className="mr-4">
-              {formatToken(myDailyTotalReward) ?? '-'}
+              {formatToken(syPoolsCtx.myDailyTotalReward) ?? '-'}
             </Text>
             <Text type="p2" color="secondary">
               BOND / DAY
@@ -224,9 +70,9 @@ const SYPoolCard: React.FC = () => {
           Total Pools Balance
         </Text>
         <Text type="p1" weight="semibold" color="primary" style={{ marginBottom: '20px' }}>
-          {formatUSD(totalPoolsBalance) ?? '-'}
+          {formatUSD(syPoolsCtx.totalPoolsBalance) ?? '-'}
         </Text>
-        <PoolStakeShareBar shares={shares} />
+        <PoolStakeShareBar shares={syPoolsCtx.shares} />
       </div>
       {wallet.isActive && (
         <div className="card-row p-24">
@@ -234,9 +80,9 @@ const SYPoolCard: React.FC = () => {
             My Pools Balance
           </Text>
           <Text type="p1" weight="semibold" color="primary" style={{ marginBottom: '24px' }}>
-            {formatUSD(myTotalPoolsBalance) ?? '-'}
+            {formatUSD(syPoolsCtx.myTotalPoolsBalance) ?? '-'}
           </Text>
-          <PoolStakeShareBar shares={myShares} />
+          <PoolStakeShareBar shares={syPoolsCtx.myShares} />
         </div>
       )}
     </div>
