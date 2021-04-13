@@ -159,12 +159,13 @@ const Columns: ColumnsType<SYPoolEntity> = [
 
       return (
         <Tooltip
-          className="flex flow-row row-gap-4"
           placement="bottomRight"
+          overlayStyle={{ maxWidth: 'inherit' }}
           title={formatToken(amount, {
             decimals: entity.underlyingDecimals,
+            tokenName: entity.underlyingSymbol,
           })}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {formatToken(amount, {
               compact: true,
             }) ?? '-'}
