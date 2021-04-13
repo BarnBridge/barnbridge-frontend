@@ -60,7 +60,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [harvesting, setHarvesting] = React.useState(false);
 
-  const amount = provider.underlyingFees?.unscaleBy(underlyingDecimals)?.multipliedBy(100);
+  const amount = provider.underlyingFees?.unscaleBy(underlyingDecimals);
 
   const harvest = React.useCallback(async () => {
     setConfirmVisible(false);
@@ -159,12 +159,13 @@ const Columns: ColumnsType<SYPoolEntity> = [
 
       return (
         <Tooltip
-          className="flex flow-row row-gap-4"
           placement="bottomRight"
+          overlayStyle={{ maxWidth: 'inherit' }}
           title={formatToken(amount, {
             decimals: entity.underlyingDecimals,
+            tokenName: entity.underlyingSymbol,
           })}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {formatToken(amount, {
               compact: true,
             }) ?? '-'}
