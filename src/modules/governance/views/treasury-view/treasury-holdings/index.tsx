@@ -110,6 +110,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
         placement="bottomRight"
         title={formatToken(entity.amount, {
           decimals: entity.tokenDecimals,
+          tokenName: entity.tokenSymbol,
         })}>
         <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
           {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
@@ -362,9 +363,16 @@ const TreasuryHoldings: React.FC = () => {
                   {item.tokenSymbol}
                 </Text>
               </div>
-              <Text type="h3" weight="bold" color="primary" className="mb-4">
-                {formatToken(amount) ?? '-'}
-              </Text>
+              <Tooltip
+                overlayStyle={{ maxWidth: 'inherit' }}
+                title={formatToken(amount, {
+                  decimals: item.tokenDecimals,
+                  tokenName: item.tokenSymbol,
+                })}>
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  {formatToken(amount) ?? '-'}
+                </Text>
+              </Tooltip>
               <Text type="small" weight="semibold" color="secondary">
                 {formatUSD(amountUSD)}
               </Text>
