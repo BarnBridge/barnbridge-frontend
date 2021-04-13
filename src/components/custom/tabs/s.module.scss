@@ -8,16 +8,12 @@
 
   &.shadows {
     --tabs-bg: var(--theme-body-color);
-    background:
-      linear-gradient(to right, var(--tabs-bg) 30%, rgba(255, 255, 255, 0)),
-      linear-gradient(to right, rgba(255, 255, 255, 0), var(--tabs-bg) 70%) 100% 0,
-
-      radial-gradient(farthest-side at 0 50% , rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0))  0 0,
-      radial-gradient(farthest-side at 100% 50% , rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) 100% 0;
-    background-repeat: no-repeat;
-    background-color: var(--tabs-bg);
-    background-size: 40px 100%, 40px 100% , 8px 100%, 8px 100%;
-    background-attachment: local, local, scroll, scroll;
+    background-size: 40px 100%, 40px 100%, 8px 100%, 8px 100%;
+    background: var(--tabs-bg) linear-gradient(to right, var(--tabs-bg) 30%, rgba(255, 255, 255, 0))
+        linear-gradient(to right, rgba(255, 255, 255, 0), var(--tabs-bg) 70%)
+        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0))
+        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) no-repeat local,
+      local, scroll, scroll 100% 0 0 0 100% 0;
   }
 
   .tab {
@@ -82,6 +78,7 @@
 }
 
 .elasticTabs {
+  position: relative;
   overflow-x: auto;
   display: inline-flex;
   max-width: 100%;
@@ -92,6 +89,21 @@
 
   [data-theme='dark'] & {
     background: rgba(147, 148, 150, 0.08);
+  }
+
+  .elasticToggle {
+    position: absolute;
+    height: calc(100% - 8px);
+    transition: left 0.2s linear;
+
+    background-color: var(--theme-card-color);
+    box-shadow: var(--theme-card-shadow);
+    border-radius: 20px;
+
+    [data-theme='dark'] & {
+      background: #43484d;
+      box-shadow: 0 0 0.5px rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
+    }
   }
 
   .tab {
@@ -118,14 +130,7 @@
     }
 
     &.active {
-      background-color: var(--theme-card-color);
       color: var(--theme-primary-color);
-      box-shadow: var(--theme-card-shadow);
-
-      [data-theme='dark'] & {
-        background: #43484d;
-        box-shadow: 0 0 0.5px rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
-      }
 
       > svg {
         color: var(--theme-red-color);
