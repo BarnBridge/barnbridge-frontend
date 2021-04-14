@@ -80,6 +80,9 @@ type TabsProps = {
 };
 
 export const Tabs: FC<TabsProps> = props => {
+  const totalTabs = props.tabs.length;
+  const activeIndex = props.tabs.findIndex(tab => tab.id === props.active);
+
   return (
     <div
       className={cn(props.className, {
@@ -87,6 +90,10 @@ export const Tabs: FC<TabsProps> = props => {
         [s.elasticTabs]: props.variation === 'elastic',
       })}
       style={props.style}>
+      <div
+        className={s.elasticToggle}
+        style={{ left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`, width: `calc(100% / ${totalTabs} - 8px)` }}
+      />
       {props.tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}
@@ -94,6 +101,7 @@ export const Tabs: FC<TabsProps> = props => {
             [s.active]: id === props.active,
             [s.small]: props.size === 'small',
           })}
+          style={{ width: `calc(100% / ${totalTabs})` }}
           type="button"
           onClick={() => {
             props.onClick(id);

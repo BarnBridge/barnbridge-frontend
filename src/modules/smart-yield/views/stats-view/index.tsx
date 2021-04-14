@@ -1,39 +1,39 @@
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import cn from 'classnames';
 
 import Icon from 'components/custom/icon';
+import { Tabs } from 'components/custom/tabs';
+import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
 import DepositHeader from '../deposit-view/deposit-header';
 import ApyTrend from './apy';
 import Liquidity from './liquidity';
 import MarketDetails from './market';
-import StatsTables from './tables';
+import PoolTxTable from './pool-tx-table';
+import SeniorBondsTable from './senior-bonds-table';
 
 import s from './s.module.scss';
 
+const tabs = [
+  {
+    children: 'Transaction history',
+    id: 'th',
+  },
+  {
+    children: 'Senior bonds',
+    id: 'sb',
+  },
+];
+
 const StatsView: React.FC = () => {
-  const location = useLocation();
   const wallet = useWallet();
+  const syPool = useSYPool();
 
-  const [market, token] = React.useMemo(() => {
-    const urlQuery = new URLSearchParams(location.search);
+  const [activeTab, setActiveTab] = React.useState('th');
 
-    let marketStr = urlQuery.get('m') ?? undefined;
-
-    if (marketStr) {
-      marketStr = decodeURIComponent(marketStr);
-    }
-
-    let tokenStr = urlQuery.get('t') ?? undefined;
-
-    if (tokenStr) {
-      tokenStr = decodeURIComponent(tokenStr);
-    }
-
-    return [marketStr, tokenStr];
-  }, [location.search]);
+  const tabsComponent = <Tabs tabs={tabs} active={activeTab} onClick={setActiveTab} variation="normal" size="small" />;
 
   return (
     <div className="container-limit">
@@ -48,7 +48,7 @@ const StatsView: React.FC = () => {
         <Link
           to={{
             pathname: `/smart-yield/deposit`,
-            search: `?m=${market}&t=${token}`,
+            search: `?m=${syPool.marketId}&t=${syPool.tokenId}`,
           }}
           className="button-primary ml-auto"
           {...{ disabled: !wallet.isActive }}>
@@ -61,7 +61,9 @@ const StatsView: React.FC = () => {
         <MarketDetails />
       </div>
       <Liquidity className="mb-32" />
-      <StatsTables />
+      <section className="card">
+        {activeTab === 'th' ? <PoolTxTable tabs={tabsComponent} /> : <SeniorBondsTable tabs={tabsComponent} />}
+      </section>
     </div>
   );
 };

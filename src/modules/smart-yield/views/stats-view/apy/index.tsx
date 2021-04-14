@@ -26,7 +26,7 @@ const tabs = [
   },
   {
     children: '1mo',
-    id: '1mo',
+    id: '30d',
   },
 ];
 
@@ -42,13 +42,12 @@ const InitialState: State = {
 
 const ApyTrend: React.FC = () => {
   const poolCtx = useSYPool();
-  const [activeTab, setActiveTab] = React.useState('24h');
+  const { pool } = poolCtx;
 
+  const [activeTab, setActiveTab] = React.useState('24h');
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
-    const { pool } = poolCtx;
-
     if (!pool) {
       setState(
         mergeState<State>({
@@ -66,7 +65,7 @@ const ApyTrend: React.FC = () => {
       );
 
       try {
-        const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress);
+        const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress, activeTab);
 
         setState(
           mergeState<State>({
@@ -86,7 +85,11 @@ const ApyTrend: React.FC = () => {
         );
       }
     })();
-  }, [poolCtx.pool]);
+  }, [pool, activeTab]);
+
+  if (!pool) {
+    return null;
+  }
 
   return (
     <section className="card">

@@ -138,14 +138,75 @@ export type APISYPoolAPY = {
   point: Date;
   seniorApy: number;
   juniorApy: number;
+  originatorApy: number;
 };
 
-export function fetchSYPoolAPY(syAddr: string): Promise<APISYPoolAPY[]> {
-  const url = new URL(`/api/smartyield/pools/${syAddr}/apy`, GOV_API_URL);
+export function fetchSYPoolAPY(syAddr: string, windowFilter: string = '24h'): Promise<APISYPoolAPY[]> {
+  const query = queryfy({
+    window: windowFilter,
+  });
+
+  const url = new URL(`/api/smartyield/pools/${syAddr}/apy?${query}`, GOV_API_URL);
 
   return fetch(url.toString())
     .then(result => result.json())
     .then(result => result.data);
+}
+
+export type APISYPoolLiquidity = {
+  point: Date;
+  seniorLiquidity: number;
+  juniorLiquidity: number;
+};
+
+export function fetchSYPoolLiquidity(syAddr: string, windowFilter: string = '24h'): Promise<APISYPoolLiquidity[]> {
+  const query = queryfy({
+    window: windowFilter,
+  });
+
+  const url = new URL(`/api/smartyield/pools/${syAddr}/liquidity?${query}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then(result => result.data);
+}
+
+export type APISYPoolTransaction = {
+  protocolId: string;
+  pool: string;
+  underlyingTokenAddress: string;
+  underlyingTokenSymbol: string;
+  amount: BigNumber;
+  tranche: string;
+  transactionType: string;
+  transactionHash: string;
+  blockTimestamp: number;
+  blockNumber: number;
+};
+
+export function fetchSYPoolTransactions(
+  poolAddress: string,
+  page = 1,
+  limit = 10,
+  transactionType: string = 'all',
+): Promise<PaginatedResult<APISYPoolTransaction>> {
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    transactionType,
+  });
+
+  const url = new URL(`/api/smartyield/pools/${poolAddress}/transactions?${query}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then((result: PaginatedResult<APISYPoolTransaction>) => ({
+      ...result,
+      data: (result.data ?? []).map((item: APISYPoolTransaction) => ({
+        ...item,
+        amount: new BigNumber(item.amount),
+      })),
+    }));
 }
 
 export enum APISYTxHistoryType {

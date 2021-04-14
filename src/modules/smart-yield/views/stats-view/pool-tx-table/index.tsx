@@ -5,28 +5,24 @@ import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
 import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
+import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
+import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { mergeState } from 'hooks/useMergeState';
 import {
+  APISYPoolTransaction,
   APISYTxHistoryType,
-  APISYUserTxHistory,
   HistoryShortTypes,
-  fetchSYUserTxHistory,
+  fetchSYPoolTransactions,
   isPositiveHistoryType,
 } from 'modules/smart-yield/api';
-import { SYPool } from 'modules/smart-yield/providers/pool-provider';
-import { usePools } from 'modules/smart-yield/providers/pools-provider';
-import HistoryTableFilter, {
-  HistoryTableFilterValues,
-} from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
-import { useWallet } from 'wallets/wallet';
+import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
-type TableEntity = APISYUserTxHistory & {
+type TableEntity = APISYPoolTransaction & {
   poolEntity?: SYPool;
   isTokenAmount?: boolean;
   computedAmount?: BigNumber;
@@ -36,22 +32,25 @@ const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
     render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
-        <Grid flow="row" gap={4} className="ml-auto">
+      <div className="flex">
+        <IconBubble
+          name={entity.poolEntity?.meta?.icon}
+          bubbleName={entity.poolEntity?.market?.icon}
+          className="mr-16"
+        />
+        <div className="flex flow-row">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {entity.underlyingTokenSymbol}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
             {entity.poolEntity?.market?.name}
           </Text>
-        </Grid>
-      </Grid>
+        </div>
+      </div>
     ),
   },
   {
     title: 'Tranche / Transaction',
-    align: 'right',
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -95,6 +94,18 @@ const Columns: ColumnsType<TableEntity> = [
     },
   },
   {
+    title: 'Address',
+    render: (_, entity) => (
+      <Grid flow="row" gap={4}>
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.transactionHash)}
+          </Text>
+        </ExternalLink>
+      </Grid>
+    ),
+  },
+  {
     title: 'Transaction Hash',
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
@@ -128,6 +139,9 @@ type State = {
   total: number;
   pageSize: number;
   page: number;
+  filters: {
+    transactionType: string;
+  };
 };
 
 const InitialState: State = {
@@ -136,73 +150,86 @@ const InitialState: State = {
   total: 0,
   pageSize: 10,
   page: 1,
+  filters: {
+    transactionType: 'all',
+  },
 };
 
-const InitialFilters: HistoryTableFilterValues = {
-  originator: 'all',
-  token: 'all',
-  transactionType: 'all',
-};
+const Filters: TableFilterType[] = [
+  {
+    name: 'transactionType',
+    label: 'Transaction direction',
+    defaultValue: 'all',
+    itemRender: () => {
+      const options = [
+        {
+          value: 'all',
+          label: 'All transactions',
+        },
+        {
+          value: 'in',
+          label: 'In',
+        },
+        {
+          value: 'out',
+          label: 'Out',
+        },
+      ];
+
+      return <Select options={options} className="full-width" />;
+    },
+  },
+];
 
 type Props = {
   tabs: React.ReactNode;
 };
 
-const HistoryTable: React.FC<Props> = ({ tabs }) => {
-  const wallet = useWallet();
-  const poolsCtx = usePools();
-
-  const { pools } = poolsCtx;
+const PoolTxTable: React.FC<Props> = ({ tabs }) => {
+  const poolCtx = useSYPool();
+  const { pool } = poolCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
-  const [filters, setFilters] = React.useState<HistoryTableFilterValues>(InitialFilters);
 
   React.useEffect(() => {
     (async () => {
-      if (!wallet.account) {
+      if (!pool) {
         return;
       }
 
-      setState(
-        mergeState<State>({
-          loading: true,
-        }),
-      );
+      setState(prevState => ({
+        ...prevState,
+        loading: true,
+      }));
 
       try {
-        const history = await fetchSYUserTxHistory(
-          wallet.account,
+        const transactions = await fetchSYPoolTransactions(
+          pool.smartYieldAddress,
           state.page,
           state.pageSize,
-          filters.originator,
-          filters.token,
-          filters.transactionType,
+          state.filters.transactionType,
         );
 
-        setState(
-          mergeState<State>({
-            loading: false,
-            data: history.data,
-            total: history.meta.count,
-          }),
-        );
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          data: transactions.data,
+          total: transactions.meta.count,
+        }));
       } catch {
-        setState(
-          mergeState<State>({
-            loading: false,
-            data: [],
-            total: 0,
-          }),
-        );
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          data: [],
+          total: 0,
+        }));
       }
     })();
-  }, [wallet.account, filters.originator, filters.token, filters.transactionType, state.page]);
+  }, [pool?.smartYieldAddress, state.page, state.filters.transactionType]);
 
   const mappedData = React.useMemo(
     () =>
       state.data.map(item => {
-        const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.pool);
-
         let isTokenAmount: boolean | undefined;
         let computedAmount: BigNumber | undefined;
 
@@ -245,34 +272,32 @@ const HistoryTable: React.FC<Props> = ({ tabs }) => {
           computedAmount,
         } as TableEntity;
       }),
-    [state.data, pools],
+    [state.data, pool],
   );
 
-  function handleFiltersApply(values: HistoryTableFilterValues) {
+  function handleFilterChange(filters: Record<string, any>) {
     setState(prevState => ({
       ...prevState,
       page: 1,
-    }));
-
-    setFilters(prevState => ({
-      ...prevState,
-      ...values,
+      filters: {
+        ...prevState.filters,
+        ...filters,
+      },
     }));
   }
 
   function handlePageChange(page: number) {
-    setState(
-      mergeState<State>({
-        page,
-      }),
-    );
+    setState(prevState => ({
+      ...prevState,
+      page,
+    }));
   }
 
   return (
     <>
-      <header className="card-header flex align-center" style={{ padding: '0 12px 0 24px' }}>
+      <header className="card-header flex align-center justify-space-between ph-24 pv-0">
         {tabs}
-        <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
+        <TableFilter filters={Filters} value={state.filters} onChange={handleFilterChange} />
       </header>
       <Table<TableEntity>
         inCard
@@ -300,4 +325,4 @@ const HistoryTable: React.FC<Props> = ({ tabs }) => {
   );
 };
 
-export default HistoryTable;
+export default PoolTxTable;

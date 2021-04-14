@@ -5,7 +5,6 @@ import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
 import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
-import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';

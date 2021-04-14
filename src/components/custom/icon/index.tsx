@@ -60,6 +60,7 @@ export type IconNames =
   | 'close-tiny'
   | 'dropdown-arrow'
   | 'warning-outlined'
+  | 'warning-circle-outlined'
   | 'gear'
   | 'node-status'
   | 'info-outlined'

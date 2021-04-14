@@ -7,6 +7,7 @@ import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import Web3Contract from 'web3/contracts/web3Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
+import Divider from 'components/antd/divider';
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -53,11 +54,13 @@ type ActionColumnProps = {
 };
 
 const ActionColumn: React.FC<ActionColumnProps> = props => {
-  const { provider, reloadFees } = props.entity;
+  const { provider, underlyingDecimals, underlyingSymbol, reloadFees } = props.entity;
   const wallet = useWallet();
 
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [harvesting, setHarvesting] = React.useState(false);
+
+  const amount = provider.underlyingFees?.unscaleBy(underlyingDecimals);
 
   const harvest = React.useCallback(async () => {
     setConfirmVisible(false);
@@ -82,7 +85,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
       <button
         type="button"
         className="button-ghost ml-auto"
-        disabled={!provider.underlyingFees?.gt(BigNumber.ZERO) || harvesting}
+        disabled={!amount?.gt(BigNumber.ZERO) || harvesting}
         onClick={() => setConfirmVisible(true)}>
         {harvesting && <AntdSpin spinning className="mr-8" />}
         Transfer fees
@@ -92,8 +95,29 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
           title="Confirm transfer fees"
           submitText="Transfer fees"
           onCancel={() => setConfirmVisible(false)}
-          onConfirm={harvest}
-        />
+          onConfirm={harvest}>
+          {() => (
+            <div>
+              <Text type="h2" weight="bold" align="center" color="primary" className="mb-16">
+                {formatToken(amount, {
+                  compact: true,
+                  tokenName: underlyingSymbol,
+                }) ?? '-'}
+              </Text>
+              <div className="flex align-center justify-center mb-8">
+                <Icon name="warning-circle-outlined" className="mr-8" />
+                <Text type="p2" weight="semibold" align="center" color="red">
+                  Warning
+                </Text>
+              </div>
+              <Text type="p2" weight="semibold" align="center" color="secondary" className="mb-32">
+                Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
+                Treasury. Make sure you are willing to spend the gas to send this transaction!
+              </Text>
+              <Divider style={{ margin: '0 -24px', width: 'calc(100% + 48px)' }} />
+            </div>
+          )}
+        </TxConfirmModal>
       )}
       <ContractListener contract={props.entity.provider} />
     </>
@@ -135,13 +159,13 @@ const Columns: ColumnsType<SYPoolEntity> = [
 
       return (
         <Tooltip
-          className="flex flow-row row-gap-4"
           placement="bottomRight"
-          title={formatToken(entity.provider.underlyingFees, {
-            scale: entity.underlyingDecimals,
+          overlayStyle={{ maxWidth: 'inherit' }}
+          title={formatToken(amount, {
             decimals: entity.underlyingDecimals,
+            tokenName: entity.underlyingSymbol,
           })}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {formatToken(amount, {
               compact: true,
             }) ?? '-'}

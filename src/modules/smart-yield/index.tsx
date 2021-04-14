@@ -33,14 +33,16 @@ const SmartYieldView: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
   React.useEffect(() => {
-    if (vt === 'deposit') {
+    if (['stats', 'deposit'].includes(vt)) {
       setActiveTab('markets');
       return;
     }
+
     if (vt === 'withdraw') {
       setActiveTab('portfolio');
       return;
     }
+
     if (vt === 'pool') {
       setActiveTab('pools');
       return;
