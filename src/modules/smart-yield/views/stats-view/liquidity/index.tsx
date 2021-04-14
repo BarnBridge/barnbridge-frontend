@@ -1,19 +1,20 @@
 import React from 'react';
 import { Spin } from 'antd';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
-import { formatPercent } from 'web3/utils';
+import { formatPercent, formatUSD } from 'web3/utils';
 
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
+import { APISYPoolLiquidity, fetchSYPoolLiquidity } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';
 
-type ChartEntity = APISYPoolAPY;
+type ChartEntity = APISYPoolLiquidity;
 
 const tabs = [
   {
@@ -26,7 +27,7 @@ const tabs = [
   },
   {
     children: '1mo',
-    id: '1mo',
+    id: '30d',
   },
 ];
 
@@ -46,13 +47,12 @@ const InitialState: State = {
 
 const Liquidity: React.FC<Props> = ({ className }) => {
   const poolCtx = useSYPool();
-  const [activeTab, setActiveTab] = React.useState('24h');
+  const { pool } = poolCtx;
 
+  const [activeTab, setActiveTab] = React.useState('24h');
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
-    const { pool } = poolCtx;
-
     if (!pool) {
       setState(
         mergeState<State>({
@@ -70,14 +70,14 @@ const Liquidity: React.FC<Props> = ({ className }) => {
       );
 
       try {
-        const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress);
+        const poolLiquidity = await fetchSYPoolLiquidity(pool.smartYieldAddress, activeTab);
 
         setState(
           mergeState<State>({
             loading: false,
-            data: poolAPYs.map(apy => ({
-              ...apy,
-              point: new Date(apy.point),
+            data: poolLiquidity.map(liquidity => ({
+              ...liquidity,
+              point: new Date(liquidity.point),
             })),
           }),
         );
@@ -90,7 +90,11 @@ const Liquidity: React.FC<Props> = ({ className }) => {
         );
       }
     })();
-  }, [poolCtx.pool]);
+  }, [pool, activeTab]);
+
+  if (!pool) {
+    return null;
+  }
 
   return (
     <section className={cn('card', className)}>
@@ -108,7 +112,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
       <div className="p-24">
         <Spin spinning={state.loading}>
           <ReCharts.ResponsiveContainer width="100%" height={225} className="mb-24">
-            <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
+            <ReCharts.AreaChart data={state.data} margin={{ left: 25 }}>
               <defs>
                 <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
                   <stop offset="0%" stopColor="rgba(var(--theme-green-color-rgb), 0.08)" />
@@ -121,11 +125,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
               </defs>
               <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
               <ReCharts.XAxis dataKey="point" hide />
-              <ReCharts.YAxis
-                axisLine={false}
-                tickLine={false}
-                tickFormatter={value => formatPercent(value, 0) ?? ''}
-              />
+              <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatUSD(value, true) ?? ''} />
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
@@ -134,14 +134,18 @@ const Liquidity: React.FC<Props> = ({ className }) => {
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
-                  <Text type="p2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
-                    {formatPercent(value)}
+                  <Text
+                    type="p2"
+                    tag="span"
+                    weight="semibold"
+                    color={dataKey === 'seniorLiquidity' ? 'green' : 'purple'}>
+                    {formatUSD(value)}
                   </Text>
                 )}
               />
               <ReCharts.Area
                 name="Senior APY "
-                dataKey="seniorApy"
+                dataKey="seniorLiquidity"
                 type="monotone"
                 fill="url(#chart-green-gradient)"
                 stroke="var(--theme-green-color)"
@@ -149,7 +153,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
               />
               <ReCharts.Area
                 name="Junior APY "
-                dataKey="juniorApy"
+                dataKey="juniorLiquidity"
                 type="monotone"
                 fill="url(#chart-purple-gradient)"
                 stroke="var(--theme-purple-color)"
@@ -167,7 +171,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
           <div
             className="chart-label text-sm fw-semibold"
             style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
-            Junior Liqudity
+            Junior Liquidity
           </div>
         </div>
       </div>

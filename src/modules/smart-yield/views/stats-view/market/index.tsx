@@ -1,7 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatBigValue, formatPercent, formatUSDValue } from 'web3/utils';
+import format from 'date-fns/format';
+import { formatBigValue, formatPercent, formatToken, formatUSDValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
@@ -32,6 +33,10 @@ const MarketDetails: React.FC = () => {
   if (!pool) {
     return null;
   }
+
+  const abond = pool.contracts.smartYield.abond;
+
+  console.log(abond);
 
   return (
     <section className="card">
@@ -203,19 +208,19 @@ const MarketDetails: React.FC = () => {
                 title={
                   <>
                     <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                      ASD
-                    </Text>
-                    <Text type="small" weight="semibold" color="secondary">
-                      QWE
+                      {formatToken(abond?.principal.unscaleBy(pool.underlyingDecimals), {
+                        decimals: pool.underlyingDecimals,
+                        tokenName: pool.underlyingSymbol,
+                      }) ?? '-'}
                     </Text>
                   </>
                 }>
                 <div className="flex flow-col col-gap-8">
                   <Text type="p1" weight="semibold" color="primary">
-                    {Intl.NumberFormat('en', { notation: 'compact' }).format(123456)}
-                  </Text>
-                  <Text type="p1" weight="semibold" color="primary">
-                    ASD
+                    {formatToken(abond?.principal.unscaleBy(pool.underlyingDecimals), {
+                      compact: true,
+                      tokenName: pool.underlyingSymbol,
+                    }) ?? '-'}
                   </Text>
                 </div>
               </Tooltip>
@@ -228,19 +233,19 @@ const MarketDetails: React.FC = () => {
                 title={
                   <>
                     <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                      ASD
-                    </Text>
-                    <Text type="small" weight="semibold" color="secondary">
-                      {formatUSDValue(new BigNumber(123456))}
+                      {formatToken(abond?.gain.unscaleBy(pool.underlyingDecimals), {
+                        decimals: pool.underlyingDecimals,
+                        tokenName: pool.underlyingSymbol,
+                      }) ?? '-'}
                     </Text>
                   </>
                 }>
                 <div className="flex flow-col col-gap-8">
                   <Text type="p1" weight="semibold" color="primary">
-                    {Intl.NumberFormat('en', { notation: 'compact' }).format(123456)}
-                  </Text>
-                  <Text type="p1" weight="semibold" color="primary">
-                    ASD
+                    {formatToken(abond?.gain.unscaleBy(pool.underlyingDecimals), {
+                      compact: true,
+                      tokenName: pool.underlyingSymbol,
+                    }) ?? '-'}
                   </Text>
                 </div>
               </Tooltip>
@@ -252,26 +257,11 @@ const MarketDetails: React.FC = () => {
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
                 Abond matures at
               </Text>
-              <Tooltip
-                title={
-                  <>
-                    <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                      ASD
-                    </Text>
-                    <Text type="small" weight="semibold" color="secondary">
-                      QWE
-                    </Text>
-                  </>
-                }>
-                <div className="flex flow-col col-gap-8">
-                  <Text type="p1" weight="semibold" color="primary">
-                    {Intl.NumberFormat('en', { notation: 'compact' }).format(123456)}
-                  </Text>
-                  <Text type="p1" weight="semibold" color="primary">
-                    ASD
-                  </Text>
-                </div>
-              </Tooltip>
+              <div className="flex flow-col col-gap-8">
+                <Text type="p1" weight="semibold" color="primary">
+                  {(abond?.maturesAt && format(abond?.maturesAt, 'MM.dd.yyyy HH:mm')) ?? '-'}
+                </Text>
+              </div>
             </div>
           </div>
         </>

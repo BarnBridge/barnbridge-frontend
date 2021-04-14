@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
-import { ElasticTabs } from 'components/custom/tabs';
+import { Tabs } from 'components/custom/tabs';
 
 import TreasuryFees from './treasury-fees';
 import TreasuryHoldings from './treasury-holdings';
@@ -31,7 +31,8 @@ const TreasuryView: React.FC = () => {
 
   return (
     <>
-      <ElasticTabs
+      <Tabs
+        variation="elastic"
         tabs={[
           {
             id: 'holdings',
