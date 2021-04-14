@@ -46,7 +46,7 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
   return (
     <div
       className={cn('flexbox-list', className)}
-      style={{ '--gap': '64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
+      style={{ '--gap': '24px 64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       <Grid flow="col" gap={16} align="center">
         <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} />
         <div className="ml-auto">
