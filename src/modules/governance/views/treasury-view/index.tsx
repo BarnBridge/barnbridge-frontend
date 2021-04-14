@@ -32,7 +32,6 @@ const TreasuryView: React.FC = () => {
   return (
     <>
       <Tabs
-        variation="elastic"
         tabs={[
           {
             id: 'holdings',
@@ -51,8 +50,12 @@ const TreasuryView: React.FC = () => {
         ]}
         active={activeTab}
         onClick={setActiveTab}
+        variation="elastic"
         className="mb-40"
-        style={{ width: 248, height: 40 }}
+        style={{
+          width: 248,
+          height: 40,
+        }}
       />
       <Switch>
         <Route path="/governance/treasury/holdings" component={TreasuryHoldings} />
