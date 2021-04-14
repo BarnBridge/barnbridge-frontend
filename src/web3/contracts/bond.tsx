@@ -17,14 +17,14 @@ const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLo
 const Contract = new Web3Contract(BOND_ABI as Web3ContractAbiItem[], CONTRACT_BOND_ADDR, 'BOND');
 
 export const BONDTokenMeta: TokenMeta = {
-  icon: <Icon key="bond" name="bond-token" />,
+  icon: <Icon key="bond" name="token-bond" />,
   name: 'BOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
 };
 
 export const VBONDTokenMeta: TokenMeta = {
-  icon: <Icon key="vbond" name="bond-token" />,
+  icon: <Icon key="vbond" name="token-bond" />,
   name: 'vBOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,

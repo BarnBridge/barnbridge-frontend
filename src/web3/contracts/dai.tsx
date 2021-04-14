@@ -15,7 +15,7 @@ const CONTRACT_DAI_ADDR = String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowe
 const Contract = new Web3Contract(DAI_ABI as Web3ContractAbiItem[], CONTRACT_DAI_ADDR, 'DAI');
 
 export const DAITokenMeta: TokenMeta = {
-  icon: <Icon key="dai" name="dai-token" />,
+  icon: <Icon key="dai" name="token-dai" />,
   name: 'DAI',
   address: CONTRACT_DAI_ADDR,
   decimals: 18,

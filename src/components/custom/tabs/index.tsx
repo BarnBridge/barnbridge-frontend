@@ -94,6 +94,7 @@ export const Tabs: FC<TabsProps> = props => {
             [s.active]: id === props.active,
             [s.small]: props.size === 'small',
           })}
+          style={{ width: `calc(100% / ${totalTabs})` }}
           type="button"
           onClick={() => {
             props.onClick(id);

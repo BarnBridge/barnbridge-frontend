@@ -15,7 +15,7 @@ const CONTRACT_SUSD_ADDR = String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLo
 const Contract = new Web3Contract(SUSD_ABI as Web3ContractAbiItem[], CONTRACT_SUSD_ADDR, 'SUSD');
 
 export const SUSDTokenMeta: TokenMeta = {
-  icon: <Icon key="susd" name="susd-token" />,
+  icon: <Icon key="susd" name="token-susd" />,
   name: 'sUSD',
   address: CONTRACT_SUSD_ADDR,
   decimals: 18,

@@ -7,6 +7,7 @@ import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import Web3Contract from 'web3/contracts/web3Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
+import Divider from 'components/antd/divider';
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -15,6 +16,7 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
+import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, fetchSYPools } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
@@ -22,6 +24,7 @@ import { useWallet } from 'wallets/wallet';
 
 type SYPoolEntity = APISYPool & {
   provider: SYProviderContract;
+  reloadFees: () => void;
 };
 
 type State = {
@@ -51,11 +54,13 @@ type ActionColumnProps = {
 };
 
 const ActionColumn: React.FC<ActionColumnProps> = props => {
-  const { provider } = props.entity;
+  const { provider, underlyingDecimals, underlyingSymbol, reloadFees } = props.entity;
   const wallet = useWallet();
 
   const [confirmVisible, setConfirmVisible] = React.useState(false);
   const [harvesting, setHarvesting] = React.useState(false);
+
+  const amount = provider.underlyingFees?.unscaleBy(underlyingDecimals);
 
   const harvest = React.useCallback(async () => {
     setConfirmVisible(false);
@@ -65,6 +70,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
       provider.setProvider(wallet.provider);
       provider.setAccount(wallet.account);
       await provider.transferFeesSend();
+      reloadFees();
     } catch {}
 
     setHarvesting(false);
@@ -79,7 +85,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
       <button
         type="button"
         className="button-ghost ml-auto"
-        disabled={!provider.underlyingFees?.gt(BigNumber.ZERO) || harvesting}
+        disabled={!amount?.gt(BigNumber.ZERO) || harvesting}
         onClick={() => setConfirmVisible(true)}>
         {harvesting && <AntdSpin spinning className="mr-8" />}
         Transfer fees
@@ -89,8 +95,29 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
           title="Confirm transfer fees"
           submitText="Transfer fees"
           onCancel={() => setConfirmVisible(false)}
-          onConfirm={harvest}
-        />
+          onConfirm={harvest}>
+          {() => (
+            <div>
+              <Text type="h2" weight="bold" align="center" color="primary" className="mb-16">
+                {formatToken(amount, {
+                  compact: true,
+                  tokenName: underlyingSymbol,
+                }) ?? '-'}
+              </Text>
+              <div className="flex align-center justify-center mb-8">
+                <Icon name="warning-circle-outlined" className="mr-8" />
+                <Text type="p2" weight="semibold" align="center" color="red">
+                  Warning
+                </Text>
+              </div>
+              <Text type="p2" weight="semibold" align="center" color="secondary" className="mb-32">
+                Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
+                Treasury. Make sure you are willing to spend the gas to send this transaction!
+              </Text>
+              <Divider style={{ margin: '0 -24px', width: 'calc(100% + 48px)' }} />
+            </div>
+          )}
+        </TxConfirmModal>
       )}
       <ContractListener contract={props.entity.provider} />
     </>
@@ -126,26 +153,29 @@ const Columns: ColumnsType<SYPoolEntity> = [
   {
     title: 'Fees Amount',
     align: 'right',
-    render: (_, entity) => (
-      <Tooltip
-        className="flex flow-row row-gap-4"
-        placement="bottomRight"
-        title={formatToken(entity.provider.underlyingFees, {
-          scale: entity.underlyingDecimals,
-          decimals: entity.underlyingDecimals,
-        })}>
-        <Text type="p1" weight="semibold" color="primary">
-          {formatToken(entity.provider.underlyingFees, {
-            scale: entity.underlyingDecimals,
-            compact: true,
-          }) ?? '-'}
-        </Text>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSD(entity.provider.underlyingFees?.unscaleBy(entity.underlyingDecimals)?.multipliedBy(1), true) ??
-            '-'}
-        </Text>
-      </Tooltip>
-    ),
+    render: (_, entity) => {
+      const amount = entity.provider.underlyingFees?.unscaleBy(entity.underlyingDecimals);
+      const amountUSD = convertTokenInUSD(amount, entity.underlyingSymbol);
+
+      return (
+        <Tooltip
+          placement="bottomRight"
+          overlayStyle={{ maxWidth: 'inherit' }}
+          title={formatToken(amount, {
+            decimals: entity.underlyingDecimals,
+            tokenName: entity.underlyingSymbol,
+          })}>
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {formatToken(amount, {
+              compact: true,
+            }) ?? '-'}
+          </Text>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(amountUSD) ?? '-'}
+          </Text>
+        </Tooltip>
+      );
+    },
   },
   {
     align: 'right',
@@ -200,6 +230,7 @@ const TreasuryFees: React.FC = () => {
   const walletRef = React.useRef(wallet);
   walletRef.current = wallet;
 
+  const [reloadFees, versionFees] = useReload();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -234,11 +265,11 @@ const TreasuryFees: React.FC = () => {
             items: data.map(item => {
               const providerContract = new SYProviderContract(item.providerAddress);
               providerContract.on(Web3Contract.UPDATE_DATA, reload);
-              providerContract.loadUnderlyingFees();
 
               const result = {
                 ...item,
                 provider: providerContract,
+                reloadFees,
               };
 
               return result;
@@ -260,6 +291,12 @@ const TreasuryFees: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
+    state.fees.items.forEach(fee => {
+      fee.provider.loadUnderlyingFees();
+    });
+  }, [state.fees.items, versionFees]);
+
+  React.useEffect(() => {
     setState(prevState => ({
       ...prevState,
       fees: {
@@ -271,7 +308,10 @@ const TreasuryFees: React.FC = () => {
 
   const totalFees = React.useMemo(() => {
     return state.fees.items.reduce((a, c) => {
-      return a.plus(c.provider.underlyingFees?.unscaleBy(c.underlyingDecimals)?.multipliedBy(1) ?? 0);
+      const amount = c.provider.underlyingFees?.unscaleBy(c.underlyingDecimals);
+      const amountUSD = convertTokenInUSD(amount, c.underlyingSymbol);
+
+      return a.plus(amountUSD ?? 0);
     }, BigNumber.ZERO);
   }, [state.fees.items, version]);
 
