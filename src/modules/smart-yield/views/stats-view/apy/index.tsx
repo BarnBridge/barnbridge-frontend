@@ -13,20 +13,22 @@ import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';
 
-type ChartEntity = APISYPoolAPY;
+type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
+  point: number;
+};
 
 const tabs = [
   {
-    children: '24h',
     id: '24h',
+    children: '24h',
   },
   {
-    children: '1w',
     id: '1w',
+    children: '1w',
   },
   {
-    children: '1mo',
     id: '30d',
+    children: '1mo',
   },
 ];
 
@@ -72,7 +74,7 @@ const ApyTrend: React.FC = () => {
             loading: false,
             data: poolAPYs.map(apy => ({
               ...apy,
-              point: new Date(apy.point),
+              point: new Date(apy.point).valueOf(),
             })),
           }),
         );
@@ -86,6 +88,61 @@ const ApyTrend: React.FC = () => {
       }
     })();
   }, [pool, activeTab]);
+
+  const ticks = React.useMemo(() => {
+    const dates = state.data.map(d => d.point);
+    const minDate = Math.min(...dates);
+    const maxDate = Math.max(...dates);
+
+    if (!Number.isFinite(minDate) || !Number.isFinite(maxDate)) {
+      return [];
+    }
+
+    let count = 0;
+    let range = 0;
+
+    switch (activeTab) {
+      case '24h':
+        count = 3;
+        range = 8 * 60 * 60 * 1_000; // 8 hours
+        break;
+      case '1w':
+        count = 7;
+        range = 24 * 60 * 60 * 1_000; // 24 hours
+        break;
+      case '30d':
+        count = 4;
+        range = 7 * 24 * 60 * 60 * 1_000; // 7 days
+        break;
+      default:
+        return [];
+    }
+
+    const minDt = maxDate - count * range;
+
+    const arr = Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
+
+    // arr.unshift(minDate);
+
+    return arr;
+  }, [state.data, activeTab]);
+
+  function formatTick(value: number) {
+    if (!Number.isInteger(value)) {
+      return '';
+    }
+
+    switch (activeTab) {
+      case '24h':
+        return format(new Date(value), 'HH:mm');
+      case '1w':
+        return format(new Date(value), 'EEE');
+      case '30d':
+        return format(new Date(value), 'dd MMM');
+      default:
+        return '';
+    }
+  }
 
   if (!pool) {
     return null;
@@ -119,7 +176,7 @@ const ApyTrend: React.FC = () => {
                 </linearGradient>
               </defs>
               <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
-              <ReCharts.XAxis dataKey="point" hide />
+              <ReCharts.XAxis dataKey="point" ticks={ticks} minTickGap={0} tickFormatter={value => formatTick(value)} />
               <ReCharts.YAxis
                 axisLine={false}
                 tickLine={false}
@@ -129,7 +186,7 @@ const ApyTrend: React.FC = () => {
                 separator=""
                 labelFormatter={value => (
                   <Text type="p2" tag="span" weight="semibold" color="primary">
-                    {value instanceof Date ? format(value, 'MM.dd.yyyy HH:mm') : ''}
+                    {value && !Number.isNaN(value) ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (

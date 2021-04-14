@@ -1,13 +1,13 @@
 import React from 'react';
 import { Spin } from 'antd';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
+import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYPoolLiquidity, fetchSYPoolLiquidity } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -78,6 +78,8 @@ const Liquidity: React.FC<Props> = ({ className }) => {
             data: poolLiquidity.map(liquidity => ({
               ...liquidity,
               point: new Date(liquidity.point),
+              seniorLiquidity: convertTokenInUSD(liquidity.seniorLiquidity, pool?.underlyingSymbol)?.toNumber() ?? 0,
+              juniorLiquidity: convertTokenInUSD(liquidity.juniorLiquidity, pool?.underlyingSymbol)?.toNumber() ?? 0,
             })),
           }),
         );

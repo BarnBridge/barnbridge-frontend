@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -17,6 +17,7 @@ import {
   APISYPoolTransaction,
   APISYTxHistoryType,
   HistoryShortTypes,
+  HistoryTypes,
   fetchSYPoolTransactions,
   isPositiveHistoryType,
 } from 'modules/smart-yield/api';
@@ -97,9 +98,9 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Address',
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+        <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
           <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
+            {shortenAddr(entity.accountAddress)}
           </Text>
         </ExternalLink>
       </Grid>
@@ -166,14 +167,10 @@ const Filters: TableFilterType[] = [
           value: 'all',
           label: 'All transactions',
         },
-        {
-          value: 'in',
-          label: 'In',
-        },
-        {
-          value: 'out',
-          label: 'Out',
-        },
+        ...Array.from(HistoryTypes.entries()).map(([type, label]) => ({
+          value: type,
+          label,
+        })),
       ];
 
       return <Select options={options} className="full-width" />;
@@ -303,7 +300,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
         inCard
         columns={Columns}
         dataSource={mappedData}
-        rowKey="transactionHash"
+        rowKey={entity => `${entity.transactionHash}_${entity.transactionType}`}
         loading={state.loading}
         pagination={{
           total: state.total,

@@ -36,8 +36,6 @@ const MarketDetails: React.FC = () => {
 
   const abond = pool.contracts.smartYield.abond;
 
-  console.log(abond);
-
   return (
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>

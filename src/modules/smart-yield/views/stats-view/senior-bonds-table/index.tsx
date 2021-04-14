@@ -1,120 +1,121 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import capitalize from 'lodash/capitalize';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
+import Select from 'components/antd/select';
+import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
+import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { mergeState } from 'hooks/useMergeState';
-import {
-  APISYTxHistoryType,
-  APISYUserTxHistory,
-  HistoryShortTypes,
-  fetchSYUserTxHistory,
-  isPositiveHistoryType,
-} from 'modules/smart-yield/api';
-import { SYPool } from 'modules/smart-yield/providers/pool-provider';
-import { usePools } from 'modules/smart-yield/providers/pools-provider';
-import HistoryTableFilter, {
-  HistoryTableFilterValues,
-} from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
-import { useWallet } from 'wallets/wallet';
+import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { APISYSeniorBonds, fetchSYSeniorBonds } from 'modules/smart-yield/api';
+import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
-type TableEntity = APISYUserTxHistory & {
+type TableEntity = APISYSeniorBonds & {
   poolEntity?: SYPool;
-  isTokenAmount?: boolean;
-  computedAmount?: BigNumber;
+};
+
+const TokenNameColumn: React.FC = () => {
+  const { pool } = useSYPool();
+
+  return (
+    <div className="flex">
+      <IconBubble name={pool?.meta?.icon} bubbleName={pool?.market?.icon} className="mr-16" />
+      <div className="flex flow-row">
+        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          {pool?.underlyingSymbol}
+        </Text>
+        <Text type="small" weight="semibold" color="secondary">
+          {pool?.market?.name}
+        </Text>
+      </div>
+    </div>
+  );
 };
 
 const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
-        <Grid flow="row" gap={4} className="ml-auto">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {entity.underlyingTokenSymbol}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {entity.poolEntity?.market?.name}
-          </Text>
-        </Grid>
-      </Grid>
-    ),
+    render: (_, entity) => <TokenNameColumn />,
   },
   {
-    title: 'Tranche / Transaction',
+    title: 'Deposited',
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {capitalize(entity.tranche)}
-        </Text>
-        <Text type="small" weight="semibold">
-          {HistoryShortTypes.get(entity.transactionType)}
+        <Tooltip
+          title={formatToken(entity.depositedAmount, {
+            decimals: entity.underlyingTokenDecimals,
+            tokenName: entity.underlyingTokenSymbol,
+          })}>
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {formatToken(entity.depositedAmount) ?? '-'}
+          </Text>
+        </Tooltip>
+        <Text type="small" weight="semibold" color="secondary">
+          {formatUSD(convertTokenInUSD(entity.depositedAmount, entity.underlyingTokenSymbol)) ?? '-'}
         </Text>
       </>
     ),
   },
   {
-    title: 'Amount',
+    title: 'Redeemable',
     align: 'right',
-    render: (_, entity) => {
-      const isPositive = isPositiveHistoryType(entity.transactionType as APISYTxHistoryType);
-
-      return (
+    render: (_, entity) => (
+      <>
         <Tooltip
-          title={
-            <Text type="small" weight="semibold" color="primary">
-              {formatToken(entity.amount, {
-                tokenName: entity.poolEntity?.contracts.smartYield.symbol,
-                decimals: entity.poolEntity?.underlyingDecimals,
-              })}
-            </Text>
-          }>
-          <Text type="p1" weight="semibold" color={isPositive ? 'green' : 'red'}>
-            {isPositive ? '+' : '-'}{' '}
-            {formatToken(entity.amount, {
-              tokenName: entity.isTokenAmount
-                ? entity.poolEntity?.contracts.smartYield.symbol
-                : entity.underlyingTokenSymbol,
-            })}
-          </Text>
-          <Text type="small" weight="semibold">
-            {formatUSD(entity.computedAmount)}
+          title={formatToken(entity.redeemableAmount, {
+            decimals: entity.underlyingTokenDecimals,
+            tokenName: entity.underlyingTokenSymbol,
+          })}>
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {formatToken(entity.redeemableAmount) ?? '-'}
           </Text>
         </Tooltip>
-      );
-    },
+        <Text type="small" weight="semibold" color="secondary">
+          {formatUSD(convertTokenInUSD(entity.redeemableAmount, entity.underlyingTokenSymbol)) ?? '-'}
+        </Text>
+      </>
+    ),
   },
   {
-    title: 'Transaction Hash',
+    title: 'Address',
     render: (_, entity) => (
-      <Grid flow="row" gap={4}>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+      <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
+        <Text type="p1" weight="semibold" color="blue">
+          {shortenAddr(entity.accountAddress)}
+        </Text>
+      </ExternalLink>
+    ),
+  },
+  {
+    title: 'Tx Hash / Timestamp',
+    render: (_, entity) => (
+      <>
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="mb-4">
           <Text type="p1" weight="semibold" color="blue">
             {shortenAddr(entity.transactionHash)}
           </Text>
         </ExternalLink>
-      </Grid>
+        <Text type="small" weight="semibold" color="secondary">
+          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+        </Text>
+      </>
     ),
   },
   {
-    title: 'Date',
+    title: 'Maturity Date',
     align: 'right',
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
+          {format(entity.maturityDate * 1_000, 'MM.dd.yyyy')}
         </Text>
         <Text type="small" weight="semibold">
-          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
+          {format(entity.maturityDate * 1_000, 'HH:mm')}
         </Text>
       </>
     ),
@@ -127,6 +128,11 @@ type State = {
   total: number;
   pageSize: number;
   page: number;
+  filters: {
+    redeemed: string;
+    sortBy: string;
+    sortDir: string;
+  };
 };
 
 const InitialState: State = {
@@ -135,149 +141,161 @@ const InitialState: State = {
   total: 0,
   pageSize: 10,
   page: 1,
+  filters: {
+    redeemed: 'all',
+    sortBy: 'none',
+    sortDir: 'desc',
+  },
 };
 
-const InitialFilters: HistoryTableFilterValues = {
-  originator: 'all',
-  token: 'all',
-  transactionType: 'all',
-};
+const Filters: TableFilterType[] = [
+  {
+    name: 'redeemed',
+    label: 'Type',
+    defaultValue: 'all',
+    itemRender: () => {
+      const options = [
+        {
+          value: 'all',
+          label: 'All senior bonds',
+        },
+        {
+          value: 'false',
+          label: 'Active',
+        },
+        {
+          value: 'true',
+          label: 'Redeemed',
+        },
+      ];
+
+      return <Select options={options} className="full-width" />;
+    },
+  },
+  {
+    name: 'sortBy',
+    label: 'Sort by',
+    defaultValue: 'none',
+    itemRender: () => {
+      const options = [
+        {
+          value: 'none',
+          label: 'Default',
+        },
+        {
+          value: 'maturityDate',
+          label: 'Maturity Date',
+        },
+        {
+          value: 'depositedAmount',
+          label: 'Deposited Amount',
+        },
+        {
+          value: 'redeemableAmount',
+          label: 'Redeemable Amount',
+        },
+      ];
+
+      return <Select options={options} className="full-width" />;
+    },
+  },
+  {
+    name: 'sortDir',
+    label: 'Sort direction',
+    defaultValue: 'desc',
+    itemRender: () => {
+      const options = [
+        {
+          value: 'desc',
+          label: 'Descending',
+        },
+        {
+          value: 'asc',
+          label: 'Ascending',
+        },
+      ];
+
+      return <Select options={options} className="full-width" />;
+    },
+  },
+];
 
 type Props = {
   tabs: React.ReactNode;
 };
 
 const SeniorBondsTable: React.FC<Props> = ({ tabs }) => {
-  const wallet = useWallet();
-  const poolsCtx = usePools();
-
-  const { pools } = poolsCtx;
+  const poolCtx = useSYPool();
+  const { pool } = poolCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
-  const [filters, setFilters] = React.useState<HistoryTableFilterValues>(InitialFilters);
 
   React.useEffect(() => {
-    (async () => {
-      if (!wallet.account) {
-        return;
-      }
+    if (!pool) {
+      return;
+    }
 
-      setState(
-        mergeState<State>({
-          loading: true,
-        }),
-      );
+    (async () => {
+      setState(prevState => ({
+        ...prevState,
+        loading: true,
+      }));
 
       try {
-        const history = await fetchSYUserTxHistory(
-          wallet.account,
+        const history = await fetchSYSeniorBonds(
+          pool.smartYieldAddress,
           state.page,
           state.pageSize,
-          filters.originator,
-          filters.token,
-          filters.transactionType,
+          state.filters.redeemed !== 'all' ? state.filters.redeemed : undefined,
+          state.filters.sortBy !== 'none' ? state.filters.sortBy : undefined,
+          state.filters.sortBy !== 'none' ? state.filters.sortDir : undefined,
         );
 
-        setState(
-          mergeState<State>({
-            loading: false,
-            data: history.data,
-            total: history.meta.count,
-          }),
-        );
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          data: history.data,
+          total: history.meta.count,
+        }));
       } catch {
-        setState(
-          mergeState<State>({
-            loading: false,
-            data: [],
-            total: 0,
-          }),
-        );
+        setState(prevState => ({
+          ...prevState,
+          loading: false,
+          data: [],
+          total: 0,
+        }));
       }
     })();
-  }, [wallet.account, filters.originator, filters.token, filters.transactionType, state.page]);
+  }, [pool?.smartYieldAddress, state.page, state.filters]);
 
-  const mappedData = React.useMemo(
-    () =>
-      state.data.map(item => {
-        const pool = pools.find(poolItem => poolItem.smartYieldAddress === item.pool);
-
-        let isTokenAmount: boolean | undefined;
-        let computedAmount: BigNumber | undefined;
-
-        if (pool) {
-          if (
-            [
-              APISYTxHistoryType.SENIOR_DEPOSIT,
-              APISYTxHistoryType.SENIOR_REDEEM,
-              APISYTxHistoryType.JUNIOR_DEPOSIT,
-              APISYTxHistoryType.JUNIOR_REDEEM,
-              APISYTxHistoryType.SBOND_SEND,
-              APISYTxHistoryType.SBOND_RECEIVE,
-            ].includes(item.transactionType as APISYTxHistoryType)
-          ) {
-            isTokenAmount = false;
-            computedAmount = new BigNumber(item.amount);
-          }
-
-          if (
-            [
-              APISYTxHistoryType.JUNIOR_INSTANT_WITHDRAW,
-              APISYTxHistoryType.JUNIOR_REGULAR_WITHDRAW,
-              APISYTxHistoryType.JTOKEN_SEND,
-              APISYTxHistoryType.JTOKEN_RECEIVE,
-              APISYTxHistoryType.JBOND_SEND,
-              APISYTxHistoryType.JBOND_RECEIVE,
-              APISYTxHistoryType.JUNIOR_STAKE,
-              APISYTxHistoryType.JUNIOR_UNSTAKE,
-            ].includes(item.transactionType as APISYTxHistoryType)
-          ) {
-            isTokenAmount = true;
-            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
-          }
-        }
-
-        return {
-          ...item,
-          poolEntity: pool,
-          isTokenAmount,
-          computedAmount,
-        } as TableEntity;
-      }),
-    [state.data, pools],
-  );
-
-  function handleFiltersApply(values: HistoryTableFilterValues) {
+  function handleFilterChange(filters: Record<string, any>) {
     setState(prevState => ({
       ...prevState,
       page: 1,
-    }));
-
-    setFilters(prevState => ({
-      ...prevState,
-      ...values,
+      filters: {
+        ...prevState.filters,
+        ...filters,
+      },
     }));
   }
 
   function handlePageChange(page: number) {
-    setState(
-      mergeState<State>({
-        page,
-      }),
-    );
+    setState(prevState => ({
+      ...prevState,
+      page,
+    }));
   }
 
   return (
     <>
-      <header className="card-header flex align-center" style={{ padding: '0 12px 0 24px' }}>
+      <header className="card-header flex align-center justify-space-between ph-24 pv-0">
         {tabs}
-        <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
+        <TableFilter filters={Filters} value={state.filters} onChange={handleFilterChange} />
       </header>
-      TODO: bonds table
-      {/* <Table<TableEntity>
+      <Table<TableEntity>
         inCard
         columns={Columns}
-        dataSource={mappedData}
+        dataSource={state.data}
         rowKey="transactionHash"
         loading={state.loading}
         pagination={{
@@ -295,7 +313,7 @@ const SeniorBondsTable: React.FC<Props> = ({ tabs }) => {
         scroll={{
           x: true,
         }}
-      /> */}
+      />
     </>
   );
 };
