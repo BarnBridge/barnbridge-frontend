@@ -9,12 +9,14 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
+import { useWallet } from 'wallets/wallet';
 
 type Props = {
   className?: string;
 };
 
 const DepositHeader: React.FC<Props> = ({ className }) => {
+  const wallet = useWallet();
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
 
@@ -68,76 +70,80 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
           </Text>
         </div>
       </Grid>
-      <Tooltip
-        title={formatToken(pool.contracts.underlying.balance, {
-          scale: pool.underlyingDecimals,
-        })}>
-        <Text type="small" weight="semibold" className="mb-4">
-          Wallet balance
-        </Text>
-        <Text type="p1" weight="semibold" color="primary">
-          <span className="grid flow-col col-gap-8 align-center">
-            {formatToken(pool.contracts.underlying.balance, {
+      {wallet.isActive && (
+        <>
+          <Tooltip
+            title={formatToken(pool.contracts.underlying.balance, {
               scale: pool.underlyingDecimals,
-            })}
-            <Text type="small" tag="span" weight="semibold" color="secondary">
-              {pool.underlyingSymbol}
+            })}>
+            <Text type="small" weight="semibold" className="mb-4">
+              Wallet balance
             </Text>
-          </span>
-        </Text>
-      </Tooltip>
-      {!isSeniorDeposit && !isRootDeposit && (
-        <Tooltip
-          title={formatToken(pool.contracts.smartYield.balance, {
-            scale: pool.underlyingDecimals,
-          })}>
-          <Text type="small" weight="semibold" className="mb-4">
-            Portfolio balance
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            <span className="grid flow-col col-gap-8 align-center">
-              {formatToken(pool.contracts.smartYield.balance, {
+            <Text type="p1" weight="semibold" color="primary">
+              <span className="grid flow-col col-gap-8 align-center">
+                {formatToken(pool.contracts.underlying.balance, {
+                  scale: pool.underlyingDecimals,
+                })}
+                <Text type="small" tag="span" weight="semibold" color="secondary">
+                  {pool.underlyingSymbol}
+                </Text>
+              </span>
+            </Text>
+          </Tooltip>
+          {!isSeniorDeposit && !isRootDeposit && (
+            <Tooltip
+              title={formatToken(pool.contracts.smartYield.balance, {
                 scale: pool.underlyingDecimals,
-              })}
-              <Text type="small" tag="span" weight="semibold" color="secondary">
-                {pool.contracts.smartYield.symbol}
+              })}>
+              <Text type="small" weight="semibold" className="mb-4">
+                Portfolio balance
               </Text>
-            </span>
-          </Text>
-        </Tooltip>
-      )}
-      {isSeniorDeposit && (
-        <div>
-          <Text type="small" weight="semibold" className="mb-4">
-            Senior APY
-          </Text>
-          <Text type="p1" weight="semibold" color="green">
-            {formatPercent(pool.state.seniorApy)}
-          </Text>
-        </div>
-      )}
-      {isJuniorDeposit && (
-        <div>
-          <Text type="small" weight="semibold" className="mb-4">
-            Junior APY
-          </Text>
-          <Text type="p1" weight="semibold" color="purple">
-            {formatPercent(pool.state.juniorApy)}
-          </Text>
-        </div>
-      )}
-      {(isSeniorDeposit || isJuniorDeposit) && (
-        <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Enable token
-          </Text>
-          <AntdSwitch
-            style={{ justifySelf: 'flex-start' }}
-            checked={pool.contracts.underlying.isAllowed}
-            loading={pool.contracts.underlying.isAllowed === undefined || isApproving}
-            onChange={handleSwitchChange}
-          />
-        </div>
+              <Text type="p1" weight="semibold" color="primary">
+                <span className="grid flow-col col-gap-8 align-center">
+                  {formatToken(pool.contracts.smartYield.balance, {
+                    scale: pool.underlyingDecimals,
+                  })}
+                  <Text type="small" tag="span" weight="semibold" color="secondary">
+                    {pool.contracts.smartYield.symbol}
+                  </Text>
+                </span>
+              </Text>
+            </Tooltip>
+          )}
+          {isSeniorDeposit && (
+            <div>
+              <Text type="small" weight="semibold" className="mb-4">
+                Senior APY
+              </Text>
+              <Text type="p1" weight="semibold" color="green">
+                {formatPercent(pool.state.seniorApy)}
+              </Text>
+            </div>
+          )}
+          {isJuniorDeposit && (
+            <div>
+              <Text type="small" weight="semibold" className="mb-4">
+                Junior APY
+              </Text>
+              <Text type="p1" weight="semibold" color="purple">
+                {formatPercent(pool.state.juniorApy)}
+              </Text>
+            </div>
+          )}
+          {(isSeniorDeposit || isJuniorDeposit) && (
+            <div>
+              <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                Enable token
+              </Text>
+              <AntdSwitch
+                style={{ justifySelf: 'flex-start' }}
+                checked={pool.contracts.underlying.isAllowed}
+                loading={pool.contracts.underlying.isAllowed === undefined || isApproving}
+                onChange={handleSwitchChange}
+              />
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -22,3 +22,17 @@
     margin-right: 8px;
   }
 }
+
+.recharts-text.recharts-cartesian-axis-tick-value {
+  font-size: var(--font-size-sm);
+  line-height: calc(var(--font-size-sm) + 4px);
+  color: var(--theme-default-color);
+}
+
+.recharts-wrapper {
+  .recharts-default-tooltip {
+    background: var(--theme-card-color) !important;
+    border: 1px solid var(--theme-border-color) !important;
+    color: var(--theme-color-secondary) !important;
+  }
+}

@@ -1,6 +1,6 @@
 .apyMarketRow {
   display: grid;
-  align-items: flex-start;
+  align-items: stretch;
   grid-template-columns: minmax(280px, 1fr) minmax(280px, 482px);
   gap: 32px;
 

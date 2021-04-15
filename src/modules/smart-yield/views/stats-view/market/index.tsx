@@ -1,8 +1,8 @@
-import React from 'react';
+﻿import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import format from 'date-fns/format';
-import { formatBigValue, formatPercent, formatToken, formatUSDValue } from 'web3/utils';
+import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
@@ -35,6 +35,7 @@ const MarketDetails: React.FC = () => {
   }
 
   const abond = pool.contracts.smartYield.abond;
+  const abondDebt = pool.contracts.smartYield.abondDebt;
 
   return (
     <section className="card">
@@ -52,11 +53,12 @@ const MarketDetails: React.FC = () => {
                 title={
                   <>
                     <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                      {formatBigValue(pool.state.seniorLiquidity)}
-                      {` ${pool.underlyingSymbol}`}
+                      {formatToken(pool.state.seniorLiquidity, {
+                        tokenName: pool.underlyingSymbol,
+                      })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSDValue(new BigNumber(pool.state.seniorLiquidity))}
+                      {formatUSD(new BigNumber(pool.state.seniorLiquidity))}
                     </Text>
                   </>
                 }>
@@ -84,11 +86,12 @@ const MarketDetails: React.FC = () => {
                 title={
                   <>
                     <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                      {formatBigValue(pool.state.juniorLiquidity)}
-                      {` ${pool.underlyingSymbol}`}
+                      {formatToken(pool.state.juniorLiquidity, {
+                        tokenName: pool.underlyingSymbol,
+                      })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSDValue(new BigNumber(pool.state.juniorLiquidity))}
+                      {formatUSD(new BigNumber(pool.state.juniorLiquidity))}
                     </Text>
                   </>
                 }>
@@ -115,7 +118,7 @@ const MarketDetails: React.FC = () => {
                 # of seniors
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatBigValue(pool.state.numberOfSeniors)}
+                {formatNumber(pool.state.numberOfSeniors)}
               </Text>
             </div>
             <div className="flex flow-row">
@@ -123,7 +126,7 @@ const MarketDetails: React.FC = () => {
                 # of juniors
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatBigValue(pool.state.numberOfJuniors)}
+                {formatNumber(pool.state.numberOfJuniors)}
               </Text>
             </div>
           </div>
@@ -169,11 +172,12 @@ const MarketDetails: React.FC = () => {
                 title={
                   <>
                     <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                      {formatBigValue(pool.state.juniorLiquidityLocked)}
-                      {` ${pool.underlyingSymbol}`}
+                      {formatToken(pool.state.juniorLiquidityLocked, {
+                        tokenName: pool.underlyingSymbol,
+                      })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSDValue(new BigNumber(pool.state.juniorLiquidityLocked))}
+                      {formatUSD(new BigNumber(pool.state.juniorLiquidityLocked))}
                     </Text>
                   </>
                 }>
@@ -211,16 +215,20 @@ const MarketDetails: React.FC = () => {
                         tokenName: pool.underlyingSymbol,
                       }) ?? '-'}
                     </Text>
+                    <Text type="small" weight="semibold" color="secondary">
+                      {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals))}
+                    </Text>
                   </>
                 }>
-                <div className="flex flow-col col-gap-8">
-                  <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(abond?.principal.unscaleBy(pool.underlyingDecimals), {
-                      compact: true,
-                      tokenName: pool.underlyingSymbol,
-                    }) ?? '-'}
-                  </Text>
-                </div>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(abond?.principal.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                    tokenName: pool.underlyingSymbol,
+                  }) ?? '-'}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals), true)}
+                </Text>
               </Tooltip>
             </div>
             <div className="flex flow-row">
@@ -236,16 +244,20 @@ const MarketDetails: React.FC = () => {
                         tokenName: pool.underlyingSymbol,
                       }) ?? '-'}
                     </Text>
+                    <Text type="small" weight="semibold" color="secondary">
+                      {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals))}
+                    </Text>
                   </>
                 }>
-                <div className="flex flow-col col-gap-8">
-                  <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(abond?.gain.unscaleBy(pool.underlyingDecimals), {
-                      compact: true,
-                      tokenName: pool.underlyingSymbol,
-                    }) ?? '-'}
-                  </Text>
-                </div>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(abond?.gain.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                    tokenName: pool.underlyingSymbol,
+                  }) ?? '-'}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals), true)}
+                </Text>
               </Tooltip>
             </div>
           </div>
@@ -260,6 +272,35 @@ const MarketDetails: React.FC = () => {
                   {(abond?.maturesAt && format(abond?.maturesAt, 'MM.dd.yyyy HH:mm')) ?? '-'}
                 </Text>
               </div>
+            </div>
+            <div className="flex flow-row">
+              <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                Abond debt
+              </Text>
+              <Tooltip
+                title={
+                  <>
+                    <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                      {formatToken(abondDebt?.unscaleBy(pool.underlyingDecimals), {
+                        decimals: pool.underlyingDecimals,
+                        tokenName: pool.underlyingSymbol,
+                      }) ?? '-'}
+                    </Text>
+                    <Text type="small" weight="semibold" color="secondary">
+                      {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals))}
+                    </Text>
+                  </>
+                }>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(abondDebt?.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                    tokenName: pool.underlyingSymbol,
+                  }) ?? '-'}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals), true)}
+                </Text>
+              </Tooltip>
             </div>
           </div>
         </>

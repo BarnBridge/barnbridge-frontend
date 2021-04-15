@@ -232,7 +232,7 @@ class SYSmartYieldContract extends Erc20Contract {
   }
 
   price?: BigNumber;
-
+  abondDebt?: BigNumber;
   abond?: SYAbond;
 
   async loadCommon(): Promise<void> {
@@ -241,6 +241,10 @@ class SYSmartYieldContract extends Erc20Contract {
     return this.batch([
       {
         method: 'price',
+        transform: value => new BigNumber(value),
+      },
+      {
+        method: 'abondDebt',
         transform: value => new BigNumber(value),
       },
       {
@@ -253,8 +257,9 @@ class SYSmartYieldContract extends Erc20Contract {
           liquidated: value.liquidated,
         }),
       },
-    ]).then(([price, abond]) => {
+    ]).then(([price, abondDebt, abond]) => {
       this.price = price.dividedBy(1e18);
+      this.abondDebt = abondDebt;
       this.abond = abond;
       this.emit(Web3Contract.UPDATE_DATA);
     });

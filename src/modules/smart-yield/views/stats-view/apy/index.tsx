@@ -120,11 +120,7 @@ const ApyTrend: React.FC = () => {
 
     const minDt = maxDate - count * range;
 
-    const arr = Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
-
-    // arr.unshift(minDate);
-
-    return arr;
+    return Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
   }, [state.data, activeTab]);
 
   function formatTick(value: number) {
@@ -163,7 +159,7 @@ const ApyTrend: React.FC = () => {
       </header>
       <div className="p-24">
         <Spin spinning={state.loading}>
-          <ReCharts.ResponsiveContainer width="100%" height={225} className="mb-24">
+          <ReCharts.ResponsiveContainer width="100%" height={300} className="mb-24">
             <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
               <defs>
                 <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
@@ -176,7 +172,13 @@ const ApyTrend: React.FC = () => {
                 </linearGradient>
               </defs>
               <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
-              <ReCharts.XAxis dataKey="point" ticks={ticks} minTickGap={0} tickFormatter={value => formatTick(value)} />
+              <ReCharts.XAxis
+                dataKey="point"
+                ticks={ticks}
+                tickMargin={12}
+                minTickGap={0}
+                tickFormatter={value => formatTick(value)}
+              />
               <ReCharts.YAxis
                 axisLine={false}
                 tickLine={false}
