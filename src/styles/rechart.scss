@@ -3,3 +3,36 @@
   font-weight: 600;
   line-height: calc(var(--font-size-p2) + 10px);
 }
+
+.chart-label {
+  background: var(--theme-body-color);
+  color: var(--theme-color-secondary);
+  border-radius: 4px;
+  padding: 8px 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: var(--dot-color, var(--theme-color-primary));
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+}
+
+.recharts-text.recharts-cartesian-axis-tick-value {
+  font-size: var(--font-size-sm);
+  line-height: calc(var(--font-size-sm) + 4px);
+  color: var(--theme-default-color);
+}
+
+.recharts-wrapper {
+  .recharts-default-tooltip {
+    background: var(--theme-card-color) !important;
+    border: 1px solid var(--theme-border-color) !important;
+    color: var(--theme-color-secondary) !important;
+  }
+}

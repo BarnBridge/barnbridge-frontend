@@ -1,9 +1,9 @@
 import React, { Suspense, lazy } from 'react';
-import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
-import Tabs from 'components/antd/tabs';
 import Icon from 'components/custom/icon';
+import { NavTabs } from 'components/custom/tabs';
 import { useWallet } from 'wallets/wallet';
 
 import PoolProvider from './providers/pool-provider';
@@ -14,6 +14,7 @@ import RewardPoolsProvider from './providers/reward-pools-provider';
 import s from './s.module.scss';
 
 const MarketsView = lazy(() => import('./views/markets-view'));
+const StatsView = lazy(() => import('./views/stats-view'));
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 const DepositView = lazy(() => import('./views/deposit-view'));
 const WithdrawView = lazy(() => import('./views/withdraw-view'));
@@ -25,27 +26,23 @@ type SmartYieldViewParams = {
 };
 
 const SmartYieldView: React.FC = () => {
-  const history = useHistory();
   const {
     params: { vt = 'markets' },
   } = useRouteMatch<SmartYieldViewParams>();
   const wallet = useWallet();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
-  function handleTabChange(tabKey: string) {
-    setActiveTab(tabKey);
-    history.push(`/smart-yield/${tabKey}`);
-  }
-
   React.useEffect(() => {
-    if (vt === 'deposit') {
+    if (['stats', 'deposit'].includes(vt)) {
       setActiveTab('markets');
       return;
     }
+
     if (vt === 'withdraw') {
       setActiveTab('portfolio');
       return;
     }
+
     if (vt === 'pool') {
       setActiveTab('pools');
       return;
@@ -56,35 +53,37 @@ const SmartYieldView: React.FC = () => {
     }
   }, [vt]);
 
+  const tabs = [
+    {
+      children: (
+        <>
+          <Icon name="bar-charts-outlined" className="mr-8" /> Markets
+        </>
+      ),
+      href: '/smart-yield/markets',
+    },
+    {
+      children: (
+        <>
+          <Icon name="wallet-outlined" className="mr-8" /> Portfolio
+        </>
+      ),
+      href: '/smart-yield/portfolio',
+      disabled: !wallet.account,
+    },
+    {
+      children: (
+        <>
+          <Icon name="savings-outlined" className="mr-8" /> Pools
+        </>
+      ),
+      href: '/smart-yield/pools',
+    },
+  ];
+
   return (
     <>
-      <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange}>
-        <Tabs.Tab
-          key="markets"
-          tab={
-            <>
-              <Icon name="bar-charts-outlined" /> Markets
-            </>
-          }
-        />
-        <Tabs.Tab
-          key="portfolio"
-          disabled={!wallet.account}
-          tab={
-            <>
-              <Icon name="wallet-outlined" /> Portfolio
-            </>
-          }
-        />
-        <Tabs.Tab
-          key="pools"
-          tab={
-            <>
-              <Icon name="savings-outlined" /> Pools
-            </>
-          }
-        />
-      </Tabs>
+      <NavTabs tabs={tabs} className={s.tabs} />
       <div className="content-container-fix content-container">
         <Suspense fallback={<AntdSpin />}>
           <Switch>
@@ -122,6 +121,11 @@ const SmartYieldView: React.FC = () => {
                 )
               }
             />
+            <Route path="/smart-yield/stats" exact>
+              <PoolProvider>
+                <StatsView />
+              </PoolProvider>
+            </Route>
             <Route
               path="/smart-yield/pools"
               exact
