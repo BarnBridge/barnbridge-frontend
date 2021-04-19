@@ -28,7 +28,12 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <div className="flex flow-col align-center">
-        <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} className="mr-16" />
+        <IconBubble
+          name={entity.meta?.icon}
+          bubbleName="bond-circle-token"
+          secondBubbleName={entity.market?.icon}
+          className="mr-16"
+        />
         <div className="flex flow-row">
           <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
             <Text type="p1" weight="semibold" color="blue" className="mr-4">

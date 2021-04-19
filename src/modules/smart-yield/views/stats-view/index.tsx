@@ -9,6 +9,7 @@ import { useWallet } from 'wallets/wallet';
 
 import DepositHeader from '../deposit-view/deposit-header';
 import ApyTrend from './apy';
+import JuniorBondsTable from './junior-bonds-table';
 import Liquidity from './liquidity';
 import MarketDetails from './market';
 import PoolTxTable from './pool-tx-table';
@@ -24,6 +25,10 @@ const tabs = [
   {
     children: 'Senior bonds',
     id: 'sb',
+  },
+  {
+    children: 'Junior bonds',
+    id: 'jb',
   },
 ];
 
@@ -62,7 +67,9 @@ const StatsView: React.FC = () => {
       </div>
       <Liquidity className="mb-32" />
       <section className="card">
-        {activeTab === 'th' ? <PoolTxTable tabs={tabsComponent} /> : <SeniorBondsTable tabs={tabsComponent} />}
+        {activeTab === 'th' && <PoolTxTable tabs={tabsComponent} />}
+        {activeTab === 'sb' && <SeniorBondsTable tabs={tabsComponent} />}
+        {activeTab === 'jb' && <JuniorBondsTable tabs={tabsComponent} />}
       </section>
     </div>
   );
