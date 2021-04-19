@@ -254,6 +254,48 @@ export function fetchSYSeniorBonds(
     }));
 }
 
+export type APISYJuniorBonds = {
+  juniorBondId: number;
+  maturityDate: number;
+  redeemed: boolean;
+  accountAddress: string;
+  depositedAmount: BigNumber;
+  underlyingTokenAddress: string;
+  underlyingTokenSymbol: string;
+  underlyingTokenDecimals: number;
+  transactionHash: string;
+  blockTimestamp: number;
+};
+
+export function fetchSYJuniorBonds(
+  poolAddress: string,
+  page = 1,
+  limit = 10,
+  redeemed?: string,
+  sortBy?: string,
+  sortDir?: string,
+): Promise<PaginatedResult<APISYJuniorBonds>> {
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    redeemed,
+    sort: sortBy,
+    sortDirection: sortDir,
+  });
+
+  const url = new URL(`/api/smartyield/pools/${poolAddress}/junior-bonds?${query}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then((result: PaginatedResult<APISYJuniorBonds>) => ({
+      ...result,
+      data: (result.data ?? []).map((item: APISYJuniorBonds) => ({
+        ...item,
+        depositedAmount: new BigNumber(item.depositedAmount),
+      })),
+    }));
+}
+
 export enum APISYTxHistoryType {
   JUNIOR_DEPOSIT = 'JUNIOR_DEPOSIT',
   JUNIOR_INSTANT_WITHDRAW = 'JUNIOR_INSTANT_WITHDRAW',

@@ -34,11 +34,20 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <div className="flex">
-        <IconBubble
-          name={entity.poolEntity?.meta?.icon}
-          bubbleName={entity.poolEntity?.market?.icon}
-          className="mr-16"
-        />
+        {entity.isTokenAmount ? (
+          <IconBubble
+            name={entity.poolEntity?.meta?.icon}
+            bubbleName="bond-circle-token"
+            secondBubbleName={entity.poolEntity?.market?.icon}
+            className="mr-16"
+          />
+        ) : (
+          <IconBubble
+            name={entity.poolEntity?.meta?.icon}
+            bubbleName={entity.poolEntity?.market?.icon}
+            className="mr-16"
+          />
+        )}
         <div className="flex flow-row">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {entity.underlyingTokenSymbol}

@@ -269,7 +269,7 @@ const MarketDetails: React.FC = () => {
               </Text>
               <div className="flex flow-col col-gap-8">
                 <Text type="p1" weight="semibold" color="primary">
-                  {(abond?.maturesAt && format(abond?.maturesAt, 'MM.dd.yyyy HH:mm')) ?? '-'}
+                  {(abond?.maturesAt && format(abond.maturesAt * 1_000, 'MM.dd.yyyy HH:mm')) ?? '-'}
                 </Text>
               </div>
             </div>
