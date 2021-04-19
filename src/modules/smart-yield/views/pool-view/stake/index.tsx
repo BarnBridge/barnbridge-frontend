@@ -30,7 +30,7 @@ const StakeForm: React.FC = () => {
   const [confirmVisible, setConfirm] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  const enabled = rewardPool?.poolToken.isAllowed === true;
+  const enabled = rewardPool?.poolToken.isAllowedOf(rewardPool?.poolAddress) === true;
   const canStake = values.amount > 0;
 
   const market = Markets.get(rewardPool?.protocolId ?? '');
@@ -93,7 +93,7 @@ const StakeForm: React.FC = () => {
                 className="mr-8"
               />
             }
-            max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)?.toNumber()}
+            max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
             disabled={saving || !enabled}
@@ -218,7 +218,7 @@ const UnstakeForm: React.FC = () => {
                 className="mr-8"
               />
             }
-            max={getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals)?.toNumber()}
+            max={getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals)}
             maximumFractionDigits={rewardPool?.poolToken.decimals}
             displayDecimals={4}
             disabled={saving}

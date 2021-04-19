@@ -42,7 +42,7 @@ const ContractListener: React.FC<Props> = props => {
 
     function onSuccess(result: any, meta: Web3SendMeta) {
       setTxStatus(prevState =>
-        prevState.meta === meta
+        prevState.meta?.id === meta.id
           ? {
               ...prevState,
               state: meta.state,
@@ -56,7 +56,7 @@ const ContractListener: React.FC<Props> = props => {
         setUserRejected(true);
       } else {
         setTxStatus(prevState =>
-          prevState.meta === meta
+          prevState.meta?.id === meta.id
             ? {
                 ...prevState,
                 state: meta.state,
