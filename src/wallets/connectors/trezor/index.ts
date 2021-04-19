@@ -2,6 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { TrezorConnector } from '@web3-react/trezor-connector';
 
 import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
+import TrezorLogoDark from 'resources/svg/wallets/trezor-logo-dark.svg';
 import TrezorLogo from 'resources/svg/wallets/trezor-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
@@ -12,7 +13,7 @@ const WEB3_TREZOR_APP_URL = String(process.env.REACT_APP_WEB3_TREZOR_APP_URL);
 
 const TrezorWalletConfig: WalletConnector = {
   id: 'trezor',
-  logo: TrezorLogo,
+  logo: [TrezorLogo, TrezorLogoDark],
   name: 'Trezor',
   factory(chainId: number): AbstractConnector {
     return new TrezorConnector({

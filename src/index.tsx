@@ -23,17 +23,17 @@ const App: React.FC = () => {
       <StaticSprite />
       <WindowStateProvider>
         <EthWeb3Provider>
-          <Web3WalletProvider>
-            <Web3ContractsProvider>
-              <GeneralContextProvider>
+          <GeneralContextProvider>
+            <Web3WalletProvider>
+              <Web3ContractsProvider>
                 <Router>
                   <NotificationsProvider>
                     <LayoutView />
                   </NotificationsProvider>
                 </Router>
-              </GeneralContextProvider>
-            </Web3ContractsProvider>
-          </Web3WalletProvider>
+              </Web3ContractsProvider>
+            </Web3WalletProvider>
+          </GeneralContextProvider>
         </EthWeb3Provider>
       </WindowStateProvider>
     </ErrorBoundary>
