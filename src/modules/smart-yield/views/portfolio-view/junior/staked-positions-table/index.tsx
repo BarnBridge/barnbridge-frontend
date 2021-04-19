@@ -32,7 +32,12 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
 
       return (
         <div className="flex flow-col align-center">
-          <IconBubble name={meta?.icon} bubbleName={market?.icon} className="mr-16" />
+          <IconBubble
+            name={meta?.icon}
+            bubbleName="bond-circle-token"
+            secondBubbleName={market?.icon}
+            className="mr-16"
+          />
           <div className="flex flow-row">
             <ExternalLink href={getEtherscanAddressUrl(entity.poolTokenAddress)} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">

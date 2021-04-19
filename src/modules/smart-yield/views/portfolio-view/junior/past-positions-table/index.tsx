@@ -32,7 +32,12 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <div className="flex flow-col align-center">
-        <IconBubble name={entity.pool?.meta?.icon} bubbleName={entity.pool?.market?.icon} className="mr-16" />
+        <IconBubble
+          name={entity.pool?.meta?.icon}
+          bubbleName="bond-circle-token"
+          secondBubbleName={entity.pool?.market?.icon}
+          className="mr-16"
+        />
         <div className="flex flow-row">
           <ExternalLink href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress)} className="flex flow-col mb-4">
             <Text type="p1" weight="semibold" color="blue" className="mr-4">

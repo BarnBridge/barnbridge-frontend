@@ -45,7 +45,7 @@ $margins: 4, 8, 12, 16, 24, 32, 40, 48, 64;
   margin-top: auto;
 }
 
-$paddings: 4, 8, 12, 16, 24, 32, 48, 64;
+$paddings: 0, 4, 8, 12, 16, 24, 32, 48, 64;
 
 @each $padding in $paddings {
   .p-#{$padding}.p-#{$padding} {
