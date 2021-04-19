@@ -6,7 +6,7 @@ import { DAITokenMeta } from 'web3/contracts/dai';
 import { SUSDTokenMeta } from 'web3/contracts/susd';
 import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import Web3Contract, { BatchContractMethod, Web3ContractAbiItem } from 'web3/contracts/web3Contract';
+import Web3Contract, { BatchContractMethod, Web3ContractAbiItem, createAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
@@ -14,6 +14,39 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_STAKING_ADDR = String(process.env.REACT_APP_CONTRACT_STAKING_ADDR);
+
+export class NewStakingContract extends Web3Contract {
+  constructor() {
+    super(
+      [
+        createAbiItem('getEpochPoolSize', ['address', 'uint128'], ['uint256']),
+        createAbiItem('getEpochUserBalance', ['address', 'address', 'uint128'], ['uint256']),
+        createAbiItem('balanceOf', ['address', 'address'], ['uint256']),
+      ],
+      CONTRACT_STAKING_ADDR,
+      'STAKING',
+    );
+
+    this.on(Web3Contract.UPDATE_ACCOUNT, () => {
+      //
+    });
+  }
+
+  loadCommon(): Promise<void> {
+    return Promise.resolve();
+  }
+
+  loadUserData(): Promise<void> {
+    return Promise.resolve();
+  }
+}
+
+const staking = new NewStakingContract();
+staking.on(Web3Contract.UPDATE_DATA, () => {
+  console.log('STAKING', staking);
+});
+staking.setAccount('');
+staking.loadCommon().then(() => staking.loadUserData());
 
 const Contract = new Web3Contract(STAKING_ABI as Web3ContractAbiItem[], CONTRACT_STAKING_ADDR, 'STAKING');
 
