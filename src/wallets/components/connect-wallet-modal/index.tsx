@@ -4,6 +4,7 @@ import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import { useGeneral } from 'components/providers/general-provider';
 import useMergeState from 'hooks/useMergeState';
 import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
 import { WalletConnectors, useWallet } from 'wallets/wallet';
@@ -22,6 +23,7 @@ const InitialState: ConnectWalletModalState = {
 
 const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
   const { ...modalProps } = props;
+  const { isDarkTheme } = useGeneral();
 
   const wallet = useWallet();
   const [state, setState] = useMergeState<ConnectWalletModalState>(InitialState);
@@ -60,7 +62,11 @@ const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
               type="select"
               style={{ height: '96px' }}
               onClick={() => handleConnectorSelect(connector)}>
-              <img src={connector.logo} alt={connector.name} height={32} />
+              <img
+                src={Array.isArray(connector.logo) ? connector.logo[isDarkTheme ? 1 : 0] : connector.logo}
+                alt={connector.name}
+                height={32}
+              />
             </Button>
           ))}
         </Grid>
