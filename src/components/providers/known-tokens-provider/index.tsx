@@ -1,13 +1,8 @@
 import React, { FC, createContext, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import { BondContract, CONTRACT_BOND_ADDR } from 'web3/contracts/bond';
-import { CONTRACT_DAI_ADDR, DaiContract } from 'web3/contracts/dai';
 import Erc20Contract from 'web3/contracts/erc20Contract';
-import { CONTRACT_SUSD_ADDR, SusdContract } from 'web3/contracts/susd';
-import { CONTRACT_UNISWAP_ADDR, UniV2Contract } from 'web3/contracts/uniswap';
-import { CONTRACT_USDC_ADDR, UsdcContract } from 'web3/contracts/usdc';
-import Web3Contract from 'web3/contracts/web3Contract';
+import Web3Contract, { createAbiItem } from 'web3/contracts/web3Contract';
 
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import { useReload } from 'hooks/useReload';
@@ -24,12 +19,17 @@ export enum KnownTokens {
   DAI = 'DAI',
   SUSD = 'sUSD',
   UNIV2 = 'UNIV2',
-  bbcUSDC = 'bb_cUSDC',
-  bbcDAI = 'bb_cDAI',
+}
+
+export namespace KnownTokens {
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  export const bbcUSDC = isProduction ? 'bb_cUSDC' : 'bbcUSDC';
+  export const bbcDAI = isProduction ? 'bb_cDAI' : 'bbcDAI';
 }
 
 type TokenMeta = {
-  symbol: KnownTokens;
+  symbol: string;
   name: string;
   address: string;
   decimals: number;
@@ -42,7 +42,7 @@ type TokenMeta = {
 
 const KNOWN_TOKENS: TokenMeta[] = [
   {
-    address: '',
+    address: '0x',
     symbol: KnownTokens.BTC,
     name: 'BTC',
     decimals: 0,
@@ -82,52 +82,52 @@ const KNOWN_TOKENS: TokenMeta[] = [
     icon: 'token-renbtc',
   },
   {
-    address: CONTRACT_BOND_ADDR,
+    address: String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase(),
     symbol: KnownTokens.BOND,
     name: 'BarnBridge',
     decimals: 18,
-    priceFeed: CONTRACT_UNISWAP_ADDR, // BOND -> USDC
+    priceFeed: String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase(), // BOND -> USDC
     pricePath: [KnownTokens.USDC],
     icon: 'token-bond',
-    contract: new BondContract(),
+    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
   },
   {
-    address: CONTRACT_USDC_ADDR,
+    address: String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase(),
     symbol: KnownTokens.USDC,
     name: 'USD Coin',
     decimals: 6,
     priceFeed: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6', // USDC -> $
     icon: 'token-usdc',
-    contract: new UsdcContract(),
+    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase()),
   },
   {
-    address: CONTRACT_DAI_ADDR,
+    address: String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase(),
     symbol: KnownTokens.DAI,
     name: 'Dai Stablecoin',
     decimals: 18,
     priceFeed: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9', // DAI -> $
     icon: 'token-dai',
-    contract: new DaiContract(),
+    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase()),
   },
   {
-    address: CONTRACT_SUSD_ADDR,
+    address: String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase(),
     symbol: KnownTokens.SUSD,
     name: 'Synth sUSD',
     decimals: 18,
     priceFeed: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757', // sUSD -> ETH
     pricePath: [KnownTokens.ETH],
     icon: 'token-susd',
-    contract: new SusdContract(),
+    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase()),
   },
   {
-    address: CONTRACT_UNISWAP_ADDR,
+    address: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(),
     symbol: KnownTokens.UNIV2,
     name: 'Uniswap V2',
     decimals: 18,
-    priceFeed: CONTRACT_UNISWAP_ADDR, // UNIV2 -> USDC
+    priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // UNIV2 -> USDC
     pricePath: [KnownTokens.USDC],
     icon: 'token-uniswap',
-    contract: new UniV2Contract(),
+    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase()),
   },
   {
     address: '0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840',
@@ -143,7 +143,7 @@ const KNOWN_TOKENS: TokenMeta[] = [
     symbol: KnownTokens.bbcDAI,
     name: 'BarnBridge cDAI',
     decimals: 18,
-    priceFeed: '0x673f9488619821aB4f4155FdFFe06f6139De518F', // bbcDAI -> USDC
+    priceFeed: '0x673f9488619821aB4f4155FdFFe06f6139De518F', // bbcDAI -> DAI
     pricePath: [KnownTokens.DAI],
     icon: 'token-dai',
   },
@@ -155,15 +155,11 @@ export function getKnownTokens(): TokenMeta[] {
 
 type ContextType = {
   tokens: TokenMeta[];
-  getTokenBySymbol(symbol: KnownTokens | string): TokenMeta | undefined;
+  getTokenBySymbol(symbol: string): TokenMeta | undefined;
   getTokenByAddress(address: string): TokenMeta | undefined;
-  getTokenPriceIn(source: KnownTokens, target: KnownTokens): BigNumber | undefined;
-  convertTokenIn(
-    amount: BigNumber | undefined,
-    source: KnownTokens | string,
-    target: KnownTokens | string,
-  ): BigNumber | undefined;
-  convertTokenInUSD(amount: BigNumber | undefined, source: KnownTokens | string): BigNumber | undefined;
+  getTokenPriceIn(source: string, target: string): BigNumber | undefined;
+  convertTokenIn(amount: BigNumber | undefined, source: string, target: string): BigNumber | undefined;
+  convertTokenInUSD(amount: BigNumber | undefined, source: string): BigNumber | undefined;
 };
 
 const Context = createContext<ContextType>({
@@ -180,67 +176,20 @@ export function useKnownTokens(): ContextType {
 }
 
 const PRICE_FEED_ABI: AbiItem[] = [
-  {
-    name: 'decimals',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: 'value', type: 'int8' }],
-  },
-  {
-    name: 'latestAnswer',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: 'value', type: 'int256' }],
-  },
+  createAbiItem('decimals', [], ['int8']),
+  createAbiItem('latestAnswer', [], ['int256']),
 ];
 
 const BOND_PRICE_FEED_ABI: AbiItem[] = [
-  {
-    name: 'totalSupply',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: 'value', type: 'uint256' }],
-  },
-  {
-    name: 'decimals',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: 'value', type: 'int8' }],
-  },
-  {
-    name: 'getReserves',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [
-      { name: 'reserve1', type: 'uint112' },
-      { name: 'reserve2', type: 'uint112' },
-    ],
-  },
-  {
-    name: 'token0',
-    type: 'function',
-    stateMutability: 'view',
-    inputs: [],
-    outputs: [{ name: 'value', type: 'address' }],
-  },
+  createAbiItem('totalSupply', [], ['uint256']),
+  createAbiItem('decimals', [], ['int8']),
+  createAbiItem('getReserves', [], ['uint112', 'uint112']),
+  createAbiItem('token0', [], ['address']),
 ];
 
-const J_PRICE_FEED_ABI: AbiItem[] = [
-  {
-    name: 'price',
-    type: 'function',
-    stateMutability: 'nonpayable',
-    inputs: [],
-    outputs: [{ name: 'value', type: 'uint256' }],
-  },
-];
+const J_PRICE_FEED_ABI: AbiItem[] = [createAbiItem('price', [], ['uint256'])];
 
-export function getTokenBySymbol(symbol: KnownTokens | string): TokenMeta | undefined {
+export function getTokenBySymbol(symbol: string): TokenMeta | undefined {
   return KNOWN_TOKENS.find(token => token.symbol === symbol);
 }
 
@@ -248,7 +197,7 @@ export function getTokenByAddress(address: string): TokenMeta | undefined {
   return KNOWN_TOKENS.find(token => token.address === address);
 }
 
-async function getFeedPrice(symbol: KnownTokens): Promise<BigNumber> {
+async function getFeedPrice(symbol: string): Promise<BigNumber> {
   const token = getTokenBySymbol(symbol);
 
   if (!token || !token.priceFeed) {
@@ -313,7 +262,7 @@ async function getUniV2Price(): Promise<BigNumber> {
   return usdcReserve.dividedBy(supply).multipliedBy(2);
 }
 
-async function getJTokenPrice(symbol: KnownTokens): Promise<BigNumber> {
+async function getJTokenPrice(symbol: string): Promise<BigNumber> {
   const token = getTokenBySymbol(symbol);
 
   if (!token || !token.priceFeed) {
@@ -328,11 +277,11 @@ async function getJTokenPrice(symbol: KnownTokens): Promise<BigNumber> {
   return new BigNumber(price).dividedBy(1e18);
 }
 
-export function getTokenPrice(symbol: KnownTokens): BigNumber | undefined {
+export function getTokenPrice(symbol: string): BigNumber | undefined {
   return getTokenBySymbol(symbol)?.price;
 }
 
-export function getTokenPriceIn(source: KnownTokens, target: KnownTokens): BigNumber | undefined {
+export function getTokenPriceIn(source: string, target: string): BigNumber | undefined {
   const sourcePrice = getTokenPrice(source);
   const targetPrice = getTokenPrice(target);
 
@@ -345,8 +294,8 @@ export function getTokenPriceIn(source: KnownTokens, target: KnownTokens): BigNu
 
 export function convertTokenIn(
   amount: BigNumber | number | undefined,
-  source: KnownTokens | string,
-  target: KnownTokens | string,
+  source: string,
+  target: string,
 ): BigNumber | undefined {
   if (!amount) {
     return undefined;
@@ -358,7 +307,7 @@ export function convertTokenIn(
     return bnAmount;
   }
 
-  const price = getTokenPriceIn(source as KnownTokens, target as KnownTokens);
+  const price = getTokenPriceIn(source, target);
 
   if (!price) {
     return undefined;
@@ -367,10 +316,7 @@ export function convertTokenIn(
   return bnAmount.multipliedBy(price);
 }
 
-export function convertTokenInUSD(
-  amount: BigNumber | number | undefined,
-  source: KnownTokens | string,
-): BigNumber | undefined {
+export function convertTokenInUSD(amount: BigNumber | number | undefined, source: string): BigNumber | undefined {
   return convertTokenIn(amount, source, KnownTokens.USDC);
 }
 

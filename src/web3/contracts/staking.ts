@@ -10,15 +10,25 @@ import Web3Contract, { BatchContractMethod, Web3ContractAbiItem, createAbiItem }
 import { TokenMeta } from 'web3/types';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
+import { KnownTokens, getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_STAKING_ADDR = String(process.env.REACT_APP_CONTRACT_STAKING_ADDR);
 
+export type StakedToken = {
+  currentEpochPoolSize?: BigNumber;
+  nextEpochPoolSize?: BigNumber;
+  userBalance?: BigNumber;
+  currentEpochUserBalance?: BigNumber;
+  nextEpochUserBalance?: BigNumber;
+};
+
 export class NewStakingContract extends Web3Contract {
   constructor() {
     super(
       [
+        createAbiItem('getCurrentEpoch', [], ['uint128']),
         createAbiItem('getEpochPoolSize', ['address', 'uint128'], ['uint256']),
         createAbiItem('getEpochUserBalance', ['address', 'address', 'uint128'], ['uint256']),
         createAbiItem('balanceOf', ['address', 'address'], ['uint256']),
@@ -27,17 +37,72 @@ export class NewStakingContract extends Web3Contract {
       'STAKING',
     );
 
+    this.stakedTokens = new Map();
+
     this.on(Web3Contract.UPDATE_ACCOUNT, () => {
       //
     });
   }
 
+  // common data
+  currentEpoch?: number;
+  stakedTokens: Map<string, StakedToken>;
+
   loadCommon(): Promise<void> {
-    return Promise.resolve();
+    return this.batch([{ method: 'getCurrentEpoch' }]).then(([currentEpoch]) => {
+      this.currentEpoch = Number(currentEpoch);
+
+      return Promise.allSettled(
+        [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD, KnownTokens.UNIV2, KnownTokens.BOND]
+          .map(getTokenBySymbol)
+          .filter(Boolean)
+          .map(token => {
+            return this.batch([
+              { method: 'getEpochPoolSize', methodArgs: [token!.address, currentEpoch] },
+              { method: 'getEpochPoolSize', methodArgs: [token!.address, currentEpoch + 1] },
+            ]).then(([currentEpochPoolSize, nextEpochPoolSize]) => {
+              this.stakedTokens.set(token!.address, {
+                ...this.stakedTokens.get(token!.address),
+                currentEpochPoolSize: new BigNumber(currentEpochPoolSize),
+                nextEpochPoolSize: new BigNumber(nextEpochPoolSize),
+              });
+            });
+          }),
+      ).then(() => {
+        this.emit(Web3Contract.UPDATE_DATA);
+      });
+    });
   }
 
   loadUserData(): Promise<void> {
-    return Promise.resolve();
+    const currentEpoch = this.currentEpoch;
+    const account = this.account;
+
+    if (!account || currentEpoch === undefined) {
+      return Promise.reject();
+    }
+
+    return Promise.allSettled(
+      [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD, KnownTokens.UNIV2, KnownTokens.BOND]
+        .map(getTokenBySymbol)
+        .filter(Boolean)
+        .map(token => {
+          return this.batch([
+            { method: 'balanceOf', methodArgs: [account, token!.address] },
+            { method: 'getEpochUserBalance', methodArgs: [account, token!.address, currentEpoch] },
+            { method: 'getEpochUserBalance', methodArgs: [account, token!.address, currentEpoch + 1] },
+          ]).then(([userBalance, currentEpochUserBalance, nextEpochUserBalance]) => {
+            this.stakedTokens.set(token!.address, {
+              ...this.stakedTokens.get(token!.address),
+              userBalance: new BigNumber(userBalance),
+              currentEpochUserBalance: new BigNumber(currentEpochUserBalance),
+              nextEpochUserBalance: new BigNumber(nextEpochUserBalance),
+            });
+          });
+        }),
+    ).then(() => {
+      this.emit(Web3Contract.UPDATE_DATA);
+    });
   }
 }
 
