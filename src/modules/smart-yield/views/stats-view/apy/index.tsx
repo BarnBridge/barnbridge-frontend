@@ -213,6 +213,14 @@ const ApyTrend: React.FC = () => {
                 stroke="var(--theme-purple-color)"
                 strokeWidth={2}
               />
+              <ReCharts.Area
+                name="Originator APY "
+                dataKey="originatorNetApy"
+                type="monotone"
+                fill="url(#chart-red-gradient)"
+                stroke="var(--theme-red-color)"
+                strokeWidth={2}
+              />
             </ReCharts.AreaChart>
           </ReCharts.ResponsiveContainer>
         </Spin>
@@ -226,6 +234,11 @@ const ApyTrend: React.FC = () => {
             className="chart-label text-sm fw-semibold"
             style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
             Junior APY
+          </div>
+          <div
+            className="chart-label text-sm fw-semibold"
+            style={{ '--dot-color': 'var(--theme-red-color)' } as React.CSSProperties}>
+            Originator APY
           </div>
         </div>
       </div>
