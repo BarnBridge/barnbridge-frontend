@@ -1,6 +1,7 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { InjectedConnector } from '@web3-react/injected-connector';
 
+import MetaMaskLogoDark from 'resources/svg/wallets/metamask-logo-dark.svg';
 import MetaMaskLogo from 'resources/svg/wallets/metamask-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
@@ -11,7 +12,7 @@ type MetaMaskError = Error & {
 
 const MetaMaskWalletConfig: WalletConnector = {
   id: 'metamask',
-  logo: MetaMaskLogo,
+  logo: [MetaMaskLogo, MetaMaskLogoDark],
   name: 'MetaMask',
   factory(chainId: number): AbstractConnector {
     return new InjectedConnector({
