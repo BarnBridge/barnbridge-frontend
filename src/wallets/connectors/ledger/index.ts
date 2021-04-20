@@ -2,6 +2,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
 import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
+import LedgerLogoDark from 'resources/svg/wallets/ledger-logo-dark.svg';
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
@@ -15,7 +16,7 @@ export type LedgerWalletArgs = {
 
 const LedgerWalletConfig: WalletConnector = {
   id: 'ledger',
-  logo: LedgerLogo,
+  logo: [LedgerLogo, LedgerLogoDark],
   name: 'Ledger',
   factory(chainId: number, args?: LedgerWalletArgs): AbstractConnector {
     let baseDerivationPath: string | undefined = args?.baseDerivationPath;
