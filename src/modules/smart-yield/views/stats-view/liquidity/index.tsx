@@ -205,7 +205,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
                 )}
               />
               <ReCharts.Area
-                name="Senior APY "
+                name="Senior Liquidity "
                 dataKey="seniorLiquidity"
                 type="monotone"
                 fill="url(#chart-green-gradient)"
@@ -213,7 +213,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
                 strokeWidth={2}
               />
               <ReCharts.Area
-                name="Junior APY "
+                name="Junior Liquidity "
                 dataKey="juniorLiquidity"
                 type="monotone"
                 fill="url(#chart-purple-gradient)"

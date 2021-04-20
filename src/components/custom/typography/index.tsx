@@ -45,19 +45,28 @@ export const Text: React.FC<TextProps> = React.memo(props => {
 export type HintProps = {
   text: React.ReactNode;
   className?: string;
+  maxWidth?: number;
 };
 
 export const Hint: React.FC<HintProps> = props => {
-  const { text, className, children } = props;
+  const { text, className, maxWidth, children } = props;
 
   if (!text) {
     return <>{children}</>;
   }
 
+  const overlayStyle = {
+    ...(maxWidth !== undefined && { maxWidth: `${maxWidth}px` }),
+  };
+
   return (
     <div className={cn(s.hint, className)}>
       <span>{children}</span>
-      <Tooltip title={text} className={s.tooltip}>
+      <Tooltip
+        title={text}
+        className={cn(s.tooltip, 'text-p2', 'primary-color')}
+        overlayStyle={overlayStyle}
+        overlayInnerStyle={overlayStyle}>
         <span>
           <Icon name="info-outlined" width={16} height={16} className={s.icon} />
         </span>
