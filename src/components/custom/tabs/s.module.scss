@@ -10,9 +10,9 @@
     --tabs-bg: var(--theme-body-color);
     background-size: 40px 100%, 40px 100%, 8px 100%, 8px 100%;
     background: var(--tabs-bg) linear-gradient(to right, var(--tabs-bg) 30%, rgba(255, 255, 255, 0))
-        linear-gradient(to right, rgba(255, 255, 255, 0), var(--tabs-bg) 70%)
-        radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0))
-        radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) no-repeat local,
+      linear-gradient(to right, rgba(255, 255, 255, 0), var(--tabs-bg) 70%)
+      radial-gradient(farthest-side at 0 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0))
+      radial-gradient(farthest-side at 100% 50%, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0)) no-repeat local,
       local, scroll, scroll 100% 0 0 0 100% 0;
   }
 
@@ -42,8 +42,7 @@
       margin-right: 0;
     }
 
-    &[href*='//']
-    {
+    &[href*='//'] {
       padding-right: 10px;
 
       &::after {
