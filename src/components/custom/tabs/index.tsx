@@ -1,18 +1,10 @@
 import React, { FC } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, NavLinkProps } from 'react-router-dom';
 import cn from 'classnames';
 
 import s from './s.module.scss';
 
-function isExternal(href: string) {
-  let parser = document.createElement('a');
-  parser.href = href;
-  return window.location.host !== parser.host;
-}
-
-type NavTabProps = React.HTMLProps<HTMLAnchorElement> & {
-  href: string;
-};
+type NavTabProps = NavLinkProps | React.HTMLProps<HTMLAnchorElement>;
 
 type NavTabsProps = {
   tabs: NavTabProps[];
@@ -36,26 +28,21 @@ export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) 
           '--tabs-bg': `var(${typeof shadows === 'string' ? shadows : '--theme-body-color'})`,
         } as React.CSSProperties
       }>
-      {tabs.map(({ href, className, children, ...restTab }, idx) => {
-        if (isExternal(href)) {
+      {tabs.map(({ className, children, ...restTab }, idx) => {
+        // @ts-ignore
+        if (restTab.to) {
           return (
-            <a
-              key={idx}
-              href={href}
-              className={cn(s.tab, className)}
-              rel="noopener noreferrer"
-              target="_blank"
-              {...restTab}>
+            // @ts-ignore
+            <NavLink key={idx} className={cn(s.tab, className)} exact activeClassName={s.active} {...restTab}>
               {children}
-            </a>
+            </NavLink>
           );
         }
 
         return (
-          // @ts-ignore
-          <NavLink key={idx} to={href} className={cn(s.tab, className)} exact activeClassName={s.active} {...restTab}>
+          <a key={idx} className={cn(s.tab, className)} rel="noopener noreferrer" target="_blank" {...restTab}>
             {children}
-          </NavLink>
+          </a>
         );
       })}
     </div>
