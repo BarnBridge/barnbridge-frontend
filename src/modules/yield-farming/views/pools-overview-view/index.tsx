@@ -5,6 +5,7 @@ import { Text } from 'components/custom/typography';
 import PoolCard from 'modules/yield-farming/components/pool-card';
 import PoolTxChart from 'modules/yield-farming/components/pool-tx-chart';
 import PoolTxTable from 'modules/yield-farming/components/pool-tx-table';
+import SYPoolCard from 'modules/yield-farming/components/sy-pool-card';
 
 import { PoolTypes } from 'modules/yield-farming/utils';
 
@@ -22,6 +23,7 @@ const PoolsOverviewView: React.FC = () => {
         </Text>
       </Grid>
       <div className={s.poolCards}>
+        <SYPoolCard />
         <PoolCard pool={PoolTypes.STABLE} />
         <PoolCard pool={PoolTypes.UNILP} />
         <PoolCard pool={PoolTypes.BOND} />

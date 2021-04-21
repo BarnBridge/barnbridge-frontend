@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AntdForm from 'antd/lib/form';
+import uniqBy from 'lodash/uniqBy';
 
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
@@ -38,10 +39,13 @@ const HistoryTableFilter: React.FC<Props> = props => {
         label: 'All originators',
         value: 'all',
       },
-      ...originators.map(originator => ({
-        label: originator.market?.name ?? '-',
-        value: originator.protocolId,
-      })),
+      ...uniqBy(
+        originators.map(originator => ({
+          label: originator.market?.name ?? '-',
+          value: originator.protocolId,
+        })),
+        'value',
+      ),
     ];
   }, [originators]);
 
@@ -51,10 +55,13 @@ const HistoryTableFilter: React.FC<Props> = props => {
         label: 'All tokens',
         value: 'all',
       },
-      ...originators.map(originator => ({
-        label: originator.meta?.name ?? '-',
-        value: originator.underlyingAddress,
-      })),
+      ...uniqBy(
+        originators.map(originator => ({
+          label: originator.meta?.name ?? '-',
+          value: originator.underlyingAddress,
+        })),
+        'value',
+      ),
     ];
   }, [originators]);
 

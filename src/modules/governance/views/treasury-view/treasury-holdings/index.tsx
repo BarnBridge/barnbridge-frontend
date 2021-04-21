@@ -4,12 +4,16 @@ import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import Web3Contract from 'web3/contracts/web3Contract';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
+import Select from 'components/antd/select';
 import Table from 'components/antd/table';
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
+import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
+import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -17,8 +21,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-import { Pools } from 'modules/smart-yield/api';
-import { useWallet } from 'wallets/wallet';
 
 const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
@@ -37,6 +39,10 @@ type State = {
     page: number;
     pageSize: number;
     loading: boolean;
+    filters: {
+      token: string;
+      direction: string;
+    };
   };
 };
 
@@ -51,6 +57,10 @@ const InitialState: State = {
     page: 1,
     pageSize: 10,
     loading: false,
+    filters: {
+      token: 'all',
+      direction: 'all',
+    },
   },
 };
 
@@ -58,11 +68,11 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   {
     title: 'Token Name',
     render: (_, entity) => {
-      const meta = Pools.get(entity.tokenSymbol);
+      const tokenMeta = getTokenBySymbol(entity.tokenSymbol);
 
       return (
         <div className="flex flow-col align-center">
-          <Icon name={meta?.icon as TokenIconNames} className="mr-16" />
+          <Icon name={(tokenMeta?.icon as TokenIconNames) ?? 'token-unknown'} className="mr-16" />
           <Text type="p1" weight="semibold" color="primary" className="mr-4">
             {entity.tokenSymbol}
           </Text>
@@ -96,14 +106,19 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   {
     title: 'Amount',
     render: (_, entity) => (
-      <>
+      <Tooltip
+        placement="bottomRight"
+        title={formatToken(entity.amount, {
+          decimals: entity.tokenDecimals,
+          tokenName: entity.tokenSymbol,
+        })}>
         <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
-          {entity.transactionDirection === 'IN' ? '+' : '-'} {entity.amount}
+          {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
         </Text>
         <Text type="small" weight="semibold">
-          {formatUSD(new BigNumber(entity.amount).multipliedBy(1))}
+          {formatUSD(convertTokenInUSD(entity.amount, entity.tokenSymbol))}
         </Text>
-      </>
+      </Tooltip>
     ),
   },
   {
@@ -121,7 +136,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
       }
 
       return (
-        <ExternalLink href={getEtherscanTxUrl(address)}>
+        <ExternalLink href={getEtherscanAddressUrl(address)}>
           <Text type="p1" weight="semibold" color="blue">
             {label}
           </Text>
@@ -144,7 +159,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
       }
 
       return (
-        <ExternalLink href={getEtherscanTxUrl(address)}>
+        <ExternalLink href={getEtherscanAddressUrl(address)}>
           <Text type="p1" weight="semibold" color="blue">
             {label}
           </Text>
@@ -154,8 +169,54 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
 ];
 
+function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
+  return [
+    {
+      name: 'token',
+      label: 'Token address',
+      defaultValue: 'all',
+      itemRender: () => {
+        const tokenOpts = [
+          {
+            value: 'all',
+            label: 'All tokens',
+          },
+          ...tokens.map(token => ({
+            value: token.tokenAddress,
+            label: token.token.name ?? '-',
+          })),
+        ];
+
+        return <Select options={tokenOpts} className="full-width" />;
+      },
+    },
+    {
+      name: 'direction',
+      label: 'Transaction direction',
+      defaultValue: 'all',
+      itemRender: () => {
+        const options = [
+          {
+            value: 'all',
+            label: 'All transactions',
+          },
+          {
+            value: 'in',
+            label: 'In',
+          },
+          {
+            value: 'out',
+            label: 'Out',
+          },
+        ];
+
+        return <Select options={options} className="full-width" />;
+      },
+    },
+  ];
+}
+
 const TreasuryHoldings: React.FC = () => {
-  const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -165,6 +226,20 @@ const TreasuryHoldings: React.FC = () => {
       history: {
         ...prevState.history,
         page,
+      },
+    }));
+  }
+
+  function handleFilterChange(filters: Record<string, any>) {
+    setState(prevState => ({
+      ...prevState,
+      history: {
+        ...prevState.history,
+        filters: {
+          ...prevState.history.filters,
+          ...filters,
+        },
+        page: 1,
       },
     }));
   }
@@ -180,21 +255,27 @@ const TreasuryHoldings: React.FC = () => {
 
     fetchTreasuryTokens()
       .then(data => {
+        const items = data.filter(item => Boolean(getTokenBySymbol(item.tokenSymbol as KnownTokens)));
+
+        const mappedItems = items.map(item => {
+          const tokenContract = new Erc20Contract([], item.tokenAddress);
+          tokenContract.on(Web3Contract.UPDATE_DATA, reload);
+          tokenContract.loadCommon();
+          tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
+
+          return {
+            ...item,
+            token: tokenContract,
+          };
+        });
+
+        mappedItems.sort((a, b) => (a.token.balance?.gt(b.token.balance ?? 0) ? 1 : -1));
+
         setState(prevState => ({
           ...prevState,
           tokens: {
             ...prevState.tokens,
-            items: data.map(item => {
-              const tokenContract = new Erc20Contract([], item.tokenAddress);
-              tokenContract.setProvider(wallet);
-              tokenContract.on(Web3Contract.UPDATE_DATA, reload);
-              tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
-
-              return {
-                ...item,
-                token: tokenContract,
-              };
-            }),
+            items: mappedItems,
             loading: false,
           },
         }));
@@ -212,6 +293,8 @@ const TreasuryHoldings: React.FC = () => {
   }, []);
 
   React.useEffect(() => {
+    const { page, pageSize, filters } = state.history;
+
     setState(prevState => ({
       ...prevState,
       history: {
@@ -220,7 +303,7 @@ const TreasuryHoldings: React.FC = () => {
       },
     }));
 
-    fetchTreasuryHistory(state.history.page)
+    fetchTreasuryHistory(page, pageSize, filters.token, filters.direction)
       .then(data => {
         setState(prevState => ({
           ...prevState,
@@ -243,14 +326,20 @@ const TreasuryHoldings: React.FC = () => {
           },
         }));
       });
-  }, [state.history.page]);
+  }, [state.history.page, state.history.filters]);
 
   const totalHoldings = React.useMemo(() => {
-    return state.tokens.items.reduce((a, c) => {
-      const value = c.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(c.tokenDecimals)?.multipliedBy(1);
-      return a.plus(value ?? 0);
+    if (state.tokens.loading) {
+      return undefined;
+    }
+
+    return state.tokens.items.reduce((a, item) => {
+      const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+      const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
+
+      return a.plus(amountUSD ?? 0);
     }, BigNumber.ZERO);
-  }, [version]);
+  }, [state.tokens, version]);
 
   return (
     <>
@@ -258,33 +347,49 @@ const TreasuryHoldings: React.FC = () => {
         Total holdings balance
       </Text>
       <Text type="h2" weight="bold" color="primary" className="mb-40">
-        {formatUSD(totalHoldings)}
+        {formatUSD(totalHoldings) ?? '-'}
       </Text>
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
-        {state.tokens.items.map(item => (
-          <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
-            <div className="flex mb-16">
-              <Icon name={Pools.get(item.tokenSymbol)?.icon as IconNames} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {item.tokenSymbol}
+        {state.tokens.items.map(item => {
+          const tokenMeta = getTokenBySymbol(item.tokenSymbol);
+          const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+          const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
+
+          return (
+            <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
+              <div className="flex mb-16">
+                <Icon name={(tokenMeta?.icon as IconNames) ?? 'token-unknown'} className="mr-8" />
+                <Text type="p1" weight="semibold" color="primary">
+                  {item.tokenSymbol}
+                </Text>
+              </div>
+              <Tooltip
+                overlayStyle={{ maxWidth: 'inherit' }}
+                title={formatToken(amount, {
+                  decimals: item.tokenDecimals,
+                  tokenName: item.tokenSymbol,
+                })}>
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  {formatToken(amount) ?? '-'}
+                </Text>
+              </Tooltip>
+              <Text type="small" weight="semibold" color="secondary">
+                {formatUSD(amountUSD)}
               </Text>
             </div>
-            <Text type="h3" weight="bold" color="primary" className="mb-4">
-              {formatToken(item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals)) ?? '-'}
-            </Text>
-            <Text type="small" weight="semibold" color="secondary">
-              {formatUSD(
-                item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals)?.multipliedBy(1),
-              ) ?? '-'}
-            </Text>
-          </div>
-        ))}
+          );
+        })}
       </div>
       <div className="card">
-        <div className="card-header">
+        <div className="card-header flex flow-col align-center justify-space-between pv-12">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
+          <TableFilter
+            filters={getFilters(state.tokens.items)}
+            value={state.history.filters}
+            onChange={handleFilterChange}
+          />
         </div>
         <Table<APITreasuryHistory>
           inCard

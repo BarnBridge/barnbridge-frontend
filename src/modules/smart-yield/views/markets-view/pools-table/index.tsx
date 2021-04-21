@@ -212,11 +212,10 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
                 <NavLink
                   className="button-ghost"
                   to={{
-                    pathname: `/smart-yield/deposit`,
+                    pathname: `/smart-yield/stats`,
                     search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
-                  }}
-                  {...{ disabled: !wallet.isActive }}>
-                  Deposit
+                  }}>
+                  Details
                 </NavLink>
               );
             },

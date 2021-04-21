@@ -226,7 +226,10 @@ const PoolProvider: React.FC = props => {
 
       const abondDebt = await pool.contracts.smartYield.getAbondDebt();
 
-      return abondDebt.multipliedBy(amount).dividedBy(totalSupply.dividedBy(10 ** decimals));
+      return abondDebt
+        .dividedBy(10 ** decimals)
+        .multipliedBy(amount)
+        .dividedBy(totalSupply.dividedBy(10 ** decimals));
     },
     [state.pool],
   );

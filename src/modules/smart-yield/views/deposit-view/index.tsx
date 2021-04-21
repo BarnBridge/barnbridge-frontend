@@ -5,8 +5,6 @@ import cn from 'classnames';
 
 import { useSYPool } from '../../providers/pool-provider';
 import DepositHeader from './deposit-header';
-import PoolAPYTrend from './pool-apy-trend';
-import PoolDetails from './pool-details';
 
 import s from './s.module.scss';
 
@@ -26,24 +24,18 @@ const DepositView: React.FC = () => {
   }
 
   return (
-    <div className="container-limit">
-      <DepositHeader />
-      <div className={s.container}>
-        <div className={cn('card p-32', s.content)}>
-          <Suspense fallback={<AntdSpin />}>
-            <Switch>
-              <Route path="/smart-yield/deposit" exact component={SelectTranche} />
-              <Route path="/smart-yield/deposit/senior" exact component={SeniorTranche} />
-              <Route path="/smart-yield/deposit/junior" exact component={JuniorTranche} />
-            </Switch>
-          </Suspense>
-        </div>
-        <div className={cn('grid flow-row row-gap-32', s.sidebar)}>
-          <PoolDetails />
-          <PoolAPYTrend />
-        </div>
+    <>
+      <DepositHeader className={s.header} />
+      <div className={cn('card p-32', s.content)}>
+        <Suspense fallback={<AntdSpin />}>
+          <Switch>
+            <Route path="/smart-yield/deposit" exact component={SelectTranche} />
+            <Route path="/smart-yield/deposit/senior" exact component={SeniorTranche} />
+            <Route path="/smart-yield/deposit/junior" exact component={JuniorTranche} />
+          </Switch>
+        </Suspense>
       </div>
-    </div>
+    </>
   );
 };
 

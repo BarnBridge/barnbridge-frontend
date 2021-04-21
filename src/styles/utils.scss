@@ -120,6 +120,14 @@
   }
 }
 
+.color-primary {
+  color: var(--theme-primary-color);
+}
+
+.color-secondary {
+  color: var(--theme-secondary-color);
+}
+
 .hidden-mobile {
   @media (max-width: 480px) {
     display: none !important;

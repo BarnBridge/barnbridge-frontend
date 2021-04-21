@@ -123,6 +123,16 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
+export function formatNumber(value: number | BigNumber | undefined): string | undefined {
+  if (value === undefined || Number.isNaN(value)) {
+    return undefined;
+  }
+
+  const val = BigNumber.isBigNumber(value) ? value.toNumber() : value;
+
+  return Intl.NumberFormat('en').format(val);
+}
+
 export function formatPercent(value: number | BigNumber | undefined, decimals: number = 2): string | undefined {
   if (value === undefined || Number.isNaN(value)) {
     return undefined;

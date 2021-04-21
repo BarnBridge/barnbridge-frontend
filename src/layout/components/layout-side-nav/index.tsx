@@ -2,7 +2,7 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events */
 import React from 'react';
 import { isMobile } from 'react-device-detect';
-import { NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
@@ -47,8 +47,10 @@ const LayoutSideNav: React.FC = () => {
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
             <Icon name="close-circle-outlined" />
           </button>
-          <Icon name="bond-square-token" className={s.logo} />
-          <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+          <Link to="/" className={s.logo}>
+            <Icon name="bond-square-token" />
+            <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+          </Link>
         </div>
         <nav className={s.top}>
           <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">

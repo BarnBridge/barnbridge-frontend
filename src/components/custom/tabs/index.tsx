@@ -10,12 +10,12 @@ function isExternal(href: string) {
   return window.location.host !== parser.host;
 }
 
-type TabProps = React.HTMLProps<HTMLAnchorElement> & {
+type NavTabProps = React.HTMLProps<HTMLAnchorElement> & {
   href: string;
 };
 
-type TabsProps = {
-  tabs: TabProps[];
+type NavTabsProps = {
+  tabs: NavTabProps[];
   className?: string;
   /**
    * @example
@@ -25,7 +25,7 @@ type TabsProps = {
   shadows?: boolean | string;
 };
 
-export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
+export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) => {
   return (
     <div
       className={cn(s.tabs, className, {
@@ -62,29 +62,46 @@ export const Tabs: FC<TabsProps> = ({ className, tabs, shadows = false }) => {
   );
 };
 
-type ElasticTabProps = {
+type TabProps = {
   children: React.ReactNode;
   id: string;
   className?: string;
   onClick?: Function;
 };
 
-type ElasticTabsProps = {
-  tabs: ElasticTabProps[];
+type TabsProps = {
+  tabs: TabProps[];
   className?: string;
-  active: ElasticTabProps['id'];
-  onClick: (id: ElasticTabProps['id']) => void;
+  active: TabProps['id'];
+  onClick: (id: TabProps['id']) => void;
+  variation: 'normal' | 'elastic';
+  size?: 'normal' | 'small';
+  style?: React.CSSProperties;
 };
 
-export const ElasticTabs: FC<ElasticTabsProps> = props => {
+export const Tabs: FC<TabsProps> = props => {
+  const totalTabs = props.tabs.length;
+  const activeIndex = props.tabs.findIndex(tab => tab.id === props.active);
+
   return (
-    <div className={cn(s.elasticTabs, props.className)}>
+    <div
+      className={cn(props.className, {
+        [s.tabs]: props.variation === 'normal',
+        [s.elasticTabs]: props.variation === 'elastic',
+      })}
+      style={props.style}>
+      <div
+        className={s.elasticToggle}
+        style={{ left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`, width: `calc(100% / ${totalTabs} - 8px)` }}
+      />
       {props.tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}
           className={cn(s.tab, className, {
             [s.active]: id === props.active,
+            [s.small]: props.size === 'small',
           })}
+          style={{ width: `calc(100% / ${totalTabs})` }}
           type="button"
           onClick={() => {
             props.onClick(id);
