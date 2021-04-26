@@ -138,7 +138,7 @@ export type APISYPoolAPY = {
   point: Date;
   seniorApy: number;
   juniorApy: number;
-  originatorApy: number;
+  originatorNetApy: number;
 };
 
 export function fetchSYPoolAPY(syAddr: string, windowFilter: string = '24h'): Promise<APISYPoolAPY[]> {
