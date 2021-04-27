@@ -75,6 +75,8 @@ export type IconNames =
   | 'search-outlined'
   | 'link-outlined'
   | 'arrow-top-right'
+  | 'arrow-top-right-thin'
+  | 'arrow-bottom-right-thin'
   | 'handshake-outlined'
   | 'stamp-outlined'
   | 'circle-plus-outlined'
@@ -110,7 +112,11 @@ export type IconNames =
   | 'apy-up'
   | 'chart'
   | 'queue'
-  | 'stake';
+  | 'stake'
+  | 'finance'
+  | 'scales'
+  | 'vertical-dots'
+  | 'dropdown';
 
 export type IconProps = {
   name: IconNames;

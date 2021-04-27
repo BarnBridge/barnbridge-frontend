@@ -57,7 +57,7 @@
 .card {
   background-color: var(--theme-card-color);
   border-radius: 4px;
-  box-shadow: 0 8px 16px rgba(113, 121, 128, 0.08), 0 0 0.5px rgba(6, 10, 13, 0.4);
+  box-shadow: var(--theme-card-shadow);
 
   .card-row:not(:last-of-type) {
     border-bottom: 1px solid var(--theme-border-color);
@@ -128,6 +128,18 @@
   color: var(--theme-secondary-color);
 }
 
+.color-border {
+  color: var(--theme-border-color);
+}
+
+.color-red {
+  color: var(--theme-red-color);
+}
+
+.color-green {
+  color: var(--theme-green-color);
+}
+
 .hidden-mobile {
   @media (max-width: 480px) {
     display: none !important;
@@ -143,5 +155,43 @@
 .hidden-desktop {
   @media (min-width: 768px) {
     display: none !important;
+  }
+}
+
+.middle-dot {
+  display: flex;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: var(--dot-color, currentColor);
+    border-radius: 50%;
+  }
+}
+
+.progress {
+  display: flex;
+  border-radius: 10px;
+  height: 4px;
+  border: 0;
+  width: 100%;
+  background-color: var(--background-color, var(--theme-border-color));
+
+  &::-webkit-progress-bar {
+    background-color: var(--background-color, var(--theme-border-color));
+    border-radius: 10px;
+  }
+
+  &::-webkit-progress-value {
+    background-color: var(--progress-color, var(--theme-blue-color));
+    border-radius: 10px 0 0 10px;
+    border-right: 2px solid var(--theme-card-color);
+  }
+
+  &::-moz-progress-bar {
+    background-color: var(--progress-color, var(--theme-blue-color));
+    border-radius: 10px 0 0 10px;
+    border-right: 2px solid var(--theme-card-color);
   }
 }
