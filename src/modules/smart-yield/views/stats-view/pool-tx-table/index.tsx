@@ -34,14 +34,23 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <div className="flex">
-        <IconBubble
-          name={entity.poolEntity?.meta?.icon}
-          bubbleName={entity.poolEntity?.market?.icon}
-          className="mr-16"
-        />
+        {entity.isTokenAmount ? (
+          <IconBubble
+            name={entity.poolEntity?.meta?.icon}
+            bubbleName="bond-circle-token"
+            secondBubbleName={entity.poolEntity?.market?.icon}
+            className="mr-16"
+          />
+        ) : (
+          <IconBubble
+            name={entity.poolEntity?.meta?.icon}
+            bubbleName={entity.poolEntity?.market?.icon}
+            className="mr-16"
+          />
+        )}
         <div className="flex flow-row">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {entity.underlyingTokenSymbol}
+            {entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.symbol : entity.underlyingTokenSymbol}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
             {entity.poolEntity?.market?.name}
@@ -74,18 +83,15 @@ const Columns: ColumnsType<TableEntity> = [
           title={
             <Text type="small" weight="semibold" color="primary">
               {formatToken(entity.amount, {
-                tokenName: entity.poolEntity?.contracts.smartYield.symbol,
+                tokenName: entity.isTokenAmount
+                  ? entity.poolEntity?.contracts.smartYield.symbol
+                  : entity.underlyingTokenSymbol,
                 decimals: entity.poolEntity?.underlyingDecimals,
               })}
             </Text>
           }>
           <Text type="p1" weight="semibold" color={isPositive ? 'green' : 'red'}>
-            {isPositive ? '+' : '-'}{' '}
-            {formatToken(entity.amount, {
-              tokenName: entity.isTokenAmount
-                ? entity.poolEntity?.contracts.smartYield.symbol
-                : entity.underlyingTokenSymbol,
-            })}
+            {isPositive ? '+' : '-'} {formatToken(entity.amount)}
           </Text>
           <Text type="small" weight="semibold">
             {formatUSD(entity.computedAmount)}

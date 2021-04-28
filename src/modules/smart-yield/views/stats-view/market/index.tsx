@@ -16,12 +16,32 @@ import s from './s.module.scss';
 
 const tabs = [
   {
-    children: 'Market details',
     id: 'market',
+    children: 'Market details',
   },
   {
-    children: 'Abond details',
     id: 'abond',
+    children: (
+      <Hint
+        maxWidth={475}
+        text={
+          <div>
+            <div className="mb-8">
+              In order to calculate the profits and losses of the pool efficiently - we do that by averaging all
+              existing senior bonds into one "weighted average" aBOND with the following properties:
+            </div>
+            <dl className="ph-12 fw-semibold text-nowrap">
+              <dd>- ABOND.principal -&gt; Principal locked</dd>
+              <dd>- ABOND.gain -&gt; Guaranteed gains for all seniors</dd>
+              <dd>- ABOND.debt -&gt; Amount owed to existing seniors</dd>
+              <dd>- ABOND.issuedAt -&gt; Start timestamp</dd>
+              <dd>- ABOND.maturesAt -&gt; Maturity date</dd>
+            </dl>
+          </div>
+        }>
+        Abond details
+      </Hint>
+    ),
   },
 ];
 
@@ -203,9 +223,11 @@ const MarketDetails: React.FC = () => {
         <>
           <div className="flexbox-grid p-24">
             <div className="flex flow-row">
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Abond principal
-              </Text>
+              <Hint text="This number shows the aggregated amount of liquidity deposited in senior bonds.">
+                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  Abond principal
+                </Text>
+              </Hint>
               <Tooltip
                 title={
                   <>
@@ -232,9 +254,11 @@ const MarketDetails: React.FC = () => {
               </Tooltip>
             </div>
             <div className="flex flow-row">
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Abond gain
-              </Text>
+              <Hint text="This number shows the aggregated gains of all senior bonds so far. This includes previously redeemed bonds.">
+                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  Abond gain
+                </Text>
+              </Hint>
               <Tooltip
                 title={
                   <>
@@ -264,19 +288,23 @@ const MarketDetails: React.FC = () => {
           <Divider />
           <div className="flexbox-grid p-24">
             <div className="flex flow-row">
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Abond matures at
-              </Text>
+              <Hint text="This number shows the average date at which all existing seniors bonds end at. It's also the time that junior withdrawals .">
+                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  Abond matures at
+                </Text>
+              </Hint>
               <div className="flex flow-col col-gap-8">
                 <Text type="p1" weight="semibold" color="primary">
-                  {(abond?.maturesAt && format(abond?.maturesAt, 'MM.dd.yyyy HH:mm')) ?? '-'}
+                  {(abond?.maturesAt && format(abond.maturesAt * 1_000, 'MM.dd.yyyy HH:mm')) ?? '-'}
                 </Text>
               </div>
             </div>
             <div className="flex flow-row">
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Abond debt
-              </Text>
+              <Hint text="This number shows the total amount owed to the existing seniors. It's the total gain owed to senior bonds minus what was already paid out to redeemed bonds.">
+                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  Abond debt
+                </Text>
+              </Hint>
               <Tooltip
                 title={
                   <>

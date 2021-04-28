@@ -37,7 +37,15 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Token Name',
     render: (_, entity) => (
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
+        {entity.isTokenAmount ? (
+          <IconBubble
+            name={entity.poolEntity?.meta?.icon}
+            bubbleName="bond-circle-token"
+            secondBubbleName={entity.poolEntity?.market?.icon}
+          />
+        ) : (
+          <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
+        )}
         <Grid flow="row" gap={4} className="ml-auto">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {entity.underlyingTokenSymbol}

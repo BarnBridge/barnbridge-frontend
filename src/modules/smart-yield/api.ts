@@ -138,7 +138,7 @@ export type APISYPoolAPY = {
   point: Date;
   seniorApy: number;
   juniorApy: number;
-  originatorApy: number;
+  originatorNetApy: number;
 };
 
 export function fetchSYPoolAPY(syAddr: string, windowFilter: string = '24h'): Promise<APISYPoolAPY[]> {
@@ -250,6 +250,48 @@ export function fetchSYSeniorBonds(
         ...item,
         depositedAmount: new BigNumber(item.depositedAmount),
         redeemableAmount: new BigNumber(item.redeemableAmount),
+      })),
+    }));
+}
+
+export type APISYJuniorBonds = {
+  juniorBondId: number;
+  maturityDate: number;
+  redeemed: boolean;
+  accountAddress: string;
+  depositedAmount: BigNumber;
+  underlyingTokenAddress: string;
+  underlyingTokenSymbol: string;
+  underlyingTokenDecimals: number;
+  transactionHash: string;
+  blockTimestamp: number;
+};
+
+export function fetchSYJuniorBonds(
+  poolAddress: string,
+  page = 1,
+  limit = 10,
+  redeemed?: string,
+  sortBy?: string,
+  sortDir?: string,
+): Promise<PaginatedResult<APISYJuniorBonds>> {
+  const query = queryfy({
+    page: String(page),
+    limit: String(limit),
+    redeemed,
+    sort: sortBy,
+    sortDirection: sortDir,
+  });
+
+  const url = new URL(`/api/smartyield/pools/${poolAddress}/junior-bonds?${query}`, GOV_API_URL);
+
+  return fetch(url.toString())
+    .then(result => result.json())
+    .then((result: PaginatedResult<APISYJuniorBonds>) => ({
+      ...result,
+      data: (result.data ?? []).map((item: APISYJuniorBonds) => ({
+        ...item,
+        depositedAmount: new BigNumber(item.depositedAmount),
       })),
     }));
 }
