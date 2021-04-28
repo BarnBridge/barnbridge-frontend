@@ -62,8 +62,6 @@ const SmartYieldView: React.FC = () => {
       ),
       to: '/smart-yield/markets',
       isActive: (match, location) => {
-        console.log({ match, location });
-
         return (
           match ||
           location.pathname.startsWith('/smart-yield/stats') ||
@@ -78,8 +76,11 @@ const SmartYieldView: React.FC = () => {
         </>
       ),
       to: '/smart-yield/portfolio',
+      isActive: (match, location) => {
+        return match || location.pathname.startsWith('/smart-yield/withdraw');
+      },
       disabled: !wallet.account,
-    },
+    } as NavLinkProps,
     {
       children: (
         <>
