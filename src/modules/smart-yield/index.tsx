@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { NavLinkProps, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
@@ -60,24 +60,34 @@ const SmartYieldView: React.FC = () => {
           <Icon name="bar-charts-outlined" className="mr-8" /> Markets
         </>
       ),
-      href: '/smart-yield/markets',
-    },
+      to: '/smart-yield/markets',
+      isActive: (match, location) => {
+        return (
+          match ||
+          location.pathname.startsWith('/smart-yield/stats') ||
+          location.pathname.startsWith('/smart-yield/deposit')
+        );
+      },
+    } as NavLinkProps,
     {
       children: (
         <>
           <Icon name="wallet-outlined" className="mr-8" /> Portfolio
         </>
       ),
-      href: '/smart-yield/portfolio',
+      to: '/smart-yield/portfolio',
+      isActive: (match, location) => {
+        return match || location.pathname.startsWith('/smart-yield/withdraw');
+      },
       disabled: !wallet.account,
-    },
+    } as NavLinkProps,
     {
       children: (
         <>
           <Icon name="savings-outlined" className="mr-8" /> Pools
         </>
       ),
-      href: '/smart-yield/pools',
+      to: '/smart-yield/pools',
     },
   ];
 
