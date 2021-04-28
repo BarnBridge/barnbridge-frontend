@@ -33,7 +33,7 @@ const PoolFilters: SelectOption[] = [
 ];
 
 const TypeFilters: SelectOption[] = [
-  { value: 'all', label: 'All transactions' },
+  { value: 'all', label: 'All pool transactions' },
   { value: 'deposits', label: 'Deposits' },
   { value: 'withdrawals', label: 'Withdrawals' },
 ];

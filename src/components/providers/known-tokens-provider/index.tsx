@@ -4,6 +4,7 @@ import { AbiItem } from 'web3-utils';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import Web3Contract, { createAbiItem } from 'web3/contracts/web3Contract';
 
+import { TokenIconNames } from 'components/custom/icon';
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
@@ -21,14 +22,16 @@ export enum KnownTokens {
   UNIV2 = 'UNIV2',
 }
 
+/* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
   const isProduction = process.env.NODE_ENV === 'production';
 
   export const bbcUSDC = isProduction ? 'bb_cUSDC' : 'bbcUSDC';
   export const bbcDAI = isProduction ? 'bb_cDAI' : 'bbcDAI';
 }
+/* eslint-enable @typescript-eslint/no-redeclare */
 
-type TokenMeta = {
+export type TokenMeta = {
   symbol: string;
   name: string;
   address: string;
@@ -36,7 +39,7 @@ type TokenMeta = {
   priceFeed?: string;
   pricePath?: KnownTokens[];
   price?: BigNumber;
-  icon?: React.ReactNode;
+  icon?: TokenIconNames;
   contract?: Web3Contract;
 };
 
@@ -86,7 +89,7 @@ const KNOWN_TOKENS: TokenMeta[] = [
     symbol: KnownTokens.BOND,
     name: 'BarnBridge',
     decimals: 18,
-    priceFeed: String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase(), // BOND -> USDC
+    priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // BOND -> USDC
     pricePath: [KnownTokens.USDC],
     icon: 'token-bond',
     contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
@@ -181,8 +184,8 @@ const PRICE_FEED_ABI: AbiItem[] = [
 ];
 
 const BOND_PRICE_FEED_ABI: AbiItem[] = [
-  createAbiItem('totalSupply', [], ['uint256']),
   createAbiItem('decimals', [], ['int8']),
+  createAbiItem('totalSupply', [], ['uint256']),
   createAbiItem('getReserves', [], ['uint112', 'uint112']),
   createAbiItem('token0', [], ['address']),
 ];
@@ -207,57 +210,65 @@ async function getFeedPrice(symbol: string): Promise<BigNumber> {
   const priceFeedContract = new Erc20Contract(PRICE_FEED_ABI, token.priceFeed);
   priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
 
-  const [decimals, latestAnswer] = await priceFeedContract.batch([{ method: 'decimals' }, { method: 'latestAnswer' }]);
+  const [decimals, latestAnswer] = await priceFeedContract.batch([
+    { method: 'decimals', transform: Number },
+    { method: 'latestAnswer', transform: BigNumber.parse },
+  ]);
 
-  return new BigNumber(latestAnswer).unscaleBy(decimals)!;
+  return latestAnswer.unscaleBy(decimals)!;
 }
 
 async function getBondPrice(): Promise<BigNumber> {
+  const usdcToken = getTokenBySymbol(KnownTokens.USDC);
   const bondToken = getTokenBySymbol(KnownTokens.BOND);
 
-  if (!bondToken || !bondToken.priceFeed) {
+  if (!usdcToken || !bondToken || !bondToken.priceFeed) {
     return Promise.reject();
   }
 
   const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed);
 
-  const [decimals, { reserve1, reserve2 }, token0] = await priceFeedContract.batch([
-    { method: 'decimals' },
-    { method: 'getReserves' },
-    { method: 'token1' },
+  const [decimals, [reserve0, reserve1], token0] = await priceFeedContract.batch([
+    { method: 'decimals', transform: Number },
+    {
+      method: 'getReserves',
+      transform: ({ 0: reserve0, 1: reserve1 }) => [BigNumber.parse(reserve0), BigNumber.parse(reserve1)],
+    },
+    { method: 'token0', transform: value => value.toLowerCase() },
   ]);
 
-  const bond = token0 === bondToken.address ? reserve1 : reserve2;
-  const usdc = token0 === bondToken.address ? reserve2 : reserve1;
+  const bond = token0 === bondToken.address.toLowerCase() ? reserve0 : reserve1;
+  const usdc = token0 === bondToken.address.toLowerCase() ? reserve1 : reserve0;
 
-  const usdcToken = getTokenBySymbol(KnownTokens.USDC);
-
-  const bondReserve = new BigNumber(bond).unscaleBy(decimals)!;
-  const usdcReserve = new BigNumber(usdc).unscaleBy(usdcToken?.decimals)!;
+  const bondReserve = bond.unscaleBy(decimals)!;
+  const usdcReserve = usdc.unscaleBy(usdcToken.decimals)!;
 
   return usdcReserve.dividedBy(bondReserve);
 }
 
 async function getUniV2Price(): Promise<BigNumber> {
-  const token = getTokenBySymbol(KnownTokens.UNIV2);
+  const usdcToken = getTokenBySymbol(KnownTokens.USDC);
+  const univ2Token = getTokenBySymbol(KnownTokens.UNIV2);
 
-  if (!token || !token.priceFeed) {
+  if (!usdcToken || !univ2Token || !univ2Token.priceFeed) {
     return Promise.reject();
   }
 
-  const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, token.priceFeed);
+  const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, univ2Token.priceFeed);
 
-  const [decimals, totalSupply, { reserve1, reserve2 }, token0] = await priceFeedContract.batch([
-    { method: 'decimals' },
-    { method: 'totalSupply' },
-    { method: 'getReserves' },
-    { method: 'token1' },
+  const [decimals, totalSupply, [reserve0, reserve1], token0] = await priceFeedContract.batch([
+    { method: 'decimals', transform: Number },
+    { method: 'totalSupply', transform: BigNumber.parse },
+    {
+      method: 'getReserves',
+      transform: ({ 0: reserve0, 1: reserve1 }) => [BigNumber.parse(reserve0), BigNumber.parse(reserve1)],
+    },
+    { method: 'token0', transform: value => value.toLowerCase() },
   ]);
 
-  const usdcAmount = token0 === token.address ? reserve2 : reserve1;
-  const usdcToken = getTokenBySymbol(KnownTokens.USDC);
-  const usdcReserve = new BigNumber(usdcAmount).unscaleBy(usdcToken?.decimals)!;
-  const supply = new BigNumber(totalSupply).unscaleBy(decimals)!;
+  const usdcAmount = token0 === usdcToken.address.toLowerCase() ? reserve0 : reserve1;
+  const usdcReserve = usdcAmount.unscaleBy(usdcToken.decimals)!;
+  const supply = totalSupply.unscaleBy(decimals)!;
 
   return usdcReserve.dividedBy(supply).multipliedBy(2);
 }
@@ -392,3 +403,9 @@ const KnownTokensProvider: FC = props => {
 };
 
 export default KnownTokensProvider;
+
+setTimeout(() => {
+  KNOWN_TOKENS.forEach(token => {
+    console.log(token.symbol, token.price?.toNumber());
+  });
+}, 5000);

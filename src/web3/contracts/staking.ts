@@ -32,12 +32,15 @@ export class NewStakingContract extends Web3Contract {
         createAbiItem('getEpochPoolSize', ['address', 'uint128'], ['uint256']),
         createAbiItem('getEpochUserBalance', ['address', 'address', 'uint128'], ['uint256']),
         createAbiItem('balanceOf', ['address', 'address'], ['uint256']),
+        createAbiItem('deposit', ['address', 'uint256'], []),
+        createAbiItem('withdraw', ['address', 'uint256'], []),
       ],
       CONTRACT_STAKING_ADDR,
       'STAKING',
     );
 
     this.stakedTokens = new Map();
+    this.stakedTokensBySymbol = new Map();
 
     this.on(Web3Contract.UPDATE_ACCOUNT, () => {
       //
@@ -47,25 +50,31 @@ export class NewStakingContract extends Web3Contract {
   // common data
   currentEpoch?: number;
   stakedTokens: Map<string, StakedToken>;
+  stakedTokensBySymbol: Map<string, StakedToken>;
 
   loadCommon(): Promise<void> {
     return this.batch([{ method: 'getCurrentEpoch' }]).then(([currentEpoch]) => {
-      this.currentEpoch = Number(currentEpoch);
+      const cEpoch = (this.currentEpoch = Number(currentEpoch));
 
       return Promise.allSettled(
         [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD, KnownTokens.UNIV2, KnownTokens.BOND]
           .map(getTokenBySymbol)
           .filter(Boolean)
           .map(token => {
+            const tokenAddress = token!.address;
+
             return this.batch([
-              { method: 'getEpochPoolSize', methodArgs: [token!.address, currentEpoch] },
-              { method: 'getEpochPoolSize', methodArgs: [token!.address, currentEpoch + 1] },
+              { method: 'getEpochPoolSize', methodArgs: [tokenAddress, cEpoch] },
+              { method: 'getEpochPoolSize', methodArgs: [tokenAddress, cEpoch + 1] },
             ]).then(([currentEpochPoolSize, nextEpochPoolSize]) => {
-              this.stakedTokens.set(token!.address, {
-                ...this.stakedTokens.get(token!.address),
+              const stakedToken = {
+                ...this.stakedTokens.get(tokenAddress),
                 currentEpochPoolSize: new BigNumber(currentEpochPoolSize),
                 nextEpochPoolSize: new BigNumber(nextEpochPoolSize),
-              });
+              };
+
+              this.stakedTokens.set(tokenAddress, stakedToken);
+              this.stakedTokensBySymbol.set(token!.symbol, stakedToken);
             });
           }),
       ).then(() => {
@@ -75,43 +84,66 @@ export class NewStakingContract extends Web3Contract {
   }
 
   loadUserData(): Promise<void> {
-    const currentEpoch = this.currentEpoch;
     const account = this.account;
 
-    if (!account || currentEpoch === undefined) {
+    if (!account) {
       return Promise.reject();
     }
 
-    return Promise.allSettled(
-      [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD, KnownTokens.UNIV2, KnownTokens.BOND]
-        .map(getTokenBySymbol)
-        .filter(Boolean)
-        .map(token => {
-          return this.batch([
-            { method: 'balanceOf', methodArgs: [account, token!.address] },
-            { method: 'getEpochUserBalance', methodArgs: [account, token!.address, currentEpoch] },
-            { method: 'getEpochUserBalance', methodArgs: [account, token!.address, currentEpoch + 1] },
-          ]).then(([userBalance, currentEpochUserBalance, nextEpochUserBalance]) => {
-            this.stakedTokens.set(token!.address, {
-              ...this.stakedTokens.get(token!.address),
-              userBalance: new BigNumber(userBalance),
-              currentEpochUserBalance: new BigNumber(currentEpochUserBalance),
-              nextEpochUserBalance: new BigNumber(nextEpochUserBalance),
+    return this.batch([{ method: 'getCurrentEpoch' }]).then(([currentEpoch]) => {
+      const cEpoch = (this.currentEpoch = Number(currentEpoch));
+
+      return Promise.allSettled(
+        [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD, KnownTokens.UNIV2, KnownTokens.BOND]
+          .map(getTokenBySymbol)
+          .filter(Boolean)
+          .map(token => {
+            const tokenAddress = token!.address;
+
+            return this.batch([
+              { method: 'balanceOf', methodArgs: [account, tokenAddress] },
+              { method: 'getEpochUserBalance', methodArgs: [account, tokenAddress, cEpoch] },
+              { method: 'getEpochUserBalance', methodArgs: [account, tokenAddress, cEpoch + 1] },
+            ]).then(([userBalance, currentEpochUserBalance, nextEpochUserBalance]) => {
+              const stakedToken = {
+                ...this.stakedTokens.get(tokenAddress),
+                userBalance: new BigNumber(userBalance),
+                currentEpochUserBalance: new BigNumber(currentEpochUserBalance),
+                nextEpochUserBalance: new BigNumber(nextEpochUserBalance),
+              };
+
+              this.stakedTokens.set(tokenAddress, stakedToken);
+              this.stakedTokensBySymbol.set(token!.symbol, stakedToken);
             });
-          });
-        }),
-    ).then(() => {
-      this.emit(Web3Contract.UPDATE_DATA);
+          }),
+      ).then(() => {
+        this.emit(Web3Contract.UPDATE_DATA);
+      });
     });
   }
-}
 
-const staking = new NewStakingContract();
-staking.on(Web3Contract.UPDATE_DATA, () => {
-  console.log('STAKING', staking);
-});
-staking.setAccount('');
-staking.loadCommon().then(() => staking.loadUserData());
+  stake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
+    return this.send('deposit', [tokenAddress, amount], {
+      from: this.account,
+      gasPrice: getGasValue(gasPrice),
+    }).then(result => new BigNumber(result));
+  }
+
+  unstake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
+    return this.send('withdraw', [tokenAddress, amount], {
+      from: this.account,
+      gasPrice: getGasValue(gasPrice),
+    }).then(result => new BigNumber(result));
+  }
+}
 
 const Contract = new Web3Contract(STAKING_ABI as Web3ContractAbiItem[], CONTRACT_STAKING_ADDR, 'STAKING');
 

@@ -110,7 +110,8 @@ export type IconNames =
   | 'apy-up'
   | 'chart'
   | 'queue'
-  | 'stake';
+  | 'stake'
+  | 'dropdown';
 
 export type IconProps = {
   name: IconNames;

@@ -1,7 +1,6 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/contracts/web3Contract';
-import { CONTRACT_YIELD_FARM_ADDR } from 'web3/contracts/yieldFarm';
 
 const ABI: AbiItem[] = [
   createAbiItem('NR_OF_EPOCHS', [], ['uint256']),
@@ -70,6 +69,10 @@ export class YFContract extends Web3Contract {
       return undefined;
     }
 
+    if (this.poolEndDate) {
+      return BigNumber.ZERO;
+    }
+
     return this.totalForDistribution.dividedBy(this.totalEpochs);
   }
 
@@ -83,6 +86,10 @@ export class YFContract extends Web3Contract {
       epochReward === undefined
     ) {
       return undefined;
+    }
+
+    if (this.poolEndDate) {
+      return BigNumber.ZERO;
     }
 
     return this.currentEpochStake.dividedBy(this.currentPoolSize).multipliedBy(epochReward);
@@ -130,22 +137,29 @@ export class YFContract extends Web3Contract {
       return Promise.reject();
     }
 
-    return this.batch([
-      { method: 'getEpochStake', methodArgs: [this.account, this.currentEpoch] },
-      { method: 'getEpochStake', methodArgs: [this.account, this.currentEpoch! + 1] },
-      { method: 'massHarvest', callArgs: { from: this.account } },
-    ]).then(([currentEpochStake, nextEpochStake, toClaim]) => {
-      this.currentEpochStake = new BigNumber(currentEpochStake);
-      this.nextEpochStake = new BigNumber(nextEpochStake);
-      this.toClaim = new BigNumber(toClaim);
-      this.emit(Web3Contract.UPDATE_DATA);
+    return this.batch([{ method: 'getCurrentEpoch' }]).then(([currentEpoch]) => {
+      this.currentEpoch = Number(currentEpoch);
+
+      return this.batch([
+        { method: 'getEpochStake', methodArgs: [this.account, this.currentEpoch] },
+        { method: 'getEpochStake', methodArgs: [this.account, this.currentEpoch! + 1] },
+        { method: 'massHarvest', callArgs: { from: this.account } },
+      ]).then(([currentEpochStake, nextEpochStake, toClaim]) => {
+        this.currentEpochStake = new BigNumber(currentEpochStake);
+        this.nextEpochStake = new BigNumber(nextEpochStake);
+        this.toClaim = new BigNumber(toClaim);
+        this.emit(Web3Contract.UPDATE_DATA);
+      });
     });
   }
-}
 
-const yf = new YFContract(CONTRACT_YIELD_FARM_ADDR);
-yf.on(Web3Contract.UPDATE_DATA, () => {
-  console.log('YF', yf);
-});
-yf.setAccount('');
-yf.loadCommon().then(() => yf.loadUserData());
+  claim(): Promise<BigNumber> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
+    return this.send('massHarvest', [], {
+      from: this.account,
+    }).then(result => new BigNumber(result));
+  }
+}

@@ -198,7 +198,7 @@ function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
         const options = [
           {
             value: 'all',
-            label: 'All transactions',
+            label: 'All pool transactions',
           },
           {
             value: 'in',

@@ -1384,4 +1384,8 @@
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5"
           d="M16.8 19.2a2.4 2.4 0 100-4.8 2.4 2.4 0 000 4.8z" clip-rule="evenodd"/>
   </symbol>
+  <!-- DROPDOWN -->
+  <symbol id="icon__dropdown" fill="none" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M11.293 14.293l-3.586-3.586C7.077 10.077 7.523 9 8.414 9h7.172c.89 0 1.337 1.077.707 1.707l-3.586 3.586a1 1 0 01-1.414 0z"/>
+  </symbol>
 </svg>
