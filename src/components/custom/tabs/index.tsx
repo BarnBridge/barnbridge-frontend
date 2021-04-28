@@ -33,7 +33,7 @@ export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) 
         if (restTab.to) {
           return (
             // @ts-ignore
-            <NavLink key={idx} className={cn(s.tab, className)} exact activeClassName={s.active} {...restTab}>
+            <NavLink key={idx} className={cn(s.tab, className)} activeClassName={s.active} {...restTab}>
               {children}
             </NavLink>
           );
