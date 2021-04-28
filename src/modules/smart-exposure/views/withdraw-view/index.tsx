@@ -3,12 +3,9 @@ import React from 'react';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Tabs } from 'components/custom/tabs';
-import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
+import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { KnownTokens } from 'components/providers/known-tokens-provider';
-
-import s from './s.module.scss';
 
 const DepositView: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('multiple');

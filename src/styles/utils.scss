@@ -38,11 +38,14 @@
   border-radius: 4px;
   box-shadow: var(--theme-card-shadow);
   display: flex;
+  align-items: center;
   padding: 16px;
   text-align: left;
 
-  &disabled {
+  &[disabled] {
     border-color: var(--theme-body-color);
+    filter: grayscale(1);
+    cursor: not-allowed;
 
     [data-theme='dark'] & {
       border-color: var(--theme-body-color);
@@ -138,6 +141,10 @@
 
 .color-green {
   color: var(--theme-green-color);
+}
+
+.color-icon {
+  color: var(--theme-icon-color);
 }
 
 .hidden-mobile {

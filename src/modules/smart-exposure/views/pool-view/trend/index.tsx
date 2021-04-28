@@ -1,21 +1,15 @@
 import React from 'react';
-import { Spin } from 'antd';
 import cn from 'classnames';
-import format from 'date-fns/format';
-import * as ReCharts from 'recharts';
-import { formatPercent } from 'web3/utils';
 
 import { Tabs } from 'components/custom/tabs';
-import { Text } from 'components/custom/typography';
-import { mergeState } from 'hooks/useMergeState';
-import { APISYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
-import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';
 
-type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
-  point: number;
-};
+// import { APISYPoolAPY } from 'modules/smart-yield/api';
+
+// type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
+//   point: number;
+// };
 
 const tabs = [
   {
@@ -32,22 +26,22 @@ const tabs = [
   },
 ];
 
-type State = {
-  loading: boolean;
-  data: ChartEntity[];
-};
+// type State = {
+//   loading: boolean;
+//   data: ChartEntity[];
+// };
 
-const InitialState: State = {
-  loading: false,
-  data: [],
-};
+// const InitialState: State = {
+//   loading: false,
+//   data: [],
+// };
 
 export const PriceTrend: React.FC = () => {
   // const poolCtx = useSYPool();
   // const { pool } = poolCtx;
 
   const [activeTab, setActiveTab] = React.useState('24h');
-  const [state, setState] = React.useState<State>(InitialState);
+  // const [state, setState] = React.useState<State>(InitialState);
 
   // React.useEffect(() => {
   //   if (!pool) {
@@ -216,18 +210,14 @@ export const PriceTrend: React.FC = () => {
             </ReCharts.AreaChart>
           </ReCharts.ResponsiveContainer>
         </Spin> */}
-        <div className="flex flow-col justify-center col-gap-24 row-gap-16">
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
+        <footer className="flex flow-col justify-center col-gap-24 row-gap-16">
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
             Senior APY
           </div>
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
             Junior APY
           </div>
-        </div>
+        </footer>
       </div>
     </section>
   );

@@ -224,14 +224,10 @@ const Liquidity: React.FC<Props> = ({ className }) => {
           </ReCharts.ResponsiveContainer>
         </Spin>
         <div className="flex flow-col justify-center col-gap-24 row-gap-16">
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
             Senior Liquidity
           </div>
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
             Junior Liquidity
           </div>
         </div>

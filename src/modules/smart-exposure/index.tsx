@@ -12,6 +12,7 @@ const PairsView = lazy(() => import('./views/pairs-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
 const DepositView = lazy(() => import('./views/deposit-view'));
 const WithdrawView = lazy(() => import('./views/withdraw-view'));
+const PortfolioView = lazy(() => import('./views/portfolio-view'));
 
 type SmartYieldViewParams = {
   vt: string;
@@ -52,7 +53,7 @@ const SmartExposureView: React.FC = () => {
           <Icon name="finance" className="mr-8" /> Pairs
         </>
       ),
-      href: '/smart-exposure/pairs',
+      to: '/smart-exposure/pairs',
     },
     {
       children: (
@@ -60,7 +61,7 @@ const SmartExposureView: React.FC = () => {
           <Icon name="wallet-outlined" className="mr-8" /> Portfolio
         </>
       ),
-      href: '/smart-exposure/portfolio',
+      to: '/smart-exposure/portfolio',
       disabled: !wallet.account,
     },
   ];
@@ -82,6 +83,9 @@ const SmartExposureView: React.FC = () => {
             </Route>
             <Route path="/smart-exposure/pairs/:pool/withdraw" exact>
               <WithdrawView />
+            </Route>
+            <Route path="/smart-exposure/portfolio" exact>
+              <PortfolioView />
             </Route>
             <Redirect to="/smart-exposure/pairs" />
           </Switch>

@@ -116,7 +116,9 @@ export type IconNames =
   | 'finance'
   | 'scales'
   | 'vertical-dots'
-  | 'dropdown';
+  | 'dropdown'
+  | 'arrow-backward'
+  | 'arrow-forward';
 
 export type IconProps = {
   name: IconNames;

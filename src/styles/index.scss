@@ -6,6 +6,7 @@
 @import 'utils';
 @import 'button';
 @import 'rechart';
+@import 'table';
 
 html {
   block-size: 100%;
@@ -74,6 +75,7 @@ body.mobile-menu-open {
   --theme-overlay-color: #fff;
   --theme-mask-color: rgba(19, 32, 43, 0.8);
   --theme-border-color: #e3e4e6; // grey100
+  --theme-border-color-rgb: 227, 228, 230;
   --theme-icon-color: #aaafb3; // grey300
   --theme-icon-hover-color: #060a0d; // grey900
 

@@ -1,3 +1,5 @@
+@import 'src/styles/text';
+
 .recharts-legend-item-text {
   font-size: var(--font-size-p2);
   font-weight: 600;
@@ -5,8 +7,9 @@
 }
 
 .chart-label {
+  @include font-sm-semi-bold;
   background: var(--theme-body-color);
-  color: var(--theme-color-secondary);
+  color: var(--theme-secondary-color);
   border-radius: 4px;
   padding: 8px 12px;
   position: relative;

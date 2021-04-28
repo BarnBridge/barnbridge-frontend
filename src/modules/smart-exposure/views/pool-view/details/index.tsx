@@ -1,17 +1,10 @@
 ﻿import React from 'react';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import format from 'date-fns/format';
-import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
-import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
-import { Hint, Text } from 'components/custom/typography';
-import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
-
-import { getFormattedDuration } from 'utils';
+import { Text } from 'components/custom/typography';
 
 import s from './s.module.scss';
 
