@@ -44,23 +44,16 @@ const DepositView: React.FC = () => {
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet WBTC balance</div>
+          <div className="text-sm fw-semibold color-secondary mb-4">25:75_WBTC_ETH balance</div>
           <div>
             <span className="text-p1 fw-semibold color-primary mr-8">9.789</span>
             <span className="text-sm fw-semibold color-secondary">WBTC</span>
           </div>
         </div>
-        <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet ETH balance</div>
-          <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">9.789</span>
-            <span className="text-sm fw-semibold color-secondary">ETH</span>
-          </div>
-        </div>
       </div>
       <div className="card ph-32 pv-32 mh-auto" style={{ width: '100%', maxWidth: 640 }}>
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
-          Deposit
+          Withdraw
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur odio nunc, a sodales ligula
@@ -83,61 +76,51 @@ const DepositView: React.FC = () => {
 export default DepositView;
 
 const MultipleTokensForm = () => {
-  const [wbtcState, setWbtcState] = React.useState<string>('');
-  const [ethState, setEthState] = React.useState<string>('');
+  const [tokenState, setTokenState] = React.useState<string>('');
   return (
     <form>
+      <div className="flex mb-8">
+        <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
+      </div>
+      <TokenAmount
+        before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
+        value={tokenState}
+        onChange={setTokenState}
+        max={9.789}
+        placeholder={`0 (Max ${9.789})`}
+        className="mb-40"
+        slider
+      />
+
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">WBTC amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>
       </div>
-      <TokenAmount
+      <TokenAmountPreview
         before={<Icon name="token-wbtc" width={24} height={24} />}
-        value={wbtcState}
-        onChange={setWbtcState}
-        max={9.789}
-        placeholder={`0 (Max ${9.789})`}
-        className="mb-40"
+        value="1.8716"
+        secondary="$ 107,319.4467"
+        className="mb-32"
       />
 
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">ETH amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 26.13%</span>
       </div>
-      <TokenAmount
-        before={<Icon name="token-eth" width={24} height={24} />}
-        value={ethState}
-        onChange={setEthState}
-        max={9.789}
-        placeholder={`0 (Max ${9.789})`}
-        className="mb-40"
-      />
-
-      <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">bb_ET_WBTC75/ETH25 amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">$ 63,132.11 per bb_ET_WBTC50/ETH50</span>
-      </div>
       <TokenAmountPreview
-        before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
+        before={<Icon name="token-eth" width={24} height={24} />}
         value="2.3116"
+        secondary="$ 107,319.4467"
         className="mb-32"
       />
-      <div className="flex align-center col-gap-24 mb-32">
-        <button type="button" className="button-primary" style={{ flexGrow: 1 }}>
-          Enable ETH
-        </button>
-        <span className="middle-dot color-border" />
-        <button type="button" className="button-primary" style={{ flexGrow: 1 }}>
-          Enable WBTC
-        </button>
-      </div>
+
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
         <button type="button" className="button-back">
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </button>
         <button type="submit" className="button-primary">
-          Deposit
+          Withdraw
         </button>
       </div>
     </form>
@@ -145,59 +128,31 @@ const MultipleTokensForm = () => {
 };
 
 const SingleTokenForm = () => {
-  const tokens = [KnownTokens.BTC, KnownTokens.ETH, KnownTokens.BOND];
-
-  const [selectedToken, setSelectedToken] = React.useState<KnownTokens>(tokens[0]);
   const [tokenState, setTokenState] = React.useState<string>('');
 
   return (
     <form>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">WBTC amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>
+        <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
       </div>
       <TokenAmount
-        before={<TokenSelect value={selectedToken} onChange={setSelectedToken} tokens={tokens} />}
+        before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
         value={tokenState}
         onChange={setTokenState}
         max={9.789}
         placeholder={`0 (Max ${9.789})`}
         className="mb-40"
-        classNameBefore={s.amountDropdownBefore}
+        slider
       />
 
-      <div className="css-grid mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
-        <div>
-          <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">Uniswap WBTC amount</span>
-            <span className="text-sm fw-semibold color-secondary ml-auto">73.87%</span>
-          </div>
-          <TokenAmountPreview
-            before={<Icon name="token-wbtc" width={24} height={24} />}
-            value="2.3116"
-            secondary="$ 107,319.4467"
-          />
-        </div>
-        <div>
-          <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">Uniswap ETH amount</span>
-            <span className="text-sm fw-semibold color-secondary ml-auto">26.13%</span>
-          </div>
-          <TokenAmountPreview
-            before={<Icon name="token-eth" width={24} height={24} />}
-            value="2.3116"
-            secondary="$ 107,319.4467"
-          />
-        </div>
-      </div>
-
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">bb_ET_WBTC75/ETH25 amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">$ 63,132.11 per bb_ET_WBTC50/ETH50</span>
+        <span className="text-sm fw-semibold color-secondary">WBTC amount</span>
+        <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>
       </div>
       <TokenAmountPreview
-        before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
-        value="2.3116"
+        before={<Icon name="token-wbtc" width={24} height={24} />}
+        value="1.8716"
+        secondary="$ 107,319.4467"
         className="mb-32"
       />
 
@@ -218,7 +173,7 @@ const SingleTokenForm = () => {
           Cancel
         </button>
         <button type="submit" className="button-primary">
-          Deposit
+          Withdraw
         </button>
       </div>
     </form>

@@ -11,6 +11,7 @@ import s from './s.module.scss';
 const PairsView = lazy(() => import('./views/pairs-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
 const DepositView = lazy(() => import('./views/deposit-view'));
+const WithdrawView = lazy(() => import('./views/withdraw-view'));
 
 type SmartYieldViewParams = {
   vt: string;
@@ -78,6 +79,9 @@ const SmartExposureView: React.FC = () => {
             </Route>
             <Route path="/smart-exposure/pairs/:pool/deposit" exact>
               <DepositView />
+            </Route>
+            <Route path="/smart-exposure/pairs/:pool/withdraw" exact>
+              <WithdrawView />
             </Route>
             <Redirect to="/smart-exposure/pairs" />
           </Switch>

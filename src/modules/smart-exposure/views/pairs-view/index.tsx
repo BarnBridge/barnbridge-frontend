@@ -1,15 +1,10 @@
 import { useState } from 'react';
 import cn from 'classnames';
-import { formatUSDValue } from 'web3/utils';
 
-import Table from 'components/antd/table';
-import Icon, { IconNames } from 'components/custom/icon';
+import { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
-import { Hint, Text } from 'components/custom/typography';
+import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
-import { usePools } from 'modules/smart-yield/providers/pools-provider';
-import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
 
 import { PairsTable } from './table';
 
