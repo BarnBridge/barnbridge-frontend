@@ -1,3 +1,5 @@
+import 'web3/contracts/yieldFarming';
+
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';

@@ -15,7 +15,6 @@ const Contract = new Web3Contract(YF_LP_ABI as Web3ContractAbiItem[], CONTRACT_Y
 type YieldFarmLPContractData = {
   isEnded?: boolean;
   endDate?: number;
-  delayedEpochs?: number;
   totalEpochs?: number;
   totalReward?: BigNumber;
   epochReward?: BigNumber;
@@ -39,7 +38,6 @@ export type YieldFarmLPContract = YieldFarmLPContractData & {
 const InitialData: YieldFarmLPContractData = {
   isEnded: undefined,
   endDate: undefined,
-  delayedEpochs: undefined,
   totalEpochs: undefined,
   totalReward: undefined,
   epochReward: undefined,
@@ -104,7 +102,6 @@ export function useYieldFarmLPContract(): YieldFarmLPContract {
         ...prevState,
         isEnded,
         endDate,
-        delayedEpochs: 1,
         totalEpochs,
         totalReward,
         epochReward,

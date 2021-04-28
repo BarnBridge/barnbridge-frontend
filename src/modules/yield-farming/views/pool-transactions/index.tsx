@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
@@ -9,25 +9,17 @@ import Table from 'components/antd/table';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import IconBubble from 'components/custom/icon-bubble';
+import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { convertTokenInUSD, getTokenByAddress, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
-import {
-  APISYRewardPoolTransaction,
-  APISYRewardTxHistoryType,
-  Markets,
-  Pools,
-  RewardHistoryShortTypes,
-  fetchSYRewardPoolTransactions,
-} from 'modules/smart-yield/api';
-import { SYRewardPool, useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { APIYFPoolActionType, APIYFPoolTransaction, fetchYFPoolTransactions } from 'modules/yield-farming/api';
+import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-type TableEntity = APISYRewardPoolTransaction & {
-  pool?: SYRewardPool;
-};
+type TableEntity = APIYFPoolTransaction;
 
 type State = {
   transactions: TableEntity[];
@@ -36,7 +28,8 @@ type State = {
   pageSize: number;
   loading: boolean;
   filters: {
-    type: string;
+    actionType: string;
+    tokenAddress: string;
   };
 };
 
@@ -47,8 +40,69 @@ const InitialState: State = {
   pageSize: 10,
   loading: false,
   filters: {
-    type: 'all',
+    actionType: 'all',
+    tokenAddress: 'all',
   },
+};
+
+const TransactionColumn: React.FC<{ entity: TableEntity }> = props => {
+  const { entity } = props;
+  const knownToken = getTokenByAddress(entity.tokenAddress);
+
+  if (!knownToken) {
+    return null;
+  }
+
+  return (
+    <div className="flex flow-col col-gap-16 align-center">
+      <Icon name={knownToken.icon as IconNames} width={40} height={40} />
+      <div>
+        <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
+          {entity.actionType === APIYFPoolActionType.DEPOSIT && 'Stake'}
+          {entity.actionType === APIYFPoolActionType.WITHDRAW && 'Unstake'}
+        </Text>
+        <Text type="small" weight="semibold" wrap={false}>
+          {knownToken.name}
+        </Text>
+      </div>
+    </div>
+  );
+};
+
+const AmountColumn: React.FC<{ entity: TableEntity }> = props => {
+  const { entity } = props;
+  const isStake = entity.actionType === APIYFPoolActionType.DEPOSIT;
+  const knownToken = getTokenByAddress(entity.tokenAddress);
+
+  if (!knownToken) {
+    return null;
+  }
+
+  const amount = entity.amount.unscaleBy(knownToken.decimals);
+
+  return (
+    <>
+      <Tooltip
+        placement="bottomLeft"
+        title={
+          <Text type="p2" weight="semibold" color="primary">
+            {formatToken(amount, {
+              decimals: knownToken.decimals,
+            }) ?? '-'}
+          </Text>
+        }>
+        <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+          {isStake ? '+' : '-'}
+          {formatToken(amount, {
+            tokenName: knownToken.symbol,
+          }) ?? '-'}
+        </Text>
+      </Tooltip>
+      <Text type="small" weight="semibold" wrap={false}>
+        {formatUSD(convertTokenInUSD(amount, knownToken.symbol))}
+      </Text>
+    </>
+  );
 };
 
 function getColumns(isAll: boolean): ColumnsType<TableEntity> {
@@ -56,53 +110,12 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
     {
       title: 'Transaction',
       width: '25%',
-      render: (_, entity) => {
-        const market = Markets.get(entity.pool?.protocolId ?? '');
-        const meta = Pools.get(entity.pool?.underlyingSymbol ?? '');
-
-        return (
-          <div className="flex flow-col col-gap-16 align-center">
-            {market && meta && <IconBubble name={meta.icon} bubbleName="token-bond" secondBubbleName={market.icon} />}
-            <div>
-              <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-                {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
-              </Text>
-              <Text type="small" weight="semibold" wrap={false}>
-                {entity.pool?.poolToken.symbol}
-              </Text>
-            </div>
-          </div>
-        );
-      },
+      render: (_, entity) => <TransactionColumn entity={entity} />,
     },
     {
       title: 'Amount',
       width: '25%',
-      render: (_, entity) => {
-        const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
-
-        return (
-          <>
-            <Tooltip
-              placement="bottomLeft"
-              title={
-                formatToken(entity.amount, {
-                  decimals: entity.pool?.poolTokenDecimals,
-                }) ?? '-'
-              }>
-              <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
-                {isStake ? '+' : '-'}
-                {formatToken(entity.amount, {
-                  tokenName: entity.pool?.poolToken.symbol,
-                }) ?? '-'}
-              </Text>
-            </Tooltip>
-            <Text type="small" weight="semibold" wrap={false}>
-              {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
-            </Text>
-          </>
-        );
-      },
+      render: (_, entity) => <AmountColumn entity={entity} />,
     },
     isAll
       ? {
@@ -137,23 +150,31 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
   ];
 }
 
-const Transactions: React.FC = () => {
+const TX_OPTS: SelectOption[] = [
+  {
+    label: 'All pool transactions',
+    value: 'all',
+  },
+  {
+    label: 'Stake',
+    value: APIYFPoolActionType.DEPOSIT,
+  },
+  {
+    label: 'Unstake',
+    value: APIYFPoolActionType.WITHDRAW,
+  },
+];
+
+const PoolTransactions: React.FC = () => {
+  const knownTokensCtx = useKnownTokens();
   const wallet = useWallet();
-  const rewardPool = useRewardPool();
+  const yfPoolCtx = useYFPool();
 
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
   const [activeTab, setActiveTab] = React.useState(wallet.isActive ? 'own' : 'all');
 
-  const txOpts = React.useMemo<SelectOption[]>(() => {
-    return [
-      {
-        label: 'All pool transactions',
-        value: 'all',
-      },
-      ...Array.from(RewardHistoryShortTypes).map(([value, label]) => ({ label, value })),
-    ];
-  }, []);
+  const defaultSelectedToken = knownTokensCtx.getTokenBySymbol(yfPoolCtx.poolMeta?.tokens[0]!);
 
   React.useEffect(() => {
     setState(prevState => ({
@@ -161,32 +182,32 @@ const Transactions: React.FC = () => {
       page: 1,
       filters: {
         ...prevState.filters,
-        type: 'all',
+        actionType: 'all',
+        tokenAddress: defaultSelectedToken?.address ?? 'all',
       },
     }));
-  }, [activeTab]);
 
-  React.useEffect(() => {
     function onPoolTx() {
       if (activeTab === 'own') {
         reload();
       }
     }
 
-    rewardPool.rewardPool?.pool.on('tx:success', onPoolTx);
+    yfPoolCtx.poolMeta?.contract.on('tx:success', onPoolTx);
 
     return () => {
-      rewardPool.rewardPool?.pool.off('tx:success', onPoolTx);
+      yfPoolCtx.poolMeta?.contract.off('tx:success', onPoolTx);
     };
-  }, [rewardPool.rewardPool]);
+  }, [yfPoolCtx.poolMeta]);
 
   React.useEffect(() => {
-    if (!rewardPool.rewardPool) {
-      return;
-    }
+    setState(prevState => ({
+      ...prevState,
+      page: 1,
+    }));
+  }, [activeTab]);
 
-    const { poolAddress } = rewardPool.rewardPool;
-
+  React.useEffect(() => {
     setState(prevState => ({
       ...prevState,
       loading: true,
@@ -198,21 +219,18 @@ const Transactions: React.FC = () => {
         const {
           data: transactions,
           meta: { count },
-        } = await fetchSYRewardPoolTransactions(
-          poolAddress,
+        } = await fetchYFPoolTransactions(
           state.page,
           state.pageSize,
+          state.filters.tokenAddress,
           activeTab === 'own' ? wallet.account : 'all',
-          state.filters.type,
+          state.filters.actionType,
         );
 
         setState(prevState => ({
           ...prevState,
           loading: false,
-          transactions: transactions.map(transaction => ({
-            ...transaction,
-            pool: rewardPool.rewardPool,
-          })),
+          transactions,
           total: count,
         }));
       } catch {
@@ -223,11 +241,22 @@ const Transactions: React.FC = () => {
         }));
       }
     })();
-  }, [rewardPool.rewardPool, wallet, activeTab, state.page, state.pageSize, state.filters, version]);
+  }, [yfPoolCtx.poolMeta, wallet.account, activeTab, state.page, state.pageSize, state.filters, version]);
 
   React.useEffect(() => {
     setActiveTab(wallet.isActive ? 'own' : 'all');
   }, [wallet.isActive]);
+
+  function handleTokenFilterChange(value: SelectValue) {
+    setState(prevState => ({
+      ...prevState,
+      page: 1,
+      filters: {
+        ...prevState.filters,
+        tokenAddress: String(value),
+      },
+    }));
+  }
 
   function handleTypeFilterChange(value: SelectValue) {
     setState(prevState => ({
@@ -235,7 +264,7 @@ const Transactions: React.FC = () => {
       page: 1,
       filters: {
         ...prevState.filters,
-        type: String(value),
+        actionType: String(value),
       },
     }));
   }
@@ -258,12 +287,28 @@ const Transactions: React.FC = () => {
         activeKey={activeTab}
         onChange={setActiveTab}
         tabBarExtraContent={
-          <Select
-            className="full-width"
-            options={txOpts}
-            value={state.filters.type}
-            onChange={handleTypeFilterChange}
-          />
+          <div className="flex align-center">
+            {yfPoolCtx.poolMeta?.tokens.length! > 1 && (
+              <Select
+                className="full-width mr-16"
+                options={
+                  yfPoolCtx.poolMeta?.tokens.map(token => ({
+                    value: knownTokensCtx.getTokenBySymbol(token)?.address ?? 'all',
+                    label: token,
+                  })) ?? []
+                }
+                value={state.filters.tokenAddress}
+                onChange={handleTokenFilterChange}
+              />
+            )}
+
+            <Select
+              className="full-width"
+              options={TX_OPTS}
+              value={state.filters.actionType}
+              onChange={handleTypeFilterChange}
+            />
+          </div>
         }>
         {wallet.isActive && <Tabs.Tab key="own" tab="My transactions" />}
         <Tabs.Tab key="all" tab="All transactions" />
@@ -294,4 +339,4 @@ const Transactions: React.FC = () => {
   );
 };
 
-export default Transactions;
+export default PoolTransactions;

@@ -38,7 +38,7 @@ import { PoolActions, PoolTypes } from 'modules/yield-farming/utils';
 import s from './s.module.scss';
 
 const TypeFilters: SelectOption[] = [
-  { value: 'all', label: 'All transactions' },
+  { value: 'all', label: 'All pool transactions' },
   { value: 'deposits', label: 'Deposits' },
   { value: 'withdrawals', label: 'Withdrawals' },
 ];
