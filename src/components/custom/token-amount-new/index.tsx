@@ -47,7 +47,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
           />
           <div className={s.tokenAmountHint}>{secondary}</div>
         </div>
-        {rest.max && (
+        {Number.isFinite(rest.max) && (
           <button
             className="button-ghost"
             style={{ alignSelf: 'center' }}
@@ -57,7 +57,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
           </button>
         )}
       </div>
-      {slider && rest.max ? (
+      {slider && Number.isFinite(rest.max) ? (
         <Slider
           className={s.tokenAmountSlider}
           type="range"

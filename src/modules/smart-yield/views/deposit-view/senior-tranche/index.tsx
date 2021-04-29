@@ -239,7 +239,7 @@ const SeniorTranche: React.FC = () => {
         <Form.Item
           name="maturityDate"
           label="Maturity date"
-          extra={`Max ${bondMaxLife} days`}
+          extra={bondMaxLife ? `Max ${bondMaxLife} days` : ''}
           hint="You can select a maturity date between 1 and 30 days, in increments of 1 day."
           rules={[{ required: true, message: 'Required' }]}>
           <DatePicker
