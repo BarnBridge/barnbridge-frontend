@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link, useParams } from 'react-router-dom';
 
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
@@ -73,6 +74,7 @@ const DepositView: React.FC = () => {
 export default DepositView;
 
 const MultipleTokensForm = () => {
+  const { pool } = useParams<{ pool: string }>();
   const [tokenState, setTokenState] = React.useState<string>('');
   return (
     <form>
@@ -112,10 +114,10 @@ const MultipleTokensForm = () => {
       />
 
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <button type="button" className="button-back">
+        <Link to={`/smart-exposure/pairs/${pool}`} className="button-back">
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
-        </button>
+        </Link>
         <button type="submit" className="button-primary">
           Withdraw
         </button>
@@ -125,6 +127,7 @@ const MultipleTokensForm = () => {
 };
 
 const SingleTokenForm = () => {
+  const { pool } = useParams<{ pool: string }>();
   const [tokenState, setTokenState] = React.useState<string>('');
 
   return (
@@ -165,10 +168,10 @@ const SingleTokenForm = () => {
       </TransactionDetails>
 
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <button type="button" className="button-back">
+        <Link to={`/smart-exposure/pairs/${pool}`} className="button-back">
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
-        </button>
+        </Link>
         <button type="submit" className="button-primary">
           Withdraw
         </button>

@@ -116,6 +116,7 @@
     "identicon.js": "2.3.3",
     "lodash": "4.17.21",
     "nanoid": "^3.1.22",
+    "outy": "^0.1.2",
     "query-string": "7.0.0",
     "react": "17.0.1",
     "react-device-detect": "1.17.0",

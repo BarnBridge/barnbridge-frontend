@@ -21,7 +21,7 @@ const PoolView: React.FC = () => {
           Tranches
         </Link>
       </div>
-      <div className="flex mb-40">
+      <div className="flex align-center mb-40">
         <div className="flex">
           <IconsPair icon1="token-wbtc" icon2="token-eth" size={40} className="mr-16" />
           <div>
@@ -31,13 +31,13 @@ const PoolView: React.FC = () => {
         </div>
 
         <div className="flex col-gap-24 ml-auto">
-          <Link to={`${location.pathname}/deposit`} className="button-primary">
+          <Link to={`${location.pathname}/deposit`} className="button-primary button-big">
             Deposit
           </Link>
-          <Link to={`${location.pathname}/withdraw`} className="button-ghost">
+          <Link to={`${location.pathname}/withdraw`} className="button-ghost button-big">
             Withdraw
           </Link>
-          <button type="button" className="button-ghost-alt button-icon">
+          <button type="button" className="button-ghost-alt button-big button-icon">
             <Icon name="vertical-dots" />
           </button>
         </div>

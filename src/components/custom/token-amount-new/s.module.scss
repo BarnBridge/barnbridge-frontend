@@ -84,6 +84,7 @@
   font-weight: 600;
   font-size: 16px;
   line-height: 24px;
+  color: var(--theme-secondary-color);
 }
 
 .tokenAmountPreviewHint {
@@ -92,6 +93,10 @@
   font-size: 12px;
   line-height: 16px;
   color: var(--theme-secondary-color);
+
+  &:empty {
+    display: none;
+  }
 }
 
 // TOKEN SELECT ⬇️

@@ -113,11 +113,15 @@
 .button-big {
   font-size: 16px;
   line-height: 24px;
-  padding: 20px 48px;
+  padding: 19px 48px;
 }
 
 .button-icon {
   padding: 11px;
+
+  &.button-big {
+    padding: 19px;
+  }
 }
 
 .button-text {

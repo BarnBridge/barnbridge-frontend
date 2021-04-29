@@ -24,7 +24,8 @@ export type TokenIconNames =
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
-  | 'yearn_finance';
+  | 'yearn_finance'
+  | 'token-all';
 
 export type NavIconNames =
   | 'paper-bill-outlined'

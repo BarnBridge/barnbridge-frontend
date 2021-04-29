@@ -22,7 +22,7 @@ export const Pairs = new Map<string, PairType>([
     {
       id: 'ALL',
       name: 'All pairs',
-      icon1: 'token-wbtc',
+      icon1: 'token-all',
       active: true,
     },
   ],
