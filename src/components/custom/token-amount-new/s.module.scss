@@ -1,3 +1,5 @@
+@import 'src/styles/text';
+
 .tokenAmount {
   // background: var(--theme-body-color);
   border: 1px solid var(--theme-border-color);
@@ -96,23 +98,15 @@
 
 // TOKEN SELECT ⬇️
 
-.tokenSelect {
+.tokenSelectTrigger {
   position: relative;
   display: flex;
+  border: 0;
+  background-color: transparent;
+  padding: 0;
 
   svg {
     flex-shrink: 0;
-  }
-
-  select {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    border: 0;
-    opacity: 0.0001;
-    height: 100%;
-    width: 100%;
   }
 }
 
@@ -120,7 +114,41 @@
   color: var(--theme-icon-color);
   margin-left: 4px;
 
-  .tokenSelect:hover & {
+  .tokenSelectTrigger:hover & {
     color: var(--theme-icon-hover-color);
+  }
+}
+
+.tokenSelectList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--theme-card-color);
+  box-shadow: var(--theme-overlay-shadow);
+  padding: 4px;
+  border-radius: 4px;
+
+  li:not(:last-of-type) {
+    margin-bottom: 4px;
+  }
+}
+
+.tokenSelectListButton {
+  @include font-p2-semi-bold;
+  background-color: transparent;
+  border: 0;
+  padding: 12px;
+  display: flex;
+  width: 100%;
+  color: var(--theme-secondary-color);
+  border-radius: 4px;
+
+  &.active {
+    color: var(--theme-primary-color);
+  }
+
+  &:hover {
+    color: var(--theme-primary-color);
+    background: var(--theme-body-color);
   }
 }
