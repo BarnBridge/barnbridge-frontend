@@ -1,6 +1,7 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/contracts/web3Contract';
+import { getGasValue } from 'web3/utils';
 
 const ABI: AbiItem[] = [
   createAbiItem('NR_OF_EPOCHS', [], ['uint256']),
@@ -65,18 +66,22 @@ export class YFContract extends Web3Contract {
   }
 
   get epochReward(): BigNumber | undefined {
-    if (this.totalForDistribution === undefined || this.totalEpochs === undefined || this.totalEpochs === 0) {
-      return undefined;
+    if (this.isPoolEnded) {
+      return BigNumber.ZERO;
     }
 
-    if (this.poolEndDate) {
-      return BigNumber.ZERO;
+    if (this.totalForDistribution === undefined || this.totalEpochs === undefined || this.totalEpochs === 0) {
+      return undefined;
     }
 
     return this.totalForDistribution.dividedBy(this.totalEpochs);
   }
 
   get potentialReward(): BigNumber | undefined {
+    if (this.isPoolEnded) {
+      return BigNumber.ZERO;
+    }
+
     const epochReward = this.epochReward;
 
     if (
@@ -86,10 +91,6 @@ export class YFContract extends Web3Contract {
       epochReward === undefined
     ) {
       return undefined;
-    }
-
-    if (this.poolEndDate) {
-      return BigNumber.ZERO;
     }
 
     return this.currentEpochStake.dividedBy(this.currentPoolSize).multipliedBy(epochReward);
@@ -153,13 +154,14 @@ export class YFContract extends Web3Contract {
     });
   }
 
-  claim(): Promise<BigNumber> {
+  claim(gasPrice: number): Promise<BigNumber> {
     if (!this.account) {
       return Promise.reject();
     }
 
     return this.send('massHarvest', [], {
       from: this.account,
+      gasPrice: getGasValue(gasPrice),
     }).then(result => new BigNumber(result));
   }
 }

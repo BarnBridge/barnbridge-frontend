@@ -59,6 +59,9 @@ $paddings: 0, 4, 8, 12, 16, 24, 32, 48, 64;
     padding-left: #{$padding}px;
     padding-right: #{$padding}px;
   }
+  .pb-#{$padding}.pb-#{$padding} {
+    padding-bottom: #{$padding}px;
+  }
 }
 
 @media (max-width: 768px) {

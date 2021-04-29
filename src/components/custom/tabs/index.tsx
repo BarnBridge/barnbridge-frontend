@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import cn from 'classnames';
 
@@ -17,7 +17,7 @@ type NavTabsProps = {
   shadows?: boolean | string;
 };
 
-export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) => {
+export const NavTabs: React.FC<NavTabsProps> = ({ className, tabs, shadows = false }) => {
   return (
     <div
       className={cn(s.tabs, className, {
@@ -53,6 +53,7 @@ type TabProps = {
   children: React.ReactNode;
   id: string;
   className?: string;
+  disabled?: boolean;
   onClick?: Function;
 };
 
@@ -66,7 +67,7 @@ type TabsProps = {
   style?: React.CSSProperties;
 };
 
-export const Tabs: FC<TabsProps> = props => {
+export const Tabs: React.FC<TabsProps> = props => {
   const totalTabs = props.tabs.length;
   const activeIndex = props.tabs.findIndex(tab => tab.id === props.active);
 

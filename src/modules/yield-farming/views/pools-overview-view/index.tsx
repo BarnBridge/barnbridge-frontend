@@ -3,16 +3,16 @@ import { isMobile } from 'react-device-detect';
 
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import PoolCard from 'modules/yield-farming/components/pool-card';
 import PoolRewards from 'modules/yield-farming/components/pool-rewards';
 import PoolStats from 'modules/yield-farming/components/pool-stats';
 import PoolTxChart from 'modules/yield-farming/components/pool-tx-chart';
 import PoolTxTable from 'modules/yield-farming/components/pool-tx-table';
 import SYPoolCard from 'modules/yield-farming/components/sy-pool-card';
+import { YFPoolID } from 'modules/yield-farming/providers/pools-provider';
 import SyPoolsProvider from 'modules/yield-farming/providers/sy-pools-provider';
 import { useWallet } from 'wallets/wallet';
 
-import { PoolTypes } from 'modules/yield-farming/utils';
+import PoolCard from '../pool-card';
 
 import s from './s.module.scss';
 
@@ -37,9 +37,9 @@ const PoolsOverviewView: React.FC = () => {
           <SyPoolsProvider>
             <SYPoolCard />
           </SyPoolsProvider>
-          <PoolCard pool={PoolTypes.STABLE} />
-          <PoolCard pool={PoolTypes.UNILP} />
-          <PoolCard pool={PoolTypes.BOND} />
+          <PoolCard poolId={YFPoolID.STABLE} />
+          <PoolCard poolId={YFPoolID.UNILP} />
+          <PoolCard poolId={YFPoolID.BOND} />
         </div>
         <PoolTxChart className="mb-32" />
         <PoolTxTable label="Transactions" />

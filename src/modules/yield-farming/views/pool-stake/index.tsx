@@ -2,43 +2,69 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatToken } from 'web3/utils';
+import Erc20Contract from 'web3/contracts/erc20Contract';
+import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import { formatNumber, formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, TokenMeta } from 'components/providers/known-tokens-provider';
+import { KnownTokens, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useReload } from 'hooks/useReload';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
+import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
 type Props = {
   type: 'stake' | 'unstake';
-  token?: TokenMeta;
 };
 
 const PoolStake: React.FC<Props> = props => {
-  const { type, token } = props;
+  const { type } = props;
 
+  const knownTokensCtx = useKnownTokens();
+  const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
+  const [reload] = useReload();
 
+  const [selectedTokenSymbol, setSelectedTokenSymbol] = React.useState(yfPoolCtx.poolMeta?.tokens[0]);
+  const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
   const [staking, setStaking] = React.useState(false);
   const [amount, setAmount] = React.useState('');
-  const [activeToken, setActiveToken] = React.useState(token?.symbol);
-  const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
 
   const { poolMeta } = yfPoolCtx;
+  const tokenMeta = selectedTokenSymbol ? knownTokensCtx.getTokenBySymbol(selectedTokenSymbol) : undefined;
 
-  if (!poolMeta) {
+  React.useEffect(() => {
+    const contract = tokenMeta?.contract as Erc20Contract;
+
+    if (contract && walletCtx.account) {
+      Promise.all([
+        contract.loadBalance(walletCtx.account),
+        contract.loadAllowance(CONTRACT_STAKING_ADDR, walletCtx.account),
+      ]).then(reload);
+    }
+  }, [tokenMeta?.contract, walletCtx.account]);
+
+  if (!poolMeta || !tokenMeta) {
     return null;
   }
 
-  const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(activeToken!);
+  const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(selectedTokenSymbol!);
+  const allowance = (tokenMeta.contract as Erc20Contract)
+    .getAllowanceOf(CONTRACT_STAKING_ADDR)
+    ?.unscaleBy(tokenMeta.decimals);
+  const balance = (tokenMeta.contract as Erc20Contract)
+    .getBalanceOf(walletCtx.account ?? '')
+    ?.unscaleBy(tokenMeta.decimals);
+  const maxAmount = BigNumber.min(balance ?? 0, allowance ?? 0);
+  const bnAmount = new BigNumber(amount);
 
   function handleStake() {
     setConfirmModalVisible(true);
@@ -53,28 +79,22 @@ const PoolStake: React.FC<Props> = props => {
 
     let value = new BigNumber(amount);
 
-    if (!token || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
+    if (!tokenMeta || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();
     }
 
     setStaking(true);
 
-    value = value.scaleBy(token.decimals)!;
+    value = value.scaleBy(tokenMeta.decimals)!;
 
     try {
-      let result;
-
       if (type === 'stake') {
-        result = await yfPoolsCtx.stakingContract?.stake(token.address, value, gasPrice);
+        await yfPoolsCtx.stakingContract?.stake(tokenMeta.address, value, gasPrice);
       } else if (type === 'unstake') {
-        result = await yfPoolsCtx.stakingContract?.unstake(token.address, value, gasPrice);
+        await yfPoolsCtx.stakingContract?.unstake(tokenMeta.address, value, gasPrice);
       }
-      console.log('--- STAKE RESULT', result);
-
       setAmount('');
-    } catch (e) {
-      console.log('ERRR', e);
-    }
+    } catch (e) {}
 
     setStaking(false);
   }
@@ -87,7 +107,7 @@ const PoolStake: React.FC<Props> = props => {
             Staked balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatToken(selectedStakedToken?.currentEpochUserBalance) ?? '-'}
+            {formatToken(selectedStakedToken?.nextEpochUserBalance) ?? '-'}
           </Text>
         </div>
         <div className="flex flow-row">
@@ -103,57 +123,61 @@ const PoolStake: React.FC<Props> = props => {
         before={
           poolMeta.tokens.length > 1 ? (
             <TokenSelect
-              value={activeToken as KnownTokens}
-              onChange={setActiveToken}
+              value={selectedTokenSymbol as KnownTokens}
+              onChange={setSelectedTokenSymbol}
               tokens={poolMeta.tokens}
               showLabel
             />
           ) : (
-            <Icon name={token?.icon!} width={24} height={24} />
+            <Icon name={tokenMeta?.icon!} width={24} height={24} />
           )
         }
         value={amount}
         onChange={setAmount}
-        max={9.789}
-        placeholder={`0 (Max ${9.789})`}
+        max={maxAmount.toNumber()}
+        placeholder={`0 (Max ${formatNumber(maxAmount)})`}
+        slider
         className="mb-40"
       />
 
-      {poolMeta.contract.isPoolEnded && [KnownTokens.USDC, KnownTokens.DAI].includes(activeToken as KnownTokens) && (
-        <Alert
-          message={
-            <div className="flex flow-row row-gap-16 align-start">
-              <Text type="p2" weight="semibold" color="blue">
-                You can still deposit {activeToken} in SMART Yield’s Junior or Senior Tranches and earn interest for
-                your funds.
-              </Text>
-              <Link to="/smart-yield" className="link-blue">
-                <Text type="p2" weight="bold" style={{ textDecoration: 'underline' }}>
-                  Go to SMART yield
-                </Text>
-              </Link>
-            </div>
-          }
-          className="mb-32"
-        />
-      )}
-
-      {poolMeta.contract.isPoolEnded && activeToken === KnownTokens.BOND && (
-        <Alert
-          message={
-            <div className="flex flow-row row-gap-16 align-start">
-              <Text type="p2" weight="semibold" color="blue">
-                You can still deposit BOND in the DAO governance to earn interest for your funds.
-              </Text>
-              <Link to="/governance" className="link-blue">
-                <Text type="p2" weight="bold" style={{ textDecoration: 'underline' }}>
-                  Go to governance staking
-                </Text>
-              </Link>
-            </div>
-          }
-          className="mb-32"
-        />
+      {poolMeta.contract.isPoolEnded === true && (
+        <>
+          {[KnownTokens.USDC, KnownTokens.DAI].includes(selectedTokenSymbol as KnownTokens) && (
+            <Alert
+              message={
+                <div className="flex flow-row row-gap-16 align-start">
+                  <Text type="p2" weight="semibold" color="blue">
+                    You can still deposit {selectedTokenSymbol} in SMART Yield’s Junior or Senior Tranches and earn
+                    interest for your funds.
+                  </Text>
+                  <Link to="/smart-yield" className="link-blue">
+                    <Text type="p2" weight="bold" style={{ textDecoration: 'underline' }}>
+                      Go to SMART yield
+                    </Text>
+                  </Link>
+                </div>
+              }
+              className="mb-32"
+            />
+          )}
+          {selectedTokenSymbol === KnownTokens.BOND && (
+            <Alert
+              message={
+                <div className="flex flow-row row-gap-16 align-start">
+                  <Text type="p2" weight="semibold" color="blue">
+                    You can still deposit BOND in the DAO governance to earn interest for your funds.
+                  </Text>
+                  <Link to="/governance" className="link-blue">
+                    <Text type="p2" weight="bold" style={{ textDecoration: 'underline' }}>
+                      Go to governance staking
+                    </Text>
+                  </Link>
+                </div>
+              }
+              className="mb-32"
+            />
+          )}
+        </>
       )}
 
       {poolMeta.contract.isPoolEnded === false && type === 'stake' && (
@@ -163,7 +187,11 @@ const PoolStake: React.FC<Props> = props => {
         />
       )}
 
-      <button type="button" className="button-primary" disabled={staking} onClick={handleStake}>
+      <button
+        type="button"
+        className="button-primary"
+        disabled={!bnAmount.gt(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
+        onClick={handleStake}>
         {staking && <Spin spinning />}
         {type === 'stake' && 'Stake'}
         {type === 'unstake' && 'Unstake'}
@@ -175,9 +203,9 @@ const PoolStake: React.FC<Props> = props => {
           header={
             <div className="flex align-center justify-center">
               <Text type="h2" weight="bold" color="primary" className="mr-8">
-                {formatToken(new BigNumber(amount))}
+                {formatToken(bnAmount)}
               </Text>
-              <Icon name={token?.icon!} />
+              <Icon name={tokenMeta?.icon!} />
             </div>
           }
           submitText={`Confirm your ${type}`}
