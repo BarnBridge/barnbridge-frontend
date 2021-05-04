@@ -157,7 +157,6 @@ const ActivePositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<ActivePositionsTableEntity>
-      inCard
       columns={Columns}
       dataSource={data}
       rowKey="smartYieldAddress"

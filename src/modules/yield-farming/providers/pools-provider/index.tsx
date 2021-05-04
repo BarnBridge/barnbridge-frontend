@@ -24,32 +24,34 @@ export type YFPoolMeta = {
   contract: YFContract;
 };
 
-const KNOWN_POOLS: YFPoolMeta[] = [
-  {
-    name: YFPoolID.STABLE,
-    label: 'USDC/DAI/sUSD',
-    icons: ['token-usdc', 'token-dai', 'token-susd'],
-    colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
-    tokens: [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD],
-    contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR).toLowerCase()),
-  },
-  {
-    name: YFPoolID.UNILP,
-    label: 'USDC_BOND_UNI_LP',
-    icons: ['token-uniswap'],
-    colors: ['var(--theme-red-color)'],
-    tokens: [KnownTokens.UNIV2],
-    contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR).toLowerCase()),
-  },
-  {
-    name: YFPoolID.BOND,
-    label: 'BOND',
-    icons: ['token-bond'],
-    colors: ['var(--theme-red-color)'],
-    tokens: [KnownTokens.BOND],
-    contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR).toLowerCase()),
-  },
-];
+export const StableYfPool: YFPoolMeta = {
+  name: YFPoolID.STABLE,
+  label: 'USDC/DAI/sUSD',
+  icons: ['token-usdc', 'token-dai', 'token-susd'],
+  colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
+  tokens: [KnownTokens.USDC, KnownTokens.DAI, KnownTokens.SUSD],
+  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR).toLowerCase()),
+};
+
+export const UnilpYfPool: YFPoolMeta = {
+  name: YFPoolID.UNILP,
+  label: 'USDC_BOND_UNI_LP',
+  icons: ['token-uniswap'],
+  colors: ['var(--theme-red-color)'],
+  tokens: [KnownTokens.UNIV2],
+  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR).toLowerCase()),
+};
+
+export const BondYfPool: YFPoolMeta = {
+  name: YFPoolID.BOND,
+  label: 'BOND',
+  icons: ['token-bond'],
+  colors: ['var(--theme-red-color)'],
+  tokens: [KnownTokens.BOND],
+  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR).toLowerCase()),
+};
+
+const KNOWN_POOLS: YFPoolMeta[] = [StableYfPool, UnilpYfPool, BondYfPool];
 
 export function getKnownPoolByName(name: string): YFPoolMeta | undefined {
   return KNOWN_POOLS.find(pool => pool.name === name);
@@ -121,8 +123,8 @@ const YFPoolsProvider: React.FC = props => {
   }, [walletCtx.account]);
 
   const getPoolBalance = React.useCallback(
-    (poolName: string): BigNumber | undefined => {
-      const pool = getKnownPoolByName(poolName);
+    (poolId: string): BigNumber | undefined => {
+      const pool = getKnownPoolByName(poolId);
 
       if (!pool) {
         return undefined;
@@ -150,8 +152,8 @@ const YFPoolsProvider: React.FC = props => {
   );
 
   const getPoolEffectiveBalance = React.useCallback(
-    (poolName: string): BigNumber | undefined => {
-      const pool = getKnownPoolByName(poolName);
+    (poolId: string): BigNumber | undefined => {
+      const pool = getKnownPoolByName(poolId);
 
       if (!pool) {
         return undefined;

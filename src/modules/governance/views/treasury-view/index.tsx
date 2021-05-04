@@ -48,7 +48,7 @@ const TreasuryView: React.FC = () => {
             children: 'Fees',
           },
         ]}
-        active={activeTab}
+        activeKey={activeTab}
         onClick={setActiveTab}
         variation="elastic"
         className="mb-40"

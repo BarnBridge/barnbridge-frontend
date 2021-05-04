@@ -1,38 +1,34 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { isMobile } from 'react-device-detect';
 
-import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import PoolRewards from 'modules/yield-farming/components/pool-rewards';
 import PoolStats from 'modules/yield-farming/components/pool-stats';
 import PoolTxChart from 'modules/yield-farming/components/pool-tx-chart';
-import PoolTxTable from 'modules/yield-farming/components/pool-tx-table';
 import SYPoolCard from 'modules/yield-farming/components/sy-pool-card';
 import { YFPoolID } from 'modules/yield-farming/providers/pools-provider';
 import SyPoolsProvider from 'modules/yield-farming/providers/sy-pools-provider';
+import PoolRewards from 'modules/yield-farming/views/pool-rewards';
+import PoolTransactions from 'modules/yield-farming/views/pool-transactions';
 import { useWallet } from 'wallets/wallet';
 
 import PoolCard from '../pool-card';
 
 import s from './s.module.scss';
 
-const PoolsOverviewView: React.FC = () => {
-  const wallet = useWallet();
+const PoolsView: FC = () => {
+  const walletCtx = useWallet();
 
   return (
     <>
-      {!isMobile && wallet.isActive && <PoolRewards />}
+      {!isMobile && walletCtx.isActive && <PoolRewards />}
       <div className="content-container-fix content-container">
         <PoolStats className="mb-64" />
-
-        <Grid flow="row" gap={16} className="mb-32">
-          <Text type="h1" weight="bold" color="primary">
-            Pools
-          </Text>
-          <Text type="p1" weight="semibold" color="secondary">
-            Overview
-          </Text>
-        </Grid>
+        <Text type="h1" weight="bold" color="primary" className="mb-16">
+          Pools
+        </Text>
+        <Text type="p1" weight="semibold" color="secondary" className="mb-32">
+          Overview
+        </Text>
         <div className={s.poolCards}>
           <SyPoolsProvider>
             <SYPoolCard />
@@ -42,10 +38,10 @@ const PoolsOverviewView: React.FC = () => {
           <PoolCard poolId={YFPoolID.BOND} />
         </div>
         <PoolTxChart className="mb-32" />
-        <PoolTxTable label="Transactions" />
+        <PoolTransactions />
       </div>
     </>
   );
 };
 
-export default PoolsOverviewView;
+export default PoolsView;

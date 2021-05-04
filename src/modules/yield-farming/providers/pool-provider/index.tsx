@@ -19,22 +19,23 @@ export function useYFPool(): YFPoolType {
 }
 
 type Props = {
-  poolName: string;
+  poolId: string;
 };
 
 const YFPoolProvider: React.FC<Props> = props => {
-  const { poolName, children } = props;
+  const { poolId, children } = props;
 
   const yfPoolsCtx = useYFPools();
 
-  const pool = React.useMemo(() => yfPoolsCtx.getKnownPoolByName(poolName), [poolName]);
+  const pool = React.useMemo(() => yfPoolsCtx.getKnownPoolByName(poolId), [poolId]);
 
-  const poolBalance = yfPoolsCtx.getPoolBalance(poolName);
-  const effectivePoolBalance = yfPoolsCtx.getPoolEffectiveBalance(poolName);
+  const poolBalance = yfPoolsCtx.getPoolBalance(poolId);
+  const effectivePoolBalance = yfPoolsCtx.getPoolEffectiveBalance(poolId);
 
-  const apy = poolBalance?.isGreaterThan(BigNumber.ZERO)
-    ? convertTokenInUSD(pool?.contract.epochReward?.multipliedBy(52), KnownTokens.BOND)?.dividedBy(poolBalance)
-    : undefined;
+  const apy =
+    poolBalance?.isGreaterThan(BigNumber.ZERO) && pool?.contract.epochReward
+      ? convertTokenInUSD(pool?.contract.epochReward * 52, KnownTokens.BOND)?.dividedBy(poolBalance)
+      : undefined;
 
   const value: YFPoolType = {
     poolMeta: pool,

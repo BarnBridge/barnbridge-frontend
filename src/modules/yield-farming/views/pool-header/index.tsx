@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
@@ -6,18 +6,20 @@ import Tooltip from 'components/antd/tooltip';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
+import { useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
 
 import s from './s.module.scss';
 
-const PoolHeader: React.FC = () => {
+const PoolHeader: FC = () => {
+  const knownTokensCtx = useKnownTokens();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
 
   const { poolMeta, poolBalance, effectivePoolBalance, apy } = yfPoolCtx;
 
-  React.useEffect(() => {
+  useEffect(() => {
     document.documentElement.scrollTop = 0;
   }, []);
 
@@ -91,13 +93,19 @@ const PoolHeader: React.FC = () => {
           </Text>
           <div className={s.stakedBar}>
             {poolMeta.tokens.map((token, index) => {
+              const tokenMeta = knownTokensCtx.getTokenBySymbol(token);
               const stakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(token);
-              let rate = stakedToken?.nextEpochPoolSize?.dividedBy(poolBalance ?? 0).multipliedBy(100) ?? 0;
+              let rate =
+                knownTokensCtx
+                  .convertTokenInUSD(stakedToken?.nextEpochPoolSize, token)
+                  ?.unscaleBy(tokenMeta?.decimals)
+                  ?.dividedBy(poolBalance ?? 0)
+                  .multipliedBy(100) ?? 0;
 
               return (
                 <Tooltip
                   key={token}
-                  title={formatToken(stakedToken?.nextEpochPoolSize, {
+                  title={formatToken(stakedToken?.nextEpochPoolSize?.unscaleBy(tokenMeta?.decimals), {
                     tokenName: token,
                   })}>
                   <div style={{ background: poolMeta.colors[index], width: `${rate}%` }} />

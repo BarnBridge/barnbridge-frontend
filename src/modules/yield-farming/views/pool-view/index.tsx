@@ -1,8 +1,8 @@
-import React from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Redirect, useRouteMatch } from 'react-router-dom';
 import cn from 'classnames';
 
-import Tabs from 'components/antd/tabs';
+import { Tabs } from 'components/custom/tabs';
 import YFPoolProvider, { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import PoolHeader from 'modules/yield-farming/views/pool-header';
 import PoolTransactions from 'modules/yield-farming/views/pool-transactions';
@@ -14,12 +14,14 @@ import { PoolTypes } from 'modules/yield-farming/utils';
 
 import s from './s.module.scss';
 
-const PoolViewInner: React.FC = () => {
+const PoolViewInner: FC = () => {
   const yfPoolCtx = useYFPool();
 
   const { poolMeta } = yfPoolCtx;
 
-  React.useEffect(() => {
+  const [activeTab, setActiveTab] = useState('stake');
+
+  useEffect(() => {
     document.documentElement.scrollTop = 0;
   }, []);
 
@@ -34,16 +36,30 @@ const PoolViewInner: React.FC = () => {
 
         <div className="flexbox-grid mb-32">
           <div className={cn('card', s.stakeCard)}>
-            <Tabs defaultActiveKey="stake">
-              {poolMeta.contract.isPoolEnded === false && (
-                <Tabs.Tab key="stake" tab="Stake" className="p-24">
-                  <PoolStake type="stake" />
-                </Tabs.Tab>
-              )}
-              <Tabs.Tab key="unstake" tab="Unstake" className="p-24">
-                <PoolStake type="unstake" />
-              </Tabs.Tab>
-            </Tabs>
+            <div className="card-header pv-0">
+              <Tabs
+                tabs={[
+                  ...(poolMeta.contract.isPoolEnded === false
+                    ? [
+                        {
+                          id: 'stake',
+                          children: 'Stake',
+                        },
+                      ]
+                    : []),
+                  {
+                    id: 'unstake',
+                    children: 'Unstake',
+                  },
+                ]}
+                size="small"
+                activeKey={activeTab}
+                onClick={setActiveTab}
+              />
+            </div>
+            <div className="p-24">
+              <PoolStake type={activeTab as 'stake' | 'unstake'} />
+            </div>
           </div>
           <PoolStatistics />
         </div>
@@ -54,15 +70,15 @@ const PoolViewInner: React.FC = () => {
 };
 
 type RouteParams = {
-  poolName: PoolTypes;
+  poolId: PoolTypes;
 };
 
-const PoolView: React.FC = () => {
+const PoolView: FC = () => {
   const match = useRouteMatch<RouteParams>();
-  const { poolName } = match.params;
+  const { poolId } = match.params;
 
   return (
-    <YFPoolProvider poolName={poolName}>
+    <YFPoolProvider poolId={poolId}>
       <PoolViewInner />
     </YFPoolProvider>
   );

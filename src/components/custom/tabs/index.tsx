@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { CSSProperties, FC, HTMLProps, ReactNode } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import cn from 'classnames';
 
 import s from './s.module.scss';
 
-type NavTabProps = NavLinkProps | React.HTMLProps<HTMLAnchorElement>;
+type NavTabProps = NavLinkProps | HTMLProps<HTMLAnchorElement>;
 
 type NavTabsProps = {
   tabs: NavTabProps[];
@@ -17,7 +17,7 @@ type NavTabsProps = {
   shadows?: boolean | string;
 };
 
-export const NavTabs: React.FC<NavTabsProps> = ({ className, tabs, shadows = false }) => {
+export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) => {
   return (
     <div
       className={cn(s.tabs, className, {
@@ -26,7 +26,7 @@ export const NavTabs: React.FC<NavTabsProps> = ({ className, tabs, shadows = fal
       style={
         {
           '--tabs-bg': `var(${typeof shadows === 'string' ? shadows : '--theme-body-color'})`,
-        } as React.CSSProperties
+        } as CSSProperties
       }>
       {tabs.map(({ className, children, ...restTab }, idx) => {
         // @ts-ignore
@@ -50,52 +50,54 @@ export const NavTabs: React.FC<NavTabsProps> = ({ className, tabs, shadows = fal
 };
 
 type TabProps = {
-  children: React.ReactNode;
   id: string;
+  children: ReactNode;
   className?: string;
   disabled?: boolean;
   onClick?: Function;
 };
 
 type TabsProps = {
+  variation?: 'normal' | 'elastic';
   tabs: TabProps[];
-  className?: string;
-  active: TabProps['id'];
-  onClick: (id: TabProps['id']) => void;
-  variation: 'normal' | 'elastic';
+  activeKey: TabProps['id'];
   size?: 'normal' | 'small';
-  style?: React.CSSProperties;
+  className?: string;
+  style?: CSSProperties;
+  onClick?: (id: TabProps['id']) => void;
 };
 
-export const Tabs: React.FC<TabsProps> = props => {
-  const totalTabs = props.tabs.length;
-  const activeIndex = props.tabs.findIndex(tab => tab.id === props.active);
+export const Tabs: FC<TabsProps> = props => {
+  const { variation = 'normal', tabs, activeKey, size, className, style } = props;
+
+  const totalTabs = tabs.length;
+  const activeIndex = tabs.findIndex(tab => tab.id === activeKey);
 
   return (
     <div
-      className={cn(props.className, {
-        [s.tabs]: props.variation === 'normal',
-        [s.elasticTabs]: props.variation === 'elastic',
+      className={cn(className, {
+        [s.tabs]: variation === 'normal',
+        [s.elasticTabs]: variation === 'elastic',
       })}
-      style={props.style}>
-      <div
-        className={s.elasticToggle}
-        style={{ left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`, width: `calc(100% / ${totalTabs} - 8px)` }}
-      />
-      {props.tabs.map(({ id, className, onClick, ...tabRest }) => (
+      style={style}>
+      {variation === 'elastic' && (
+        <div
+          className={s.elasticToggle}
+          style={{ left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`, width: `calc(100% / ${totalTabs} - 8px)` }}
+        />
+      )}
+      {tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}
           className={cn(s.tab, className, {
-            [s.active]: id === props.active,
-            [s.small]: props.size === 'small',
+            [s.active]: id === activeKey,
+            [s.small]: size === 'small',
           })}
-          style={{ width: `calc(100% / ${totalTabs})` }}
+          style={{ width: variation === 'elastic' ? `calc(100% / ${totalTabs})` : 'inherit' }}
           type="button"
           onClick={() => {
-            props.onClick(id);
-            if (typeof onClick === 'function') {
-              onClick();
-            }
+            props.onClick?.(id);
+            onClick?.();
           }}
           {...tabRest}
         />
