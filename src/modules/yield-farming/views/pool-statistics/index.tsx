@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
@@ -9,33 +9,25 @@ import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-const PoolStatistics: React.FC = () => {
-  const knownTokensCtx = useKnownTokens();
+const PoolStatistics: FC = () => {
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
 
   const { poolMeta } = yfPoolCtx;
 
-  const [activeTokenTab, setActiveTokenTab] = React.useState<string>(poolMeta?.tokens[0]!);
-  const [claiming, setClaiming] = React.useState(false);
-  const [confirmClaimVisible, setConfirmClaimVisible] = React.useState(false);
+  const [activeTokenTab, setActiveTokenTab] = useState<string>(poolMeta?.tokens[0]!);
+  const [claiming, setClaiming] = useState(false);
+  const [confirmClaimVisible, setConfirmClaimVisible] = useState(false);
 
-  const bondToken = knownTokensCtx.getTokenBySymbol(KnownTokens.BOND);
-  const bondContract = bondToken?.contract as Erc20Contract;
-
-  React.useEffect(() => {
-    if (walletCtx.account) {
-      bondContract.loadBalance(walletCtx.account);
-    }
-  }, [bondContract, walletCtx.account]);
+  const bondContract = BondToken.contract as Erc20Contract;
 
   if (!walletCtx.isActive || !poolMeta) {
     return null;
@@ -74,7 +66,7 @@ const PoolStatistics: React.FC = () => {
             <div className="flex align-center">
               <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(bondContract.getBalanceOf(walletCtx.account!)?.unscaleBy(bondToken?.decimals)) ?? '-'}
+                {formatToken(bondContract.balance?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -85,7 +77,7 @@ const PoolStatistics: React.FC = () => {
             <div className="flex align-center">
               <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(poolMeta.contract.potentialReward?.unscaleBy(bondToken?.decimals)) ?? '-'}
+                {formatToken(poolMeta.contract.potentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -95,7 +87,7 @@ const PoolStatistics: React.FC = () => {
             <div className="flex flow-row">
               <div className="flex align-center mb-4">
                 <Text type="h2" weight="semibold" color="primary" className="mr-8">
-                  {formatToken(poolMeta.contract.toClaim?.unscaleBy(bondToken?.decimals)) ?? '-'}
+                  {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
                 <Icon name="bond-circle-token" />
               </div>
@@ -128,7 +120,7 @@ const PoolStatistics: React.FC = () => {
                 id: token,
                 children: token,
               }))}
-              active={activeTokenTab}
+              activeKey={activeTokenTab}
               onClick={setActiveTokenTab}
               variation="elastic"
               className="mb-32"
@@ -175,7 +167,7 @@ const PoolStatistics: React.FC = () => {
           header={
             <div className="flex col-gap-8 align-center justify-center">
               <Text type="h2" weight="semibold" color="primary">
-                {formatToken(poolMeta.contract.toClaim?.unscaleBy(bondToken?.decimals)) ?? '-'}
+                {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
               <Icon name="bond-circle-token" width={32} height={32} />
             </div>

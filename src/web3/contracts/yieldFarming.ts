@@ -3,6 +3,8 @@ import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/contracts/web3Contract';
 import { getGasValue } from 'web3/utils';
 
+import { BondToken } from 'components/providers/known-tokens-provider';
+
 const ABI: AbiItem[] = [
   createAbiItem('NR_OF_EPOCHS', [], ['uint256']),
   createAbiItem('TOTAL_DISTRIBUTED_AMOUNT', [], ['uint256']),
@@ -28,7 +30,7 @@ export class YFContract extends Web3Contract {
 
   // common data
   totalEpochs?: number;
-  totalForDistribution?: BigNumber;
+  totalForDistribution?: number;
   epochDuration?: number;
   epochStart?: number;
   currentEpoch?: number;
@@ -65,16 +67,16 @@ export class YFContract extends Web3Contract {
     return this.epochStart + this.totalEpochs * this.epochDuration;
   }
 
-  get epochReward(): BigNumber | undefined {
+  get epochReward(): number | undefined {
     if (this.isPoolEnded) {
-      return BigNumber.ZERO;
+      return 0;
     }
 
     if (this.totalForDistribution === undefined || this.totalEpochs === undefined || this.totalEpochs === 0) {
       return undefined;
     }
 
-    return this.totalForDistribution.dividedBy(this.totalEpochs);
+    return this.totalForDistribution / this.totalEpochs;
   }
 
   get potentialReward(): BigNumber | undefined {
@@ -96,7 +98,7 @@ export class YFContract extends Web3Contract {
     return this.currentEpochStake.dividedBy(this.currentPoolSize).multipliedBy(epochReward);
   }
 
-  get distributedReward(): BigNumber | undefined {
+  get distributedReward(): number | undefined {
     const lastActiveEpoch = this.lastActiveEpoch;
     const epochReward = this.epochReward;
 
@@ -104,7 +106,7 @@ export class YFContract extends Web3Contract {
       return undefined;
     }
 
-    return epochReward.multipliedBy(lastActiveEpoch === this.totalEpochs ? lastActiveEpoch : lastActiveEpoch - 1);
+    return epochReward * (lastActiveEpoch === this.totalEpochs ? lastActiveEpoch : lastActiveEpoch - 1);
   }
 
   loadCommon(): Promise<void> {
@@ -116,7 +118,7 @@ export class YFContract extends Web3Contract {
       { method: 'getCurrentEpoch' },
     ]).then(([totalEpochs, totalForDistribution, epochDuration, epochStart, currentEpoch]) => {
       this.totalEpochs = Number(totalEpochs);
-      this.totalForDistribution = new BigNumber(totalForDistribution);
+      this.totalForDistribution = Number(totalForDistribution);
       this.epochDuration = Number(epochDuration);
       this.epochStart = Number(epochStart);
       this.currentEpoch = Number(currentEpoch);
@@ -126,8 +128,8 @@ export class YFContract extends Web3Contract {
         { method: 'getPoolSize', methodArgs: [this.currentEpoch] },
         { method: 'getPoolSize', methodArgs: [this.currentEpoch + 1] },
       ]).then(([currentPoolSize, nextPoolSize]) => {
-        this.currentPoolSize = new BigNumber(currentPoolSize);
-        this.nextPoolSize = new BigNumber(nextPoolSize);
+        this.currentPoolSize = new BigNumber(currentPoolSize).unscaleBy(BondToken.decimals);
+        this.nextPoolSize = new BigNumber(nextPoolSize).unscaleBy(BondToken.decimals);
         this.emit(Web3Contract.UPDATE_DATA);
       });
     });
@@ -146,9 +148,9 @@ export class YFContract extends Web3Contract {
         { method: 'getEpochStake', methodArgs: [this.account, this.currentEpoch! + 1] },
         { method: 'massHarvest', callArgs: { from: this.account } },
       ]).then(([currentEpochStake, nextEpochStake, toClaim]) => {
-        this.currentEpochStake = new BigNumber(currentEpochStake);
-        this.nextEpochStake = new BigNumber(nextEpochStake);
-        this.toClaim = new BigNumber(toClaim);
+        this.currentEpochStake = new BigNumber(currentEpochStake).unscaleBy(BondToken.decimals);
+        this.nextEpochStake = new BigNumber(nextEpochStake).unscaleBy(BondToken.decimals);
+        this.toClaim = new BigNumber(toClaim).unscaleBy(BondToken.decimals);
         this.emit(Web3Contract.UPDATE_DATA);
       });
     });

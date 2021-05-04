@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
@@ -24,7 +24,7 @@ type Props = {
   type: 'stake' | 'unstake';
 };
 
-const PoolStake: React.FC<Props> = props => {
+const PoolStake: FC<Props> = props => {
   const { type } = props;
 
   const knownTokensCtx = useKnownTokens();
@@ -33,24 +33,25 @@ const PoolStake: React.FC<Props> = props => {
   const yfPoolCtx = useYFPool();
   const [reload] = useReload();
 
-  const [selectedTokenSymbol, setSelectedTokenSymbol] = React.useState(yfPoolCtx.poolMeta?.tokens[0]);
-  const [confirmModalVisible, setConfirmModalVisible] = React.useState(false);
-  const [staking, setStaking] = React.useState(false);
-  const [amount, setAmount] = React.useState('');
+  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(yfPoolCtx.poolMeta?.tokens[0]);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [enabling, setEnabling] = useState(false);
+  const [staking, setStaking] = useState(false);
+  const [amount, setAmount] = useState('');
 
   const { poolMeta } = yfPoolCtx;
   const tokenMeta = selectedTokenSymbol ? knownTokensCtx.getTokenBySymbol(selectedTokenSymbol) : undefined;
 
-  React.useEffect(() => {
-    const contract = tokenMeta?.contract as Erc20Contract;
+  const contract = tokenMeta?.contract as Erc20Contract;
 
+  useEffect(() => {
     if (contract && walletCtx.account) {
       Promise.all([
         contract.loadBalance(walletCtx.account),
         contract.loadAllowance(CONTRACT_STAKING_ADDR, walletCtx.account),
       ]).then(reload);
     }
-  }, [tokenMeta?.contract, walletCtx.account]);
+  }, [contract, walletCtx.account]);
 
   if (!poolMeta || !tokenMeta) {
     return null;
@@ -65,6 +66,16 @@ const PoolStake: React.FC<Props> = props => {
     ?.unscaleBy(tokenMeta.decimals);
   const maxAmount = BigNumber.min(balance ?? 0, allowance ?? 0);
   const bnAmount = new BigNumber(amount);
+
+  async function handleEnable() {
+    setEnabling(true);
+
+    try {
+      await contract.approve(true, yfPoolsCtx.stakingContract?.address!);
+    } catch {}
+
+    setEnabling(false);
+  }
 
   function handleStake() {
     setConfirmModalVisible(true);
@@ -187,15 +198,24 @@ const PoolStake: React.FC<Props> = props => {
         />
       )}
 
-      <button
-        type="button"
-        className="button-primary"
-        disabled={!bnAmount.gt(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
-        onClick={handleStake}>
-        {staking && <Spin spinning />}
-        {type === 'stake' && 'Stake'}
-        {type === 'unstake' && 'Unstake'}
-      </button>
+      {type === 'stake' && !contract.getAllowanceOf(yfPoolsCtx.stakingContract?.address!)?.gt(BigNumber.ZERO) && (
+        <button type="button" className="button-primary" disabled={enabling} onClick={handleEnable}>
+          {enabling && <Spin spinning />}
+          Enable {tokenMeta.symbol}
+        </button>
+      )}
+
+      {(type === 'unstake' || contract.getAllowanceOf(yfPoolsCtx.stakingContract?.address!)?.gt(BigNumber.ZERO)) && (
+        <button
+          type="button"
+          className="button-primary"
+          disabled={!bnAmount.gt(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
+          onClick={handleStake}>
+          {staking && <Spin spinning />}
+          {type === 'stake' && 'Stake'}
+          {type === 'unstake' && 'Unstake'}
+        </button>
+      )}
 
       {confirmModalVisible && (
         <TxConfirmModal

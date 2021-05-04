@@ -278,7 +278,6 @@ const JuniorBondsTable: React.FC<Props> = ({ tabs }) => {
         <TableFilter filters={Filters} value={state.filters} onChange={handleFilterChange} />
       </header>
       <Table<TableEntity>
-        inCard
         columns={Columns}
         dataSource={state.data}
         rowKey="transactionHash"

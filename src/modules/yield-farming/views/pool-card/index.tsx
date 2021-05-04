@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
@@ -15,7 +15,7 @@ import IconsSet from 'components/custom/icons-set';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken, KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { YFPoolID, useYFPools } from 'modules/yield-farming/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -25,20 +25,18 @@ type Props = {
   poolId: YFPoolID;
 };
 
-const PoolCard: React.FC<Props> = props => {
+const PoolCard: FC<Props> = props => {
   const { poolId } = props;
 
-  const knownTokensCtx = useKnownTokens();
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
+
   const poolMeta = yfPoolsCtx.getKnownPoolByName(poolId);
   const isEnded = poolMeta?.contract.isPoolEnded === true;
 
-  const [activeTab, setActiveTab] = React.useState('pool');
-  const [claiming, setClaiming] = React.useState(false);
-  const [confirmClaimVisible, setConfirmClaimVisible] = React.useState(false);
-
-  const bondToken = knownTokensCtx.getTokenBySymbol(KnownTokens.BOND);
+  const [activeTab, setActiveTab] = useState('pool');
+  const [claiming, setClaiming] = useState(false);
+  const [confirmClaimVisible, setConfirmClaimVisible] = useState(false);
 
   const {
     totalEpochs,
@@ -58,9 +56,12 @@ const PoolCard: React.FC<Props> = props => {
     'MMM dd yyyy, HH:mm',
   );
 
-  const apy = nextPoolSize?.isGreaterThan(BigNumber.ZERO)
-    ? convertTokenInUSD(epochReward?.multipliedBy(52), KnownTokens.BOND)?.dividedBy(nextPoolSize)
-    : undefined;
+  const poolBalance = yfPoolsCtx.getPoolBalance(poolId);
+
+  const apy =
+    poolBalance?.isGreaterThan(BigNumber.ZERO) && epochReward
+      ? convertTokenInUSD(epochReward * 52, KnownTokens.BOND)?.dividedBy(poolBalance)
+      : undefined;
 
   function handleClaim() {
     setConfirmClaimVisible(true);
@@ -112,7 +113,7 @@ const PoolCard: React.FC<Props> = props => {
             { id: 'pool', children: 'Pool statistics' },
             { id: 'my', children: 'My statistics', disabled: !walletCtx.isActive },
           ]}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           variation="elastic"
           className="mb-24"
@@ -183,7 +184,7 @@ const PoolCard: React.FC<Props> = props => {
               <div className="flex align-center">
                 <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatToken(potentialReward?.unscaleBy(bondToken?.decimals)) ?? '-'}
+                  {formatToken(potentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
               </div>
             </div>
@@ -281,7 +282,7 @@ const PoolCard: React.FC<Props> = props => {
             header={
               <div className="flex col-gap-8 align-center justify-center">
                 <Text type="h2" weight="semibold" color="primary">
-                  {formatToken(toClaim?.unscaleBy(bondToken?.decimals)) ?? '-'}
+                  {formatToken(toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
                 <Icon name="bond-circle-token" width={32} height={32} />
               </div>

@@ -131,7 +131,6 @@ const StakedPositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<StakedPositionsTableEntity>
-      inCard
       columns={Columns}
       dataSource={data}
       rowKey="poolAddress"

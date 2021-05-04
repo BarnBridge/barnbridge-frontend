@@ -340,7 +340,6 @@ const TreasuryFees: React.FC = () => {
           <TableFilter filters={Filters} value={state.fees.filters} onChange={handleFilterChange} />
         </div>
         <Table<SYPoolEntity>
-          inCard
           columns={Columns}
           dataSource={filteredFees}
           rowKey="smartYieldAddress"

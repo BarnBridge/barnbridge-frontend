@@ -39,7 +39,7 @@ const StatsView: React.FC = () => {
 
   const [activeTab, setActiveTab] = React.useState('th');
 
-  const tabsComponent = <Tabs tabs={tabs} active={activeTab} onClick={setActiveTab} variation="normal" size="small" />;
+  const tabsComponent = <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} size="small" />;
 
   return (
     <Spin spinning={syPool.loading}>
