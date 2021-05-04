@@ -3,11 +3,12 @@ import cn from 'classnames';
 import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { formatBONDValue, formatUSDValue } from 'web3/utils';
+import { formatBONDValue, formatUSD, formatUSDValue } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 
 import { useSyPools } from '../../providers/sy-pools-provider';
@@ -24,7 +25,7 @@ type Props = {
 
 const PoolStats: React.FC<Props> = ({ className }) => {
   const syPoolsCtx = useSyPools();
-  const { aggregated, uniswap, staking } = useWeb3Contracts();
+  const { aggregated, staking } = useWeb3Contracts();
   const epochEnd = React.useMemo<number | undefined>(() => {
     const [, end] = staking.getEpochPeriod(staking.currentEpoch!) ?? [];
     return end;
@@ -102,7 +103,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
           </Grid>
           <Grid flow="row" gap={4}>
             <Text type="h2" weight="bold" color="primary">
-              {formatUSDValue(uniswap.bondPrice)}
+              {formatUSD(BondToken.price) ?? '-'}
             </Text>
             <ExternalLink href={UNISWAP_EXCHANGE_LINK}>
               <Text type="p1" weight="semibold" color="blue">

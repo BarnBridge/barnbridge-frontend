@@ -222,7 +222,6 @@ const PastPositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<TableEntity>
-      inCard
       columns={Columns}
       dataSource={state.data}
       rowKey="transactionHash"

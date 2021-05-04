@@ -109,7 +109,6 @@ const VotersTable: React.FC<VotersTableProps> = props => {
         </Text>
       </div>
       <Table<APIVoterEntity>
-        inCard
         columns={Columns}
         dataSource={voters}
         rowKey="address"

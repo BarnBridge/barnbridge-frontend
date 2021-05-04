@@ -2,7 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 
-import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { YFPoolMeta, useYFPools } from 'modules/yield-farming/providers/pools-provider';
 
 export type YFPoolType = {
@@ -19,58 +19,23 @@ export function useYFPool(): YFPoolType {
 }
 
 type Props = {
-  poolName: string;
+  poolId: string;
 };
 
 const YFPoolProvider: React.FC<Props> = props => {
-  const { poolName, children } = props;
+  const { poolId, children } = props;
 
-  const knownTokensCtx = useKnownTokens();
   const yfPoolsCtx = useYFPools();
 
-  const pool = React.useMemo(() => yfPoolsCtx.getKnownPoolByName(poolName), [poolName]);
+  const pool = React.useMemo(() => yfPoolsCtx.getKnownPoolByName(poolId), [poolId]);
 
-  const poolBalance = pool?.tokens.reduce((a, c) => {
-    const token = knownTokensCtx.getTokenBySymbol(c);
+  const poolBalance = yfPoolsCtx.getPoolBalance(poolId);
+  const effectivePoolBalance = yfPoolsCtx.getPoolEffectiveBalance(poolId);
 
-    if (!token) {
-      return a;
-    }
-
-    const stakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(token.address);
-
-    if (!stakedToken) {
-      return a;
-    }
-
-    const tokenValue = convertTokenInUSD(stakedToken.nextEpochPoolSize?.unscaleBy(token.decimals), c);
-    return a.plus(tokenValue ?? BigNumber.ZERO);
-  }, BigNumber.ZERO);
-
-  const effectivePoolBalance = pool?.tokens.reduce((a, c) => {
-    if (pool.contract.poolEndDate) {
-      return BigNumber.ZERO;
-    }
-
-    const token = knownTokensCtx.getTokenBySymbol(c);
-
-    if (!token) {
-      return a;
-    }
-
-    const stakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(token.address);
-
-    if (!stakedToken) {
-      return a;
-    }
-
-    const tokenValue = convertTokenInUSD(stakedToken.currentEpochPoolSize?.unscaleBy(18), c);
-    return a.plus(tokenValue ?? BigNumber.ZERO);
-  }, BigNumber.ZERO);
-
-  const apy = poolBalance?.isGreaterThan(BigNumber.ZERO)
-    ? convertTokenInUSD(pool?.contract.epochReward?.multipliedBy(52), KnownTokens.BOND)?.dividedBy(poolBalance)
-    : undefined;
+  const apy =
+    poolBalance?.isGreaterThan(BigNumber.ZERO) && pool?.contract.epochReward
+      ? convertTokenInUSD(pool?.contract.epochReward * 52, KnownTokens.BOND)?.dividedBy(poolBalance)
+      : undefined;
 
   const value: YFPoolType = {
     poolMeta: pool,

@@ -392,7 +392,6 @@ const TreasuryHoldings: React.FC = () => {
           />
         </div>
         <Table<APITreasuryHistory>
-          inCard
           columns={Columns}
           dataSource={state.history.items}
           rowKey="transactionHash"

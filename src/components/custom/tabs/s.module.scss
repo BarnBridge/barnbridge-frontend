@@ -75,6 +75,12 @@
       }
     }
   }
+
+  :global(.card) > & {
+    :global(.ant-tabs-nav) {
+      border: 0 !important;
+    }
+  }
 }
 
 .elasticTabs {
@@ -121,7 +127,7 @@
     flex-grow: 1;
     border-radius: 20px;
 
-    &:hover {
+    &:not(:disabled):hover {
       color: var(--theme-primary-color);
 
       > svg {

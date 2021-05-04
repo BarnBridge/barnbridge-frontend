@@ -19,7 +19,7 @@ export enum KnownTokens {
   USDC = 'USDC',
   DAI = 'DAI',
   SUSD = 'sUSD',
-  UNIV2 = 'UNIV2',
+  UNIV2 = 'UNI V2',
 }
 
 /* eslint-disable @typescript-eslint/no-redeclare */
@@ -41,6 +41,59 @@ export type TokenMeta = {
   price?: BigNumber;
   icon?: TokenIconNames;
   contract?: Web3Contract;
+};
+
+export const BondToken: TokenMeta = {
+  address: String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase(),
+  symbol: KnownTokens.BOND,
+  name: 'BarnBridge',
+  decimals: 18,
+  priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // BOND -> USDC
+  pricePath: [KnownTokens.USDC],
+  icon: 'token-bond',
+  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
+};
+
+export const UsdcToken: TokenMeta = {
+  address: String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase(),
+  symbol: KnownTokens.USDC,
+  name: 'USD Coin',
+  decimals: 6,
+  priceFeed: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6', // USDC -> $
+  icon: 'token-usdc',
+  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase()),
+};
+
+export const DaiToken: TokenMeta = {
+  address: String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase(),
+  symbol: KnownTokens.DAI,
+  name: 'Dai Stablecoin',
+  decimals: 18,
+  priceFeed: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9', // DAI -> $
+  icon: 'token-dai',
+  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase()),
+};
+
+export const SusdToken: TokenMeta = {
+  address: String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase(),
+  symbol: KnownTokens.SUSD,
+  name: 'Synth sUSD',
+  decimals: 18,
+  priceFeed: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757', // sUSD -> ETH
+  pricePath: [KnownTokens.ETH],
+  icon: 'token-susd',
+  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase()),
+};
+
+export const UniV2Token: TokenMeta = {
+  address: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(),
+  symbol: KnownTokens.UNIV2,
+  name: 'Uniswap V2',
+  decimals: 18,
+  priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // UNIV2 -> USDC
+  pricePath: [KnownTokens.USDC],
+  icon: 'token-uniswap',
+  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase()),
 };
 
 const KNOWN_TOKENS: TokenMeta[] = [
@@ -84,54 +137,11 @@ const KNOWN_TOKENS: TokenMeta[] = [
     pricePath: [KnownTokens.BTC],
     icon: 'token-renbtc',
   },
-  {
-    address: String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase(),
-    symbol: KnownTokens.BOND,
-    name: 'BarnBridge',
-    decimals: 18,
-    priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // BOND -> USDC
-    pricePath: [KnownTokens.USDC],
-    icon: 'token-bond',
-    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
-  },
-  {
-    address: String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase(),
-    symbol: KnownTokens.USDC,
-    name: 'USD Coin',
-    decimals: 6,
-    priceFeed: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6', // USDC -> $
-    icon: 'token-usdc',
-    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase()),
-  },
-  {
-    address: String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase(),
-    symbol: KnownTokens.DAI,
-    name: 'Dai Stablecoin',
-    decimals: 18,
-    priceFeed: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9', // DAI -> $
-    icon: 'token-dai',
-    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase()),
-  },
-  {
-    address: String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase(),
-    symbol: KnownTokens.SUSD,
-    name: 'Synth sUSD',
-    decimals: 18,
-    priceFeed: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757', // sUSD -> ETH
-    pricePath: [KnownTokens.ETH],
-    icon: 'token-susd',
-    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase()),
-  },
-  {
-    address: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(),
-    symbol: KnownTokens.UNIV2,
-    name: 'Uniswap V2',
-    decimals: 18,
-    priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // UNIV2 -> USDC
-    pricePath: [KnownTokens.USDC],
-    icon: 'token-uniswap',
-    contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase()),
-  },
+  BondToken,
+  UsdcToken,
+  DaiToken,
+  SusdToken,
+  UniV2Token,
   {
     address: '0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840',
     symbol: KnownTokens.bbcUSDC,
@@ -388,6 +398,11 @@ const KnownTokensProvider: FC = props => {
     KNOWN_TOKENS.forEach(token => {
       token.contract?.setAccount(wallet.account);
     });
+
+    // load bonds balance for connected wallet
+    if (wallet.account) {
+      (BondToken.contract as Erc20Contract).loadBalance();
+    }
   }, [wallet.account]);
 
   const value = {
