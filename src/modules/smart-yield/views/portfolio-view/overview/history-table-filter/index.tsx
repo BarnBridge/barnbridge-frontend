@@ -68,7 +68,7 @@ const HistoryTableFilter: React.FC<Props> = props => {
   const txOpts = React.useMemo<SelectOption[]>(() => {
     return [
       {
-        label: 'All transactions',
+        label: 'All pool transactions',
         value: 'all',
       },
       ...Array.from(HistoryTypes.entries()).map(([type, label]) => ({

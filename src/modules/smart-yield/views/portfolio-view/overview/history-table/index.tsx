@@ -283,7 +283,6 @@ const HistoryTable: React.FC = () => {
         </Grid>
       </div>
       <Table<TableEntity>
-        inCard
         columns={Columns}
         dataSource={mappedData}
         rowKey="transactionHash"

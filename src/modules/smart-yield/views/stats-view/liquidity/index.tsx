@@ -157,7 +157,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
         <div className="text-p1 fw-semibold color-primary">Liquidity</div>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="ml-auto"
           variation="elastic"

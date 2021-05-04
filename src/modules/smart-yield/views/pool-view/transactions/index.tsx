@@ -148,7 +148,7 @@ const Transactions: React.FC = () => {
   const txOpts = React.useMemo<SelectOption[]>(() => {
     return [
       {
-        label: 'All transactions',
+        label: 'All pool transactions',
         value: 'all',
       },
       ...Array.from(RewardHistoryShortTypes).map(([value, label]) => ({ label, value })),

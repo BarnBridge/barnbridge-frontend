@@ -1,3 +1,5 @@
+@import 'src/styles/text';
+
 .tokenAmount {
   // background: var(--theme-body-color);
   border: 1px solid var(--theme-border-color);
@@ -9,14 +11,6 @@
   padding-right: 8px;
 }
 
-.tokenAmountBefore {
-  border-right: 1px solid var(--theme-border-color);
-  padding-left: 16px;
-  padding-right: 16px;
-  display: flex;
-  align-items: center;
-}
-
 .tokenAmountValues {
   display: flex;
   flex-direction: column;
@@ -24,6 +18,10 @@
   flex-grow: 1;
   padding-left: 16px;
   padding-right: 16px;
+
+  &.hasBefore {
+    border-left: 1px solid var(--theme-border-color);
+  }
 }
 
 .tokenAmountValue {
@@ -101,32 +99,35 @@
 
 // TOKEN SELECT ⬇️
 
-.tokenSelect {
+.tokenSelectTrigger {
   position: relative;
   display: flex;
+  align-items: center;
+  border: 0;
+  background-color: transparent;
+  padding: 0 8px 0 16px;
 
   svg {
     flex-shrink: 0;
   }
-
-  select {
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    border: 0;
-    opacity: 0.0001;
-    height: 100%;
-    width: 100%;
-    cursor: pointer;
-  }
 }
 
-.tokenSelectChevron {
-  color: var(--theme-icon-color);
-  margin-left: 4px;
+.tokenSelectListButton {
+  @include font-p2-semi-bold;
+  background-color: transparent;
+  border: 0;
+  padding: 12px;
+  display: flex;
+  width: 100%;
+  color: var(--theme-secondary-color);
+  border-radius: 4px;
 
-  .tokenSelect:hover & {
-    color: var(--theme-icon-hover-color);
+  &.active {
+    color: var(--theme-primary-color);
+  }
+
+  &:hover {
+    color: var(--theme-primary-color);
+    background: var(--theme-body-color);
   }
 }

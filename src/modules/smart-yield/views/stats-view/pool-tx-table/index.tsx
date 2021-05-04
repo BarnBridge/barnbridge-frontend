@@ -303,7 +303,6 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
         <TableFilter filters={Filters} value={state.filters} onChange={handleFilterChange} />
       </header>
       <Table<TableEntity>
-        inCard
         columns={Columns}
         dataSource={mappedData}
         rowKey={entity => `${entity.transactionHash}_${entity.transactionType}`}

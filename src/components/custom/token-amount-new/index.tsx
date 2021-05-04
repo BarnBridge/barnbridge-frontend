@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
 import cn from 'classnames';
-import { nanoid } from 'nanoid';
 
+import { DropdownList } from 'components/custom/dropdown';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import { Slider } from 'components/custom/slider';
+import { Text } from 'components/custom/typography';
 import { KnownTokens, getTokenBySymbol } from 'components/providers/known-tokens-provider';
 
 import s from './s.module.scss';
@@ -34,8 +34,11 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
   return (
     <div className={className}>
       <div className={s.tokenAmount}>
-        {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
-        <div className={s.tokenAmountValues}>
+        {before}
+        <div
+          className={cn(s.tokenAmountValues, {
+            [s.hasBefore]: before,
+          })}>
           <input
             className={s.tokenAmountValue}
             type="number"
@@ -46,7 +49,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
           />
           <div className={s.tokenAmountHint}>{secondary}</div>
         </div>
-        {rest.max && (
+        {Number.isFinite(rest.max) && (
           <button
             className="button-ghost"
             style={{ alignSelf: 'center' }}
@@ -56,7 +59,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
           </button>
         )}
       </div>
-      {slider && rest.max ? (
+      {slider && Number.isFinite(rest.max) ? (
         <Slider
           className={s.tokenAmountSlider}
           type="range"
@@ -95,25 +98,47 @@ export const TokenAmountPreview: React.FC<TokenAmountPreviewType> = ({ value, be
 type TokenSelectType = {
   value: KnownTokens;
   onChange: (value: KnownTokens) => void;
+  showLabel?: boolean;
   tokens: KnownTokens[];
 };
 
-export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens }) => {
-  const id = useMemo(() => nanoid(), []);
-
+export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens, showLabel }) => {
   const foundToken = getTokenBySymbol(value);
 
   return (
-    <label htmlFor={id} className={s.tokenSelect}>
-      {foundToken ? <Icon name={foundToken.icon as TokenIconNames} /> : null}
-      <Icon name="dropdown" width="24" height="24" className={s.tokenSelectChevron} />
-      <select id={id} value={value} onChange={e => onChange(e.target.value as KnownTokens)}>
-        {tokens.map(token => (
-          <option key={token} value={token}>
-            {getTokenBySymbol(token)?.name}
-          </option>
-        ))}
-      </select>
-    </label>
+    <DropdownList
+      options={tokens.reduce((acc: React.ButtonHTMLAttributes<HTMLButtonElement>[], token) => {
+        const found = getTokenBySymbol(token);
+        if (!found) return acc;
+        return [
+          ...acc,
+          {
+            onClick: () => {
+              onChange(token as KnownTokens);
+            },
+            children: (
+              <>
+                <Icon name={getTokenBySymbol(token)?.icon as TokenIconNames} className="mr-8" />
+                {getTokenBySymbol(token)?.name}
+              </>
+            ),
+            'aria-selected': foundToken?.symbol === found.symbol ? 'true' : 'false',
+          },
+        ];
+      }, [])}
+      referenceProps={{
+        children: (
+          <>
+            {foundToken ? <Icon name={foundToken.icon as TokenIconNames} className="mr-4" /> : null}
+            {showLabel && (
+              <Text type="p1" weight="semibold" color="primary">
+                {value}
+              </Text>
+            )}
+          </>
+        ),
+        className: s.tokenSelectTrigger,
+      }}
+    />
   );
 };

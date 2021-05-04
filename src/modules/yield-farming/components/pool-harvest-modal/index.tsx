@@ -12,7 +12,7 @@ import useMergeState from 'hooks/useMergeState';
 
 import { PoolTypes, getPoolIcons, getPoolNames } from 'modules/yield-farming/utils';
 
-import s from './s.module.scss';
+import s from 'modules/yield-farming/components/pool-harvest-modal/s.module.scss';
 
 export type PoolHarvestModalProps = ModalProps;
 

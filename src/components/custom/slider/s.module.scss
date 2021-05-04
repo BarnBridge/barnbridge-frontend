@@ -17,14 +17,16 @@
     appearance: none;
     height: var(--track-height);
     border-radius: 5ex;
-    background: linear-gradient(to right, transparent var(--track-fill), var(--theme-border-color) 0), var(--brand-bg-gradient) fixed;
+    background: linear-gradient(to right, transparent var(--track-fill), var(--theme-border-color) 0),
+      var(--brand-bg-gradient) fixed;
   }
 
   &::-moz-range-track {
     appearance: none;
     height: var(--track-height);
     border-radius: 5ex;
-    background: linear-gradient(to right, transparent var(--track-fill), var(--theme-border-color) 0), var(--brand-bg-gradient) fixed;
+    background: linear-gradient(to right, transparent var(--track-fill), var(--theme-border-color) 0),
+      var(--brand-bg-gradient) fixed;
   }
 
   &::-webkit-slider-thumb {
@@ -66,4 +68,3 @@
     --thumb-highlight-size: 10px;
   }
 }
-

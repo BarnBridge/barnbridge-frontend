@@ -1,26 +1,18 @@
-import React from 'react';
+import React, { FC, Suspense, lazy, useEffect } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import AntdSpin from 'antd/lib/spin';
 
 import { useWarning } from 'components/providers/warning-provider';
-import { useWallet } from 'wallets/wallet';
+import YFPoolsProvider from 'modules/yield-farming/providers/pools-provider';
 
-import PoolRewards from './components/pool-rewards';
-import PoolStats from './components/pool-stats';
-import SyPoolsProvider from './providers/sy-pools-provider';
-import PoolDetailsView from './views/pool-details-view';
-import PoolsOverviewView from './views/pools-overview-view';
+const PoolsView = lazy(() => import('modules/yield-farming/views/pools-view'));
+const PoolView = lazy(() => import('./views/pool-view'));
 
-import { PoolActions, PoolTypes } from './utils';
-
-const PATH_POOLS_OPTS = [PoolTypes.STABLE, PoolTypes.UNILP, PoolTypes.BOND].join('|');
-const PATH_ACTIONS_OPTS = [PoolActions.DEPOSIT, PoolActions.WITHDRAW].join('|');
-
-const YieldFarmingView: React.FC = () => {
-  const wallet = useWallet();
+const YieldFarmingView: FC = () => {
   const warning = useWarning();
 
-  React.useEffect(() => {
+  useEffect(() => {
     let warningDestructor: () => void;
 
     if (isMobile) {
@@ -43,26 +35,15 @@ const YieldFarmingView: React.FC = () => {
   }, [isMobile]);
 
   return (
-    <SyPoolsProvider>
-      {!isMobile && wallet.isActive && <PoolRewards />}
-
-      <div className="content-container-fix content-container">
-        <PoolStats className="mb-64" />
+    <YFPoolsProvider>
+      <Suspense fallback={<AntdSpin />}>
         <Switch>
-          <Route path="/yield-farming" exact component={PoolsOverviewView} />
-          <Route
-            path={`/yield-farming/:pool(${PATH_POOLS_OPTS})/:action(${PATH_ACTIONS_OPTS})`}
-            exact
-            component={PoolDetailsView}
-          />
-          <Redirect
-            from={`/yield-farming/:pool(${PATH_POOLS_OPTS})`}
-            to={`/yield-farming/:pool/${PoolActions.DEPOSIT}`}
-          />
+          <Route path="/yield-farming" exact component={PoolsView} />
+          <Route path="/yield-farming/:poolId" exact component={PoolView} />
           <Redirect to="/yield-farming" />
         </Switch>
-      </div>
-    </SyPoolsProvider>
+      </Suspense>
+    </YFPoolsProvider>
   );
 };
 

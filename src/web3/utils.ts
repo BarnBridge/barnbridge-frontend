@@ -25,6 +25,10 @@ BigNumber.prototype.unscaleBy = function (decimals?: number): BigNumber | undefi
 BigNumber.ZERO = new BigNumber(0);
 BigNumber.MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 
+BigNumber.parse = (value: BigNumber.Value) => {
+  return new BigNumber(value);
+};
+
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -161,6 +165,12 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
     return undefined;
   }
 
+  let val = new BigNumber(value);
+
+  if (val.isNaN()) {
+    return undefined;
+  }
+
   if (options) {
     if (options.hasOwnProperty('scale') && options.scale === undefined) {
       return undefined;
@@ -169,10 +179,8 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
 
   const { tokenName, compact = false, decimals = 4, minDecimals, scale = 0 } = options ?? {};
 
-  let val = new BigNumber(value);
-
   if (scale > 0) {
-    val = val.dividedBy(10 ** scale);
+    val = val.unscaleBy(scale)!;
   }
 
   let str = '';

@@ -1,6 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import USDC_ABI from 'web3/abi/usdc.json';
+import Erc20Contract from 'web3/contracts/erc20Contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
 import { TokenMeta } from 'web3/types';
@@ -10,7 +11,13 @@ import Icon from 'components/custom/icon';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
-const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
+export const CONTRACT_USDC_ADDR = String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase();
+
+export class UsdcContract extends Erc20Contract {
+  constructor() {
+    super([], CONTRACT_USDC_ADDR);
+  }
+}
 
 const Contract = new Web3Contract(USDC_ABI as Web3ContractAbiItem[], CONTRACT_USDC_ADDR, 'USDC');
 
