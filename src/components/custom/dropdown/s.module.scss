@@ -1,0 +1,48 @@
+@import 'src/styles/text';
+
+.tokenSelectChevron {
+  color: var(--theme-icon-color);
+  margin-left: 4px;
+
+  button:hover & {
+    color: var(--theme-icon-hover-color);
+  }
+}
+
+.tokenSelectList {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  background-color: var(--theme-card-color);
+  box-shadow: var(--theme-overlay-shadow);
+  padding: 4px;
+  border-radius: 4px;
+  max-width: 400px;
+
+  li:not(:last-of-type) {
+    margin-bottom: 4px;
+  }
+}
+
+.tokenSelectListButton {
+  @include font-p2-semi-bold;
+  background-color: transparent;
+  border: 0;
+  padding: 12px;
+  display: flex;
+  width: 100%;
+  color: var(--theme-secondary-color);
+  border-radius: 4px;
+  text-align: left;
+
+  &.active,
+  &[aria-selected='true'] {
+    color: var(--theme-primary-color);
+    // pointer-events: none;
+  }
+
+  &:hover {
+    color: var(--theme-primary-color);
+    background: var(--theme-body-color);
+  }
+}

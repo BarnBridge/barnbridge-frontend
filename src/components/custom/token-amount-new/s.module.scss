@@ -11,14 +11,6 @@
   padding-right: 8px;
 }
 
-.tokenAmountBefore {
-  border-right: 1px solid var(--theme-border-color);
-  padding-left: 16px;
-  padding-right: 16px;
-  display: flex;
-  align-items: center;
-}
-
 .tokenAmountValues {
   display: flex;
   flex-direction: column;
@@ -26,6 +18,10 @@
   flex-grow: 1;
   padding-left: 16px;
   padding-right: 16px;
+
+  &.hasBefore {
+    border-left: 1px solid var(--theme-border-color);
+  }
 }
 
 .tokenAmountValue {
@@ -101,35 +97,13 @@
 .tokenSelectTrigger {
   position: relative;
   display: flex;
+  align-items: center;
   border: 0;
   background-color: transparent;
-  padding: 0;
+  padding: 0 8px 0 16px;
 
   svg {
     flex-shrink: 0;
-  }
-}
-
-.tokenSelectChevron {
-  color: var(--theme-icon-color);
-  margin-left: 4px;
-
-  .tokenSelectTrigger:hover & {
-    color: var(--theme-icon-hover-color);
-  }
-}
-
-.tokenSelectList {
-  list-style-type: none;
-  padding: 0;
-  margin: 0;
-  background-color: var(--theme-card-color);
-  box-shadow: var(--theme-overlay-shadow);
-  padding: 4px;
-  border-radius: 4px;
-
-  li:not(:last-of-type) {
-    margin-bottom: 4px;
   }
 }
 

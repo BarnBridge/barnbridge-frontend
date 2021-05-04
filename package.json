@@ -41,10 +41,12 @@
   "eslintConfig": {
     "extends": [
       "react-app",
-      "prettier"
+      "prettier",
+      "plugin:css-modules/recommended"
     ],
     "plugins": [
-      "prettier"
+      "prettier",
+      "css-modules"
     ],
     "rules": {
       "prettier/prettier": [
@@ -116,6 +118,7 @@
     "identicon.js": "2.3.3",
     "lodash": "4.17.21",
     "nanoid": "^3.1.22",
+    "outy": "^0.1.2",
     "query-string": "7.0.0",
     "react": "17.0.2",
     "react-device-detect": "1.17.0",
@@ -142,6 +145,7 @@
     "@types/wolfy87-eventemitter": "5.2.0",
     "dotenv": "8.2.0",
     "eslint-config-prettier": "8.2.0",
+    "eslint-plugin-css-modules": "^2.11.0",
     "eslint-plugin-prettier": "3.4.0",
     "husky": "6.0.0",
     "import-sort-style-vmv": "2.0.2",

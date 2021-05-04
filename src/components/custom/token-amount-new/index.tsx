@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom';
-import { usePopper } from 'react-popper';
 import cn from 'classnames';
 
+import { DropdownList } from 'components/custom/dropdown';
 import Icon, { TokenIconNames } from 'components/custom/icon';
-import { OutsideClick } from 'components/custom/outside-click';
 import { Slider } from 'components/custom/slider';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, getTokenBySymbol } from 'components/providers/known-tokens-provider';
@@ -37,8 +34,11 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
   return (
     <div className={className}>
       <div className={s.tokenAmount}>
-        {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
-        <div className={s.tokenAmountValues}>
+        {before}
+        <div
+          className={cn(s.tokenAmountValues, {
+            [s.hasBefore]: before,
+          })}>
           <input
             className={s.tokenAmountValue}
             type="number"
@@ -95,8 +95,6 @@ export const TokenAmountPreview: React.FC<TokenAmountPreviewType> = ({ value, be
   );
 };
 
-const tooltipRoot = document.querySelector('#tooltip-root');
-
 type TokenSelectType = {
   value: KnownTokens;
   onChange: (value: KnownTokens) => void;
@@ -105,77 +103,42 @@ type TokenSelectType = {
 };
 
 export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens, showLabel }) => {
-  const [open, setOpen] = useState(false);
   const foundToken = getTokenBySymbol(value);
 
-  const [targetRef, setTargetRef] = useState(null);
-  const [optionsRef, setOptionsRef] = useState(null);
-  const { styles, attributes, forceUpdate } = usePopper(targetRef, optionsRef, {
-    placement: 'bottom-start',
-    modifiers: [{ name: 'offset', options: { offset: [-16, 24] } }],
-  });
-
-  useEffect(() => {
-    if (open) {
-      forceUpdate && forceUpdate();
-    }
-  }, [open]);
-
   return (
-    <>
-      <button
-        type="button"
-        // @ts-ignore
-        ref={setTargetRef}
-        className={s.tokenSelectTrigger}
-        onClick={() => setOpen(isOpen => !isOpen)}>
-        {foundToken ? <Icon name={foundToken.icon as TokenIconNames} className="mr-4" /> : null}
-        {showLabel && (
-          <Text type="p1" weight="semibold" color="primary">
-            {value}
-          </Text>
-        )}
-        <Icon
-          name="dropdown"
-          width="24"
-          height="24"
-          className={s.tokenSelectChevron}
-          style={{ transform: open ? 'rotate(180deg)' : '' }}
-        />
-      </button>
-      {tooltipRoot &&
-        open &&
-        ReactDOM.createPortal(
-          <OutsideClick handler={() => setOpen(false)} nodes={[optionsRef, targetRef]}>
-            {/*
-            // @ts-ignore */}
-            <ul className={s.tokenSelectList} ref={setOptionsRef} style={styles.popper} {...attributes.popper}>
-              {tokens.map(token => {
-                const found = getTokenBySymbol(token);
-                if (!found) return null;
-
-                return (
-                  <li key={token} value={token}>
-                    <button
-                      className={cn(s.tokenSelectListButton, {
-                        [s.active]: foundToken?.symbol === found.symbol,
-                      })}
-                      type="button"
-                      onClick={() => {
-                        onChange(token as KnownTokens);
-                        setOpen(false);
-                      }}>
-                      <Icon name={getTokenBySymbol(token)?.icon as TokenIconNames} className="mr-8" />
-                      {getTokenBySymbol(token)?.name}
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          </OutsideClick>,
-
-          tooltipRoot,
-        )}
-    </>
+    <DropdownList
+      options={tokens.reduce((acc: React.ButtonHTMLAttributes<HTMLButtonElement>[], token) => {
+        const found = getTokenBySymbol(token);
+        if (!found) return acc;
+        return [
+          ...acc,
+          {
+            onClick: () => {
+              onChange(token as KnownTokens);
+            },
+            children: (
+              <>
+                <Icon name={getTokenBySymbol(token)?.icon as TokenIconNames} className="mr-8" />
+                {getTokenBySymbol(token)?.name}
+              </>
+            ),
+            'aria-selected': foundToken?.symbol === found.symbol ? 'true' : 'false',
+          },
+        ];
+      }, [])}
+      referenceProps={{
+        children: (
+          <>
+            {foundToken ? <Icon name={foundToken.icon as TokenIconNames} className="mr-4" /> : null}
+            {showLabel && (
+              <Text type="p1" weight="semibold" color="primary">
+                {value}
+              </Text>
+            )}
+          </>
+        ),
+        className: s.tokenSelectTrigger,
+      }}
+    />
   );
 };
