@@ -426,9 +426,3 @@ const KnownTokensProvider: FC = props => {
 };
 
 export default KnownTokensProvider;
-
-setTimeout(() => {
-  KNOWN_TOKENS.forEach(token => {
-    console.log(token.symbol, token.price?.toNumber());
-  });
-}, 5000);
