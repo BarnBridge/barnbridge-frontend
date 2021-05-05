@@ -9,7 +9,7 @@ import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
@@ -17,23 +17,30 @@ import { useWallet } from 'wallets/wallet';
 import s from './s.module.scss';
 
 const PoolStatistics: FC = () => {
+  const knownTokensCtx = useKnownTokens();
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
 
   const { poolMeta } = yfPoolCtx;
 
-  const [activeTokenTab, setActiveTokenTab] = useState<string>(poolMeta?.tokens[0]!);
+  const [activeToken, setActiveToken] = useState(poolMeta?.tokens[0]);
   const [claiming, setClaiming] = useState(false);
   const [confirmClaimVisible, setConfirmClaimVisible] = useState(false);
 
   const bondContract = BondToken.contract as Erc20Contract;
+  const activeContract = activeToken?.contract as Erc20Contract;
 
   if (!walletCtx.isActive || !poolMeta) {
     return null;
   }
 
-  const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(activeTokenTab);
+  const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken?.address!);
+
+  function handleTabSelect(tokenSymbol: string) {
+    const tokenMeta = knownTokensCtx.getTokenBySymbol(tokenSymbol);
+    setActiveToken(tokenMeta);
+  }
 
   function handleClaim() {
     setConfirmClaimVisible(true);
@@ -44,7 +51,7 @@ const PoolStatistics: FC = () => {
     setClaiming(true);
 
     try {
-      await poolMeta?.contract.claim(args.gasPrice);
+      await poolMeta.contract.claim(args.gasPrice);
     } catch {}
 
     setClaiming(false);
@@ -77,7 +84,9 @@ const PoolStatistics: FC = () => {
             <div className="flex align-center">
               <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(poolMeta.contract.potentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
+                {formatToken(poolMeta.contract.potentialReward?.unscaleBy(BondToken.decimals), {
+                  decimals: BondToken.decimals,
+                }) ?? '-'}
               </Text>
             </div>
           </div>
@@ -87,7 +96,9 @@ const PoolStatistics: FC = () => {
             <div className="flex flow-row">
               <div className="flex align-center mb-4">
                 <Text type="h2" weight="semibold" color="primary" className="mr-8">
-                  {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
+                  {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals), {
+                    decimals: BondToken.decimals,
+                  }) ?? '-'}
                 </Text>
                 <Icon name="bond-circle-token" />
               </div>
@@ -117,11 +128,11 @@ const PoolStatistics: FC = () => {
           {poolMeta.tokens.length > 1 && (
             <ElasticTabs
               tabs={poolMeta.tokens.map(token => ({
-                id: token,
-                children: token,
+                id: token.symbol,
+                children: token.symbol,
               }))}
-              activeKey={activeTokenTab}
-              onClick={setActiveTokenTab}
+              activeKey={activeToken?.symbol!}
+              onClick={handleTabSelect}
               variation="elastic"
               className="mb-32"
               style={{
@@ -136,7 +147,9 @@ const PoolStatistics: FC = () => {
                 Staked balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(selectedStakedToken?.nextEpochUserBalance) ?? '-'}
+                {formatToken(selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken?.decimals), {
+                  decimals: activeToken?.decimals,
+                }) ?? '-'}
               </Text>
             </div>
 
@@ -145,7 +158,9 @@ const PoolStatistics: FC = () => {
                 Effective Staked balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(selectedStakedToken?.currentEpochUserBalance) ?? '-'}
+                {formatToken(selectedStakedToken?.currentEpochUserBalance?.unscaleBy(activeToken?.decimals), {
+                  decimals: activeToken?.decimals,
+                }) ?? '-'}
               </Text>
             </div>
 
@@ -154,7 +169,9 @@ const PoolStatistics: FC = () => {
                 Wallet balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(selectedStakedToken?.userBalance) ?? '-'}
+                {formatToken(activeContract.balance?.unscaleBy(activeToken?.decimals), {
+                  decimals: activeToken?.decimals,
+                }) ?? '-'}
               </Text>
             </div>
           </div>

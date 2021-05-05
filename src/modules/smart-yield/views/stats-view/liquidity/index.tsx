@@ -186,7 +186,15 @@ const Liquidity: React.FC<Props> = ({ className }) => {
                 minTickGap={0}
                 tickFormatter={value => formatTick(value)}
               />
-              <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatUSD(value, true) ?? ''} />
+              <ReCharts.YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={value =>
+                  formatUSD(value, {
+                    compact: true,
+                  }) ?? ''
+                }
+              />
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (

@@ -249,7 +249,9 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals), true)}
+                  {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>
@@ -280,7 +282,9 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals), true)}
+                  {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>
@@ -326,7 +330,9 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals), true)}
+                  {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>

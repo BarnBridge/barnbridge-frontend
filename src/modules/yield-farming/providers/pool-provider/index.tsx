@@ -27,10 +27,10 @@ const YFPoolProvider: React.FC<Props> = props => {
 
   const yfPoolsCtx = useYFPools();
 
-  const pool = React.useMemo(() => yfPoolsCtx.getKnownPoolByName(poolId), [poolId]);
+  const pool = React.useMemo(() => yfPoolsCtx.getYFKnownPoolByName(poolId), [poolId]);
 
-  const poolBalance = yfPoolsCtx.getPoolBalance(poolId);
-  const effectivePoolBalance = yfPoolsCtx.getPoolEffectiveBalance(poolId);
+  const poolBalance = yfPoolsCtx.getPoolBalanceInUSD(poolId);
+  const effectivePoolBalance = yfPoolsCtx.getPoolEffectiveBalanceInUSD(poolId);
 
   const apy =
     poolBalance?.isGreaterThan(BigNumber.ZERO) && pool?.contract.epochReward
