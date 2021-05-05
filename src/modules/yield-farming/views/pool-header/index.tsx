@@ -29,7 +29,7 @@ const PoolHeader: FC = () => {
 
   return (
     <>
-      <Link to="/yield-farming" className="flex inline align-center mb-16">
+      <Link to="/yield-farming" className="flex align-center mb-16">
         <Icon name="arrow-back" width={14} height={14} className="mr-8" />
         <Text type="p1" weight="semibold" color="secondary">
           Pools
@@ -93,20 +93,20 @@ const PoolHeader: FC = () => {
           </Text>
           <div className={s.stakedBar}>
             {poolMeta.tokens.map((token, index) => {
-              const tokenMeta = knownTokensCtx.getTokenBySymbol(token);
-              const stakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(token);
-              let rate =
+              const stakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(token.address);
+              const rate =
                 knownTokensCtx
-                  .convertTokenInUSD(stakedToken?.nextEpochPoolSize, token)
-                  ?.unscaleBy(tokenMeta?.decimals)
+                  .convertTokenInUSD(stakedToken?.nextEpochPoolSize, token.symbol)
+                  ?.unscaleBy(token.decimals)
                   ?.dividedBy(poolBalance ?? 0)
                   .multipliedBy(100) ?? 0;
 
               return (
                 <Tooltip
-                  key={token}
-                  title={formatToken(stakedToken?.nextEpochPoolSize?.unscaleBy(tokenMeta?.decimals), {
-                    tokenName: token,
+                  key={token.symbol}
+                  title={formatToken(stakedToken?.nextEpochPoolSize?.unscaleBy(token.decimals), {
+                    tokenName: token.symbol,
+                    decimals: token.decimals,
                   })}>
                   <div style={{ background: poolMeta.colors[index], width: `${rate}%` }} />
                 </Tooltip>

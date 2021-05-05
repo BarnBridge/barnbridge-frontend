@@ -11,7 +11,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD, getTokenByAddress, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { convertTokenInUSD, getTokenByAddress } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import { APIYFPoolActionType, APIYFPoolTransaction, fetchYFPoolTransactions } from 'modules/yield-farming/api';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
@@ -159,7 +159,6 @@ const TX_OPTS: SelectOption[] = [
 ];
 
 const PoolTransactions: FC = () => {
-  const knownTokensCtx = useKnownTokens();
   const walletCtx = useWallet();
   const poolsCtx = useYFPools();
   const poolCtx = useYFPool();
@@ -174,7 +173,7 @@ const PoolTransactions: FC = () => {
       return poolCtx.poolMeta.tokens;
     }
 
-    return poolsCtx.pools.map(pool => pool.tokens).flat();
+    return poolsCtx.yfPools.map(pool => pool.tokens).flat();
   }, [poolCtx.poolMeta]);
 
   const tableColumns = useMemo(() => {
@@ -188,7 +187,7 @@ const PoolTransactions: FC = () => {
       filters: {
         ...prevState.filters,
         actionType: 'all',
-        tokenAddress: poolCtx.poolMeta ? knownTokensCtx.getTokenBySymbol(tokens[0])?.address ?? 'all' : 'all',
+        tokenAddress: poolCtx.poolMeta ? tokens[0].address ?? 'all' : 'all',
       },
     }));
 
@@ -313,8 +312,8 @@ const PoolTransactions: FC = () => {
                   label: 'All tokens',
                 },
                 ...tokens.map(token => ({
-                  value: knownTokensCtx.getTokenBySymbol(token)?.address ?? 'all',
-                  label: token,
+                  value: token.address ?? 'all',
+                  label: token.symbol,
                 })),
               ]}
               value={state.filters.tokenAddress}

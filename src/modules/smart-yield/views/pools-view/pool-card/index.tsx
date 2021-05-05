@@ -2,7 +2,6 @@ import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
-import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { ZERO_BIG_NUMBER, formatPercent, formatToken } from 'web3/utils';
 
@@ -10,6 +9,7 @@ import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPool } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/wallet';
@@ -25,7 +25,6 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
   const { rewardPool, className } = props;
 
   const wallet = useWallet();
-  const web3c = useWeb3Contracts();
   const [activeTab, setActiveTab] = useState<'pool' | 'my'>('pool');
   const [confirmClaimVisible, setConfirmClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
@@ -58,12 +57,11 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
       return undefined;
     }
 
-    const bondPrice = web3c.uniswap.bondPrice ?? 1;
     const jTokenPrice = rewardPool.poolToken.price ?? 1;
 
     const yearlyReward = dailyReward
       .dividedBy(10 ** BONDTokenMeta.decimals)
-      .multipliedBy(bondPrice)
+      .multipliedBy(BondToken.price ?? 1)
       .multipliedBy(365);
     const poolBalance = poolSize
       .dividedBy(10 ** (rewardPool.poolToken.decimals ?? 0))
@@ -75,7 +73,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
     }
 
     return yearlyReward.dividedBy(poolBalance);
-  }, [rewardPool.pool.poolSize, rewardPool.pool.dailyReward]);
+  }, [rewardPool.pool.poolSize, rewardPool.pool.dailyReward, BondToken.price]);
 
   return (
     <>

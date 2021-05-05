@@ -1,11 +1,12 @@
 import React from 'react';
 import cn from 'classnames';
 import { useWeb3Contracts } from 'web3/contracts';
-import { formatBONDValue, formatUSDValue } from 'web3/utils';
+import { formatBONDValue, formatUSD } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
+import { BondToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
 
@@ -51,7 +52,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               </Text>
             </Grid>
             <Text type="p1" color="secondary">
-              {formatUSDValue(web3c.aggregated.bondLockedPrice)}
+              {formatUSD(convertTokenInUSD(web3c.daoBarn.bondStaked, BondToken.symbol))}
             </Text>
           </Grid>
         </Grid>

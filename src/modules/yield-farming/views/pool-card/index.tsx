@@ -31,36 +31,27 @@ const PoolCard: FC<Props> = props => {
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
 
-  const poolMeta = yfPoolsCtx.getKnownPoolByName(poolId);
+  const poolMeta = yfPoolsCtx.getYFKnownPoolByName(poolId);
   const isEnded = poolMeta?.contract.isPoolEnded === true;
 
   const [activeTab, setActiveTab] = useState('pool');
   const [claiming, setClaiming] = useState(false);
   const [confirmClaimVisible, setConfirmClaimVisible] = useState(false);
 
-  const {
-    totalEpochs,
-    lastActiveEpoch,
-    epochReward,
-    potentialReward,
-    currentPoolSize,
-    nextPoolSize,
-    currentEpochStake,
-    nextEpochStake,
-    poolEndDate = 0,
-    toClaim,
-  } = poolMeta?.contract ?? {};
+  const { totalEpochs, lastActiveEpoch, epochReward, potentialReward, poolEndDate = 0, toClaim } =
+    poolMeta?.contract ?? {};
 
   const formattedEndDate = format(
     addMinutes(fromUnixTime(poolEndDate), fromUnixTime(poolEndDate).getTimezoneOffset()),
     'MMM dd yyyy, HH:mm',
   );
 
-  const poolBalance = yfPoolsCtx.getPoolBalance(poolId);
+  const poolBalanceInUSD = yfPoolsCtx.getPoolBalanceInUSD(poolId);
+  const poolEffectiveBalanceInUSD = yfPoolsCtx.getPoolEffectiveBalanceInUSD(poolId);
 
   const apy =
-    poolBalance?.isGreaterThan(BigNumber.ZERO) && epochReward
-      ? convertTokenInUSD(epochReward * 52, KnownTokens.BOND)?.dividedBy(poolBalance)
+    poolBalanceInUSD?.isGreaterThan(BigNumber.ZERO) && epochReward
+      ? convertTokenInUSD(epochReward * 52, KnownTokens.BOND)?.dividedBy(poolBalanceInUSD)
       : undefined;
 
   function handleClaim() {
@@ -149,7 +140,7 @@ const PoolCard: FC<Props> = props => {
                 Pool balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(nextPoolSize, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(poolBalanceInUSD) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
@@ -159,7 +150,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(currentPoolSize, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(poolEffectiveBalanceInUSD) ?? '-'}
               </Text>
             </div>
           </div>
@@ -193,7 +184,7 @@ const PoolCard: FC<Props> = props => {
                 My pool balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(nextEpochStake, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(0) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
@@ -203,7 +194,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(currentEpochStake, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(0) ?? '-'}
               </Text>
             </div>
           </div>
@@ -254,7 +245,7 @@ const PoolCard: FC<Props> = props => {
                 Your balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(nextEpochStake, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(convertTokenInUSD(0, KnownTokens.UNIV2)) ?? '-'}
               </Text>
             </div>
           </>
