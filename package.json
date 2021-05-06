@@ -52,8 +52,7 @@
         {
           "endOfLine": "lf"
         }
-      ],
-      "react-hooks/exhaustive-deps": "off"
+      ]
     }
   },
   "prettier": {
