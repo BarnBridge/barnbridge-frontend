@@ -1,0 +1,20 @@
+.component {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+
+  @media (max-width: 768px) {
+    gap: 8px;
+  }
+
+  .epochProgress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4f6ae6 0%, #00d395 100%);
+    border-radius: 0 4px 4px;
+  }
+}

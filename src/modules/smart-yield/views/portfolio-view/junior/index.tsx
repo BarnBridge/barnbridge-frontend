@@ -2,7 +2,6 @@ import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { useWeb3Contracts } from 'web3/contracts';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
@@ -14,6 +13,7 @@ import Badge from 'components/custom/badge';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { fetchSYRewardPools } from 'modules/smart-yield/api';
@@ -83,7 +83,6 @@ const JuniorPortfolio: React.FC = () => {
   const [reload] = useReload();
   const [activeTab, setActiveTab] = React.useState('active');
 
-  const web3c = useWeb3Contracts();
   const wallet = useWallet();
   const poolsCtx = usePools();
 
@@ -272,10 +271,10 @@ const JuniorPortfolio: React.FC = () => {
       ...prevState,
       dataStaked: prevState.dataStaked.map(data => ({
         ...data,
-        rewardPrice: web3c.uniswap.bondPrice,
+        rewardPrice: BondToken.price,
       })),
     }));
-  }, [state.dataStaked.length, web3c.uniswap.bondPrice]);
+  }, [state.dataStaked.length, BondToken.price]);
 
   function handleFiltersApply(values: PositionsFilterValues) {
     setFiltersMap(prevState => ({

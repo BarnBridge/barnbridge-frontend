@@ -34,7 +34,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
         <div className="flex flow-col align-center">
           <IconBubble
             name={meta?.icon}
-            bubbleName="bond-circle-token"
+            bubbleName="static/token-bond"
             secondBubbleName={market?.icon}
             className="mr-16"
           />
@@ -131,7 +131,6 @@ const StakedPositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<StakedPositionsTableEntity>
-      inCard
       columns={Columns}
       dataSource={data}
       rowKey="poolAddress"

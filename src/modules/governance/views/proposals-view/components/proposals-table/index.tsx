@@ -89,8 +89,6 @@ const ProposalsTable: React.FC = () => {
 
   return (
     <Table<LiteProposalEntity>
-      inCard
-      title={() => ''}
       columns={Columns}
       dataSource={proposalsCtx.proposals}
       rowKey="proposalId"

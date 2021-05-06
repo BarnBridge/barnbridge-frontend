@@ -34,7 +34,7 @@ const Columns: ColumnsType<TableEntity> = [
       <div className="flex flow-col align-center">
         <IconBubble
           name={entity.pool?.meta?.icon}
-          bubbleName="bond-circle-token"
+          bubbleName="static/token-bond"
           secondBubbleName={entity.pool?.market?.icon}
           className="mr-16"
         />
@@ -222,7 +222,6 @@ const PastPositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<TableEntity>
-      inCard
       columns={Columns}
       dataSource={state.data}
       rowKey="transactionHash"

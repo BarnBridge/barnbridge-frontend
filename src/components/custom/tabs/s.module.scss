@@ -74,6 +74,16 @@
         color: var(--theme-red-color);
       }
     }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
+  }
+
+  :global(.card) > & {
+    :global(.ant-tabs-nav) {
+      border: 0 !important;
+    }
   }
 }
 
@@ -121,7 +131,7 @@
     flex-grow: 1;
     border-radius: 20px;
 
-    &:hover {
+    &:not(:disabled):hover {
       color: var(--theme-primary-color);
 
       > svg {

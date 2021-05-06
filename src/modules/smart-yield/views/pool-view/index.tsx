@@ -1,13 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AntdSwitch from 'antd/lib/switch';
-import { useWeb3Contracts } from 'web3/contracts';
 import { BONDTokenMeta } from 'web3/contracts/bond';
 import { ZERO_BIG_NUMBER, formatPercent, formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
@@ -19,7 +19,6 @@ import s from './s.module.scss';
 
 const PoolView: React.FC = () => {
   const wallet = useWallet();
-  const web3c = useWeb3Contracts();
   const { rewardPool } = useRewardPool();
 
   const [enabling, setEnabling] = React.useState(false);
@@ -35,7 +34,7 @@ const PoolView: React.FC = () => {
       return undefined;
     }
 
-    const bondPrice = web3c.uniswap.bondPrice ?? 1;
+    const bondPrice = BondToken.price ?? 1;
     const jTokenPrice = rewardPool.poolToken.price ?? 1;
 
     const yearlyReward = dailyReward
@@ -52,7 +51,7 @@ const PoolView: React.FC = () => {
     }
 
     return yearlyReward.dividedBy(poolBalance);
-  }, [rewardPool?.pool.poolSize, rewardPool?.pool.dailyReward]);
+  }, [rewardPool?.pool.poolSize, rewardPool?.pool.dailyReward, BondToken.price]);
 
   if (!rewardPool) {
     return null;
@@ -82,7 +81,7 @@ const PoolView: React.FC = () => {
       <div className="flex align-center mb-32">
         <IconBubble
           name={meta?.icon}
-          bubbleName="bond-circle-token"
+          bubbleName="static/token-bond"
           secondBubbleName={market?.icon}
           width={36}
           height={36}
@@ -99,7 +98,7 @@ const PoolView: React.FC = () => {
             <dd>
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={16}
                 height={16}
@@ -117,7 +116,7 @@ const PoolView: React.FC = () => {
           <div className={s.headerTermRow}>
             <dt>Daily rewards</dt>
             <dd>
-              <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
               {formatToken(rewardPool.pool.dailyReward, {
                 scale: rewardPool.rewardToken.decimals,
               }) ?? '-'}
@@ -126,7 +125,7 @@ const PoolView: React.FC = () => {
           <div className={s.headerTermRow}>
             <dt>Rewards left</dt>
             <dd>
-              <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
               {formatToken(rewardPool.pool.rewardLeft, {
                 scale: rewardPool.rewardToken.decimals,
               }) ?? '-'}

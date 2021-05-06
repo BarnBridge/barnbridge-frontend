@@ -10,6 +10,16 @@ import { DEFAULT_WEB3, DEFAULT_WEB3_PROVIDER, WEB3_ERROR_VALUE } from 'component
 
 export type Web3ContractAbiItem = AbiItem;
 
+export function createAbiItem(name: string, inputs: string[] = [], outputs: string[] = []): AbiItem {
+  return {
+    name,
+    type: 'function',
+    stateMutability: 'view',
+    inputs: inputs.map(type => ({ name: '', type })),
+    outputs: outputs.map(type => ({ name: '', type })),
+  };
+}
+
 export type BatchContractMethod = {
   method: string;
   methodArgs?: any[];
@@ -42,7 +52,7 @@ class Web3Contract extends EventEmitter {
   static requestsPool: Map<any, Method[]> = new Map();
 
   static addRequest(source: Web3Contract, request: Method) {
-    const provider = source.callContract.currentProvider;
+    const provider = source._callContract.currentProvider;
     const collected = this.requestsPool.get(provider) ?? [];
 
     this.requestsPool.set(provider, [...collected, request]);
@@ -70,12 +80,12 @@ class Web3Contract extends EventEmitter {
     });
   }
 
-  readonly abi: AbiItem[];
+  readonly _abi: AbiItem[];
 
   readonly address: string;
 
-  readonly callContract: EthContract;
-  readonly sendContract: EthContract;
+  readonly _callContract: EthContract;
+  readonly _sendContract: EthContract;
 
   name: string;
 
@@ -84,24 +94,24 @@ class Web3Contract extends EventEmitter {
   constructor(abi: AbiItem[], address: string, name: string) {
     super();
 
-    this.abi = abi;
+    this._abi = abi;
     this.address = address;
     this.name = name;
 
-    this.callContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
-    this.sendContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
+    this._callContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
+    this._sendContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
   }
 
   get writeFunctions(): AbiItem[] {
-    return this.abi.filter(r => r.type === 'function' && !r.constant);
+    return this._abi.filter(r => r.type === 'function' && !r.constant);
   }
 
   setCallProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
-    this.callContract.setProvider(provider);
+    this._callContract.setProvider(provider);
   }
 
   setProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
-    this.sendContract.setProvider(provider);
+    this._sendContract.setProvider(provider);
   }
 
   setAccount(account?: string): void {
@@ -126,7 +136,7 @@ class Web3Contract extends EventEmitter {
   }
 
   call(method: string, methodArgs: any[] = [], callArgs: Record<string, any> = {}): Promise<any> {
-    const contractMethod = this.callContract.methods[method];
+    const contractMethod = this._callContract.methods[method];
 
     if (!contractMethod) {
       return Promise.reject(new Error(`Invalid contract method name [${method}].`));
@@ -150,7 +160,7 @@ class Web3Contract extends EventEmitter {
   }
 
   send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
-    const contractMethod = this.sendContract.methods[method];
+    const contractMethod = this._sendContract.methods[method];
 
     if (!contractMethod) {
       return Promise.reject(new Error(`Unknown method "${method}" in contract.`));

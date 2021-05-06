@@ -29,7 +29,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
       <div className="flex flow-col align-center">
         <IconBubble
           name={entity.pool.meta?.icon}
-          bubbleName="bond-circle-token"
+          bubbleName="static/token-bond"
           secondBubbleName={entity.pool.market?.icon}
           className="mr-16"
         />
@@ -126,7 +126,6 @@ const LockedPositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<LockedPositionsTableEntity>
-      inCard
       columns={Columns}
       dataSource={data}
       rowKey={row => `${row.pool.protocolId}:${row.jBond.jBondId}`}

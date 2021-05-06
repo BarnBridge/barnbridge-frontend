@@ -17,9 +17,9 @@ import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
+import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TransactionSummary from 'modules/smart-yield/components/transaction-summary';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
@@ -239,7 +239,7 @@ const SeniorTranche: React.FC = () => {
         <Form.Item
           name="maturityDate"
           label="Maturity date"
-          extra={`Max ${bondMaxLife} days`}
+          extra={bondMaxLife ? `Max ${bondMaxLife} days` : ''}
           hint="You can select a maturity date between 1 and 30 days, in increments of 1 day."
           rules={[{ required: true, message: 'Required' }]}>
           <DatePicker
@@ -311,8 +311,9 @@ const SeniorTranche: React.FC = () => {
                 slippageHint="Your transaction will revert if the gains for your senior bonds you actually receive are smaller by this percentage."
                 showDeadline
                 deadline={deadline}
-                onChange={handleTxDetailsChange}
-              />
+                onChange={handleTxDetailsChange}>
+                Transaction details
+              </TransactionDetails>
             );
           }}
         </Form.Item>

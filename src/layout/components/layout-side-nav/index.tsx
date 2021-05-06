@@ -85,6 +85,14 @@ const LayoutSideNav: React.FC = () => {
               </Text>
             </NavLink>
           </Tooltip>
+          <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
+            <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
+              <Icon name="scales" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                SMART Exposure
+              </Text>
+            </NavLink>
+          </Tooltip>
         </nav>
         <div className={s.bottom}>
           <Tooltip title={displayTooltip && 'Docs'} placement="right">

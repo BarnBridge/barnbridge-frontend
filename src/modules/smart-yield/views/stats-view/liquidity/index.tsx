@@ -157,7 +157,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
         <div className="text-p1 fw-semibold color-primary">Liquidity</div>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="ml-auto"
           variation="elastic"
@@ -186,7 +186,15 @@ const Liquidity: React.FC<Props> = ({ className }) => {
                 minTickGap={0}
                 tickFormatter={value => formatTick(value)}
               />
-              <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatUSD(value, true) ?? ''} />
+              <ReCharts.YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={value =>
+                  formatUSD(value, {
+                    compact: true,
+                  }) ?? ''
+                }
+              />
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
@@ -224,14 +232,10 @@ const Liquidity: React.FC<Props> = ({ className }) => {
           </ReCharts.ResponsiveContainer>
         </Spin>
         <div className="flex flow-col justify-center col-gap-24 row-gap-16">
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
             Senior Liquidity
           </div>
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
             Junior Liquidity
           </div>
         </div>

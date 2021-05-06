@@ -13,8 +13,8 @@ import Grid from 'components/custom/grid';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
+import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -159,7 +159,7 @@ const InstantWithdraw: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={pool.meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}
@@ -230,8 +230,9 @@ const InstantWithdraw: React.FC = () => {
                 slippage={slippage}
                 showDeadline
                 deadline={deadline}
-                onChange={handleTxDetailsChange}
-              />
+                onChange={handleTxDetailsChange}>
+                Transaction details
+              </TransactionDetails>
             );
           }}
         </Form.Item>

@@ -12,19 +12,25 @@ import Icon from 'components/custom/icon';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
-const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
+export const CONTRACT_BOND_ADDR = String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase();
+
+export class BondContract extends Erc20Contract {
+  constructor() {
+    super([], CONTRACT_BOND_ADDR);
+  }
+}
 
 const Contract = new Web3Contract(BOND_ABI as Web3ContractAbiItem[], CONTRACT_BOND_ADDR, 'BOND');
 
 export const BONDTokenMeta: TokenMeta = {
-  icon: <Icon key="bond" name="token-bond" />,
+  icon: <Icon key="bond" name="static/token-bond" />,
   name: 'BOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
 };
 
 export const VBONDTokenMeta: TokenMeta = {
-  icon: <Icon key="vbond" name="token-bond" />,
+  icon: <Icon key="vbond" name="static/token-bond" />,
   name: 'vBOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
@@ -130,10 +136,4 @@ export function useBONDContract(): BONDContract {
     }),
     [data, reload, approveSend],
   );
-}
-
-export class BondContract extends Erc20Contract {
-  constructor() {
-    super([], CONTRACT_BOND_ADDR);
-  }
 }

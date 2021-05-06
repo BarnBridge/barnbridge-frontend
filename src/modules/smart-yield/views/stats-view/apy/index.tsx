@@ -150,7 +150,7 @@ const ApyTrend: React.FC = () => {
         <div className="text-p1 fw-semibold color-primary">APY trend</div>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="ml-auto"
           variation="elastic"
@@ -217,14 +217,10 @@ const ApyTrend: React.FC = () => {
           </ReCharts.ResponsiveContainer>
         </Spin>
         <div className="flex flow-col justify-center col-gap-24 row-gap-16">
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
             Senior APY
           </div>
-          <div
-            className="chart-label text-sm fw-semibold"
-            style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
             Junior APY
           </div>
         </div>

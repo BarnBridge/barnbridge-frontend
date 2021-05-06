@@ -1,0 +1,147 @@
+@import 'src/styles/text';
+
+.tokenAmount {
+  // background: var(--theme-body-color);
+  border: 1px solid var(--theme-border-color);
+  box-sizing: border-box;
+  border-radius: 4px;
+  display: flex;
+  align-items: stretch;
+  height: 64px;
+  padding-right: 8px;
+}
+
+.tokenAmountBefore {
+  border-right: 1px solid var(--theme-border-color);
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.tokenAmountValues {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.tokenAmountValue {
+  font-weight: 600;
+  font-size: 16px;
+  // line-height: 24px;
+  height: 24px;
+  border: 0;
+  background-color: transparent;
+
+  &::-webkit-inner-spin-button {
+    appearance: none;
+  }
+}
+
+.tokenAmountHint {
+  margin-top: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--theme-secondary-color);
+}
+
+.tokenAmountSlider {
+  margin-top: 16px;
+}
+
+// PREVIEW ⬇️
+
+.tokenAmountPreview {
+  background: var(--theme-body-color);
+  border: 1px solid var(--theme-border-color);
+  box-sizing: border-box;
+  border-radius: 4px;
+  display: flex;
+  align-items: stretch;
+  height: 64px;
+}
+
+.tokenAmountPreviewBefore {
+  border-right: 1px solid var(--theme-border-color);
+  padding-left: 16px;
+  padding-right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.tokenAmountPreviewValues {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  flex-grow: 1;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
+.tokenAmountPreviewValue {
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--theme-secondary-color);
+}
+
+.tokenAmountPreviewHint {
+  margin-top: 4px;
+  font-weight: 600;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--theme-secondary-color);
+
+  &:empty {
+    display: none;
+  }
+}
+
+// TOKEN SELECT ⬇️
+
+.tokenSelectTrigger {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 0;
+  background-color: transparent;
+  padding: 0;
+  margin-right: -8px;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.tokenSelectChevron {
+  color: var(--theme-icon-color);
+  margin-left: 4px;
+
+  .tokenSelectTrigger:hover & {
+    color: var(--theme-icon-hover-color);
+  }
+}
+
+.tokenSelectListButton {
+  @include font-p2-semi-bold;
+  background-color: transparent;
+  border: 0;
+  padding: 12px;
+  display: flex;
+  width: 100%;
+  color: var(--theme-secondary-color);
+  border-radius: 4px;
+
+  &.active {
+    color: var(--theme-primary-color);
+  }
+
+  &:hover {
+    color: var(--theme-primary-color);
+    background: var(--theme-body-color);
+  }
+}

@@ -190,12 +190,14 @@ export default class Erc20Contract extends Web3Contract {
     });
   }
 
-  async loadAllowance(spenderAddress: string): Promise<void> {
-    if (!this.account) {
+  async loadAllowance(spenderAddress: string, address?: string): Promise<void> {
+    const addr = address ?? this.account;
+
+    if (!addr) {
       return;
     }
 
-    return this.call('allowance', [this.account, spenderAddress]).then(value => {
+    return this.call('allowance', [addr, spenderAddress]).then(value => {
       this.allowances.set(spenderAddress, new BigNumber(value));
       this.emit(Web3Contract.UPDATE_DATA);
     });

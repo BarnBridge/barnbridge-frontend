@@ -37,7 +37,7 @@ const Columns: ColumnsType<TableEntity> = [
         {entity.isTokenAmount ? (
           <IconBubble
             name={entity.poolEntity?.meta?.icon}
-            bubbleName="bond-circle-token"
+            bubbleName="static/token-bond"
             secondBubbleName={entity.poolEntity?.market?.icon}
             className="mr-16"
           />
@@ -303,7 +303,6 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
         <TableFilter filters={Filters} value={state.filters} onChange={handleFilterChange} />
       </header>
       <Table<TableEntity>
-        inCard
         columns={Columns}
         dataSource={mappedData}
         rowKey={entity => `${entity.transactionHash}_${entity.transactionType}`}

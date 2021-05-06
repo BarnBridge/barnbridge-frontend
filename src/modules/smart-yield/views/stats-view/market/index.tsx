@@ -60,7 +60,7 @@ const MarketDetails: React.FC = () => {
   return (
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>
-        <Tabs tabs={tabs} active={activeTab} onClick={setActiveTab} variation="normal" />
+        <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} />
       </header>
       {activeTab === 'market' && (
         <>
@@ -249,7 +249,9 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals), true)}
+                  {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>
@@ -280,7 +282,9 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals), true)}
+                  {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>
@@ -326,7 +330,9 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals), true)}
+                  {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals), {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>

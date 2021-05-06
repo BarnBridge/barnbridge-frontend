@@ -2,6 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import UNISWAP_ABI from 'web3/abi/uniswap_v2.json';
 import { BONDTokenMeta } from 'web3/contracts/bond';
+import Erc20Contract from 'web3/contracts/erc20Contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { USDCTokenMeta } from 'web3/contracts/usdc';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/contracts/web3Contract';
@@ -14,10 +15,16 @@ import { useWallet } from 'wallets/wallet';
 
 export const CONTRACT_UNISWAP_ADDR = String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase();
 
+export class UniV2Contract extends Erc20Contract {
+  constructor() {
+    super([], CONTRACT_UNISWAP_ADDR);
+  }
+}
+
 const Contract = new Web3Contract(UNISWAP_ABI as Web3ContractAbiItem[], CONTRACT_UNISWAP_ADDR, 'UNISWAP');
 
 export const UNISWAPTokenMeta: TokenMeta = {
-  icon: <Icon key="uniswap" name="token-uniswap" />,
+  icon: <Icon key="uniswap" name="static/token-uniswap" />,
   name: 'USDC_BOND_UNI_LP',
   address: CONTRACT_UNISWAP_ADDR,
   decimals: 18,
@@ -90,7 +97,6 @@ export function useUNISWAPContract(): UNISWAPContract {
       }
 
       const lpPrice = usdcReserve?.div(totalSupply ?? 1).multipliedBy(2);
-
       const bondPrice = usdcReserve?.div(bondReserve ?? 1);
 
       setData(prevState => ({

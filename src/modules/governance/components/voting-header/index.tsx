@@ -80,7 +80,7 @@ const VotingHeader: React.FC = () => {
                 </Text>
               </Skeleton>
             </Tooltip>
-            <Icon name="bond-square-token" />
+            <Icon name="static/token-bond" />
             <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -97,7 +97,7 @@ const VotingHeader: React.FC = () => {
                 {formatBONDValue(bondBalance)}
               </Text>
             </Skeleton>
-            <Icon name="bond-square-token" />
+            <Icon name="static/token-bond" />
           </Grid>
         </Grid>
         <Divider type="vertical" />

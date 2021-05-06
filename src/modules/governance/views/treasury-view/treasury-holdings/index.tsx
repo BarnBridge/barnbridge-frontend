@@ -198,7 +198,7 @@ function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
         const options = [
           {
             value: 'all',
-            label: 'All transactions',
+            label: 'All pool transactions',
           },
           {
             value: 'in',
@@ -392,7 +392,6 @@ const TreasuryHoldings: React.FC = () => {
           />
         </div>
         <Table<APITreasuryHistory>
-          inCard
           columns={Columns}
           dataSource={state.history.items}
           rowKey="transactionHash"

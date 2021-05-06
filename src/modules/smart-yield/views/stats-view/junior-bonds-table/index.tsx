@@ -23,7 +23,7 @@ const TokenNameColumn: React.FC = () => {
     <div className="flex">
       <IconBubble
         name={pool?.meta?.icon}
-        bubbleName="bond-circle-token"
+        bubbleName="static/token-bond"
         secondBubbleName={pool?.market?.icon}
         className="mr-16"
       />
@@ -278,7 +278,6 @@ const JuniorBondsTable: React.FC<Props> = ({ tabs }) => {
         <TableFilter filters={Filters} value={state.filters} onChange={handleFilterChange} />
       </header>
       <Table<TableEntity>
-        inCard
         columns={Columns}
         dataSource={state.data}
         rowKey="transactionHash"

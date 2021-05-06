@@ -25,6 +25,25 @@ BigNumber.prototype.unscaleBy = function (decimals?: number): BigNumber | undefi
 BigNumber.ZERO = new BigNumber(0);
 BigNumber.MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 
+BigNumber.parse = (value: BigNumber.Value) => {
+  return new BigNumber(value);
+};
+
+BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | undefined): BigNumber | undefined => {
+  let sum = BigNumber.ZERO;
+
+  for (let item of items) {
+    const val = predicate?.(item);
+
+    if (!val || val.isNaN()) {
+      return undefined;
+    }
+
+    sum = sum.plus(val);
+  }
+  return sum;
+};
+
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
@@ -123,14 +142,22 @@ export function formatBigValue(
   return new BigNumber(bnValue.toFixed(decimals)).toFormat(minDecimals);
 }
 
-export function formatNumber(value: number | BigNumber | undefined): string | undefined {
+type FormatNumberOptions = {
+  decimals?: number;
+};
+
+export function formatNumber(value: number | BigNumber | undefined, options?: FormatNumberOptions): string | undefined {
   if (value === undefined || Number.isNaN(value)) {
     return undefined;
   }
 
+  const { decimals } = options ?? {};
+
   const val = BigNumber.isBigNumber(value) ? value.toNumber() : value;
 
-  return Intl.NumberFormat('en').format(val);
+  return Intl.NumberFormat('en', {
+    maximumFractionDigits: decimals,
+  }).format(val);
 }
 
 export function formatPercent(value: number | BigNumber | undefined, decimals: number = 2): string | undefined {
@@ -161,6 +188,12 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
     return undefined;
   }
 
+  let val = new BigNumber(value);
+
+  if (val.isNaN()) {
+    return undefined;
+  }
+
   if (options) {
     if (options.hasOwnProperty('scale') && options.scale === undefined) {
       return undefined;
@@ -169,10 +202,8 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
 
   const { tokenName, compact = false, decimals = 4, minDecimals, scale = 0 } = options ?? {};
 
-  let val = new BigNumber(value);
-
   if (scale > 0) {
-    val = val.dividedBy(10 ** scale);
+    val = val.unscaleBy(scale)!;
   }
 
   let str = '';
@@ -189,14 +220,21 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
   return tokenName ? `${str} ${tokenName}` : str;
 }
 
-export function formatUSD(value: number | BigNumber | undefined, compact?: boolean): string | undefined {
+type FormatUSDOptions = {
+  decimals?: number;
+  compact?: boolean;
+};
+
+export function formatUSD(value: number | BigNumber | undefined, options?: FormatUSDOptions): string | undefined {
   if (value === undefined || value === null || Number.isNaN(value)) {
     return undefined;
   }
 
+  const { decimals = 2, compact = false } = options ?? {};
+
   return Intl.NumberFormat('en', {
     notation: compact ? 'compact' : undefined,
-    maximumFractionDigits: compact ? 2 : undefined,
+    maximumFractionDigits: decimals,
     style: 'currency',
     currency: 'USD',
   }).format(BigNumber.isBigNumber(value) ? value.toNumber() : value);

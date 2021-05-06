@@ -30,7 +30,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
       <div className="flex flow-col align-center">
         <IconBubble
           name={entity.meta?.icon}
-          bubbleName="bond-circle-token"
+          bubbleName="static/token-bond"
           secondBubbleName={entity.market?.icon}
           className="mr-16"
         />
@@ -157,7 +157,6 @@ const ActivePositionsTable: React.FC<Props> = props => {
 
   return (
     <Table<ActivePositionsTableEntity>
-      inCard
       columns={Columns}
       dataSource={data}
       rowKey="smartYieldAddress"
