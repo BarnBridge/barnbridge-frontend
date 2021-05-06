@@ -115,7 +115,7 @@ const YFPoolsProvider: FC = props => {
 
   const knownTokensCtx = useKnownTokens();
   const walletCtx = useWallet();
-  const [reload] = useReload();
+  const [reload, version] = useReload();
 
   const [syPools, setSYPools] = useState<SYPoolMeta[]>([]);
 
@@ -205,7 +205,7 @@ const YFPoolsProvider: FC = props => {
       return BigNumber.sumEach(pool.tokens, token => {
         const stakedToken = stakingContract.stakedTokens.get(token.address);
 
-        if (!stakedToken || !stakedToken.nextEpochPoolSize) {
+        if (!stakedToken || stakedToken.nextEpochPoolSize === undefined) {
           return undefined;
         }
 
@@ -226,7 +226,7 @@ const YFPoolsProvider: FC = props => {
       return BigNumber.sumEach(pool.tokens, token => {
         const stakedToken = stakingContract.stakedTokens.get(token.address);
 
-        if (!stakedToken || !stakedToken.currentEpochPoolSize) {
+        if (!stakedToken || stakedToken.currentEpochPoolSize === undefined) {
           return undefined;
         }
 
@@ -247,7 +247,7 @@ const YFPoolsProvider: FC = props => {
       return BigNumber.sumEach(pool.tokens, token => {
         const stakedToken = stakingContract.stakedTokens.get(token.address);
 
-        if (!stakedToken || !stakedToken.nextEpochUserBalance) {
+        if (!stakedToken || stakedToken.nextEpochUserBalance === undefined) {
           return undefined;
         }
 
@@ -268,7 +268,7 @@ const YFPoolsProvider: FC = props => {
       return BigNumber.sumEach(pool.tokens, token => {
         const stakedToken = stakingContract.stakedTokens.get(token.address);
 
-        if (!stakedToken || !stakedToken.currentEpochUserBalance) {
+        if (!stakedToken || stakedToken.currentEpochUserBalance === undefined) {
           return undefined;
         }
 
@@ -294,7 +294,7 @@ const YFPoolsProvider: FC = props => {
     return BigNumber.sumEach(KNOWN_POOLS, yfPool => {
       const { distributedReward } = yfPool.contract;
 
-      if (!distributedReward) {
+      if (distributedReward === undefined) {
         return undefined;
       }
 
@@ -306,7 +306,7 @@ const YFPoolsProvider: FC = props => {
     return BigNumber.sumEach(KNOWN_POOLS, yfPool => {
       const { totalSupply } = yfPool.contract;
 
-      if (!totalSupply) {
+      if (totalSupply === undefined) {
         return undefined;
       }
 
@@ -318,14 +318,14 @@ const YFPoolsProvider: FC = props => {
     return BigNumber.sumEach(syPools, syPool => {
       const { poolSize } = syPool.rewardContract;
 
-      if (!poolSize) {
+      if (poolSize === undefined) {
         return undefined;
       }
 
       const tokenMeta = knownTokensCtx.getTokenByAddress(syPool.poolContract.address);
 
       if (!tokenMeta) {
-        return undefined;
+        return BigNumber.ZERO;
       }
 
       return knownTokensCtx.convertTokenInUSD(poolSize.unscaleBy(tokenMeta.decimals), tokenMeta.symbol);

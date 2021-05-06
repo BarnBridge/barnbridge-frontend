@@ -41,6 +41,7 @@ BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | un
 
     sum = sum.plus(val);
   }
+
   return sum;
 };
 
@@ -231,6 +232,11 @@ export function formatUSD(value: number | BigNumber | undefined, options?: Forma
   }
 
   const { decimals = 2, compact = false } = options ?? {};
+
+  if (0 > decimals || decimals > 20) {
+    console.trace(`Decimals value is out of range 0..20 (value: ${decimals})`);
+    return undefined;
+  }
 
   return Intl.NumberFormat('en', {
     notation: compact ? 'compact' : undefined,

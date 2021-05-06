@@ -14,11 +14,9 @@ import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
-import { useReload } from 'hooks/useReload';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
-import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
@@ -30,10 +28,8 @@ const PoolStake: FC<Props> = props => {
   const { type } = props;
 
   const knownTokensCtx = useKnownTokens();
-  const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
-  const [reload] = useReload();
 
   const [activeToken, setActiveToken] = useState(yfPoolCtx.poolMeta?.tokens[0]);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -47,12 +43,6 @@ const PoolStake: FC<Props> = props => {
   useEffect(() => {
     setAmount('');
   }, [type]);
-
-  useEffect(() => {
-    if (activeContract && walletCtx.account) {
-      Promise.all([activeContract.loadBalance(), activeContract.loadAllowance(CONTRACT_STAKING_ADDR)]).then(reload);
-    }
-  }, [activeContract, walletCtx.account]);
 
   if (!poolMeta || !activeToken) {
     return null;

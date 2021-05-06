@@ -113,21 +113,21 @@ const PoolHarvestModal: FC<ModalProps> = props => {
           <PoolHarvestButton
             icons={StableYfPool.icons}
             label={StableYfPool.label}
-            reward={StableYfPool.contract.toClaim}
+            reward={StableYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
             loading={stableHarvesting}
             onClick={handleStableHarvest}
           />
           <PoolHarvestButton
             icons={UnilpYfPool.icons}
             label={UnilpYfPool.label}
-            reward={UnilpYfPool.contract.toClaim}
+            reward={UnilpYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
             loading={unilpHarvesting}
             onClick={handleUnilpHarvest}
           />
           <PoolHarvestButton
             icons={BondYfPool.icons}
             label={BondYfPool.label}
-            reward={BondYfPool.contract.toClaim}
+            reward={BondYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
             loading={bondHarvesting}
             onClick={handleBondHarvest}
           />

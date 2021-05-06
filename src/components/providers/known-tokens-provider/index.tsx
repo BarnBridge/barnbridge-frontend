@@ -19,7 +19,8 @@ export enum KnownTokens {
   USDC = 'USDC',
   DAI = 'DAI',
   SUSD = 'sUSD',
-  UNIV2 = 'UNI V2',
+  UNIV2 = 'UNI-V2',
+  USDT = 'USDT',
 }
 
 /* eslint-disable @typescript-eslint/no-redeclare */
@@ -143,6 +144,14 @@ const KNOWN_TOKENS: TokenMeta[] = [
   SusdToken,
   UniV2Token,
   {
+    address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+    symbol: KnownTokens.USDT,
+    name: 'Tether USD',
+    decimals: 6,
+    priceFeed: '0x4e58ab12d2051ea2068e78e4fcee7ddee6785848', // USDT -> $
+    icon: 'token-usdt',
+  },
+  {
     address: '0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840',
     symbol: KnownTokens.bbcUSDC,
     name: 'BarnBridge cUSDC',
@@ -161,6 +170,8 @@ const KNOWN_TOKENS: TokenMeta[] = [
     icon: 'token-dai',
   },
 ];
+
+(window as any).KNOWN_TOKENS = KNOWN_TOKENS;
 
 export function getKnownTokens(): TokenMeta[] {
   return [...KNOWN_TOKENS];
@@ -390,9 +401,9 @@ const KnownTokensProvider: FC = props => {
             token.price = token.price?.multipliedBy(tk.price) ?? tk.price;
           }
         }
-
-        reload();
       });
+
+      reload();
     })();
   }, []);
 
@@ -409,7 +420,7 @@ const KnownTokensProvider: FC = props => {
 
     // load bonds balance for connected wallet
     if (wallet.account) {
-      (BondToken.contract as Erc20Contract).loadBalance();
+      (BondToken.contract as Erc20Contract).loadBalance().then(reload).catch(Error);
     }
   }, [wallet.account]);
 
