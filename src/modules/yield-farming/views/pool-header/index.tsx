@@ -81,7 +81,7 @@ const PoolHeader: FC = () => {
             Weekly rewards
           </Text>
           <div className="flex align-center">
-            <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+            <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
             <Text type="p1" weight="semibold" color="primary">
               {formatNumber(poolMeta.contract.epochReward) ?? '-'}
             </Text>

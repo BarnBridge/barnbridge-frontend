@@ -29,16 +29,6 @@
     <path d="m166.91 10.553v2.8862h-7.486v3.2468h6.854v2.8862h-6.854v3.4272h7.576v2.8861h-10.913v-15.332h10.823z"
           fill="currentColor"/>
   </symbol>
-  <!-- BOND CIRCLE TOKEN -->
-  <symbol id="icon__bond-circle-token" viewBox="0 0 20 20" fill="none">
-    <rect x="1" y="1" width="18" height="18" rx="9" fill="#FF4339"/>
-    <path
-      d="M10.0292 9.19238H9.97153C9.19268 9.19238 8.58691 9.827 8.58691 10.6347V12.1924L10.0004 11.1251L11.4138 12.1924V10.6347C11.4138 9.85584 10.7792 9.22123 10.0292 9.19238Z"
-      fill="white"/>
-    <path
-      d="M4 4V15.5962L7.60577 12.9135V9.85577L6.94231 9.33654L10 7.02885L13.0577 9.33654L12.3942 9.85577V12.9135L16 15.5962V4H4Z"
-      fill="white"/>
-  </symbol>
   <!-- BOND SQUARE TOKEN -->
   <symbol id="icon__bond-square-token" viewBox="0 0 37 37" fill="none">
     <path

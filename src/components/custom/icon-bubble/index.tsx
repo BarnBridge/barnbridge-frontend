@@ -34,9 +34,23 @@ const IconBubble: React.FC<IconBubbleProps> = props => {
       <g mask={`url(#${id})`}>
         <use xlinkHref={`${Sprite}#icon__${name}`} />
       </g>
-      {bubbleName && <use xlinkHref={`${Sprite}#icon__${bubbleName}`} width="45%" height="45%" x="55%" y="0" />}
+      {bubbleName && (
+        <use
+          xlinkHref={`${bubbleName.indexOf('static/') === 0 ? '' : Sprite}#icon__${bubbleName}`}
+          width="45%"
+          height="45%"
+          x="55%"
+          y="0"
+        />
+      )}
       {secondBubbleName && (
-        <use xlinkHref={`${Sprite}#icon__${secondBubbleName}`} width="45%" height="45%" x="55%" y="55%" />
+        <use
+          xlinkHref={`${secondBubbleName.indexOf('static/') === 0 ? '' : Sprite}#icon__${secondBubbleName}`}
+          width="45%"
+          height="45%"
+          x="55%"
+          y="55%"
+        />
       )}
     </svg>
   );

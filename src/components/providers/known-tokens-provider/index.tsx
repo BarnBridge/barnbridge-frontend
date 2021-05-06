@@ -50,7 +50,7 @@ export const BondToken: TokenMeta = {
   decimals: 18,
   priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // BOND -> USDC
   pricePath: [KnownTokens.USDC],
-  icon: 'token-bond',
+  icon: 'static/token-bond',
   contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
 };
 

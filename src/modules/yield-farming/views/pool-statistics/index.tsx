@@ -71,7 +71,7 @@ const PoolStatistics: FC = () => {
               Bond balance
             </Text>
             <div className="flex align-center">
-              <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+              <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(bondContract.balance?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
@@ -82,7 +82,7 @@ const PoolStatistics: FC = () => {
               Potential reward this epoch
             </Text>
             <div className="flex align-center">
-              <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+              <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.potentialReward?.unscaleBy(BondToken.decimals), {
                   decimals: BondToken.decimals,
@@ -100,7 +100,7 @@ const PoolStatistics: FC = () => {
                     decimals: BondToken.decimals,
                   }) ?? '-'}
                 </Text>
-                <Icon name="bond-circle-token" />
+                <Icon name="static/token-bond" />
               </div>
               <Text type="small" weight="semibold" color="secondary">
                 Current reward
@@ -186,7 +186,7 @@ const PoolStatistics: FC = () => {
               <Text type="h2" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
-              <Icon name="bond-circle-token" width={32} height={32} />
+              <Icon name="static/token-bond" width={32} height={32} />
             </div>
           }
           submitText="Claim"

@@ -58,7 +58,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
             <dd>
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={16}
                 height={16}
@@ -74,7 +74,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
             <dd>
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={16}
                 height={16}
@@ -88,7 +88,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
           <div className={s.def}>
             <dt>My daily reward</dt>
             <dd>
-              <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
               {formatToken(rewardPool?.pool.myDailyReward, {
                 scale: rewardPool?.rewardToken.decimals,
               }) ?? '-'}
@@ -97,7 +97,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
           <div className={s.def}>
             <dt>My Bond balance</dt>
             <dd>
-              <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
               {formatToken(rewardPool?.rewardToken.balance, {
                 scale: rewardPool?.rewardToken.decimals,
               }) ?? '-'}
@@ -122,7 +122,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
                   }) ?? '-'}
                 </Text>
               </Tooltip>
-              <Icon name="bond-circle-token" width="24" height="24" style={{ marginLeft: 8 }} />
+              <Icon name="static/token-bond" width="24" height="24" style={{ marginLeft: 8 }} />
             </div>
             <Text type="small" weight="semibold" color="secondary">
               My current reward
@@ -144,7 +144,7 @@ const Statistics: React.FC<Props> = ({ className }) => {
                   scale: rewardPool?.rewardToken.decimals,
                 }) ?? '-'}
               </Text>
-              <Icon name="bond-circle-token" width={32} height={32} />
+              <Icon name="static/token-bond" width={32} height={32} />
             </div>
           }
           submitText="Claim"

@@ -133,6 +133,7 @@
     "wolfy87-eventemitter": "5.2.9"
   },
   "devDependencies": {
+    "@popperjs/core": "2.9.2",
     "@types/classnames": "2.3.1",
     "@types/identicon.js": "2.3.0",
     "@types/lodash": "4.14.168",

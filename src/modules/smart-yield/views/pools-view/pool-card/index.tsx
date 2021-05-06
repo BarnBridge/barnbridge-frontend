@@ -81,7 +81,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
         <header className={s.header}>
           <IconBubble
             name={meta?.icon}
-            bubbleName="bond-circle-token"
+            bubbleName="static/token-bond"
             secondBubbleName={market?.icon}
             width={36}
             height={36}
@@ -130,7 +130,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
                 <Hint text="This number shows the $BOND token rewards distributed per day.">Daily reward</Hint>
               </dt>
               <dd>
-                <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+                <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
                 {formatToken(rewardPool.pool.dailyReward, {
                   scale: rewardPool.rewardToken.decimals,
                 }) ?? '-'}
@@ -141,7 +141,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
                 <Hint text="This number shows the $BOND token rewards remaining.">Reward left</Hint>
               </dt>
               <dd>
-                <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+                <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
                 {formatToken(rewardPool.pool.rewardLeft, {
                   scale: rewardPool.rewardToken.decimals,
                 }) ?? '-'}
@@ -152,7 +152,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
               <dd>
                 <IconBubble
                   name={meta?.icon}
-                  bubbleName="bond-circle-token"
+                  bubbleName="static/token-bond"
                   secondBubbleName={market?.icon}
                   width={16}
                   height={16}
@@ -178,7 +178,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
                 </Hint>
               </dt>
               <dd>
-                <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+                <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
                 {formatToken(rewardPool.pool.myDailyReward, {
                   scale: rewardPool.rewardToken.decimals,
                 }) ?? '-'}
@@ -187,7 +187,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
             <div className={s.defRow}>
               <dt>Your current reward</dt>
               <dd>
-                <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+                <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
                 {formatToken(rewardPool.pool.toClaim, {
                   scale: rewardPool.rewardToken.decimals,
                 }) ?? '-'}
@@ -198,7 +198,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
               <dd>
                 <IconBubble
                   name={meta?.icon}
-                  bubbleName="bond-circle-token"
+                  bubbleName="static/token-bond"
                   secondBubbleName={market?.icon}
                   width={16}
                   height={16}
@@ -239,7 +239,7 @@ export const PoolsCard: FC<PoolsCardProps> = props => {
                   scale: rewardPool.rewardToken.decimals,
                 }) ?? '-'}
               </Text>
-              <Icon name="bond-circle-token" width={32} height={32} />
+              <Icon name="static/token-bond" width={32} height={32} />
             </div>
           }
           submitText="Claim"

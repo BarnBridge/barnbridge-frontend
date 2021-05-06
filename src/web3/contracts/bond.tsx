@@ -23,14 +23,14 @@ export class BondContract extends Erc20Contract {
 const Contract = new Web3Contract(BOND_ABI as Web3ContractAbiItem[], CONTRACT_BOND_ADDR, 'BOND');
 
 export const BONDTokenMeta: TokenMeta = {
-  icon: <Icon key="bond" name="token-bond" />,
+  icon: <Icon key="bond" name="static/token-bond" />,
   name: 'BOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
 };
 
 export const VBONDTokenMeta: TokenMeta = {
-  icon: <Icon key="vbond" name="token-bond" />,
+  icon: <Icon key="vbond" name="static/token-bond" />,
   name: 'vBOND',
   address: CONTRACT_BOND_ADDR,
   decimals: 18,
