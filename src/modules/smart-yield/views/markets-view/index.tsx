@@ -1,6 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
-import { formatUSDValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
@@ -19,9 +19,18 @@ const InitialState: State = {
 
 const MarketsView: React.FC = () => {
   const poolsCtx = usePools();
-  const { totalLiquidity } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
+
+  const activeMarketTotalLiquidity = React.useMemo(() => {
+    return poolsCtx.pools.reduce((sum, pool) => {
+      if (pool.protocolId !== state.activeMarket?.id) {
+        return sum;
+      }
+
+      return sum.plus(pool.state.seniorLiquidity).plus(pool.state.juniorLiquidity);
+    }, ZERO_BIG_NUMBER);
+  }, [state.activeMarket, poolsCtx.pools]);
 
   return (
     <>
@@ -60,7 +69,7 @@ const MarketsView: React.FC = () => {
             </Text>
           </Hint>
           <Text type="h2" weight="bold" color="primary" className="mb-40">
-            {formatUSDValue(totalLiquidity)}
+            {formatUSD(activeMarketTotalLiquidity)}
           </Text>
         </>
       )}

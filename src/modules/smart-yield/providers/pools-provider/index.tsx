@@ -29,13 +29,11 @@ export type PoolsSYPool = APISYPool & {
 type State = {
   loading: boolean;
   pools: PoolsSYPool[];
-  totalLiquidity?: BigNumber;
 };
 
 const InitialState: State = {
   loading: false,
   pools: [],
-  totalLiquidity: undefined,
 };
 
 type ContextType = State & {
@@ -82,15 +80,11 @@ const PoolsProvider: React.FC = props => {
       ...prevState,
       loading: true,
       pools: [],
-      totalLiquidity: undefined,
     }));
 
     (async () => {
       try {
         const pools = await fetchSYPools();
-        const totalLiquidity = pools.reduce((sum, pool) => {
-          return sum.plus(pool.state.seniorLiquidity).plus(pool.state.juniorLiquidity);
-        }, ZERO_BIG_NUMBER);
 
         setState(prevState => ({
           ...prevState,
@@ -118,7 +112,6 @@ const PoolsProvider: React.FC = props => {
               },
             };
           }),
-          totalLiquidity,
         }));
       } catch {
         setState(prevState => ({

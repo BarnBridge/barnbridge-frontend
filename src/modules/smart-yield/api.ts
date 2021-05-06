@@ -44,12 +44,12 @@ export const Markets = new Map<string, SYMarketMeta>([
     },
   ],
   [
-    'aave',
+    'aave/v2',
     {
-      id: 'aave',
+      id: 'aave/v2',
       name: 'Aave',
-      icon: `aave_grayed`,
-      active: false,
+      icon: `static/aave`,
+      active: true,
     },
   ],
   [
@@ -89,6 +89,15 @@ export const Pools = new Map<string, SYPoolMeta>([
       name: 'Dai Stablecoin',
       icon: 'token-dai',
       color: 'var(--theme-yellow-color)',
+    },
+  ],
+  [
+    'USDT',
+    {
+      id: 'USDT',
+      name: 'Tether USD',
+      icon: 'token-usdt',
+      color: '#50af95',
     },
   ],
 ]);

@@ -17,6 +17,7 @@ export type TokenIconNames =
   | 'token-renbtc'
   | 'static/token-bond'
   | 'token-usdc'
+  | 'token-usdt'
   | 'token-dai'
   | 'token-susd'
   | 'static/token-uniswap'
