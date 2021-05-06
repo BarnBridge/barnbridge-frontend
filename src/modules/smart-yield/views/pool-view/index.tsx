@@ -81,7 +81,7 @@ const PoolView: React.FC = () => {
       <div className="flex align-center mb-32">
         <IconBubble
           name={meta?.icon}
-          bubbleName="bond-circle-token"
+          bubbleName="static/token-bond"
           secondBubbleName={market?.icon}
           width={36}
           height={36}
@@ -98,7 +98,7 @@ const PoolView: React.FC = () => {
             <dd>
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={16}
                 height={16}
@@ -116,7 +116,7 @@ const PoolView: React.FC = () => {
           <div className={s.headerTermRow}>
             <dt>Daily rewards</dt>
             <dd>
-              <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
               {formatToken(rewardPool.pool.dailyReward, {
                 scale: rewardPool.rewardToken.decimals,
               }) ?? '-'}
@@ -125,7 +125,7 @@ const PoolView: React.FC = () => {
           <div className={s.headerTermRow}>
             <dt>Rewards left</dt>
             <dd>
-              <Icon name="bond-circle-token" className="mr-8" width="16" height="16" />
+              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
               {formatToken(rewardPool.pool.rewardLeft, {
                 scale: rewardPool.rewardToken.decimals,
               }) ?? '-'}

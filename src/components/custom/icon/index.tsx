@@ -8,7 +8,6 @@ import s from './s.module.scss';
 export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
-  | 'bond-circle-token'
   | 'bond-square-token'
   | 'token-unknown'
   | 'token-eth'
@@ -16,7 +15,7 @@ export type TokenIconNames =
   | 'token-weth'
   | 'token-wbtc'
   | 'token-renbtc'
-  | 'token-bond'
+  | 'static/token-bond'
   | 'token-usdc'
   | 'token-dai'
   | 'token-susd'
@@ -126,8 +125,6 @@ export type IconProps = {
 const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style, ...rest } = props;
 
-  const isStatic = (name ?? '').indexOf('static/') === 0;
-
   return (
     <svg
       className={cn(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
@@ -135,7 +132,7 @@ const Icon: React.FC<IconProps> = props => {
       height={height ?? width}
       style={style}
       {...rest}>
-      {!isStatic ? <use xlinkHref={`${Sprite}#icon__${name}`} /> : <use xlinkHref={`#icon__${name}`} />}
+      {name && <use xlinkHref={`${name.indexOf('static/') === 0 ? '' : Sprite}#icon__${name}`} />}
     </svg>
   );
 };

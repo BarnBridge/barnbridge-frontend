@@ -70,7 +70,7 @@ const PoolCard: FC<Props> = props => {
   };
 
   return (
-    <div className="card">
+    <div className="card flex flow-row">
       <div className="flex align-center justify-space-between p-24">
         <div className="flex align-center">
           <IconsSet
@@ -98,7 +98,7 @@ const PoolCard: FC<Props> = props => {
           />
         )}
       </div>
-      <div className="ph-24 pb-24">
+      <div className="flex flow-row flex-grow ph-24 pb-24">
         <ElasticTabs
           tabs={[
             { id: 'pool', children: 'Pool statistics' },
@@ -129,7 +129,7 @@ const PoolCard: FC<Props> = props => {
                 Weekly reward
               </Text>
               <div className="flex align-center">
-                <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+                <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(epochReward) ?? '-'}
                 </Text>
@@ -173,7 +173,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+                <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(potentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
@@ -251,7 +251,7 @@ const PoolCard: FC<Props> = props => {
           </>
         )}
 
-        <div className="flex align-center justify-space-between col-gap-16">
+        <div className="flex align-center justify-space-between col-gap-16 mt-auto">
           <Link to={`/yield-farming/${poolId}`} className="button-primary flex-grow">
             View pool
           </Link>
@@ -275,7 +275,7 @@ const PoolCard: FC<Props> = props => {
                 <Text type="h2" weight="semibold" color="primary">
                   {formatToken(toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
-                <Icon name="bond-circle-token" width={32} height={32} />
+                <Icon name="static/token-bond" width={32} height={32} />
               </div>
             }
             submitText="Claim"

@@ -57,7 +57,7 @@ export const UnilpYfPool: YFPoolMeta = {
 export const BondYfPool: YFPoolMeta = {
   name: YFPoolID.BOND,
   label: 'BOND',
-  icons: ['token-bond'],
+  icons: ['static/token-bond'],
   colors: ['var(--theme-red-color)'],
   tokens: [BondToken],
   contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR).toLowerCase()),

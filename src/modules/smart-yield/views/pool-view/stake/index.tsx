@@ -86,7 +86,7 @@ const StakeForm: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={32}
                 height={32}
@@ -117,7 +117,7 @@ const StakeForm: React.FC = () => {
               </Text>
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={32}
                 height={32}
@@ -211,7 +211,7 @@ const UnstakeForm: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={market?.icon}
                 width={32}
                 height={32}
@@ -252,7 +252,7 @@ const UnstakeForm: React.FC = () => {
                   </Text>
                   <IconBubble
                     name={meta?.icon}
-                    bubbleName="bond-circle-token"
+                    bubbleName="static/token-bond"
                     secondBubbleName={market?.icon}
                     width={32}
                     height={32}
@@ -272,7 +272,7 @@ const UnstakeForm: React.FC = () => {
                         scale: rewardPool?.rewardToken.decimals,
                       }) ?? '-'}
                     </Text>
-                    <Icon name="bond-circle-token" width={32} height={32} />
+                    <Icon name="static/token-bond" width={32} height={32} />
                   </div>
                 </div>
               )}

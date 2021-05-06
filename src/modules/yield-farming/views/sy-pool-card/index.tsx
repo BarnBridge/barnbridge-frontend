@@ -76,7 +76,7 @@ const SYPoolCard: React.FC = () => {
   });
 
   return (
-    <div className="card">
+    <div className="card flex flow-row">
       <div className={cn(s.cardHeader, 'flex align-center justify-space-between p-24')}>
         <div className="flex align-center">
           <StatusTag
@@ -90,7 +90,7 @@ const SYPoolCard: React.FC = () => {
           </Text>
         </div>
       </div>
-      <div className="ph-24 pb-24">
+      <div className="flex flow-row flex-grow ph-24 pb-24">
         <ElasticTabs
           tabs={[
             { id: 'pool', children: 'Pool statistics' },
@@ -123,7 +123,7 @@ const SYPoolCard: React.FC = () => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+                <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(totalDailyReward?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
@@ -163,7 +163,7 @@ const SYPoolCard: React.FC = () => {
                 My potential reward
               </Text>
               <div className="flex align-center">
-                <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+                <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(totalPotentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
@@ -188,7 +188,7 @@ const SYPoolCard: React.FC = () => {
           </div>
         )}
 
-        <div className="flex align-center justify-space-between col-gap-16">
+        <div className="flex align-center justify-space-between col-gap-16 mt-auto">
           <Link to={`/smart-yield/pools`} className="button-primary flex-grow">
             View pools
           </Link>
