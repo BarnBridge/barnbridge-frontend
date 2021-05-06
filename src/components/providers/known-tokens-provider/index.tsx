@@ -50,7 +50,7 @@ export const BondToken: TokenMeta = {
   decimals: 18,
   priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // BOND -> USDC
   pricePath: [KnownTokens.USDC],
-  icon: 'token-bond',
+  icon: 'static/token-bond',
   contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
 };
 
@@ -207,7 +207,7 @@ export function getTokenBySymbol(symbol: string): TokenMeta | undefined {
 }
 
 export function getTokenByAddress(address: string): TokenMeta | undefined {
-  return KNOWN_TOKENS.find(token => token.address === address);
+  return KNOWN_TOKENS.find(token => token.address.toLowerCase() === address.toLowerCase());
 }
 
 async function getFeedPrice(symbol: string): Promise<BigNumber> {
@@ -318,11 +318,19 @@ export function convertTokenIn(
   source: string,
   target: string,
 ): BigNumber | undefined {
-  if (!amount) {
+  if (amount === undefined || amount === null) {
     return undefined;
   }
 
+  if (amount === 0 || BigNumber.ZERO.eq(amount)) {
+    return BigNumber.ZERO;
+  }
+
   const bnAmount = new BigNumber(amount);
+
+  if (bnAmount.isNaN()) {
+    return undefined;
+  }
 
   if (source === target) {
     return bnAmount;

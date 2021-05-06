@@ -1,15 +1,34 @@
-<svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; visibility: hidden; width: 0; height: 0;">
+<svg xmlns="http://www.w3.org/2000/svg" style="position: absolute; width: 0; height: 0;">
+  <defs>
+    <!-- TOKEN BOND MASK -->
+    <mask id="icon__static/token-bond__mask" width="36" height="36" x="4" y="4" maskUnits="userSpaceOnUse">
+      <circle cx="22" cy="22" r="17.6" fill="white" />
+    </mask>
+    <!-- AAVE TOKEN GRADIENT -->
+    <linearGradient id="icon__static/aave__gradient" x1="-3.46667" y1="7.46667" x2="41.6" y2="32.5333"
+                    gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2EBAC6"/>
+      <stop offset="1" stop-color="#B6509E"/>
+    </linearGradient>
+  </defs>
+  <!-- TOKEN BOND -->
+  <symbol id="icon__static/token-bond" viewBox="0 0 44 44" fill="none">
+    <rect rx="22" width="44" height="44" fill="#ff4339" />
+    <path
+      fill="#fff"
+      d="M22.084 19.631h-.169c-2.284 0-4.061 1.862-4.061 4.231v4.57L22 25.3l4.146 3.13v-4.569c0-2.285-1.862-4.146-4.062-4.23z"
+    />
+    <g mask="url(#icon__static/token-bond__mask)">
+      <path
+        fill="#fff"
+        d="M4.4 4.4v34.016l10.577-7.87v-8.969l-1.946-1.523L22 13.284l8.97 6.77-1.947 1.523v8.97L39.6 38.415V4.4H4.4z"
+      />
+    </g>
+  </symbol>
   <!-- AAVE TOKEN -->
   <symbol id="icon__static/aave" viewBox="0 0 40 40" fill="none">
-    <defs>
-      <linearGradient id="gradient_aave" x1="-3.46667" y1="7.46667" x2="41.6" y2="32.5333"
-                      gradientUnits="userSpaceOnUse">
-        <stop stop-color="#2EBAC6"/>
-        <stop offset="1" stop-color="#B6509E"/>
-      </linearGradient>
-    </defs>
     <path d="M20 0C8.956 0 0 8.956 0 20C0 31.044 8.956 40 20 40C31.044 40 40 31.044 40 20C40 8.956 31.044 0 20 0Z"
-          fill="url(#gradient_aave)"/>
+          fill="url(#icon__static/aave__gradient)"/>
     <path
       d="M23.6754 23.9785L20.6272 16.7593C20.6031 16.6935 20.5903 16.6243 20.5893 16.5545C20.5834 16.407 20.6367 16.2631 20.7379 16.1534C20.7903 16.1011 20.8535 16.0603 20.9234 16.0338C20.9933 16.0073 21.0682 15.9957 21.143 15.9998C21.2562 16.0014 21.3662 16.0372 21.4577 16.1022C21.553 16.1719 21.6275 16.2652 21.6734 16.3725L24.5729 23.4352L27.4725 16.3725C27.5192 16.2649 27.5947 16.1716 27.691 16.1022C27.7826 16.0372 27.8925 16.0014 28.0057 15.9998C28.0801 15.9961 28.1544 16.0079 28.2238 16.0344C28.2931 16.0609 28.3559 16.1014 28.4079 16.1534C28.5102 16.2627 28.5646 16.4066 28.5594 16.5545C28.5584 16.6243 28.5456 16.6935 28.5215 16.7593L25.4734 23.9785C25.4212 24.1371 25.3195 24.2758 25.1827 24.3752C25.0458 24.4747 24.8805 24.5299 24.7099 24.5332H24.4389C24.2683 24.5299 24.103 24.4747 23.9661 24.3752C23.8292 24.2758 23.7276 24.1371 23.6754 23.9785Z"
       fill="white"/>

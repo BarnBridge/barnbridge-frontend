@@ -8,7 +8,6 @@ import s from './s.module.scss';
 export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
-  | 'bond-circle-token'
   | 'bond-square-token'
   | 'token-unknown'
   | 'token-eth'
@@ -16,7 +15,7 @@ export type TokenIconNames =
   | 'token-weth'
   | 'token-wbtc'
   | 'token-renbtc'
-  | 'token-bond'
+  | 'static/token-bond'
   | 'token-usdc'
   | 'token-dai'
   | 'token-susd'
@@ -24,7 +23,8 @@ export type TokenIconNames =
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
-  | 'yearn_finance';
+  | 'yearn_finance'
+  | 'token-all';
 
 export type NavIconNames =
   | 'paper-bill-outlined'
@@ -75,6 +75,8 @@ export type IconNames =
   | 'search-outlined'
   | 'link-outlined'
   | 'arrow-top-right'
+  | 'arrow-top-right-thin'
+  | 'arrow-bottom-right-thin'
   | 'handshake-outlined'
   | 'stamp-outlined'
   | 'circle-plus-outlined'
@@ -111,7 +113,12 @@ export type IconNames =
   | 'chart'
   | 'queue'
   | 'stake'
-  | 'dropdown';
+  | 'finance'
+  | 'scales'
+  | 'vertical-dots'
+  | 'dropdown'
+  | 'arrow-backward'
+  | 'arrow-forward';
 
 export type IconProps = {
   name: IconNames;
@@ -126,8 +133,6 @@ export type IconProps = {
 const Icon: React.FC<IconProps> = props => {
   const { name, width = 24, height = 24, rotate, color, className, style, ...rest } = props;
 
-  const isStatic = (name ?? '').indexOf('static/') === 0;
-
   return (
     <svg
       className={cn(s.component, className, rotate && `rotate-${rotate}`, color && s[`${color}-color`])}
@@ -135,7 +140,7 @@ const Icon: React.FC<IconProps> = props => {
       height={height ?? width}
       style={style}
       {...rest}>
-      {!isStatic ? <use xlinkHref={`${Sprite}#icon__${name}`} /> : <use xlinkHref={`#icon__${name}`} />}
+      {name && <use xlinkHref={`${name.indexOf('static/') === 0 ? '' : Sprite}#icon__${name}`} />}
     </svg>
   );
 };

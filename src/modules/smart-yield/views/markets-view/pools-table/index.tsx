@@ -59,7 +59,9 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             })}
           </Text>
           <Text type="small" weight="semibold">
-            {formatUSD(entity.state.seniorLiquidity, true)}
+            {formatUSD(entity.state.seniorLiquidity, {
+              compact: true,
+            })}
           </Text>
         </Tooltip>
       ),
@@ -106,7 +108,9 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             })}
           </Text>
           <Text type="small" weight="semibold">
-            {formatUSD(entity.state.juniorLiquidity, true)}
+            {formatUSD(entity.state.juniorLiquidity, {
+              compact: true,
+            })}
           </Text>
         </Tooltip>
       ),

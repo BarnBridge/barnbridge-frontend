@@ -29,15 +29,9 @@ const PoolHeader: FC = () => {
 
   return (
     <>
-<<<<<<< Updated upstream
       <Link to="/yield-farming" className="flex inline align-center mb-16">
         <Icon name="arrow-back" width={14} height={14} className="mr-8" />
         <Text type="p1" weight="semibold" color="secondary">
-=======
-      <Link to="/yield-farming" className="button-text mb-16">
-        <Icon name="arrow-back" width={14} height={14} className="mr-8" color="inherit" />
-        <Text type="p1" weight="semibold">
->>>>>>> Stashed changes
           Pools
         </Text>
       </Link>
@@ -87,7 +81,7 @@ const PoolHeader: FC = () => {
             Weekly rewards
           </Text>
           <div className="flex align-center">
-            <Icon name="bond-circle-token" width={16} height={16} className="mr-8" />
+            <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
             <Text type="p1" weight="semibold" color="primary">
               {formatNumber(poolMeta.contract.epochReward) ?? '-'}
             </Text>
@@ -99,20 +93,20 @@ const PoolHeader: FC = () => {
           </Text>
           <div className={s.stakedBar}>
             {poolMeta.tokens.map((token, index) => {
-              const tokenMeta = knownTokensCtx.getTokenBySymbol(token);
-              const stakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(token);
-              let rate =
+              const stakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(token.address);
+              const rate =
                 knownTokensCtx
-                  .convertTokenInUSD(stakedToken?.nextEpochPoolSize, token)
-                  ?.unscaleBy(tokenMeta?.decimals)
+                  .convertTokenInUSD(stakedToken?.nextEpochPoolSize, token.symbol)
+                  ?.unscaleBy(token.decimals)
                   ?.dividedBy(poolBalance ?? 0)
                   .multipliedBy(100) ?? 0;
 
               return (
                 <Tooltip
-                  key={token}
-                  title={formatToken(stakedToken?.nextEpochPoolSize?.unscaleBy(tokenMeta?.decimals), {
-                    tokenName: token,
+                  key={token.symbol}
+                  title={formatToken(stakedToken?.nextEpochPoolSize?.unscaleBy(token.decimals), {
+                    tokenName: token.symbol,
+                    decimals: token.decimals,
                   })}>
                   <div style={{ background: poolMeta.colors[index], width: `${rate}%` }} />
                 </Tooltip>

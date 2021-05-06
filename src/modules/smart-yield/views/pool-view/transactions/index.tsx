@@ -62,7 +62,9 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            {market && meta && <IconBubble name={meta.icon} bubbleName="token-bond" secondBubbleName={market.icon} />}
+            {market && meta && (
+              <IconBubble name={meta.icon} bubbleName="static/token-bond" secondBubbleName={market.icon} />
+            )}
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}

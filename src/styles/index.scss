@@ -6,6 +6,7 @@
 @import 'utils';
 @import 'button';
 @import 'rechart';
+@import 'table';
 
 html {
   block-size: 100%;
@@ -14,7 +15,7 @@ html {
 
 body {
   background: var(--theme-body-color);
-  color: var(--theme-secondary-color);
+  color: var(--theme-primary-color);
   font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -74,6 +75,7 @@ body.mobile-menu-open {
   --theme-overlay-color: #fff;
   --theme-mask-color: rgba(19, 32, 43, 0.8);
   --theme-border-color: #e3e4e6; // grey100
+  --theme-border-color-rgb: 227, 228, 230;
   --theme-icon-color: #aaafb3; // grey300
   --theme-icon-hover-color: #060a0d; // grey900
 

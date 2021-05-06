@@ -7,8 +7,8 @@ import { formatToken } from 'web3/utils';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { BondToken } from 'components/providers/known-tokens-provider';
-import PoolHarvestModal from 'modules/yield-farming/components/pool-harvest-modal';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
+import PoolHarvestModal from 'modules/yield-farming/views/pool-harvest-modal';
 import { useWallet } from 'wallets/wallet';
 
 import s from 'modules/yield-farming/views/pool-rewards/s.module.scss';
@@ -21,11 +21,11 @@ const PoolRewards: FC = () => {
 
   const bondContract = BondToken.contract as Erc20Contract;
 
-  const totalToClaim = yfPoolsCtx.pools.reduce((sum: BigNumber | undefined, { contract }) => {
+  const totalToClaim = yfPoolsCtx.yfPools.reduce((sum: BigNumber | undefined, { contract }) => {
     return (sum ?? BigNumber.ZERO).plus(contract.toClaim ?? BigNumber.ZERO);
   }, undefined);
 
-  const totalPotentialReward = yfPoolsCtx.pools.reduce((sum: BigNumber | undefined, { contract }) => {
+  const totalPotentialReward = yfPoolsCtx.yfPools.reduce((sum: BigNumber | undefined, { contract }) => {
     if (contract.isPoolEnded !== false) {
       return sum;
     }
@@ -53,6 +53,7 @@ const PoolRewards: FC = () => {
               <button
                 type="button"
                 className="button-text"
+                style={{ color: totalToClaim?.gt(BigNumber.ZERO) ? 'red' : 'var(--theme-default-color)' }}
                 disabled={!totalToClaim?.gt(BigNumber.ZERO)}
                 onClick={() => showHarvestModal(true)}>
                 Claim

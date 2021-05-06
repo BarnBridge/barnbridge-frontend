@@ -23,7 +23,7 @@ const TokenNameColumn: React.FC = () => {
     <div className="flex">
       <IconBubble
         name={pool?.meta?.icon}
-        bubbleName="bond-circle-token"
+        bubbleName="static/token-bond"
         secondBubbleName={pool?.market?.icon}
         className="mr-16"
       />

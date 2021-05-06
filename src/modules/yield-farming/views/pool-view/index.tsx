@@ -2,6 +2,7 @@ import React, { FC, useEffect, useState } from 'react';
 import { Redirect, useRouteMatch } from 'react-router-dom';
 import cn from 'classnames';
 
+import Spin from 'components/antd/spin';
 import { Tabs } from 'components/custom/tabs';
 import YFPoolProvider, { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import PoolHeader from 'modules/yield-farming/views/pool-header';
@@ -25,9 +26,17 @@ const PoolViewInner: FC = () => {
     document.documentElement.scrollTop = 0;
   }, []);
 
+  useEffect(() => {
+    if (poolMeta?.contract.isPoolEnded === true) {
+      setActiveTab('unstake');
+    }
+  }, [poolMeta?.contract.isPoolEnded]);
+
   if (!poolMeta) {
     return <Redirect to="/yield-farming" />;
   }
+
+  const isInitialized = poolMeta.contract.isPoolEnded !== undefined;
 
   return (
     <div className="content-container-fix content-container">
@@ -36,30 +45,32 @@ const PoolViewInner: FC = () => {
 
         <div className="flexbox-grid mb-32">
           <div className={cn('card', s.stakeCard)}>
-            <div className="card-header pv-0">
-              <Tabs
-                tabs={[
-                  ...(poolMeta.contract.isPoolEnded === false
-                    ? [
-                        {
-                          id: 'stake',
-                          children: 'Stake',
-                        },
-                      ]
-                    : []),
-                  {
-                    id: 'unstake',
-                    children: 'Unstake',
-                  },
-                ]}
-                size="small"
-                activeKey={activeTab}
-                onClick={setActiveTab}
-              />
+            <div className={cn('card-header pv-0', s.stakeCardHeader)}>
+              {isInitialized && (
+                <Tabs
+                  tabs={[
+                    ...(poolMeta.contract.isPoolEnded === false
+                      ? [
+                          {
+                            id: 'stake',
+                            children: 'Stake',
+                          },
+                        ]
+                      : []),
+                    {
+                      id: 'unstake',
+                      children: 'Unstake',
+                    },
+                  ]}
+                  size="small"
+                  activeKey={activeTab}
+                  onClick={setActiveTab}
+                />
+              )}
             </div>
-            <div className="p-24">
-              <PoolStake type={activeTab as 'stake' | 'unstake'} />
-            </div>
+            <Spin spinning={!isInitialized}>
+              <div className="p-24">{isInitialized && <PoolStake type={activeTab as 'stake' | 'unstake'} />}</div>
+            </Spin>
           </div>
           <PoolStatistics />
         </div>

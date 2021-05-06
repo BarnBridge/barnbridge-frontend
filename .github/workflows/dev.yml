@@ -75,7 +75,7 @@ jobs:
 
         REACT_APP_TOKEN_API_URL: 'https://tokenapi.barnbridge.com'
         REACT_APP_TOKEN_API_POOL_INTERVAL: 20000
-        REACT_APP_GOV_API_URL: 'https://devv2.api.barnbridge.com'
+        REACT_APP_GOV_API_URL: 'https://dev.api.barnbridge.com'
 
     - name: Save artifacts
       uses: actions/upload-artifact@v2

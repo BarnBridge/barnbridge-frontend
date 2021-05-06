@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import { YFContract } from 'web3/contracts/yieldFarming';
 import { formatNumber, formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
@@ -33,45 +34,47 @@ const PoolStake: FC<Props> = props => {
   const yfPoolCtx = useYFPool();
   const [reload] = useReload();
 
-  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState(yfPoolCtx.poolMeta?.tokens[0]);
+  const [activeToken, setActiveToken] = useState(yfPoolCtx.poolMeta?.tokens[0]);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [enabling, setEnabling] = useState(false);
   const [staking, setStaking] = useState(false);
   const [amount, setAmount] = useState('');
 
   const { poolMeta } = yfPoolCtx;
-  const tokenMeta = selectedTokenSymbol ? knownTokensCtx.getTokenBySymbol(selectedTokenSymbol) : undefined;
-
-  const contract = tokenMeta?.contract as Erc20Contract;
+  const activeContract = activeToken?.contract as Erc20Contract;
 
   useEffect(() => {
-    if (contract && walletCtx.account) {
-      Promise.all([
-        contract.loadBalance(walletCtx.account),
-        contract.loadAllowance(CONTRACT_STAKING_ADDR, walletCtx.account),
-      ]).then(reload);
-    }
-  }, [contract, walletCtx.account]);
+    setAmount('');
+  }, [type]);
 
-  if (!poolMeta || !tokenMeta) {
+  useEffect(() => {
+    if (activeContract && walletCtx.account) {
+      Promise.all([activeContract.loadBalance(), activeContract.loadAllowance(CONTRACT_STAKING_ADDR)]).then(reload);
+    }
+  }, [activeContract, walletCtx.account]);
+
+  if (!poolMeta || !activeToken) {
     return null;
   }
 
-  const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokensBySymbol.get(selectedTokenSymbol!);
-  const allowance = (tokenMeta.contract as Erc20Contract)
-    .getAllowanceOf(CONTRACT_STAKING_ADDR)
-    ?.unscaleBy(tokenMeta.decimals);
-  const balance = (tokenMeta.contract as Erc20Contract)
-    .getBalanceOf(walletCtx.account ?? '')
-    ?.unscaleBy(tokenMeta.decimals);
-  const maxAmount = BigNumber.min(balance ?? 0, allowance ?? 0);
+  const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken.address);
+  const allowance = activeContract.getAllowanceOf(CONTRACT_STAKING_ADDR)?.unscaleBy(activeToken.decimals);
+  const stakedBalance = selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken.decimals);
+  const walletBalance = activeContract.balance?.unscaleBy(activeToken.decimals);
+  const maxAmount =
+    type === 'stake' ? BigNumber.min(walletBalance ?? 0, allowance ?? 0) : stakedBalance ?? BigNumber.ZERO;
   const bnAmount = new BigNumber(amount);
+
+  function handleTokenSelect(tokenSymbol: string) {
+    const tokenMeta = knownTokensCtx.getTokenBySymbol(tokenSymbol);
+    setActiveToken(tokenMeta);
+  }
 
   async function handleEnable() {
     setEnabling(true);
 
     try {
-      await contract.approve(true, yfPoolsCtx.stakingContract?.address!);
+      await activeContract.approve(true, yfPoolsCtx.stakingContract?.address!);
     } catch {}
 
     setEnabling(false);
@@ -90,21 +93,27 @@ const PoolStake: FC<Props> = props => {
 
     let value = new BigNumber(amount);
 
-    if (!tokenMeta || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
+    if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();
     }
 
     setStaking(true);
 
-    value = value.scaleBy(tokenMeta.decimals)!;
+    value = value.scaleBy(activeToken.decimals)!;
 
     try {
       if (type === 'stake') {
-        await yfPoolsCtx.stakingContract?.stake(tokenMeta.address, value, gasPrice);
+        await yfPoolsCtx.stakingContract?.stake(activeToken.address, value, gasPrice);
       } else if (type === 'unstake') {
-        await yfPoolsCtx.stakingContract?.unstake(tokenMeta.address, value, gasPrice);
+        await yfPoolsCtx.stakingContract?.unstake(activeToken.address, value, gasPrice);
       }
+
       setAmount('');
+      await yfPoolsCtx.stakingContract?.loadCommonFor(activeToken);
+      await yfPoolsCtx.stakingContract?.loadUserDataFor(activeToken);
+      await activeContract.loadBalance();
+      await (poolMeta?.contract as YFContract).loadCommon();
+      await (poolMeta?.contract as YFContract).loadUserData();
     } catch (e) {}
 
     setStaking(false);
@@ -118,7 +127,9 @@ const PoolStake: FC<Props> = props => {
             Staked balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatToken(selectedStakedToken?.nextEpochUserBalance) ?? '-'}
+            {formatToken(stakedBalance, {
+              decimals: activeToken.decimals,
+            }) ?? '-'}
           </Text>
         </div>
         <div className="flex flow-row">
@@ -126,7 +137,9 @@ const PoolStake: FC<Props> = props => {
             Wallet balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatToken(selectedStakedToken?.userBalance) ?? '-'}
+            {formatToken(walletBalance, {
+              decimals: activeToken.decimals,
+            }) ?? '-'}
           </Text>
         </div>
       </div>
@@ -134,31 +147,31 @@ const PoolStake: FC<Props> = props => {
         before={
           poolMeta.tokens.length > 1 ? (
             <TokenSelect
-              value={selectedTokenSymbol as KnownTokens}
-              onChange={setSelectedTokenSymbol}
-              tokens={poolMeta.tokens}
-              showLabel
+              value={activeToken.symbol as KnownTokens}
+              onChange={handleTokenSelect}
+              tokens={poolMeta.tokens.map(t => t.symbol as KnownTokens)}
             />
           ) : (
-            <Icon name={tokenMeta?.icon!} width={24} height={24} />
+            <Icon name={activeToken.icon!} width={24} height={24} />
           )
         }
         value={amount}
         onChange={setAmount}
         max={maxAmount.toNumber()}
-        placeholder={`0 (Max ${formatNumber(maxAmount)})`}
+        placeholder={`0 (Max ${formatNumber(maxAmount, { decimals: activeToken.decimals })})`}
         slider
         className="mb-40"
+        classNameBefore="ph-0"
       />
 
       {poolMeta.contract.isPoolEnded === true && (
         <>
-          {[KnownTokens.USDC, KnownTokens.DAI].includes(selectedTokenSymbol as KnownTokens) && (
+          {[KnownTokens.USDC, KnownTokens.DAI].includes(activeToken.symbol as KnownTokens) && (
             <Alert
               message={
                 <div className="flex flow-row row-gap-16 align-start">
                   <Text type="p2" weight="semibold" color="blue">
-                    You can still deposit {selectedTokenSymbol} in SMART Yield’s Junior or Senior Tranches and earn
+                    You can still deposit {activeToken.symbol} in SMART Yield’s Junior or Senior Tranches and earn
                     interest for your funds.
                   </Text>
                   <Link to="/smart-yield" className="link-blue">
@@ -171,8 +184,9 @@ const PoolStake: FC<Props> = props => {
               className="mb-32"
             />
           )}
-          {selectedTokenSymbol === KnownTokens.BOND && (
+          {activeToken.symbol === KnownTokens.BOND && (
             <Alert
+              className="mb-32"
               message={
                 <div className="flex flow-row row-gap-16 align-start">
                   <Text type="p2" weight="semibold" color="blue">
@@ -185,7 +199,6 @@ const PoolStake: FC<Props> = props => {
                   </Link>
                 </div>
               }
-              className="mb-32"
             />
           )}
         </>
@@ -193,19 +206,26 @@ const PoolStake: FC<Props> = props => {
 
       {poolMeta.contract.isPoolEnded === false && type === 'stake' && (
         <Alert
-          message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch."
           className="mb-32"
+          message="Deposits made after an epoch started will be considered as pro-rata figures in relation to the length of the epoch."
         />
       )}
 
-      {type === 'stake' && !contract.getAllowanceOf(yfPoolsCtx.stakingContract?.address!)?.gt(BigNumber.ZERO) && (
+      {poolMeta.contract.isPoolEnded === false && type === 'unstake' && (
+        <Alert
+          className="mb-32"
+          message="Any funds withdrawn before the end of this epoch will not accrue any rewards for this epoch."
+        />
+      )}
+
+      {type === 'stake' && allowance?.eq(BigNumber.ZERO) && (
         <button type="button" className="button-primary" disabled={enabling} onClick={handleEnable}>
           {enabling && <Spin spinning />}
-          Enable {tokenMeta.symbol}
+          Enable {activeToken.symbol}
         </button>
       )}
 
-      {(type === 'unstake' || contract.getAllowanceOf(yfPoolsCtx.stakingContract?.address!)?.gt(BigNumber.ZERO)) && (
+      {(type === 'unstake' || allowance?.gt(BigNumber.ZERO)) && (
         <button
           type="button"
           className="button-primary"
@@ -223,9 +243,11 @@ const PoolStake: FC<Props> = props => {
           header={
             <div className="flex align-center justify-center">
               <Text type="h2" weight="bold" color="primary" className="mr-8">
-                {formatToken(bnAmount)}
+                {formatToken(bnAmount, {
+                  decimals: activeToken.decimals,
+                })}
               </Text>
-              <Icon name={tokenMeta?.icon!} />
+              <Icon name={activeToken.icon!} />
             </div>
           }
           submitText={`Confirm your ${type}`}
