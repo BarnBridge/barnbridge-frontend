@@ -54,10 +54,14 @@
         {
           "endOfLine": "lf"
         }
+<<<<<<< Updated upstream
       ],
       "css-modules/no-unused-class": "warn",
       "css-modules/no-undef-class": "warn",
       "react-hooks/exhaustive-deps": "off"
+=======
+      ]
+>>>>>>> Stashed changes
     }
   },
   "prettier": {

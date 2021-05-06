@@ -29,9 +29,15 @@ const PoolHeader: FC = () => {
 
   return (
     <>
+<<<<<<< Updated upstream
       <Link to="/yield-farming" className="flex inline align-center mb-16">
         <Icon name="arrow-back" width={14} height={14} className="mr-8" />
         <Text type="p1" weight="semibold" color="secondary">
+=======
+      <Link to="/yield-farming" className="button-text mb-16">
+        <Icon name="arrow-back" width={14} height={14} className="mr-8" color="inherit" />
+        <Text type="p1" weight="semibold">
+>>>>>>> Stashed changes
           Pools
         </Text>
       </Link>
