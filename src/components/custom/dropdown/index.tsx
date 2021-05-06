@@ -25,8 +25,8 @@ const modifiers: readonly Partial<Modifier<string, object>>[] = [
   },
 ];
 
-export type DropdownListProps = {
-  items: (HTMLProps<HTMLButtonElement> | HTMLProps<HTMLLinkElement> | LinkProps)[];
+export type DropdownProps = {
+  content: (setOpen: React.Dispatch<React.SetStateAction<boolean>>) => React.ReactNode;
   options?: Partial<PopperJS.Options>;
   children: ({
     ref,
@@ -39,7 +39,7 @@ export type DropdownListProps = {
   }) => void;
 };
 
-export const DropdownList: React.FC<DropdownListProps> = ({ items, children, options }) => {
+export const Dropdown: React.FC<DropdownProps> = ({ content, children, options }) => {
   const [open, setOpen] = React.useState(false);
   const referenceElement = React.useRef(null);
   const popperElement = React.useRef(null);
@@ -90,65 +90,91 @@ export const DropdownList: React.FC<DropdownListProps> = ({ items, children, opt
             display: open ? '' : 'none',
           }}
           {...attributes.popper}>
-          <ul className={s.tokenSelectList}>
-            {items.map(({ onClick, ...rest }, idx) => {
-              if (rest.href) {
-                return (
-                  <li key={idx}>
-                    {/**
-                     @ts-ignore */}
-                    <a
-                      href={rest.href}
-                      {...rest}
-                      className={s.tokenSelectListButton}
-                      onClick={e => {
-                        // if (onClick) onClick(e);
-                        setOpen(false);
-                      }}>
-                      {rest.children}
-                    </a>
-                  </li>
-                );
-              }
+          {content(setOpen)}
+        </div>,
+        document.querySelector('#tooltip-root') || document.body,
+      )}
+    </>
+  );
+};
 
-              // @ts-ignore
-              if (rest.to) {
-                return (
-                  <li key={idx}>
-                    {/**
-                     @ts-ignore */}
-                    <Link
-                      {...rest}
-                      className={s.tokenSelectListButton}
-                      onClick={e => {
-                        // if (onClick) onClick(e);
-                        setOpen(false);
-                      }}
-                    />
-                  </li>
-                );
-              }
+export type DropdownListProps = {
+  items: (HTMLProps<HTMLButtonElement> | HTMLProps<HTMLLinkElement> | LinkProps)[];
+  options?: Partial<PopperJS.Options>;
+  children: ({
+    ref,
+    setOpen,
+    open,
+  }: {
+    ref: React.MutableRefObject<null>;
+    setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+    open: boolean;
+  }) => void;
+};
 
+export const DropdownList: React.FC<DropdownListProps> = ({ items, children, options }) => {
+  return (
+    <Dropdown
+      content={setOpen => (
+        <ul className={s.tokenSelectList}>
+          {items.map(({ onClick, ...rest }, idx) => {
+            if (rest.href) {
               return (
                 <li key={idx}>
                   {/**
                      @ts-ignore */}
-                  <button
+                  <a
+                    href={rest.href}
                     {...rest}
                     className={s.tokenSelectListButton}
                     onClick={e => {
-                      // @ts-ignore
-                      if (onClick) onClick(e);
+                      // if (onClick) onClick(e);
+                      setOpen(false);
+                    }}>
+                    {rest.children}
+                  </a>
+                </li>
+              );
+            }
+
+            // @ts-ignore
+            if (rest.to) {
+              return (
+                <li key={idx}>
+                  {/**
+                     @ts-ignore */}
+                  <Link
+                    {...rest}
+                    className={s.tokenSelectListButton}
+                    onClick={e => {
+                      // if (onClick) onClick(e);
                       setOpen(false);
                     }}
                   />
                 </li>
               );
-            })}
-          </ul>
-        </div>,
-        document.querySelector('#tooltip-root') || document.body,
+            }
+
+            return (
+              <li key={idx}>
+                {/**
+                     @ts-ignore */}
+                <button
+                  {...rest}
+                  className={s.tokenSelectListButton}
+                  onClick={e => {
+                    // @ts-ignore
+                    if (onClick) onClick(e);
+                    setOpen(false);
+                  }}
+                />
+              </li>
+            );
+          })}
+        </ul>
       )}
-    </>
+      options={options}>
+      {children}
+    </Dropdown>
   );
 };
