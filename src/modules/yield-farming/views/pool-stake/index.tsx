@@ -166,7 +166,7 @@ const PoolStake: FC<Props> = props => {
         placeholder={`0 (Max ${formatNumber(maxAmount, { decimals: activeToken.decimals })})`}
         slider
         className="mb-40"
-        classNameBefore="ph-0"
+        classNameBefore={poolMeta.tokens.length > 1 ? 'ph-0' : ''}
       />
 
       {poolMeta.contract.isPoolEnded === true && (

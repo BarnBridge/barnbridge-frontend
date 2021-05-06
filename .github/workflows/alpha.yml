@@ -45,6 +45,7 @@ jobs:
       env:
         CI: false
         SKIP_PREFLIGHT_CHECK: true
+        REACT_APP_ENV: 'production'
         REACT_APP_HTML_TITLE: 'BarnBridge'
 
         REACT_APP_WEB3_CHAIN_ID: 1
