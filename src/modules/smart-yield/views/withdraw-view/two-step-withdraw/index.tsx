@@ -113,7 +113,7 @@ const TwoStepWithdraw: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={pool.meta?.icon}
-                bubbleName="bond-circle-token"
+                bubbleName="static/token-bond"
                 secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}

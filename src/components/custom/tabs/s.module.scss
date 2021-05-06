@@ -74,6 +74,10 @@
         color: var(--theme-red-color);
       }
     }
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
 
   :global(.card) > & {
