@@ -45,6 +45,7 @@ jobs:
       env:
         CI: false
         SKIP_PREFLIGHT_CHECK: true
+        REACT_APP_ENV: 'development'
         REACT_APP_HTML_TITLE: 'BarnBridge Kovan'
 
         REACT_APP_WEB3_CHAIN_ID: 42

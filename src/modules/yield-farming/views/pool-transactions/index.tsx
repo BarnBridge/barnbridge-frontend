@@ -6,7 +6,6 @@ import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shor
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
-import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
@@ -87,22 +86,13 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 
         return (
           <>
-            <Tooltip
-              placement="bottomLeft"
-              title={
-                <Text type="p2" weight="semibold" color="primary">
-                  {formatToken(amount, {
-                    decimals: knownToken.decimals,
-                  }) ?? '-'}
-                </Text>
-              }>
-              <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
-                {isStake ? '+' : '-'}
-                {formatToken(amount, {
-                  tokenName: knownToken.symbol,
-                }) ?? '-'}
-              </Text>
-            </Tooltip>
+            <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+              {isStake ? '+' : '-'}
+              {formatToken(amount, {
+                tokenName: knownToken.symbol,
+                decimals: knownToken.decimals,
+              }) ?? '-'}
+            </Text>
             <Text type="small" weight="semibold" wrap={false}>
               {formatUSD(convertTokenInUSD(amount, knownToken.symbol))}
             </Text>

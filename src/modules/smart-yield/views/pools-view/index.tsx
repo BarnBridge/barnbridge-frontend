@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
-import { formatUSD } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { useKnownTokens } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
@@ -19,8 +20,31 @@ const InitialState: State = {
 };
 
 const PoolsView: React.FC = () => {
+  const knownTokensCtx = useKnownTokens();
   const [state, setState] = useState<State>(InitialState);
-  const { loading, rewardPools, totalValueLocked } = useRewardPools();
+  const rewardPoolsCtx = useRewardPools();
+  const { loading, rewardPools } = rewardPoolsCtx;
+
+  const activeMarketTotalValueLocked = React.useMemo(() => {
+    return rewardPools
+      .filter(pool => pool.protocolId === state.activeMarket?.id)
+      .reduce((sum, c) => {
+        if (!c.pool.poolSize) {
+          return sum;
+        }
+
+        const usdValue = knownTokensCtx.convertTokenInUSD(
+          c.pool.poolSize.unscaleBy(c.poolToken.decimals),
+          c.poolToken.symbol!,
+        );
+
+        if (!usdValue) {
+          return sum;
+        }
+
+        return sum.plus(usdValue);
+      }, ZERO_BIG_NUMBER);
+  }, [rewardPoolsCtx, state.activeMarket]);
 
   return (
     <>
@@ -57,15 +81,17 @@ const PoolsView: React.FC = () => {
             Total value locked
           </Text>
           <Text type="h2" weight="bold" color="primary">
-            {formatUSD(totalValueLocked)}
+            {formatUSD(activeMarketTotalValueLocked)}
           </Text>
         </div>
       </div>
       <AntdSpin spinning={loading}>
         <div className="flex row-gap-32 col-gap-32">
-          {rewardPools.map(rewardPool => (
-            <PoolsCard key={rewardPool.poolAddress} rewardPool={rewardPool} />
-          ))}
+          {rewardPools
+            .filter(pool => pool.protocolId === state.activeMarket?.id)
+            .map(rewardPool => (
+              <PoolsCard key={rewardPool.poolAddress} rewardPool={rewardPool} />
+            ))}
         </div>
       </AntdSpin>
     </>

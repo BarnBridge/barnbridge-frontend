@@ -4,6 +4,8 @@ import intervalToDuration from 'date-fns/intervalToDuration';
 import { isAddress } from 'web3-utils';
 import { DEFAULT_ADDRESS } from 'web3/utils';
 
+export const isDevelopment = process.env.REACT_APP_ENV === 'development';
+
 export function getNowTs(): number {
   return Math.floor(Date.now() / 1_000);
 }

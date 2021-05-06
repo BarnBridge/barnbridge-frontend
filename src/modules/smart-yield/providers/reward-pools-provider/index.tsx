@@ -1,9 +1,7 @@
 import React from 'react';
-import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import Web3Contract from 'web3/contracts/web3Contract';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
 import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
@@ -20,13 +18,11 @@ export type SYRewardPool = APISYRewardPool & {
 type State = {
   loading: boolean;
   rewardPools: SYRewardPool[];
-  totalValueLocked?: BigNumber;
 };
 
 const InitialState: State = {
   loading: false,
   rewardPools: [],
-  totalValueLocked: undefined,
 };
 
 type ContextType = State;
@@ -45,10 +41,6 @@ const RewardPoolsProvider: React.FC = props => {
   const wallet = useWallet();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
-
-  const convertInUSD = React.useCallback((value: BigNumber | number): BigNumber | undefined => {
-    return new BigNumber(value).multipliedBy(1);
-  }, []);
 
   React.useEffect(() => {
     setState(prevState => ({
@@ -120,32 +112,9 @@ const RewardPoolsProvider: React.FC = props => {
     });
   }, [state.rewardPools, wallet.account]);
 
-  const totalValueLocked = React.useMemo(() => {
-    return state.rewardPools.reduce((a, c) => {
-      if (!c.pool.poolSize) {
-        return a;
-      }
-
-      const tokenValue = c.poolToken.convertInUnderlying(c.pool.poolSize.dividedBy(10 ** (c.poolToken.decimals ?? 0)));
-
-      if (!tokenValue) {
-        return a;
-      }
-
-      const usdValue = convertInUSD(tokenValue);
-
-      if (!usdValue) {
-        return a;
-      }
-
-      return a.plus(usdValue);
-    }, ZERO_BIG_NUMBER);
-  }, [state.rewardPools, version]);
-
   const value = React.useMemo<ContextType>(() => {
     return {
       ...state,
-      totalValueLocked,
     };
   }, [state, version]);
 

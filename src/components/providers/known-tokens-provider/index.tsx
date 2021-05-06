@@ -92,7 +92,7 @@ export const UniV2Token: TokenMeta = {
   decimals: 18,
   priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // UNIV2 -> USDC
   pricePath: [KnownTokens.USDC],
-  icon: 'token-uniswap',
+  icon: 'static/token-uniswap',
   contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase()),
 };
 
