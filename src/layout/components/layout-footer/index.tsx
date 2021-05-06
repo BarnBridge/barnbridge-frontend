@@ -14,7 +14,7 @@ const TWITTER_LINK = 'https://twitter.com/barn_bridge';
 const WHITEPAPER_LINK = 'https://github.com/BarnBridge/BarnBridge-Whitepaper';
 const GITHUB_LINK = 'https://github.com/BarnBridge/';
 const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/v2/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
-const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
+const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?use=V2&inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
 const LayoutFooter: React.FC = () => {
   return (
