@@ -14,6 +14,7 @@ const YieldFarmingView = lazy(() => import('modules/yield-farming'));
 const GovernanceView = lazy(() => import('modules/governance'));
 const SmartYieldView = lazy(() => import('modules/smart-yield'));
 const SmartAlphaView = lazy(() => import('modules/smart-alpha'));
+const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 
 const LayoutView: React.FC = () => {
   return (
@@ -32,6 +33,7 @@ const LayoutView: React.FC = () => {
                   <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
                   <Route path="/smart-yield" component={SmartYieldView} />
                   <Route path="/smart-alpha" component={SmartAlphaView} />
+                  <Route path="/smart-exposure" component={SmartExposureView} />
                   <Redirect from="/" to="/smart-yield" />
                 </Switch>
               </Suspense>

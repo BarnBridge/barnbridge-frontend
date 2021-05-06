@@ -150,7 +150,6 @@ const PoolStake: FC<Props> = props => {
               value={activeToken.symbol as KnownTokens}
               onChange={handleTokenSelect}
               tokens={poolMeta.tokens.map(t => t.symbol as KnownTokens)}
-              showLabel
             />
           ) : (
             <Icon name={activeToken.icon!} width={24} height={24} />
@@ -162,6 +161,7 @@ const PoolStake: FC<Props> = props => {
         placeholder={`0 (Max ${formatNumber(maxAmount, { decimals: activeToken.decimals })})`}
         slider
         className="mb-40"
+        classNameBefore="ph-0"
       />
 
       {poolMeta.contract.isPoolEnded === true && (

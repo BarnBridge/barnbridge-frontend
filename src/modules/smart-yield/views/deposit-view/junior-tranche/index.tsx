@@ -11,9 +11,9 @@ import Input from 'components/antd/input';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
+import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -280,8 +280,9 @@ const JuniorTranche: React.FC = () => {
                 slippageHint="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage."
                 showDeadline
                 deadline={deadline}
-                onChange={handleTxDetailsChange}
-              />
+                onChange={handleTxDetailsChange}>
+                Transaction details
+              </TransactionDetails>
             );
           }}
         </Form.Item>

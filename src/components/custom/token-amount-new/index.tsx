@@ -34,11 +34,8 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
   return (
     <div className={className}>
       <div className={s.tokenAmount}>
-        {before}
-        <div
-          className={cn(s.tokenAmountValues, {
-            [s.hasBefore]: before,
-          })}>
+        {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
+        <div className={s.tokenAmountValues}>
           <input
             className={s.tokenAmountValue}
             type="number"
@@ -98,16 +95,15 @@ export const TokenAmountPreview: React.FC<TokenAmountPreviewType> = ({ value, be
 type TokenSelectType = {
   value: KnownTokens;
   onChange: (value: KnownTokens) => void;
-  showLabel?: boolean;
   tokens: KnownTokens[];
 };
 
-export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens, showLabel }) => {
+export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens }) => {
   const foundToken = getTokenBySymbol(value);
 
   return (
     <DropdownList
-      options={tokens.reduce((acc: React.ButtonHTMLAttributes<HTMLButtonElement>[], token) => {
+      items={tokens.reduce((acc: React.ButtonHTMLAttributes<HTMLButtonElement>[], token) => {
         const found = getTokenBySymbol(token);
         if (!found) return acc;
         return [
@@ -125,20 +121,31 @@ export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens
             'aria-selected': foundToken?.symbol === found.symbol ? 'true' : 'false',
           },
         ];
-      }, [])}
-      referenceProps={{
-        children: (
-          <>
-            {foundToken ? <Icon name={foundToken.icon as TokenIconNames} className="mr-4" /> : null}
-            {showLabel && (
-              <Text type="p1" weight="semibold" color="primary">
-                {value}
-              </Text>
-            )}
-          </>
-        ),
-        className: s.tokenSelectTrigger,
-      }}
-    />
+      }, [])}>
+      {({ ref, setOpen, open }) => (
+        <button
+          type="button"
+          ref={ref}
+          onClick={() => setOpen(isOpen => !isOpen)}
+          className="token-amount-select-token">
+          {foundToken ? (
+            <Icon name={foundToken.icon as TokenIconNames} width={24} height={24} className="mr-16" />
+          ) : null}
+          <Text type="p1" weight="semibold" color="primary">
+            {foundToken?.symbol}
+          </Text>
+          <Icon
+            name="dropdown"
+            width="24"
+            height="24"
+            className="token-select-chevron"
+            style={{
+              marginLeft: 4,
+              transform: open ? 'rotate(180deg)' : '',
+            }}
+          />
+        </button>
+      )}
+    </DropdownList>
   );
 };

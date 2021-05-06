@@ -13,10 +13,10 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
+import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
-import TransactionDetails from 'modules/smart-yield/components/transaction-details';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -134,7 +134,9 @@ const TwoStepWithdraw: React.FC = () => {
             const { deadline } = form.getFieldsValue();
 
             return (
-              <TransactionDetails className="mb-32" showDeadline deadline={deadline} onChange={handleTxDetailsChange} />
+              <TransactionDetails className="mb-32" showDeadline deadline={deadline} onChange={handleTxDetailsChange}>
+                Transaction details
+              </TransactionDetails>
             );
           }}
         </Form.Item>
