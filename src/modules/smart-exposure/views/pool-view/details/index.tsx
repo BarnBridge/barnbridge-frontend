@@ -34,7 +34,7 @@ export const TrancheDetails: React.FC = () => {
   return (
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>
-        <Tabs tabs={tabs} active={activeTab} onClick={setActiveTab} variation="normal" />
+        <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" />
       </header>
       {activeTab === 'rebalancing' && (
         <>

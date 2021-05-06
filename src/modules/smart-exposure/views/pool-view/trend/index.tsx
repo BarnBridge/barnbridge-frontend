@@ -144,7 +144,7 @@ export const PriceTrend: React.FC = () => {
         <div className="text-p1 fw-semibold color-primary">APY trend</div>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="ml-auto"
           variation="elastic"

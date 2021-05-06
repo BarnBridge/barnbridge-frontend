@@ -27,7 +27,7 @@ export const PortfolioTable: React.FC<Props> = ({ className }) => {
   return (
     <section className={cn('card', className)}>
       <header className="card-header flex align-center ph-24 pv-0">
-        <Tabs tabs={tabs} active={activeTab} onClick={setActiveTab} variation="normal" size="small" />
+        <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" size="small" />
       </header>
       {activeTab === 'positions' ? <PositionsTable /> : <TransactionHistoryTable />}
     </section>

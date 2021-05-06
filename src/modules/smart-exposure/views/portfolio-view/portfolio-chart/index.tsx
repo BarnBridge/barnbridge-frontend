@@ -34,7 +34,7 @@ export const PortfolioChart: React.FC<Props> = ({ className }) => {
         </Text>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="ml-auto"
           variation="elastic"

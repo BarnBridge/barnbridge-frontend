@@ -9,8 +9,6 @@ import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { KnownTokens } from 'components/providers/known-tokens-provider';
 
-import s from './s.module.scss';
-
 const DepositView: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('multiple');
 
@@ -69,7 +67,7 @@ const DepositView: React.FC = () => {
         </Text>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="mb-32"
           variation="elastic"
@@ -166,7 +164,7 @@ const SingleTokenForm = () => {
         max={9.789}
         placeholder={`0 (Max ${9.789})`}
         className="mb-40"
-        classNameBefore={s.amountDropdownBefore}
+        classNameBefore="ph-0"
       />
 
       <div className="css-grid mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>

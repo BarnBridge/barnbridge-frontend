@@ -1,6 +1,7 @@
 import { Link, useLocation, useParams } from 'react-router-dom';
 import cn from 'classnames';
 
+import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 
@@ -37,9 +38,26 @@ const PoolView: React.FC = () => {
           <Link to={`${location.pathname}/withdraw`} className="button-ghost button-big">
             Withdraw
           </Link>
-          <button type="button" className="button-ghost-alt button-big button-icon">
-            <Icon name="vertical-dots" />
-          </button>
+          <DropdownList
+            items={[
+              {
+                to: `${location.pathname}/change-tranche`,
+                children: 'Change tranche',
+              },
+            ]}
+            options={{
+              placement: 'bottom-end',
+            }}>
+            {({ ref, setOpen, open }) => (
+              <button
+                type="button"
+                className="button-ghost-alt button-big button-icon"
+                ref={ref}
+                onClick={() => setOpen(isOpen => !isOpen)}>
+                <Icon name="vertical-dots" />
+              </button>
+            )}
+          </DropdownList>
         </div>
       </div>
       <div className={cn(s.trendDetailsRow, 'mb-32')}>

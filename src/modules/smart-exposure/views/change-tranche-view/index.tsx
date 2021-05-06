@@ -1,15 +1,42 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 
+import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 
+type ETokenType = '75:25_WBTC_ETH' | '50:50_WBTC_ETH' | '25:75_WBTC_ETH';
+
+type ETokenOptionType = {
+  value: ETokenType;
+  name: string;
+};
+
 const ChangeTrancheView: React.FC = () => {
   const { pool } = useParams<{ pool: string }>();
   const [tokenState, setTokenState] = React.useState<string>('');
+
+  const tokens: ETokenOptionType[] = React.useMemo(() => {
+    return [
+      {
+        value: '75:25_WBTC_ETH',
+        name: '75% WBTC / 25% ETH',
+      },
+      {
+        value: '50:50_WBTC_ETH',
+        name: '50% WBTC / 50% ETH',
+      },
+      {
+        value: '25:75_WBTC_ETH',
+        name: '25% WBTC / 75% ETH',
+      },
+    ];
+  }, []);
+
+  const [selectedToken, setSelectedToken] = React.useState<ETokenOptionType>(tokens[0]);
 
   return (
     <>
@@ -49,10 +76,31 @@ const ChangeTrancheView: React.FC = () => {
         </Text>
         <form>
           <div className="flex mb-8">
+            <span className="text-sm fw-semibold color-secondary">Select new tranche</span>
+          </div>
+          <DropdownList items={tokens.map(token => ({ children: token.name, onClick: () => setSelectedToken(token) }))}>
+            {({ ref, setOpen, open }) => (
+              <button type="button" ref={ref} onClick={() => setOpen(isOpen => !isOpen)} className="token-select mb-32">
+                <IconsPair icon1="token-wbtc" icon2="token-eth" size={24} className="mr-16" />
+                <Text type="p1" weight="semibold" color="primary">
+                  {selectedToken.name}
+                </Text>
+                <Icon
+                  name="dropdown"
+                  width="24"
+                  height="24"
+                  className="token-select-chevron ml-auto"
+                  style={{ transform: open ? 'rotate(180deg)' : '' }}
+                />
+              </button>
+            )}
+          </DropdownList>
+
+          <div className="flex mb-8">
             <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
           </div>
           <TokenAmount
-            before={<Icon name="token-wbtc" width={24} height={24} />}
+            before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
             value={tokenState}
             onChange={setTokenState}
             max={9.789}

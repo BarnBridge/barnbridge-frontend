@@ -21,8 +21,10 @@
   &:disabled,
   &[disabled] {
     background: rgba(170, 175, 179, 0.08);
+    box-shadow: none;
     color: #aaafb3;
     cursor: not-allowed;
+    pointer-events: none;
   }
 }
 
@@ -213,5 +215,34 @@
     &:active {
       color: var(--theme-blue-color);
     }
+  }
+}
+
+.token-select {
+  border: 1px solid var(--theme-border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 24px;
+  width: 100%;
+  background-color: transparent;
+}
+
+.token-amount-select-token {
+  border: 0;
+  display: flex;
+  align-items: center;
+  height: 64px;
+  padding: 0 8px 0 16px;
+  width: 100%;
+  background-color: transparent;
+}
+
+.token-select-chevron {
+  color: var(--theme-icon-color);
+
+  button:hover & {
+    color: var(--theme-icon-hover-color);
   }
 }

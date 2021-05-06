@@ -59,7 +59,7 @@ const DepositView: React.FC = () => {
         </Text>
         <Tabs
           tabs={tabs}
-          active={activeTab}
+          activeKey={activeTab}
           onClick={setActiveTab}
           className="mb-32"
           variation="elastic"

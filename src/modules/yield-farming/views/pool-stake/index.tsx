@@ -137,7 +137,6 @@ const PoolStake: FC<Props> = props => {
               value={selectedTokenSymbol as KnownTokens}
               onChange={setSelectedTokenSymbol}
               tokens={poolMeta.tokens}
-              showLabel
             />
           ) : (
             <Icon name={tokenMeta?.icon!} width={24} height={24} />
@@ -149,6 +148,7 @@ const PoolStake: FC<Props> = props => {
         placeholder={`0 (Max ${formatNumber(maxAmount)})`}
         slider
         className="mb-40"
+        classNameBefore="ph-0"
       />
 
       {poolMeta.contract.isPoolEnded === true && (

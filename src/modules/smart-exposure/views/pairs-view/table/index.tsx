@@ -117,7 +117,6 @@ const dataMock = [
 export const PairsTable: React.FC = () => {
   return (
     <Table<APIPairType>
-      inCard
       columns={Columns}
       dataSource={dataMock}
       rowKey="token"
