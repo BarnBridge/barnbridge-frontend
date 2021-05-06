@@ -1,14 +1,5 @@
 @import 'src/styles/text';
 
-.tokenSelectChevron {
-  color: var(--theme-icon-color);
-  margin-left: 4px;
-
-  button:hover & {
-    color: var(--theme-icon-hover-color);
-  }
-}
-
 .tokenSelectList {
   list-style-type: none;
   padding: 0;
@@ -17,7 +8,7 @@
   box-shadow: var(--theme-overlay-shadow);
   padding: 4px;
   border-radius: 4px;
-  max-width: 400px;
+  max-width: 90vw;
 
   li:not(:last-of-type) {
     margin-bottom: 4px;
@@ -38,7 +29,6 @@
   &.active,
   &[aria-selected='true'] {
     color: var(--theme-primary-color);
-    // pointer-events: none;
   }
 
   &:hover {

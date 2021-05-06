@@ -23,7 +23,8 @@ export type TokenIconNames =
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
-  | 'yearn_finance';
+  | 'yearn_finance'
+  | 'token-all';
 
 export type NavIconNames =
   | 'paper-bill-outlined'
@@ -74,6 +75,8 @@ export type IconNames =
   | 'search-outlined'
   | 'link-outlined'
   | 'arrow-top-right'
+  | 'arrow-top-right-thin'
+  | 'arrow-bottom-right-thin'
   | 'handshake-outlined'
   | 'stamp-outlined'
   | 'circle-plus-outlined'
@@ -110,7 +113,12 @@ export type IconNames =
   | 'chart'
   | 'queue'
   | 'stake'
-  | 'dropdown';
+  | 'finance'
+  | 'scales'
+  | 'vertical-dots'
+  | 'dropdown'
+  | 'arrow-backward'
+  | 'arrow-forward';
 
 export type IconProps = {
   name: IconNames;

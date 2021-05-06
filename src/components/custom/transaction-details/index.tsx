@@ -144,7 +144,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
     <section className={cn(s.container, className)}>
       <header className="flex ph-24 pv-16">
         <Text type="p2" weight="semibold" color="secondary">
-          Transaction details
+          {props.children}
         </Text>
         <Popover
           title="Customize transaction"

@@ -1,21 +1,15 @@
 import React from 'react';
-import { Spin } from 'antd';
 import cn from 'classnames';
-import format from 'date-fns/format';
-import * as ReCharts from 'recharts';
-import { formatPercent } from 'web3/utils';
 
 import { Tabs } from 'components/custom/tabs';
-import { Text } from 'components/custom/typography';
-import { mergeState } from 'hooks/useMergeState';
-import { APISYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
-import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';
 
-type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
-  point: number;
-};
+// import { APISYPoolAPY } from 'modules/smart-yield/api';
+
+// type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
+//   point: number;
+// };
 
 const tabs = [
   {
@@ -32,117 +26,117 @@ const tabs = [
   },
 ];
 
-type State = {
-  loading: boolean;
-  data: ChartEntity[];
-};
+// type State = {
+//   loading: boolean;
+//   data: ChartEntity[];
+// };
 
-const InitialState: State = {
-  loading: false,
-  data: [],
-};
+// const InitialState: State = {
+//   loading: false,
+//   data: [],
+// };
 
-const ApyTrend: React.FC = () => {
-  const poolCtx = useSYPool();
-  const { pool } = poolCtx;
+export const PriceTrend: React.FC = () => {
+  // const poolCtx = useSYPool();
+  // const { pool } = poolCtx;
 
   const [activeTab, setActiveTab] = React.useState('24h');
-  const [state, setState] = React.useState<State>(InitialState);
+  // const [state, setState] = React.useState<State>(InitialState);
 
-  React.useEffect(() => {
-    if (!pool) {
-      setState(
-        mergeState<State>({
-          data: [],
-        }),
-      );
-      return;
-    }
+  // React.useEffect(() => {
+  //   if (!pool) {
+  //     setState(
+  //       mergeState<State>({
+  //         data: [],
+  //       }),
+  //     );
+  //     return;
+  //   }
 
-    (async () => {
-      setState(
-        mergeState<State>({
-          loading: true,
-        }),
-      );
+  //   (async () => {
+  //     setState(
+  //       mergeState<State>({
+  //         loading: true,
+  //       }),
+  //     );
 
-      try {
-        const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress, activeTab);
+  //     try {
+  //       const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress, activeTab);
 
-        setState(
-          mergeState<State>({
-            loading: false,
-            data: poolAPYs.map(apy => ({
-              ...apy,
-              point: new Date(apy.point).valueOf(),
-            })),
-          }),
-        );
-      } catch {
-        setState(
-          mergeState<State>({
-            loading: false,
-            data: [],
-          }),
-        );
-      }
-    })();
-  }, [pool, activeTab]);
+  //       setState(
+  //         mergeState<State>({
+  //           loading: false,
+  //           data: poolAPYs.map(apy => ({
+  //             ...apy,
+  //             point: new Date(apy.point).valueOf(),
+  //           })),
+  //         }),
+  //       );
+  //     } catch {
+  //       setState(
+  //         mergeState<State>({
+  //           loading: false,
+  //           data: [],
+  //         }),
+  //       );
+  //     }
+  //   })();
+  // }, [pool, activeTab]);
 
-  const ticks = React.useMemo(() => {
-    const dates = state.data.map(d => d.point);
-    const minDate = Math.min(...dates);
-    const maxDate = Math.max(...dates);
+  // const ticks = React.useMemo(() => {
+  //   const dates = state.data.map(d => d.point);
+  //   const minDate = Math.min(...dates);
+  //   const maxDate = Math.max(...dates);
 
-    if (!Number.isFinite(minDate) || !Number.isFinite(maxDate)) {
-      return [];
-    }
+  //   if (!Number.isFinite(minDate) || !Number.isFinite(maxDate)) {
+  //     return [];
+  //   }
 
-    let count = 0;
-    let range = 0;
+  //   let count = 0;
+  //   let range = 0;
 
-    switch (activeTab) {
-      case '24h':
-        count = 3;
-        range = 8 * 60 * 60 * 1_000; // 8 hours
-        break;
-      case '1w':
-        count = 7;
-        range = 24 * 60 * 60 * 1_000; // 24 hours
-        break;
-      case '30d':
-        count = 4;
-        range = 7 * 24 * 60 * 60 * 1_000; // 7 days
-        break;
-      default:
-        return [];
-    }
+  //   switch (activeTab) {
+  //     case '24h':
+  //       count = 3;
+  //       range = 8 * 60 * 60 * 1_000; // 8 hours
+  //       break;
+  //     case '1w':
+  //       count = 7;
+  //       range = 24 * 60 * 60 * 1_000; // 24 hours
+  //       break;
+  //     case '30d':
+  //       count = 4;
+  //       range = 7 * 24 * 60 * 60 * 1_000; // 7 days
+  //       break;
+  //     default:
+  //       return [];
+  //   }
 
-    const minDt = maxDate - count * range;
+  //   const minDt = maxDate - count * range;
 
-    return Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
-  }, [state.data, activeTab]);
+  //   return Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
+  // }, [state.data, activeTab]);
 
-  function formatTick(value: number) {
-    if (!Number.isInteger(value)) {
-      return '';
-    }
+  // function formatTick(value: number) {
+  //   if (!Number.isInteger(value)) {
+  //     return '';
+  //   }
 
-    switch (activeTab) {
-      case '24h':
-        return format(new Date(value), 'HH:mm');
-      case '1w':
-        return format(new Date(value), 'EEE');
-      case '30d':
-        return format(new Date(value), 'dd MMM');
-      default:
-        return '';
-    }
-  }
+  //   switch (activeTab) {
+  //     case '24h':
+  //       return format(new Date(value), 'HH:mm');
+  //     case '1w':
+  //       return format(new Date(value), 'EEE');
+  //     case '30d':
+  //       return format(new Date(value), 'dd MMM');
+  //     default:
+  //       return '';
+  //   }
+  // }
 
-  if (!pool) {
-    return null;
-  }
+  // if (!pool) {
+  //   return null;
+  // }
 
   return (
     <section className="card">
@@ -158,7 +152,7 @@ const ApyTrend: React.FC = () => {
         />
       </header>
       <div className="p-24">
-        <Spin spinning={state.loading}>
+        {/* <Spin spinning={state.loading}>
           <ReCharts.ResponsiveContainer width="100%" height={300} className="mb-24">
             <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
               <defs>
@@ -188,7 +182,7 @@ const ApyTrend: React.FC = () => {
                 separator=""
                 labelFormatter={value => (
                   <Text type="p2" tag="span" weight="semibold" color="primary">
-                    {value && !Number.isNaN(value) ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
+                    {value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
@@ -215,18 +209,16 @@ const ApyTrend: React.FC = () => {
               />
             </ReCharts.AreaChart>
           </ReCharts.ResponsiveContainer>
-        </Spin>
-        <div className="flex flow-col justify-center col-gap-24 row-gap-16">
+        </Spin> */}
+        <footer className="flex flow-col justify-center col-gap-24 row-gap-16">
           <div className="chart-label" style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
             Senior APY
           </div>
           <div className="chart-label" style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
             Junior APY
           </div>
-        </div>
+        </footer>
       </div>
     </section>
   );
 };
-
-export default ApyTrend;
