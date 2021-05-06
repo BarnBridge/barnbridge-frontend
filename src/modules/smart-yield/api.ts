@@ -53,6 +53,15 @@ export const Markets = new Map<string, SYMarketMeta>([
     },
   ],
   [
+    'cream-finance',
+    {
+      id: 'cream-finance',
+      name: 'Cream Finance',
+      icon: `cream_finance_grayed`,
+      active: false,
+    },
+  ],
+  [
     'yearn-finance',
     {
       id: 'yearn-finance',
