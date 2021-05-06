@@ -19,7 +19,7 @@ export type TokenIconNames =
   | 'token-usdc'
   | 'token-dai'
   | 'token-susd'
-  | 'token-uniswap'
+  | 'static/token-uniswap'
   | 'compound'
   | 'static/aave'
   | 'cream_finance'

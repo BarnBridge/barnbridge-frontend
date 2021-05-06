@@ -48,6 +48,8 @@ const PoolCard: FC<Props> = props => {
 
   const poolBalanceInUSD = yfPoolsCtx.getPoolBalanceInUSD(poolId);
   const poolEffectiveBalanceInUSD = yfPoolsCtx.getPoolEffectiveBalanceInUSD(poolId);
+  const myPoolBalanceInUSD = yfPoolsCtx.getMyPoolBalanceInUSD(poolId);
+  const myPoolEffectiveBalanceInUSD = yfPoolsCtx.getMyPoolEffectiveBalanceInUSD(poolId);
 
   const apy =
     poolBalanceInUSD?.isGreaterThan(BigNumber.ZERO) && epochReward
@@ -175,7 +177,9 @@ const PoolCard: FC<Props> = props => {
               <div className="flex align-center">
                 <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatToken(potentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
+                  {formatToken(potentialReward?.unscaleBy(BondToken.decimals), {
+                    decimals: BondToken.decimals,
+                  }) ?? '-'}
                 </Text>
               </div>
             </div>
@@ -184,7 +188,7 @@ const PoolCard: FC<Props> = props => {
                 My pool balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(0) ?? '-'}
+                {formatUSD(myPoolBalanceInUSD) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
@@ -194,7 +198,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(0) ?? '-'}
+                {formatUSD(myPoolEffectiveBalanceInUSD) ?? '-'}
               </Text>
             </div>
           </div>

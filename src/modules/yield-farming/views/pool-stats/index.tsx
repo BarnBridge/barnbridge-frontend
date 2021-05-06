@@ -11,7 +11,7 @@ import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
 
 import { getFormattedDuration } from 'utils';
 
-import s from 'modules/yield-farming/views/pool-stats/s.module.scss';
+import s from './s.module.scss';
 
 const UNISWAP_EXCHANGE_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BondToken.address}&outputCurrency=${UsdcToken.address}`;
 
@@ -30,7 +30,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
   const yfTotalSupply = yfPoolsCtx.getYFTotalSupply();
   const yfDistributedRewards = yfPoolsCtx.getYFDistributedRewards();
 
-  const epochEndDate = yfPoolsCtx.stakingContract?.epochEndDate;
+  const [, epochEndDate, epochProgress] = yfPoolsCtx.stakingContract?.epochDates ?? [];
 
   return (
     <div className={cn(s.component, className)}>
@@ -117,7 +117,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
         </div>
       </div>
 
-      <div className="card p-24">
+      <div className="card p-24 relative">
         <div className="flex flow-row">
           <div className="flex align-center justify-space-between mb-48">
             <Hint
@@ -147,6 +147,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Text>
           </div>
         </div>
+        {epochProgress && <div className={s.epochProgress} style={{ width: `${epochProgress}%` }} />}
       </div>
     </div>
   );

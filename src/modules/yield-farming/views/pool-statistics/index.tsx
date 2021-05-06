@@ -3,13 +3,14 @@ import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/contracts/erc20Contract';
-import { formatToken } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
+import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { BondToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
 import { useYFPools } from 'modules/yield-farming/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
@@ -146,33 +147,60 @@ const PoolStatistics: FC = () => {
               <Text type="small" weight="semibold" color="secondary">
                 Staked balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken?.decimals), {
-                  decimals: activeToken?.decimals,
-                }) ?? '-'}
-              </Text>
+              <Tooltip
+                title={
+                  formatUSD(
+                    convertTokenInUSD(
+                      selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken?.decimals),
+                      activeToken?.symbol!,
+                    ),
+                  ) ?? '-'
+                }>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken?.decimals), {
+                    decimals: activeToken?.decimals,
+                  }) ?? '-'}
+                </Text>
+              </Tooltip>
             </div>
 
             <div className="flex align-center justify-space-between mb-24">
               <Text type="small" weight="semibold" color="secondary">
                 Effective Staked balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(selectedStakedToken?.currentEpochUserBalance?.unscaleBy(activeToken?.decimals), {
-                  decimals: activeToken?.decimals,
-                }) ?? '-'}
-              </Text>
+              <Tooltip
+                title={
+                  formatUSD(
+                    convertTokenInUSD(
+                      selectedStakedToken?.currentEpochUserBalance?.unscaleBy(activeToken?.decimals),
+                      activeToken?.symbol!,
+                    ),
+                  ) ?? '-'
+                }>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(selectedStakedToken?.currentEpochUserBalance?.unscaleBy(activeToken?.decimals), {
+                    decimals: activeToken?.decimals,
+                  }) ?? '-'}
+                </Text>
+              </Tooltip>
             </div>
 
             <div className="flex align-center justify-space-between">
               <Text type="small" weight="semibold" color="secondary">
                 Wallet balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(activeContract.balance?.unscaleBy(activeToken?.decimals), {
-                  decimals: activeToken?.decimals,
-                }) ?? '-'}
-              </Text>
+              <Tooltip
+                title={
+                  formatUSD(
+                    convertTokenInUSD(activeContract.balance?.unscaleBy(activeToken?.decimals), activeToken?.symbol!),
+                  ) ?? '-'
+                }>
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(activeContract.balance?.unscaleBy(activeToken?.decimals), {
+                    decimals: activeToken?.decimals,
+                  }) ?? '-'}
+                </Text>
+              </Tooltip>
             </div>
           </div>
         </div>

@@ -55,7 +55,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icon name="bond-square-token" />
+          <Icon name="static/token-bond" />
           <Text type="p1" weight="bold" color="primary">
             {formatBONDValue(dao.bondStaked)}
           </Text>

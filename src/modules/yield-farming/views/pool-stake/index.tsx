@@ -5,14 +5,15 @@ import cn from 'classnames';
 import Erc20Contract from 'web3/contracts/erc20Contract';
 import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
 import { YFContract } from 'web3/contracts/yieldFarming';
-import { formatNumber, formatToken } from 'web3/utils';
+import { formatNumber, formatToken, formatUSD } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Spin from 'components/antd/spin';
+import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import { useYFPool } from 'modules/yield-farming/providers/pool-provider';
@@ -126,21 +127,25 @@ const PoolStake: FC<Props> = props => {
           <Text type="small" weight="semibold" color="secondary" className="mb-8">
             Staked balance
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatToken(stakedBalance, {
-              decimals: activeToken.decimals,
-            }) ?? '-'}
-          </Text>
+          <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, activeToken.symbol)) ?? '-'}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatToken(stakedBalance, {
+                decimals: activeToken.decimals,
+              }) ?? '-'}
+            </Text>
+          </Tooltip>
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-8">
             Wallet balance
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatToken(walletBalance, {
-              decimals: activeToken.decimals,
-            }) ?? '-'}
-          </Text>
+          <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, activeToken.symbol)) ?? '-'}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatToken(walletBalance, {
+                decimals: activeToken.decimals,
+              }) ?? '-'}
+            </Text>
+          </Tooltip>
         </div>
       </div>
       <TokenAmount

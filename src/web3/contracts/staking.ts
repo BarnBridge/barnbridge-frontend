@@ -49,12 +49,16 @@ export class NewStakingContract extends Web3Contract {
   stakedTokens: Map<string, StakedToken>;
 
   // computed data
-  get epochEndDate(): number | undefined {
+  get epochDates(): [number, number, number] | undefined {
     if (!this.epochStart || !this.currentEpoch || !this.epochDuration) {
       return undefined;
     }
 
-    return (this.epochStart + this.currentEpoch * this.epochDuration) * 1_000;
+    const startDate = (this.epochStart + (this.currentEpoch - 1) * this.epochDuration) * 1_000;
+    const endDate = (this.epochStart + this.currentEpoch * this.epochDuration) * 1_000;
+    const progress = ((Date.now() - startDate) / (this.epochDuration * 1_000)) * 100;
+
+    return [startDate, endDate, progress];
   }
 
   loadCommonFor(token: TokenMeta): Promise<void> {
