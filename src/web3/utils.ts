@@ -1,5 +1,7 @@
 import BigNumber from 'bignumber.js';
 
+import config from 'config';
+
 BigNumber.prototype.scaleBy = function (decimals?: number): BigNumber | undefined {
   if (decimals === undefined) {
     return undefined;
@@ -42,12 +44,8 @@ BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | un
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
-const ETHERSCAN_API_KEY = String(process.env.REACT_APP_ETHERSCAN_API_KEY);
 
-export function getEtherscanTxUrl(
-  txHash?: string,
-  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string | undefined {
+export function getEtherscanTxUrl(txHash?: string, chainId = config.web3.chainId): string | undefined {
   if (txHash) {
     switch (chainId) {
       case 1:
@@ -63,10 +61,7 @@ export function getEtherscanTxUrl(
   return undefined;
 }
 
-export function getEtherscanAddressUrl(
-  address?: string,
-  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string | undefined {
+export function getEtherscanAddressUrl(address?: string, chainId = config.web3.chainId): string | undefined {
   if (address) {
     switch (chainId) {
       case 1:
@@ -85,7 +80,7 @@ export function getEtherscanAddressUrl(
 export function getEtherscanABIUrl(
   address?: string,
   apiKey?: string,
-  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+  chainId = config.web3.chainId,
 ): string | undefined {
   if (address) {
     switch (chainId) {
@@ -264,7 +259,7 @@ export function shortenAddr(addr: string | undefined, first = 6, last = 4): stri
 }
 
 export function fetchContractABI(address: string): any {
-  const url = getEtherscanABIUrl(address, ETHERSCAN_API_KEY);
+  const url = getEtherscanABIUrl(address, config.web3.etherscan.apiKey);
 
   if (!url) {
     return Promise.reject();
@@ -289,7 +284,7 @@ type GasPriceResult = {
 };
 
 export function fetchGasPrice(): Promise<GasPriceResult> {
-  return fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`)
+  return fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${config.web3.etherscan.apiKey}`)
     .then(result => result.json())
     .then(result => result.result)
     .then(result => {

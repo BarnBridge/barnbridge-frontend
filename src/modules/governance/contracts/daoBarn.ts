@@ -4,6 +4,7 @@ import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
@@ -12,9 +13,7 @@ import DAO_BARN_ABI from './daoBarn.json';
 
 import { getNowTs } from 'utils';
 
-export const CONTRACT_DAO_BARN_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR).toLowerCase();
-
-const Contract = new Web3Contract(DAO_BARN_ABI as Web3ContractAbiItem[], CONTRACT_DAO_BARN_ADDR, 'DAO Barn');
+const Contract = new Web3Contract(DAO_BARN_ABI as Web3ContractAbiItem[], config.contracts.daoBarn, 'DAO Barn');
 
 function loadCommonData(): Promise<any> {
   return Contract.batch([

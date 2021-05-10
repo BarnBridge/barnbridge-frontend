@@ -4,15 +4,14 @@ import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 import DAO_REWARD_ABI from './daoReward.json';
 
-const CONTRACT_DAO_REWARD_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase();
-
-const Contract = new Web3Contract(DAO_REWARD_ABI as Web3ContractAbiItem[], CONTRACT_DAO_REWARD_ADDR, 'DAO Reward');
+const Contract = new Web3Contract(DAO_REWARD_ABI as Web3ContractAbiItem[], config.contracts.daoReward, 'DAO Reward');
 
 export type DaoRewardPullFeature = {
   source: string;

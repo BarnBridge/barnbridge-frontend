@@ -14,6 +14,7 @@ import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -21,8 +22,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-
-const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
 type APITreasuryTokenEntity = APITreasuryToken & {
   token: Erc20Contract;
@@ -261,7 +260,7 @@ const TreasuryHoldings: React.FC = () => {
           const tokenContract = new Erc20Contract([], item.tokenAddress);
           tokenContract.on(Web3Contract.UPDATE_DATA, reload);
           tokenContract.loadCommon();
-          tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
+          tokenContract.loadBalance(config.contracts.daoGovernance);
 
           return {
             ...item,
@@ -334,7 +333,7 @@ const TreasuryHoldings: React.FC = () => {
     }
 
     return state.tokens.items.reduce((a, item) => {
-      const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+      const amount = item.token.getBalanceOf(config.contracts.daoGovernance)?.unscaleBy(item.tokenDecimals);
       const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
       return a.plus(amountUSD ?? 0);
@@ -352,7 +351,7 @@ const TreasuryHoldings: React.FC = () => {
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
         {state.tokens.items.map(item => {
           const tokenMeta = getTokenBySymbol(item.tokenSymbol);
-          const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+          const amount = item.token.getBalanceOf(config.contracts.daoGovernance)?.unscaleBy(item.tokenDecimals);
           const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
           return (

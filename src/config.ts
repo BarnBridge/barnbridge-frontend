@@ -1,5 +1,7 @@
 const config = {
   env: String(process.env.REACT_APP_ENV),
+  isDev: String(process.env.REACT_APP_ENV) === 'development',
+  isProd: String(process.env.REACT_APP_ENV) === 'production',
   api: {
     baseUrl: String(process.env.REACT_APP_BASE_API_URL),
   },
@@ -21,8 +23,8 @@ const config = {
     chainId: Number(process.env.REACT_APP_WEB3_CHAIN_ID),
     poolingInterval: Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL),
     rpc: {
-      wssUrl: Number(process.env.REACT_APP_WEB3_RPC_WSS_URL),
-      httpsUrl: Number(process.env.REACT_APP_WEB3_RPC_HTTPS_URL),
+      wssUrl: String(process.env.REACT_APP_WEB3_RPC_WSS_URL),
+      httpsUrl: String(process.env.REACT_APP_WEB3_RPC_HTTPS_URL),
     },
     etherscan: {
       apiKey: String(process.env.REACT_APP_ETHERSCAN_API_KEY),

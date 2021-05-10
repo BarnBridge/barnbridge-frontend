@@ -26,10 +26,8 @@ export enum KnownTokens {
 
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  export const bbcUSDC = isProduction ? 'bb_cUSDC' : 'bbcUSDC';
-  export const bbcDAI = isProduction ? 'bb_cDAI' : 'bbcDAI';
+  export const bbcUSDC = config.isDev ? 'bbcUSDC' : 'bb_cUSDC';
+  export const bbcDAI = config.isDev ? 'bbcDAI' : 'bb_cDAI';
 }
 /* eslint-enable @typescript-eslint/no-redeclare */
 

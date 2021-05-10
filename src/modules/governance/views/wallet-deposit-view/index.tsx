@@ -17,7 +17,6 @@ import { BondToken } from 'components/providers/known-tokens-provider';
 import config from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
-import { CONTRACT_DAO_BARN_ADDR } from 'modules/governance/contracts/daoBarn';
 
 import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
@@ -64,7 +63,7 @@ const WalletDepositView: React.FC = () => {
     setState({ enabling: true });
 
     try {
-      await (BondToken.contract as Erc20Contract).approve(checked, CONTRACT_DAO_BARN_ADDR);
+      await (BondToken.contract as Erc20Contract).approve(checked, config.contracts.daoBarn);
     } catch {}
 
     setState({ enabling: false });

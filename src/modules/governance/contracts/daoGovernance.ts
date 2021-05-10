@@ -3,17 +3,16 @@ import { Web3EventType } from 'web3/types';
 import { getGasValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
+import config from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
 import DAO_GOVERNANCE_ABI from './daoGovernance.json';
 
-const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
-
 const Contract = new Web3Contract(
   DAO_GOVERNANCE_ABI as Web3ContractAbiItem[],
-  CONTRACT_DAO_GOVERNANCE_ADDR,
+  config.contracts.daoGovernance,
   'DAO Governance',
 );
 

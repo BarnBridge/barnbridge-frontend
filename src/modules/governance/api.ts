@@ -3,16 +3,9 @@ import QueryString from 'query-string';
 import { getHumanValue } from 'web3/utils';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
+import config from 'config';
 
-const APP_API_URL = String(process.env.REACT_APP_BASE_API_URL);
-const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
-
-type PaginatedResult<T extends Record<string, any>> = {
-  data: T[];
-  meta: {
-    count: number;
-  };
-};
+import { PaginatedResult } from 'utils/fetch';
 
 export type APIOverviewData = {
   avgLockTimeSeconds: number;
@@ -25,7 +18,7 @@ export type APIOverviewData = {
 };
 
 export function fetchOverviewData(): Promise<APIOverviewData> {
-  const url = new URL(`/api/governance/overview`, APP_API_URL);
+  const url = new URL(`/api/governance/overview`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -48,7 +41,7 @@ export type APIVoterEntity = {
 };
 
 export function fetchVoters(page = 1, limit = 10): Promise<PaginatedResult<APIVoterEntity>> {
-  const url = new URL(`/api/governance/voters?page=${page}&limit=${limit}`, APP_API_URL);
+  const url = new URL(`/api/governance/voters?page=${page}&limit=${limit}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -136,7 +129,7 @@ export function fetchProposals(
     },
   );
 
-  const url = new URL(`/api/governance/proposals?${query}`, APP_API_URL);
+  const url = new URL(`/api/governance/proposals?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -180,7 +173,7 @@ export type APIProposalEntity = APILiteProposalEntity & {
 };
 
 export function fetchProposal(proposalId: number): Promise<APIProposalEntity> {
-  const url = new URL(`/api/governance/proposals/${proposalId}`, APP_API_URL);
+  const url = new URL(`/api/governance/proposals/${proposalId}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -224,7 +217,7 @@ export function fetchProposalVoters(
     },
   );
 
-  const url = new URL(`/api/governance/proposals/${proposalId}/votes?${query}`, APP_API_URL);
+  const url = new URL(`/api/governance/proposals/${proposalId}/votes?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -254,7 +247,7 @@ export type APIAbrogationEntity = {
 };
 
 export function fetchAbrogation(proposalId: number): Promise<APIAbrogationEntity> {
-  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}`, APP_API_URL);
+  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -298,7 +291,7 @@ export function fetchAbrogationVoters(
     },
   );
 
-  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}/votes?${query}`, APP_API_URL);
+  const url = new URL(`/api/governance/abrogation-proposals/${proposalId}/votes?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -325,7 +318,7 @@ export type APITreasuryToken = {
 };
 
 export function fetchTreasuryTokens(): Promise<APITreasuryToken[]> {
-  const url = new URL(`/api/governance/treasury/tokens?address=${CONTRACT_DAO_GOVERNANCE_ADDR}`, APP_API_URL);
+  const url = new URL(`/api/governance/treasury/tokens?address=${config.contracts.daoGovernance}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -361,7 +354,7 @@ export function fetchTreasuryHistory(
 ): Promise<PaginatedResult<APITreasuryHistory>> {
   const query = QueryString.stringify(
     {
-      address: CONTRACT_DAO_GOVERNANCE_ADDR,
+      address: config.contracts.daoGovernance,
       page: String(page),
       limit: String(limit),
       tokenAddress: tokenFilter,
@@ -374,7 +367,7 @@ export function fetchTreasuryHistory(
     },
   );
 
-  const url = new URL(`/api/governance/treasury/transactions?${query}`, APP_API_URL);
+  const url = new URL(`/api/governance/treasury/transactions?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())

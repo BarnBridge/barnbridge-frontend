@@ -1,13 +1,10 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 
-import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
+import config from 'config';
 import WalletConnectLogo from 'resources/svg/wallets/walletconnect-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
-
-const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
-const WEB3_WALLET_CONNECT_BRIDGE = String(process.env.REACT_APP_WEB3_WALLET_CONNECT_BRIDGE);
 
 const WalletConnectConfig: WalletConnector = {
   id: 'walletconnect',
@@ -16,10 +13,10 @@ const WalletConnectConfig: WalletConnector = {
   factory(chainId: number): AbstractConnector {
     return new WalletConnectConnector({
       rpc: {
-        [chainId]: WEB3_RPC_HTTPS_URL,
+        [chainId]: config.web3.rpc.httpsUrl,
       },
-      pollingInterval: WEB3_POLLING_INTERVAL,
-      bridge: WEB3_WALLET_CONNECT_BRIDGE,
+      pollingInterval: config.web3.poolingInterval,
+      bridge: config.web3.wallets.walletConnect.bridge,
       qrcode: true,
     });
   },
