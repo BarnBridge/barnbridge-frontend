@@ -4,14 +4,14 @@ import cn from 'classnames';
 
 import Spin from 'components/antd/spin';
 import { Tabs } from 'components/custom/tabs';
-import YFPoolProvider, { useYFPool } from 'modules/yield-farming/providers/pool-provider';
-import PoolHeader from 'modules/yield-farming/views/pool-header';
-import PoolTransactions from 'modules/yield-farming/views/pool-transactions';
 
-import PoolStake from '../pool-stake';
-import PoolStatistics from '../pool-statistics';
-
-import { PoolTypes } from 'modules/yield-farming/utils';
+import PoolHeader from '../../components/pool-header';
+import PoolStake from '../../components/pool-stake';
+import PoolStatistics from '../../components/pool-statistics';
+import PoolTransactions from '../../components/pool-transactions';
+import PoolUnstake from '../../components/pool-unstake';
+import YFPoolProvider, { useYFPool } from '../../providers/pool-provider';
+import { YFPoolID } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
@@ -69,7 +69,10 @@ const PoolViewInner: FC = () => {
               )}
             </div>
             <Spin spinning={!isInitialized}>
-              <div className="p-24">{isInitialized && <PoolStake type={activeTab as 'stake' | 'unstake'} />}</div>
+              <div className="p-24">
+                {activeTab === 'stake' && <PoolStake />}
+                {activeTab === 'unstake' && <PoolUnstake />}
+              </div>
             </Spin>
           </div>
           <PoolStatistics />
@@ -81,7 +84,7 @@ const PoolViewInner: FC = () => {
 };
 
 type RouteParams = {
-  poolId: PoolTypes;
+  poolId: YFPoolID;
 };
 
 const PoolView: FC = () => {

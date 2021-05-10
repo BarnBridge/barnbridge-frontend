@@ -1,13 +1,13 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { useWeb3Contracts } from 'web3/contracts';
 import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Icon from 'components/custom/icon';
 import { useLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+import { useDAO } from 'modules/governance/components/dao-provider';
 
 import { isValidAddress } from 'utils';
 
@@ -26,8 +26,8 @@ const InitialState: VotingDetailedModalState = {
 };
 
 const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
-  const web3c = useWeb3Contracts();
-  const { votingPower, userDelegatedTo, delegatedPower, userLockedUntil, balance: myBondBalance } = web3c.daoBarn;
+  const daoCtx = useDAO();
+  const { votingPower, userDelegatedTo, delegatedPower, userLockedUntil, balance: myBondBalance } = daoCtx.daoBarn!;
 
   const [state, setState] = useMergeState<VotingDetailedModalState>(InitialState);
 

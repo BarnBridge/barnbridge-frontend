@@ -1,10 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { DAITokenMeta } from 'web3/contracts/dai';
-import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { TokenMeta } from 'web3/types';
+
+import config from 'config';
 
 BigNumber.prototype.scaleBy = function (decimals?: number): BigNumber | undefined {
   if (decimals === undefined) {
@@ -41,18 +37,15 @@ BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | un
 
     sum = sum.plus(val);
   }
+
   return sum;
 };
 
 export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 export const ZERO_BIG_NUMBER = new BigNumber(0);
 export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
-const ETHERSCAN_API_KEY = String(process.env.REACT_APP_ETHERSCAN_API_KEY);
 
-export function getEtherscanTxUrl(
-  txHash?: string,
-  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string | undefined {
+export function getEtherscanTxUrl(txHash?: string, chainId = config.web3.chainId): string | undefined {
   if (txHash) {
     switch (chainId) {
       case 1:
@@ -68,10 +61,7 @@ export function getEtherscanTxUrl(
   return undefined;
 }
 
-export function getEtherscanAddressUrl(
-  address?: string,
-  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
-): string | undefined {
+export function getEtherscanAddressUrl(address?: string, chainId = config.web3.chainId): string | undefined {
   if (address) {
     switch (chainId) {
       case 1:
@@ -90,7 +80,7 @@ export function getEtherscanAddressUrl(
 export function getEtherscanABIUrl(
   address?: string,
   apiKey?: string,
-  chainId = Number(process.env.REACT_APP_WEB3_CHAIN_ID),
+  chainId = config.web3.chainId,
 ): string | undefined {
   if (address) {
     switch (chainId) {
@@ -232,6 +222,11 @@ export function formatUSD(value: number | BigNumber | undefined, options?: Forma
 
   const { decimals = 2, compact = false } = options ?? {};
 
+  if (0 > decimals || decimals > 20) {
+    console.trace(`Decimals value is out of range 0..20 (value: ${decimals})`);
+    return undefined;
+  }
+
   return Intl.NumberFormat('en', {
     notation: compact ? 'compact' : undefined,
     maximumFractionDigits: decimals,
@@ -263,25 +258,8 @@ export function shortenAddr(addr: string | undefined, first = 6, last = 4): stri
   return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
 }
 
-export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
-  switch (tokenAddr.toLowerCase()) {
-    case USDCTokenMeta.address:
-      return USDCTokenMeta;
-    case DAITokenMeta.address:
-      return DAITokenMeta;
-    case SUSDTokenMeta.address:
-      return SUSDTokenMeta;
-    case UNISWAPTokenMeta.address:
-      return UNISWAPTokenMeta;
-    case BONDTokenMeta.address:
-      return BONDTokenMeta;
-    default:
-      return undefined;
-  }
-}
-
 export function fetchContractABI(address: string): any {
-  const url = getEtherscanABIUrl(address, ETHERSCAN_API_KEY);
+  const url = getEtherscanABIUrl(address, config.web3.etherscan.apiKey);
 
   if (!url) {
     return Promise.reject();
@@ -306,7 +284,7 @@ type GasPriceResult = {
 };
 
 export function fetchGasPrice(): Promise<GasPriceResult> {
-  return fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${ETHERSCAN_API_KEY}`)
+  return fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${config.web3.etherscan.apiKey}`)
     .then(result => result.json())
     .then(result => result.result)
     .then(result => {

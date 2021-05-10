@@ -2,15 +2,15 @@ import React, { FC } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { Text } from 'components/custom/typography';
-import PoolTxChart from 'modules/yield-farming/components/pool-tx-chart';
-import { YFPoolID } from 'modules/yield-farming/providers/pools-provider';
-import PoolRewards from 'modules/yield-farming/views/pool-rewards';
-import PoolStats from 'modules/yield-farming/views/pool-stats';
-import PoolTransactions from 'modules/yield-farming/views/pool-transactions';
-import SYPoolCard from 'modules/yield-farming/views/sy-pool-card';
 import { useWallet } from 'wallets/wallet';
 
-import PoolCard from '../pool-card';
+import PoolCard from '../../components/pool-card';
+import PoolChart from '../../components/pool-chart';
+import PoolRewards from '../../components/pool-rewards';
+import PoolStats from '../../components/pool-stats';
+import PoolSYCard from '../../components/pool-sy-card';
+import PoolTransactions from '../../components/pool-transactions';
+import { YFPoolID } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
@@ -29,12 +29,12 @@ const PoolsView: FC = () => {
           Overview
         </Text>
         <div className={s.poolCards}>
-          <SYPoolCard />
+          <PoolSYCard />
           <PoolCard poolId={YFPoolID.UNILP} />
           <PoolCard poolId={YFPoolID.STABLE} />
           <PoolCard poolId={YFPoolID.BOND} />
         </div>
-        <PoolTxChart className="mb-32" />
+        <PoolChart className="mb-32" />
         <PoolTransactions />
       </div>
     </>

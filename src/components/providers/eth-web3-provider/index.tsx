@@ -2,13 +2,10 @@ import React from 'react';
 import Web3 from 'web3';
 
 import { useWindowState } from 'components/providers/window-state';
+import config from 'config';
 
-const CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
-export const WEB3_RPC_HTTPS_URL = String(process.env.REACT_APP_WEB3_RPC_HTTPS_URL);
-export const WEB3_RPC_WSS_URL = String(process.env.REACT_APP_WEB3_RPC_WSS_URL);
-
-export const HttpsWeb3Provider = new Web3.providers.HttpProvider(WEB3_RPC_HTTPS_URL);
-export const WssWeb3Provider = new Web3.providers.WebsocketProvider(WEB3_RPC_WSS_URL);
+export const HttpsWeb3Provider = new Web3.providers.HttpProvider(config.web3.rpc.httpsUrl);
+export const WssWeb3Provider = new Web3.providers.WebsocketProvider(config.web3.rpc.wssUrl);
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
   'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',
 );
@@ -41,10 +38,10 @@ export type EthWeb3ContextType = {
 };
 
 const InitialContextValue = {
-  chainId: CHAIN_ID,
+  chainId: config.web3.chainId,
   web3: HttpsWeb3,
   blockNumber: undefined,
-  networkName: getNetworkName(CHAIN_ID),
+  networkName: getNetworkName(config.web3.chainId),
 };
 
 const EthWeb3Context = React.createContext<EthWeb3ContextType>(InitialContextValue);

@@ -1,24 +1,8 @@
 import BigNumber from 'bignumber.js';
-import QueryString from 'query-string';
 
-const GOV_API_URL = process.env.REACT_APP_GOV_API_URL;
+import config from 'config';
 
-function queryfy(obj: Record<string, any>): string {
-  return QueryString.stringify(obj, {
-    skipNull: true,
-    skipEmptyString: true,
-    encode: true,
-    arrayFormat: 'comma',
-  });
-}
-
-type PaginatedResult<T extends Record<string, any>> = {
-  data: T[];
-  meta: {
-    count: number;
-    block: number;
-  };
-};
+import { PaginatedResult, queryfy } from 'utils/fetch';
 
 export enum APIYFPoolActionType {
   DEPOSIT = 'DEPOSIT',
@@ -49,17 +33,26 @@ export function fetchYFPoolTransactions(
     tokenAddress,
   });
 
-  const url = new URL(`/api/yieldfarming/staking-actions/list?${query}`, GOV_API_URL);
+  const url = new URL(`/api/yieldfarming/staking-actions/list?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then((result: PaginatedResult<APIYFPoolTransaction>) => ({
-      ...result,
-      data: (result.data ?? []).map((item: APIYFPoolTransaction) => ({
-        ...item,
-        amount: new BigNumber(item.amount),
-      })),
-    }));
+    .then(result => {
+      if (result.status !== 200) {
+        return Promise.reject(new Error(result.data));
+      }
+
+      return result;
+    })
+    .then((result: PaginatedResult<APIYFPoolTransaction>) => {
+      return {
+        ...result,
+        data: (result.data ?? []).map((item: APIYFPoolTransaction) => ({
+          ...item,
+          amount: new BigNumber(item.amount),
+        })),
+      };
+    });
 }
 
 export type APIYFPoolChart = {
@@ -84,9 +77,15 @@ export function fetchYFPoolChart(
     scale,
   });
 
-  const url = new URL(`/api/yieldfarming/staking-actions/chart?${query}`, GOV_API_URL);
+  const url = new URL(`/api/yieldfarming/staking-actions/chart?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
-    .then(result => result.data);
+    .then(result => {
+      if (result.status !== 200) {
+        return Promise.reject(new Error(result.data));
+      }
+
+      return result.data;
+    });
 }

@@ -2,9 +2,9 @@ import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import Erc20Contract from 'web3/contracts/erc20Contract';
-import Web3Contract from 'web3/contracts/web3Contract';
+import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import Divider from 'components/antd/divider';
 import Tabs from 'components/antd/tabs';

@@ -2,10 +2,8 @@ import React from 'react';
 import AntdForm from 'antd/lib/form';
 import AntdSwitch from 'antd/lib/switch';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { CONTRACT_DAO_BARN_ADDR } from 'web3/contracts/daoBarn';
-import { MAX_UINT_256, ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+import Erc20Contract from 'web3/erc20Contract';
+import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -15,7 +13,10 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import useMergeState from 'hooks/useMergeState';
+import { useDAO } from 'modules/governance/components/dao-provider';
 
 import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
@@ -48,22 +49,21 @@ const InitialState: WalletDepositViewState = {
 };
 
 const WalletDepositView: React.FC = () => {
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
   const [form] = AntdForm.useForm<DepositFormData>();
 
   const [state, setState] = useMergeState<WalletDepositViewState>(InitialState);
 
-  const { balance: stakedBalance, userLockedUntil } = web3c.daoBarn;
-  const { balance: bondBalance, barnAllowance } = web3c.bond;
+  const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
+  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
+  const barnAllowance = (BondToken.contract as Erc20Contract).getAllowanceOf(config.contracts.daoBarn);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
 
   async function handleSwitchChange(checked: boolean) {
-    const value = checked ? MAX_UINT_256 : ZERO_BIG_NUMBER;
-
     setState({ enabling: true });
 
     try {
-      await web3c.bond.approveSend(CONTRACT_DAO_BARN_ADDR, value);
+      await (BondToken.contract as Erc20Contract).approve(checked, config.contracts.daoBarn);
     } catch {}
 
     setState({ enabling: false });
@@ -79,10 +79,10 @@ const WalletDepositView: React.FC = () => {
     setState({ saving: true });
 
     try {
-      await web3c.daoBarn.actions.deposit(amount, gasPrice.value);
+      await daoCtx.daoBarn.actions.deposit(amount, gasPrice.value);
       form.setFieldsValue(InitialFormValues);
-      web3c.daoBarn.reload();
-      web3c.bond.reload();
+      daoCtx.daoBarn.reload();
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch {}
 
     setState({ saving: false });
@@ -175,7 +175,7 @@ const WalletDepositView: React.FC = () => {
                   <TokenAmount
                     tokenIcon="static/token-bond"
                     max={bondBalance}
-                    maximumFractionDigits={BONDTokenMeta.decimals}
+                    maximumFractionDigits={BondToken.decimals}
                     displayDecimals={4}
                     disabled={state.saving}
                     slider
