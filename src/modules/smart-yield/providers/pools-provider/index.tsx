@@ -1,9 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import Web3Contract from 'web3/contracts/web3Contract';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
@@ -151,7 +150,7 @@ const PoolsProvider: React.FC = props => {
         const jTokenPrice = smartYield.price ?? 1;
 
         const yearlyReward = dailyReward
-          .dividedBy(10 ** BONDTokenMeta.decimals)
+          .dividedBy(10 ** BondToken.decimals)
           .multipliedBy(bondPrice)
           .multipliedBy(365);
         const poolBalance = poolSize

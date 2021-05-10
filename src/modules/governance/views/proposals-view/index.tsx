@@ -136,17 +136,17 @@ const ProposalsViewInner: React.FC = () => {
 
 const ProposalsView: React.FC = () => {
   const history = useHistory();
-  const dao = useDAO();
+  const daoCtx = useDAO();
 
   function handleBackClick() {
     history.push('/governance/overview');
   }
 
-  if (dao.isActive === undefined) {
+  if (daoCtx.isActive === undefined) {
     return <AntdSpin />;
   }
 
-  if (!dao.isActive) {
+  if (!daoCtx.isActive) {
     return (
       <Grid flow="row" gap={24} align="start">
         <button type="button" onClick={handleBackClick} className="button-text">

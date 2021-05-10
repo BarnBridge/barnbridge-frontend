@@ -6,6 +6,7 @@ import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import * as Antd from 'antd';
 
 import { getNetworkName } from 'components/providers/eth-web3-provider';
+import config from 'config';
 import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
 import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
 import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
@@ -17,9 +18,6 @@ import TrezorWalletConfig from 'wallets/connectors/trezor';
 import WalletConnectConfig from 'wallets/connectors/wallet-connect';
 
 import { WalletConnector } from 'wallets/types';
-
-const WEB3_CHAIN_ID = Number(process.env.REACT_APP_WEB3_CHAIN_ID);
-const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
 
 export const WalletConnectors: WalletConnector[] = [
   MetaMaskWalletConfig,
@@ -102,7 +100,7 @@ const WalletProvider: React.FC = props => {
       setConnecting(walletConnector);
       setWalletsModal(false);
 
-      const connector = walletConnector.factory(WEB3_CHAIN_ID, args);
+      const connector = walletConnector.factory(config.web3.chainId, args);
 
       function onError(error: Error) {
         console.error('Wallet::Connect().onError', { error });
@@ -187,7 +185,7 @@ const WalletProvider: React.FC = props => {
 
 function getLibrary(provider: any) {
   const library = new Web3Provider(provider);
-  library.pollingInterval = WEB3_POLLING_INTERVAL;
+  library.pollingInterval = config.web3.poolingInterval;
   return library;
 }
 

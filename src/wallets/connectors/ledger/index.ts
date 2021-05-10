@@ -1,13 +1,12 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
-import { WEB3_RPC_HTTPS_URL } from 'components/providers/eth-web3-provider';
+import config from 'config';
 import LedgerLogoDark from 'resources/svg/wallets/ledger-logo-dark.svg';
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
 
-const WEB3_POLLING_INTERVAL = Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL);
 const LEDGER_BASE_DERIVATION_PATH = 'base_derivation_path';
 
 export type LedgerWalletArgs = {
@@ -27,8 +26,8 @@ const LedgerWalletConfig: WalletConnector = {
 
     return new LedgerConnector({
       chainId,
-      url: WEB3_RPC_HTTPS_URL,
-      pollingInterval: WEB3_POLLING_INTERVAL,
+      url: config.web3.rpc.httpsUrl,
+      pollingInterval: config.web3.poolingInterval,
       baseDerivationPath,
     });
   },

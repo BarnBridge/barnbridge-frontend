@@ -20,11 +20,11 @@ import startOfMonth from 'date-fns/startOfMonth';
 import startOfWeek from 'date-fns/startOfWeek';
 import flow from 'lodash/fp/flow';
 import * as ReCharts from 'recharts';
-import { useWeb3Contracts } from 'web3/contracts';
 import { formatBONDValue, formatBigValue } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
+import { useDAO } from 'modules/governance/components/dao-provider';
 
 import { inRange } from 'utils';
 
@@ -148,8 +148,8 @@ export type WalletLockChartProps = {
 const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   const { lockEndDate } = props;
 
-  const web3c = useWeb3Contracts();
-  const { balance: stakedBalance } = web3c.daoBarn;
+  const daoCtx = useDAO();
+  const { balance: stakedBalance } = daoCtx.daoBarn;
 
   const multiplier = React.useMemo<number>(() => getPeriodRate(addYears(new Date(), 1), new Date(), lockEndDate), [
     lockEndDate,

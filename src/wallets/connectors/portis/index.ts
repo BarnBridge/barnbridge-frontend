@@ -1,11 +1,10 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { PortisConnector } from '@web3-react/portis-connector';
 
+import config from 'config';
 import PortisLogo from 'resources/svg/wallets/portis-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
-
-const WEB3_PORTIS_APP_ID = String(process.env.REACT_APP_WEB3_PORTIS_APP_ID);
 
 const PortisWalletConfig: WalletConnector = {
   id: 'portis',
@@ -13,7 +12,7 @@ const PortisWalletConfig: WalletConnector = {
   name: 'Portis',
   factory(chainId: number): AbstractConnector {
     return new PortisConnector({
-      dAppId: WEB3_PORTIS_APP_ID,
+      dAppId: config.web3.wallets.portis.id,
       networks: [chainId],
     });
   },

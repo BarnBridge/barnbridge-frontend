@@ -4,9 +4,10 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import { useWarning } from 'components/providers/warning-provider';
-import YFPoolsProvider from 'modules/yield-farming/providers/pools-provider';
 
-const PoolsView = lazy(() => import('modules/yield-farming/views/pools-view'));
+import YFPoolsProvider from './providers/pools-provider';
+
+const PoolsView = lazy(() => import('./views/pools-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
 
 const YieldFarmingView: FC = () => {
