@@ -8,7 +8,6 @@ export type SYMarketMeta = {
   id: string;
   name: string;
   icon: string;
-  active: boolean;
 };
 
 export type SYPoolMeta = {
@@ -25,7 +24,6 @@ export const Markets = new Map<string, SYMarketMeta>([
       id: 'compound/v2',
       name: 'Compound',
       icon: 'compound',
-      active: true,
     },
   ],
   [
@@ -34,7 +32,6 @@ export const Markets = new Map<string, SYMarketMeta>([
       id: 'aave/v2',
       name: 'Aave',
       icon: `static/aave`,
-      active: true,
     },
   ],
   [
@@ -43,7 +40,6 @@ export const Markets = new Map<string, SYMarketMeta>([
       id: 'cream-finance',
       name: 'Cream Finance',
       icon: `cream_finance_grayed`,
-      active: false,
     },
   ],
   [
@@ -52,7 +48,6 @@ export const Markets = new Map<string, SYMarketMeta>([
       id: 'yearn-finance',
       name: 'Yearn Finance',
       icon: 'yearn_finance_grayed',
-      active: false,
     },
   ],
 ]);

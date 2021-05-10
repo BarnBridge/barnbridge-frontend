@@ -147,7 +147,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Text>
           </div>
         </div>
-        {epochProgress && <div className={s.epochProgress} style={{ width: `${epochProgress}%` }} />}
+        {epochProgress && <div className={s.epochProgress} style={{ width: `${100 - epochProgress}%` }} />}
       </div>
     </div>
   );
