@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
-import Erc20Contract from 'web3/contracts/erc20Contract';
-import { CONTRACT_STAKING_ADDR } from 'web3/contracts/staking';
+import Erc20Contract from 'web3/erc20Contract';
 
 import { KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
-import { YFPoolMeta, useYFPools } from 'modules/yield-farming/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
+
+import { YFPoolMeta, useYFPools } from '../../providers/pools-provider';
 
 export type YFPoolType = {
   poolMeta?: YFPoolMeta;
@@ -54,7 +55,7 @@ const YFPoolProvider: React.FC<Props> = props => {
     if (walletCtx.account) {
       pool?.tokens.forEach(token => {
         (token.contract as Erc20Contract).loadBalance().then(reload).catch(Error);
-        (token.contract as Erc20Contract).loadAllowance(CONTRACT_STAKING_ADDR).then(reload).catch(Error);
+        (token.contract as Erc20Contract).loadAllowance(config.contracts.yfStaking).then(reload).catch(Error);
       });
     }
   }, [pool, walletCtx.account]);

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Web3SendState } from 'web3/contracts/web3Contract';
 import { getEtherscanTxUrl } from 'web3/utils';
+import { Web3SendState } from 'web3/web3Contract';
 
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';

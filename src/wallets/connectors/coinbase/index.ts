@@ -6,7 +6,7 @@ import CoinbaseWalletLogo from 'resources/svg/wallets/coinbase-logo.svg';
 
 import { WalletConnector } from 'wallets/types';
 
-const WEB3_COINBASE_WALLET_APP_NAME = String(process.env.REACT_APP_WEB3_COINBASE_WALLET_APP_NAME);
+const WEB3_COINBASE_WALLET_APP_NAME = String(process.env.REACT_APP_WEB3_COINBASE_APP_NAME);
 
 export type CoinbaseWalletArgs = {
   darkMode?: boolean;

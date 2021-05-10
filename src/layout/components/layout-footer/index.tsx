@@ -1,20 +1,19 @@
 import React from 'react';
 import cn from 'classnames';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Text } from 'components/custom/typography';
+import {
+  DISCORD_LINK,
+  GITHUB_LINK,
+  TWITTER_LINK,
+  UNISWAP_LIQUIDITY_LINK,
+  UNISWAP_MARKET_LINK,
+  WEBSITE_LINK,
+  WHITEPAPER_LINK,
+} from 'config';
 
 import s from './s.module.scss';
-
-const WEBSITE_LINK = 'http://www.barnbridge.com/';
-const DISCORD_LINK = 'https://discord.com/invite/FfEhsVk';
-const TWITTER_LINK = 'https://twitter.com/barn_bridge';
-const WHITEPAPER_LINK = 'https://github.com/BarnBridge/BarnBridge-Whitepaper';
-const GITHUB_LINK = 'https://github.com/BarnBridge/';
-const UNISWAP_LIQUIDITY_LINK = `https://app.uniswap.org/#/add/${BONDTokenMeta.address}/${USDCTokenMeta.address}`;
-const UNISWAP_MARKET_LINK = `https://app.uniswap.org/#/swap?inputCurrency=${BONDTokenMeta.address}&outputCurrency=${USDCTokenMeta.address}`;
 
 const LayoutFooter: React.FC = () => {
   return (

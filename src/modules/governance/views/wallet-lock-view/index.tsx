@@ -7,7 +7,6 @@ import addSeconds from 'date-fns/addSeconds';
 import getUnixTime from 'date-fns/getUnixTime';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
-import { useWeb3Contracts } from 'web3/contracts';
 import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
@@ -20,6 +19,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+import { useDAO } from 'modules/governance/components/dao-provider';
 
 // import WalletLockChart from './components/wallet-lock-chart';
 import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
@@ -84,10 +84,10 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
 const WalletLockView: React.FC = () => {
   const [form] = Antd.Form.useForm<LockFormData>();
 
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
   const [state, setState] = useMergeState<WalletLockViewState>(InitialState);
 
-  const { balance: stakedBalance, userLockedUntil, userDelegatedTo } = web3c.daoBarn;
+  const { balance: stakedBalance, userLockedUntil, userDelegatedTo } = daoCtx.daoBarn;
 
   const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
   const hasDelegation = isValidAddress(userDelegatedTo);
@@ -123,9 +123,9 @@ const WalletLockView: React.FC = () => {
     setState({ saving: true });
 
     try {
-      await web3c.daoBarn.actions.lock(getUnixTime(lockEndDate), gasPrice.value);
+      await daoCtx.daoBarn.actions.lock(getUnixTime(lockEndDate), gasPrice.value);
       form.setFieldsValue(InitialFormValues);
-      web3c.daoBarn.reload();
+      daoCtx.daoBarn.reload();
     } catch {}
 
     setState({ saving: false });

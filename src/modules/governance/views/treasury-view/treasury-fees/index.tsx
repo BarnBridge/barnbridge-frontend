@@ -4,8 +4,8 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
-import Web3Contract from 'web3/contracts/web3Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import Divider from 'components/antd/divider';
 import Select from 'components/antd/select';

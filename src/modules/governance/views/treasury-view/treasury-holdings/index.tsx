@@ -2,9 +2,9 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import Erc20Contract from 'web3/contracts/erc20Contract';
-import Web3Contract from 'web3/contracts/web3Contract';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';

@@ -1,9 +1,16 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
+import ContractListener from 'web3/components/contract-listener';
+import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
+import { BondToken } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import useMergeState from 'hooks/useMergeState';
+import { DAOBarnContract, useDAOBarnContract } from 'modules/governance/contracts/daoBarn';
+import { DAOGovernanceContract, useDAOGovernanceContract } from 'modules/governance/contracts/daoGovernance';
+import { DAORewardContract, useDAORewardContract } from 'modules/governance/contracts/daoReward';
+import { useWallet } from 'wallets/wallet';
 
 import { APIProposalStateId } from '../../api';
 
@@ -26,6 +33,9 @@ const InitialState: DAOProviderState = {
 };
 
 type DAOContextType = DAOProviderState & {
+  daoBarn: DAOBarnContract;
+  daoReward: DAORewardContract;
+  daoGovernance: DAOGovernanceContract;
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
@@ -35,6 +45,9 @@ type DAOContextType = DAOProviderState & {
 
 const DAOContext = React.createContext<DAOContextType>({
   ...InitialState,
+  daoBarn: undefined as any,
+  daoReward: undefined as any,
+  daoGovernance: undefined as any,
   actions: {
     activate: Promise.reject,
     hasActiveProposal: Promise.reject,
@@ -49,13 +62,34 @@ export function useDAO(): DAOContextType {
 const DAOProvider: React.FC = props => {
   const { children } = props;
 
-  const web3c = useWeb3Contracts();
+  const walletCtx = useWallet();
+
+  const daoBarn = useDAOBarnContract();
+  const daoReward = useDAORewardContract();
+  const daoGovernance = useDAOGovernanceContract();
 
   const [state, setState] = useMergeState<DAOProviderState>(InitialState);
 
   React.useEffect(() => {
-    const { isActive } = web3c.daoGovernance;
-    const { bondStaked, activationThreshold, votingPower } = web3c.daoBarn;
+    daoBarn.contract.setProvider(walletCtx.provider);
+    daoReward.contract.setProvider(walletCtx.provider);
+    daoGovernance.contract.setProvider(walletCtx.provider);
+  }, [walletCtx.provider]);
+
+  React.useEffect(() => {
+    const bondContract = BondToken.contract as Erc20Contract;
+
+    (async () => {
+      if (walletCtx.isActive) {
+        bondContract.setAccount(walletCtx.account);
+        bondContract.loadAllowance(config.contracts.daoBarn).catch(Error);
+      }
+    })();
+  }, [walletCtx.account]);
+
+  React.useEffect(() => {
+    const { isActive } = daoGovernance;
+    const { bondStaked, activationThreshold, votingPower } = daoBarn;
 
     let activationRate: number | undefined;
 
@@ -78,27 +112,22 @@ const DAOProvider: React.FC = props => {
       activationRate,
       thresholdRate,
     });
-  }, [
-    web3c.daoGovernance.isActive,
-    web3c.daoBarn.bondStaked,
-    web3c.daoBarn.activationThreshold,
-    web3c.daoBarn.votingPower,
-  ]);
+  }, [daoGovernance.isActive, daoBarn.bondStaked, daoBarn.activationThreshold, daoBarn.votingPower]);
 
   function activate() {
-    return web3c.daoGovernance.actions.activate().then(() => {
-      web3c.daoGovernance.reload();
-      web3c.daoBarn.reload();
+    return daoGovernance.actions.activate().then(() => {
+      daoGovernance.reload();
+      daoBarn.reload();
     });
   }
 
   function hasActiveProposal(): Promise<boolean> {
-    return web3c.daoGovernance.actions.getLatestProposalId().then(proposalId => {
+    return daoGovernance.actions.getLatestProposalId().then(proposalId => {
       if (!proposalId) {
         return Promise.resolve(false);
       }
 
-      return web3c.daoGovernance.actions.getProposalState(proposalId).then(proposalState => {
+      return daoGovernance.actions.getProposalState(proposalId).then(proposalState => {
         return ![
           APIProposalStateId.CANCELED,
           APIProposalStateId.EXECUTED,
@@ -122,6 +151,9 @@ const DAOProvider: React.FC = props => {
     <DAOContext.Provider
       value={{
         ...state,
+        daoBarn,
+        daoReward,
+        daoGovernance,
         actions: {
           activate,
           hasThreshold,
@@ -129,6 +161,9 @@ const DAOProvider: React.FC = props => {
         },
       }}>
       {children}
+      <ContractListener contract={daoBarn.contract} />
+      <ContractListener contract={daoReward.contract} />
+      <ContractListener contract={daoGovernance.contract} />
     </DAOContext.Provider>
   );
 };

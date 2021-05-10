@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import Erc20Contract from 'web3/contracts/erc20Contract';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
 import Button from 'components/antd/button';

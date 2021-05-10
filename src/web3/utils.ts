@@ -1,10 +1,4 @@
 import BigNumber from 'bignumber.js';
-import { BONDTokenMeta } from 'web3/contracts/bond';
-import { DAITokenMeta } from 'web3/contracts/dai';
-import { SUSDTokenMeta } from 'web3/contracts/susd';
-import { UNISWAPTokenMeta } from 'web3/contracts/uniswap';
-import { USDCTokenMeta } from 'web3/contracts/usdc';
-import { TokenMeta } from 'web3/types';
 
 BigNumber.prototype.scaleBy = function (decimals?: number): BigNumber | undefined {
   if (decimals === undefined) {
@@ -267,23 +261,6 @@ export function isSmallBONDValue(value?: BigNumber): boolean {
 
 export function shortenAddr(addr: string | undefined, first = 6, last = 4): string | undefined {
   return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
-}
-
-export function getTokenMeta(tokenAddr: string): TokenMeta | undefined {
-  switch (tokenAddr.toLowerCase()) {
-    case USDCTokenMeta.address:
-      return USDCTokenMeta;
-    case DAITokenMeta.address:
-      return DAITokenMeta;
-    case SUSDTokenMeta.address:
-      return SUSDTokenMeta;
-    case UNISWAPTokenMeta.address:
-      return UNISWAPTokenMeta;
-    case BONDTokenMeta.address:
-      return BONDTokenMeta;
-    default:
-      return undefined;
-  }
 }
 
 export function fetchContractABI(address: string): any {

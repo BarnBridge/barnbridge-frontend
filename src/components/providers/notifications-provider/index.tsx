@@ -202,7 +202,7 @@ export function fetchNotifications({
   target?: string;
   timestamp?: number | null;
 }): Promise<NotificationType[]> {
-  const url = new URL('/api/notifications/list', process.env.REACT_APP_GOV_API_URL);
+  const url = new URL('/api/notifications/list', process.env.REACT_APP_BASE_API_URL);
   if (target) {
     url.searchParams.set('target', target);
   }

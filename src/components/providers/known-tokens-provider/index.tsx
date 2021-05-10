@@ -1,11 +1,12 @@
 import React, { FC, createContext, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import Erc20Contract from 'web3/contracts/erc20Contract';
-import Web3Contract, { createAbiItem } from 'web3/contracts/web3Contract';
+import Erc20Contract from 'web3/erc20Contract';
+import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { TokenIconNames } from 'components/custom/icon';
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
@@ -45,56 +46,56 @@ export type TokenMeta = {
 };
 
 export const BondToken: TokenMeta = {
-  address: String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase(),
+  address: config.contracts.bond,
   symbol: KnownTokens.BOND,
   name: 'BarnBridge',
   decimals: 18,
-  priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // BOND -> USDC
+  priceFeed: config.contracts.univ2, // BOND -> USDC
   pricePath: [KnownTokens.USDC],
   icon: 'static/token-bond',
-  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_BOND_ADDR).toLowerCase()),
+  contract: new Erc20Contract([], config.contracts.bond),
 };
 
 export const UsdcToken: TokenMeta = {
-  address: String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase(),
+  address: config.contracts.usdc,
   symbol: KnownTokens.USDC,
   name: 'USD Coin',
   decimals: 6,
   priceFeed: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6', // USDC -> $
   icon: 'token-usdc',
-  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_USDC_ADDR).toLowerCase()),
+  contract: new Erc20Contract([], config.contracts.usdc),
 };
 
 export const DaiToken: TokenMeta = {
-  address: String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase(),
+  address: config.contracts.dai,
   symbol: KnownTokens.DAI,
   name: 'Dai Stablecoin',
   decimals: 18,
   priceFeed: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9', // DAI -> $
   icon: 'token-dai',
-  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_DAI_ADDR).toLowerCase()),
+  contract: new Erc20Contract([], config.contracts.dai),
 };
 
 export const SusdToken: TokenMeta = {
-  address: String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase(),
+  address: config.contracts.susd,
   symbol: KnownTokens.SUSD,
   name: 'Synth sUSD',
   decimals: 18,
   priceFeed: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757', // sUSD -> ETH
   pricePath: [KnownTokens.ETH],
   icon: 'token-susd',
-  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_SUSD_ADDR).toLowerCase()),
+  contract: new Erc20Contract([], config.contracts.susd),
 };
 
 export const UniV2Token: TokenMeta = {
-  address: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(),
+  address: config.contracts.univ2,
   symbol: KnownTokens.UNIV2,
   name: 'Uniswap V2',
   decimals: 18,
-  priceFeed: String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase(), // UNIV2 -> USDC
+  priceFeed: config.contracts.univ2, // UNIV2 -> USDC
   pricePath: [KnownTokens.USDC],
   icon: 'static/token-uniswap',
-  contract: new Erc20Contract([], String(process.env.REACT_APP_CONTRACT_UNISWAP_V2_ADDR).toLowerCase()),
+  contract: new Erc20Contract([], config.contracts.univ2),
 };
 
 const KNOWN_TOKENS: TokenMeta[] = [
@@ -367,6 +368,8 @@ const KnownTokensProvider: FC = props => {
   const [reload] = useReload();
 
   React.useEffect(() => {
+    (BondToken.contract as Erc20Contract).loadCommon().catch(Error);
+
     (async () => {
       await Promise.allSettled(
         KNOWN_TOKENS.map(async token => {

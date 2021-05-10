@@ -1,9 +1,7 @@
 import React, { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
-import { NewStakingContract } from 'web3/contracts/staking';
-import Web3Contract from 'web3/contracts/web3Contract';
-import { YFContract } from 'web3/contracts/yieldFarming';
+import Web3Contract from 'web3/web3Contract';
 
 import {
   BondToken,
@@ -15,10 +13,13 @@ import {
   convertTokenInUSD,
   useKnownTokens,
 } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import { fetchSYRewardPools } from 'modules/smart-yield/api';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
+import { YfStakingContract } from 'modules/yield-farming/contracts/yfStaking';
 import { useWallet } from 'wallets/wallet';
 
 export enum YFPoolID {
@@ -33,7 +34,7 @@ export type YFPoolMeta = {
   icons: string[];
   colors: string[];
   tokens: TokenMeta[];
-  contract: YFContract;
+  contract: YfPoolContract;
 };
 
 export const StableYfPool: YFPoolMeta = {
@@ -42,7 +43,7 @@ export const StableYfPool: YFPoolMeta = {
   icons: ['token-usdc', 'token-dai', 'token-susd'],
   colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
   tokens: [UsdcToken, DaiToken, SusdToken],
-  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR).toLowerCase()),
+  contract: new YfPoolContract(config.contracts.yfStable),
 };
 
 export const UnilpYfPool: YFPoolMeta = {
@@ -51,7 +52,7 @@ export const UnilpYfPool: YFPoolMeta = {
   icons: ['static/token-uniswap'],
   colors: ['var(--theme-red-color)'],
   tokens: [UniV2Token],
-  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR).toLowerCase()),
+  contract: new YfPoolContract(config.contracts.yfUnilp),
 };
 
 export const BondYfPool: YFPoolMeta = {
@@ -60,7 +61,7 @@ export const BondYfPool: YFPoolMeta = {
   icons: ['static/token-bond'],
   colors: ['var(--theme-red-color)'],
   tokens: [BondToken],
-  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR).toLowerCase()),
+  contract: new YfPoolContract(config.contracts.yfBond),
 };
 
 const KNOWN_POOLS: YFPoolMeta[] = [StableYfPool, UnilpYfPool, BondYfPool];
@@ -78,7 +79,7 @@ export type YFPoolsType = {
   yfPools: YFPoolMeta[];
   syPools: SYPoolMeta[];
   getYFKnownPoolByName: (name: string) => YFPoolMeta | undefined;
-  stakingContract?: NewStakingContract;
+  stakingContract?: YfStakingContract;
   getPoolBalanceInUSD: (name: string) => BigNumber | undefined;
   getPoolEffectiveBalanceInUSD: (name: string) => BigNumber | undefined;
   getMyPoolBalanceInUSD: (name: string) => BigNumber | undefined;
@@ -115,12 +116,12 @@ const YFPoolsProvider: FC = props => {
 
   const knownTokensCtx = useKnownTokens();
   const walletCtx = useWallet();
-  const [reload, version] = useReload();
+  const [reload] = useReload();
 
   const [syPools, setSYPools] = useState<SYPoolMeta[]>([]);
 
   const stakingContract = useMemo(() => {
-    const staking = new NewStakingContract();
+    const staking = new YfStakingContract();
     staking.on(Web3Contract.UPDATE_DATA, reload);
 
     return staking;

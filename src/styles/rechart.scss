@@ -8,7 +8,7 @@
 
 .chart-label {
   @include font-sm-semi-bold;
-  background: var(--theme-body-color);
+  background: var(--bg-color, var(--theme-body-color));
   color: var(--theme-secondary-color);
   border-radius: 4px;
   padding: 8px 12px;

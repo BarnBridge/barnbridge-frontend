@@ -1,8 +1,7 @@
 import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
@@ -13,7 +12,9 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import useMergeState from 'hooks/useMergeState';
+import { useDAO } from 'modules/governance/components/dao-provider';
 
 type WithdrawFormData = {
   amount?: BigNumber;
@@ -36,13 +37,13 @@ const InitialState: WalletWithdrawViewState = {
 };
 
 const WalletWithdrawView: React.FC = () => {
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
 
   const [state, setState] = useMergeState<WalletWithdrawViewState>(InitialState);
 
-  const { balance: stakedBalance, userLockedUntil } = web3c.daoBarn;
-  const { balance: bondBalance } = web3c.bond;
+  const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
+  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
   const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
   const formDisabled = !hasStakedBalance || isLocked;
@@ -57,10 +58,10 @@ const WalletWithdrawView: React.FC = () => {
     setState({ saving: true });
 
     try {
-      await web3c.daoBarn.actions.withdraw(amount, gasPrice.value);
+      await daoCtx.daoBarn.actions.withdraw(amount, gasPrice.value);
       form.setFieldsValue(InitialFormValues);
-      web3c.daoBarn.reload();
-      web3c.bond.reload();
+      daoCtx.daoBarn.reload();
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch {}
 
     setState({ saving: false });
@@ -109,7 +110,7 @@ const WalletWithdrawView: React.FC = () => {
                 <TokenAmount
                   tokenIcon="static/token-bond"
                   max={stakedBalance}
-                  maximumFractionDigits={BONDTokenMeta.decimals}
+                  maximumFractionDigits={BondToken.decimals}
                   displayDecimals={4}
                   disabled={formDisabled || state.saving}
                   slider
