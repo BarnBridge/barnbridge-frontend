@@ -2,9 +2,8 @@ import { useState } from 'react';
 import cn from 'classnames';
 
 import IconsPair from 'components/custom/icons-pair';
-import { Pagination } from 'components/custom/pagination';
+import { Table, TableFooter } from 'components/custom/table';
 import { Tabs } from 'components/custom/tabs';
-import { Text } from 'components/custom/typography';
 
 const tabs = [
   {
@@ -34,114 +33,74 @@ export const PortfolioTable: React.FC<Props> = ({ className }) => {
   );
 };
 
-const PositionsTable = () => {
+type ColumnType = {
+  trancheName: string;
+  poolAmount: number;
+};
+
+const PositionsTable: React.FC = () => {
+  const [current, setCurrent] = useState(1);
+  const total = 54;
+  const pageSize = 10;
+
   return (
     <>
-      <div className="table-container">
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Tranche / Transaction</th>
-              <th>Pool token amount</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>
-                <div className="flex align-center">
-                  <IconsPair
-                    icon1="token-wbtc"
-                    icon2="token-eth"
-                    size={40}
-                    className="mr-16"
-                    style={{ flexShrink: 0 }}
-                  />
-                  <div className="text-p1 fw-semibold color-primary mr-4">75% WBTC / 25% ETH</div>
-                </div>
-              </td>
-              <td>
-                <div className="text-p1 fw-semibold color-primary mr-4">25,381.32</div>
-              </td>
-              <td>
-                <div className="flex align-center col-gap-24">
-                  <button type="button" className="button-primary">
-                    Withdraw
-                  </button>
-                  <button type="button" className="button-ghost">
-                    Change tranche
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="flex align-center">
-                  <IconsPair
-                    icon1="token-wbtc"
-                    icon2="token-eth"
-                    size={40}
-                    className="mr-16"
-                    style={{ flexShrink: 0 }}
-                  />
-                  <div className="text-p1 fw-semibold color-primary mr-4">75% WBTC / 25% ETH</div>
-                </div>
-              </td>
-              <td>
-                <div className="text-p1 fw-semibold color-primary mr-4">25,381.32</div>
-              </td>
-              <td>
-                <div className="flex align-center col-gap-24">
-                  <button type="button" className="button-primary">
-                    Withdraw
-                  </button>
-                  <button type="button" className="button-ghost">
-                    Change tranche
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr>
-              <td>
-                <div className="flex align-center">
-                  <IconsPair
-                    icon1="token-wbtc"
-                    icon2="token-eth"
-                    size={40}
-                    className="mr-16"
-                    style={{ flexShrink: 0 }}
-                  />
-                  <div className="text-p1 fw-semibold color-primary mr-4">75% WBTC / 25% ETH</div>
-                </div>
-              </td>
-              <td>
-                <div className="text-p1 fw-semibold color-primary mr-4">25,381.32</div>
-              </td>
-              <td>
-                <div className="flex align-center col-gap-24">
-                  <button type="button" className="button-primary">
-                    Withdraw
-                  </button>
-                  <button type="button" className="button-ghost">
-                    Change tranche
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div className="flex p-24">
-        <Text type="p2" weight="semibold" color="secondary">
-          Showing 1 to 10 out of 3189 entries
-        </Text>
-        <Pagination className="ml-auto" />
-      </div>
+      <Table<ColumnType>
+        columns={[
+          {
+            heading: 'Tranche / Transaction',
+            render: item => (
+              <div className="flex align-center">
+                <IconsPair icon1="token-wbtc" icon2="token-eth" size={40} className="mr-16" style={{ flexShrink: 0 }} />
+                <div className="text-p1 fw-semibold color-primary mr-4">{item.trancheName}</div>
+              </div>
+            ),
+          },
+          {
+            heading: 'Pool token amount',
+            render: item => <div className="text-p1 fw-semibold color-primary mr-4">{item.poolAmount}</div>,
+          },
+          {
+            heading: 'Actions',
+            render: item => (
+              <div className="flex align-center col-gap-24">
+                <button type="button" className="button-primary">
+                  Withdraw
+                </button>
+                <button type="button" className="button-ghost">
+                  Change tranche
+                </button>
+              </div>
+            ),
+          },
+        ]}
+        data={[
+          {
+            trancheName: '75% WBTC / 25% ETH',
+            poolAmount: 25381.32,
+          },
+          {
+            trancheName: '50% WBTC / 50% ETH',
+            poolAmount: 25381.32,
+          },
+          {
+            trancheName: '25% WBTC / 75% ETH',
+            poolAmount: 25381.32,
+          },
+        ]}
+      />
+      <TableFooter total={total} current={current} pageSize={pageSize} changeHandler={setCurrent}>
+        {({ total, from, to }) => (
+          <>
+            Showing {from} to {to} out of {total} entries
+          </>
+        )}
+      </TableFooter>
     </>
   );
 };
 
-const TransactionHistoryTable = () => {
+const TransactionHistoryTable: React.FC = () => {
   return (
     <table>
       <thead>
