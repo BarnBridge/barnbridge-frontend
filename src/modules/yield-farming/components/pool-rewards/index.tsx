@@ -83,7 +83,7 @@ const PoolRewards: FC = () => {
           </Hint>
           <div className="flex col-gap-8 align-center">
             <Text type="h3" weight="bold" color="primary">
-              {formatToken(totalPotentialReward?.unscaleBy(BondToken.decimals)) ?? '-'}
+              {formatToken(totalPotentialReward) ?? '-'}
             </Text>
             <Icon name={BondToken.icon!} />
           </div>

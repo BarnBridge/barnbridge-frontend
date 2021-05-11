@@ -52,7 +52,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
             type="button"
             className="button-ghost"
             style={{ alignSelf: 'center' }}
-            disabled={rest.disabled}
+            disabled={rest.disabled || rest.max === 0}
             onClick={() => onChange(String(rest.max))}>
             MAX
           </button>
@@ -66,7 +66,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
           max={rest.max}
           step={1 / 10 ** Math.min(decimals, 6)}
           value={rest.value ?? 0}
-          disabled={rest.disabled}
+          disabled={rest.disabled || rest.max === 0}
           onChange={e => {
             onChange(e.target.value);
           }}

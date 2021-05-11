@@ -189,6 +189,11 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
+    if (!bnAmount) {
+      setBondGain(undefined);
+      return;
+    }
+
     getBondGain(pool, bnAmount, formState.maturityDate);
   }, [pool, amount, formState.maturityDate]);
 
@@ -240,7 +245,7 @@ const SeniorTranche: React.FC = () => {
             before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount?.toNumber() ?? 0}
-            disabled={formDisabled || state.isSaving}
+            disabled={state.isSaving}
             decimals={pool?.underlyingDecimals}
             value={amount}
             onChange={ev => {
@@ -262,7 +267,7 @@ const SeniorTranche: React.FC = () => {
             }
             format="DD/MM/YYYY"
             size="large"
-            disabled={formDisabled || state.isSaving}
+            disabled={state.isSaving}
           />
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
@@ -285,7 +290,7 @@ const SeniorTranche: React.FC = () => {
                       className={cn('button-ghost-monochrome ph-24 pv-16', {
                         selected: date?.valueOf() === maturityDate?.valueOf(),
                       })}
-                      disabled={formDisabled || state.isSaving}
+                      disabled={state.isSaving}
                       onClick={() => {
                         form.setFieldsValue({
                           maturityDate: date,
