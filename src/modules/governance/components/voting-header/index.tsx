@@ -2,8 +2,7 @@ import React from 'react';
 import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { useWeb3Contracts } from 'web3/contracts';
-import { BONDTokenMeta } from 'web3/contracts/bond';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatBONDValue, formatBigValue, isSmallBONDValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -14,8 +13,10 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
+import { BondToken } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
+import { useDAO } from 'modules/governance/components/dao-provider';
 
 import VotingDetailedModal from '../voting-detailed-modal';
 
@@ -34,29 +35,29 @@ const InitialState: VotingHeaderState = {
 };
 
 const VotingHeader: React.FC = () => {
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
 
   const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
 
-  const { claimValue } = web3c.daoReward;
-  const { balance: bondBalance } = web3c.bond;
-  const { votingPower, userLockedUntil, multiplier = 1 } = web3c.daoBarn;
+  const { claimValue } = daoCtx.daoReward;
+  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
+  const { votingPower, userLockedUntil, multiplier = 1 } = daoCtx.daoBarn;
 
   const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
 
   function handleLeftTimeEnd() {
-    web3c.daoBarn.reload();
+    daoCtx.daoBarn.reload();
   }
 
   function handleClaim() {
     setState({ claiming: true });
 
-    web3c.daoReward.actions
+    daoCtx.daoReward.actions
       .claim()
       .catch(Error)
       .then(() => {
-        web3c.daoReward.reload();
-        web3c.bond.reload();
+        daoCtx.daoReward.reload();
+        (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
         setState({ claiming: false });
       });
   }
@@ -72,7 +73,7 @@ const VotingHeader: React.FC = () => {
             Current reward
           </Text>
           <Grid flow="col" gap={16} align="center">
-            <Tooltip title={<Text type="p2">{formatBigValue(claimValue, BONDTokenMeta.decimals)}</Text>}>
+            <Tooltip title={<Text type="p2">{formatBigValue(claimValue, BondToken.decimals)}</Text>}>
               <Skeleton loading={claimValue === undefined}>
                 <Text type="h3" weight="bold" color="primary">
                   {isSmallBONDValue(claimValue) && '> '}
@@ -80,7 +81,7 @@ const VotingHeader: React.FC = () => {
                 </Text>
               </Skeleton>
             </Tooltip>
-            <Icon name="bond-square-token" />
+            <Icon name="static/token-bond" />
             <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -97,7 +98,7 @@ const VotingHeader: React.FC = () => {
                 {formatBONDValue(bondBalance)}
               </Text>
             </Skeleton>
-            <Icon name="bond-square-token" />
+            <Icon name="static/token-bond" />
           </Grid>
         </Grid>
         <Divider type="vertical" />

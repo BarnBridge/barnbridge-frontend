@@ -1,9 +1,7 @@
 import React, { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
-import { NewStakingContract } from 'web3/contracts/staking';
-import Web3Contract from 'web3/contracts/web3Contract';
-import { YFContract } from 'web3/contracts/yieldFarming';
+import Web3Contract from 'web3/web3Contract';
 
 import {
   BondToken,
@@ -15,10 +13,13 @@ import {
   convertTokenInUSD,
   useKnownTokens,
 } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import { fetchSYRewardPools } from 'modules/smart-yield/api';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
+import { YfStakingContract } from 'modules/yield-farming/contracts/yfStaking';
 import { useWallet } from 'wallets/wallet';
 
 export enum YFPoolID {
@@ -33,7 +34,7 @@ export type YFPoolMeta = {
   icons: string[];
   colors: string[];
   tokens: TokenMeta[];
-  contract: YFContract;
+  contract: YfPoolContract;
 };
 
 export const StableYfPool: YFPoolMeta = {
@@ -42,16 +43,16 @@ export const StableYfPool: YFPoolMeta = {
   icons: ['token-usdc', 'token-dai', 'token-susd'],
   colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
   tokens: [UsdcToken, DaiToken, SusdToken],
-  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_ADDR).toLowerCase()),
+  contract: new YfPoolContract(config.contracts.yfStable),
 };
 
 export const UnilpYfPool: YFPoolMeta = {
   name: YFPoolID.UNILP,
   label: 'USDC_BOND_UNI_LP',
-  icons: ['token-uniswap'],
+  icons: ['static/token-uniswap'],
   colors: ['var(--theme-red-color)'],
   tokens: [UniV2Token],
-  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_LP_ADDR).toLowerCase()),
+  contract: new YfPoolContract(config.contracts.yfUnilp),
 };
 
 export const BondYfPool: YFPoolMeta = {
@@ -60,7 +61,7 @@ export const BondYfPool: YFPoolMeta = {
   icons: ['static/token-bond'],
   colors: ['var(--theme-red-color)'],
   tokens: [BondToken],
-  contract: new YFContract(String(process.env.REACT_APP_CONTRACT_YIELD_FARM_BOND_ADDR).toLowerCase()),
+  contract: new YfPoolContract(config.contracts.yfBond),
 };
 
 const KNOWN_POOLS: YFPoolMeta[] = [StableYfPool, UnilpYfPool, BondYfPool];
@@ -78,9 +79,11 @@ export type YFPoolsType = {
   yfPools: YFPoolMeta[];
   syPools: SYPoolMeta[];
   getYFKnownPoolByName: (name: string) => YFPoolMeta | undefined;
-  stakingContract?: NewStakingContract;
+  stakingContract?: YfStakingContract;
   getPoolBalanceInUSD: (name: string) => BigNumber | undefined;
   getPoolEffectiveBalanceInUSD: (name: string) => BigNumber | undefined;
+  getMyPoolBalanceInUSD: (name: string) => BigNumber | undefined;
+  getMyPoolEffectiveBalanceInUSD: (name: string) => BigNumber | undefined;
   getYFTotalStakedInUSD: () => BigNumber | undefined;
   getYFTotalEffectiveStakedInUSD: () => BigNumber | undefined;
   getYFDistributedRewards: () => BigNumber | undefined;
@@ -95,6 +98,8 @@ const YFPoolsContext = createContext<YFPoolsType>({
   stakingContract: undefined,
   getPoolBalanceInUSD: () => undefined,
   getPoolEffectiveBalanceInUSD: () => undefined,
+  getMyPoolBalanceInUSD: () => undefined,
+  getMyPoolEffectiveBalanceInUSD: () => undefined,
   getYFTotalStakedInUSD: () => undefined,
   getYFTotalEffectiveStakedInUSD: () => undefined,
   getYFDistributedRewards: () => undefined,
@@ -116,7 +121,7 @@ const YFPoolsProvider: FC = props => {
   const [syPools, setSYPools] = useState<SYPoolMeta[]>([]);
 
   const stakingContract = useMemo(() => {
-    const staking = new NewStakingContract();
+    const staking = new YfStakingContract();
     staking.on(Web3Contract.UPDATE_DATA, reload);
 
     return staking;
@@ -201,7 +206,7 @@ const YFPoolsProvider: FC = props => {
       return BigNumber.sumEach(pool.tokens, token => {
         const stakedToken = stakingContract.stakedTokens.get(token.address);
 
-        if (!stakedToken || !stakedToken.nextEpochPoolSize) {
+        if (!stakedToken || stakedToken.nextEpochPoolSize === undefined) {
           return undefined;
         }
 
@@ -222,11 +227,53 @@ const YFPoolsProvider: FC = props => {
       return BigNumber.sumEach(pool.tokens, token => {
         const stakedToken = stakingContract.stakedTokens.get(token.address);
 
-        if (!stakedToken || !stakedToken.currentEpochPoolSize) {
+        if (!stakedToken || stakedToken.currentEpochPoolSize === undefined) {
           return undefined;
         }
 
         return convertTokenInUSD(stakedToken.currentEpochPoolSize.unscaleBy(token.decimals), token.symbol);
+      });
+    },
+    [stakingContract],
+  );
+
+  const getMyPoolBalanceInUSD = useCallback(
+    (poolId: string): BigNumber | undefined => {
+      const pool = getYFKnownPoolByName(poolId);
+
+      if (!pool) {
+        return undefined;
+      }
+
+      return BigNumber.sumEach(pool.tokens, token => {
+        const stakedToken = stakingContract.stakedTokens.get(token.address);
+
+        if (!stakedToken || stakedToken.nextEpochUserBalance === undefined) {
+          return undefined;
+        }
+
+        return convertTokenInUSD(stakedToken.nextEpochUserBalance.unscaleBy(token.decimals), token.symbol);
+      });
+    },
+    [stakingContract],
+  );
+
+  const getMyPoolEffectiveBalanceInUSD = useCallback(
+    (poolId: string): BigNumber | undefined => {
+      const pool = getYFKnownPoolByName(poolId);
+
+      if (!pool) {
+        return undefined;
+      }
+
+      return BigNumber.sumEach(pool.tokens, token => {
+        const stakedToken = stakingContract.stakedTokens.get(token.address);
+
+        if (!stakedToken || stakedToken.currentEpochUserBalance === undefined) {
+          return undefined;
+        }
+
+        return convertTokenInUSD(stakedToken.currentEpochUserBalance.unscaleBy(token.decimals), token.symbol);
       });
     },
     [stakingContract],
@@ -248,7 +295,7 @@ const YFPoolsProvider: FC = props => {
     return BigNumber.sumEach(KNOWN_POOLS, yfPool => {
       const { distributedReward } = yfPool.contract;
 
-      if (!distributedReward) {
+      if (distributedReward === undefined) {
         return undefined;
       }
 
@@ -260,7 +307,7 @@ const YFPoolsProvider: FC = props => {
     return BigNumber.sumEach(KNOWN_POOLS, yfPool => {
       const { totalSupply } = yfPool.contract;
 
-      if (!totalSupply) {
+      if (totalSupply === undefined) {
         return undefined;
       }
 
@@ -272,14 +319,14 @@ const YFPoolsProvider: FC = props => {
     return BigNumber.sumEach(syPools, syPool => {
       const { poolSize } = syPool.rewardContract;
 
-      if (!poolSize) {
+      if (poolSize === undefined) {
         return undefined;
       }
 
       const tokenMeta = knownTokensCtx.getTokenByAddress(syPool.poolContract.address);
 
       if (!tokenMeta) {
-        return undefined;
+        return BigNumber.ZERO;
       }
 
       return knownTokensCtx.convertTokenInUSD(poolSize.unscaleBy(tokenMeta.decimals), tokenMeta.symbol);
@@ -296,6 +343,8 @@ const YFPoolsProvider: FC = props => {
     getSYTotalStakedInUSD,
     getPoolBalanceInUSD,
     getPoolEffectiveBalanceInUSD,
+    getMyPoolBalanceInUSD,
+    getMyPoolEffectiveBalanceInUSD,
     getYFDistributedRewards,
     getYFTotalSupply,
   };

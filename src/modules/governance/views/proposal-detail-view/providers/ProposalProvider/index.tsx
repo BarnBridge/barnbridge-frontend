@@ -2,13 +2,13 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
-import { ProposalReceipt } from 'web3/contracts/daoGovernance';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
+import { useDAO } from 'modules/governance/components/dao-provider';
+import { ProposalReceipt } from 'modules/governance/contracts/daoGovernance';
 import { useWallet } from 'wallets/wallet';
 
 export type ProposalProviderState = {
@@ -61,7 +61,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
   const history = useHistory();
   const wallet = useWallet();
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
   const [reload, version] = useReload();
 
   const [state, setState] = useMergeState<ProposalProviderState>(InitialState);
@@ -119,7 +119,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       againstRate,
     });
 
-    web3c.daoBarn.actions.bondStakedAtTs(createTime + warmUpDuration).then(bondStakedAt => {
+    daoCtx.daoBarn.actions.bondStakedAtTs(createTime + warmUpDuration).then(bondStakedAt => {
       let quorum: number | undefined;
 
       if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
@@ -129,7 +129,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       setState({ quorum });
     });
 
-    web3c.daoGovernance.actions.abrogationProposal(state.proposal.proposalId).then(result => {
+    daoCtx.daoGovernance.actions.abrogationProposal(state.proposal.proposalId).then(result => {
       if (result) {
         setState({ isCanceled: result.createTime > 0 });
       }
@@ -141,7 +141,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       thresholdRate: undefined,
     });
 
-    const { bondStaked } = web3c.daoBarn;
+    const { bondStaked } = daoCtx.daoBarn;
 
     if (!state.proposal || !bondStaked || bondStaked.isEqualTo(ZERO_BIG_NUMBER)) {
       return;
@@ -149,14 +149,14 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
     const { proposer } = state.proposal;
 
-    web3c.daoBarn.actions.votingPower(proposer).then(votingPower => {
+    daoCtx.daoBarn.actions.votingPower(proposer).then(votingPower => {
       if (votingPower) {
         setState({
           thresholdRate: votingPower.div(bondStaked).multipliedBy(100).toNumber(),
         });
       }
     });
-  }, [state.proposal, web3c.daoBarn.bondStaked]);
+  }, [state.proposal, daoCtx.daoBarn.bondStaked]);
 
   React.useEffect(() => {
     setState({
@@ -170,44 +170,46 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
     const { createTime, warmUpDuration } = state.proposal;
 
-    web3c.daoGovernance.actions.getProposalReceipt(state.proposal.proposalId).then(receipt => {
+    daoCtx.daoGovernance.actions.getProposalReceipt(state.proposal.proposalId).then(receipt => {
       setState({ receipt });
     });
 
-    web3c.daoBarn.actions.votingPowerAtTs(createTime + warmUpDuration).then(votingPower => {
+    daoCtx.daoBarn.actions.votingPowerAtTs(createTime + warmUpDuration).then(votingPower => {
       setState({ votingPower });
     });
   }, [state.proposal, wallet.account]);
 
   function cancelProposal(): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.cancelProposal(proposalId).then(() => reload()) : Promise.reject();
+    return proposalId ? daoCtx.daoGovernance.actions.cancelProposal(proposalId).then(() => reload()) : Promise.reject();
   }
 
   function queueProposalForExecution(gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.queueProposalForExecution(proposalId, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.actions.queueProposalForExecution(proposalId, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   function executeProposal(): Promise<void> {
-    return proposalId ? web3c.daoGovernance.actions.executeProposal(proposalId).then(() => reload()) : Promise.reject();
+    return proposalId
+      ? daoCtx.daoGovernance.actions.executeProposal(proposalId).then(() => reload())
+      : Promise.reject();
   }
 
   function proposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.proposalCastVote(proposalId, support, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.actions.proposalCastVote(proposalId, support, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   function proposalCancelVote(gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.proposalCancelVote(proposalId, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.actions.proposalCancelVote(proposalId, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   function startAbrogationProposal(description: string, gasPrice: number): Promise<void> {
     return proposalId
-      ? web3c.daoGovernance.actions.startAbrogationProposal(proposalId, description, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.actions.startAbrogationProposal(proposalId, description, gasPrice).then(() => reload())
       : Promise.reject();
   }
 

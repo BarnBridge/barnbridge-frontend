@@ -4,6 +4,9 @@ import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
+import { Text } from 'components/custom/typography';
+import config from 'config';
+import RocketSvg from 'resources/img/rocket.png';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
@@ -66,6 +69,22 @@ const SmartExposureView: React.FC = () => {
       disabled: !wallet.account,
     },
   ];
+
+  if (!config.isDev) {
+    return (
+      <div className="flex flow-row row-gap-48 align-center justify-center full-height">
+        <img src={RocketSvg} alt="Rocket" style={{ maxWidth: '310px', maxHeight: '377px' }} />
+        <div className="grid flow-row row-gap-8">
+          <Text type="h1" weight="bold" color="primary">
+            Stay tuned!
+          </Text>
+          <Text type="p1" weight="semibold" color="secondary">
+            We are launching soon
+          </Text>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>

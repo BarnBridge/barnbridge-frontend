@@ -1,9 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
+import Erc20Contract from 'web3/erc20Contract';
 
 import { KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
-import { YFPoolMeta, useYFPools } from 'modules/yield-farming/providers/pools-provider';
+import config from 'config';
+import { useReload } from 'hooks/useReload';
+import { useWallet } from 'wallets/wallet';
+
+import { YFPoolMeta, useYFPools } from '../../providers/pools-provider';
 
 export type YFPoolType = {
   poolMeta?: YFPoolMeta;
@@ -25,6 +30,8 @@ type Props = {
 const YFPoolProvider: React.FC<Props> = props => {
   const { poolId, children } = props;
 
+  const [reload] = useReload();
+  const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
 
   const pool = React.useMemo(() => yfPoolsCtx.getYFKnownPoolByName(poolId), [poolId]);
@@ -43,6 +50,15 @@ const YFPoolProvider: React.FC<Props> = props => {
     effectivePoolBalance,
     apy,
   };
+
+  useEffect(() => {
+    if (walletCtx.account) {
+      pool?.tokens.forEach(token => {
+        (token.contract as Erc20Contract).loadBalance().then(reload).catch(Error);
+        (token.contract as Erc20Contract).loadAllowance(config.contracts.yfStaking).then(reload).catch(Error);
+      });
+    }
+  }, [pool, walletCtx.account]);
 
   return (
     <YFPoolContext.Provider value={value}>

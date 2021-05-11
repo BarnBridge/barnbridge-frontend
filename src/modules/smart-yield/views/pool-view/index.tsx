@@ -1,7 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import AntdSwitch from 'antd/lib/switch';
-import { BONDTokenMeta } from 'web3/contracts/bond';
 import { ZERO_BIG_NUMBER, formatPercent, formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
@@ -38,7 +37,7 @@ const PoolView: React.FC = () => {
     const jTokenPrice = rewardPool.poolToken.price ?? 1;
 
     const yearlyReward = dailyReward
-      .dividedBy(10 ** BONDTokenMeta.decimals)
+      .dividedBy(10 ** BondToken.decimals)
       .multipliedBy(bondPrice)
       .multipliedBy(365);
     const poolBalance = poolSize

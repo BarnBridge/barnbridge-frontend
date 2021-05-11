@@ -15,12 +15,12 @@ export type ActivationThresholdProps = {
 };
 
 const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
-  const dao = useDAO();
+  const daoCtx = useDAO();
   const [activating, setActivating] = React.useState<boolean>(false);
 
   function handleActivate() {
     setActivating(true);
-    dao.actions
+    daoCtx.actions
       .activate()
       .catch(Error)
       .then(() => {
@@ -34,8 +34,8 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         <Hint
           text={
             <Text type="p2">
-              For the DAO to be activated, a threshold of {formatBONDValue(dao.activationThreshold)} $BOND tokens staked
-              has to be met.
+              For the DAO to be activated, a threshold of {formatBONDValue(daoCtx.activationThreshold)} $BOND tokens
+              staked has to be met.
             </Text>
           }>
           <Text type="p1" weight="semibold" color="primary">
@@ -44,7 +44,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         </Hint>
         <Grid gap={12} colsTemplate="auto 24px" width="100%">
           <Progress
-            percent={dao.activationRate}
+            percent={daoCtx.activationRate}
             trailColor="var(--theme-border-color)"
             strokeWidth={24}
             strokeColor={{
@@ -55,15 +55,15 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icon name="bond-square-token" />
+          <Icon name="static/token-bond" />
           <Text type="p1" weight="bold" color="primary">
-            {formatBONDValue(dao.bondStaked)}
+            {formatBONDValue(daoCtx.bondStaked)}
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            / {formatBONDValue(dao.activationThreshold)} already staked.
+            / {formatBONDValue(daoCtx.activationThreshold)} already staked.
           </Text>
         </Grid>
-        {dao.activationRate === 100 && !dao.isActive && (
+        {daoCtx.activationRate === 100 && !daoCtx.isActive && (
           <Button type="primary" loading={activating} onClick={handleActivate}>
             Activate
           </Button>

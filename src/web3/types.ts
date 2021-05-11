@@ -1,12 +1,3 @@
-import React from 'react';
-
-export type TokenMeta = {
-  icon: React.ReactNode;
-  name: string;
-  address: string;
-  decimals: number;
-};
-
 export type Web3EventType<T extends Record<string, any>> = {
   event: string;
   id: string;

@@ -4,7 +4,6 @@ import AntdForm from 'antd/lib/form';
 import { waitUntil } from 'async-wait-until';
 import cn from 'classnames';
 import { StoreValue } from 'rc-field-form/lib/interface';
-import { useWeb3Contracts } from 'web3/contracts';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -48,9 +47,8 @@ const InitialState: ProposalCreateViewState = {
 
 const ProposalCreateView: React.FC = () => {
   const history = useHistory();
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
   const wallet = useWallet();
-  const dao = useDAO();
 
   const [form] = AntdForm.useForm<NewProposalForm>();
   const [state, setState] = useMergeState<ProposalCreateViewState>(InitialState);
@@ -130,7 +128,7 @@ const ProposalCreateView: React.FC = () => {
         ),
       };
 
-      const proposal = await web3c.daoGovernance.actions.createProposal(payload);
+      const proposal = await daoCtx.daoGovernance.actions.createProposal(payload);
       const { proposalId } = proposal.returnValues;
 
       await waitUntil(() => fetchProposal(proposalId), { intervalBetweenAttempts: 3_000, timeout: Infinity });
@@ -145,7 +143,7 @@ const ProposalCreateView: React.FC = () => {
   }
 
   React.useEffect(() => {
-    dao.actions.hasActiveProposal().then(hasActiveProposal => {
+    daoCtx.actions.hasActiveProposal().then(hasActiveProposal => {
       setState({ hasActiveProposal });
     });
   }, [wallet.account]);
@@ -158,15 +156,15 @@ const ProposalCreateView: React.FC = () => {
     return <Redirect to="/governance/proposals" />;
   }
 
-  const hasCreateRestrictions = state.hasActiveProposal !== undefined && dao.actions.hasThreshold() !== undefined;
+  const hasCreateRestrictions = state.hasActiveProposal !== undefined && daoCtx.actions.hasThreshold() !== undefined;
 
-  if (dao.isActive === undefined || !hasCreateRestrictions) {
+  if (daoCtx.isActive === undefined || !hasCreateRestrictions) {
     return null;
   }
 
-  const canCreateProposal = state.hasActiveProposal === false && dao.actions.hasThreshold() === true;
+  const canCreateProposal = state.hasActiveProposal === false && daoCtx.actions.hasThreshold() === true;
 
-  if (!dao.isActive || !canCreateProposal) {
+  if (!daoCtx.isActive || !canCreateProposal) {
     return <Redirect to="/governance/proposals" />;
   }
 

@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { useLocalStorage } from 'react-use-storage';
 
 import { Toast } from 'components/custom/notification';
+import config from 'config';
 import { useWallet } from 'wallets/wallet';
 
 export type NotificationsContextType = {
@@ -202,7 +203,7 @@ export function fetchNotifications({
   target?: string;
   timestamp?: number | null;
 }): Promise<NotificationType[]> {
-  const url = new URL('/api/notifications/list', process.env.REACT_APP_GOV_API_URL);
+  const url = new URL('/api/notifications/list', config.api.baseUrl);
   if (target) {
     url.searchParams.set('target', target);
   }

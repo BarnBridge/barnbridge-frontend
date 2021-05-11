@@ -2,9 +2,9 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import Erc20Contract from 'web3/contracts/erc20Contract';
-import Web3Contract from 'web3/contracts/web3Contract';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -14,6 +14,7 @@ import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -21,8 +22,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-
-const CONTRACT_DAO_GOVERNANCE_ADDR = String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase();
 
 type APITreasuryTokenEntity = APITreasuryToken & {
   token: Erc20Contract;
@@ -261,7 +260,7 @@ const TreasuryHoldings: React.FC = () => {
           const tokenContract = new Erc20Contract([], item.tokenAddress);
           tokenContract.on(Web3Contract.UPDATE_DATA, reload);
           tokenContract.loadCommon();
-          tokenContract.loadBalance(CONTRACT_DAO_GOVERNANCE_ADDR);
+          tokenContract.loadBalance(config.contracts.daoGovernance);
 
           return {
             ...item,
@@ -334,7 +333,7 @@ const TreasuryHoldings: React.FC = () => {
     }
 
     return state.tokens.items.reduce((a, item) => {
-      const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+      const amount = item.token.getBalanceOf(config.contracts.daoGovernance)?.unscaleBy(item.tokenDecimals);
       const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
       return a.plus(amountUSD ?? 0);
@@ -352,7 +351,7 @@ const TreasuryHoldings: React.FC = () => {
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
         {state.tokens.items.map(item => {
           const tokenMeta = getTokenBySymbol(item.tokenSymbol);
-          const amount = item.token.getBalanceOf(CONTRACT_DAO_GOVERNANCE_ADDR)?.unscaleBy(item.tokenDecimals);
+          const amount = item.token.getBalanceOf(config.contracts.daoGovernance)?.unscaleBy(item.tokenDecimals);
           const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
           return (

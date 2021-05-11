@@ -2,13 +2,13 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { useWeb3Contracts } from 'web3/contracts';
-import { AbrogationProposalReceipt } from 'web3/contracts/daoGovernance';
 import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { APIAbrogationEntity, fetchAbrogation } from 'modules/governance/api';
+import { useDAO } from 'modules/governance/components/dao-provider';
+import { AbrogationProposalReceipt } from 'modules/governance/contracts/daoGovernance';
 import { useWallet } from 'wallets/wallet';
 
 import { useProposal } from '../ProposalProvider';
@@ -50,7 +50,7 @@ const AbrogationProvider: React.FC = props => {
   const history = useHistory();
   const [reload, version] = useReload();
   const wallet = useWallet();
-  const web3c = useWeb3Contracts();
+  const daoCtx = useDAO();
   const { proposal } = useProposal();
 
   const [state, setState] = useMergeState<AbrogationProviderState>(InitialState);
@@ -110,7 +110,7 @@ const AbrogationProvider: React.FC = props => {
       againstRate,
     });
 
-    web3c.daoBarn.actions.bondStakedAtTs(createTime - 1).then(bondStakedAt => {
+    daoCtx.daoBarn.actions.bondStakedAtTs(createTime - 1).then(bondStakedAt => {
       let approvalRate: number | undefined;
 
       if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
@@ -135,13 +135,13 @@ const AbrogationProvider: React.FC = props => {
 
     const { proposalId, createTime } = state.abrogation;
 
-    web3c.daoBarn.actions.votingPowerAtTs(createTime - 1).then(votingPower => {
+    daoCtx.daoBarn.actions.votingPowerAtTs(createTime - 1).then(votingPower => {
       setState({
         votingPower,
       });
     });
 
-    web3c.daoGovernance.actions.getAbrogationProposalReceipt(proposalId).then(receipt => {
+    daoCtx.daoGovernance.actions.getAbrogationProposalReceipt(proposalId).then(receipt => {
       setState({
         receipt,
       });
@@ -150,7 +150,7 @@ const AbrogationProvider: React.FC = props => {
 
   function abrogationProposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? web3c.daoGovernance.actions
+      ? daoCtx.daoGovernance.actions
           .abrogationProposalCastVote(proposal?.proposalId, support, gasPrice)
           .then(() => reload())
       : Promise.reject();
@@ -158,7 +158,7 @@ const AbrogationProvider: React.FC = props => {
 
   function abrogationProposalCancelVote(gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? web3c.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice).then(() => reload())
       : Promise.reject();
   }
 

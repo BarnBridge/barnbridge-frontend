@@ -9,7 +9,7 @@ export const Slider: React.FC<Props> = ({ className, value, ...rest }) => {
   const max = Number(rest.max) || 0;
   const slicedMax = Math.floor(max * 1e6) / 1e6;
   const slicedValue = Math.floor(Number(value) * 1e6) / 1e6;
-  const percent = (slicedValue / slicedMax) * 100;
+  const percent = (slicedValue / slicedMax) * 100 || 0;
 
   return (
     <input
