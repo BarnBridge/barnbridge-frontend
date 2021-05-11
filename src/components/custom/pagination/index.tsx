@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import cn from 'classnames';
 
 import Icon from 'components/custom/icon';
@@ -44,19 +45,19 @@ type Props = {
   total: number;
   current: number;
   pageSize: number;
-  changeHandler: (page: number) => void;
+  onChange: (page: number) => void;
 };
 
-export const Pagination: React.FC<Props> = ({ className, total, current, pageSize, changeHandler }) => {
+export const Pagination: React.FC<Props> = ({ className, total, current, pageSize, onChange }) => {
   const pages = Math.ceil(total / pageSize);
-  const paginationList = pagination(current, pages);
+  const paginationList = useMemo(() => pagination(current, pages), [current, pages]);
 
   return (
     <div className={cn(s.pagination, className)}>
       <button
         className={cn(s.page, s.prev)}
         type="button"
-        onClick={() => changeHandler(current - 1)}
+        onClick={() => onChange(current - 1)}
         disabled={current <= 1}>
         <Icon name="arrow-backward" width={24} height={24} color="inherit" />
       </button>
@@ -64,7 +65,7 @@ export const Pagination: React.FC<Props> = ({ className, total, current, pageSiz
         page ? (
           <button
             key={idx}
-            onClick={() => changeHandler(page)}
+            onClick={() => onChange(page)}
             className={cn(s.page, {
               [s.active]: page === current,
             })}
@@ -73,13 +74,15 @@ export const Pagination: React.FC<Props> = ({ className, total, current, pageSiz
             {page}
           </button>
         ) : (
-          <div className={s.separator}>...</div>
+          <div key={idx} className={s.separator}>
+            ...
+          </div>
         ),
       )}
       <button
         className={cn(s.page, s.next)}
         type="button"
-        onClick={() => changeHandler(current + 1)}
+        onClick={() => onChange(current + 1)}
         disabled={current >= pages}>
         <Icon name="arrow-forward" width={24} height={24} color="inherit" />
       </button>

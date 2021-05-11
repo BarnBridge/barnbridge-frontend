@@ -20,12 +20,7 @@ const LayoutView: React.FC = () => {
   return (
     <div className={s.layout}>
       <LayoutSideNav />
-      <div
-        style={{
-          flexGrow: 1,
-          display: 'flex',
-          flexDirection: 'column',
-        }}>
+      <div className="flex flow-row flex-grow">
         <WarningProvider>
           <LayoutHeader />
           <main className={s.main}>

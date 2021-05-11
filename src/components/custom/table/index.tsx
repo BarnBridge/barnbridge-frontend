@@ -41,10 +41,10 @@ type TableFooterType = {
   current: number;
   pageSize: number;
   children?: JSX.Element | (({ total, from, to }: { total: number; from: number; to: number }) => JSX.Element);
-  changeHandler: (page: number) => void;
+  onChange: (page: number) => void;
 };
 
-export const TableFooter: React.FC<TableFooterType> = ({ children, total, current, pageSize, changeHandler }) => {
+export const TableFooter: React.FC<TableFooterType> = ({ children, total, current, pageSize, onChange }) => {
   return (
     <div className="flex p-24">
       <Text type="p2" weight="semibold" color="secondary">
@@ -56,13 +56,7 @@ export const TableFooter: React.FC<TableFooterType> = ({ children, total, curren
             })
           : children}
       </Text>
-      <Pagination
-        className="ml-auto"
-        total={total}
-        current={current}
-        pageSize={pageSize}
-        changeHandler={changeHandler}
-      />
+      <Pagination className="ml-auto" total={total} current={current} pageSize={pageSize} onChange={onChange} />
     </div>
   );
 };

@@ -89,7 +89,7 @@ const PositionsTable: React.FC = () => {
           },
         ]}
       />
-      <TableFooter total={total} current={current} pageSize={pageSize} changeHandler={setCurrent}>
+      <TableFooter total={total} current={current} pageSize={pageSize} onChange={setCurrent}>
         {({ total, from, to }) => (
           <>
             Showing {from} to {to} out of {total} entries
