@@ -2,15 +2,15 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, formatToken } from 'web3/utils';
 
-import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
+import Spin from 'components/antd/spin';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import TokenAmount from 'components/custom/token-amount';
+import { TokenAmount } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
@@ -21,7 +21,6 @@ import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
 type FormData = {
-  from?: BigNumber;
   to?: BigNumber;
   slippage?: number;
   deadline?: number;
@@ -35,7 +34,6 @@ type State = {
 
 const InitialState: State = {
   formValues: {
-    from: undefined,
     to: undefined,
     slippage: 0.5,
     deadline: 20,
@@ -55,6 +53,10 @@ const JuniorTranche: React.FC = () => {
   const [state, setState] = React.useState<State>(InitialState);
   const [priceReversible, setPriceReversible] = React.useState(false);
   const formDisabled = !pool?.contracts.underlying.isAllowed;
+  const [isApproving, setApproving] = React.useState<boolean>(false);
+  const [amount, setAmount] = React.useState('');
+  const bnAmount = amount ? new BigNumber(amount) : undefined;
+  const maxAmount = pool?.contracts.underlying.maxAllowed.unscaleBy(pool?.underlyingDecimals);
 
   function handlePriceReverse() {
     setPriceReversible(prevState => !prevState);
@@ -97,7 +99,7 @@ const JuniorTranche: React.FC = () => {
       return undefined;
     }
 
-    const { from } = form.getFieldsValue();
+    const from = bnAmount;
 
     if (!from) {
       return undefined;
@@ -114,7 +116,9 @@ const JuniorTranche: React.FC = () => {
       return undefined;
     }
 
-    const { from, slippage } = form.getFieldsValue();
+    const from = bnAmount;
+
+    const { slippage } = form.getFieldsValue();
 
     if (!from) {
       return undefined;
@@ -141,6 +145,16 @@ const JuniorTranche: React.FC = () => {
     });
   }
 
+  async function handleTokenEnable() {
+    setApproving(true);
+
+    try {
+      await poolCtx.actions.approveUnderlying(true);
+    } catch {}
+
+    setApproving(false);
+  }
+
   function handleSubmit() {
     setState(
       mergeState<State>({
@@ -162,7 +176,9 @@ const JuniorTranche: React.FC = () => {
       return;
     }
 
-    const { from, deadline } = form.getFieldsValue();
+    const from = bnAmount;
+
+    const { deadline } = form.getFieldsValue();
 
     if (!from) {
       return;
@@ -211,13 +227,18 @@ const JuniorTranche: React.FC = () => {
         onValuesChange={handleFormValuesChange}
         validateTrigger={['onSubmit']}
         onFinish={handleSubmit}>
-        <Form.Item name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
+        <Form.Item label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
-            tokenIcon={pool?.meta?.icon as TokenIconNames}
-            max={getHumanValue(pool?.contracts.underlying.maxAllowed, pool?.underlyingDecimals)}
-            maximumFractionDigits={pool?.underlyingDecimals}
-            displayDecimals={4}
+            className="mb-24"
+            before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
+            placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
+            max={maxAmount?.toNumber() ?? 0}
             disabled={formDisabled || state.isSaving}
+            decimals={pool?.underlyingDecimals}
+            value={amount}
+            onChange={(value: string) => {
+              setAmount(value);
+            }}
             slider
           />
         </Form.Item>
@@ -245,21 +266,24 @@ const JuniorTranche: React.FC = () => {
           }
           dependencies={['from', 'slippage']}>
           {() => (
-            <TokenAmount
-              tokenIcon={
-                <IconBubble
-                  name={pool?.meta?.icon}
-                  bubbleName="static/token-bond"
-                  secondBubbleName={pool?.market?.icon}
-                  width={36}
-                  height={36}
-                />
-              }
-              maximumFractionDigits={pool?.underlyingDecimals}
-              displayDecimals={pool?.underlyingDecimals}
-              value={new BigNumber(getAmount()?.toFixed(pool?.underlyingDecimals ?? 0) ?? ZERO_BIG_NUMBER)}
-              disabled
-            />
+            <>
+              <TokenAmount
+                className="mb-24"
+                before={
+                  <IconBubble
+                    name={pool?.meta?.icon}
+                    bubbleName="static/token-bond"
+                    secondBubbleName={pool?.market?.icon}
+                    width={36}
+                    height={36}
+                  />
+                }
+                decimals={pool?.underlyingDecimals}
+                value={formatToken(getAmount()) ?? ''}
+                onChange={(value: string) => {}}
+                disabled
+              />
+            </>
           )}
         </Form.Item>
         <Form.Item name="slippage" noStyle hidden>
@@ -299,18 +323,8 @@ const JuniorTranche: React.FC = () => {
                 Protocol fees
               </Text>
               <Text type="p2" weight="semibold" color="primary">
-                <Form.Item dependencies={['from']} noStyle>
-                  {() => (
-                    <>
-                      {formatBigValue(
-                        new BigNumber(form.getFieldValue('from') ?? ZERO_BIG_NUMBER)
-                          .multipliedBy(juniorFee ?? 0)
-                          .dividedBy(1e18),
-                      )}{' '}
-                    </>
-                  )}
-                </Form.Item>
-                {pool?.underlyingSymbol} ({formatPercent(juniorFee?.dividedBy(1e18))})
+                {formatBigValue(bnAmount?.multipliedBy(juniorFee ?? 0).dividedBy(1e18))} {pool?.underlyingSymbol} (
+                {formatPercent(juniorFee?.dividedBy(1e18))})
               </Text>
             </div>
             <div className="grid flow-col justify-space-between">
@@ -332,9 +346,18 @@ const JuniorTranche: React.FC = () => {
             <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
             Cancel
           </button>
-          <Button type="primary" htmlType="submit" disabled={formDisabled} loading={state.isSaving}>
-            Deposit
-          </Button>
+          <div className="flex">
+            {pool?.contracts.underlying.isAllowed === false && (
+              <button type="button" className="button-ghost mr-24" disabled={isApproving} onClick={handleTokenEnable}>
+                <Spin spinning={isApproving} />
+                Enable {pool?.underlyingSymbol}
+              </button>
+            )}
+            <button type="submit" className="button-primary" disabled={formDisabled}>
+              <Spin spinning={state.isSaving} />
+              Deposit
+            </button>
+          </div>
         </div>
       </Form>
 
@@ -356,7 +379,7 @@ const JuniorTranche: React.FC = () => {
                   Deposited
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(form.getFieldValue('from'))} {pool?.underlyingSymbol}
+                  {formatBigValue(bnAmount)} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
@@ -364,12 +387,8 @@ const JuniorTranche: React.FC = () => {
                   Transaction fees
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(
-                    new BigNumber(form.getFieldValue('from') ?? ZERO_BIG_NUMBER)
-                      .multipliedBy(juniorFee ?? 0)
-                      .dividedBy(1e18),
-                  )}{' '}
-                  {pool?.underlyingSymbol} ({formatPercent(juniorFee?.dividedBy(1e18))})
+                  {formatBigValue(bnAmount?.multipliedBy(juniorFee ?? 0).dividedBy(1e18))} {pool?.underlyingSymbol} (
+                  {formatPercent(juniorFee?.dividedBy(1e18))})
                 </Text>
               </div>
             </div>

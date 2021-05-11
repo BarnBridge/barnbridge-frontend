@@ -1,6 +1,5 @@
 import React from 'react';
 import { useRouteMatch } from 'react-router-dom';
-import AntdSwitch from 'antd/lib/switch';
 import cn from 'classnames';
 import { formatPercent, formatToken } from 'web3/utils';
 
@@ -28,18 +27,6 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
   );
   const isSeniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/senior'));
   const isJuniorDeposit = Boolean(useRouteMatch('/smart-yield/deposit/junior'));
-
-  const [isApproving, setApproving] = React.useState<boolean>(false);
-
-  async function handleSwitchChange(enable: boolean) {
-    setApproving(true);
-
-    try {
-      await poolCtx.actions.approveUnderlying(enable);
-    } catch {}
-
-    setApproving(false);
-  }
 
   if (!pool) {
     return null;
@@ -128,19 +115,6 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
               <Text type="p1" weight="semibold" color="purple">
                 {formatPercent(pool.state.juniorApy)}
               </Text>
-            </div>
-          )}
-          {(isSeniorDeposit || isJuniorDeposit) && (
-            <div>
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Enable token
-              </Text>
-              <AntdSwitch
-                style={{ justifySelf: 'flex-start' }}
-                checked={pool.contracts.underlying.isAllowed}
-                loading={pool.contracts.underlying.isAllowed === undefined || isApproving}
-                onChange={handleSwitchChange}
-              />
             </div>
           )}
         </>

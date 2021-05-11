@@ -215,9 +215,28 @@ type FormatUSDOptions = {
   compact?: boolean;
 };
 
-export function formatUSD(value: number | BigNumber | undefined, options?: FormatUSDOptions): string | undefined {
-  if (value === undefined || value === null || Number.isNaN(value)) {
+export function formatUSD(
+  value: number | BigNumber | string | undefined,
+  options?: FormatUSDOptions,
+): string | undefined {
+  let val = value;
+
+  if (val === undefined || val === null) {
     return undefined;
+  }
+
+  if (typeof val === 'string') {
+    val = Number(val);
+  }
+
+  if (BigNumber.isBigNumber(val)) {
+    if (val.isNaN()) {
+      return undefined;
+    }
+  } else if (typeof val === 'number') {
+    if (!Number.isFinite(val)) {
+      return undefined;
+    }
   }
 
   const { decimals = 2, compact = false } = options ?? {};
@@ -227,12 +246,18 @@ export function formatUSD(value: number | BigNumber | undefined, options?: Forma
     return undefined;
   }
 
-  return Intl.NumberFormat('en', {
-    notation: compact ? 'compact' : undefined,
-    maximumFractionDigits: decimals,
-    style: 'currency',
-    currency: 'USD',
-  }).format(BigNumber.isBigNumber(value) ? value.toNumber() : value);
+  let str = '';
+
+  if (compact) {
+    str = Intl.NumberFormat('en', {
+      notation: 'compact',
+      maximumFractionDigits: decimals !== 0 ? decimals : undefined,
+    }).format(BigNumber.isBigNumber(val) ? val.toNumber() : val);
+  } else {
+    str = new BigNumber(val.toFixed(decimals)).toFormat(decimals);
+  }
+
+  return `$${str}`;
 }
 
 export function formatUSDValue(value?: BigNumber | number, decimals = 2, minDecimals: number = decimals): string {
