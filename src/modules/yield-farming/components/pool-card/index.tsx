@@ -244,32 +244,35 @@ const PoolCard: FC<Props> = props => {
                 </Grid>
               </div>
             )}
+          </>
+        )}
 
+        <div className="flex flow-row justify-end mt-auto">
+          {isEnded && (
             <div className="flex align-center justify-space-between mb-24">
               <Text type="small" weight="semibold" color="secondary">
                 Your balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(0, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(myPoolBalanceInUSD) ?? '-'}
               </Text>
             </div>
-          </>
-        )}
-
-        <div className="flex align-center justify-space-between col-gap-16 mt-auto">
-          <Link to={`/yield-farming/${poolId}`} className="button-primary flex-grow">
-            View pool
-          </Link>
-          {walletCtx.isActive && activeTab === 'my' && (
-            <button
-              type="button"
-              className="button-ghost flex-grow"
-              disabled={!toClaim?.gt(ZERO_BIG_NUMBER) || claiming}
-              onClick={handleClaim}>
-              {claiming && <Spin type="circle" />}
-              Claim
-            </button>
           )}
+          <div className="flex align-center justify-space-between col-gap-16">
+            <Link to={`/yield-farming/${poolId}`} className="button-primary flex-grow">
+              View pool
+            </Link>
+            {walletCtx.isActive && activeTab === 'my' && (
+              <button
+                type="button"
+                className="button-ghost flex-grow"
+                disabled={!toClaim?.gt(ZERO_BIG_NUMBER) || claiming}
+                onClick={handleClaim}>
+                {claiming && <Spin type="circle" />}
+                Claim
+              </button>
+            )}
+          </div>
         </div>
 
         {confirmClaimVisible && (

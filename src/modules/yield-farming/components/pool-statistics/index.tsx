@@ -86,9 +86,7 @@ const PoolStatistics: FC = () => {
             <div className="flex align-center">
               <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(poolMeta.contract.potentialReward?.unscaleBy(BondToken.decimals), {
-                  decimals: BondToken.decimals,
-                }) ?? '-'}
+                {formatToken(poolMeta.contract.potentialReward) ?? '-'}
               </Text>
             </div>
           </div>

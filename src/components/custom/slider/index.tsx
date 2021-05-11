@@ -17,7 +17,8 @@ export const Slider: React.FC<Props> = ({ className, value, ...rest }) => {
       type="range"
       className={cn(s.input, className)}
       style={{ '--track-fill': `${percent}%` } as React.CSSProperties}
-      max={slicedMax}
+      max={slicedMax === 0 ? 1 : slicedMax}
+      disabled={slicedMax === 0}
       value={value || '0'}
     />
   );

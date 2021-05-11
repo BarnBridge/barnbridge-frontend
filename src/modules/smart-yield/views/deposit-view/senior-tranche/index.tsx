@@ -189,6 +189,11 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
+    if (!bnAmount) {
+      setBondGain(undefined);
+      return;
+    }
+
     getBondGain(pool, bnAmount, formState.maturityDate);
   }, [pool, amount, formState.maturityDate]);
 
@@ -240,7 +245,7 @@ const SeniorTranche: React.FC = () => {
             before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount?.toNumber() ?? 0}
-            disabled={formDisabled || state.isSaving}
+            disabled={state.isSaving}
             decimals={pool?.underlyingDecimals}
             value={amount}
             onChange={ev => {
