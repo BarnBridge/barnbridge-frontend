@@ -12,22 +12,22 @@
     color: var(--theme-secondary-color);
     padding: 24px;
 
-    &:first-child {
-      // position: sticky;
-      // left: 0;
-      // z-index: 2;
-      // background-color: var(--theme-card-color);
+    // &:first-child {
+    //   position: sticky;
+    //   left: 0;
+    //   z-index: 2;
+    //   background-color: var(--theme-card-color);
 
-      // &::after {
-      //   content: '';
-      //   position: absolute;
-      //   top: 0;
-      //   bottom: 0;
-      //   right: 0;
-      //   width: 4px;
-      //   background-image: linear-gradient(to right, rgba(var(--theme-border-color-rgb), 0.5), transparent);
-      // }
-    }
+    //   &::after {
+    //     content: '';
+    //     position: absolute;
+    //     top: 0;
+    //     bottom: 0;
+    //     right: 0;
+    //     width: 4px;
+    //     background-image: linear-gradient(to right, rgba(var(--theme-border-color-rgb), 0.5), transparent);
+    //   }
+    // }
   }
 
   td {
@@ -67,8 +67,5 @@
         }
       }
     }
-  }
-
-  tbody {
   }
 }
