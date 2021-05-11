@@ -6,6 +6,7 @@ import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import config from 'config';
+import { SEPoolsProvider } from 'modules/smart-exposure/providers/se-pools-provider';
 import RocketSvg from 'resources/img/rocket.png';
 import { useWallet } from 'wallets/wallet';
 
@@ -90,29 +91,31 @@ const SmartExposureView: React.FC = () => {
     <>
       <NavTabs tabs={tabs} className={s.tabs} />
       <div className="content-container-fix content-container">
-        <Suspense fallback={<AntdSpin />}>
-          <Switch>
-            <Route path="/smart-exposure/pairs" exact>
-              <PairsView />
-            </Route>
-            <Route path="/smart-exposure/pairs/:pool" exact>
-              <PoolView />
-            </Route>
-            <Route path="/smart-exposure/pairs/:pool/deposit" exact>
-              <DepositView />
-            </Route>
-            <Route path="/smart-exposure/pairs/:pool/withdraw" exact>
-              <WithdrawView />
-            </Route>
-            <Route path="/smart-exposure/pairs/:pool/change-tranche" exact>
-              <ChangeTrancheView />
-            </Route>
-            <Route path="/smart-exposure/portfolio" exact>
-              <PortfolioView />
-            </Route>
-            <Redirect to="/smart-exposure/pairs" />
-          </Switch>
-        </Suspense>
+        <SEPoolsProvider>
+          <Suspense fallback={<AntdSpin />}>
+            <Switch>
+              <Route path="/smart-exposure/pairs" exact>
+                <PairsView />
+              </Route>
+              <Route path="/smart-exposure/pairs/:pool" exact>
+                <PoolView />
+              </Route>
+              <Route path="/smart-exposure/pairs/:pool/deposit" exact>
+                <DepositView />
+              </Route>
+              <Route path="/smart-exposure/pairs/:pool/withdraw" exact>
+                <WithdrawView />
+              </Route>
+              <Route path="/smart-exposure/pairs/:pool/change-tranche" exact>
+                <ChangeTrancheView />
+              </Route>
+              <Route path="/smart-exposure/portfolio" exact>
+                <PortfolioView />
+              </Route>
+              <Redirect to="/smart-exposure/pairs" />
+            </Switch>
+          </Suspense>
+        </SEPoolsProvider>
       </div>
     </>
   );
