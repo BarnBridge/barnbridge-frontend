@@ -267,7 +267,7 @@ const SeniorTranche: React.FC = () => {
             }
             format="DD/MM/YYYY"
             size="large"
-            disabled={formDisabled || state.isSaving}
+            disabled={state.isSaving}
           />
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
@@ -290,7 +290,7 @@ const SeniorTranche: React.FC = () => {
                       className={cn('button-ghost-monochrome ph-24 pv-16', {
                         selected: date?.valueOf() === maturityDate?.valueOf(),
                       })}
-                      disabled={formDisabled || state.isSaving}
+                      disabled={state.isSaving}
                       onClick={() => {
                         form.setFieldsValue({
                           maturityDate: date,

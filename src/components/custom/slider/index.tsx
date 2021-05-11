@@ -10,16 +10,17 @@ export const Slider: React.FC<Props> = ({ className, value, ...rest }) => {
   const slicedMax = Math.floor(max * 1e6) / 1e6;
   const slicedValue = Math.floor(Number(value) * 1e6) / 1e6;
   const percent = (slicedValue / slicedMax) * 100 || 0;
+  const disabled = slicedMax === 0;
 
   return (
     <input
       {...rest}
       type="range"
       className={cn(s.input, className)}
-      style={{ '--track-fill': `${percent}%` } as React.CSSProperties}
-      max={slicedMax === 0 ? 1 : slicedMax}
-      disabled={slicedMax === 0}
-      value={value || '0'}
+      style={{ '--track-fill': `${!disabled ? percent : 0}%` } as React.CSSProperties}
+      max={disabled ? 1 : slicedMax}
+      disabled={disabled}
+      value={!disabled ? value || '0' : '0'}
     />
   );
 };
