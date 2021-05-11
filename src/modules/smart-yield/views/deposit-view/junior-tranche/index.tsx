@@ -10,7 +10,7 @@ import Input from 'components/antd/input';
 import Spin from 'components/antd/spin';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import { TokenAmount } from 'components/custom/token-amount-new';
+import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
@@ -95,7 +95,7 @@ const JuniorTranche: React.FC = () => {
   }, [pool?.smartYieldAddress]);
 
   function getAmount() {
-    if (!pool || !juniorFee || !price) {
+    if (!pool || !price) {
       return undefined;
     }
 
@@ -106,9 +106,7 @@ const JuniorTranche: React.FC = () => {
     }
 
     /// to = (from - fee) * price
-    const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
-
-    return minAmount.dividedBy(price.dividedBy(1e18));
+    return from.dividedBy(price.dividedBy(1e18));
   }
 
   function getMinAmount() {
@@ -233,7 +231,7 @@ const JuniorTranche: React.FC = () => {
             before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount?.toNumber() ?? 0}
-            disabled={formDisabled || state.isSaving}
+            disabled={state.isSaving}
             decimals={pool?.underlyingDecimals}
             value={amount}
             onChange={(value: string) => {
@@ -267,21 +265,20 @@ const JuniorTranche: React.FC = () => {
           dependencies={['from', 'slippage']}>
           {() => (
             <>
-              <TokenAmount
+              <TokenAmountPreview
                 className="mb-24"
                 before={
                   <IconBubble
                     name={pool?.meta?.icon}
                     bubbleName="static/token-bond"
                     secondBubbleName={pool?.market?.icon}
-                    width={36}
-                    height={36}
+                    width={24}
+                    height={24}
                   />
                 }
-                decimals={pool?.underlyingDecimals}
-                value={formatToken(getAmount()) ?? ''}
-                onChange={(value: string) => {}}
-                disabled
+                value={formatToken(getAmount(), {
+                  decimals: pool?.underlyingDecimals,
+                })}
               />
             </>
           )}
