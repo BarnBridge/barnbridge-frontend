@@ -6,6 +6,7 @@ import addMinutes from 'date-fns/addMinutes';
 import format from 'date-fns/format';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
+import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
@@ -16,6 +17,7 @@ import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { BondToken, KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/wallet';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
@@ -67,6 +69,8 @@ const PoolCard: FC<Props> = props => {
 
     try {
       await poolMeta?.contract.claim(args.gasPrice);
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (poolMeta?.contract as YfPoolContract).loadUserData().catch(Error);
     } catch {}
 
     setClaiming(false);
@@ -244,32 +248,35 @@ const PoolCard: FC<Props> = props => {
                 </Grid>
               </div>
             )}
+          </>
+        )}
 
+        <div className="flex flow-row justify-end mt-auto">
+          {isEnded && (
             <div className="flex align-center justify-space-between mb-24">
               <Text type="small" weight="semibold" color="secondary">
                 Your balance
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {formatUSD(convertTokenInUSD(0, KnownTokens.UNIV2)) ?? '-'}
+                {formatUSD(myPoolBalanceInUSD) ?? '-'}
               </Text>
             </div>
-          </>
-        )}
-
-        <div className="flex align-center justify-space-between col-gap-16 mt-auto">
-          <Link to={`/yield-farming/${poolId}`} className="button-primary flex-grow">
-            View pool
-          </Link>
-          {walletCtx.isActive && activeTab === 'my' && (
-            <button
-              type="button"
-              className="button-ghost flex-grow"
-              disabled={!toClaim?.gt(ZERO_BIG_NUMBER) || claiming}
-              onClick={handleClaim}>
-              {claiming && <Spin type="circle" />}
-              Claim
-            </button>
           )}
+          <div className="flex align-center justify-space-between col-gap-16">
+            <Link to={`/yield-farming/${poolId}`} className="button-primary flex-grow">
+              View pool
+            </Link>
+            {walletCtx.isActive && activeTab === 'my' && (
+              <button
+                type="button"
+                className="button-ghost flex-grow"
+                disabled={!toClaim?.gt(ZERO_BIG_NUMBER) || claiming}
+                onClick={handleClaim}>
+                {claiming && <Spin type="circle" />}
+                Claim
+              </button>
+            )}
+          </div>
         </div>
 
         {confirmClaimVisible && (

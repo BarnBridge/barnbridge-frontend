@@ -9,14 +9,14 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
 
-import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
+import Spin from 'components/antd/spin';
 import Icon, { TokenIconNames } from 'components/custom/icon';
-import TokenAmount from 'components/custom/token-amount';
+import { TokenAmount } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
@@ -30,14 +30,12 @@ import { useWallet } from 'wallets/wallet';
 import { DURATION_1_MONTH, DURATION_1_YEAR, DURATION_3_MONTHS, DURATION_6_MONTHS, getDurationDate } from 'utils/date';
 
 type FormData = {
-  amount?: BigNumber;
   maturityDate?: Date;
   slippage?: number;
   deadline?: number;
 };
 
 const InitialFormValues: FormData = {
-  amount: undefined,
   maturityDate: undefined,
   slippage: 0.5,
   deadline: 20,
@@ -69,6 +67,10 @@ const SeniorTranche: React.FC = () => {
   const [formState, setFormState] = React.useState<FormData>(InitialFormValues);
   const [bondMaxLife, setBondMaxLife] = React.useState<number | undefined>();
   const [seniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
+  const [isApproving, setApproving] = React.useState<boolean>(false);
+  const [amount, setAmount] = React.useState('');
+  const bnAmount = amount ? new BigNumber(amount) : undefined;
+  const maxAmount = pool?.contracts.underlying.maxAllowed.unscaleBy(pool?.underlyingDecimals);
 
   React.useEffect(() => {
     if (!pool) {
@@ -94,6 +96,16 @@ const SeniorTranche: React.FC = () => {
     });
   }
 
+  async function handleTokenEnable() {
+    setApproving(true);
+
+    try {
+      await poolCtx.actions.approveUnderlying(true);
+    } catch {}
+
+    setApproving(false);
+  }
+
   function handleSubmit() {
     setState(
       mergeState<State>({
@@ -115,7 +127,8 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
-    const { amount, maturityDate, slippage, deadline } = form.getFieldsValue();
+    const amount = bnAmount;
+    const { maturityDate, slippage, deadline } = form.getFieldsValue();
 
     if (!amount) {
       return;
@@ -153,13 +166,9 @@ const SeniorTranche: React.FC = () => {
     );
   }
 
-  function handleValuesChange(changedValues: Partial<FormData>, allValues: FormData) {
-    setFormState(allValues);
-
-    if (changedValues.amount) {
-      setBondGain(undefined);
-    }
-  }
+  React.useEffect(() => {
+    setBondGain(undefined);
+  }, [amount]);
 
   const getBondGain = useDebounce((pPool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
     const smartYieldContract = new SYSmartYieldContract(pPool.smartYieldAddress);
@@ -167,7 +176,7 @@ const SeniorTranche: React.FC = () => {
     smartYieldContract.setAccount(wallet.account);
 
     const decimals = pPool.underlyingDecimals;
-    const amount = pAmount?.multipliedBy(10 ** decimals) ?? ZERO_BIG_NUMBER;
+    const amount = pAmount?.multipliedBy(10 ** decimals) ?? BigNumber.ZERO;
     const today = startOfDay(new Date());
     const days = differenceInDays(pMaturityDate ?? today, today);
 
@@ -179,8 +188,13 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
-    getBondGain(pool, formState.amount, formState.maturityDate);
-  }, [pool, formState.amount, formState.maturityDate]);
+    if (!bnAmount || !bnAmount.gt(BigNumber.ZERO)) {
+      setBondGain(undefined);
+      return;
+    }
+
+    getBondGain(pool, bnAmount, formState.maturityDate);
+  }, [pool, amount, formState.maturityDate]);
 
   const maturityDays = React.useMemo(() => {
     const today = startOfDay(new Date());
@@ -188,26 +202,26 @@ const SeniorTranche: React.FC = () => {
   }, [formState.maturityDate]);
 
   const apy = React.useMemo(() => {
-    if (maturityDays <= 0 || !formState.amount || formState.amount?.isEqualTo(ZERO_BIG_NUMBER)) {
-      return ZERO_BIG_NUMBER;
+    if (maturityDays <= 0 || !bnAmount || !bnAmount?.gt(BigNumber.ZERO)) {
+      return BigNumber.ZERO;
     }
 
-    // return (formState.amount ?? ZERO_BIG_NUMBER)
-    //   .plus() ?? ZERO_BIG_NUMBER)
+    // return (formState.amount ?? BigNumber.ZERO)
+    //   .plus() ?? BigNumber.ZERO)
     //   .dividedBy(maturityDays)
     //   .dividedBy(365);
     return (
       bondGain
         ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
-        .dividedBy(formState.amount ?? 1)
+        .dividedBy(bnAmount ?? 1)
         .dividedBy(maturityDays)
-        .multipliedBy(365) ?? ZERO_BIG_NUMBER
+        .multipliedBy(365) ?? BigNumber.ZERO
     );
-  }, [pool, bondGain, maturityDays]);
+  }, [pool, bondGain, amount, maturityDays]);
 
-  const reward = formState.amount
+  const reward = bnAmount
     ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
-    ?.plus(bondGain?.multipliedBy(1 - (seniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
+    ?.plus(bondGain?.multipliedBy(1 - (seniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? BigNumber.ZERO);
 
   return (
     <>
@@ -218,21 +232,24 @@ const SeniorTranche: React.FC = () => {
         Choose the amount of tokens you want to deposit in the senior bond. Make sure you double check the amounts,
         including reward at maturity and maturity date.
       </Text>
-
       <Form
         className="grid flow-row row-gap-32"
         form={form}
         initialValues={InitialFormValues}
         validateTrigger={['onSubmit']}
-        onValuesChange={handleValuesChange}
         onFinish={handleSubmit}>
-        <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
+        <Form.Item label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
-            tokenIcon={pool?.meta?.icon as TokenIconNames}
-            max={getHumanValue(pool?.contracts.underlying.maxAllowed, pool?.underlyingDecimals)}
-            maximumFractionDigits={pool?.underlyingDecimals}
-            displayDecimals={4}
-            disabled={formDisabled || state.isSaving}
+            className="mb-24"
+            before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
+            placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
+            max={maxAmount?.toNumber() ?? 0}
+            disabled={state.isSaving}
+            decimals={pool?.underlyingDecimals}
+            value={amount}
+            onChange={ev => {
+              setAmount(ev);
+            }}
             slider
           />
         </Form.Item>
@@ -249,7 +266,7 @@ const SeniorTranche: React.FC = () => {
             }
             format="DD/MM/YYYY"
             size="large"
-            disabled={formDisabled || state.isSaving}
+            disabled={state.isSaving}
           />
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
@@ -272,7 +289,7 @@ const SeniorTranche: React.FC = () => {
                       className={cn('button-ghost-monochrome ph-24 pv-16', {
                         selected: date?.valueOf() === maturityDate?.valueOf(),
                       })}
-                      disabled={formDisabled || state.isSaving}
+                      disabled={state.isSaving}
                       onClick={() => {
                         form.setFieldsValue({
                           maturityDate: date,
@@ -321,7 +338,7 @@ const SeniorTranche: React.FC = () => {
           apy={bondGain ? apy : undefined}
           gain={getHumanValue(bondGain, pool?.underlyingDecimals)}
           gainFee={seniorRedeemFee?.dividedBy(1e18)}
-          reward={bondGain ? getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER : undefined}
+          reward={bondGain ? getHumanValue(reward, pool?.underlyingDecimals) ?? BigNumber.ZERO : undefined}
           symbol={pool?.underlyingSymbol}
         />
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
@@ -329,9 +346,18 @@ const SeniorTranche: React.FC = () => {
             <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
             Cancel
           </button>
-          <Button type="primary" htmlType="submit" disabled={formDisabled} loading={state.isSaving}>
-            Deposit
-          </Button>
+          <div className="flex">
+            {pool?.contracts.underlying.isAllowed === false && (
+              <button type="button" className="button-ghost mr-24" disabled={isApproving} onClick={handleTokenEnable}>
+                <Spin spinning={isApproving} />
+                Enable {pool?.underlyingSymbol}
+              </button>
+            )}
+            <button type="submit" className="button-primary" disabled={formDisabled}>
+              <Spin spinning={state.isSaving} />
+              Deposit
+            </button>
+          </div>
         </div>
       </Form>
 
@@ -353,7 +379,7 @@ const SeniorTranche: React.FC = () => {
                   Deposited amount
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(form.getFieldValue('amount'))} {pool?.underlyingSymbol}
+                  {formatBigValue(bnAmount)} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">

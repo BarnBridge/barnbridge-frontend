@@ -19,7 +19,8 @@ $gaps: 4, 8, 12, 16, 24, 32, 40, 48, 64;
   &.wrap {
     flex-wrap: wrap;
   }
-
+  
+  &.flex-grow,
   > .flex-grow {
     flex-grow: 1;
   }

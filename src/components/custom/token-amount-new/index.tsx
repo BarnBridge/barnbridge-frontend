@@ -16,6 +16,7 @@ type TokenAmountType = {
   className?: string;
   classNameBefore?: string;
   placeholder?: string;
+  disabled?: boolean;
   max?: number;
   slider?: boolean;
   decimals?: number;
@@ -48,9 +49,10 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
         </div>
         {Number.isFinite(rest.max) && (
           <button
+            type="button"
             className="button-ghost"
             style={{ alignSelf: 'center' }}
-            type="button"
+            disabled={rest.disabled || rest.max === 0}
             onClick={() => onChange(String(rest.max))}>
             MAX
           </button>
@@ -58,15 +60,16 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
       </div>
       {slider && Number.isFinite(rest.max) ? (
         <Slider
-          className={s.tokenAmountSlider}
           type="range"
+          className={s.tokenAmountSlider}
           min="0"
           max={rest.max}
+          step={1 / 10 ** Math.min(decimals, 6)}
           value={rest.value ?? 0}
+          disabled={rest.disabled || rest.max === 0}
           onChange={e => {
             onChange(e.target.value);
           }}
-          step={1 / 10 ** Math.min(decimals, 6)}
         />
       ) : null}
     </div>

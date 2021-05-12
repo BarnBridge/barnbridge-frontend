@@ -133,7 +133,7 @@ const YFPoolsProvider: FC = props => {
       pool.contract.loadCommon().catch(Error);
 
       pool.tokens.forEach(tokenMeta => {
-        stakingContract.loadCommonFor(tokenMeta).catch(Error);
+        stakingContract.loadCommonFor(tokenMeta.address).catch(Error);
       });
     });
   }, []);
@@ -156,7 +156,7 @@ const YFPoolsProvider: FC = props => {
         pool.contract.loadUserData().catch(Error);
 
         pool.tokens.forEach(tokenMeta => {
-          stakingContract.loadUserDataFor(tokenMeta).catch(Error);
+          stakingContract.loadUserDataFor(tokenMeta.address).catch(Error);
         });
       }
     });

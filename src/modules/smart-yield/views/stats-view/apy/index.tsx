@@ -188,7 +188,7 @@ const ApyTrend: React.FC = () => {
                 separator=""
                 labelFormatter={value => (
                   <Text type="p2" tag="span" weight="semibold" color="primary">
-                    {value && !Number.isNaN(value) ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
+                    {Number.isFinite(value) ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (

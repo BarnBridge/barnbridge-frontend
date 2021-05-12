@@ -4,6 +4,7 @@ import { Method } from 'web3-core-method';
 import { Eth } from 'web3-eth';
 import { Contract } from 'web3-eth-contract';
 import { AbiItem } from 'web3-utils';
+import { getGasValue } from 'web3/utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import { DEFAULT_WEB3, DEFAULT_WEB3_PROVIDER, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
@@ -119,6 +120,12 @@ class Web3Contract extends EventEmitter {
     this.emit(Web3Contract.UPDATE_ACCOUNT, account);
   }
 
+  assertAccount() {
+    if (!this.account) {
+      throw new Error('This operation requires account to be connected!');
+    }
+  }
+
   batch(methods: BatchContractMethod[]): Promise<any[]> {
     if (methods.length === 0) {
       return Promise.reject(new Error(`Empty list of methods for batch.`));
@@ -159,7 +166,9 @@ class Web3Contract extends EventEmitter {
     });
   }
 
-  send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}): Promise<any> {
+  send(method: string, methodArgs: any[] = [], sendArgs: Record<string, any> = {}, gasPrice?: number): Promise<any> {
+    this.assertAccount();
+
     const contractMethod = this._sendContract.methods[method];
 
     if (!contractMethod) {
@@ -168,16 +177,22 @@ class Web3Contract extends EventEmitter {
 
     Web3Contract.sendIncNumber += 1;
 
+    const _sendArgs = {
+      from: this.account,
+      gasPrice: gasPrice !== undefined ? getGasValue(gasPrice) : undefined,
+      ...sendArgs,
+    };
+
     const meta: Web3SendMeta = {
       id: `${method}:${Web3Contract.sendIncNumber}`,
       sender: this,
       method,
       methodArgs,
-      sendArgs,
+      sendArgs: _sendArgs,
     };
 
     return contractMethod(...methodArgs)
-      .send(sendArgs, async (err: Error, txHash: string) => {
+      .send(_sendArgs, async (err: Error, txHash: string) => {
         if (err) {
           return;
         }
