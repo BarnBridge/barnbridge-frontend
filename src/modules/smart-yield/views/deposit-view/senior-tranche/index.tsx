@@ -9,7 +9,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
@@ -30,14 +30,12 @@ import { useWallet } from 'wallets/wallet';
 import { DURATION_1_MONTH, DURATION_1_YEAR, DURATION_3_MONTHS, DURATION_6_MONTHS, getDurationDate } from 'utils/date';
 
 type FormData = {
-  amount?: BigNumber;
   maturityDate?: Date;
   slippage?: number;
   deadline?: number;
 };
 
 const InitialFormValues: FormData = {
-  amount: undefined,
   maturityDate: undefined,
   slippage: 0.5,
   deadline: 20,
@@ -129,7 +127,8 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
-    const { amount, maturityDate, slippage, deadline } = form.getFieldsValue();
+    const amount = bnAmount;
+    const { maturityDate, slippage, deadline } = form.getFieldsValue();
 
     if (!amount) {
       return;
@@ -177,7 +176,7 @@ const SeniorTranche: React.FC = () => {
     smartYieldContract.setAccount(wallet.account);
 
     const decimals = pPool.underlyingDecimals;
-    const amount = pAmount?.multipliedBy(10 ** decimals) ?? ZERO_BIG_NUMBER;
+    const amount = pAmount?.multipliedBy(10 ** decimals) ?? BigNumber.ZERO;
     const today = startOfDay(new Date());
     const days = differenceInDays(pMaturityDate ?? today, today);
 
@@ -189,7 +188,7 @@ const SeniorTranche: React.FC = () => {
       return;
     }
 
-    if (!bnAmount) {
+    if (!bnAmount || !bnAmount.gt(BigNumber.ZERO)) {
       setBondGain(undefined);
       return;
     }
@@ -203,12 +202,12 @@ const SeniorTranche: React.FC = () => {
   }, [formState.maturityDate]);
 
   const apy = React.useMemo(() => {
-    if (maturityDays <= 0 || !bnAmount || bnAmount?.isEqualTo(ZERO_BIG_NUMBER)) {
-      return ZERO_BIG_NUMBER;
+    if (maturityDays <= 0 || !bnAmount || !bnAmount?.gt(BigNumber.ZERO)) {
+      return BigNumber.ZERO;
     }
 
-    // return (formState.amount ?? ZERO_BIG_NUMBER)
-    //   .plus() ?? ZERO_BIG_NUMBER)
+    // return (formState.amount ?? BigNumber.ZERO)
+    //   .plus() ?? BigNumber.ZERO)
     //   .dividedBy(maturityDays)
     //   .dividedBy(365);
     return (
@@ -216,13 +215,13 @@ const SeniorTranche: React.FC = () => {
         ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
         .dividedBy(bnAmount ?? 1)
         .dividedBy(maturityDays)
-        .multipliedBy(365) ?? ZERO_BIG_NUMBER
+        .multipliedBy(365) ?? BigNumber.ZERO
     );
-  }, [pool, bondGain, bnAmount, maturityDays]);
+  }, [pool, bondGain, amount, maturityDays]);
 
   const reward = bnAmount
     ?.multipliedBy(10 ** (pool?.underlyingDecimals ?? 0))
-    ?.plus(bondGain?.multipliedBy(1 - (seniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? ZERO_BIG_NUMBER);
+    ?.plus(bondGain?.multipliedBy(1 - (seniorRedeemFee?.dividedBy(1e18)?.toNumber() ?? 0)) ?? BigNumber.ZERO);
 
   return (
     <>
@@ -339,7 +338,7 @@ const SeniorTranche: React.FC = () => {
           apy={bondGain ? apy : undefined}
           gain={getHumanValue(bondGain, pool?.underlyingDecimals)}
           gainFee={seniorRedeemFee?.dividedBy(1e18)}
-          reward={bondGain ? getHumanValue(reward, pool?.underlyingDecimals) ?? ZERO_BIG_NUMBER : undefined}
+          reward={bondGain ? getHumanValue(reward, pool?.underlyingDecimals) ?? BigNumber.ZERO : undefined}
           symbol={pool?.underlyingSymbol}
         />
         <div className="grid flow-col col-gap-32 align-center justify-space-between">

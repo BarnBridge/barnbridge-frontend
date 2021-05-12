@@ -11,6 +11,7 @@ import Icon from 'components/custom/icon';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { BondToken, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/wallet';
 
 import { useYFPool } from '../../providers/pool-provider';
@@ -54,6 +55,8 @@ const PoolStatistics: FC = () => {
 
     try {
       await poolMeta.contract.claim(args.gasPrice);
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (poolMeta.contract as YfPoolContract).loadUserData().catch(Error);
     } catch {}
 
     setClaiming(false);

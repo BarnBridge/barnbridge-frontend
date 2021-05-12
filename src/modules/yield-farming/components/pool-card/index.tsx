@@ -6,6 +6,7 @@ import addMinutes from 'date-fns/addMinutes';
 import format from 'date-fns/format';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
+import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
@@ -16,6 +17,7 @@ import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { BondToken, KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/wallet';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
@@ -67,6 +69,8 @@ const PoolCard: FC<Props> = props => {
 
     try {
       await poolMeta?.contract.claim(args.gasPrice);
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (poolMeta?.contract as YfPoolContract).loadUserData().catch(Error);
     } catch {}
 
     setClaiming(false);

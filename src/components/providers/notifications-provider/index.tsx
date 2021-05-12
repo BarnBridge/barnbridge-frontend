@@ -281,7 +281,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
     return () => {
       if (intervalId) clearInterval(intervalId);
     };
-  }, [wallet.initialized, wallet.account]);
+  }, [wallet.initialized, wallet.account, addToast]);
 
   return (
     <NotificationsContext.Provider
