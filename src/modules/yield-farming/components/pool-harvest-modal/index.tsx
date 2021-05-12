@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
 import BigNumber from 'bignumber.js';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
@@ -71,7 +72,8 @@ const PoolHarvestModal: FC<ModalProps> = props => {
 
     try {
       await StableYfPool.contract.claim();
-      await StableYfPool.contract.loadUserData();
+      StableYfPool.contract.loadUserData().catch(Error);
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setStableHarvesting(false);
@@ -82,7 +84,8 @@ const PoolHarvestModal: FC<ModalProps> = props => {
 
     try {
       await UnilpYfPool.contract.claim();
-      await UnilpYfPool.contract.loadUserData();
+      UnilpYfPool.contract.loadUserData().catch(Error);
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setUnilpHarvesting(false);
@@ -93,7 +96,8 @@ const PoolHarvestModal: FC<ModalProps> = props => {
 
     try {
       await BondYfPool.contract.claim();
-      await BondYfPool.contract.loadUserData();
+      BondYfPool.contract.loadUserData().catch(Error);
+      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setBondHarvesting(false);

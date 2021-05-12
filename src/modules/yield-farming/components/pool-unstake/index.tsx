@@ -73,11 +73,11 @@ const PoolUnstake: FC = () => {
       await yfPoolsCtx.stakingContract?.unstake(activeToken.address, value, gasPrice);
 
       setAmount('');
-      await yfPoolsCtx.stakingContract?.loadCommonFor(activeToken);
-      await yfPoolsCtx.stakingContract?.loadUserDataFor(activeToken);
-      await activeContract.loadBalance();
-      await (poolMeta?.contract as YfPoolContract).loadCommon();
-      await (poolMeta?.contract as YfPoolContract).loadUserData();
+      yfPoolsCtx.stakingContract?.loadCommonFor(activeToken.address).catch(Error);
+      yfPoolsCtx.stakingContract?.loadUserDataFor(activeToken.address).catch(Error);
+      (poolMeta?.contract as YfPoolContract).loadCommon().catch(Error);
+      (poolMeta?.contract as YfPoolContract).loadUserData().catch(Error);
+      activeContract.loadBalance().catch(Error);
     } catch (e) {}
 
     setUnstaking(false);
