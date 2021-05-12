@@ -1,9 +1,19 @@
 import BigNumber from 'bignumber.js';
-import { getGasValue } from 'web3/utils';
+import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import { TokenMeta } from 'components/providers/known-tokens-provider';
 import config from 'config';
+
+const ABI: AbiItem[] = [
+  createAbiItem('epoch1Start', [], ['uint256']),
+  createAbiItem('epochDuration', [], ['uint256']),
+  createAbiItem('getCurrentEpoch', [], ['uint128']),
+  createAbiItem('getEpochPoolSize', ['address', 'uint128'], ['uint256']),
+  createAbiItem('getEpochUserBalance', ['address', 'address', 'uint128'], ['uint256']),
+  createAbiItem('balanceOf', ['address', 'address'], ['uint256']),
+  createAbiItem('deposit', ['address', 'uint256'], []),
+  createAbiItem('withdraw', ['address', 'uint256'], []),
+];
 
 export type YfStakedToken = {
   currentEpochPoolSize?: BigNumber;
@@ -14,20 +24,7 @@ export type YfStakedToken = {
 
 export class YfStakingContract extends Web3Contract {
   constructor() {
-    super(
-      [
-        createAbiItem('epoch1Start', [], ['uint256']),
-        createAbiItem('epochDuration', [], ['uint256']),
-        createAbiItem('getCurrentEpoch', [], ['uint128']),
-        createAbiItem('getEpochPoolSize', ['address', 'uint128'], ['uint256']),
-        createAbiItem('getEpochUserBalance', ['address', 'address', 'uint128'], ['uint256']),
-        createAbiItem('balanceOf', ['address', 'address'], ['uint256']),
-        createAbiItem('deposit', ['address', 'uint256'], []),
-        createAbiItem('withdraw', ['address', 'uint256'], []),
-      ],
-      config.contracts.yfStaking,
-      'STAKING',
-    );
+    super(ABI, config.contracts.yfStaking, 'STAKING');
 
     this.stakedTokens = new Map();
 
@@ -60,78 +57,64 @@ export class YfStakingContract extends Web3Contract {
     return [startDate, endDate, progress];
   }
 
-  loadCommonFor(token: TokenMeta): Promise<void> {
-    return this.batch([{ method: 'getCurrentEpoch' }, { method: 'epoch1Start' }, { method: 'epochDuration' }]).then(
-      ([currentEpoch, epochStart, epochDuration]) => {
-        const cEpoch = (this.currentEpoch = Number(currentEpoch));
+  async loadCommonFor(tokenAddress: string): Promise<void> {
+    const [currentEpoch, epochStart, epochDuration] = await this.batch([
+      { method: 'getCurrentEpoch' },
+      { method: 'epoch1Start' },
+      { method: 'epochDuration' },
+    ]);
+    const cEpoch = (this.currentEpoch = Number(currentEpoch));
 
-        this.epochStart = Number(epochStart);
-        this.epochDuration = Number(epochDuration);
+    this.epochStart = Number(epochStart);
+    this.epochDuration = Number(epochDuration);
 
-        return this.batch([
-          { method: 'getEpochPoolSize', methodArgs: [token.address, cEpoch] },
-          { method: 'getEpochPoolSize', methodArgs: [token.address, cEpoch + 1] },
-        ]).then(([currentEpochPoolSize, nextEpochPoolSize]) => {
-          const stakedToken = {
-            ...this.stakedTokens.get(token.address),
-            currentEpochPoolSize: new BigNumber(currentEpochPoolSize),
-            nextEpochPoolSize: new BigNumber(nextEpochPoolSize),
-          };
+    const [currentEpochPoolSize, nextEpochPoolSize] = await this.batch([
+      { method: 'getEpochPoolSize', methodArgs: [tokenAddress, cEpoch] },
+      { method: 'getEpochPoolSize', methodArgs: [tokenAddress, cEpoch + 1] },
+    ]);
 
-          this.stakedTokens.set(token.address, stakedToken);
-          this.emit(Web3Contract.UPDATE_DATA);
-        });
-      },
-    );
+    const stakedToken = {
+      ...this.stakedTokens.get(tokenAddress),
+      currentEpochPoolSize: new BigNumber(currentEpochPoolSize),
+      nextEpochPoolSize: new BigNumber(nextEpochPoolSize),
+    };
+
+    this.stakedTokens.set(tokenAddress, stakedToken);
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  loadUserDataFor(token: TokenMeta): Promise<void> {
+  async loadUserDataFor(tokenAddress: string): Promise<void> {
     const account = this.account;
 
-    if (!account) {
-      return Promise.reject();
-    }
+    this.assertAccount();
 
-    return this.batch([{ method: 'getCurrentEpoch' }]).then(([currentEpoch]) => {
-      const cEpoch = (this.currentEpoch = Number(currentEpoch));
+    const [currentEpoch] = await this.batch([{ method: 'getCurrentEpoch' }]);
+    const cEpoch = (this.currentEpoch = Number(currentEpoch));
 
-      return this.batch([
-        { method: 'balanceOf', methodArgs: [account, token.address] },
-        { method: 'getEpochUserBalance', methodArgs: [account, token.address, cEpoch] },
-        { method: 'getEpochUserBalance', methodArgs: [account, token.address, cEpoch + 1] },
-      ]).then(([userBalance, currentEpochUserBalance, nextEpochUserBalance]) => {
-        const stakedToken = {
-          ...this.stakedTokens.get(token.address),
-          userBalance: new BigNumber(userBalance),
-          currentEpochUserBalance: new BigNumber(currentEpochUserBalance),
-          nextEpochUserBalance: new BigNumber(nextEpochUserBalance),
-        };
+    const [userBalance, currentEpochUserBalance, nextEpochUserBalance] = await this.batch([
+      { method: 'balanceOf', methodArgs: [account, tokenAddress] },
+      { method: 'getEpochUserBalance', methodArgs: [account, tokenAddress, cEpoch] },
+      { method: 'getEpochUserBalance', methodArgs: [account, tokenAddress, cEpoch + 1] },
+    ]);
 
-        this.stakedTokens.set(token.address, stakedToken);
-        this.emit(Web3Contract.UPDATE_DATA);
-      });
-    });
+    const stakedToken = {
+      ...this.stakedTokens.get(tokenAddress),
+      userBalance: new BigNumber(userBalance),
+      currentEpochUserBalance: new BigNumber(currentEpochUserBalance),
+      nextEpochUserBalance: new BigNumber(nextEpochUserBalance),
+    };
+
+    this.stakedTokens.set(tokenAddress, stakedToken);
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  stake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.send('deposit', [tokenAddress, amount], {
-      from: this.account,
-      gasPrice: getGasValue(gasPrice),
-    }).then(result => new BigNumber(result));
+  async stake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
+    const result = await this.send('deposit', [tokenAddress, amount], {}, gasPrice);
+    return new BigNumber(result);
   }
 
-  unstake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.send('withdraw', [tokenAddress, amount], {
-      from: this.account,
-      gasPrice: getGasValue(gasPrice),
-    }).then(result => new BigNumber(result));
+  async unstake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
+    const result = await this.send('withdraw', [tokenAddress, amount], {}, gasPrice);
+    return new BigNumber(result);
   }
 }

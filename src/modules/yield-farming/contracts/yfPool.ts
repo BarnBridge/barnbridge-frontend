@@ -1,6 +1,5 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import { getGasValue } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 const ABI: AbiItem[] = [
@@ -101,55 +100,47 @@ export class YfPoolContract extends Web3Contract {
     return epochReward * (lastActiveEpoch === this.totalEpochs ? lastActiveEpoch : lastActiveEpoch - 1);
   }
 
-  loadCommon(): Promise<void> {
-    return this.batch([
+  async loadCommon(): Promise<void> {
+    const [totalEpochs, totalForDistribution, epochDuration, epochStart, currentEpoch] = await this.batch([
       { method: 'NR_OF_EPOCHS' },
       { method: 'TOTAL_DISTRIBUTED_AMOUNT' },
       { method: 'epochDuration' },
       { method: 'epochStart' },
       { method: 'getCurrentEpoch' },
-    ]).then(([totalEpochs, totalForDistribution, epochDuration, epochStart, currentEpoch]) => {
-      this.totalEpochs = Number(totalEpochs);
-      this.totalSupply = Number(totalForDistribution);
-      this.epochDuration = Number(epochDuration);
-      this.epoch1Start = Number(epochStart);
-      this.currentEpoch = Number(currentEpoch);
-      this.emit(Web3Contract.UPDATE_DATA);
+    ]);
 
-      this.batch([{ method: 'getPoolSize', methodArgs: [this.currentEpoch] }]).then(([currentPoolSize]) => {
-        this.poolSize = new BigNumber(currentPoolSize);
-        this.emit(Web3Contract.UPDATE_DATA);
-      });
-    });
+    this.totalEpochs = Number(totalEpochs);
+    this.totalSupply = Number(totalForDistribution);
+    this.epochDuration = Number(epochDuration);
+    this.epoch1Start = Number(epochStart);
+    this.currentEpoch = Number(currentEpoch);
+    this.emit(Web3Contract.UPDATE_DATA);
+
+    const [currentPoolSize] = await this.batch([{ method: 'getPoolSize', methodArgs: [this.currentEpoch] }]);
+    this.poolSize = new BigNumber(currentPoolSize);
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  loadUserData(): Promise<void> {
-    if (!this.account) {
-      return Promise.reject();
-    }
+  async loadUserData(): Promise<void> {
+    const account = this.account;
 
-    return this.batch([{ method: 'getCurrentEpoch' }]).then(([currentEpoch]) => {
-      this.currentEpoch = Number(currentEpoch);
+    this.assertAccount();
 
-      return this.batch([
-        { method: 'getEpochStake', methodArgs: [this.account, this.currentEpoch] },
-        { method: 'massHarvest', callArgs: { from: this.account } },
-      ]).then(([currentEpochStake, toClaim]) => {
-        this.userStaked = new BigNumber(currentEpochStake);
-        this.toClaim = new BigNumber(toClaim);
-        this.emit(Web3Contract.UPDATE_DATA);
-      });
-    });
+    const currentEpoch = await this.batch([{ method: 'getCurrentEpoch' }]);
+    this.currentEpoch = Number(currentEpoch);
+
+    const [currentEpochStake, toClaim] = await this.batch([
+      { method: 'getEpochStake', methodArgs: [account, this.currentEpoch] },
+      { method: 'massHarvest', callArgs: { from: account } },
+    ]);
+
+    this.userStaked = new BigNumber(currentEpochStake);
+    this.toClaim = new BigNumber(toClaim);
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  claim(gasPrice?: number): Promise<BigNumber> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.send('massHarvest', [], {
-      from: this.account,
-      gasPrice: gasPrice ? getGasValue(gasPrice) : undefined,
-    }).then(result => new BigNumber(result));
+  async claim(gasPrice?: number): Promise<BigNumber> {
+    const result = await this.send('massHarvest', [], {}, gasPrice);
+    return new BigNumber(result);
   }
 }
