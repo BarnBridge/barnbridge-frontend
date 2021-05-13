@@ -5,6 +5,7 @@ import cn from 'classnames';
 import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
+import config from 'config';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -50,17 +51,24 @@ const StatsView: React.FC = () => {
             Markets
           </Link>
         </div>
-        <div className="flex align-start mb-40">
+        <div className="flex col-gap-24 row-gap-16 align-start mb-40">
           <DepositHeader />
-          <Link
-            to={{
-              pathname: `/smart-yield/deposit`,
-              search: `?m=${syPool.marketId}&t=${syPool.tokenId}`,
-            }}
-            className="button-primary ml-auto"
-            {...{ disabled: !wallet.isActive }}>
-            Deposit
-          </Link>
+          <div className="flex wrap col-gap-24 row-gap-16 ml-auto">
+            <Link
+              to={{
+                pathname: `/smart-yield/deposit`,
+                search: `?m=${syPool.marketId}&t=${syPool.tokenId}`,
+              }}
+              className="button-primary"
+              {...{ disabled: !wallet.isActive }}>
+              Deposit
+            </Link>
+            {config.isTestnet && (
+              <Link to="/faucets" className="button-ghost ml-auto">
+                Faucets
+              </Link>
+            )}
+          </div>
         </div>
 
         <div className={cn(s.apyMarketRow, 'mb-32')}>

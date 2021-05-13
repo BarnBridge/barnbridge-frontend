@@ -77,7 +77,7 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
 };
 
 type TokenAmountPreviewType = {
-  value: React.ReactNode;
+  value?: string;
   before: React.ReactNode;
   secondary?: React.ReactNode;
   className?: string;
@@ -88,7 +88,7 @@ export const TokenAmountPreview: React.FC<TokenAmountPreviewType> = ({ value, be
     <div className={cn(s.tokenAmountPreview, className)}>
       {before && <div className={s.tokenAmountPreviewBefore}>{before}</div>}
       <div className={s.tokenAmountPreviewValues}>
-        <div className={s.tokenAmountPreviewValue}>{value}</div>
+        <input className={s.tokenAmountPreviewValue} type="text" value={value || ''} readOnly />
         <div className={s.tokenAmountPreviewHint}>{secondary}</div>
       </div>
     </div>

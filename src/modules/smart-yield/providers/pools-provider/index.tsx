@@ -93,12 +93,16 @@ const PoolsProvider: React.FC = props => {
             smartYield.on(Web3Contract.UPDATE_DATA, reload);
             const underlying = new SYUnderlyingContract(pool.underlyingAddress);
             underlying.on(Web3Contract.UPDATE_DATA, reload);
-            const rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress);
-            rewardPool.on(Web3Contract.UPDATE_DATA, reload);
 
             smartYield.loadCommon();
             underlying.loadCommon();
-            rewardPool.loadCommon();
+
+            let rewardPool;
+            if (pool.rewardPoolAddress) {
+              rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress);
+              rewardPool.on(Web3Contract.UPDATE_DATA, reload);
+              rewardPool.loadCommon();
+            }
 
             return {
               ...pool,

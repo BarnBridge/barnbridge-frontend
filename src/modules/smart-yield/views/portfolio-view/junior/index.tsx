@@ -9,7 +9,7 @@ import Web3Contract from 'web3/web3Contract';
 import Divider from 'components/antd/divider';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
-import Badge from 'components/custom/badge';
+import { SquareBadge } from 'components/custom/badge';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
@@ -436,7 +436,7 @@ const JuniorPortfolio: React.FC = () => {
             tab={
               <>
                 Staked
-                <Badge>{state.dataStaked.length}</Badge>
+                <SquareBadge>{state.dataStaked.length}</SquareBadge>
               </>
             }>
             <Divider />
@@ -447,7 +447,7 @@ const JuniorPortfolio: React.FC = () => {
             tab={
               <>
                 Locked
-                <Badge>{state.dataLocked.length}</Badge>
+                <SquareBadge>{state.dataLocked.length}</SquareBadge>
               </>
             }>
             <Divider />
