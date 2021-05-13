@@ -192,21 +192,23 @@ const PoolStake: FC = () => {
         />
       )}
 
-      {allowance?.eq(BigNumber.ZERO) && (
-        <button type="button" className="button-primary" disabled={enabling} onClick={handleEnable}>
-          {enabling && <Spin spinning />}
-          Enable {activeToken.symbol}
-        </button>
-      )}
+      <div className="flex align-center justify-end">
+        {allowance?.eq(BigNumber.ZERO) && (
+          <button type="button" className="button-primary mr-16" disabled={enabling} onClick={handleEnable}>
+            {enabling && <Spin spinning />}
+            Enable {activeToken.symbol}
+          </button>
+        )}
 
-      <button
-        type="button"
-        className="button-primary"
-        disabled={!allowance?.gt(BigNumber.ZERO) || bnAmount.eq(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
-        onClick={handleStake}>
-        {staking && <Spin spinning />}
-        Stake
-      </button>
+        <button
+          type="button"
+          className="button-primary"
+          disabled={!allowance?.gt(BigNumber.ZERO) || bnAmount.eq(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
+          onClick={handleStake}>
+          {staking && <Spin spinning />}
+          Stake
+        </button>
+      </div>
 
       {confirmModalVisible && (
         <TxConfirmModal
