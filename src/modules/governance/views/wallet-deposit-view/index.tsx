@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import AntdForm from 'antd/lib/form';
 import AntdSwitch from 'antd/lib/switch';
 import BigNumber from 'bignumber.js';
@@ -37,7 +38,7 @@ type WalletDepositViewState = {
   enabling: boolean;
   enabled?: boolean;
   saving: boolean;
-  expanded: boolean;
+  // expanded: boolean;
 };
 
 const InitialState: WalletDepositViewState = {
@@ -45,7 +46,7 @@ const InitialState: WalletDepositViewState = {
   enabling: false,
   enabled: undefined,
   saving: false,
-  expanded: false,
+  // expanded: false,
 };
 
 const WalletDepositView: React.FC = () => {
@@ -102,13 +103,13 @@ const WalletDepositView: React.FC = () => {
 
     setState({
       enabled: isEnabled,
-      expanded: isEnabled,
+      // expanded: isEnabled,
     });
   }, [barnAllowance]);
 
   return (
     <div className="card">
-      <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
+      <div className="card-header flex wrap col-gap-64">
         <Grid flow="col" gap={12}>
           <Icon name="static/token-bond" width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
@@ -145,60 +146,49 @@ const WalletDepositView: React.FC = () => {
             onChange={handleSwitchChange}
           />
         </Grid>
-
-        {state.enabled && (
-          <button
-            type="button"
-            className="button-ghost-monochrome p-8"
-            onClick={() =>
-              setState(prevState => ({
-                ...prevState,
-                expanded: !prevState.expanded,
-              }))
-            }>
-            <Icon name="chevron-right" rotate={state.expanded ? 270 : 0} />
-          </button>
+        {config.isTestnet && (
+          <Link to="/faucets" className="button-ghost ml-auto">
+            Faucets
+          </Link>
         )}
-      </Grid>
+      </div>
 
-      {state.expanded && (
-        <Form
-          className="p-24"
-          form={form}
-          initialValues={InitialFormValues}
-          validateTrigger={['onSubmit']}
-          onFinish={handleFinish}>
-          <Grid flow="row" gap={32}>
-            <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
-              <Grid flow="row" gap={32}>
-                <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
-                  <TokenAmount
-                    tokenIcon="static/token-bond"
-                    max={bondBalance}
-                    maximumFractionDigits={BondToken.decimals}
-                    displayDecimals={4}
-                    disabled={state.saving}
-                    slider
-                  />
-                </Form.Item>
-                <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
-              </Grid>
-              <Grid flow="row">
-                <Form.Item
-                  name="gasPrice"
-                  label="Gas Fee (Gwei)"
-                  hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-                  rules={[{ required: true, message: 'Required' }]}>
-                  <GasFeeList disabled={state.saving} />
-                </Form.Item>
-              </Grid>
+      <Form
+        className="p-24"
+        form={form}
+        initialValues={InitialFormValues}
+        validateTrigger={['onSubmit']}
+        onFinish={handleFinish}>
+        <Grid flow="row" gap={32}>
+          <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
+            <Grid flow="row" gap={32}>
+              <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
+                <TokenAmount
+                  tokenIcon="static/token-bond"
+                  max={bondBalance}
+                  maximumFractionDigits={BondToken.decimals}
+                  displayDecimals={4}
+                  disabled={state.saving}
+                  slider
+                />
+              </Form.Item>
+              <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
             </Grid>
-            <Button type="primary" htmlType="submit" loading={state.saving} style={{ justifySelf: 'start' }}>
-              Deposit
-            </Button>
+            <Grid flow="row">
+              <Form.Item
+                name="gasPrice"
+                label="Gas Fee (Gwei)"
+                hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
+                rules={[{ required: true, message: 'Required' }]}>
+                <GasFeeList disabled={state.saving} />
+              </Form.Item>
+            </Grid>
           </Grid>
-        </Form>
-      )}
+          <Button type="primary" htmlType="submit" loading={state.saving} style={{ justifySelf: 'start' }}>
+            Deposit
+          </Button>
+        </Grid>
+      </Form>
 
       {state.showDepositConfirmModal && (
         <WalletDepositConfirmModal

@@ -5,7 +5,7 @@ import uniqBy from 'lodash/uniqBy';
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import Select, { SelectOption } from 'components/antd/select';
-import Badge from 'components/custom/badge';
+import { SquareBadge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
 
@@ -118,7 +118,7 @@ const PositionsFilter: React.FC<Props> = props => {
       <button type="button" className="button-ghost-monochrome pv-16 ml-auto">
         <Icon name="filter" className="mr-8" color="inherit" />
         <span className="mr-8">Filters</span>
-        <Badge>{countApplied}</Badge>
+        <SquareBadge>{countApplied}</SquareBadge>
       </button>
     </Popover>
   );

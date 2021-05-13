@@ -2,7 +2,7 @@ const config = {
   env: String(process.env.REACT_APP_ENV),
   isDev: String(process.env.REACT_APP_ENV) === 'development',
   isProd: String(process.env.REACT_APP_ENV) === 'production',
-  isTestnet: String(process.env.REACT_APP_ENV) === 'testnet',
+  isTestnet: true,// String(process.env.REACT_APP_ENV) === 'testnet',
   api: {
     baseUrl: String(process.env.REACT_APP_BASE_API_URL),
   },
@@ -19,7 +19,22 @@ const config = {
     daoGovernance: String(process.env.REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR).toLowerCase(),
     daoBarn: String(process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR).toLowerCase(),
     daoReward: String(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR).toLowerCase(),
+    testnet: {
+      comp: {
+        fauceteer: String(process.env.REACT_APP_CONTRACT_TESTNET_COMP_FAUCETEER_ADDR).toLowerCase(),
+        usdc: String(process.env.REACT_APP_CONTRACT_TESTNET_COMP_USDC_ADDR).toLowerCase(),
+        dai: String(process.env.REACT_APP_CONTRACT_TESTNET_COMP_DAI_ADDR).toLowerCase(),
+      },
+      aave: {
+        fauceteer: String(process.env.REACT_APP_CONTRACT_TESTNET_AAVE_FAUCETEER_ADDR).toLowerCase(),
+        usdc: String(process.env.REACT_APP_CONTRACT_TESTNET_AAVE_USDC_ADDR).toLowerCase(),
+        dai: String(process.env.REACT_APP_CONTRACT_TESTNET_AAVE_DAI_ADDR).toLowerCase(),
+        usdt: String(process.env.REACT_APP_CONTRACT_TESTNET_AAVE_USDT_ADDR).toLowerCase(),
+      },
+      bond: String(process.env.REACT_APP_CONTRACT_TESTNET_BOND_ADDR).toLowerCase(),
+    },
   },
+
   web3: {
     chainId: Number(process.env.REACT_APP_WEB3_CHAIN_ID),
     poolingInterval: Number(process.env.REACT_APP_WEB3_POLLING_INTERVAL),

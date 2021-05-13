@@ -115,11 +115,16 @@ export type IconNames =
   | 'queue'
   | 'stake'
   | 'finance'
-  | 'scales'
+  | 'balance'
   | 'vertical-dots'
   | 'dropdown'
   | 'arrow-backward'
-  | 'arrow-forward';
+  | 'arrow-forward'
+  | 'science'
+  | 'building'
+  | 'internet'
+  | 'balance'
+  | 'finance';
 
 export type IconProps = {
   name: IconNames;
