@@ -4,6 +4,7 @@ import AntdSpin from 'antd/lib/spin';
 
 import ErrorBoundary from 'components/custom/error-boundary';
 import WarningProvider from 'components/providers/warning-provider';
+import config from 'config';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
@@ -15,6 +16,7 @@ const GovernanceView = lazy(() => import('modules/governance'));
 const SmartYieldView = lazy(() => import('modules/smart-yield'));
 const SmartAlphaView = lazy(() => import('modules/smart-alpha'));
 const SmartExposureView = lazy(() => import('modules/smart-exposure'));
+const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
   return (
@@ -27,7 +29,11 @@ const LayoutView: React.FC = () => {
             <ErrorBoundary>
               <Suspense fallback={<AntdSpin className="pv-24 ph-64" />}>
                 <Switch>
-                  <Route path="/yield-farming" component={YieldFarmingView} />
+                  {config.isTestnet ? (
+                    <Route path="/faucets" component={FaucetsView} />
+                  ) : (
+                    <Route path="/yield-farming" component={YieldFarmingView} />
+                  )}
                   <Route path="/governance/:vt(\w+)" component={GovernanceView} />
                   <Route path="/governance" component={GovernanceView} />
                   <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />

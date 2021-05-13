@@ -3,7 +3,7 @@ import AntdForm from 'antd/lib/form';
 
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
-import Badge from 'components/custom/badge';
+import { SquareBadge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 
 export type TableFilterType = {
@@ -90,7 +90,7 @@ const TableFilter: React.FC<Props> = props => {
       <button type="button" className="button-ghost-monochrome pv-16">
         <Icon name="filter" className="mr-8" color="inherit" />
         <span className="mr-8">Filters</span>
-        <Badge>{countApplied}</Badge>
+        <SquareBadge>{countApplied}</SquareBadge>
       </button>
     </Popover>
   );
