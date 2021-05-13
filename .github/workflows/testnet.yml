@@ -79,7 +79,7 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: frontend
+          name: frontent-testnet
           path: build
 
       - name: Notify Slack success
@@ -122,7 +122,7 @@ jobs:
       - name: Get artifacts
         uses: actions/download-artifact@v2
         with:
-          name: frontend
+          name: frontend-testnet
 
       - name: Configure AWS credetials
         uses: aws-actions/configure-aws-credentials@v1
@@ -132,14 +132,14 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy static site to S3
-        run: ls -l && aws s3 sync . s3://prod-appbarnbridgecom-origin --delete
+        run: ls -l && aws s3 sync . s3://testnet-testnetappbarnbridgecom-origin --delete
 
       - name: Invalidate CloudFront cache
         run: |
           #!/usr/bin/env bash
           set -euo pipefail
 
-          CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'app.barnbridge.com')].Id | [0]" | tr -d \")
+          CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'testnet.app.barnbridge.com')].Id | [0]" | tr -d \")
           echo "Clearing cache for ${CF_DIST_ID}..."
           CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
           while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
