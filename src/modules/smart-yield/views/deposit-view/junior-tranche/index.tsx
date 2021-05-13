@@ -319,7 +319,7 @@ const JuniorTranche: React.FC = () => {
               <Text type="small" weight="semibold" color="secondary">
                 Protocol fees
               </Text>
-              <Text type="p2" weight="semibold" color="primary">
+              <Text type="p2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
                 {formatBigValue(bnAmount?.multipliedBy(juniorFee ?? 0).dividedBy(1e18))} {pool?.underlyingSymbol} (
                 {formatPercent(juniorFee?.dividedBy(1e18))})
               </Text>
@@ -330,7 +330,7 @@ const JuniorTranche: React.FC = () => {
               </Text>
               <Form.Item dependencies={['from', 'slippage']} noStyle>
                 {() => (
-                  <Text type="p2" weight="semibold" color="primary">
+                  <Text type="p2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
                     {formatBigValue(getMinAmount() ?? ZERO_BIG_NUMBER)} {pool?.contracts.smartYield.symbol}
                   </Text>
                 )}
