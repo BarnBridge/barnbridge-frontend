@@ -79,12 +79,14 @@ const DAOProvider: React.FC = props => {
   React.useEffect(() => {
     const bondContract = BondToken.contract as Erc20Contract;
 
-    (async () => {
-      if (walletCtx.isActive) {
-        bondContract.setAccount(walletCtx.account);
-        bondContract.loadAllowance(config.contracts.dao.barn).catch(Error);
-      }
-    })();
+    bondContract.setAccount(walletCtx.account); // ?
+    daoBarn.contract.setAccount(walletCtx.account);
+    daoReward.contract.setAccount(walletCtx.account);
+    daoGovernance.contract.setAccount(walletCtx.account);
+
+    if (walletCtx.account) {
+      bondContract.loadAllowance(config.contracts.dao.barn).catch(Error);
+    }
   }, [walletCtx.account]);
 
   React.useEffect(() => {
