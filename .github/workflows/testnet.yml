@@ -99,7 +99,7 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: frontent-testnet
+          name: frontend-testnet
           path: build
 
       - name: Notify Slack success
