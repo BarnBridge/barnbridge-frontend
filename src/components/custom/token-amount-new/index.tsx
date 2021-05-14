@@ -40,6 +40,9 @@ export const TokenAmount: React.FC<TokenAmountType> = ({
           <input
             className={s.tokenAmountValue}
             type="number"
+            onWheel={ev => {
+              ev.currentTarget.blur();
+            }}
             onChange={e => {
               onChange(e.target.value);
             }}
