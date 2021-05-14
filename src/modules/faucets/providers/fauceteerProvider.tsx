@@ -39,8 +39,8 @@ class AaveFauceteerContract extends Web3Contract implements IFauceteer {
   }
 }
 
-const compFauceteerContract = new CompFauceteerContract(config.contracts.testnet.comp.fauceteer);
-const aaveFauceteerContract = new AaveFauceteerContract(config.contracts.testnet.aave.fauceteer);
+const compFauceteerContract = new CompFauceteerContract(config.testnet.comp.fauceteer);
+const aaveFauceteerContract = new AaveFauceteerContract(config.testnet.aave.fauceteer);
 
 export type FaucetType = {
   name: string;
@@ -72,10 +72,10 @@ export const FAUCETS: FaucetType[] = [
     icon: BondToken.icon!,
     decimals: BondToken.decimals,
     link: {
-      url: `https://app.uniswap.org/#/swap?use=V2&outputCurrency=${config.contracts.testnet.bond}`,
+      url: `https://app.uniswap.org/#/swap?use=V2&outputCurrency=${config.tokens.bond}`,
       label: 'Swap',
     },
-    token: new Erc20Contract([], config.contracts.testnet.bond),
+    token: new Erc20Contract([], config.tokens.bond),
   },
   {
     name: UsdcToken.symbol,
@@ -92,7 +92,7 @@ export const FAUCETS: FaucetType[] = [
       },
     ],
     fauceteer: compFauceteerContract,
-    token: new Erc20Contract([], config.contracts.testnet.comp.usdc),
+    token: new Erc20Contract([], config.testnet.comp.usdc),
   },
   {
     name: DaiToken.symbol,
@@ -109,7 +109,7 @@ export const FAUCETS: FaucetType[] = [
       },
     ],
     fauceteer: compFauceteerContract,
-    token: new Erc20Contract([], config.contracts.testnet.comp.dai),
+    token: new Erc20Contract([], config.testnet.comp.dai),
   },
   {
     name: UsdcToken.symbol,
@@ -122,7 +122,7 @@ export const FAUCETS: FaucetType[] = [
       },
     ],
     fauceteer: aaveFauceteerContract,
-    token: new Erc20Contract([], config.contracts.testnet.aave.usdc),
+    token: new Erc20Contract([], config.testnet.aave.usdc),
   },
   {
     name: UsdtToken.symbol,
@@ -135,7 +135,7 @@ export const FAUCETS: FaucetType[] = [
       },
     ],
     fauceteer: aaveFauceteerContract,
-    token: new Erc20Contract([], config.contracts.testnet.aave.usdt),
+    token: new Erc20Contract([], config.testnet.aave.usdt),
   },
   {
     name: DaiToken.symbol,
@@ -148,7 +148,7 @@ export const FAUCETS: FaucetType[] = [
       },
     ],
     fauceteer: aaveFauceteerContract,
-    token: new Erc20Contract([], config.contracts.testnet.aave.dai),
+    token: new Erc20Contract([], config.testnet.aave.dai),
   },
 ];
 

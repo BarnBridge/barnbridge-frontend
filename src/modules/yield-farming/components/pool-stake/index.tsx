@@ -40,7 +40,7 @@ const PoolStake: FC = () => {
   }
 
   const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken.address);
-  const allowance = activeContract.getAllowanceOf(config.contracts.yfStaking)?.unscaleBy(activeToken.decimals);
+  const allowance = activeContract.getAllowanceOf(config.contracts.yf.staking)?.unscaleBy(activeToken.decimals);
   const stakedBalance = selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken.decimals);
   const walletBalance = activeContract.balance?.unscaleBy(activeToken.decimals);
   const maxAmount = BigNumber.min(walletBalance ?? BigNumber.ZERO, allowance ?? BigNumber.ZERO);

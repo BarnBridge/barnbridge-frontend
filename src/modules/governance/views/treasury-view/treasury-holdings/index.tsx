@@ -260,7 +260,7 @@ const TreasuryHoldings: React.FC = () => {
           const tokenContract = new Erc20Contract([], item.tokenAddress);
           tokenContract.on(Web3Contract.UPDATE_DATA, reload);
           tokenContract.loadCommon();
-          tokenContract.loadBalance(config.contracts.daoGovernance);
+          tokenContract.loadBalance(config.contracts.dao.governance);
 
           return {
             ...item,
@@ -333,7 +333,7 @@ const TreasuryHoldings: React.FC = () => {
     }
 
     return state.tokens.items.reduce((a, item) => {
-      const amount = item.token.getBalanceOf(config.contracts.daoGovernance)?.unscaleBy(item.tokenDecimals);
+      const amount = item.token.getBalanceOf(config.contracts.dao.governance)?.unscaleBy(item.tokenDecimals);
       const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
       return a.plus(amountUSD ?? 0);
@@ -351,7 +351,7 @@ const TreasuryHoldings: React.FC = () => {
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
         {state.tokens.items.map(item => {
           const tokenMeta = getTokenBySymbol(item.tokenSymbol);
-          const amount = item.token.getBalanceOf(config.contracts.daoGovernance)?.unscaleBy(item.tokenDecimals);
+          const amount = item.token.getBalanceOf(config.contracts.dao.governance)?.unscaleBy(item.tokenDecimals);
           const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
           return (
