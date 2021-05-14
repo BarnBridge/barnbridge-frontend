@@ -252,35 +252,30 @@ async function getFeedPrice(symbol: string): Promise<BigNumber> {
 }
 
 async function getBondPrice(): Promise<BigNumber> {
-  try {
-    const usdcToken = getTokenBySymbol(KnownTokens.USDC);
-    const bondToken = getTokenBySymbol(KnownTokens.BOND);
+  const usdcToken = getTokenBySymbol(KnownTokens.USDC);
+  const bondToken = getTokenBySymbol(KnownTokens.BOND);
 
-    if (!usdcToken || !bondToken || !bondToken.priceFeed) {
-      return Promise.reject();
-    }
-
-    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed);
-    const [decimals, [reserve0, reserve1], token0] = await priceFeedContract.batch([
-      { method: 'decimals', transform: Number },
-      {
-        method: 'getReserves',
-        transform: ({ 0: reserve0, 1: reserve1 }) => [BigNumber.parse(reserve0), BigNumber.parse(reserve1)],
-      },
-      { method: 'token0', transform: value => value.toLowerCase() },
-    ]);
-
-    const bond = token0 === bondToken.address.toLowerCase() ? reserve0 : reserve1;
-    const usdc = token0 === bondToken.address.toLowerCase() ? reserve1 : reserve0;
-
-    const bondReserve = bond.unscaleBy(decimals)!;
-    const usdcReserve = usdc.unscaleBy(usdcToken.decimals)!;
-
-    return usdcReserve.dividedBy(bondReserve);
-  } catch (e) {
-    console.log(e);
-    return BigNumber.ZERO;
+  if (!usdcToken || !bondToken || !bondToken.priceFeed) {
+    return Promise.reject();
   }
+
+  const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed);
+  const [decimals, [reserve0, reserve1], token0] = await priceFeedContract.batch([
+    { method: 'decimals', transform: Number },
+    {
+      method: 'getReserves',
+      transform: ({ 0: reserve0, 1: reserve1 }) => [BigNumber.parse(reserve0), BigNumber.parse(reserve1)],
+    },
+    { method: 'token0', transform: value => value.toLowerCase() },
+  ]);
+
+  const bond = token0 === bondToken.address.toLowerCase() ? reserve0 : reserve1;
+  const usdc = token0 === bondToken.address.toLowerCase() ? reserve1 : reserve0;
+
+  const bondReserve = bond.unscaleBy(decimals)!;
+  const usdcReserve = usdc.unscaleBy(usdcToken.decimals)!;
+
+  return usdcReserve.dividedBy(bondReserve);
 }
 
 async function getUniV2Price(): Promise<BigNumber> {
