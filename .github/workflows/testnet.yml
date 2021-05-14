@@ -48,7 +48,7 @@ jobs:
           REACT_APP_ENV: 'testnet'
           REACT_APP_HTML_TITLE: 'BarnBridge Testnet'
 
-          REACT_APP_WEB3_CHAIN_ID: 1
+          REACT_APP_WEB3_CHAIN_ID: 42
           REACT_APP_WEB3_POLLING_INTERVAL: 12000
           REACT_APP_WEB3_RPC_WSS_URL: 'wss://kovan.infura.io/ws/v3/aacf4c6a162a483eab3163105bebe222'
           REACT_APP_WEB3_RPC_HTTPS_URL: 'https://kovan.infura.io/v3/aacf4c6a162a483eab3163105bebe222'
