@@ -9,6 +9,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
+import config from 'config';
 
 import s from './s.module.scss';
 
@@ -53,14 +54,25 @@ const LayoutSideNav: React.FC = () => {
           </Link>
         </div>
         <nav className={s.top}>
-          <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
-            <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
-              <Icon name="tractor-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                Yield Farming
-              </Text>
-            </NavLink>
-          </Tooltip>
+          {config.isTestnet ? (
+            <Tooltip title={displayTooltip && 'Faucets'} placement="right">
+              <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
+                <Icon name="building" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  Faucets
+                </Text>
+              </NavLink>
+            </Tooltip>
+          ) : (
+            <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
+              <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
+                <Icon name="tractor-outlined" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  Yield Farming
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
           <Tooltip title={displayTooltip && 'Governance'} placement="right">
             <NavLink to="/governance" className={s.button} activeClassName={s.active}>
               <Icon name="bank-outlined" />
@@ -87,7 +99,7 @@ const LayoutSideNav: React.FC = () => {
           </Tooltip>
           <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
             <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-              <Icon name="scales" />
+              <Icon name="balance" />
               <Text type="p2" weight="semibold" className={s.buttonLabel}>
                 SMART Exposure
               </Text>
@@ -95,6 +107,25 @@ const LayoutSideNav: React.FC = () => {
           </Tooltip>
         </nav>
         <div className={s.bottom}>
+          {config.isTestnet ? (
+            <Tooltip title={displayTooltip && 'Mainnet'} placement="right">
+              <a rel="noopener noreferrer" target="_blank" href="https://app.barnbridge.com/" className={s.button}>
+                <Icon name="internet" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  Mainnet
+                </Text>
+              </a>
+            </Tooltip>
+          ) : (
+            <Tooltip title={displayTooltip && 'Testnet'} placement="right">
+              <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
+                <Icon name="science" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  Testnet
+                </Text>
+              </a>
+            </Tooltip>
+          )}
           <Tooltip title={displayTooltip && 'Docs'} placement="right">
             <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
               <Icon name="docs-outlined" />

@@ -40,7 +40,7 @@ const PoolStake: FC = () => {
   }
 
   const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken.address);
-  const allowance = activeContract.getAllowanceOf(config.contracts.yfStaking)?.unscaleBy(activeToken.decimals);
+  const allowance = activeContract.getAllowanceOf(config.contracts.yf.staking)?.unscaleBy(activeToken.decimals);
   const stakedBalance = selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken.decimals);
   const walletBalance = activeContract.balance?.unscaleBy(activeToken.decimals);
   const maxAmount = BigNumber.min(walletBalance ?? BigNumber.ZERO, allowance ?? BigNumber.ZERO);
@@ -192,21 +192,23 @@ const PoolStake: FC = () => {
         />
       )}
 
-      {allowance?.eq(BigNumber.ZERO) && (
-        <button type="button" className="button-primary" disabled={enabling} onClick={handleEnable}>
-          {enabling && <Spin spinning />}
-          Enable {activeToken.symbol}
-        </button>
-      )}
+      <div className="flex align-center justify-end">
+        {allowance?.eq(BigNumber.ZERO) && (
+          <button type="button" className="button-primary mr-16" disabled={enabling} onClick={handleEnable}>
+            {enabling && <Spin spinning />}
+            Enable {activeToken.symbol}
+          </button>
+        )}
 
-      <button
-        type="button"
-        className="button-primary"
-        disabled={!allowance?.gt(BigNumber.ZERO) || bnAmount.eq(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
-        onClick={handleStake}>
-        {staking && <Spin spinning />}
-        Stake
-      </button>
+        <button
+          type="button"
+          className="button-primary"
+          disabled={!allowance?.gt(BigNumber.ZERO) || bnAmount.eq(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
+          onClick={handleStake}>
+          {staking && <Spin spinning />}
+          Stake
+        </button>
+      </div>
 
       {confirmModalVisible && (
         <TxConfirmModal

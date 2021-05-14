@@ -55,7 +55,7 @@ const YFPoolProvider: React.FC<Props> = props => {
     if (walletCtx.account) {
       pool?.tokens.forEach(token => {
         (token.contract as Erc20Contract).loadBalance().then(reload).catch(Error);
-        (token.contract as Erc20Contract).loadAllowance(config.contracts.yfStaking).then(reload).catch(Error);
+        (token.contract as Erc20Contract).loadAllowance(config.contracts.yf.staking).then(reload).catch(Error);
       });
     }
   }, [pool, walletCtx.account]);

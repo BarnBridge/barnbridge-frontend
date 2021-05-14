@@ -12,7 +12,7 @@ import DAO_GOVERNANCE_ABI from './daoGovernance.json';
 
 const Contract = new Web3Contract(
   DAO_GOVERNANCE_ABI as Web3ContractAbiItem[],
-  config.contracts.daoGovernance,
+  config.contracts.dao.governance,
   'DAO Governance',
 );
 

@@ -95,6 +95,10 @@ class Web3Contract extends EventEmitter {
   constructor(abi: AbiItem[], address: string, name: string) {
     super();
 
+    if (!address) {
+      throw new Error(`Invalid contract address (${name})`);
+    }
+
     this._abi = abi;
     this.address = address;
     this.name = name;

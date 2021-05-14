@@ -82,7 +82,7 @@ const DAOProvider: React.FC = props => {
     (async () => {
       if (walletCtx.isActive) {
         bondContract.setAccount(walletCtx.account);
-        bondContract.loadAllowance(config.contracts.daoBarn).catch(Error);
+        bondContract.loadAllowance(config.contracts.dao.barn).catch(Error);
       }
     })();
   }, [walletCtx.account]);

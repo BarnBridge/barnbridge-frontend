@@ -1,6 +1,37 @@
 @import 'src/styles/text';
 
 .badge {
+  @include font-lb2-bold;
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  padding: 8px 24px;
+  background: rgba(var(--theme-secondary-color-rgb), 0.08);
+  color: var(--theme-secondary-color);
+  border-radius: 32px;
+
+  &.green {
+    background: rgba(var(--theme-green-color-rgb), 0.08);
+    color: var(--theme-green-color);
+  }
+
+  &.red {
+    background: rgba(var(--theme-red-color-rgb), 0.08);
+    color: var(--theme-red-color);
+  }
+
+  &.blue {
+    background: rgba(var(--theme-blue-color-rgb), 0.08);
+    color: var(--theme-blue-color);
+  }
+
+  &.small {
+    @include font-p2-bold;
+    padding: 0 12px;
+  }
+}
+
+.squareBadge {
   @include font-sm-semi-bold;
   align-items: center;
   background: rgba(113, 121, 128, 0.08);

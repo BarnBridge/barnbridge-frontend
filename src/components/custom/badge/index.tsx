@@ -3,19 +3,32 @@ import cn from 'classnames';
 
 import s from './s.module.scss';
 
-type Props = {
-  children?: number;
+type BadgeProps = {
   className?: string;
+  color?: 'green' | 'blue' | 'red' | 'grey';
+  size?: 'small' | 'medium';
 };
 
-const Badge: React.FC<Props> = ({ children, className, ...rest }) => {
+export const Badge: React.FC<BadgeProps> = ({ color, size, children, className, ...rest }) => {
   if (!children) return null;
 
   return (
-    <div className={cn(s.badge, className)} {...rest}>
+    <div className={cn(s.badge, className, s[color ?? ''], s[size ?? ''])} {...rest}>
       {children}
     </div>
   );
 };
 
-export default Badge;
+type SquareBadgeProps = {
+  className?: string;
+};
+
+export const SquareBadge: React.FC<SquareBadgeProps> = ({ children, className, ...rest }) => {
+  if (!children) return null;
+
+  return (
+    <div className={cn(s.squareBadge, className)} {...rest}>
+      {children}
+    </div>
+  );
+};

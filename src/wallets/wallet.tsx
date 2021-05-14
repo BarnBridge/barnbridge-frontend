@@ -4,8 +4,9 @@ import { Web3Provider } from '@ethersproject/providers';
 import { UnsupportedChainIdError, Web3ReactProvider, useWeb3React } from '@web3-react/core';
 import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import * as Antd from 'antd';
+import BigNumber from 'bignumber.js';
 
-import { getNetworkName } from 'components/providers/eth-web3-provider';
+import { HttpsWeb3, getNetworkName } from 'components/providers/eth-web3-provider';
 import config from 'config';
 import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
 import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
@@ -21,11 +22,11 @@ import { WalletConnector } from 'wallets/types';
 
 export const WalletConnectors: WalletConnector[] = [
   MetaMaskWalletConfig,
-  WalletConnectConfig,
   LedgerWalletConfig,
+  PortisWalletConfig,
   TrezorWalletConfig,
   CoinbaseWalletConfig,
-  PortisWalletConfig,
+  WalletConnectConfig,
 ];
 
 type WalletData = {
@@ -37,6 +38,7 @@ type WalletData = {
   networkName?: string;
   connector?: WalletConnector;
   provider?: any;
+  ethBalance?: BigNumber;
 };
 
 export type Wallet = WalletData & {
@@ -76,7 +78,7 @@ const WalletProvider: React.FC = props => {
   connectingRef.current = connecting;
   const [activeConnector, setActiveConnector] = React.useState<WalletConnector | undefined>();
   const [activeProvider, setActiveProvider] = React.useState<any | undefined>();
-
+  const [ethBalance, setEthBalance] = React.useState<BigNumber | undefined>();
   const [walletsModal, setWalletsModal] = React.useState<boolean>(false);
   const [unsupportedChainModal, setUnsupportedChainModal] = React.useState<boolean>(false);
   const [installMetaMaskModal, setInstallMetaMaskModal] = React.useState<boolean>(false);
@@ -87,6 +89,7 @@ const WalletProvider: React.FC = props => {
     setConnecting(undefined);
     setActiveConnector(undefined);
     setActiveProvider(undefined);
+    setEthBalance(undefined);
     removeSessionProvider();
   }, [web3React, activeConnector, removeSessionProvider, setConnecting]);
 
@@ -141,6 +144,19 @@ const WalletProvider: React.FC = props => {
   );
 
   React.useEffect(() => {
+    if (web3React.account) {
+      HttpsWeb3.eth
+        .getBalance(web3React.account)
+        .then(value => {
+          setEthBalance(value ? new BigNumber(value) : undefined);
+        })
+        .catch(Error);
+    } else {
+      setEthBalance(undefined);
+    }
+  }, [web3React.account]);
+
+  React.useEffect(() => {
     (async () => {
       if (sessionProvider) {
         const walletConnector = WalletConnectors.find(c => c.id === sessionProvider);
@@ -164,13 +180,14 @@ const WalletProvider: React.FC = props => {
       networkName: getNetworkName(web3React.chainId),
       connector: activeConnector,
       provider: activeProvider,
+      ethBalance,
       showWalletsModal: () => {
         setWalletsModal(true);
       },
       connect,
       disconnect,
     }),
-    [web3React, initialized, connecting, activeConnector, activeProvider, disconnect, connect],
+    [web3React, initialized, connecting, activeConnector, activeProvider, ethBalance, disconnect, connect],
   );
 
   return (

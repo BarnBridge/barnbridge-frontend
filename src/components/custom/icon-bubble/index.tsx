@@ -32,7 +32,7 @@ const IconBubble: React.FC<IconBubbleProps> = props => {
         {secondBubbleName && <circle cx="77.5%" cy="77.5%" r="25%" fill="black" />}
       </mask>
       <g mask={`url(#${id})`}>
-        <use xlinkHref={`${Sprite}#icon__${name}`} />
+        <use xlinkHref={`${name.indexOf('static/') === 0 ? '' : Sprite}#icon__${name}`} />
       </g>
       {bubbleName && (
         <use
