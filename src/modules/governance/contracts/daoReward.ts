@@ -11,7 +11,7 @@ import { useWallet } from 'wallets/wallet';
 
 import DAO_REWARD_ABI from './daoReward.json';
 
-const Contract = new Web3Contract(DAO_REWARD_ABI as Web3ContractAbiItem[], config.contracts.daoReward, 'DAO Reward');
+const Contract = new Web3Contract(DAO_REWARD_ABI as Web3ContractAbiItem[], config.contracts.dao.reward, 'DAO Reward');
 
 export type DaoRewardPullFeature = {
   source: string;

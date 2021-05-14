@@ -28,6 +28,8 @@ const PoolHeader: FC = () => {
     return null;
   }
 
+  const isEnded = poolMeta.contract.isPoolEnded === true;
+
   return (
     <>
       <Link to="/yield-farming" className="flex inline align-center mb-16">
@@ -74,7 +76,7 @@ const PoolHeader: FC = () => {
             APY
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatPercent(apy) ?? '-'}
+            {!isEnded ? formatPercent(apy) ?? '-' : 0}
           </Text>
         </div>
         <div>
@@ -84,7 +86,7 @@ const PoolHeader: FC = () => {
           <div className="flex align-center">
             <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
             <Text type="p1" weight="semibold" color="primary">
-              {formatNumber(poolMeta.contract.epochReward) ?? '-'}
+              {!isEnded ? formatNumber(poolMeta.contract.epochReward) ?? '-' : 0}
             </Text>
           </div>
         </div>

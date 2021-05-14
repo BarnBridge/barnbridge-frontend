@@ -243,7 +243,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
         try {
           await Web3Contract.tryCall(
             values.targetAddress,
-            config.contracts.daoGovernance,
+            config.contracts.dao.governance,
             encodedFunction!,
             values.actionValue,
           );

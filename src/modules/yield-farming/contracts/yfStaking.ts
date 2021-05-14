@@ -24,7 +24,7 @@ export type YfStakedToken = {
 
 export class YfStakingContract extends Web3Contract {
   constructor() {
-    super(ABI, config.contracts.yfStaking, 'STAKING');
+    super(ABI, config.contracts.yf.staking, 'STAKING');
 
     this.stakedTokens = new Map();
 
