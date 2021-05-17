@@ -2,7 +2,7 @@ const config = {
   env: String(process.env.REACT_APP_ENV),
   isDev: String(process.env.REACT_APP_ENV) === 'development',
   isProd: String(process.env.REACT_APP_ENV) === 'production',
-  isTestnet: true,// String(process.env.REACT_APP_ENV) === 'testnet',
+  isTestnet: String(process.env.REACT_APP_ENV) === 'testnet',
   api: {
     baseUrl: String(process.env.REACT_APP_BASE_API_URL),
   },
