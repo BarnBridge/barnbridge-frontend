@@ -35,9 +35,9 @@ export const Markets = new Map<string, SYMarketMeta>([
     },
   ],
   [
-    'cream-finance',
+    'cream/v2',
     {
-      id: 'cream-finance',
+      id: 'cream/v2',
       name: 'Cream Finance',
       icon: `cream_finance_grayed`,
     },
