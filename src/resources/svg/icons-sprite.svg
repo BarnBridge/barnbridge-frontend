@@ -239,7 +239,7 @@
   </symbol>
   <!-- CLOSE TINY -->
   <symbol id="icon__close-tiny" fill="none" viewBox="0 0 24 24">
-    <path stroke="#AAAFB3" stroke-linecap="round" stroke-width="2"
+    <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
           d="M18.223 5.777L14.401 9.6M16.676 7.323l-10.899 10.9M18.223 18.223L5.778 5.777"/>
   </symbol>
   <!-- DROPDOWN ARROW -->
