@@ -89,6 +89,14 @@ const LayoutSideNav: React.FC = () => {
               </Text>
             </NavLink>
           </Tooltip>
+          <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
+            <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
+              <Icon name="balance" />
+              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                SMART Exposure
+              </Text>
+            </NavLink>
+          </Tooltip>
           <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
             <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
               <Icon name="paper-alpha-outlined" />
@@ -118,7 +126,11 @@ const LayoutSideNav: React.FC = () => {
             </Tooltip>
           ) : (
             <Tooltip title={displayTooltip && 'Testnet'} placement="right">
-              <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
+              <a
+                rel="noopener noreferrer"
+                target="_blank"
+                href="https://testnet.app.barnbridge.com/"
+                className={s.button}>
                 <Icon name="science" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   Testnet

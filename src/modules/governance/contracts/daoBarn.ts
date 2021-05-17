@@ -13,7 +13,7 @@ import DAO_BARN_ABI from './daoBarn.json';
 
 import { getNowTs } from 'utils';
 
-const Contract = new Web3Contract(DAO_BARN_ABI as Web3ContractAbiItem[], config.contracts.daoBarn, 'DAO Barn');
+const Contract = new Web3Contract(DAO_BARN_ABI as Web3ContractAbiItem[], config.contracts.dao.barn, 'DAO Barn');
 
 function loadCommonData(): Promise<any> {
   return Contract.batch([

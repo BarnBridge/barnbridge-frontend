@@ -318,7 +318,7 @@ export type APITreasuryToken = {
 };
 
 export function fetchTreasuryTokens(): Promise<APITreasuryToken[]> {
-  const url = new URL(`/api/governance/treasury/tokens?address=${config.contracts.daoGovernance}`, config.api.baseUrl);
+  const url = new URL(`/api/governance/treasury/tokens?address=${config.contracts.dao.governance}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
@@ -354,7 +354,7 @@ export function fetchTreasuryHistory(
 ): Promise<PaginatedResult<APITreasuryHistory>> {
   const query = QueryString.stringify(
     {
-      address: config.contracts.daoGovernance,
+      address: config.contracts.dao.governance,
       page: String(page),
       limit: String(limit),
       tokenAddress: tokenFilter,

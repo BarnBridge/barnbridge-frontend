@@ -43,7 +43,7 @@ export const StableYfPool: YFPoolMeta = {
   icons: ['token-usdc', 'token-dai', 'token-susd'],
   colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
   tokens: [UsdcToken, DaiToken, SusdToken],
-  contract: new YfPoolContract(config.contracts.yfStable),
+  contract: new YfPoolContract(config.contracts.yf.stable),
 };
 
 export const UnilpYfPool: YFPoolMeta = {
@@ -52,7 +52,7 @@ export const UnilpYfPool: YFPoolMeta = {
   icons: ['static/token-uniswap'],
   colors: ['var(--theme-red-color)'],
   tokens: [UniV2Token],
-  contract: new YfPoolContract(config.contracts.yfUnilp),
+  contract: new YfPoolContract(config.contracts.yf.unilp),
 };
 
 export const BondYfPool: YFPoolMeta = {
@@ -61,7 +61,7 @@ export const BondYfPool: YFPoolMeta = {
   icons: ['static/token-bond'],
   colors: ['var(--theme-red-color)'],
   tokens: [BondToken],
-  contract: new YfPoolContract(config.contracts.yfBond),
+  contract: new YfPoolContract(config.contracts.yf.bond),
 };
 
 const KNOWN_POOLS: YFPoolMeta[] = [StableYfPool, UnilpYfPool, BondYfPool];

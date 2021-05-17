@@ -206,14 +206,10 @@ const SeniorTranche: React.FC = () => {
       return BigNumber.ZERO;
     }
 
-    // return (formState.amount ?? BigNumber.ZERO)
-    //   .plus() ?? BigNumber.ZERO)
-    //   .dividedBy(maturityDays)
-    //   .dividedBy(365);
     return (
       bondGain
-        ?.dividedBy(10 ** (pool?.underlyingDecimals ?? 0))
-        .dividedBy(bnAmount ?? 1)
+        ?.unscaleBy(pool?.underlyingDecimals)
+        ?.dividedBy(bnAmount ?? 1)
         .dividedBy(maturityDays)
         .multipliedBy(365) ?? BigNumber.ZERO
     );

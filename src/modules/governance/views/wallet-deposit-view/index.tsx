@@ -57,14 +57,14 @@ const WalletDepositView: React.FC = () => {
 
   const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
   const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
-  const barnAllowance = (BondToken.contract as Erc20Contract).getAllowanceOf(config.contracts.daoBarn);
+  const barnAllowance = (BondToken.contract as Erc20Contract).getAllowanceOf(config.contracts.dao.barn);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
 
   async function handleSwitchChange(checked: boolean) {
     setState({ enabling: true });
 
     try {
-      await (BondToken.contract as Erc20Contract).approve(checked, config.contracts.daoBarn);
+      await (BondToken.contract as Erc20Contract).approve(checked, config.contracts.dao.barn);
     } catch {}
 
     setState({ enabling: false });
