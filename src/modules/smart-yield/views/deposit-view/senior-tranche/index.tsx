@@ -128,7 +128,9 @@ const SeniorTranche: React.FC = () => {
     }
 
     const amount = bnAmount;
-    const { maturityDate, slippage, deadline } = form.getFieldsValue();
+    const maturityDate = form.getFieldValue('maturityDate');
+    const slippage = form.getFieldValue('slippage');
+    const deadline = form.getFieldValue('deadline');
 
     if (!amount) {
       return;
