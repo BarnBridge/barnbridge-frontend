@@ -21,6 +21,7 @@ export enum KnownTokens {
   USDC = 'USDC',
   DAI = 'DAI',
   SUSD = 'sUSD',
+  GUSD = 'GUSD',
   UNIV2 = 'UNI-V2',
   USDT = 'USDT',
 }
@@ -140,6 +141,18 @@ export const SusdToken: TokenMeta = {
   contract: new Erc20Contract([], config.tokens.susd),
 };
 
+export const GusdToken: TokenMeta = {
+  address: config.tokens.gusd,
+  symbol: KnownTokens.GUSD,
+  name: 'Gemini dollar',
+  icon: 'token-gusd',
+  decimals: 2,
+  price: new BigNumber(1),
+  priceFeed: undefined,
+  pricePath: undefined,
+  contract: new Erc20Contract([], config.tokens.gusd),
+};
+
 export const UniV2Token: TokenMeta = {
   address: config.tokens.univ2,
   symbol: KnownTokens.UNIV2,
@@ -182,6 +195,7 @@ const KNOWN_TOKENS: TokenMeta[] = [
   UsdtToken,
   DaiToken,
   SusdToken,
+  GusdToken,
   UniV2Token,
   BBcUsdcToken,
   BBcDaiToken,

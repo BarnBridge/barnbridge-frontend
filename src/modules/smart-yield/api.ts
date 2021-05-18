@@ -35,11 +35,11 @@ export const Markets = new Map<string, SYMarketMeta>([
     },
   ],
   [
-    'cream-finance',
+    'cream/v2',
     {
-      id: 'cream-finance',
+      id: 'cream/v2',
       name: 'Cream Finance',
-      icon: `cream_finance_grayed`,
+      icon: `cream_finance`,
     },
   ],
   [
@@ -80,6 +80,15 @@ export const Pools = new Map<string, SYPoolMeta>([
       color: '#50af95',
     },
   ],
+  [
+    'GUSD',
+    {
+      id: 'GUSD',
+      name: 'Gemini dollar',
+      icon: 'token-gusd',
+      color: '#00dcfa',
+    },
+  ],
 ]);
 
 export type APISYPool = {
@@ -113,17 +122,17 @@ export type APISYPool = {
   };
 };
 
-export function fetchSYPools(protocolID = 'all'): Promise<APISYPool[]> {
-  const url = new URL(`/api/smartyield/pools?protocolID=${protocolID}`, config.api.baseUrl);
+export function fetchSYPools(originator = 'all'): Promise<APISYPool[]> {
+  const url = new URL(`/api/smartyield/pools?originator=${originator}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())
     .then(result => result.data);
 }
 
-export function fetchSYPool(protocolID: string, underlyingSymbol: string): Promise<APISYPool> {
+export function fetchSYPool(originator: string, underlyingSymbol: string): Promise<APISYPool> {
   const url = new URL(
-    `/api/smartyield/pools?protocolID=${protocolID}&underlyingSymbol=${underlyingSymbol}`,
+    `/api/smartyield/pools?originator=${originator}&underlyingSymbol=${underlyingSymbol}`,
     config.api.baseUrl,
   );
 
@@ -557,11 +566,11 @@ export type APISYRewardPool = {
 };
 
 export function fetchSYRewardPools(
-  protocolId: string = 'all',
+  originator: string = 'all',
   underlyingSymbol: string = 'all',
 ): Promise<APISYRewardPool[]> {
   const url = new URL(
-    `/api/smartyield/rewards/pools?protocolId=${protocolId}&underlyingSymbol=${underlyingSymbol}`,
+    `/api/smartyield/rewards/pools?originator=${originator}&underlyingSymbol=${underlyingSymbol}`,
     config.api.baseUrl,
   );
 

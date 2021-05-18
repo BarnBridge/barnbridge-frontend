@@ -250,7 +250,6 @@ const SeniorTranche: React.FC = () => {
           />
         </Form.Item>
         <Form.Item
-          name="maturityDate"
           label="Maturity date"
           extra={bondMaxLife ? `Max ${bondMaxLife} days` : ''}
           hint="You can select a maturity date between 1 and 30 days, in increments of 1 day."
@@ -263,6 +262,18 @@ const SeniorTranche: React.FC = () => {
             format="DD/MM/YYYY"
             size="large"
             disabled={state.isSaving}
+            value={formState.maturityDate}
+            onChange={date => {
+              form.setFieldsValue({
+                maturityDate: date ?? undefined,
+              });
+              setFormState(
+                mergeState<FormData>({
+                  maturityDate: date ?? undefined,
+                }),
+              );
+              setBondGain(undefined);
+            }}
           />
         </Form.Item>
         <Form.Item shouldUpdate noStyle>
