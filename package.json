@@ -11,6 +11,7 @@
     "build": "GENERATE_SOURCEMAP=false node ./scripts/build-non-split.js",
     "build:prod": "react-scripts build",
     "start": "react-scripts start",
+    "start:alpha": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.alpha.local",
     "start:prod": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.production.local",
     "start:testnet": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.testnet.local",
     "lessc": "lessc src/styles/antd.less src/styles/antd.css -js",
