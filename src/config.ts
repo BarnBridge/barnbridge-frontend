@@ -18,6 +18,7 @@ const config = {
     usdc: toLowerCase(process.env.REACT_APP_TOKEN_USDC_ADDR),
     dai: toLowerCase(process.env.REACT_APP_TOKEN_DAI_ADDR),
     susd: toLowerCase(process.env.REACT_APP_TOKEN_SUSD_ADDR),
+    gusd: toLowerCase(process.env.REACT_APP_TOKEN_GUSD_ADDR),
     usdt: toLowerCase(process.env.REACT_APP_TOKEN_USDT_ADDR),
     univ2: toLowerCase(process.env.REACT_APP_TOKEN_UNIV2_ADDR),
     bbcUsdc: toLowerCase(process.env.REACT_APP_TOKEN_BBC_USDC_ADDR),

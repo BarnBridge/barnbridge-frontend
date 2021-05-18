@@ -80,6 +80,15 @@ export const Pools = new Map<string, SYPoolMeta>([
       color: '#50af95',
     },
   ],
+  [
+    'GUSD',
+    {
+      id: 'GUSD',
+      name: 'Gemini dollar',
+      icon: 'token-gusd',
+      color: '#00dcfa',
+    },
+  ],
 ]);
 
 export type APISYPool = {
