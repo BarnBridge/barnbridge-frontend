@@ -66,6 +66,7 @@ jobs:
           REACT_APP_TOKEN_USDC_ADDR: '0x4A69d0F05c8667B993eFC2b500014AE1bC8fD958'
           REACT_APP_TOKEN_DAI_ADDR: '0xEa8BE82DF1519D4a25E2539bcA0342a1203CD591'
           REACT_APP_TOKEN_SUSD_ADDR: '0xED159a31184ADADC5c28CE5D9e4822ea2b0B6ef9'
+          REACT_APP_TOKEN_GUSD_ADDR: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd'
           REACT_APP_TOKEN_USDT_ADDR: '0xdac17f958d2ee523a2206206994597c13d831ec7'
           REACT_APP_TOKEN_UNIV2_ADDR: '0xe594D2B3BeA4454D841e5b616627dCA6A5D7aCF1'
           REACT_APP_TOKEN_BBC_USDC_ADDR: '0x63fD30ed07c91B7b27Da5c828c7eB752F7e4676b'
@@ -99,7 +100,7 @@ jobs:
       - name: Save artifacts
         uses: actions/upload-artifact@v2
         with:
-          name: frontent-testnet
+          name: frontend-testnet
           path: build
 
       - name: Notify Slack success
