@@ -117,7 +117,7 @@ export class YfPoolContract extends Web3Contract {
     this.emit(Web3Contract.UPDATE_DATA);
 
     const [currentPoolSize] = await this.batch([{ method: 'getPoolSize', methodArgs: [this.currentEpoch] }]);
-    this.poolSize = new BigNumber(currentPoolSize);
+    this.poolSize = BigNumber.from(currentPoolSize);
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
@@ -134,13 +134,13 @@ export class YfPoolContract extends Web3Contract {
       { method: 'massHarvest', callArgs: { from: account } },
     ]);
 
-    this.userStaked = new BigNumber(currentEpochStake);
-    this.toClaim = new BigNumber(toClaim);
+    this.userStaked = BigNumber.from(currentEpochStake);
+    this.toClaim = BigNumber.from(toClaim);
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  async claim(gasPrice?: number): Promise<BigNumber> {
+  async claim(gasPrice?: number): Promise<BigNumber | undefined> {
     const result = await this.send('massHarvest', [], {}, gasPrice);
-    return new BigNumber(result);
+    return BigNumber.from(result);
   }
 }

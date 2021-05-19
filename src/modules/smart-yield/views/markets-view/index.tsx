@@ -1,4 +1,5 @@
 import React from 'react';
+import { useHistory, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
 
@@ -10,13 +11,27 @@ import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
 
 const MarketsView: React.FC = () => {
   const poolsCtx = usePools();
+  const history = useHistory();
+  const location = useLocation();
+
+  const queryMarketId = React.useMemo(() => {
+    const urlQuery = new URLSearchParams(location.search);
+    const marketStr = urlQuery.get('m') ?? undefined;
+
+    return marketStr ? decodeURIComponent(marketStr) : undefined;
+  }, [location.search]);
 
   const [activeMarket, setActiveMarket] = React.useState<SYMarketMeta | undefined>();
 
   React.useEffect(() => {
-    const market = Array.from(Markets.values()).find(market => market.id === poolsCtx.pools[0]?.protocolId);
+    const defaultMarketId = queryMarketId ?? poolsCtx.pools[0]?.protocolId;
+    const market = Array.from(Markets.values()).find(market => market.id === defaultMarketId);
     setActiveMarket(market);
-  }, [poolsCtx.pools]);
+
+    if (defaultMarketId) {
+      history.replace(`?m=${defaultMarketId}`);
+    }
+  }, [poolsCtx.pools, queryMarketId]);
 
   const activeMarketTotalLiquidity = React.useMemo(() => {
     return poolsCtx.pools.reduce((sum, pool) => {
@@ -41,7 +56,10 @@ const MarketsView: React.FC = () => {
               className={cn('tab-card', activeMarket === market && 'active')}
               disabled={!isActive}
               style={{ color: !isActive ? 'red' : '' }}
-              onClick={() => setActiveMarket(market)}>
+              onClick={() => {
+                setActiveMarket(market);
+                history.replace(`?m=${market.id}`);
+              }}>
               <Icon name={market.icon as IconNames} width={40} height={40} className="mr-16" color="inherit" />
               <div>
                 <Text type="p1" weight="semibold" color="primary">

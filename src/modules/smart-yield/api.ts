@@ -30,7 +30,7 @@ export const Markets = new Map<string, SYMarketMeta>([
     'aave/v2',
     {
       id: 'aave/v2',
-      name: 'Aave',
+      name: 'AAVE',
       icon: `static/aave`,
     },
   ],
@@ -38,16 +38,16 @@ export const Markets = new Map<string, SYMarketMeta>([
     'cream/v2',
     {
       id: 'cream/v2',
-      name: 'Cream Finance',
+      name: 'C.R.E.A.M Finance',
       icon: `cream_finance`,
     },
   ],
   [
-    'yearn-finance',
+    'aave-polygon',
     {
-      id: 'yearn-finance',
-      name: 'Yearn Finance',
-      icon: 'yearn_finance_grayed',
+      id: 'aave-polygon',
+      name: 'AAVE Polygon',
+      icon: 'static/aave_polygon_grayed',
     },
   ],
 ]);
