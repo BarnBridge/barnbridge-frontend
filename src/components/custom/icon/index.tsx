@@ -25,7 +25,7 @@ export type TokenIconNames =
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
-  | 'yearn_finance'
+  | 'aave_polygon'
   | 'token-all';
 
 export type NavIconNames =
