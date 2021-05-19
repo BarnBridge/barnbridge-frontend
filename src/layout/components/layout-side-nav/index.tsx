@@ -6,7 +6,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/general-provider';
 import config from 'config';
@@ -14,13 +14,13 @@ import config from 'config';
 import s from './s.module.scss';
 
 const LayoutSideNav: React.FC = () => {
-  const { navOpen, setNavOpen, toggleDarkTheme, isDarkTheme } = useGeneral();
+  const { navOpen, setNavOpen } = useGeneral();
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setNavOpen(false);
-  }, [location.pathname]);
+  }, [location.pathname, setNavOpen]);
 
   React.useEffect(() => {
     if (navOpen) {
@@ -32,10 +32,6 @@ const LayoutSideNav: React.FC = () => {
 
   function handleExpand() {
     setExpanded(prevState => !prevState);
-  }
-
-  function handleThemeToggle() {
-    toggleDarkTheme();
   }
 
   const displayTooltip = !isMobile && !expanded;
@@ -138,14 +134,7 @@ const LayoutSideNav: React.FC = () => {
               </Text>
             </a>
           </Tooltip>
-          <Tooltip title={displayTooltip && (isDarkTheme ? 'Light Theme' : 'Dark Theme')} placement="right">
-            <button type="button" onClick={handleThemeToggle} className={s.button}>
-              <Icon name={isDarkTheme ? 'sun' : 'moon'} />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                {isDarkTheme ? 'Light Theme' : 'Dark Theme'}
-              </Text>
-            </button>
-          </Tooltip>
+          <ToggleThemeButton displayTooltip={displayTooltip} />
           <Tooltip title={displayTooltip && (expanded ? 'Hide menu' : 'Show menu')} placement="right">
             <button type="button" onClick={handleExpand} className={cn(s.button, 'hidden-mobile hidden-tablet')}>
               <Icon name="right-arrow-circle-outlined" style={{ transform: expanded ? 'rotate(-180deg)' : 'none' }} />
@@ -161,3 +150,31 @@ const LayoutSideNav: React.FC = () => {
 };
 
 export default LayoutSideNav;
+
+const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
+  const { toggleTheme, selectedTheme } = useGeneral();
+
+  let text;
+  let iconName: IconNames;
+  if (selectedTheme === 'light') {
+    text = 'Light Theme';
+    iconName = 'sun';
+  } else if (selectedTheme === 'dark') {
+    text = 'Dark Theme';
+    iconName = 'moon';
+  } else {
+    text = 'Auto Theme (OS)';
+    iconName = 'weather';
+  }
+
+  return (
+    <Tooltip title={displayTooltip && text} placement="right">
+      <button type="button" onClick={toggleTheme} className={s.button}>
+        <Icon name={iconName} />
+        <Text type="p2" weight="semibold" className={s.buttonLabel}>
+          {text}
+        </Text>
+      </button>
+    </Tooltip>
+  );
+};
