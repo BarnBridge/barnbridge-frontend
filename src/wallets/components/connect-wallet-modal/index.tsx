@@ -23,7 +23,7 @@ const InitialState: ConnectWalletModalState = {
 
 const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
   const { ...modalProps } = props;
-  const { isDarkTheme } = useGeneral();
+  const { theme } = useGeneral();
 
   const wallet = useWallet();
   const [state, setState] = useMergeState<ConnectWalletModalState>(InitialState);
@@ -63,7 +63,7 @@ const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
               style={{ height: '96px' }}
               onClick={() => handleConnectorSelect(connector)}>
               <img
-                src={Array.isArray(connector.logo) ? connector.logo[isDarkTheme ? 1 : 0] : connector.logo}
+                src={Array.isArray(connector.logo) ? connector.logo[theme === 'dark' ? 1 : 0] : connector.logo}
                 alt={connector.name}
                 height={32}
               />

@@ -1,15 +1,15 @@
-import React from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import { useLocalStorage } from 'react-use-storage';
 
 export type GeneralContextType = {
   navOpen: boolean;
   setNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  theme: string;
-  isDarkTheme: boolean;
-  toggleDarkTheme: () => void;
+  theme: 'light' | 'dark';
+  selectedTheme: 'light' | 'dark' | undefined;
+  toggleTheme: () => void;
 };
 
-const GeneralContext = React.createContext<GeneralContextType>({} as any);
+const GeneralContext = createContext<GeneralContextType>({} as any);
 
 const mqlDark = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultTheme = mqlDark.matches ? 'dark' : 'light';
@@ -19,10 +19,23 @@ type Props = {
 };
 
 const GeneralContextProvider: React.FC<Props> = ({ children }) => {
-  const [navOpen, setNavOpen] = React.useState<boolean>(false);
-  const [theme, setTheme] = useLocalStorage('bb_theme', defaultTheme);
+  const [navOpen, setNavOpen] = useState<boolean>(false);
+  const [osColorScheme, setOsColorScheme] = useState<'light' | 'dark'>(defaultTheme);
+  const [selectedTheme, setSelectedTheme, removeSelectedTheme] = useLocalStorage<'light' | 'dark' | undefined>(
+    'bb_theme',
+  );
 
-  React.useEffect(() => {
+  const theme: 'light' | 'dark' = selectedTheme || osColorScheme;
+
+  useEffect(() => {
+    setOsColorScheme(defaultTheme);
+
+    mqlDark.addEventListener('change', e => {
+      setOsColorScheme(e.matches ? 'dark' : 'light');
+    });
+  }, []);
+
+  useEffect(() => {
     if (theme) {
       document.body.setAttribute('data-theme', theme);
     } else {
@@ -36,9 +49,15 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
         navOpen,
         setNavOpen,
         theme,
-        isDarkTheme: theme === 'dark',
-        toggleDarkTheme: () => {
-          setTheme(theme === 'dark' ? 'light' : 'dark');
+        selectedTheme,
+        toggleTheme: () => {
+          if (selectedTheme === 'light') {
+            setSelectedTheme('dark');
+          } else if (selectedTheme === 'dark') {
+            removeSelectedTheme();
+          } else {
+            setSelectedTheme('light');
+          }
         },
       }}>
       {children}
@@ -49,5 +68,5 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
 export default GeneralContextProvider;
 
 export function useGeneral(): GeneralContextType {
-  return React.useContext<GeneralContextType>(GeneralContext);
+  return useContext<GeneralContextType>(GeneralContext);
 }
