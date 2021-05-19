@@ -11,13 +11,13 @@ import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notif
 import s from './s.module.scss';
 
 const Notifications: React.FC = () => {
-  const { isDarkTheme } = useGeneral();
+  const { theme } = useGeneral();
   const { notifications } = useNotifications();
 
   if (!notifications.length) {
     return (
       <Grid flow="row" gap={24} align="center" padding={48}>
-        {isDarkTheme ? (
+        {theme === 'dark' ? (
           <ZeroNotificationsDarkSvg width={138} height={128} />
         ) : (
           <ZeroNotificationsSvg width={138} height={128} />

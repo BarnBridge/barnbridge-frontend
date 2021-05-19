@@ -1,0 +1,59 @@
+.dialog {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+}
+
+.inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  max-width: 560px;
+  background-color: var(--theme-card-color);
+  border-radius: 4px;
+
+  @media (max-width: 768px) {
+    top: auto;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    transform: none;
+    max-width: initial;
+    width: auto;
+  }
+}
+
+.closeButton {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  display: flex;
+  flex-shrink: 0;
+  color: var(--theme-icon-color);
+
+  &:hover {
+    color: var(--theme-icon-hover-color);
+  }
+}
+
+.header {
+  padding: 32px;
+  border-bottom: 1px solid #ccc;
+  display: flex;
+  align-items: flex-start;
+}
+
+.heading {
+  flex-grow: 1;
+  display: flex;
+  align-items: center;
+}
+
+.content {
+}

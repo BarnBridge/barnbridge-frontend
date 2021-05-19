@@ -99,7 +99,7 @@ const SmartYieldView: React.FC = () => {
           <Switch>
             <Route
               path="/smart-yield/:path(markets|portfolio)"
-              render={() => (
+              render={({ location }) => (
                 <PoolsProvider>
                   <Route path="/smart-yield/markets" exact component={MarketsView} />
                   {wallet.initialized && (
@@ -107,7 +107,7 @@ const SmartYieldView: React.FC = () => {
                       {wallet.isActive ? (
                         <Route path="/smart-yield/portfolio" component={PortfolioView} />
                       ) : (
-                        <Redirect to="/smart-yield/markets" />
+                        <Redirect to={{ pathname: '/smart-yield/markets', search: location.search }} />
                       )}
                     </>
                   )}

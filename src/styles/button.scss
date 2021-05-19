@@ -8,15 +8,15 @@
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  padding: 12px 32px;
+  padding: 11px 32px;
 
   font-weight: bold;
   font-size: 14px;
   line-height: 24px;
-
   text-align: center;
-
   white-space: nowrap;
+
+  border: 1px solid transparent;
 
   &:disabled,
   &[disabled] {
@@ -29,7 +29,6 @@
 }
 
 .button-primary {
-  border: 0;
   background: #ff4339;
   box-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
   border-radius: 4px;
@@ -49,7 +48,6 @@
 }
 
 .button-secondary {
-  border: 0;
   background: rgba(255, 67, 57, 0.1);
   border-radius: 4px;
   color: #ff4339;
@@ -66,7 +64,7 @@
 }
 
 .button-ghost {
-  border: 1px solid #ff4339;
+  border-color: #ff4339;
   background-color: transparent;
   box-sizing: border-box;
   border-radius: 4px;

@@ -25,7 +25,7 @@ export type TokenIconNames =
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
-  | 'yearn_finance'
+  | 'aave_polygon'
   | 'token-all';
 
 export type NavIconNames =
@@ -42,7 +42,7 @@ export type NavIconNames =
   | 'wallet-outlined'
   | 'docs-outlined';
 
-export type ThemeIconNames = 'moon' | 'sun';
+export type ThemeIconNames = 'moon' | 'sun' | 'weather';
 
 export type IconNames =
   | LogoIconNames
@@ -123,9 +123,7 @@ export type IconNames =
   | 'arrow-forward'
   | 'science'
   | 'building'
-  | 'internet'
-  | 'balance'
-  | 'finance';
+  | 'internet';
 
 export type IconProps = {
   name: IconNames;

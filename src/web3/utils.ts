@@ -21,6 +21,20 @@ BigNumber.prototype.unscaleBy = function (decimals?: number): BigNumber | undefi
 BigNumber.ZERO = new BigNumber(0);
 BigNumber.MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
 
+BigNumber.from = (value?: BigNumber.Value): BigNumber | undefined => {
+  if (value === undefined || value === null) {
+    return undefined;
+  }
+
+  const bnValue = new BigNumber(value);
+
+  if (bnValue.isNaN()) {
+    return undefined;
+  }
+
+  return bnValue;
+};
+
 BigNumber.parse = (value: BigNumber.Value) => {
   return new BigNumber(value);
 };

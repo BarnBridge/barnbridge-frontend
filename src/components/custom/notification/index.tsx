@@ -8,7 +8,8 @@ import formatDuration from 'date-fns/formatDuration';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
-import { getEtherscanAddressUrl, getHumanValue, shortenAddr } from 'web3/utils';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken, getEtherscanAddressUrl, getHumanValue, shortenAddr } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
@@ -16,12 +17,9 @@ import { Text } from 'components/custom/typography';
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { NotificationType, useNotifications } from 'components/providers/notifications-provider';
 import { useReload } from 'hooks/useReload';
-import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 
 import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';
-
-import { getSessionContractByAddress, setSessionContractByAddress } from 'utils/contracts';
 
 import s from './s.module.scss';
 
@@ -32,6 +30,8 @@ const colorPairs: Record<'green' | 'red' | 'blue', [string, string]> = {
   red: ['--theme-red-color', '--theme-red-color-rgb'],
   blue: ['--theme-blue-color', '--theme-blue-color-rgb'],
 };
+
+const SYContractsMap = new Map<string, Erc20Contract>();
 
 function getProposalLink(id: number): React.ReactNode {
   return <Link className="link-blue" to={`/governance/proposals/${id}`}>{`PID-${id}`}</Link>;
@@ -222,26 +222,29 @@ function getData(n: NotificationType, reload: Function): [IconNames, [string, st
         </Text>,
       ];
     case 'smart-yield-token-bought': {
-      const contract = getSessionContractByAddress(n.metadata.syPoolAddress);
-      if (!contract || !contract.symbol) {
-        const syPoolContract = new SYSmartYieldContract(n.metadata.syPoolAddress);
-        syPoolContract.loadCommon().then(() => {
-          if (syPoolContract.symbol) {
-            setSessionContractByAddress(n.metadata.syPoolAddress, {
-              symbol: syPoolContract.symbol,
-            });
-            reload();
-          }
-        });
+      let erc20Contract = SYContractsMap.get(n.metadata.syPoolAddress);
+
+      if (!erc20Contract) {
+        erc20Contract = new Erc20Contract([], n.metadata.syPoolAddress);
+        SYContractsMap.set(n.metadata.syPoolAddress, erc20Contract);
+        erc20Contract
+          .loadCommon()
+          .then(() => reload())
+          .catch(Error);
       }
+
       return [
         'stake',
         colorPairs.blue,
         <>
           <Text type="p2" weight="semibold" color="secondary" className="mb-16">
             Stake your{' '}
-            {getStrongText(`${Intl.NumberFormat('en').format(Number(n.metadata.amount))} ${contract?.symbol ?? ''}`)} to
-            earn extra yield
+            {getStrongText(
+              `${formatToken(BigNumber.from(n.metadata.amount)?.unscaleBy(erc20Contract.decimals)) ?? '-'} ${
+                erc20Contract.symbol ?? ''
+              }`,
+            )}{' '}
+            to earn extra yield
           </Text>
           <Link
             to={`/smart-yield/pool?m=${n.metadata.protocolId}&t=${n.metadata.underlyingSymbol}`}

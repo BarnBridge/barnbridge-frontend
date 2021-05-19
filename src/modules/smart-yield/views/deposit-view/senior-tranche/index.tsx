@@ -182,7 +182,7 @@ const SeniorTranche: React.FC = () => {
     const today = startOfDay(new Date());
     const days = differenceInDays(pMaturityDate ?? today, today);
 
-    smartYieldContract.getBondGain(amount, days).then(setBondGain);
+    smartYieldContract.getBondGain(amount, days).then(setBondGain).catch(Error);
   }, 400);
 
   React.useEffect(() => {
@@ -285,7 +285,7 @@ const SeniorTranche: React.FC = () => {
                 {DURATION_OPTIONS.map(opt => {
                   const today = startOfDay(new Date());
                   const date = getDurationDate(today, opt);
-                  const { maturityDate } = form.getFieldsValue();
+                  const maturityDate = form.getFieldValue('maturityDate');
 
                   if ((date ?? today) > addDays(today, bondMaxLife ?? 0)) {
                     return undefined;

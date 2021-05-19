@@ -75,8 +75,8 @@ export class YfStakingContract extends Web3Contract {
 
     const stakedToken = {
       ...this.stakedTokens.get(tokenAddress),
-      currentEpochPoolSize: new BigNumber(currentEpochPoolSize),
-      nextEpochPoolSize: new BigNumber(nextEpochPoolSize),
+      currentEpochPoolSize: BigNumber.from(currentEpochPoolSize),
+      nextEpochPoolSize: BigNumber.from(nextEpochPoolSize),
     };
 
     this.stakedTokens.set(tokenAddress, stakedToken);
@@ -99,22 +99,22 @@ export class YfStakingContract extends Web3Contract {
 
     const stakedToken = {
       ...this.stakedTokens.get(tokenAddress),
-      userBalance: new BigNumber(userBalance),
-      currentEpochUserBalance: new BigNumber(currentEpochUserBalance),
-      nextEpochUserBalance: new BigNumber(nextEpochUserBalance),
+      userBalance: BigNumber.from(userBalance),
+      currentEpochUserBalance: BigNumber.from(currentEpochUserBalance),
+      nextEpochUserBalance: BigNumber.from(nextEpochUserBalance),
     };
 
     this.stakedTokens.set(tokenAddress, stakedToken);
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  async stake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
+  async stake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber | undefined> {
     const result = await this.send('deposit', [tokenAddress, amount], {}, gasPrice);
-    return new BigNumber(result);
+    return BigNumber.from(result);
   }
 
-  async unstake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber> {
+  async unstake(tokenAddress: string, amount: BigNumber, gasPrice: number): Promise<BigNumber | undefined> {
     const result = await this.send('withdraw', [tokenAddress, amount], {}, gasPrice);
-    return new BigNumber(result);
+    return BigNumber.from(result);
   }
 }
