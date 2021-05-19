@@ -32,10 +32,10 @@ const PoolView: React.FC = () => {
         </div>
 
         <div className="flex col-gap-24 ml-auto">
-          <Link to={`${location.pathname}/deposit`} className="button-primary button-big">
+          <Link to={`${location.pathname}/deposit`} className="button-primary">
             Deposit
           </Link>
-          <Link to={`${location.pathname}/withdraw`} className="button-ghost button-big">
+          <Link to={`${location.pathname}/withdraw`} className="button-ghost">
             Withdraw
           </Link>
           <DropdownList
@@ -51,7 +51,7 @@ const PoolView: React.FC = () => {
             {({ ref, setOpen, open }) => (
               <button
                 type="button"
-                className="button-ghost-alt button-big button-icon"
+                className="button-ghost-alt button-icon"
                 ref={ref}
                 onClick={() => setOpen(isOpen => !isOpen)}>
                 <Icon name="vertical-dots" />
