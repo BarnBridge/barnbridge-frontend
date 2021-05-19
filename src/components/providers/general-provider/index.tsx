@@ -51,9 +51,13 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
         theme,
         selectedTheme,
         toggleTheme: () => {
-          if (selectedTheme === 'light') setSelectedTheme('dark');
-          if (selectedTheme === 'dark') removeSelectedTheme();
-          if (selectedTheme === undefined) setSelectedTheme('light');
+          if (selectedTheme === 'light') {
+            setSelectedTheme('dark');
+          } else if (selectedTheme === 'dark') {
+            removeSelectedTheme();
+          } else {
+            setSelectedTheme('light');
+          }
         },
       }}>
       {children}
