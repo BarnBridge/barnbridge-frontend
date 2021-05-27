@@ -1,78 +1,15 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import Web3Contract from 'web3/web3Contract';
+import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-const ABI: AbiItem[] = [
-  {
-    name: 'name',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'name', type: 'string' }],
-  },
-  {
-    name: 'symbol',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'symbol', type: 'string' }],
-  },
-  {
-    name: 'decimals',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'decimals', type: 'uint8' }],
-  },
-  {
-    name: 'totalSupply',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'amount', type: 'uint256' }],
-  },
-  {
-    name: 'balanceOf',
-    type: 'function',
-    inputs: [{ name: 'account', type: 'address' }],
-    outputs: [{ name: 'amount', type: 'uint256' }],
-  },
-  {
-    name: 'allowance',
-    type: 'function',
-    inputs: [
-      {
-        name: 'owner',
-        type: 'address',
-      },
-      {
-        name: 'spender',
-        type: 'address',
-      },
-    ],
-    outputs: [
-      {
-        name: 'amount',
-        type: 'uint256',
-      },
-    ],
-  },
-  {
-    name: 'approve',
-    type: 'function',
-    inputs: [
-      {
-        name: 'spender',
-        type: 'address',
-      },
-      {
-        name: 'amount',
-        type: 'uint256',
-      },
-    ],
-    outputs: [
-      {
-        name: 'result',
-        type: 'bool',
-      },
-    ],
-  },
+const ERC20ABI: AbiItem[] = [
+  createAbiItem('name', [], ['string']),
+  createAbiItem('symbol', [], ['string']),
+  createAbiItem('decimals', [], ['uint8']),
+  createAbiItem('totalSupply', [], ['uint256']),
+  createAbiItem('balanceOf', ['address'], ['uint256']),
+  createAbiItem('allowance', ['address', 'address'], ['uint256']),
+  createAbiItem('approve', ['address', 'uint256'], ['bool']),
 ];
 
 export default class Erc20Contract extends Web3Contract {
@@ -87,131 +24,87 @@ export default class Erc20Contract extends Web3Contract {
   private allowances: Map<string, BigNumber>;
 
   constructor(abi: AbiItem[], address: string) {
-    super([...ABI, ...abi], address, '');
+    super([...ERC20ABI, ...abi], address, '');
 
     this.balances = new Map<string, BigNumber>();
     this.allowances = new Map<string, BigNumber>();
 
     this.on(Web3Contract.UPDATE_ACCOUNT, () => {
-      if (!this.account) {
-        this.balances.clear();
-        this.allowances.clear();
-        this.emit(Web3Contract.UPDATE_DATA);
-      }
+      this.balances.clear();
+      this.allowances.clear();
+      this.emit(Web3Contract.UPDATE_DATA);
     });
   }
 
   get balance(): BigNumber | undefined {
-    if (!this.account) {
-      return undefined;
-    }
-
-    return this.balances.get(this.account);
+    return this.getBalanceOf(this.account);
   }
 
-  // get allowance(): BigNumber | undefined {
-  //   if (!this.account) {
-  //     return undefined;
-  //   }
-  //
-  //   return this.allowances.get(this.account);
-  // }
-
-  // get isAllowed(): boolean | undefined {
-  //   return this.allowance?.gt(BigNumber.ZERO);
-  // }
-
-  // get maxAllowed(): BigNumber | undefined {
-  //   if (!this.balance || !this.allowance) {
-  //     return undefined;
-  //   }
-  //
-  //   return BigNumber.min(this.balance, this.allowance);
-  // }
-
-  getBalanceOf(address: string): BigNumber | undefined {
-    return this.balances.get(address);
+  getBalanceOf(address?: string): BigNumber | undefined {
+    return address ? this.balances.get(address) : undefined;
   }
 
-  getAllowanceOf(address: string): BigNumber | undefined {
-    return this.allowances.get(address);
+  getAllowanceOf(spenderAddress: string): BigNumber | undefined {
+    console.log('getAllowanceOf', this.address, { spenderAddress });
+    return spenderAddress ? this.allowances.get(spenderAddress) : undefined;
   }
 
-  isAllowedOf(address: string): boolean | undefined {
-    return this.allowances.get(address)?.gt(BigNumber.ZERO);
+  isAllowedOf(spenderAddress: string): boolean | undefined {
+    return this.getAllowanceOf(spenderAddress)?.gt(BigNumber.ZERO);
   }
 
-  maxAllowedOf(address: string): BigNumber | undefined {
-    const balance = this.getBalanceOf(address);
-    const allowance = this.getAllowanceOf(address);
+  async loadCommon(): Promise<void> {
+    const [name, symbol, decimals, totalSupply] = await this.batch([
+      { method: 'name' },
+      { method: 'symbol' },
+      { method: 'decimals' },
+      { method: 'totalSupply' },
+    ]);
 
-    if (!balance || !allowance) {
-      return undefined;
-    }
-
-    return BigNumber.min(balance, allowance);
-  }
-
-  loadCommon(): Promise<void> {
-    return this.batch([
-      {
-        method: 'name',
-      },
-      {
-        method: 'symbol',
-      },
-      {
-        method: 'decimals',
-        transform: value => Number(value),
-      },
-      {
-        method: 'totalSupply',
-        transform: value => new BigNumber(value),
-      },
-    ]).then(([name, symbol, decimals, totalSupply]) => {
-      this.name = name;
-      this.symbol = symbol;
-      this.decimals = decimals;
-      this.totalSupply = totalSupply;
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
+    this.name = name;
+    this.symbol = symbol;
+    this.decimals = Number(decimals);
+    this.totalSupply = BigNumber.from(totalSupply);
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
   async loadBalance(address?: string): Promise<void> {
     const addr = address ?? this.account;
 
-    if (!addr) {
-      return;
-    }
+    if (addr) {
+      const balance = await this.call('balanceOf', [addr]);
+      const value = BigNumber.from(balance);
 
-    return this.call('balanceOf', [addr]).then(value => {
-      this.balances.set(addr, new BigNumber(value));
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
+      if (value) {
+        this.balances.set(addr, value);
+        this.emit(Web3Contract.UPDATE_DATA);
+      }
+    }
   }
 
-  async loadAllowance(spenderAddress: string, address?: string): Promise<void> {
-    const addr = address ?? this.account;
+  async loadAllowance(spenderAddress: string): Promise<void> {
+    console.log('loadAllowance', this.address, { spenderAddress });
+    const addr = this.account;
 
-    if (!addr) {
-      return;
+    if (addr) {
+      const allowance = await this.call('allowance', [addr, spenderAddress]);
+      const value = BigNumber.from(allowance);
+
+      if (value) {
+        this.allowances.set(spenderAddress, value);
+        this.emit(Web3Contract.UPDATE_DATA);
+      }
     }
-
-    return this.call('allowance', [addr, spenderAddress]).then(value => {
-      this.allowances.set(spenderAddress, new BigNumber(value));
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
   }
 
-  approve(enable: boolean, spenderAddress: string): Promise<void> {
-    if (!this.account) {
-      return Promise.reject();
+  async approve(spenderAddress: string | undefined, enable: boolean): Promise<void> {
+    if (!spenderAddress) {
+      return Promise.reject(new Error('Invalid spender address!'));
     }
 
     const value = enable ? BigNumber.MAX_UINT_256 : BigNumber.ZERO;
 
-    return this.send('approve', [spenderAddress, value], {
-      from: this.account,
-    }).then(() => this.loadAllowance(spenderAddress));
+    await this.send('approve', [spenderAddress, value]);
+    await this.loadAllowance(spenderAddress).catch(() => undefined);
   }
 }

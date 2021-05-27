@@ -21,8 +21,10 @@ const config = {
     gusd: toLowerCase(process.env.REACT_APP_TOKEN_GUSD_ADDR),
     usdt: toLowerCase(process.env.REACT_APP_TOKEN_USDT_ADDR),
     univ2: toLowerCase(process.env.REACT_APP_TOKEN_UNIV2_ADDR),
+    stkAave: toLowerCase(process.env.REACT_APP_TOKEN_STKAAVE_ADDR),
     bbcUsdc: toLowerCase(process.env.REACT_APP_TOKEN_BBC_USDC_ADDR),
     bbcDai: toLowerCase(process.env.REACT_APP_TOKEN_BBC_DAI_ADDR),
+    bbaDai: toLowerCase(process.env.REACT_APP_TOKEN_BBA_DAI_ADDR),
   },
   feeds: {
     btc: toLowerCase(process.env.REACT_APP_FEED_BTC_ADDR),
@@ -33,8 +35,10 @@ const config = {
     susd: toLowerCase(process.env.REACT_APP_FEED_SUSD_ADDR),
     usdt: toLowerCase(process.env.REACT_APP_FEED_USDT_ADDR),
     univ2: toLowerCase(process.env.REACT_APP_FEED_UNIV2_ADDR),
+    stkAave: toLowerCase(process.env.REACT_APP_FEED_STKAAVE_ADDR),
     bbcUsdc: toLowerCase(process.env.REACT_APP_FEED_BBC_USDC_ADDR),
     bbcDai: toLowerCase(process.env.REACT_APP_FEED_BBC_DAI_ADDR),
+    bbaDai: toLowerCase(process.env.REACT_APP_FEED_BBA_DAI_ADDR),
   },
   contracts: {
     yf: {

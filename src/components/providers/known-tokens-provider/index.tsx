@@ -24,12 +24,14 @@ export enum KnownTokens {
   GUSD = 'GUSD',
   UNIV2 = 'UNI-V2',
   USDT = 'USDT',
+  STK_AAVE = 'stkAAVE',
 }
 
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
   export const bbcUSDC = config.isDev ? 'bbcUSDC' : 'bb_cUSDC';
-  export const bbcDAI = config.isDev ? 'bbcDAI' : 'bb_cDAI';
+  export const bbcDAI = config.isDev ? 'bb_cDAI' : 'bb_cDAI';
+  export const bbaDAI = config.isDev ? 'bb_aDAI' : 'bb_aDAI';
 }
 /* eslint-enable @typescript-eslint/no-redeclare */
 
@@ -164,6 +166,17 @@ export const UniV2Token: TokenMeta = {
   contract: new Erc20Contract([], config.tokens.univ2),
 };
 
+export const StkAaveToken: TokenMeta = {
+  address: config.tokens.stkAave,
+  symbol: KnownTokens.STK_AAVE,
+  name: 'Staked AAVE',
+  icon: 'static/token-staked-aave',
+  decimals: 18,
+  priceFeed: config.feeds.stkAave, // stkAAVE -> USDC
+  pricePath: [KnownTokens.USDC],
+  contract: new Erc20Contract([], config.tokens.stkAave),
+};
+
 export const BBcUsdcToken: TokenMeta = {
   address: config.tokens.bbcUsdc,
   symbol: KnownTokens.bbcUSDC,
@@ -184,6 +197,18 @@ export const BBcDaiToken: TokenMeta = {
   pricePath: [KnownTokens.DAI],
 };
 
+export const BBaDaiToken: TokenMeta = {
+  address: config.tokens.bbaDai,
+  symbol: KnownTokens.bbaDAI,
+  name: 'BarnBridge aDAI',
+  icon: 'token-dai',
+  decimals: 18,
+  priceFeed: config.feeds.bbaDai, // bbaDAI -> DAI
+  pricePath: [KnownTokens.DAI],
+};
+
+export const ProjectToken: TokenMeta = BondToken;
+
 const KNOWN_TOKENS: TokenMeta[] = [
   BtcToken,
   WBtcToken,
@@ -197,8 +222,10 @@ const KNOWN_TOKENS: TokenMeta[] = [
   SusdToken,
   GusdToken,
   UniV2Token,
+  StkAaveToken,
   BBcUsdcToken,
   BBcDaiToken,
+  BBaDaiToken,
 ];
 
 (window as any).KNOWN_TOKENS = KNOWN_TOKENS;
@@ -327,7 +354,7 @@ async function getJTokenPrice(symbol: string): Promise<BigNumber> {
   }
 
   const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
-  priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+  // priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
 
   const price = await priceFeedContract.call('price');
 
@@ -406,6 +433,7 @@ const KnownTokensProvider: FC = props => {
               break;
             case KnownTokens.bbcUSDC:
             case KnownTokens.bbcDAI:
+            case KnownTokens.bbaDAI:
               token.price = await getJTokenPrice(token.symbol);
               break;
             default:

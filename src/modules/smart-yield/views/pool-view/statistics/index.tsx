@@ -1,15 +1,17 @@
-import React, { useState } from 'react';
+import React, { FC, useState } from 'react';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
-import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { Markets, Pools } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
@@ -17,31 +19,47 @@ type Props = {
   className?: string;
 };
 
-const Statistics: React.FC<Props> = ({ className }) => {
-  const { rewardPool, sendClaim } = useRewardPool();
+const Statistics: FC<Props> = props => {
+  const { className } = props;
+  const walletCtx = useWallet();
+  const rewardPoolCtx = useRewardPool();
+  const pool = rewardPoolCtx.pool!;
 
-  const [confirmVisible, setConfirm] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const { market: poolMarket, uToken } = rewardPoolCtx;
+  const { smartYield, rewardPool } = pool;
+  const rewardTokens = Array.from(pool.rewardTokens.values());
+  const walletBalance = smartYield.balance;
+  const stakedBalance = rewardPool.getBalanceFor(walletCtx.account!);
+  const [confirmClaimVisible, setConfirmClaim] = useState(false);
+  const [claiming, setClaiming] = useState(false);
 
-  const canClaim = Boolean(rewardPool?.pool.toClaim?.gt(ZERO_BIG_NUMBER));
+  const totalToClaim = rewardTokens.reduce((sum, rewardToken) => {
+    const toClaim = rewardPool.getClaimFor(rewardToken.address);
+    return sum.plus(toClaim ?? BigNumber.ZERO);
+  }, BigNumber.ZERO);
 
-  const market = Markets.get(rewardPool?.protocolId ?? '');
-  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
+  const canClaim = totalToClaim.gt(BigNumber.ZERO);
 
   function handleClaim() {
-    rewardPool?.pool.loadClaim();
-    setConfirm(true);
+    pool.loadClaims();
+    setConfirmClaim(true);
   }
 
-  const confirmClaim = async <A extends ConfirmTxModalArgs>(args: A) => {
-    setConfirm(false);
-    setSaving(true);
+  const confirmClaimPoolReward = async <A extends ConfirmTxModalArgs>(args: A) => {
+    setConfirmClaim(false);
+    setClaiming(true);
 
     try {
-      await sendClaim(args.gasPrice);
-    } catch {}
+      await rewardPool.sendClaimAll(args.gasPrice);
 
-    setSaving(false);
+      rewardTokens.forEach(rewardToken => {
+        (rewardToken.contract as Erc20Contract).loadBalance().catch(Error);
+      });
+    } catch (e) {
+      console.log(e);
+    }
+
+    setClaiming(false);
   };
 
   return (
@@ -57,15 +75,15 @@ const Statistics: React.FC<Props> = ({ className }) => {
             <dt>Portfolio balance</dt>
             <dd>
               <IconBubble
-                name={meta?.icon}
+                name={uToken?.icon}
                 bubbleName="static/token-bond"
-                secondBubbleName={market?.icon}
+                secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}
                 className="mr-8"
               />
-              {formatToken(rewardPool?.poolToken.balance, {
-                scale: rewardPool?.poolToken.decimals,
+              {formatToken(walletBalance, {
+                scale: smartYield.decimals,
               }) ?? '-'}
             </dd>
           </div>
@@ -73,83 +91,110 @@ const Statistics: React.FC<Props> = ({ className }) => {
             <dt>Staked balance</dt>
             <dd>
               <IconBubble
-                name={meta?.icon}
+                name={uToken?.icon}
                 bubbleName="static/token-bond"
-                secondBubbleName={market?.icon}
+                secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}
                 className="mr-8"
               />
-              {formatToken(rewardPool?.pool.balance, {
-                scale: rewardPool?.poolToken.decimals,
+              {formatToken(stakedBalance, {
+                scale: smartYield.decimals,
               }) ?? '-'}
             </dd>
           </div>
-          <div className={s.def}>
-            <dt>My daily reward</dt>
-            <dd>
-              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
-              {formatToken(rewardPool?.pool.myDailyReward, {
-                scale: rewardPool?.rewardToken.decimals,
-              }) ?? '-'}
-            </dd>
-          </div>
-          <div className={s.def}>
-            <dt>My Bond balance</dt>
-            <dd>
-              <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
-              {formatToken(rewardPool?.rewardToken.balance, {
-                scale: rewardPool?.rewardToken.decimals,
-              }) ?? '-'}
-            </dd>
-          </div>
+          {rewardTokens.map(rewardToken => (
+            <React.Fragment key={rewardToken.address}>
+              <div className={s.def}>
+                <dt>My daily {rewardToken.symbol} reward</dt>
+                <dd>
+                  <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                  {formatToken(rewardPool.getMyDailyRewardFor(rewardToken.address)?.unscaleBy(rewardToken.decimals)) ??
+                    '-'}
+                </dd>
+              </div>
+              <div className={s.def}>
+                <dt>My {rewardToken.symbol} balance</dt>
+                <dd>
+                  <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                  {formatToken((rewardToken.contract as Erc20Contract).balance, {
+                    scale: rewardToken.decimals,
+                  }) ?? '-'}
+                </dd>
+              </div>
+            </React.Fragment>
+          ))}
         </dl>
         <footer className={s.footer}>
           <div>
-            <div className={s.footerReward}>
-              <Tooltip
-                title={
-                  <Text type="p2" weight="semibold" color="primary">
-                    {formatToken(rewardPool?.pool.toClaim, {
-                      scale: rewardPool?.rewardToken.decimals,
-                      decimals: rewardPool?.rewardToken.decimals,
-                    }) ?? '-'}
-                  </Text>
-                }>
-                <Text type="h2" weight="bold" color="primary" className="wrap">
-                  {formatToken(rewardPool?.pool.toClaim, {
-                    scale: rewardPool?.rewardToken.decimals,
-                  }) ?? '-'}
-                </Text>
-              </Tooltip>
-              <Icon name="static/token-bond" width="24" height="24" style={{ marginLeft: 8 }} />
-            </div>
+            {rewardTokens.map(rewardToken => (
+              <div key={rewardToken.symbol} className={s.footerReward}>
+                <div className="flex mr-16">
+                  <Tooltip
+                    title={
+                      <Text type="p2" weight="semibold" color="primary">
+                        {formatToken(rewardPool.getClaimFor(rewardToken.address), {
+                          decimals: rewardToken.decimals,
+                          scale: rewardToken.decimals,
+                          tokenName: rewardToken.symbol,
+                        }) ?? '-'}
+                      </Text>
+                    }>
+                    <Text type="h3" weight="bold" color="primary" className="wrap">
+                      {formatToken(rewardPool.getClaimFor(rewardToken.address), {
+                        compact: true,
+                        scale: rewardToken.decimals,
+                      }) ?? '-'}
+                    </Text>
+                  </Tooltip>
+                  <Icon name={rewardToken.icon!} width="24" height="24" style={{ marginLeft: 8 }} />
+                </div>
+              </div>
+            ))}
             <Text type="small" weight="semibold" color="secondary">
-              My current reward
+              My current reward{rewardTokens.length! > 1 ? 's' : ''}
             </Text>
           </div>
-          <button type="button" className="button-primary ml-auto" disabled={!canClaim || saving} onClick={handleClaim}>
-            {saving && <Spin type="circle" />}
+          <button
+            type="button"
+            className="button-primary ml-auto"
+            disabled={!canClaim || claiming}
+            onClick={handleClaim}>
+            <Spin type="circle" spinning={claiming} />
             Claim reward
           </button>
         </footer>
       </section>
-      {confirmVisible && (
+      {confirmClaimVisible && (
         <TxConfirmModal
           title="Confirm your claim"
           header={
-            <div className="flex col-gap-8 align-center justify-center">
-              <Text type="h2" weight="semibold" color="primary">
-                {formatToken(rewardPool?.pool.toClaim, {
-                  scale: rewardPool?.rewardToken.decimals,
-                }) ?? '-'}
-              </Text>
-              <Icon name="static/token-bond" width={32} height={32} />
+            <div className="flex justify-center">
+              {rewardTokens.map(rewardToken => (
+                <Tooltip
+                  key={rewardToken.symbol}
+                  className="flex col-gap-8 align-center justify-center mr-16"
+                  title={
+                    formatToken(rewardPool.getClaimFor(rewardToken.address), {
+                      decimals: rewardToken.decimals,
+                      scale: rewardToken.decimals,
+                      tokenName: rewardToken.symbol,
+                    }) ?? '-'
+                  }>
+                  <Text type="h2" weight="semibold" color="primary">
+                    {formatToken(rewardPool.getClaimFor(rewardToken.address), {
+                      compact: true,
+                      scale: rewardToken.decimals,
+                    }) ?? '-'}
+                  </Text>
+                  <Icon name={rewardToken.icon!} width={32} height={32} />
+                </Tooltip>
+              ))}
             </div>
           }
           submitText="Claim"
-          onCancel={() => setConfirm(false)}
-          onConfirm={confirmClaim}
+          onCancel={() => setConfirmClaim(false)}
+          onConfirm={confirmClaimPoolReward}
         />
       )}
     </>

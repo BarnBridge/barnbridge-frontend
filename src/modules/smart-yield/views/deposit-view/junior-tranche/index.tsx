@@ -52,11 +52,15 @@ const JuniorTranche: React.FC = () => {
 
   const [state, setState] = React.useState<State>(InitialState);
   const [priceReversible, setPriceReversible] = React.useState(false);
-  const formDisabled = !pool?.contracts.underlying.isAllowed;
+  const uToken = pool?.contracts.underlying;
+  const uBalance = uToken?.balance;
+  const uAllowed = uToken?.isAllowedOf(pool?.providerAddress!);
+  const uAllowance = uToken?.getAllowanceOf(pool?.providerAddress!);
+  const maxAmount = BigNumber.min(uAllowance ?? 0, uBalance ?? 0).unscaleBy(pool?.underlyingDecimals);
+  const formDisabled = !uAllowed;
   const [isApproving, setApproving] = React.useState<boolean>(false);
   const [amount, setAmount] = React.useState('');
   const bnAmount = amount ? new BigNumber(amount) : undefined;
-  const maxAmount = pool?.contracts.underlying.maxAllowed.unscaleBy(pool?.underlyingDecimals);
 
   function handlePriceReverse() {
     setPriceReversible(prevState => !prevState);
@@ -344,7 +348,7 @@ const JuniorTranche: React.FC = () => {
             Cancel
           </button>
           <div className="flex">
-            {pool?.contracts.underlying.isAllowed === false && (
+            {uAllowed === false && (
               <button type="button" className="button-ghost mr-24" disabled={isApproving} onClick={handleTokenEnable}>
                 <Spin spinning={isApproving} />
                 Enable {pool?.underlyingSymbol}

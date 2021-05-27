@@ -1,53 +1,38 @@
-import React from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
-import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
+import { KnownMarkets, MarketMeta } from 'modules/smart-yield/providers/markets';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
-import { PoolsCard } from 'modules/smart-yield/views/pools-view/pool-card';
+import { PoolCard } from 'modules/smart-yield/views/pools-view/pool-card';
 
-const PoolsView: React.FC = () => {
-  const knownTokensCtx = useKnownTokens();
+const PoolsView: FC = () => {
   const rewardPoolsCtx = useRewardPools();
-  const { loading, rewardPools } = rewardPoolsCtx;
+  const { loading, pools } = rewardPoolsCtx;
 
-  const [activeMarket, setActiveMarket] = React.useState<SYMarketMeta | undefined>();
+  const [activeMarket, setActiveMarket] = useState<MarketMeta | undefined>();
 
-  React.useEffect(() => {
-    const market = Array.from(Markets.values()).find(market => market.id === rewardPoolsCtx.rewardPools[0]?.protocolId);
+  const activeMarketTVL = useMemo(() => {
+    return activeMarket ? rewardPoolsCtx.getMarketTVL(activeMarket.id) : undefined;
+  }, [activeMarket]);
+
+  const activeMarketPools = useMemo(() => {
+    return pools.filter(pool => pool.meta.protocolId === activeMarket?.id);
+  }, [activeMarket]);
+
+  useEffect(() => {
+    const market = KnownMarkets.find(market => market.id === pools[0]?.meta.protocolId);
     setActiveMarket(market);
-  }, [rewardPoolsCtx.rewardPools]);
-
-  const activeMarketTotalValueLocked = React.useMemo(() => {
-    return rewardPools
-      .filter(pool => pool.protocolId === activeMarket?.id)
-      .reduce((sum, c) => {
-        if (!c.pool.poolSize) {
-          return sum;
-        }
-
-        const usdValue = knownTokensCtx.convertTokenInUSD(
-          c.pool.poolSize.unscaleBy(c.poolToken.decimals),
-          c.poolToken.symbol!,
-        );
-
-        if (!usdValue) {
-          return sum;
-        }
-
-        return sum.plus(usdValue);
-      }, ZERO_BIG_NUMBER);
-  }, [rewardPoolsCtx, activeMarket]);
+  }, [pools]);
 
   return (
     <>
       <div className="tab-cards mb-64">
-        {Array.from(Markets.values()).map(market => {
-          const isActive = rewardPoolsCtx.rewardPools.some(pool => pool.protocolId === market.id);
+        {KnownMarkets.map(market => {
+          const isActive = pools.some(pool => pool.meta.protocolId === market.id);
 
           return (
             <button
@@ -57,7 +42,13 @@ const PoolsView: React.FC = () => {
               disabled={!isActive}
               style={{ color: !isActive ? 'red' : '' }}
               onClick={() => setActiveMarket(market)}>
-              <Icon name={market.icon as IconNames} width={40} height={40} className="mr-16" color="inherit" />
+              <Icon
+                name={(isActive ? market.icon.active : market.icon.inactive) as IconNames}
+                width={40}
+                height={40}
+                className="mr-16"
+                color="inherit"
+              />
               <div>
                 <Text type="p1" weight="semibold" color="primary">
                   {market.name}
@@ -76,17 +67,15 @@ const PoolsView: React.FC = () => {
             Total value locked
           </Text>
           <Text type="h2" weight="bold" color="primary">
-            {formatUSD(activeMarketTotalValueLocked)}
+            {formatUSD(activeMarketTVL)}
           </Text>
         </div>
       </div>
       <AntdSpin spinning={loading}>
         <div className="flex row-gap-32 col-gap-32">
-          {rewardPools
-            .filter(pool => pool.protocolId === activeMarket?.id)
-            .map(rewardPool => (
-              <PoolsCard key={rewardPool.poolAddress} rewardPool={rewardPool} />
-            ))}
+          {activeMarketPools.map(pool => (
+            <PoolCard key={pool.smartYield.address} pool={pool} />
+          ))}
         </div>
       </AntdSpin>
     </>

@@ -1,4 +1,5 @@
 import React from 'react';
+import SafeProvider from '@gnosis.pm/safe-apps-react-sdk';
 import Web3 from 'web3';
 
 import { useWindowState } from 'components/providers/window-state';
@@ -97,7 +98,11 @@ const EthWeb3Provider: React.FC = props => {
     [blockNumber],
   );
 
-  return <EthWeb3Context.Provider value={value}>{children}</EthWeb3Context.Provider>;
+  return (
+    <EthWeb3Context.Provider value={value}>
+      <SafeProvider>{children}</SafeProvider>
+    </EthWeb3Context.Provider>
+  );
 };
 
 export default EthWeb3Provider;
