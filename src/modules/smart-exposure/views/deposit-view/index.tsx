@@ -8,6 +8,7 @@ import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { KnownTokens } from 'components/providers/known-tokens-provider';
+import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
 const DepositView: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState<string>('multiple');
@@ -85,8 +86,11 @@ const MultipleTokensForm = () => {
   const { pool } = useParams<{ pool: string }>();
   const [wbtcState, setWbtcState] = React.useState<string>('');
   const [ethState, setEthState] = React.useState<string>('');
+  const { ePoolContract } = useSEPools();
   return (
     <form>
+      <div>asd {ePoolContract?.feeRate}</div>
+      <div>asd {ePoolContract?.rate?.toString()}</div>
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">WBTC amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>

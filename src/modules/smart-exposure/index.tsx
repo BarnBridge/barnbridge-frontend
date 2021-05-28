@@ -10,13 +10,13 @@ import { SEPoolsProvider } from 'modules/smart-exposure/providers/se-pools-provi
 import RocketSvg from 'resources/img/rocket.png';
 import { useWallet } from 'wallets/wallet';
 
+import { PoolActionsView } from './views/pool-actions-view';
+
 import s from './s.module.scss';
 
 const PairsView = lazy(() => import('./views/pairs-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
-const DepositView = lazy(() => import('./views/deposit-view'));
-const WithdrawView = lazy(() => import('./views/withdraw-view'));
-const ChangeTrancheView = lazy(() => import('./views/change-tranche-view'));
+
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 
 type SmartYieldViewParams = {
@@ -74,7 +74,14 @@ const SmartExposureView: React.FC = () => {
   if (!config.isDev) {
     return (
       <div className="flex flow-row row-gap-48 align-center justify-center full-height">
-        <img src={RocketSvg} alt="Rocket" style={{ maxWidth: '310px', maxHeight: '377px' }} />
+        <img
+          src={RocketSvg}
+          alt="Rocket"
+          style={{
+            maxWidth: '310px',
+            maxHeight: '377px',
+          }}
+        />
         <div className="grid flow-row row-gap-8">
           <Text type="h1" weight="bold" color="primary">
             Stay tuned!
@@ -100,14 +107,8 @@ const SmartExposureView: React.FC = () => {
               <Route path="/smart-exposure/pairs/:pool" exact>
                 <PoolView />
               </Route>
-              <Route path="/smart-exposure/pairs/:pool/deposit" exact>
-                <DepositView />
-              </Route>
-              <Route path="/smart-exposure/pairs/:pool/withdraw" exact>
-                <WithdrawView />
-              </Route>
-              <Route path="/smart-exposure/pairs/:pool/change-tranche" exact>
-                <ChangeTrancheView />
+              <Route path="/smart-exposure/pairs/:pool/:path(deposit|withdraw|change-tranche)" exact>
+                <PoolActionsView />
               </Route>
               <Route path="/smart-exposure/portfolio" exact>
                 <PortfolioView />
