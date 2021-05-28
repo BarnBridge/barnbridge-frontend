@@ -10,6 +10,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { KnownTokens } from 'components/providers/known-tokens-provider';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -105,14 +106,17 @@ const Statistics: FC<Props> = props => {
           </div>
           {rewardTokens.map(rewardToken => (
             <React.Fragment key={rewardToken.address}>
-              <div className={s.def}>
-                <dt>My daily {rewardToken.symbol} reward</dt>
-                <dd>
-                  <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                  {formatToken(rewardPool.getMyDailyRewardFor(rewardToken.address)?.unscaleBy(rewardToken.decimals)) ??
-                    '-'}
-                </dd>
-              </div>
+              {rewardToken.symbol === KnownTokens.BOND ? (
+                <div className={s.def}>
+                  <dt>My daily {rewardToken.symbol} reward</dt>
+                  <dd>
+                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    {formatToken(
+                      rewardPool.getMyDailyRewardFor(rewardToken.address)?.unscaleBy(rewardToken.decimals),
+                    ) ?? '-'}
+                  </dd>
+                </div>
+              ) : null}
               <div className={s.def}>
                 <dt>My {rewardToken.symbol} balance</dt>
                 <dd>
@@ -130,6 +134,7 @@ const Statistics: FC<Props> = props => {
             {rewardTokens.map(rewardToken => (
               <div key={rewardToken.symbol} className={s.footerReward}>
                 <div className="flex mr-16">
+                  <Icon name={rewardToken.icon!} width="24" height="24" className="mr-8" style={{ flexShrink: 0 }} />
                   <Tooltip
                     title={
                       <Text type="p2" weight="semibold" color="primary">
@@ -140,14 +145,18 @@ const Statistics: FC<Props> = props => {
                         }) ?? '-'}
                       </Text>
                     }>
-                    <Text type="h3" weight="bold" color="primary" className="wrap">
+                    <Text
+                      type="h3"
+                      weight="bold"
+                      color="primary"
+                      className="text-ellipsis"
+                      style={{ maxWidth: '120px' }}>
                       {formatToken(rewardPool.getClaimFor(rewardToken.address), {
                         compact: true,
                         scale: rewardToken.decimals,
                       }) ?? '-'}
                     </Text>
                   </Tooltip>
-                  <Icon name={rewardToken.icon!} width="24" height="24" style={{ marginLeft: 8 }} />
                 </div>
               </div>
             ))}

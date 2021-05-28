@@ -98,6 +98,7 @@ const PoolStatistics: FC = () => {
           <div className={cn('flex align-center justify-space-between', s.claimBlock)}>
             <div className="flex flow-row">
               <div className="flex align-center mb-4">
+                <Icon name="static/token-bond" className="mr-8" style={{ flexShrink: 0 }} />
                 <Tooltip
                   title={
                     formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals), {
@@ -105,17 +106,16 @@ const PoolStatistics: FC = () => {
                     }) ?? '-'
                   }>
                   <Text
-                    type="h2"
+                    type="h3"
                     weight="semibold"
                     color="primary"
-                    className="mr-8 text-ellipsis"
+                    className="text-ellipsis"
                     style={{ maxWidth: '120px' }}>
                     {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals), {
                       decimals: BondToken.decimals,
                     }) ?? '-'}
                   </Text>
                 </Tooltip>
-                <Icon name="static/token-bond" />
               </div>
               <Text type="small" weight="semibold" color="secondary">
                 Current reward

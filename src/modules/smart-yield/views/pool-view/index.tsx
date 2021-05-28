@@ -6,7 +6,7 @@ import { formatPercent, formatToken } from 'web3/utils';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, KnownTokens } from 'components/providers/known-tokens-provider';
 import RewardPoolProvider, { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
 import Statistics from 'modules/smart-yield/views/pool-view/statistics';
@@ -117,24 +117,38 @@ const PoolViewInner: FC = () => {
           </div>
           {rewardTokens.map(rewardToken => (
             <React.Fragment key={rewardToken.address}>
-              <div className={s.headerTermRow}>
-                <dt>{rewardToken.symbol} daily rewards</dt>
-                <dd>
-                  <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                  {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
-                    scale: rewardToken.decimals,
-                  }) ?? '-'}
-                </dd>
-              </div>
-              <div className={s.headerTermRow}>
-                <dt>{rewardToken.symbol} rewards left</dt>
-                <dd>
-                  <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                  {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
-                    scale: rewardToken.decimals,
-                  }) ?? '-'}
-                </dd>
-              </div>
+              {rewardToken.symbol === KnownTokens.BOND ? (
+                <div className={s.headerTermRow}>
+                  <dt>{rewardToken.symbol} daily rewards</dt>
+                  <dd>
+                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
+                      scale: rewardToken.decimals,
+                    }) ?? '-'}
+                  </dd>
+                </div>
+              ) : null}
+              {rewardToken.symbol === KnownTokens.BOND ? (
+                <div className={s.headerTermRow}>
+                  <dt>{rewardToken.symbol} rewards left</dt>
+                  <dd>
+                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
+                      scale: rewardToken.decimals,
+                    }) ?? '-'}
+                  </dd>
+                </div>
+              ) : (
+                <div className={s.headerTermRow}>
+                  <dt>{rewardToken.symbol} rewards balance</dt>
+                  <dd>
+                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
+                      scale: rewardToken.decimals,
+                    }) ?? '-'}
+                  </dd>
+                </div>
+              )}
             </React.Fragment>
           ))}
         </dl>
