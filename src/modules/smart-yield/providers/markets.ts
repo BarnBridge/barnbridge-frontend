@@ -16,7 +16,7 @@ const CompoundMarket: MarketMeta = {
   },
 };
 
-const AaveMarket: MarketMeta = {
+export const AaveMarket: MarketMeta = {
   id: 'aave/v2',
   name: 'AAVE',
   icon: {

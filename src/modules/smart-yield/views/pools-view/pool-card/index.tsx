@@ -10,9 +10,14 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, getTokenByAddress, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import {
+  BondToken,
+  KnownTokens,
+  getTokenByAddress,
+  getTokenBySymbol,
+} from 'components/providers/known-tokens-provider';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
-import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
+import { AaveMarket, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
@@ -119,27 +124,36 @@ export const PoolCard: FC<PoolCardProps> = props => {
             </div>
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.symbol}>
+                {rewardToken.symbol === KnownTokens.BOND ? (
+                  <div className={s.defRow}>
+                    <dt>
+                      <Hint text={`This number shows the $${rewardToken.symbol} token rewards distributed per day.`}>
+                        {rewardToken.symbol} daily reward
+                      </Hint>
+                    </dt>
+                    <dd>
+                      <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                      {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
+                        scale: rewardToken.decimals,
+                      }) ?? '-'}
+                    </dd>
+                  </div>
+                ) : null}
                 <div className={s.defRow}>
                   <dt>
-                    <Hint text={`This number shows the $${rewardToken.symbol} token rewards distributed per day.`}>
-                      {rewardToken.symbol} daily reward
-                    </Hint>
+                    {rewardToken.symbol === KnownTokens.BOND ? (
+                      <Hint text={`This number shows the $${rewardToken.symbol} token rewards remaining.`}>
+                        {rewardToken.symbol} reward left
+                      </Hint>
+                    ) : (
+                      <Hint
+                        text={`stkAAVE reward balance: This number shows the stkAAVE amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>
+                        {rewardToken.symbol} reward balance
+                      </Hint>
+                    )}
                   </dt>
                   <dd>
                     <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                    {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
-                      scale: rewardToken.decimals,
-                    }) ?? '-'}
-                  </dd>
-                </div>
-                <div className={s.defRow}>
-                  <dt>
-                    <Hint text={`This number shows the $${rewardToken.symbol} token rewards remaining.`}>
-                      {rewardToken.symbol} reward left
-                    </Hint>
-                  </dt>
-                  <dd>
-                    <Icon name="static/token-bond" className="mr-8" width="16" height="16" />
                     {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
@@ -171,22 +185,24 @@ export const PoolCard: FC<PoolCardProps> = props => {
             </div>
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.address}>
+                {rewardToken.symbol === KnownTokens.BOND ? (
+                  <div className={s.defRow}>
+                    <dt>
+                      <Hint
+                        text={`This number shows the $${rewardToken.symbol} rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.`}>
+                        My daily {rewardToken.symbol} reward
+                      </Hint>
+                    </dt>
+                    <dd>
+                      <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                      {formatToken(rewardPool.getMyDailyRewardFor(rewardToken.address), {
+                        scale: rewardToken.decimals,
+                      }) ?? '-'}
+                    </dd>
+                  </div>
+                ) : null}
                 <div className={s.defRow}>
-                  <dt>
-                    <Hint
-                      text={`This number shows the $${rewardToken.symbol} rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.`}>
-                      Your daily {rewardToken.symbol} reward
-                    </Hint>
-                  </dt>
-                  <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                    {formatToken(rewardPool.getMyDailyRewardFor(rewardToken.address), {
-                      scale: rewardToken.decimals,
-                    }) ?? '-'}
-                  </dd>
-                </div>
-                <div className={s.defRow}>
-                  <dt>Your current reward</dt>
+                  <dt>My current reward</dt>
                   <dd>
                     <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
                     {formatToken(rewardPool.getClaimFor(rewardToken.address), {

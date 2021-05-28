@@ -84,7 +84,7 @@ const StakeForm: FC = () => {
   }
 
   function handleConfirm({ gasPrice }: ConfirmTxModalArgs): Promise<void> {
-    return formCtx.handleSubmit(values => handleSubmit(gasPrice, values))();
+    return formCtx.handleSubmit(values => handleSubmit(gasPrice, values).then(() => formCtx.setValue('amount', '0')))();
   }
 
   async function handleSubmit(gasPrice: number, values: StakeFormValues) {
@@ -139,6 +139,7 @@ const StakeForm: FC = () => {
                 max={maxAmountUnscaled?.toNumber()}
                 decimals={smartYield.decimals}
                 slider
+                placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
               <Text type="small" weight="semibold" color="red">
                 {(fieldState.error as any)?.message}
@@ -241,7 +242,7 @@ const UnstakeForm: FC = () => {
   const unstakeDisabled = formDisabled || !formCtx.formState.isValid || bnAmount?.eq(BigNumber.ZERO);
 
   function handleConfirm({ gasPrice }: ConfirmTxModalArgs): Promise<void> {
-    return formCtx.handleSubmit(values => handleSubmit(values, gasPrice))();
+    return formCtx.handleSubmit(values => handleSubmit(values, gasPrice).then(() => formCtx.setValue('amount', '0')))();
   }
 
   async function handleSubmit(values: StakeFormValues, gasPrice: number) {
@@ -300,6 +301,7 @@ const UnstakeForm: FC = () => {
                 max={maxAmountUnscaled?.toNumber()}
                 decimals={smartYield.decimals}
                 slider
+                placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
               <Text type="small" weight="semibold" color="red">
                 {(fieldState.error as any)?.message}
@@ -373,7 +375,7 @@ const UnstakeForm: FC = () => {
                             scale: rewardToken.decimals,
                           }) ?? '-'}
                         </Text>
-                        <Icon name="static/token-bond" width={32} height={32} />
+                        <Icon name={rewardToken.icon!} width={32} height={32} />
                       </div>
                     );
                   })}
