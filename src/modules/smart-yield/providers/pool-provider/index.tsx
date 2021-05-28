@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import Erc20Contract from 'web3/erc20Contract';
 import { getEtherscanTxUrl } from 'web3/utils';
 
 import { useReload } from 'hooks/useReload';
@@ -8,7 +9,6 @@ import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPool } from
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
 export type SYPool = APISYPool & {
@@ -16,7 +16,7 @@ export type SYPool = APISYPool & {
   market?: SYMarketMeta;
   contracts: {
     smartYield: SYSmartYieldContract;
-    underlying: SYUnderlyingContract;
+    underlying: Erc20Contract;
     controller: SYControllerContract;
   };
 };
@@ -149,7 +149,7 @@ const PoolProvider: React.FC = props => {
         const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
         smartYield.setProvider(wallet.provider);
 
-        const underlying = new SYUnderlyingContract(pool.underlyingAddress);
+        const underlying = new Erc20Contract([], pool.underlyingAddress);
         underlying.setProvider(wallet.provider);
 
         const controller = new SYControllerContract(pool.controllerAddress);
@@ -314,10 +314,7 @@ const PoolProvider: React.FC = props => {
         return Promise.reject();
       }
 
-      return pool.contracts.underlying
-        .approve(enable, pool.providerAddress)
-        .then(() => pool.contracts.underlying.loadAllowance(pool.providerAddress))
-        .then(reload);
+      return pool.contracts.underlying.approve(pool.providerAddress, enable).then(reload);
     },
     [state.pool],
   );

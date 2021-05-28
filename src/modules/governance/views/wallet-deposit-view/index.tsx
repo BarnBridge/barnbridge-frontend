@@ -64,7 +64,7 @@ const WalletDepositView: React.FC = () => {
     setState({ enabling: true });
 
     try {
-      await (BondToken.contract as Erc20Contract).approve(checked, config.contracts.dao.barn);
+      await (BondToken.contract as Erc20Contract).approve(config.contracts.dao.barn, checked);
     } catch {}
 
     setState({ enabling: false });

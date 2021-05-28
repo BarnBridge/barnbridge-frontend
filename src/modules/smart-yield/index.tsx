@@ -145,14 +145,7 @@ const SmartYieldView: React.FC = () => {
                 </RewardPoolsProvider>
               )}
             />
-            <Route
-              path="/smart-yield/pool"
-              render={() => (
-                <RewardPoolProvider>
-                  <PoolView />
-                </RewardPoolProvider>
-              )}
-            />
+            <Route path="/smart-yield/pool" component={PoolView} />
             <Redirect to="/smart-yield/markets" />
           </Switch>
         </Suspense>

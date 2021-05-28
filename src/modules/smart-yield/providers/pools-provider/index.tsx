@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
@@ -11,7 +12,6 @@ import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
 import { useWallet } from 'wallets/wallet';
 
 export type PoolsSYPool = APISYPool & {
@@ -19,7 +19,7 @@ export type PoolsSYPool = APISYPool & {
   market?: SYMarketMeta;
   contracts: {
     smartYield?: SYSmartYieldContract;
-    underlying?: SYUnderlyingContract;
+    underlying?: Erc20Contract;
     rewardPool?: SYRewardPoolContract;
   };
   rewardAPR?: BigNumber;
@@ -91,7 +91,7 @@ const PoolsProvider: React.FC = props => {
           pools: pools.map(pool => {
             const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
             smartYield.on(Web3Contract.UPDATE_DATA, reload);
-            const underlying = new SYUnderlyingContract(pool.underlyingAddress);
+            const underlying = new Erc20Contract([], pool.underlyingAddress);
             underlying.on(Web3Contract.UPDATE_DATA, reload);
 
             smartYield.loadCommon();
@@ -139,38 +139,38 @@ const PoolsProvider: React.FC = props => {
     });
   }, [state.pools, wallet.account]);
 
-  React.useEffect(() => {
-    state.pools.forEach(pool => {
-      const { smartYield, rewardPool } = pool.contracts;
-
-      if (!smartYield || !rewardPool) {
-        return;
-      }
-
-      const { poolSize, dailyReward } = rewardPool;
-
-      if (poolSize && dailyReward) {
-        const bondPrice = BondToken.price ?? 1;
-        const jTokenPrice = smartYield.price ?? 1;
-
-        const yearlyReward = dailyReward
-          .dividedBy(10 ** BondToken.decimals)
-          .multipliedBy(bondPrice)
-          .multipliedBy(365);
-        const poolBalance = poolSize
-          .dividedBy(10 ** (smartYield.decimals ?? 0))
-          .multipliedBy(jTokenPrice)
-          .multipliedBy(1);
-
-        if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
-          return ZERO_BIG_NUMBER;
-        }
-
-        pool.rewardAPR = yearlyReward.dividedBy(poolBalance);
-        reload();
-      }
-    });
-  }, [state.pools, BondToken.price, version]);
+  // React.useEffect(() => { /// ???
+  //   state.pools.forEach(pool => {
+  //     const { smartYield, rewardPool } = pool.contracts;
+  //
+  //     if (!smartYield || !rewardPool) {
+  //       return;
+  //     }
+  //
+  //     const { poolSize, dailyReward } = rewardPool;
+  //
+  //     if (poolSize && dailyReward) {
+  //       const bondPrice = BondToken.price ?? 1;
+  //       const jTokenPrice = smartYield.price ?? 1;
+  //
+  //       const yearlyReward = dailyReward
+  //         .dividedBy(10 ** BondToken.decimals)
+  //         .multipliedBy(bondPrice)
+  //         .multipliedBy(365);
+  //       const poolBalance = poolSize
+  //         .dividedBy(10 ** (smartYield.decimals ?? 0))
+  //         .multipliedBy(jTokenPrice)
+  //         .multipliedBy(1);
+  //
+  //       if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
+  //         return ZERO_BIG_NUMBER;
+  //       }
+  //
+  //       pool.rewardAPR = yearlyReward.dividedBy(poolBalance);
+  //       reload();
+  //     }
+  //   });
+  // }, [state.pools, BondToken.price, version]);
 
   const redeemBond = React.useCallback(
     (smartYieldAddress: string, sBondId: number, gasPrice: number) => {

@@ -1,128 +1,132 @@
-import React from 'react';
+import React, { FC, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
-import Erc20Contract from 'web3/erc20Contract';
-import Web3Contract from 'web3/web3Contract';
 
+import { useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
-import { APISYRewardPool, fetchSYRewardPools } from 'modules/smart-yield/api';
-import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
-import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { fetchSYRewardPools } from 'modules/smart-yield/api';
+import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { useWallet } from 'wallets/wallet';
 
-export type SYRewardPool = APISYRewardPool & {
-  pool: SYRewardPoolContract;
-  poolToken: SYSmartYieldContract;
-  rewardToken: Erc20Contract;
-};
-
-type State = {
+type RewardPoolsType = {
   loading: boolean;
-  rewardPools: SYRewardPool[];
+  pools: SYRewardPoolEntity[];
+  getMarketTVL: (marketId: string) => BigNumber;
+  getSYTotalStakedInUSD: () => BigNumber;
 };
 
-const InitialState: State = {
+const Context = createContext<RewardPoolsType>({
   loading: false,
-  rewardPools: [],
-};
-
-type ContextType = State;
-
-const Context = React.createContext<ContextType>({
-  ...InitialState,
+  pools: [],
+  getMarketTVL: () => BigNumber.ZERO,
+  getSYTotalStakedInUSD: () => BigNumber.ZERO,
 });
 
-export function useRewardPools(): ContextType {
-  return React.useContext(Context);
+export function useRewardPools(): RewardPoolsType {
+  return useContext(Context);
 }
 
-const RewardPoolsProvider: React.FC = props => {
+const RewardPoolsProvider: FC = props => {
   const { children } = props;
 
-  const wallet = useWallet();
-  const [reload, version] = useReload();
-  const [state, setState] = React.useState<State>(InitialState);
+  const knownTokensCtx = useKnownTokens();
+  const walletCtx = useWallet();
+  const [reload] = useReload();
 
-  React.useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      loading: true,
-      rewardPools: [],
-    }));
+  const [loading, setLoading] = useState(false);
+  const [pools, setPools] = useState<SYRewardPoolEntity[]>([]);
 
+  const getMarketTVL = useCallback(
+    (marketId: string) => {
+      return pools
+        .filter(pool => pool.meta.protocolId === marketId)
+        .reduce((sum, entity) => {
+          const { poolSize } = entity.rewardPool;
+          const { decimals, symbol } = entity.smartYield;
+
+          if (!poolSize || !symbol) {
+            return sum;
+          }
+
+          const usdValue = knownTokensCtx.convertTokenInUSD(poolSize.unscaleBy(decimals), symbol);
+
+          if (!usdValue) {
+            return sum;
+          }
+
+          return sum.plus(usdValue);
+        }, BigNumber.ZERO);
+    },
+    [pools],
+  );
+
+  const getSYTotalStakedInUSD = useCallback(() => {
+    return pools.reduce((sum, entity) => {
+      const { poolSize } = entity.rewardPool;
+      const { decimals, symbol } = entity.smartYield;
+
+      if (!poolSize || !symbol) {
+        return sum;
+      }
+
+      const usdValue = knownTokensCtx.convertTokenInUSD(poolSize.unscaleBy(decimals), symbol);
+
+      if (!usdValue) {
+        return sum;
+      }
+
+      return sum.plus(usdValue);
+    }, BigNumber.ZERO);
+  }, [pools]);
+
+  useEffect(() => {
     (async () => {
+      setLoading(true);
+
       try {
         const result = await fetchSYRewardPools();
-
-        const pools = result.map(pool => {
-          const rewardTokenContract = new Erc20Contract([], pool.rewardTokenAddress);
-          rewardTokenContract.setProvider(wallet.provider);
-          rewardTokenContract.on(Web3Contract.UPDATE_DATA, reload);
-          rewardTokenContract.loadCommon();
-
-          const poolTokenContract = new SYSmartYieldContract(pool.poolTokenAddress);
-          poolTokenContract.setProvider(wallet.provider);
-          poolTokenContract.on(Web3Contract.UPDATE_DATA, reload);
-          poolTokenContract.loadCommon();
-
-          const poolContract = new SYRewardPoolContract(pool.poolAddress);
-          poolContract.setProvider(wallet.provider);
-          poolContract.on(Web3Contract.UPDATE_DATA, reload);
-          poolContract.loadCommon();
-
-          return {
-            ...pool,
-            rewardToken: rewardTokenContract,
-            poolToken: poolTokenContract,
-            pool: poolContract,
-          };
+        const rewardPools = result.map(item => {
+          const entity = new SYRewardPoolEntity(item);
+          entity.updateProvider(walletCtx.provider);
+          entity.onDataUpdate(reload);
+          entity.loadCommonData();
+          return entity;
         });
 
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          rewardPools: pools,
-        }));
-      } catch {
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-        }));
-      }
+        setPools(rewardPools);
+      } catch {}
+
+      setLoading(false);
     })();
   }, []);
 
-  React.useEffect(() => {
-    state.rewardPools.forEach(pool => {
-      pool.rewardToken.setProvider(wallet.provider);
-      pool.poolToken.setProvider(wallet.provider);
-      pool.pool.setProvider(wallet.provider);
+  useEffect(() => {
+    pools.forEach(pool => {
+      pool.updateProvider(walletCtx.provider);
     });
-  }, [state.rewardPools, wallet.provider]);
+  }, [pools, walletCtx.provider]);
 
-  React.useEffect(() => {
-    state.rewardPools.forEach(pool => {
-      pool.rewardToken.setAccount(wallet.account);
-
-      pool.poolToken.setAccount(wallet.account);
-      pool.poolToken.loadBalance();
-
-      pool.pool.setAccount(wallet.account);
-      pool.pool.loadClaim();
-      pool.pool.loadBalance();
+  useEffect(() => {
+    pools.forEach(pool => {
+      pool.updateAccount(walletCtx.account);
+      if (walletCtx.account) {
+        pool.loadUserData();
+      }
     });
-  }, [state.rewardPools, wallet.account]);
+  }, [pools, walletCtx.account]);
 
-  const value = React.useMemo<ContextType>(() => {
-    return {
-      ...state,
-    };
-  }, [state, version]);
+  const value = {
+    loading,
+    pools,
+    getMarketTVL,
+    getSYTotalStakedInUSD,
+  };
 
   return (
     <Context.Provider value={value}>
       {children}
-      {state.rewardPools.map(pool => (
-        <ContractListener key={pool.poolAddress} contract={pool.pool} />
+      {pools.map(pool => (
+        <ContractListener key={pool.smartYield.address} contract={pool.smartYield} />
       ))}
     </Context.Provider>
   );

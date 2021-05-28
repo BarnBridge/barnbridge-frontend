@@ -559,8 +559,13 @@ export type APISYRewardPool = {
   poolAddress: string;
   poolTokenAddress: string;
   poolTokenDecimals: number;
-  rewardTokenAddress: string;
+  poolType: string; // SINGLE | MULTI
   protocolId: string;
+  rewardTokens: {
+    address: string;
+    symbol: string;
+    decimals: number;
+  }[];
   underlyingAddress: string;
   underlyingSymbol: string;
 };
@@ -570,7 +575,7 @@ export function fetchSYRewardPools(
   underlyingSymbol: string = 'all',
 ): Promise<APISYRewardPool[]> {
   const url = new URL(
-    `/api/smartyield/rewards/pools?originator=${originator}&underlyingSymbol=${underlyingSymbol}`,
+    `/api/smartyield/rewards/v2/pools?originator=${originator}&underlyingSymbol=${underlyingSymbol}`,
     config.api.baseUrl,
   );
 
@@ -612,7 +617,7 @@ export function fetchSYRewardPoolTransactions(
     transactionType,
   });
 
-  const url = new URL(`/api/smartyield/rewards/pools/${poolAddress}/transactions?${query}`, config.api.baseUrl);
+  const url = new URL(`/api/smartyield/rewards/v2/pools/${poolAddress}/transactions?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(result => result.json())

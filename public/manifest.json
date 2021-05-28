@@ -1,10 +1,16 @@
 {
-  "short_name": "BarnBridge",
   "name": "BarnBridge",
+  "short_name": "BarnBridge",
   "start_url": ".",
   "display": "standalone",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
+  "iconPath": "/logo.svg",
+  "description": "Risk Tokenizing Protocol",
+  "providedBy": {
+    "name": "BarnBridge",
+    "url": "https://branbridge.com"
+  },
   "icons": [
     {
       "src": "favicon.ico",

@@ -14,6 +14,7 @@ import { useYFPools } from '../../providers/pools-provider';
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
+import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 type Props = {
   className?: string;
@@ -21,10 +22,11 @@ type Props = {
 
 const PoolStats: React.FC<Props> = ({ className }) => {
   const yfPoolsCtx = useYFPools();
+  const rewardPoolsCtx = useRewardPools();
 
   const yfTotalStakedInUSD = yfPoolsCtx.getYFTotalStakedInUSD();
   const yfTotalEffectiveStakedInUSD = yfPoolsCtx.getYFTotalEffectiveStakedInUSD();
-  const syTotalStakedInUSD = yfPoolsCtx.getSYTotalStakedInUSD();
+  const syTotalStakedInUSD = rewardPoolsCtx.getSYTotalStakedInUSD();
   const totalStakedInUSD = BigNumber.sumEach([yfTotalStakedInUSD, syTotalStakedInUSD], bn => bn);
   const totalEffectiveStakedInUSD = BigNumber.sumEach([yfTotalEffectiveStakedInUSD, syTotalStakedInUSD], bn => bn);
   const yfTotalSupply = yfPoolsCtx.getYFTotalSupply();
