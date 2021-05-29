@@ -55,10 +55,6 @@ BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | un
   return sum;
 };
 
-export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
-export const ZERO_BIG_NUMBER = new BigNumber(0);
-export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
-
 export function getEtherscanTxUrl(txHash?: string, chainId = config.web3.chainId): string | undefined {
   if (txHash) {
     switch (chainId) {
@@ -214,7 +210,7 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
   let str = '';
 
   if (hasLess) {
-    if (val.gt(ZERO_BIG_NUMBER) && val.lt(1 / 10 ** decimals)) {
+    if (val.gt(BigNumber.ZERO) && val.lt(1 / 10 ** decimals)) {
       str += '> ';
     }
   }

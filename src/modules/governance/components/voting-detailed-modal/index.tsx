@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Icon from 'components/custom/icon';
@@ -38,14 +38,14 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
     end: !isDelegated ? userLockedUntil ?? 0 : 0,
     delay: 1_000,
     onTick: leftTime => {
-      let bonus = votingPower?.minus(delegatedPower ?? ZERO_BIG_NUMBER);
+      let bonus = votingPower?.minus(delegatedPower ?? BigNumber.ZERO);
 
       if (!isDelegated) {
-        bonus = bonus?.minus(myBondBalance ?? ZERO_BIG_NUMBER);
+        bonus = bonus?.minus(myBondBalance ?? BigNumber.ZERO);
       }
 
       const leftBonus = bonus?.multipliedBy(leftTime).div(loadedUserLockedUntil);
-      const leftTotalVotingPower = votingPower?.minus(bonus ?? ZERO_BIG_NUMBER).plus(leftBonus ?? ZERO_BIG_NUMBER);
+      const leftTotalVotingPower = votingPower?.minus(bonus ?? BigNumber.ZERO).plus(leftBonus ?? BigNumber.ZERO);
 
       setState({
         leftBonus,
@@ -57,8 +57,8 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
   React.useEffect(() => {
     setState({
       leftBonus: isDelegated
-        ? ZERO_BIG_NUMBER
-        : votingPower?.minus(myBondBalance ?? ZERO_BIG_NUMBER).minus(delegatedPower ?? ZERO_BIG_NUMBER),
+        ? BigNumber.ZERO
+        : votingPower?.minus(myBondBalance ?? BigNumber.ZERO).minus(delegatedPower ?? BigNumber.ZERO),
       leftTotalVotingPower: votingPower,
     });
   }, [isDelegated]);
@@ -92,7 +92,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             Locked balance bonus
           </dt>
           <dd className={s.data}>
-            {state.leftBonus?.gt(ZERO_BIG_NUMBER) ? '> ' : ''}
+            {state.leftBonus?.gt(BigNumber.ZERO) ? '> ' : ''}
             {formatToken(state.leftBonus)}
             <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
           </dd>

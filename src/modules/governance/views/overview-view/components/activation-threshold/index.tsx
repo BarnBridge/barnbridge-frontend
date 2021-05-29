@@ -35,8 +35,8 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         <Hint
           text={
             <Text type="p2">
-              For the DAO to be activated, a threshold of {formatToken(daoCtx.activationThreshold)} $BOND tokens staked
-              has to be met.
+              For the DAO to be activated, a threshold of {formatToken(daoCtx.activationThreshold)} $
+              {ProjectToken.symbol} tokens staked has to be met.
             </Text>
           }>
           <Text type="p1" weight="semibold" color="primary">

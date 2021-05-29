@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -67,7 +67,7 @@ const TwoStepWithdraw: React.FC = () => {
   }
 
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
-    const { to = ZERO_BIG_NUMBER, deadline = 20 } = form.getFieldsValue();
+    const { to = BigNumber.ZERO, deadline = 20 } = form.getFieldsValue();
 
     if (!pool) {
       return;

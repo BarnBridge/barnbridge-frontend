@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import BigNumber from 'bignumber.js';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -45,7 +45,7 @@ const WalletDelegateView: React.FC = () => {
   const { balance: stakedBalance, userDelegatedTo, userLockedUntil } = daoCtx.daoBarn;
   const isDelegated = isValidAddress(userDelegatedTo);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
-  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
   const formDisabled = !hasStakedBalance;
 
   React.useEffect(() => {

@@ -9,7 +9,7 @@ import Grid from 'components/custom/grid';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
 
 import { BondYfPool, StableYfPool, UnilpYfPool } from '../../providers/pools-provider';
 
@@ -50,7 +50,7 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
             </Text>
             <Text type="p1" weight="semibold" color="primary" className="mr-4">
               {formatToken(reward, {
-                tokenName: BondToken.symbol,
+                tokenName: ProjectToken.symbol,
               })}
             </Text>
           </div>

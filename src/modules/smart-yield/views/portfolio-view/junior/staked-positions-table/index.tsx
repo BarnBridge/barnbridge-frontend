@@ -79,11 +79,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     },
   },
   {
-    title: 'My $BOND rewards',
+    title: `My $${ProjectToken.symbol} rewards`,
     width: '20%',
     align: 'right',
     sorter: (a, b) => 0,
-    render: function BondRewardsRender(_, entity) {
+    render: function RewardsRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const bondToClaim = entity.rewardPool.getClaimFor(BondToken.address)?.unscaleBy(BondToken.decimals);
       const bondToClaimInUSD = knownTokensCtx.convertTokenInUSD(bondToClaim, BondToken.symbol!);

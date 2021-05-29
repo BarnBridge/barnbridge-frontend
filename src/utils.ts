@@ -2,7 +2,6 @@ import add from 'date-fns/add';
 import formatDuration from 'date-fns/formatDuration';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import { isAddress } from 'web3-utils';
-import { DEFAULT_ADDRESS } from 'web3/utils';
 
 export function getNowTs(): number {
   return Math.floor(Date.now() / 1_000);
@@ -58,7 +57,7 @@ export function getFormattedDuration(value?: number, endValue?: number): string 
 }
 
 export function isValidAddress(value: string | undefined): boolean {
-  return !!value && isAddress(value) && value !== DEFAULT_ADDRESS;
+  return !!value && isAddress(value) && value !== '0x0000000000000000000000000000000000000000';
 }
 
 export function doSequential<T, K = any>(

@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 function toLowerCase(value: any): string {
   return String(value ?? '').toLowerCase();
 }
@@ -91,6 +93,9 @@ const config = {
         appUrl: String(process.env.REACT_APP_WEB3_TREZOR_APP_URL),
       },
     },
+  },
+  dao: {
+    activationThreshold: new BigNumber(String(process.env.REACT_APP_DAO_ACTIVATION_THRESHOLD)),
   },
 };
 

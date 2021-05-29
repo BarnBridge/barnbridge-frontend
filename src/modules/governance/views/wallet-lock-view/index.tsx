@@ -1,5 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import addDays from 'date-fns/addDays';
 import addMonths from 'date-fns/addMonths';
@@ -7,7 +8,7 @@ import addSeconds from 'date-fns/addSeconds';
 import getUnixTime from 'date-fns/getUnixTime';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
-import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -90,7 +91,7 @@ const WalletLockView: React.FC = () => {
 
   const { balance: stakedBalance, userLockedUntil, userDelegatedTo } = daoCtx.daoBarn;
 
-  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
   const hasDelegation = isValidAddress(userDelegatedTo);
   const formDisabled = !hasStakedBalance || hasDelegation;
 

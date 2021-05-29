@@ -1,7 +1,8 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
@@ -40,7 +41,7 @@ const MarketsView: React.FC = () => {
       }
 
       return sum.plus(pool.state.seniorLiquidity).plus(pool.state.juniorLiquidity);
-    }, ZERO_BIG_NUMBER);
+    }, BigNumber.ZERO);
   }, [activeMarket, poolsCtx.pools]);
 
   return (

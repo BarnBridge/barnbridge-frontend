@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, formatToken } from 'web3/utils';
+import { formatBigValue, formatPercent, formatToken } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
@@ -200,7 +200,7 @@ const JuniorTranche: React.FC = () => {
 
     const decimals = pool.underlyingDecimals;
     const amount = from.multipliedBy(10 ** decimals);
-    const minTokens = new BigNumber((getMinAmount() ?? ZERO_BIG_NUMBER).multipliedBy(10 ** decimals).toFixed(0));
+    const minTokens = new BigNumber((getMinAmount() ?? BigNumber.ZERO).multipliedBy(10 ** decimals).toFixed(0));
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
     try {
@@ -336,7 +336,7 @@ const JuniorTranche: React.FC = () => {
               <Form.Item dependencies={['from', 'slippage']} noStyle>
                 {() => (
                   <Text type="p2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
-                    {formatBigValue(getMinAmount() ?? ZERO_BIG_NUMBER)} {pool?.contracts.smartYield.symbol}
+                    {formatBigValue(getMinAmount() ?? BigNumber.ZERO)} {pool?.contracts.smartYield.symbol}
                   </Text>
                 )}
               </Form.Item>

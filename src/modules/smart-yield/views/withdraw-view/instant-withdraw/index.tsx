@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -88,7 +88,7 @@ const InstantWithdraw: React.FC = () => {
   }
 
   async function handleWithdrawConfirm(args: ConfirmTxModalArgs) {
-    const { from = ZERO_BIG_NUMBER, slippage, deadline } = form.getFieldsValue();
+    const { from = BigNumber.ZERO, slippage, deadline } = form.getFieldsValue();
 
     if (!pool) {
       return;
@@ -113,7 +113,7 @@ const InstantWithdraw: React.FC = () => {
       const toPay = tokenAmount
         .multipliedBy(price)
         .div(1e18)
-        .minus(forfeitsValue ?? ZERO_BIG_NUMBER);
+        .minus(forfeitsValue ?? BigNumber.ZERO);
       const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
@@ -251,7 +251,7 @@ const InstantWithdraw: React.FC = () => {
                 Forfeited balance
               </Text>
               <Text type="p2" weight="semibold" color="red">
-                {formatBigValue(forfeits ?? ZERO_BIG_NUMBER, pool.underlyingDecimals)} {pool.underlyingSymbol}
+                {formatBigValue(forfeits ?? BigNumber.ZERO, pool.underlyingDecimals)} {pool.underlyingSymbol}
               </Text>
             </div>
             <div className="grid flow-col justify-space-between mb-16">
@@ -267,7 +267,7 @@ const InstantWithdraw: React.FC = () => {
                 Minimum received
               </Text>
               <Text type="p2" weight="semibold" color="primary">
-                {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool.underlyingSymbol}
+                {formatBigValue(minimumReceived ?? BigNumber.ZERO)} {pool.underlyingSymbol}
               </Text>
             </div>
           </div>
@@ -294,7 +294,7 @@ const InstantWithdraw: React.FC = () => {
                   Minimum received
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatBigValue(minimumReceived ?? ZERO_BIG_NUMBER)} {pool.underlyingSymbol}
+                  {formatBigValue(minimumReceived ?? BigNumber.ZERO)} {pool.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">

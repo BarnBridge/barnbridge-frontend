@@ -46,8 +46,8 @@ const PoolView: FC = () => {
   //     .multipliedBy(jTokenPrice)
   //     .multipliedBy(1);
   //
-  //   if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
-  //     return ZERO_BIG_NUMBER;
+  //   if (poolBalance.isEqualTo(BigNumber.ZERO)) {
+  //     return BigNumber.ZERO;
   //   }
   //
   //   return yearlyReward.dividedBy(poolBalance);

@@ -4,7 +4,7 @@ import AntdForm from 'antd/lib/form';
 import AntdSwitch from 'antd/lib/switch';
 import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
-import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -99,7 +99,7 @@ const WalletDepositView: React.FC = () => {
   }
 
   React.useEffect(() => {
-    const isEnabled = barnAllowance?.gt(ZERO_BIG_NUMBER) ?? false;
+    const isEnabled = barnAllowance?.gt(BigNumber.ZERO) ?? false;
 
     setState({
       enabled: isEnabled,

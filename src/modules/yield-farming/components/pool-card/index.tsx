@@ -7,7 +7,7 @@ import format from 'date-fns/format';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
-import { ZERO_BIG_NUMBER, formatPercent, formatToken, formatUSD } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Grid from 'components/custom/grid';
@@ -268,7 +268,7 @@ const PoolCard: FC<Props> = props => {
               <button
                 type="button"
                 className="button-ghost flex-grow"
-                disabled={!toClaim?.gt(ZERO_BIG_NUMBER) || claiming}
+                disabled={!toClaim?.gt(BigNumber.ZERO) || claiming}
                 onClick={handleClaim}>
                 {claiming && <Spin type="circle" />}
                 Claim

@@ -27,6 +27,7 @@ import { Hint, Text } from 'components/custom/typography';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
 import { inRange } from 'utils';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 
 enum GranularityType {
   NONE,
@@ -174,15 +175,15 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           text={
             <>
               <Text type="p2">
-                The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of up to 2x
-                vBOND. The bonus is linear, as per the following example:
+                The multiplier mechanic allows users to lock ${ProjectToken.symbol} for a period up to 1 year and get a bonus of up to 2x
+                v{ProjectToken.symbol}. The bonus is linear, as per the following example:
               </Text>
               <ul>
                 <li>
-                  <Text type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Text>
+                  <Text type="p2">lock 1000 ${ProjectToken.symbol} for 1 year → get back 2000 vBOND</Text>
                 </li>
                 <li>
-                  <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
+                  <Text type="p2">lock 1000 ${ProjectToken.symbol} for 6 months → get back 1500 vBOND</Text>
                 </li>
               </ul>
               <ExternalLink href="#">Learn more</ExternalLink>
@@ -190,7 +191,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           }>
           <Text type="small" weight="semibold">
             {formatToken(myBonus)}
-            <span> vBOND bonus - </span>
+            <span> v{ProjectToken.symbol} bonus - </span>
             {inRange(multiplier, 1, 1.01) ? '>' : ''}
             {formatBigValue(multiplier, 2)}x<span> for </span>
             {formatDistanceToNow(lockEndDate)}

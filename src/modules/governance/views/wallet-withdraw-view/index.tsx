@@ -2,7 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
-import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -45,7 +45,7 @@ const WalletWithdrawView: React.FC = () => {
   const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
   const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
-  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
   const formDisabled = !hasStakedBalance || isLocked;
 
   async function handleSubmit(values: WithdrawFormData) {
@@ -73,7 +73,7 @@ const WalletWithdrawView: React.FC = () => {
         <Grid flow="col" gap={12}>
           <Icon name={ProjectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
-            BOND
+            {ProjectToken.symbol}
           </Text>
         </Grid>
 
@@ -110,7 +110,7 @@ const WalletWithdrawView: React.FC = () => {
                 <TokenAmount
                   tokenIcon={ProjectToken.icon!}
                   max={stakedBalance}
-                  maximumFractionDigits={BondToken.decimals}
+                  maximumFractionDigits={ProjectToken.decimals}
                   displayDecimals={4}
                   disabled={formDisabled || state.saving}
                   slider

@@ -2,14 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import {
-  ZERO_BIG_NUMBER,
-  formatBigValue,
-  formatUSDValue,
-  getEtherscanAddressUrl,
-  getEtherscanTxUrl,
-  shortenAddr,
-} from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -79,7 +72,7 @@ const Columns: ColumnsType<TableEntity> = [
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.tokensIn.multipliedBy(entity.pool?.state.jTokenPrice ?? ZERO_BIG_NUMBER))}
+          {formatUSDValue(entity.tokensIn.multipliedBy(entity.pool?.state.jTokenPrice ?? BigNumber.ZERO))}
         </Text>
       </>
     ),
@@ -108,14 +101,14 @@ const Columns: ColumnsType<TableEntity> = [
     sorter: (a, b) => a.forfeits?.toNumber() ?? 0 - b.underlyingOut?.toNumber() ?? 0,
     render: (_, entity) => (
       <>
-        <Tooltip title={formatBigValue(entity.forfeits ?? ZERO_BIG_NUMBER, entity.pool?.underlyingDecimals)}>
+        <Tooltip title={formatBigValue(entity.forfeits ?? BigNumber.ZERO, entity.pool?.underlyingDecimals)}>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.forfeits ?? ZERO_BIG_NUMBER)}
+            {formatBigValue(entity.forfeits ?? BigNumber.ZERO)}
             {` ${entity.pool?.underlyingSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.forfeits ?? ZERO_BIG_NUMBER)}
+          {formatUSDValue(entity.forfeits ?? BigNumber.ZERO)}
         </Text>
       </>
     ),

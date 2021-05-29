@@ -72,8 +72,8 @@ export const PoolCard: FC<PoolCardProps> = props => {
   //     .multipliedBy(jTokenPrice)
   //     .multipliedBy(1);
   //
-  //   if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
-  //     return ZERO_BIG_NUMBER;
+  //   if (poolBalance.isEqualTo(BigNumber.ZERO)) {
+  //     return BigNumber.ZERO;
   //   }
   //
   //   return yearlyReward.dividedBy(poolBalance);
@@ -231,7 +231,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
             <button
               type="button"
               className="button-ghost"
-              // disabled={!rewardPool.pool.toClaim?.gt(ZERO_BIG_NUMBER)}
+              // disabled={!rewardPool.pool.toClaim?.gt(BigNumber.ZERO)}
               onClick={handleClaim}>
               {claiming && <Spin type="circle" />}
               Claim

@@ -2,7 +2,6 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
 import config from 'config';
@@ -95,14 +94,14 @@ const DAOProvider: React.FC = props => {
 
     let activationRate: number | undefined;
 
-    if (bondStaked && activationThreshold?.gt(ZERO_BIG_NUMBER)) {
+    if (bondStaked && activationThreshold?.gt(BigNumber.ZERO)) {
       activationRate = bondStaked.multipliedBy(100).div(activationThreshold).toNumber();
       activationRate = Math.min(activationRate, 100);
     }
 
     let thresholdRate: number | undefined;
 
-    if (votingPower && bondStaked?.gt(ZERO_BIG_NUMBER)) {
+    if (votingPower && bondStaked?.gt(BigNumber.ZERO)) {
       thresholdRate = votingPower.multipliedBy(100).div(bondStaked).toNumber();
       thresholdRate = Math.min(thresholdRate, 100);
     }

@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { MAX_UINT_256, formatBigValue } from 'web3/utils';
+import { formatBigValue } from 'web3/utils';
 
 import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
@@ -36,7 +36,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
   } = props;
 
   const step = 1 / 10 ** Math.min(displayDecimals, 6);
-  const bnMaxValue = new BigNumber(max ?? MAX_UINT_256);
+  const bnMaxValue = new BigNumber(max ?? BigNumber.MAX_UINT_256);
 
   const bnValue = value !== undefined ? BigNumber.min(new BigNumber(value), bnMaxValue) : undefined;
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { ZERO_BIG_NUMBER, formatBigValue, formatPercent, formatUSDValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -117,7 +117,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
     .multipliedBy(365 * 24 * 60 * 60 * 1_000);
   const completed = 100 - ((maturesAt - Math.min(Date.now(), maturesAt)) * 100) / (maturesAt - issuedAt);
   const canTransfer = !sBond.liquidated;
-  const gainedFee = gained.multipliedBy(seniorRedeemFee?.dividedBy(1e18) ?? ZERO_BIG_NUMBER);
+  const gainedFee = gained.multipliedBy(seniorRedeemFee?.dividedBy(1e18) ?? BigNumber.ZERO);
   const toGetAmount = deposited.plus(gained).minus(gainedFee);
 
   return (

@@ -2,7 +2,6 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
@@ -100,7 +99,7 @@ const AbrogationProvider: React.FC = props => {
     let forRate = 0;
     let againstRate = 0;
 
-    if (total.gt(ZERO_BIG_NUMBER)) {
+    if (total.gt(BigNumber.ZERO)) {
       forRate = forVotes.multipliedBy(100).div(total).toNumber();
       againstRate = againstVotes.multipliedBy(100).div(total).toNumber();
     }
@@ -113,7 +112,7 @@ const AbrogationProvider: React.FC = props => {
     daoCtx.daoBarn.actions.bondStakedAtTs(createTime - 1).then(bondStakedAt => {
       let approvalRate: number | undefined;
 
-      if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
+      if (bondStakedAt?.gt(BigNumber.ZERO)) {
         approvalRate = forVotes.multipliedBy(100).div(bondStakedAt).toNumber();
         approvalRate = Math.min(approvalRate, 100);
       }
