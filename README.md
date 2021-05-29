@@ -1,68 +1,30 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# BarnBridge Frontend
+![](https://i.imgur.com/E1SVjUa.png)
 
-## Available Scripts
+[![Prod](https://github.com/BarnBridge/barnbridge-frontend/actions/workflows/prod.yml/badge.svg)](https://github.com/BarnBridge/barnbridge-frontend/actions) [![Testnet](https://github.com/BarnBridge/barnbridge-frontend/actions/workflows/testnet.yml/badge.svg)](https://github.com/BarnBridge/barnbridge-frontend/actions)
 
-In the project directory, you can run:
+BarnBridge is a DeFi risk tokenization protocol for hedging factors like yield sensitivity or market price. This github repository contains the React (Typescript) front-end user interface for: https://app.barnbridge.com/
 
-### `npm start`
+Interested in learning more about BarnBridge? Read our [Developer Guides](https://integrations.barnbridge.com/) for more information.
 
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Setting up your local environment
 
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
+1. Ensure that you have Node.js 12.x installed. We also recommend installing Node version manager `nvm` to allow you to switch your Node environment versions. 
+2. `npm install` to install all dependencies  
+4. Run the app using one of our start scripts such as `npm run start:testnet` scripts (as declared on `package.json`)
+5. This will open the app on your web browser on `https://localhost:3000`
 
-### `npm test`
+Ensure that you have the appropriate `.env.*` configuration file. In the file, note that the app utilises Infura.io to connect to the Ethereum network which requires an API key. 
 
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Having trouble? Please contact us on [Discord](https://discord.gg/FfEhsVk) or read our [Developer Guides](https://integrations.barnbridge.com/) for more information.
 
-### `npm run build`
+### Available Start Scripts
 
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
+* `npm run start:testnet` Public testnet environment 
+* `npm run start:alpha` Alpha environment (connecting to Ethereum mainnet)
 
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
+## Discussion
+For any concerns or questions, open an issue on GitHub or visit us on [Discord](https://discord.gg/9TTQNUzg) to discuss.
+For security concerns, please email info@barnbridge.com.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `npm run build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify
+Copyright 2021 BarnBridge DAO
