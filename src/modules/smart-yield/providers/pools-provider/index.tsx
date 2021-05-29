@@ -5,12 +5,25 @@ import Erc20Contract from 'web3/erc20Contract';
 import { getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
+import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
+import {
+  DaiToken,
+  EthToken,
+  GusdToken,
+  StkAaveToken,
+  UsdcToken,
+  UsdtToken,
+  convertTokenIn,
+} from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
+import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
 
 export type PoolsSYPool = APISYPool & {
@@ -21,6 +34,7 @@ export type PoolsSYPool = APISYPool & {
     underlying?: Erc20Contract;
     rewardPool?: SYRewardPoolContract;
   };
+  apy?: BigNumber;
   rewardAPR?: BigNumber;
 };
 
@@ -35,6 +49,7 @@ const InitialState: State = {
 };
 
 type ContextType = State & {
+  getMarketTVL: (marketId?: string) => BigNumber;
   redeemBond: (smartYieldAddress: string, sBondId: number, gasPrice: number) => Promise<void>;
   redeemJuniorBond: (smartYieldAddress: string, jBondId: number, gasPrice: number) => Promise<void>;
   transferFrom: (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => Promise<void>;
@@ -42,6 +57,7 @@ type ContextType = State & {
 
 const Context = React.createContext<ContextType>({
   ...InitialState,
+  getMarketTVL: () => BigNumber.ZERO,
   redeemBond: () => Promise.reject(),
   redeemJuniorBond: () => Promise.reject(),
   transferFrom: () => Promise.reject(),
@@ -56,6 +72,48 @@ type StatusModal = {
 
 export function usePools(): ContextType {
   return React.useContext(Context);
+}
+
+async function getAaveIncentivesAPY(
+  cTokenAddress: string,
+  uDecimals: number,
+  uSymbol: string,
+): Promise<BigNumber | undefined> {
+  let aTokenAddress = '';
+  let aTokenDecimals = 0;
+
+  if (config.isProd) {
+    aTokenAddress = cTokenAddress;
+    aTokenDecimals = uDecimals;
+  } else {
+    switch (uSymbol) {
+      case UsdcToken.symbol:
+        aTokenAddress = config.tokens.aUsdc;
+        aTokenDecimals = UsdcToken.decimals;
+        break;
+      case DaiToken.symbol:
+        aTokenAddress = config.tokens.aDai;
+        aTokenDecimals = DaiToken.decimals;
+        break;
+      case UsdtToken.symbol:
+        aTokenAddress = config.tokens.aUsdt;
+        aTokenDecimals = UsdtToken.decimals;
+        break;
+      case GusdToken.symbol:
+        aTokenAddress = config.tokens.aGusd;
+        aTokenDecimals = GusdToken.decimals;
+        break;
+    }
+  }
+
+  const aToken = new SYAaveTokenContract(aTokenAddress);
+  aToken.setCallProvider(MainnetHttpsWeb3Provider);
+  await aToken.loadCommon();
+
+  const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), StkAaveToken.symbol, EthToken.symbol);
+  const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, EthToken.symbol);
+
+  return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
 }
 
 const PoolsProvider: React.FC = props => {
@@ -103,7 +161,7 @@ const PoolsProvider: React.FC = props => {
               rewardPool.loadCommon();
             }
 
-            return {
+            const result: PoolsSYPool = {
               ...pool,
               meta: Pools.get(pool.underlyingSymbol),
               market: Markets.get(pool.protocolId),
@@ -112,7 +170,18 @@ const PoolsProvider: React.FC = props => {
                 underlying,
                 rewardPool,
               },
+              apy: undefined,
             };
+
+            if (pool.protocolId === AaveMarket.id) {
+              getAaveIncentivesAPY(pool.cTokenAddress, pool.underlyingDecimals, pool.underlyingSymbol).then(apy => {
+                result.apy = apy;
+
+                reload();
+              });
+            }
+
+            return result;
           }),
         }));
       } catch {
@@ -170,6 +239,17 @@ const PoolsProvider: React.FC = props => {
   //     }
   //   });
   // }, [state.pools, BondToken.price, version]);
+
+  const getMarketTVL = React.useCallback(
+    (marketId?: string) => {
+      return state.pools
+        .filter(pool => pool.protocolId === (marketId ?? pool.protocolId))
+        .reduce((sum, entity) => {
+          return sum.plus(entity.state.seniorLiquidity).plus(entity.state.juniorLiquidity);
+        }, BigNumber.ZERO);
+    },
+    [state.pools],
+  );
 
   const redeemBond = React.useCallback(
     (smartYieldAddress: string, sBondId: number, gasPrice: number) => {
@@ -300,6 +380,7 @@ const PoolsProvider: React.FC = props => {
   const value = React.useMemo<ContextType>(() => {
     return {
       ...state,
+      getMarketTVL,
       redeemBond,
       transferFrom,
       redeemJuniorBond,

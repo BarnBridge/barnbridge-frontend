@@ -124,7 +124,9 @@ export type IconNames =
   | 'arrow-forward'
   | 'science'
   | 'building'
-  | 'internet';
+  | 'internet'
+  | 'checkbox-checked'
+  | 'checkbox';
 
 export type IconProps = {
   name: IconNames;
