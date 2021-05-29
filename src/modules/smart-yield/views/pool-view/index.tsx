@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { formatPercent, formatToken } from 'web3/utils';
@@ -7,6 +7,7 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { BondToken, KnownTokens } from 'components/providers/known-tokens-provider';
+import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import RewardPoolProvider, { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
 import Statistics from 'modules/smart-yield/views/pool-view/statistics';
@@ -55,6 +56,16 @@ const PoolViewInner: FC = () => {
   //   return yearlyReward.dividedBy(poolBalance);
   // }, [rewardPool?.pool.poolSize, rewardPool?.pool.dailyReward, BondToken.price]);
 
+  useEffect(() => {
+    if (pool) {
+      console.log({ pool });
+      // TODO: connect to harvest button
+      // const controller = new SYControllerContract(pool.controllerAddress);
+      // controller.setProvider(walletCtx.provider);
+      // controller.getHarvestAmount().then(console.log);
+    }
+  }, [walletCtx.provider, pool]);
+
   console.log(pool);
   if (!pool) {
     return null;
@@ -92,6 +103,12 @@ const PoolViewInner: FC = () => {
         <Text type="p1" weight="semibold" color="primary">
           {smartYield.symbol}
         </Text>
+        <div className="ml-auto flex flow-row align-end">
+          <button className="button-ghost">Harvest 10.24 stkAAVE</button>
+          <Text type="small" weight="semibold" color="secondary">
+            You will not get any rewards for harvesting
+          </Text>
+        </div>
       </div>
       <div className="card p-24 mb-32">
         <dl className={s.headerTerms}>

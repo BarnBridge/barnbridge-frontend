@@ -5,7 +5,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
@@ -65,6 +65,7 @@ const PoolsProvider: React.FC = props => {
   const history = useHistory();
   const wallet = useWallet();
   const [reload, version] = useReload();
+  const knownTokensCtx = useKnownTokens();
   const [state, setState] = React.useState<State>(InitialState);
 
   const [statusModal, setStatusModal] = React.useState<StatusModal>({
@@ -171,6 +172,30 @@ const PoolsProvider: React.FC = props => {
   //     }
   //   });
   // }, [state.pools, BondToken.price, version]);
+
+  const getMarketTVL = React.useCallback(
+    (marketId: string) => {
+      return state.pools
+        .filter(pool => pool.protocolId === marketId)
+        .reduce((sum, entity) => {
+          const { symbol } = entity.contracts.smartYield;
+          const poolSize = new BigNumber(entity.state.seniorLiquidity).plus(entity.state.juniorLiquidity);
+
+          if (!poolSize || !symbol) {
+            return sum;
+          }
+          // TODO:
+          const usdValue = knownTokensCtx.convertTokenInUSD(poolSize, symbol);
+
+          if (!usdValue) {
+            return sum;
+          }
+
+          return sum.plus(usdValue);
+        }, BigNumber.ZERO);
+    },
+    [state.pools],
+  );
 
   const redeemBond = React.useCallback(
     (smartYieldAddress: string, sBondId: number, gasPrice: number) => {
