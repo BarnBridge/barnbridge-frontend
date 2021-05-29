@@ -7,12 +7,13 @@ import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
+import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
+import IconsSet from 'components/custom/icons-set';
 import { Hint, Text } from 'components/custom/typography';
 import { SYMarketMeta } from 'modules/smart-yield/api';
+import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { Wallet, useWallet } from 'wallets/wallet';
-
-import { PoolsSYPool, usePools } from '../../../providers/pools-provider';
 
 type PoolEntity = PoolsSYPool;
 
@@ -143,7 +144,22 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           </Text>
           <Text type="small" weight="semibold" color="purple">
             {entity.rewardAPR && `+${formatPercent(entity.rewardAPR)}`}
+            {entity.apy && formatPercent(entity.apy.toNumber())}
           </Text>
+          <div className="apr">
+            <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
+            <div className="apr-text"> +14.32% APR</div>
+          </div>
+          <div className="apr">
+            <IconsSet
+              className="mr-4"
+              icons={[
+                <Icon width={12} height={12} name="static/token-bond" />,
+                <Icon width={12} height={12} name="static/staked_aave" />,
+              ]}
+            />
+            <div className="apr-text gradient"> +14.32% APR</div>
+          </div>
         </div>
       ),
     },

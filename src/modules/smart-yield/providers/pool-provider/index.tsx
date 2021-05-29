@@ -108,7 +108,11 @@ export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
-async function getAaveIncentivesAPY(cTokenAddress: string, uDecimals: number, uSymbol: string): Promise<BigNumber | undefined> {
+async function getAaveIncentivesAPY(
+  cTokenAddress: string,
+  uDecimals: number,
+  uSymbol: string,
+): Promise<BigNumber | undefined> {
   let aTokenAddress = '';
   let aTokenDecimals = 0;
 
