@@ -8,13 +8,13 @@ import { Hint, Text } from 'components/custom/typography';
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { UNISWAP_MARKET_LINK } from 'config';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 import { useYFPools } from '../../providers/pools-provider';
 
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
-import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 type Props = {
   className?: string;

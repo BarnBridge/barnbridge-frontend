@@ -1,12 +1,13 @@
 import React from 'react';
 import cn from 'classnames';
-import { formatBONDValue } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 
 import { useDAO } from '../../../../components/dao-provider';
 
@@ -34,8 +35,8 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         <Hint
           text={
             <Text type="p2">
-              For the DAO to be activated, a threshold of {formatBONDValue(daoCtx.activationThreshold)} $BOND tokens
-              staked has to be met.
+              For the DAO to be activated, a threshold of {formatToken(daoCtx.activationThreshold)} $BOND tokens staked
+              has to be met.
             </Text>
           }>
           <Text type="p1" weight="semibold" color="primary">
@@ -55,12 +56,12 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icon name="static/token-bond" />
+          <Icon name={ProjectToken.icon!} />
           <Text type="p1" weight="bold" color="primary">
-            {formatBONDValue(daoCtx.bondStaked)}
+            {formatToken(daoCtx.bondStaked)}
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            / {formatBONDValue(daoCtx.activationThreshold)} already staked.
+            / {formatToken(daoCtx.activationThreshold)} already staked.
           </Text>
         </Grid>
         {daoCtx.activationRate === 100 && !daoCtx.isActive && (

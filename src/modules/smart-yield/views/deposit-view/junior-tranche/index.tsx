@@ -13,6 +13,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
@@ -274,7 +275,7 @@ const JuniorTranche: React.FC = () => {
                 before={
                   <IconBubble
                     name={pool?.meta?.icon}
-                    bubbleName="static/token-bond"
+                    bubbleName={ProjectToken.icon!}
                     secondBubbleName={pool?.market?.icon}
                     width={24}
                     height={24}

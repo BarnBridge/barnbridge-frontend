@@ -11,12 +11,12 @@ import { ZERO_BIG_NUMBER, formatPercent, formatToken, formatUSD } from 'web3/uti
 
 import Spin from 'components/antd/spin';
 import Grid from 'components/custom/grid';
-import Icon, { IconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { BondToken, KnownTokens, ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/wallet';
 
@@ -81,7 +81,7 @@ const PoolCard: FC<Props> = props => {
       <div className="flex align-center justify-space-between p-24">
         <div className="flex align-center">
           <IconsSet
-            icons={poolMeta?.icons.map(icon => <Icon key={icon} name={icon as IconNames} />) ?? []}
+            icons={poolMeta?.tokens.map(token => <Icon key={token.symbol} name={token.icon!} />) ?? []}
             className="mr-16"
           />
           <div>
@@ -136,7 +136,7 @@ const PoolCard: FC<Props> = props => {
                 Weekly reward
               </Text>
               <div className="flex align-center">
-                <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
+                <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(epochReward) ?? '-'}
                 </Text>
@@ -180,7 +180,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
+                <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(potentialReward) ?? '-'}
                 </Text>
@@ -285,7 +285,7 @@ const PoolCard: FC<Props> = props => {
                 <Text type="h2" weight="semibold" color="primary">
                   {formatToken(toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
                 </Text>
-                <Icon name="static/token-bond" width={32} height={32} />
+                <Icon name={ProjectToken.icon!} width={32} height={32} />
               </div>
             }
             submitText="Claim"

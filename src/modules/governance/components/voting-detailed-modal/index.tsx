@@ -1,7 +1,7 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Icon from 'components/custom/icon';
@@ -72,7 +72,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             My staked balance
           </dt>
           <dd className={s.data}>
-            {formatBONDValue(myBondBalance)}
+            {formatToken(myBondBalance)}
             <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
           </dd>
         </div>
@@ -82,7 +82,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             Delegated by me
           </dt>
           <dd className={s.data}>
-            {isDelegated ? formatBONDValue(myBondBalance) : 0}
+            {isDelegated ? formatToken(myBondBalance) : 0}
             <Icon name="circle-minus-outlined" width={18} height={18} color="red" className={s.dataIcon} />
           </dd>
         </div>
@@ -93,7 +93,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
           </dt>
           <dd className={s.data}>
             {state.leftBonus?.gt(ZERO_BIG_NUMBER) ? '> ' : ''}
-            {formatBONDValue(state.leftBonus)}
+            {formatToken(state.leftBonus)}
             <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
           </dd>
         </div>
@@ -103,7 +103,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             Delegated to me
           </dt>
           <dd className={s.data}>
-            {formatBONDValue(delegatedPower)}
+            {formatToken(delegatedPower)}
             <Icon name="circle-plus-outlined" width={18} height={18} color="green" className={s.dataIcon} />
           </dd>
         </div>
@@ -113,7 +113,7 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             <Icon name="stamp-outlined" width={20} height={20} className={s.termIcon} />
             My total voting power
           </dt>
-          <dd className={cn(s.data, s.dataTotal)}>{formatBONDValue(state.leftTotalVotingPower)}</dd>
+          <dd className={cn(s.data, s.dataTotal)}>{formatToken(state.leftTotalVotingPower)}</dd>
         </div>
       </dl>
     </Modal>

@@ -1,5 +1,5 @@
-import React, { createContext, FC, useContext } from 'react';
-import { useForm, UseFormRegisterReturn, UseFormReturn } from 'react-hook-form';
+import React, { FC, createContext, useContext } from 'react';
+import { UseFormRegisterReturn, UseFormReturn, useForm } from 'react-hook-form';
 import { validate } from 'valirator';
 
 type VType = Record<string, any>;
@@ -18,11 +18,11 @@ type VFormScheme = {
   [field: string]: Record<string, any>;
 };
 
-type VFormContext = {
+type VFormContextType = {
   scheme?: VFormScheme;
 };
 
-export const VFormValidationResolver = async (values: any, context?: VFormContext) => {
+export const VFormValidationResolver = async (values: any, context?: VFormContextType) => {
   const validationResult = await validate(context?.scheme, values);
   const errors = validationResult.getErrors();
 

@@ -15,6 +15,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
@@ -113,7 +114,7 @@ const TwoStepWithdraw: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={pool.meta?.icon}
-                bubbleName="static/token-bond"
+                bubbleName={ProjectToken.icon!}
                 secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}

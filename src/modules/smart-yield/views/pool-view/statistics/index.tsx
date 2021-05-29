@@ -10,7 +10,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { KnownTokens } from 'components/providers/known-tokens-provider';
+import { KnownTokens, ProjectToken } from 'components/providers/known-tokens-provider';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -57,7 +57,7 @@ const Statistics: FC<Props> = props => {
         (rewardToken.contract as Erc20Contract).loadBalance().catch(Error);
       });
     } catch (e) {
-      console.log(e);
+      console.error(e);
     }
 
     setClaiming(false);
@@ -77,7 +77,7 @@ const Statistics: FC<Props> = props => {
             <dd>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName="static/token-bond"
+                bubbleName={ProjectToken.icon!}
                 secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}
@@ -93,7 +93,7 @@ const Statistics: FC<Props> = props => {
             <dd>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName="static/token-bond"
+                bubbleName={ProjectToken.icon!}
                 secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}

@@ -351,7 +351,7 @@ const UnstakeForm: FC = () => {
                   </Text>
                   <IconBubble
                     name={uToken?.icon}
-                    bubbleName="static/token-bond"
+                    bubbleName={ProjectToken.icon!}
                     secondBubbleName={poolMarket?.icon.active}
                     width={32}
                     height={32}

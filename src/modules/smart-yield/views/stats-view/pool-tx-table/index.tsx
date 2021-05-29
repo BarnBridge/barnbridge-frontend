@@ -13,6 +13,7 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import {
   APISYPoolTransaction,
   APISYTxHistoryType,
@@ -37,7 +38,7 @@ const Columns: ColumnsType<TableEntity> = [
         {entity.isTokenAmount ? (
           <IconBubble
             name={entity.poolEntity?.meta?.icon}
-            bubbleName="static/token-bond"
+            bubbleName={ProjectToken.icon!}
             secondBubbleName={entity.poolEntity?.market?.icon}
             className="mr-16"
           />

@@ -45,7 +45,6 @@ export default class Erc20Contract extends Web3Contract {
   }
 
   getAllowanceOf(spenderAddress: string): BigNumber | undefined {
-    console.log('getAllowanceOf', this.address, { spenderAddress });
     return spenderAddress ? this.allowances.get(spenderAddress) : undefined;
   }
 
@@ -83,7 +82,6 @@ export default class Erc20Contract extends Web3Contract {
   }
 
   async loadAllowance(spenderAddress: string): Promise<void> {
-    console.log('loadAllowance', this.address, { spenderAddress });
     const addr = this.account;
 
     if (addr) {

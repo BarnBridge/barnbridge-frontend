@@ -10,6 +10,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
@@ -29,7 +30,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
       <div className="flex flow-col align-center">
         <IconBubble
           name={entity.pool.meta?.icon}
-          bubbleName="static/token-bond"
+          bubbleName={ProjectToken.icon!}
           secondBubbleName={entity.pool.market?.icon}
           className="mr-16"
         />

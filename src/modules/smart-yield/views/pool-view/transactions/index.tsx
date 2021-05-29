@@ -11,7 +11,7 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import {
   APISYRewardPoolTransaction,
@@ -60,7 +60,11 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            <IconBubble name={uToken?.icon} bubbleName="static/token-bond" secondBubbleName={poolMarket?.icon.active} />
+            <IconBubble
+              name={uToken?.icon}
+              bubbleName={ProjectToken.icon!}
+              secondBubbleName={poolMarket?.icon.active}
+            />
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}

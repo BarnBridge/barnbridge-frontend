@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { formatPercent, formatToken } from 'web3/utils';
@@ -6,8 +6,8 @@ import { formatPercent, formatToken } from 'web3/utils';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { BondToken, KnownTokens } from 'components/providers/known-tokens-provider';
-import RewardPoolProvider, { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { KnownTokens, ProjectToken } from 'components/providers/known-tokens-provider';
+import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
 import Statistics from 'modules/smart-yield/views/pool-view/statistics';
 import Transactions from 'modules/smart-yield/views/pool-view/transactions';
@@ -15,14 +15,12 @@ import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-const PoolViewInner: FC = () => {
+const PoolView: FC = () => {
   const walletCtx = useWallet();
   const rewardPoolCtx = useRewardPool();
 
   const { market: poolMarket, uToken, pool } = rewardPoolCtx;
   const rewardTokens = pool ? Array.from(pool.rewardTokens.values()) : [];
-
-  const [enabling, setEnabling] = useState(false);
 
   const apr = BigNumber.ZERO;
   // const apr = React.useMemo(() => { /// ???
@@ -55,22 +53,11 @@ const PoolViewInner: FC = () => {
   //   return yearlyReward.dividedBy(poolBalance);
   // }, [rewardPool?.pool.poolSize, rewardPool?.pool.dailyReward, BondToken.price]);
 
-  console.log(pool);
   if (!pool) {
     return null;
   }
 
   const { rewardPool, smartYield } = pool;
-
-  async function handleSwitchChange(value: boolean) {
-    setEnabling(true);
-
-    try {
-      await smartYield.approve(rewardPool.address, value);
-    } catch {}
-
-    setEnabling(false);
-  }
 
   return (
     <div className="container-limit">
@@ -83,7 +70,7 @@ const PoolViewInner: FC = () => {
       <div className="flex align-center mb-32">
         <IconBubble
           name={uToken?.icon}
-          bubbleName="static/token-bond"
+          bubbleName={ProjectToken.icon!}
           secondBubbleName={poolMarket?.icon.active}
           width={36}
           height={36}
@@ -100,7 +87,7 @@ const PoolViewInner: FC = () => {
             <dd>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName="static/token-bond"
+                bubbleName={ProjectToken.icon!}
                 secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}
@@ -161,14 +148,6 @@ const PoolViewInner: FC = () => {
       )}
       <Transactions />
     </div>
-  );
-};
-
-const PoolView: FC = () => {
-  return (
-    <RewardPoolProvider>
-      <PoolViewInner />
-    </RewardPoolProvider>
   );
 };
 

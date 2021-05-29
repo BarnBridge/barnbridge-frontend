@@ -2,10 +2,9 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
-import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
+import { getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';

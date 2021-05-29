@@ -7,7 +7,7 @@ import addSeconds from 'date-fns/addSeconds';
 import getUnixTime from 'date-fns/getUnixTime';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
-import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -17,6 +17,7 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -141,7 +142,7 @@ const WalletLockView: React.FC = () => {
     <div className="card">
       <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
         <Grid flow="col" gap={12}>
-          <Icon name="static/token-bond" width={40} height={40} />
+          <Icon name={ProjectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
             BOND
           </Text>
@@ -152,7 +153,7 @@ const WalletLockView: React.FC = () => {
             Staked Balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBONDValue(stakedBalance)}
+            {formatToken(stakedBalance)}
           </Text>
         </Grid>
 

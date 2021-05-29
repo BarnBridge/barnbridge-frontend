@@ -2,7 +2,7 @@ import React from 'react';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
-import { ZERO_BIG_NUMBER, formatBONDValue } from 'web3/utils';
+import { ZERO_BIG_NUMBER, formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -12,7 +12,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
@@ -71,7 +71,7 @@ const WalletWithdrawView: React.FC = () => {
     <div className="card">
       <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
         <Grid flow="col" gap={12}>
-          <Icon name="static/token-bond" width={40} height={40} />
+          <Icon name={ProjectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
             BOND
           </Text>
@@ -82,7 +82,7 @@ const WalletWithdrawView: React.FC = () => {
             Staked Balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBONDValue(stakedBalance)}
+            {formatToken(stakedBalance)}
           </Text>
         </Grid>
 
@@ -91,7 +91,7 @@ const WalletWithdrawView: React.FC = () => {
             Wallet Balance
           </Text>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBONDValue(bondBalance)}
+            {formatToken(bondBalance)}
           </Text>
         </Grid>
 
@@ -108,7 +108,7 @@ const WalletWithdrawView: React.FC = () => {
             <Grid flow="row" gap={32}>
               <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
-                  tokenIcon="static/token-bond"
+                  tokenIcon={ProjectToken.icon!}
                   max={stakedBalance}
                   maximumFractionDigits={BondToken.decimals}
                   displayDecimals={4}

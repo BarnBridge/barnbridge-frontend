@@ -10,7 +10,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { BondToken, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/wallet';
 
@@ -73,10 +73,10 @@ const PoolStatistics: FC = () => {
         <div className="p-24">
           <div className="flex align-center justify-space-between mb-24">
             <Text type="small" weight="semibold" color="secondary">
-              Bond balance
+              {ProjectToken.symbol} balance
             </Text>
             <div className="flex align-center">
-              <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
+              <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(bondContract.balance?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
@@ -87,7 +87,7 @@ const PoolStatistics: FC = () => {
               Potential reward this epoch
             </Text>
             <div className="flex align-center">
-              <Icon name="static/token-bond" width={16} height={16} className="mr-8" />
+              <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.potentialReward) ?? '-'}
               </Text>
@@ -98,7 +98,7 @@ const PoolStatistics: FC = () => {
           <div className={cn('flex align-center justify-space-between', s.claimBlock)}>
             <div className="flex flow-row">
               <div className="flex align-center mb-4">
-                <Icon name="static/token-bond" className="mr-8" style={{ flexShrink: 0 }} />
+                <Icon name={ProjectToken.icon!} className="mr-8" style={{ flexShrink: 0 }} />
                 <Tooltip
                   title={
                     formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals), {
@@ -228,7 +228,7 @@ const PoolStatistics: FC = () => {
               <Text type="h2" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
               </Text>
-              <Icon name="static/token-bond" width={32} height={32} />
+              <Icon name={ProjectToken.icon!} width={32} height={32} />
             </div>
           }
           submitText="Claim"

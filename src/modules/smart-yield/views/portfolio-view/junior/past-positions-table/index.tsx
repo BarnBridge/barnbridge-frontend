@@ -17,6 +17,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -34,7 +35,7 @@ const Columns: ColumnsType<TableEntity> = [
       <div className="flex flow-col align-center">
         <IconBubble
           name={entity.pool?.meta?.icon}
-          bubbleName="static/token-bond"
+          bubbleName={ProjectToken.icon!}
           secondBubbleName={entity.pool?.market?.icon}
           className="mr-16"
         />

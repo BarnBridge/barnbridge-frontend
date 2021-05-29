@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
-import { formatBONDValue, formatUSD } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
@@ -46,7 +46,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
               <Text type="h2" weight="bold" color="primary">
-                {formatBONDValue(daoCtx.daoBarn.bondStaked)}
+                {formatToken(daoCtx.daoBarn.bondStaked)}
               </Text>
               <Text type="p1" color="secondary">
                 BOND
@@ -82,7 +82,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </Hint>
           <Grid flow="row" gap={4}>
             <Text type="h2" weight="bold" color="primary">
-              {formatBONDValue(overview?.totalVbond)}
+              {formatToken(overview?.totalVbond)}
             </Text>
           </Grid>
         </Grid>
@@ -126,7 +126,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             text={
               <Text type="p2">
                 This number shows the $BOND token rewards distributed so far out of the total of{' '}
-                {formatBONDValue(daoCtx.daoReward.poolFeature?.totalAmount)} that are going to be available for the DAO
+                {formatToken(daoCtx.daoReward.poolFeature?.totalAmount)} that are going to be available for the DAO
                 Staking.
               </Text>
             }>
@@ -138,12 +138,12 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             <UseLeftTime end={(daoCtx.daoReward.poolFeature?.endTs ?? 0) * 1000} delay={5_000}>
               {() => (
                 <Text type="h2" weight="bold" color="primary">
-                  {formatBONDValue(daoCtx.daoReward.actions.getBondRewards())}
+                  {formatToken(daoCtx.daoReward.actions.getBondRewards())}
                 </Text>
               )}
             </UseLeftTime>
             <Text type="p1" color="secondary">
-              out of {formatBONDValue(daoCtx.daoReward.poolFeature?.totalAmount)}
+              out of {formatToken(daoCtx.daoReward.poolFeature?.totalAmount)}
             </Text>
           </Grid>
         </Grid>
@@ -169,10 +169,10 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </Hint>
           <Grid flow="row" gap={4}>
             <Text type="h2" weight="bold" color="primary">
-              {formatBONDValue(overview?.totalDelegatedPower)}
+              {formatToken(overview?.totalDelegatedPower)}
             </Text>
             <Text type="p1" color="secondary">
-              out of {formatBONDValue((BondToken.contract as Erc20Contract).totalSupply?.unscaleBy(BondToken.decimals))}
+              out of {formatToken((BondToken.contract as Erc20Contract).totalSupply?.unscaleBy(BondToken.decimals))}
             </Text>
           </Grid>
         </Grid>
