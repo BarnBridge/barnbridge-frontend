@@ -144,7 +144,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           </Text>
           <Text type="small" weight="semibold" color="purple">
             {entity.rewardAPR && `+${formatPercent(entity.rewardAPR)}`}
-            {entity.apy && formatPercent(entity.apy.toNumber())}
+            {/* {entity.apy && formatPercent(entity.apy.toNumber())} */}
           </Text>
           {/* <div className="apr-label">
             <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
