@@ -4,11 +4,24 @@ import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import { getEtherscanTxUrl } from 'web3/utils';
 
+import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
+import {
+  DaiToken,
+  EthToken,
+  GusdToken,
+  StkAaveToken,
+  UsdcToken,
+  UsdtToken,
+  convertTokenIn,
+} from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
+import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
+import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
 
 export type SYPool = APISYPool & {
@@ -19,6 +32,7 @@ export type SYPool = APISYPool & {
     underlying: Erc20Contract;
     controller: SYControllerContract;
   };
+  apy?: BigNumber;
 };
 
 type StatusModal = {
@@ -94,6 +108,48 @@ export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
+async function getAaveIncentivesAPY(
+  cTokenAddress: string,
+  uDecimals: number,
+  uSymbol: string,
+): Promise<BigNumber | undefined> {
+  let aTokenAddress = '';
+  let aTokenDecimals = 0;
+
+  if (config.isProd) {
+    aTokenAddress = cTokenAddress;
+    aTokenDecimals = uDecimals;
+  } else {
+    switch (uSymbol) {
+      case UsdcToken.symbol:
+        aTokenAddress = config.tokens.aUsdc;
+        aTokenDecimals = UsdcToken.decimals;
+        break;
+      case DaiToken.symbol:
+        aTokenAddress = config.tokens.aDai;
+        aTokenDecimals = DaiToken.decimals;
+        break;
+      case UsdtToken.symbol:
+        aTokenAddress = config.tokens.aUsdt;
+        aTokenDecimals = UsdtToken.decimals;
+        break;
+      case GusdToken.symbol:
+        aTokenAddress = config.tokens.aGusd;
+        aTokenDecimals = GusdToken.decimals;
+        break;
+    }
+  }
+
+  const aToken = new SYAaveTokenContract(aTokenAddress);
+  aToken.setCallProvider(MainnetHttpsWeb3Provider);
+  await aToken.loadCommon();
+
+  const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), StkAaveToken.symbol, EthToken.symbol);
+  const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, EthToken.symbol);
+
+  return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
+}
+
 const PoolProvider: React.FC = props => {
   const { children } = props;
 
@@ -155,6 +211,12 @@ const PoolProvider: React.FC = props => {
         const controller = new SYControllerContract(pool.controllerAddress);
         controller.setProvider(wallet.provider);
 
+        let apy;
+
+        if (pool.protocolId === AaveMarket.id) {
+          apy = await getAaveIncentivesAPY(pool.cTokenAddress, pool.underlyingDecimals, pool.underlyingSymbol);
+        }
+
         await Promise.all([smartYield.loadCommon(), underlying.loadCommon()]);
 
         const extPool: SYPool = {
@@ -166,6 +228,7 @@ const PoolProvider: React.FC = props => {
             underlying,
             controller,
           },
+          apy,
         };
 
         setState(prevState => ({

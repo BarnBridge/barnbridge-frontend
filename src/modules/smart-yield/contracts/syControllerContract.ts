@@ -23,6 +23,27 @@ const ABI: any[] = [
     inputs: [],
     outputs: [{ name: '', type: 'uint256' }],
   },
+  {
+    name: 'harvest',
+    type: 'function',
+    stateMutability: 'nonpayable',
+    inputs: [{ name: '', type: 'uint256' }],
+    outputs: [
+      { name: 'rewardAmountGot', type: 'uint256' },
+      { name: 'underlyingHarvestReward', type: 'uint256' },
+    ],
+  },
+
+  // {
+  //   inputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+  //   name: 'harvest',
+  //   outputs: [
+  //     { internalType: 'uint256', name: 'rewardAmountGot', type: 'uint256' },
+  //     { internalType: 'uint256', name: 'underlyingHarvestReward', type: 'uint256' },
+  //   ],
+  //   stateMutability: 'nonpayable',
+  //   type: 'function',
+  // },
 ];
 
 class SYControllerContract extends Web3Contract {
@@ -40,6 +61,14 @@ class SYControllerContract extends Web3Contract {
 
   getSeniorRedeemFee(): Promise<BigNumber> {
     return this.call('FEE_REDEEM_SENIOR_BOND').then(value => new BigNumber(value));
+  }
+
+  getHarvestAmount(): Promise<BigNumber> {
+    return this.call('harvest').then(value => new BigNumber(value));
+  }
+
+  harvest(gasPrice: number): Promise<void> {
+    return this.send('harvest', [0], {}, gasPrice);
   }
 }
 

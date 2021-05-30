@@ -27,8 +27,6 @@ export enum YFPoolID {
 export type YFPoolMeta = {
   name: YFPoolID;
   label: string;
-  icons: string[];
-  colors: string[];
   tokens: TokenMeta[];
   contract: YfPoolContract;
 };
@@ -36,8 +34,6 @@ export type YFPoolMeta = {
 export const StableYfPool: YFPoolMeta = {
   name: YFPoolID.STABLE,
   label: 'USDC/DAI/sUSD',
-  icons: ['token-usdc', 'token-dai', 'token-susd'],
-  colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
   tokens: [UsdcToken, DaiToken, SusdToken],
   contract: new YfPoolContract(config.contracts.yf.stable),
 };
@@ -45,8 +41,6 @@ export const StableYfPool: YFPoolMeta = {
 export const UnilpYfPool: YFPoolMeta = {
   name: YFPoolID.UNILP,
   label: 'USDC_BOND_UNI_LP',
-  icons: ['static/token-uniswap'],
-  colors: ['var(--theme-red-color)'],
   tokens: [UniV2Token],
   contract: new YfPoolContract(config.contracts.yf.unilp),
 };
@@ -54,8 +48,6 @@ export const UnilpYfPool: YFPoolMeta = {
 export const BondYfPool: YFPoolMeta = {
   name: YFPoolID.BOND,
   label: 'BOND',
-  icons: ['static/token-bond'],
-  colors: ['var(--theme-red-color)'],
   tokens: [BondToken],
   contract: new YfPoolContract(config.contracts.yf.bond),
 };

@@ -140,7 +140,7 @@ const AggregatedPoolCard: FCx = props => {
               </Text>
             </div>
             {Array.from(rewardTokens.values()).map(rewardToken => (
-              <div className="flex align-center justify-space-between mb-24">
+              <div key={rewardToken.symbol} className="flex align-center justify-space-between mb-24">
                 <Hint text={`This number shows the $${rewardToken.symbol} token rewards distributed per day.`}>
                   <Text type="small" weight="semibold" color="secondary">
                     {rewardToken.symbol} daily reward
@@ -184,7 +184,7 @@ const AggregatedPoolCard: FCx = props => {
               </Text>
             </div>
             {Array.from(rewardTokens.values()).map(rewardToken => (
-              <div className="flex align-center justify-space-between mb-24">
+              <div key={rewardToken.symbol} className="flex align-center justify-space-between mb-24">
                 <Text type="small" weight="semibold" color="secondary">
                   My potential {rewardToken.symbol} reward
                 </Text>

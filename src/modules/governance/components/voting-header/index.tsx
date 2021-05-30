@@ -3,7 +3,7 @@ import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
-import { formatBONDValue, formatBigValue, isSmallBONDValue } from 'web3/utils';
+import { formatBigValue, formatToken } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -13,7 +13,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -73,15 +73,17 @@ const VotingHeader: React.FC = () => {
             Current reward
           </Text>
           <Grid flow="col" gap={16} align="center">
-            <Tooltip title={<Text type="p2">{formatBigValue(claimValue, BondToken.decimals)}</Text>}>
-              <Skeleton loading={claimValue === undefined}>
-                <Text type="h3" weight="bold" color="primary">
-                  {isSmallBONDValue(claimValue) && '> '}
-                  {formatBONDValue(claimValue)}
-                </Text>
-              </Skeleton>
+            <Tooltip
+              title={formatToken(claimValue, {
+                decimals: ProjectToken.decimals,
+              })}>
+              <Text type="h3" weight="bold" color="primary">
+                {formatToken(claimValue, {
+                  hasLess: true,
+                })}
+              </Text>
             </Tooltip>
-            <Icon name="static/token-bond" />
+            <Icon name={ProjectToken.icon!} />
             <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -95,10 +97,10 @@ const VotingHeader: React.FC = () => {
           <Grid flow="col" gap={16} align="center">
             <Skeleton loading={bondBalance === undefined}>
               <Text type="h3" weight="bold" color="primary">
-                {formatBONDValue(bondBalance)}
+                {formatToken(bondBalance)}
               </Text>
             </Skeleton>
-            <Icon name="static/token-bond" />
+            <Icon name={ProjectToken.icon!} />
           </Grid>
         </Grid>
         <Divider type="vertical" />
@@ -109,7 +111,7 @@ const VotingHeader: React.FC = () => {
           <Grid flow="col" gap={16} align="center">
             <Skeleton loading={votingPower === undefined}>
               <Text type="h3" weight="bold" color="primary">
-                {formatBONDValue(votingPower)}
+                {formatToken(votingPower)}
               </Text>
             </Skeleton>
             <Button type="light" onClick={() => setState({ showDetailedView: true })}>

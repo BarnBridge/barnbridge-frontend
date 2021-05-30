@@ -10,14 +10,9 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import {
-  BondToken,
-  KnownTokens,
-  getTokenByAddress,
-  getTokenBySymbol,
-} from 'components/providers/known-tokens-provider';
+import { KnownTokens, ProjectToken, getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
-import { AaveMarket, getKnownMarketById } from 'modules/smart-yield/providers/markets';
+import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
@@ -77,8 +72,8 @@ export const PoolCard: FC<PoolCardProps> = props => {
   //     .multipliedBy(jTokenPrice)
   //     .multipliedBy(1);
   //
-  //   if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
-  //     return ZERO_BIG_NUMBER;
+  //   if (poolBalance.isEqualTo(BigNumber.ZERO)) {
+  //     return BigNumber.ZERO;
   //   }
   //
   //   return yearlyReward.dividedBy(poolBalance);
@@ -90,7 +85,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
         <header className={s.header}>
           <IconBubble
             name={uToken?.icon}
-            bubbleName="static/token-bond"
+            bubbleName={ProjectToken.icon!}
             secondBubbleName={poolMarket?.icon.active}
             width={36}
             height={36}
@@ -118,10 +113,10 @@ export const PoolCard: FC<PoolCardProps> = props => {
         </div>
         {activeTab === 'pool' && (
           <dl>
-            <div className={s.defRow}>
+            {/* <div className={s.defRow}>
               <dt>APR</dt>
               <dd>{formatPercent(apr)}</dd>
-            </div>
+            </div> */}
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.symbol}>
                 {rewardToken.symbol === KnownTokens.BOND ? (
@@ -166,7 +161,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
               <dd>
                 <IconBubble
                   name={uToken?.icon}
-                  bubbleName="static/token-bond"
+                  bubbleName={ProjectToken.icon!}
                   secondBubbleName={poolMarket?.icon.active}
                   width={16}
                   height={16}
@@ -179,10 +174,10 @@ export const PoolCard: FC<PoolCardProps> = props => {
         )}
         {activeTab === 'my' && walletCtx.isActive && (
           <dl>
-            <div className={s.defRow}>
+            {/* <div className={s.defRow}>
               <dt>APR</dt>
               <dd>{formatPercent(apr)}</dd>
-            </div>
+            </div> */}
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.address}>
                 {rewardToken.symbol === KnownTokens.BOND ? (
@@ -217,7 +212,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
               <dd>
                 <IconBubble
                   name={uToken?.icon}
-                  bubbleName="static/token-bond"
+                  bubbleName={ProjectToken.icon!}
                   secondBubbleName={poolMarket?.icon.active}
                   width={16}
                   height={16}
@@ -236,7 +231,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
             <button
               type="button"
               className="button-ghost"
-              // disabled={!rewardPool.pool.toClaim?.gt(ZERO_BIG_NUMBER)}
+              // disabled={!rewardPool.pool.toClaim?.gt(BigNumber.ZERO)}
               onClick={handleClaim}>
               {claiming && <Spin type="circle" />}
               Claim

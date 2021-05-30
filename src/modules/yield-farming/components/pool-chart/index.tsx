@@ -9,7 +9,7 @@ import { formatUSD, formatUSDValue } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
-import Icon, { IconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/known-tokens-provider';
@@ -161,8 +161,8 @@ const PoolChart: FC<Props> = props => {
           {activeYfPool && (
             <IconsSet
               className="mr-8"
-              icons={activeYfPool.icons.map(icon => (
-                <Icon key={icon} name={icon as IconNames} />
+              icons={activeYfPool.tokens.map(token => (
+                <Icon key={token.symbol} name={token.icon!} />
               ))}
             />
           )}

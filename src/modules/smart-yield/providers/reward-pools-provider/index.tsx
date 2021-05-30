@@ -11,7 +11,7 @@ import { useWallet } from 'wallets/wallet';
 type RewardPoolsType = {
   loading: boolean;
   pools: SYRewardPoolEntity[];
-  getMarketTVL: (marketId: string) => BigNumber;
+  getMarketTVL: (marketId?: string) => BigNumber;
   getSYTotalStakedInUSD: () => BigNumber;
 };
 
@@ -37,9 +37,9 @@ const RewardPoolsProvider: FC = props => {
   const [pools, setPools] = useState<SYRewardPoolEntity[]>([]);
 
   const getMarketTVL = useCallback(
-    (marketId: string) => {
+    (marketId?: string) => {
       return pools
-        .filter(pool => pool.meta.protocolId === marketId)
+        .filter(pool => pool.meta.protocolId === (marketId ?? pool.meta.protocolId))
         .reduce((sum, entity) => {
           const { poolSize } = entity.rewardPool;
           const { decimals, symbol } = entity.smartYield;

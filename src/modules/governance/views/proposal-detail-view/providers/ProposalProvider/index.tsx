@@ -2,7 +2,6 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
@@ -109,7 +108,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
     let forRate = 0;
     let againstRate = 0;
 
-    if (total.gt(ZERO_BIG_NUMBER)) {
+    if (total.gt(BigNumber.ZERO)) {
       forRate = forVotes.multipliedBy(100).div(total).toNumber();
       againstRate = againstVotes.multipliedBy(100).div(total).toNumber();
     }
@@ -122,7 +121,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
     daoCtx.daoBarn.actions.bondStakedAtTs(createTime + warmUpDuration).then(bondStakedAt => {
       let quorum: number | undefined;
 
-      if (bondStakedAt?.gt(ZERO_BIG_NUMBER)) {
+      if (bondStakedAt?.gt(BigNumber.ZERO)) {
         quorum = total.multipliedBy(100).div(bondStakedAt).toNumber();
       }
 
@@ -143,7 +142,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
     const { bondStaked } = daoCtx.daoBarn;
 
-    if (!state.proposal || !bondStaked || bondStaked.isEqualTo(ZERO_BIG_NUMBER)) {
+    if (!state.proposal || !bondStaked || bondStaked.isEqualTo(BigNumber.ZERO)) {
       return;
     }
 

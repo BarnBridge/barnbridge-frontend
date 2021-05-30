@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { BondToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { useWallet } from 'wallets/wallet';
@@ -28,7 +28,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
         <div className="flex flow-col align-center">
           <IconBubble
             name={meta?.icon}
-            bubbleName="static/token-bond"
+            bubbleName={ProjectToken.icon!}
             secondBubbleName={market?.icon}
             className="mr-16"
           />
@@ -79,11 +79,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     },
   },
   {
-    title: 'My $BOND rewards',
+    title: `My $${ProjectToken.symbol} rewards`,
     width: '20%',
     align: 'right',
     sorter: (a, b) => 0,
-    render: function BondRewardsRender(_, entity) {
+    render: function RewardsRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const bondToClaim = entity.rewardPool.getClaimFor(BondToken.address)?.unscaleBy(BondToken.decimals);
       const bondToClaimInUSD = knownTokensCtx.convertTokenInUSD(bondToClaim, BondToken.symbol!);
@@ -136,7 +136,7 @@ const StakedPositionsTable: React.FC<Props> = props => {
     <Table<StakedPositionsTableEntity>
       columns={Columns}
       dataSource={data}
-      rowKey="poolAddress"
+      rowKey={entity => entity.meta.poolAddress}
       loading={loading}
       scroll={{
         x: true,

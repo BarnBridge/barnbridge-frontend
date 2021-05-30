@@ -11,13 +11,29 @@ import { DEFAULT_WEB3, DEFAULT_WEB3_PROVIDER, WEB3_ERROR_VALUE } from 'component
 
 export type Web3ContractAbiItem = AbiItem;
 
-export function createAbiItem(name: string, inputs: string[] = [], outputs: string[] = []): AbiItem {
+export function createAbiItem(
+  name: string,
+  inputs: (string | string[])[] = [],
+  outputs: (string | string[])[] = [],
+): AbiItem {
   return {
     name,
     type: 'function',
     stateMutability: 'view',
-    inputs: inputs.map(type => ({ name: '', type })),
-    outputs: outputs.map(type => ({ name: '', type })),
+    inputs: inputs.map(type => {
+      if (Array.isArray(type)) {
+        return { name: '', type: 'tuple[]', components: type.map(t => ({ name: '', type: t })) };
+      }
+
+      return { name: '', type };
+    }),
+    outputs: outputs.map(type => {
+      if (Array.isArray(type)) {
+        return { name: '', type: 'tuple[]', components: type.map(t => ({ name: '', type: t })) };
+      }
+
+      return { name: '', type };
+    }),
   };
 }
 
@@ -107,6 +123,14 @@ class Web3Contract extends EventEmitter {
 
   get writeFunctions(): AbiItem[] {
     return this._abi.filter(r => r.type === 'function' && !r.constant);
+  }
+
+  get callProvider(): any {
+    return this._callContract.currentProvider;
+  }
+
+  get provider(): any {
+    return this._sendContract.currentProvider;
   }
 
   setCallProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {

@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { ZERO_BIG_NUMBER, formatBigValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tabs from 'components/antd/tabs';
@@ -110,7 +110,7 @@ const JuniorPortfolioInner: React.FC = () => {
               smartYieldContract.getAbond(),
             ]);
 
-            if (smartYieldContract.balance?.isGreaterThan(ZERO_BIG_NUMBER)) {
+            if (smartYieldContract.balance?.isGreaterThan(BigNumber.ZERO)) {
               resolve({
                 ...pool,
                 smartYieldBalance: smartYieldContract.balance,
@@ -226,32 +226,32 @@ const JuniorPortfolioInner: React.FC = () => {
     return a.plus(
       getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
         ?.multipliedBy(c.state.jTokenPrice ?? 0)
-        .multipliedBy(1) ?? ZERO_BIG_NUMBER,
+        .multipliedBy(1) ?? BigNumber.ZERO,
     ); /// price
-  }, ZERO_BIG_NUMBER);
+  }, BigNumber.ZERO);
 
   const lockedBalance = state.dataLocked?.reduce((a, c) => {
     return a.plus(
       getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)
         ?.multipliedBy(c.pool.state.jTokenPrice ?? 0)
-        .multipliedBy(1) ?? ZERO_BIG_NUMBER,
+        .multipliedBy(1) ?? BigNumber.ZERO,
     ); /// price
-  }, ZERO_BIG_NUMBER);
+  }, BigNumber.ZERO);
 
   const stakedBalance = dataStaked?.reduce((a, c) => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
     const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
     return a.plus(valInUSD ?? BigNumber.ZERO);
-  }, ZERO_BIG_NUMBER);
+  }, BigNumber.ZERO);
 
   const apySum = state.dataActive.reduce((a, c) => {
     return a.plus(
       getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
         ?.multipliedBy(c.state.jTokenPrice)
         .multipliedBy(1)
-        .multipliedBy(c.state.juniorApy) ?? ZERO_BIG_NUMBER,
+        .multipliedBy(c.state.juniorApy) ?? BigNumber.ZERO,
     );
-  }, ZERO_BIG_NUMBER);
+  }, BigNumber.ZERO);
 
   const stakedApySum = dataStaked.reduce((a, c) => {
     const item = pools.find(p => p.smartYieldAddress === c.smartYield.address);
@@ -264,13 +264,13 @@ const JuniorPortfolioInner: React.FC = () => {
       getHumanValue(c.pool.balance, c.poolToken.decimals)
         ?.multipliedBy(item.state.jTokenPrice ?? 0)
         .multipliedBy(1)
-        .multipliedBy(item.state.juniorApy) ?? ZERO_BIG_NUMBER,
+        .multipliedBy(item.state.juniorApy) ?? BigNumber.ZERO,
     )*/ /// ???
-  }, ZERO_BIG_NUMBER);
+  }, BigNumber.ZERO);
 
-  const totalBalance = activeBalance?.plus(lockedBalance ?? ZERO_BIG_NUMBER).plus(stakedBalance ?? ZERO_BIG_NUMBER);
-  const pTotalBalance = activeBalance?.plus(stakedBalance ?? ZERO_BIG_NUMBER);
-  const apy = pTotalBalance?.gt(ZERO_BIG_NUMBER) ? apySum.plus(stakedApySum).dividedBy(pTotalBalance).toNumber() : 0; /// calculate by formula
+  const totalBalance = activeBalance?.plus(lockedBalance ?? BigNumber.ZERO).plus(stakedBalance ?? BigNumber.ZERO);
+  const pTotalBalance = activeBalance?.plus(stakedBalance ?? BigNumber.ZERO);
+  const apy = pTotalBalance?.gt(BigNumber.ZERO) ? apySum.plus(stakedApySum).dividedBy(pTotalBalance).toNumber() : 0; /// calculate by formula
 
   const dataActiveFilters = React.useMemo(() => {
     const filter = filtersMap.active;
