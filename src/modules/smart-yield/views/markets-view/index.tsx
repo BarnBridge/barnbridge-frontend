@@ -12,6 +12,15 @@ import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
 
 const MarketsView: FC = () => {
   const poolsCtx = usePools();
+  const history = useHistory();
+  const location = useLocation();
+
+  const queryMarketId = React.useMemo(() => {
+    const urlQuery = new URLSearchParams(location.search);
+    const marketStr = urlQuery.get('m') ?? undefined;
+
+    return marketStr ? decodeURIComponent(marketStr) : undefined;
+  }, [location.search]);
 
   const [marketsSelection, setMarketsSelection] = useSessionStorage<string | undefined>('sy-markets-selection');
 
