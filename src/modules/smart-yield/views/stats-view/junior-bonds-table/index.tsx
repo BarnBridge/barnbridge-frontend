@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { APISYJuniorBonds, fetchSYJuniorBonds } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
@@ -23,7 +23,7 @@ const TokenNameColumn: React.FC = () => {
     <div className="flex">
       <IconBubble
         name={pool?.meta?.icon}
-        bubbleName="static/token-bond"
+        bubbleName={ProjectToken.icon!}
         secondBubbleName={pool?.market?.icon}
         className="mr-16"
       />

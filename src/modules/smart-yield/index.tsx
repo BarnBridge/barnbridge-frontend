@@ -4,11 +4,11 @@ import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
+import RewardPoolProvider from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
 import PoolProvider from './providers/pool-provider';
 import PoolsProvider from './providers/pools-provider';
-import RewardPoolProvider from './providers/reward-pool-provider';
 import RewardPoolsProvider from './providers/reward-pools-provider';
 
 import s from './s.module.scss';
@@ -136,23 +136,16 @@ const SmartYieldView: React.FC = () => {
                 <StatsView />
               </PoolProvider>
             </Route>
-            <Route
-              path="/smart-yield/pools"
-              exact
-              render={() => (
-                <RewardPoolsProvider>
-                  <PoolsView />
-                </RewardPoolsProvider>
-              )}
-            />
-            <Route
-              path="/smart-yield/pool"
-              render={() => (
-                <RewardPoolProvider>
-                  <PoolView />
-                </RewardPoolProvider>
-              )}
-            />
+            <Route path="/smart-yield/pools" exact>
+              <RewardPoolsProvider>
+                <PoolsView />
+              </RewardPoolsProvider>
+            </Route>
+            <Route path="/smart-yield/pool" component={PoolView}>
+              <RewardPoolProvider>
+                <PoolView />
+              </RewardPoolProvider>
+            </Route>
             <Redirect to="/smart-yield/markets" />
           </Switch>
         </Suspense>

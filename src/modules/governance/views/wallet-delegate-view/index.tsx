@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Antd from 'antd';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import BigNumber from 'bignumber.js';
 
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
@@ -10,6 +10,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
@@ -44,7 +45,7 @@ const WalletDelegateView: React.FC = () => {
   const { balance: stakedBalance, userDelegatedTo, userLockedUntil } = daoCtx.daoBarn;
   const isDelegated = isValidAddress(userDelegatedTo);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
-  const hasStakedBalance = stakedBalance?.gt(ZERO_BIG_NUMBER);
+  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
   const formDisabled = !hasStakedBalance;
 
   React.useEffect(() => {
@@ -80,7 +81,7 @@ const WalletDelegateView: React.FC = () => {
     <div className="card">
       <Grid className="card-header" flow="col" gap={24} colsTemplate="auto" align="start">
         <Grid flow="col" gap={12}>
-          <Icon name="static/token-bond" width={40} height={40} />
+          <Icon name={ProjectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
             BOND
           </Text>

@@ -1,25 +1,10 @@
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import { ZERO_BIG_NUMBER, getGasValue } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
-
-import { DAY_IN_SECONDS } from 'utils/date';
 
 const ABI: AbiItem[] = [
   {
     name: 'poolSize',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'amount', type: 'uint256' }],
-  },
-  {
-    name: 'rewardRatePerSecond',
-    type: 'function',
-    inputs: [],
-    outputs: [{ name: 'amount', type: 'uint256' }],
-  },
-  {
-    name: 'claim',
     type: 'function',
     inputs: [],
     outputs: [{ name: 'amount', type: 'uint256' }],
@@ -31,9 +16,21 @@ const ABI: AbiItem[] = [
     outputs: [{ name: 'amount', type: 'uint256' }],
   },
   {
+    name: 'claim',
+    type: 'function',
+    inputs: [],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
     name: 'balances',
     type: 'function',
     inputs: [{ name: 'address', type: 'address' }],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'rewardRatePerSecond',
+    type: 'function',
+    inputs: [],
     outputs: [{ name: 'amount', type: 'uint256' }],
   },
   {
@@ -56,145 +53,179 @@ const ABI: AbiItem[] = [
   },
 ];
 
+const MULTI_ABI: AbiItem[] = [
+  {
+    name: 'poolSize',
+    type: 'function',
+    inputs: [],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'rewardLeft',
+    type: 'function',
+    inputs: [{ name: 'address', type: 'address' }],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'claim',
+    type: 'function',
+    inputs: [{ name: 'address', type: 'address' }],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'balances',
+    type: 'function',
+    inputs: [{ name: 'address', type: 'address' }],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'rewardRatesPerSecond',
+    type: 'function',
+    inputs: [{ name: 'address', type: 'address' }],
+    outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'deposit',
+    type: 'function',
+    inputs: [{ name: 'amount', type: 'uint256' }],
+    outputs: [],
+  },
+  {
+    name: 'withdraw',
+    type: 'function',
+    inputs: [{ name: 'amount', type: 'uint256' }],
+    outputs: [],
+  },
+  {
+    name: 'withdrawAndClaim',
+    type: 'function',
+    inputs: [{ name: 'amount', type: 'uint256' }],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
+    name: 'claim_allTokens',
+    type: 'function',
+    inputs: [],
+    outputs: [{ name: 'amounts', type: 'uint256[]' }],
+  },
+];
+
 class SYRewardPoolContract extends Web3Contract {
-  constructor(address: string) {
-    super(ABI, address, '');
+  private readonly _isMulti: boolean;
+
+  constructor(address: string, isMulti: boolean = false) {
+    super(isMulti ? MULTI_ABI : ABI, address, '');
+
+    this._isMulti = isMulti;
+    this.on(Web3Contract.UPDATE_ACCOUNT, () => {
+      this.balances.clear();
+      this.claims.clear();
+    });
   }
 
+  // common data
   poolSize?: BigNumber;
+  rewardLeft: Map<string, BigNumber> = new Map();
+  rewardRates: Map<string, BigNumber> = new Map();
 
-  rewardRatePerSecond?: BigNumber;
+  // user data
+  balances: Map<string, BigNumber> = new Map();
+  claims: Map<string, BigNumber> = new Map();
 
-  rewardLeft?: BigNumber;
-
-  dailyReward?: BigNumber;
-
-  toClaim?: BigNumber;
-
-  balance?: BigNumber;
-
-  get myDailyReward(): BigNumber | undefined {
-    if (!this.dailyReward || !this.balance || !this.poolSize || this.poolSize.eq(ZERO_BIG_NUMBER)) {
-      return undefined;
-    }
-
-    return this.dailyReward.multipliedBy(this.balance.dividedBy(this.poolSize));
-  }
-
-  loadCommon(): Promise<void> {
+  async loadCommon(): Promise<void> {
     this.poolSize = undefined;
-    this.rewardRatePerSecond = undefined;
-    this.rewardLeft = undefined;
-    this.dailyReward = undefined;
 
-    return this.batch([
+    const [poolSize] = await this.batch([
       {
         method: 'poolSize',
         transform: value => new BigNumber(value),
       },
-      {
-        method: 'rewardRatePerSecond',
-        transform: value => new BigNumber(value),
-      },
-      {
-        method: 'rewardLeft',
-        transform: value => new BigNumber(value),
-      },
-    ]).then(([poolSize, rewardRatePerSecond, rewardLeft]) => {
-      this.poolSize = poolSize;
-      this.rewardRatePerSecond = rewardRatePerSecond;
-      this.rewardLeft = rewardLeft;
+    ]);
 
-      if (rewardLeft?.gt(ZERO_BIG_NUMBER)) {
-        this.dailyReward = rewardRatePerSecond.multipliedBy(DAY_IN_SECONDS);
-      } else {
-        this.dailyReward = ZERO_BIG_NUMBER;
-      }
-
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
+    this.poolSize = new BigNumber(poolSize);
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  loadClaim(): Promise<void> {
-    this.toClaim = undefined;
+  async loadRewardLeftFor(rewardTokenAddress: string): Promise<void> {
+    const rewardLeft = await this.call('rewardLeft', this._isMulti ? [rewardTokenAddress] : []);
 
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.call('claim', [], { from: this.account }).then(value => {
-      this.toClaim = new BigNumber(value);
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
+    this.rewardLeft.set(rewardTokenAddress, new BigNumber(rewardLeft));
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  loadBalance(): Promise<void> {
-    this.balance = undefined;
+  async loadRewardRateFor(rewardTokenAddress: string): Promise<void> {
+    let rewardRatePerSecond;
 
-    if (!this.account) {
-      return Promise.reject();
+    if (this._isMulti) {
+      rewardRatePerSecond = await this.call('rewardRatesPerSecond', [rewardTokenAddress]);
+    } else {
+      rewardRatePerSecond = await this.call('rewardRatePerSecond', []);
     }
 
-    return this.call('balances', [this.account]).then(value => {
-      this.balance = new BigNumber(value);
-      this.emit(Web3Contract.UPDATE_DATA);
-    });
+    this.rewardRates.set(rewardTokenAddress, new BigNumber(rewardRatePerSecond));
+    this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  sendClaim(gasPrice: number): Promise<void> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.send('claim', [], {
-      from: this.account,
-      gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.loadClaim();
-    });
+  getRewardLeftFor(rewardTokenAddress: string): BigNumber | undefined {
+    return this.rewardLeft.get(rewardTokenAddress);
   }
 
-  sendDeposit(amount: BigNumber, gasPrice: number): Promise<void> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.send('deposit', [amount], {
-      from: this.account,
-      gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.loadCommon();
-      this.loadBalance();
-    });
+  getRewardRateFor(rewardTokenAddress: string): BigNumber | undefined {
+    return this.rewardRates.get(rewardTokenAddress);
   }
 
-  sendWithdraw(amount: BigNumber, gasPrice: number): Promise<void> {
-    if (!this.account) {
-      return Promise.reject();
-    }
-
-    return this.send('withdraw', [amount], {
-      from: this.account,
-      gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.loadCommon();
-      this.loadBalance();
-    });
+  getDailyRewardFor(rewardTokenAddress: string): BigNumber | undefined {
+    return this.rewardRates.get(rewardTokenAddress)?.multipliedBy(24 * 60 * 60);
   }
 
-  sendWithdrawAndClaim(amount: BigNumber, gasPrice: number): Promise<void> {
-    if (!this.account) {
-      return Promise.reject();
+  getMyDailyRewardFor(rewardTokenAddress: string): BigNumber | undefined {
+    const balance = this.getBalanceFor(this.account!);
+
+    if (!balance || !this.poolSize || !this.poolSize.gt(BigNumber.ZERO)) {
+      return undefined;
     }
 
-    return this.send('withdrawAndClaim', [amount], {
-      from: this.account,
-      gasPrice: getGasValue(gasPrice),
-    }).then(() => {
-      this.loadCommon();
-      this.loadBalance();
-      this.loadClaim();
-    });
+    const myRatio = balance.dividedBy(this.poolSize);
+
+    return this.getDailyRewardFor(rewardTokenAddress)?.multipliedBy(myRatio);
+  }
+
+  async loadBalanceFor(rewardTokenAddress: string): Promise<void> {
+    const balance = await this.call('balances', [rewardTokenAddress], { from: this.account });
+
+    this.balances.set(rewardTokenAddress, new BigNumber(balance));
+    this.emit(Web3Contract.UPDATE_DATA);
+  }
+
+  getBalanceFor(rewardTokenAddress: string): BigNumber | undefined {
+    return this.balances.get(rewardTokenAddress);
+  }
+
+  async loadClaimFor(rewardTokenAddress: string): Promise<void> {
+    const claim = await this.call('claim', this._isMulti ? [rewardTokenAddress] : [], { from: this.account });
+
+    this.claims.set(rewardTokenAddress, new BigNumber(claim));
+    this.emit(Web3Contract.UPDATE_DATA);
+  }
+
+  getClaimFor(rewardTokenAddress: string): BigNumber | undefined {
+    return this.claims.get(rewardTokenAddress);
+  }
+
+  async sendClaimAll(gasPrice: number): Promise<void> {
+    await this.send(this._isMulti ? 'claim_allTokens' : 'claim', [], {}, gasPrice);
+  }
+
+  async sendDeposit(amount: BigNumber, gasPrice: number): Promise<void> {
+    await this.send('deposit', [amount], {}, gasPrice);
+  }
+
+  async sendWithdraw(amount: BigNumber, gasPrice: number): Promise<void> {
+    await this.send('withdraw', [amount], {}, gasPrice);
+  }
+
+  async sendWithdrawAndClaim(amount: BigNumber, gasPrice: number): Promise<void> {
+    await this.send('withdrawAndClaim', [amount], {}, gasPrice);
   }
 }
 

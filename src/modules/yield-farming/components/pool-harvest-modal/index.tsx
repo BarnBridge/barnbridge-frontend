@@ -9,7 +9,7 @@ import Grid from 'components/custom/grid';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
 
 import { BondYfPool, StableYfPool, UnilpYfPool } from '../../providers/pools-provider';
 
@@ -50,7 +50,7 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
             </Text>
             <Text type="p1" weight="semibold" color="primary" className="mr-4">
               {formatToken(reward, {
-                tokenName: BondToken.symbol,
+                tokenName: ProjectToken.symbol,
               })}
             </Text>
           </div>
@@ -116,21 +116,21 @@ const PoolHarvestModal: FC<ModalProps> = props => {
         </div>
         <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, 240px)">
           <PoolHarvestButton
-            icons={StableYfPool.icons}
+            icons={StableYfPool.tokens.map(token => token.icon!)}
             label={StableYfPool.label}
             reward={StableYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
             loading={stableHarvesting}
             onClick={handleStableHarvest}
           />
           <PoolHarvestButton
-            icons={UnilpYfPool.icons}
+            icons={UnilpYfPool.tokens.map(token => token.icon!)}
             label={UnilpYfPool.label}
             reward={UnilpYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
             loading={unilpHarvesting}
             onClick={handleUnilpHarvest}
           />
           <PoolHarvestButton
-            icons={BondYfPool.icons}
+            icons={BondYfPool.tokens.map(token => token.icon!)}
             label={BondYfPool.label}
             reward={BondYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
             loading={bondHarvesting}

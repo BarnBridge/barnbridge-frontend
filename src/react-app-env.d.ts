@@ -1,5 +1,4 @@
 /// <reference types="react-scripts" />
-
 declare module 'bignumber.js' {
   export default class BigNumber {
     static ZERO: BigNumber;

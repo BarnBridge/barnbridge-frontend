@@ -11,6 +11,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import {
   APISYTxHistoryType,
@@ -40,7 +41,7 @@ const Columns: ColumnsType<TableEntity> = [
         {entity.isTokenAmount ? (
           <IconBubble
             name={entity.poolEntity?.meta?.icon}
-            bubbleName="static/token-bond"
+            bubbleName={ProjectToken.icon!}
             secondBubbleName={entity.poolEntity?.market?.icon}
           />
         ) : (

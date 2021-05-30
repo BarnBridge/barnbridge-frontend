@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { FC, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useSessionStorage } from 'react-use-storage';
 import { Web3Provider } from '@ethersproject/providers';
+import { useSafeAppsSDK } from '@gnosis.pm/safe-apps-react-sdk';
 import { UnsupportedChainIdError, Web3ReactProvider, useWeb3React } from '@web3-react/core';
 import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import * as Antd from 'antd';
@@ -12,6 +13,7 @@ import ConnectWalletModal from 'wallets/components/connect-wallet-modal';
 import InstallMetaMaskModal from 'wallets/components/install-metamask-modal';
 import UnsupportedChainModal from 'wallets/components/unsupported-chain-modal';
 import CoinbaseWalletConfig from 'wallets/connectors/coinbase';
+import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import LedgerWalletConfig from 'wallets/connectors/ledger';
 import MetaMaskWalletConfig from 'wallets/connectors/metamask';
 import PortisWalletConfig from 'wallets/connectors/portis';
@@ -47,7 +49,7 @@ export type Wallet = WalletData & {
   disconnect: () => void;
 };
 
-const WalletContext = React.createContext<Wallet>({
+const WalletContext = createContext<Wallet>({
   initialized: false,
   connecting: undefined,
   isActive: false,
@@ -62,28 +64,29 @@ const WalletContext = React.createContext<Wallet>({
 });
 
 export function useWallet(): Wallet {
-  return React.useContext(WalletContext);
+  return useContext(WalletContext);
 }
 
-const WalletProvider: React.FC = props => {
+const WalletProvider: FC = props => {
   const web3React = useWeb3React();
+  const safeApps = useSafeAppsSDK();
 
   const [sessionProvider, setSessionProvider, removeSessionProvider] = useSessionStorage<string | undefined>(
     'wallet_provider',
   );
 
-  const [initialized, setInitialized] = React.useState<boolean>(false);
-  const [connecting, setConnecting] = React.useState<WalletConnector | undefined>(undefined);
-  const connectingRef = React.useRef<WalletConnector | undefined>(connecting);
+  const [initialized, setInitialized] = useState<boolean>(false);
+  const [connecting, setConnecting] = useState<WalletConnector | undefined>(undefined);
+  const connectingRef = useRef<WalletConnector | undefined>(connecting);
   connectingRef.current = connecting;
-  const [activeConnector, setActiveConnector] = React.useState<WalletConnector | undefined>();
-  const [activeProvider, setActiveProvider] = React.useState<any | undefined>();
-  const [ethBalance, setEthBalance] = React.useState<BigNumber | undefined>();
-  const [walletsModal, setWalletsModal] = React.useState<boolean>(false);
-  const [unsupportedChainModal, setUnsupportedChainModal] = React.useState<boolean>(false);
-  const [installMetaMaskModal, setInstallMetaMaskModal] = React.useState<boolean>(false);
+  const [activeConnector, setActiveConnector] = useState<WalletConnector | undefined>();
+  const [activeProvider, setActiveProvider] = useState<any | undefined>();
+  const [ethBalance, setEthBalance] = useState<BigNumber | undefined>();
+  const [walletsModal, setWalletsModal] = useState<boolean>(false);
+  const [unsupportedChainModal, setUnsupportedChainModal] = useState<boolean>(false);
+  const [installMetaMaskModal, setInstallMetaMaskModal] = useState<boolean>(false);
 
-  const disconnect = React.useCallback(() => {
+  const disconnect = useCallback(() => {
     web3React.deactivate();
     activeConnector?.onDisconnect?.(web3React.connector);
     setConnecting(undefined);
@@ -93,7 +96,7 @@ const WalletProvider: React.FC = props => {
     removeSessionProvider();
   }, [web3React, activeConnector, removeSessionProvider, setConnecting]);
 
-  const connect = React.useCallback(
+  const connect = useCallback(
     async (walletConnector: WalletConnector, args?: Record<string, any>): Promise<void> => {
       if (connectingRef.current) {
         return;
@@ -143,7 +146,7 @@ const WalletProvider: React.FC = props => {
     [web3React, connectingRef, setConnecting, setSessionProvider, disconnect],
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (web3React.account) {
       HttpsWeb3.eth
         .getBalance(web3React.account)
@@ -156,7 +159,7 @@ const WalletProvider: React.FC = props => {
     }
   }, [web3React.account]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     (async () => {
       if (sessionProvider) {
         const walletConnector = WalletConnectors.find(c => c.id === sessionProvider);
@@ -170,7 +173,15 @@ const WalletProvider: React.FC = props => {
     })();
   }, []);
 
-  const value = React.useMemo<Wallet>(
+  useEffect(() => {
+    (async () => {
+      if (safeApps.connected) {
+        await connect(GnosisSafeConfig);
+      }
+    })();
+  }, [safeApps.connected]);
+
+  const value = useMemo<Wallet>(
     () => ({
       initialized,
       connecting,
@@ -206,7 +217,7 @@ function getLibrary(provider: any) {
   return library;
 }
 
-const Web3WalletProvider: React.FC = props => {
+const Web3WalletProvider: FC = props => {
   return (
     <Web3ReactProvider getLibrary={getLibrary}>
       <WalletProvider>{props.children}</WalletProvider>

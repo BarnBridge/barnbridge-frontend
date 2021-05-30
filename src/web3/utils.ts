@@ -55,10 +55,6 @@ BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | un
   return sum;
 };
 
-export const MAX_UINT_256 = new BigNumber(2).pow(256).minus(1);
-export const ZERO_BIG_NUMBER = new BigNumber(0);
-export const DEFAULT_ADDRESS = '0x0000000000000000000000000000000000000000';
-
 export function getEtherscanTxUrl(txHash?: string, chainId = config.web3.chainId): string | undefined {
   if (txHash) {
     switch (chainId) {
@@ -185,6 +181,7 @@ type FormatTokenOptions = {
   maxDecimals?: number;
   scale?: number;
   compact?: boolean;
+  hasLess?: boolean;
 };
 
 export function formatToken(value: number | BigNumber | undefined, options?: FormatTokenOptions): string | undefined {
@@ -204,7 +201,7 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
     }
   }
 
-  const { tokenName, compact = false, decimals = 4, minDecimals, scale = 0 } = options ?? {};
+  const { tokenName, compact = false, decimals = 4, minDecimals, scale = 0, hasLess = false } = options ?? {};
 
   if (scale > 0) {
     val = val.unscaleBy(scale)!;
@@ -212,16 +209,26 @@ export function formatToken(value: number | BigNumber | undefined, options?: For
 
   let str = '';
 
+  if (hasLess) {
+    if (val.gt(BigNumber.ZERO) && val.lt(1 / 10 ** decimals)) {
+      str += '> ';
+    }
+  }
+
   if (compact) {
-    str = Intl.NumberFormat('en', {
+    str += Intl.NumberFormat('en', {
       notation: 'compact',
       maximumFractionDigits: 2,
     }).format(val.toNumber());
   } else {
-    str = new BigNumber(val.toFixed(decimals)).toFormat(minDecimals);
+    str += new BigNumber(val.toFixed(decimals)).toFormat(minDecimals);
   }
 
-  return tokenName ? `${str} ${tokenName}` : str;
+  if (tokenName) {
+    str += ` ${tokenName}`;
+  }
+
+  return str;
 }
 
 type FormatUSDOptions = {
@@ -283,14 +290,6 @@ export function formatUSDValue(value?: BigNumber | number, decimals = 2, minDeci
   const formattedValue = formatBigValue(val.abs(), decimals, '-', minDecimals);
 
   return val.isPositive() ? `$${formattedValue}` : `-$${formattedValue}`;
-}
-
-export function formatBONDValue(value?: BigNumber): string {
-  return formatBigValue(value, 4);
-}
-
-export function isSmallBONDValue(value?: BigNumber): boolean {
-  return !!value && value.gt(ZERO_BIG_NUMBER) && value.lt(0.0001);
 }
 
 export function shortenAddr(addr: string | undefined, first = 6, last = 4): string | undefined {

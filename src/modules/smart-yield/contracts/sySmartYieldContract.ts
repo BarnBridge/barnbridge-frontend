@@ -265,22 +265,6 @@ class SYSmartYieldContract extends Erc20Contract {
     });
   }
 
-  convertInUnderlying(value: BigNumber | number): BigNumber | undefined {
-    if (!this.price) {
-      return undefined;
-    }
-
-    return new BigNumber(value).multipliedBy(this.price);
-  }
-
-  convertFromUnderlying(value: BigNumber | number): BigNumber | undefined {
-    if (!this.price) {
-      return undefined;
-    }
-
-    return new BigNumber(value).dividedBy(this.price);
-  }
-
   async getPrice(): Promise<BigNumber> {
     return this.call('price').then(value => new BigNumber(value));
   }

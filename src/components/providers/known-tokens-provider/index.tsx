@@ -24,12 +24,14 @@ export enum KnownTokens {
   GUSD = 'GUSD',
   UNIV2 = 'UNI-V2',
   USDT = 'USDT',
+  STK_AAVE = 'stkAAVE',
 }
 
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
   export const bbcUSDC = config.isDev ? 'bbcUSDC' : 'bb_cUSDC';
-  export const bbcDAI = config.isDev ? 'bbcDAI' : 'bb_cDAI';
+  export const bbcDAI = config.isDev ? 'bb_cDAI' : 'bb_cDAI';
+  export const bbaDAI = config.isDev ? 'bb_aDAI' : 'bb_aDAI';
 }
 /* eslint-enable @typescript-eslint/no-redeclare */
 
@@ -37,8 +39,9 @@ export type TokenMeta = {
   address: string;
   symbol: string;
   name: string;
-  icon?: TokenIconNames;
   decimals: number;
+  icon?: TokenIconNames;
+  color?: string;
   priceFeed?: string;
   pricePath?: KnownTokens[];
   price?: BigNumber;
@@ -49,8 +52,8 @@ export const BtcToken: TokenMeta = {
   address: '0x',
   symbol: KnownTokens.BTC,
   name: 'BTC',
-  icon: 'token-wbtc',
   decimals: 0,
+  icon: 'token-wbtc',
   priceFeed: config.feeds.btc, // BTC -> $
 };
 
@@ -58,8 +61,8 @@ export const WBtcToken: TokenMeta = {
   address: config.tokens.wBtc,
   symbol: KnownTokens.WBTC,
   name: 'Wrapped BTC',
-  icon: 'token-wbtc',
   decimals: 8,
+  icon: 'token-wbtc',
   pricePath: [KnownTokens.BTC],
 };
 
@@ -67,8 +70,8 @@ export const RenBtcToken: TokenMeta = {
   address: config.tokens.renBtc,
   symbol: KnownTokens.REN_BTC,
   name: 'renBTC',
-  icon: 'token-renbtc',
   decimals: 8,
+  icon: 'token-renbtc',
   pricePath: [KnownTokens.BTC],
 };
 
@@ -76,8 +79,8 @@ export const EthToken: TokenMeta = {
   address: '0x',
   symbol: KnownTokens.ETH,
   name: 'Ether',
-  icon: 'token-eth',
   decimals: 18,
+  icon: 'token-eth',
   priceFeed: config.feeds.eth, // ETH -> $
 };
 
@@ -85,8 +88,8 @@ export const WEthToken: TokenMeta = {
   address: config.tokens.wEth,
   symbol: KnownTokens.WETH,
   name: 'Wrapped Ether',
-  icon: 'token-weth',
   decimals: 18,
+  icon: 'token-weth',
   pricePath: [KnownTokens.ETH],
 };
 
@@ -94,8 +97,9 @@ export const UsdcToken: TokenMeta = {
   address: config.tokens.usdc,
   symbol: KnownTokens.USDC,
   name: 'USD Coin',
-  icon: 'token-usdc',
   decimals: 6,
+  icon: 'token-usdc',
+  color: '#4f6ae5',
   priceFeed: config.feeds.usdc, // USDC -> $
   contract: new Erc20Contract([], config.tokens.usdc),
 };
@@ -104,8 +108,8 @@ export const BondToken: TokenMeta = {
   address: config.tokens.bond,
   symbol: KnownTokens.BOND,
   name: 'BarnBridge',
-  icon: 'static/token-bond',
   decimals: 18,
+  icon: 'static/token-bond',
   priceFeed: config.feeds.bond, // BOND -> USDC
   pricePath: [KnownTokens.USDC],
   contract: new Erc20Contract([], config.tokens.bond),
@@ -115,8 +119,8 @@ export const UsdtToken: TokenMeta = {
   address: config.tokens.usdt,
   symbol: KnownTokens.USDT,
   name: 'Tether USD',
-  icon: 'token-usdt',
   decimals: 6,
+  icon: 'token-usdt',
   priceFeed: config.feeds.usdt, // USDT -> $
 };
 
@@ -124,8 +128,9 @@ export const DaiToken: TokenMeta = {
   address: config.tokens.dai,
   symbol: KnownTokens.DAI,
   name: 'Dai Stablecoin',
-  icon: 'token-dai',
   decimals: 18,
+  icon: 'token-dai',
+  color: '#ffd160',
   priceFeed: config.feeds.dai, // DAI -> $
   contract: new Erc20Contract([], config.tokens.dai),
 };
@@ -134,8 +139,9 @@ export const SusdToken: TokenMeta = {
   address: config.tokens.susd,
   symbol: KnownTokens.SUSD,
   name: 'Synth sUSD',
-  icon: 'token-susd',
   decimals: 18,
+  icon: 'token-susd',
+  color: '#1e1a31',
   priceFeed: config.feeds.susd, // sUSD -> ETH
   pricePath: [KnownTokens.ETH],
   contract: new Erc20Contract([], config.tokens.susd),
@@ -145,8 +151,8 @@ export const GusdToken: TokenMeta = {
   address: config.tokens.gusd,
   symbol: KnownTokens.GUSD,
   name: 'Gemini dollar',
-  icon: 'token-gusd',
   decimals: 2,
+  icon: 'token-gusd',
   price: new BigNumber(1),
   priceFeed: undefined,
   pricePath: undefined,
@@ -157,19 +163,30 @@ export const UniV2Token: TokenMeta = {
   address: config.tokens.univ2,
   symbol: KnownTokens.UNIV2,
   name: 'Uniswap V2',
-  icon: 'static/token-uniswap',
   decimals: 18,
+  icon: 'static/token-uniswap',
   priceFeed: config.feeds.univ2, // UNIV2 -> USDC
   pricePath: [KnownTokens.USDC],
   contract: new Erc20Contract([], config.tokens.univ2),
+};
+
+export const StkAaveToken: TokenMeta = {
+  address: config.tokens.stkAave,
+  symbol: KnownTokens.STK_AAVE,
+  name: 'Staked AAVE',
+  decimals: 18,
+  icon: 'static/token-staked-aave',
+  priceFeed: config.feeds.stkAave, // stkAAVE -> USDC
+  pricePath: [KnownTokens.USDC],
+  contract: new Erc20Contract([], config.tokens.stkAave),
 };
 
 export const BBcUsdcToken: TokenMeta = {
   address: config.tokens.bbcUsdc,
   symbol: KnownTokens.bbcUSDC,
   name: 'BarnBridge cUSDC',
-  icon: 'token-usdc',
   decimals: 6,
+  icon: 'token-usdc',
   priceFeed: config.feeds.bbcUsdc, // bbcUSDC -> USDC
   pricePath: [KnownTokens.USDC],
 };
@@ -178,11 +195,23 @@ export const BBcDaiToken: TokenMeta = {
   address: config.tokens.bbcDai,
   symbol: KnownTokens.bbcDAI,
   name: 'BarnBridge cDAI',
-  icon: 'token-dai',
   decimals: 18,
+  icon: 'token-dai',
   priceFeed: config.feeds.bbcDai, // bbcDAI -> DAI
   pricePath: [KnownTokens.DAI],
 };
+
+export const BBaDaiToken: TokenMeta = {
+  address: config.tokens.bbaDai,
+  symbol: KnownTokens.bbaDAI,
+  name: 'BarnBridge aDAI',
+  decimals: 18,
+  icon: 'token-dai',
+  priceFeed: config.feeds.bbaDai, // bbaDAI -> DAI
+  pricePath: [KnownTokens.DAI],
+};
+
+export const ProjectToken: TokenMeta = BondToken;
 
 const KNOWN_TOKENS: TokenMeta[] = [
   BtcToken,
@@ -197,8 +226,10 @@ const KNOWN_TOKENS: TokenMeta[] = [
   SusdToken,
   GusdToken,
   UniV2Token,
+  StkAaveToken,
   BBcUsdcToken,
   BBcDaiToken,
+  BBaDaiToken,
 ];
 
 (window as any).KNOWN_TOKENS = KNOWN_TOKENS;
@@ -327,7 +358,7 @@ async function getJTokenPrice(symbol: string): Promise<BigNumber> {
   }
 
   const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
-  priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+  // priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
 
   const price = await priceFeedContract.call('price');
 
@@ -406,6 +437,7 @@ const KnownTokensProvider: FC = props => {
               break;
             case KnownTokens.bbcUSDC:
             case KnownTokens.bbcDAI:
+            case KnownTokens.bbaDAI:
               token.price = await getJTokenPrice(token.symbol);
               break;
             default:

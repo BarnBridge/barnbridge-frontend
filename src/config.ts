@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 function toLowerCase(value: any): string {
   return String(value ?? '').toLowerCase();
 }
@@ -21,8 +23,17 @@ const config = {
     gusd: toLowerCase(process.env.REACT_APP_TOKEN_GUSD_ADDR),
     usdt: toLowerCase(process.env.REACT_APP_TOKEN_USDT_ADDR),
     univ2: toLowerCase(process.env.REACT_APP_TOKEN_UNIV2_ADDR),
+    stkAave: toLowerCase(process.env.REACT_APP_TOKEN_STKAAVE_ADDR),
     bbcUsdc: toLowerCase(process.env.REACT_APP_TOKEN_BBC_USDC_ADDR),
     bbcDai: toLowerCase(process.env.REACT_APP_TOKEN_BBC_DAI_ADDR),
+    bbaDai: toLowerCase(process.env.REACT_APP_TOKEN_BBA_DAI_ADDR),
+    bbaGusd: toLowerCase(process.env.REACT_APP_TOKEN_BBA_GUSD_ADDR),
+    bbaUsdc: toLowerCase(process.env.REACT_APP_TOKEN_BBA_USDC_ADDR),
+    bbaUsdt: toLowerCase(process.env.REACT_APP_TOKEN_BBA_USDT_ADDR),
+    aDai: toLowerCase(process.env.REACT_APP_TOKEN_ADAI_ADDR),
+    aGusd: toLowerCase(process.env.REACT_APP_TOKEN_AGUSD_ADDR),
+    aUsdc: toLowerCase(process.env.REACT_APP_TOKEN_AUSDC_ADDR),
+    aUsdt: toLowerCase(process.env.REACT_APP_TOKEN_AUSDT_ADDR),
   },
   feeds: {
     btc: toLowerCase(process.env.REACT_APP_FEED_BTC_ADDR),
@@ -33,8 +44,10 @@ const config = {
     susd: toLowerCase(process.env.REACT_APP_FEED_SUSD_ADDR),
     usdt: toLowerCase(process.env.REACT_APP_FEED_USDT_ADDR),
     univ2: toLowerCase(process.env.REACT_APP_FEED_UNIV2_ADDR),
+    stkAave: toLowerCase(process.env.REACT_APP_FEED_STKAAVE_ADDR),
     bbcUsdc: toLowerCase(process.env.REACT_APP_FEED_BBC_USDC_ADDR),
     bbcDai: toLowerCase(process.env.REACT_APP_FEED_BBC_DAI_ADDR),
+    bbaDai: toLowerCase(process.env.REACT_APP_FEED_BBA_DAI_ADDR),
   },
   contracts: {
     yf: {
@@ -87,6 +100,9 @@ const config = {
         appUrl: String(process.env.REACT_APP_WEB3_TREZOR_APP_URL),
       },
     },
+  },
+  dao: {
+    activationThreshold: new BigNumber(String(process.env.REACT_APP_DAO_ACTIVATION_THRESHOLD)),
   },
 };
 

@@ -46,7 +46,7 @@ const StatsView: React.FC = () => {
     <Spin spinning={syPool.loading}>
       <div className="container-limit">
         <div className="mb-16">
-          <Link to={{ pathname: `/smart-yield/markets`, search: `m=${syPool.marketId}` }} className="button-text">
+          <Link to="smart-yield/markets" className="button-text">
             <Icon name="arrow-back" className="mr-8" color="inherit" />
             Markets
           </Link>

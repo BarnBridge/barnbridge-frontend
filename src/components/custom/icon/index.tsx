@@ -15,15 +15,17 @@ export type TokenIconNames =
   | 'token-weth'
   | 'token-wbtc'
   | 'token-renbtc'
-  | 'static/token-bond'
   | 'token-usdc'
   | 'token-usdt'
   | 'token-dai'
   | 'token-susd'
   | 'token-gusd'
+  | 'static/token-bond'
   | 'static/token-uniswap'
+  | 'static/token-staked-aave'
   | 'compound'
   | 'static/aave'
+  | 'static/staked_aave'
   | 'cream_finance'
   | 'aave_polygon'
   | 'token-all';
@@ -123,7 +125,9 @@ export type IconNames =
   | 'arrow-forward'
   | 'science'
   | 'building'
-  | 'internet';
+  | 'internet'
+  | 'checkbox-checked'
+  | 'checkbox';
 
 export type IconProps = {
   name: IconNames;

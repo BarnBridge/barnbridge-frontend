@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { ZERO_BIG_NUMBER } from 'web3/utils';
+import BigNumber from 'bignumber.js';
 
 import Progress from 'components/antd/progress';
 import Table from 'components/antd/table';
@@ -44,10 +44,10 @@ const Columns: ColumnsType<LiteProposalEntity> = [
     render: (_, data: LiteProposalEntity) => {
       const total = data.forVotes.plus(data.againstVotes);
 
-      let forRate = ZERO_BIG_NUMBER;
-      let againstRate = ZERO_BIG_NUMBER;
+      let forRate = BigNumber.ZERO;
+      let againstRate = BigNumber.ZERO;
 
-      if (total.gt(ZERO_BIG_NUMBER)) {
+      if (total.gt(BigNumber.ZERO)) {
         forRate = data.forVotes.multipliedBy(100).div(total);
         againstRate = data.againstVotes.multipliedBy(100).div(total);
       }
