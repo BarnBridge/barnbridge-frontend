@@ -113,10 +113,10 @@ export const PoolCard: FC<PoolCardProps> = props => {
         </div>
         {activeTab === 'pool' && (
           <dl>
-            <div className={s.defRow}>
+            {/* <div className={s.defRow}>
               <dt>APR</dt>
               <dd>{formatPercent(apr)}</dd>
-            </div>
+            </div> */}
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.symbol}>
                 {rewardToken.symbol === KnownTokens.BOND ? (
@@ -174,10 +174,10 @@ export const PoolCard: FC<PoolCardProps> = props => {
         )}
         {activeTab === 'my' && walletCtx.isActive && (
           <dl>
-            <div className={s.defRow}>
+            {/* <div className={s.defRow}>
               <dt>APR</dt>
               <dd>{formatPercent(apr)}</dd>
-            </div>
+            </div> */}
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.address}>
                 {rewardToken.symbol === KnownTokens.BOND ? (

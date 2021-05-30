@@ -146,11 +146,11 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
             {entity.rewardAPR && `+${formatPercent(entity.rewardAPR)}`}
             {entity.apy && formatPercent(entity.apy.toNumber())}
           </Text>
-          <div className="apr">
+          {/* <div className="apr-label">
             <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
-            <div className="apr-text"> +14.32% APR</div>
+            <div className="apr-label__text"> +14.32% APR</div>
           </div>
-          <div className="apr">
+          <div className="apr-label">
             <IconsSet
               className="mr-4"
               icons={[
@@ -158,8 +158,8 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
                 <Icon width={12} height={12} name="static/staked_aave" />,
               ]}
             />
-            <div className="apr-text gradient"> +14.32% APR</div>
-          </div>
+            <div className="apr-label__text apr-label__text--gradient"> +14.32% APR</div>
+          </div> */}
         </div>
       ),
     },
