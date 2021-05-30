@@ -142,7 +142,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       </Hint>
                     ) : (
                       <Hint
-                        text={`stkAAVE reward balance: This number shows the stkAAVE amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>
+                        text={`This number shows the stkAAVE amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>
                         {rewardToken.symbol} reward balance
                       </Hint>
                     )}
