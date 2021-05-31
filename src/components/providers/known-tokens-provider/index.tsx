@@ -29,9 +29,18 @@ export enum KnownTokens {
 
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
+  // compound
   export const bbcUSDC = config.isDev ? 'bbcUSDC' : 'bb_cUSDC';
-  export const bbcDAI = config.isDev ? 'bb_cDAI' : 'bb_cDAI';
-  export const bbaDAI = config.isDev ? 'bb_aDAI' : 'bb_aDAI';
+  export const bbcDAI = 'bb_cDAI';
+  // aave
+  export const bbaUSDC = 'bb_aUSDC';
+  export const bbaDAI = 'bb_aDAI';
+  export const bbaUSDT = 'bb_aUSDT';
+  export const bbaGUSD = 'bb_aGUSD';
+  // cream
+  export const bbcrUSDC = 'bb_crUSDC';
+  export const bbcrDAI = 'bb_crDAI';
+  export const bbcrUSDT = 'bb_crUSDT';
 }
 /* eslint-enable @typescript-eslint/no-redeclare */
 
@@ -201,14 +210,74 @@ export const BBcDaiToken: TokenMeta = {
   pricePath: [KnownTokens.DAI],
 };
 
+export const BBaUsdcToken: TokenMeta = {
+  address: config.tokens.bbaUsdc,
+  symbol: KnownTokens.bbaUSDC,
+  name: 'BarnBridge aUSDC',
+  decimals: 6,
+  icon: 'token-usdc',
+  priceFeed: config.tokens.bbaUsdc, // bbaUSDC -> USDC
+  pricePath: [KnownTokens.USDC],
+};
+
 export const BBaDaiToken: TokenMeta = {
   address: config.tokens.bbaDai,
   symbol: KnownTokens.bbaDAI,
   name: 'BarnBridge aDAI',
   decimals: 18,
   icon: 'token-dai',
-  priceFeed: config.feeds.bbaDai, // bbaDAI -> DAI
+  priceFeed: config.tokens.bbaDai, // bbaDAI -> DAI
   pricePath: [KnownTokens.DAI],
+};
+
+export const BBaUsdtToken: TokenMeta = {
+  address: config.tokens.bbaUsdt,
+  symbol: KnownTokens.bbaUSDT,
+  name: 'BarnBridge aUSDT',
+  decimals: 6,
+  icon: 'token-usdt',
+  priceFeed: config.tokens.bbaUsdt, // bbaUSDT -> USDT
+  pricePath: [KnownTokens.USDT],
+};
+
+export const BBaGusdToken: TokenMeta = {
+  address: config.tokens.bbaGusd,
+  symbol: KnownTokens.bbaGUSD,
+  name: 'BarnBridge aGUSD',
+  decimals: 2,
+  icon: 'token-gusd',
+  priceFeed: config.tokens.bbaGusd, // bbaGUSD -> GUSD
+  pricePath: [KnownTokens.GUSD],
+};
+
+export const BBcrUsdcToken: TokenMeta = {
+  address: config.tokens.bbcrUsdc,
+  symbol: KnownTokens.bbcrUSDC,
+  name: 'BarnBridge crUSDC',
+  decimals: 6,
+  icon: 'token-usdc',
+  priceFeed: config.tokens.bbcrUsdc, // bbcrUSDC -> USDC
+  pricePath: [KnownTokens.USDC],
+};
+
+export const BBcrDaiToken: TokenMeta = {
+  address: config.tokens.bbcrDai,
+  symbol: KnownTokens.bbcrDAI,
+  name: 'BarnBridge crDAI',
+  decimals: 18,
+  icon: 'token-dai',
+  priceFeed: config.tokens.bbcrDai, // bbcrDAI -> DAI
+  pricePath: [KnownTokens.DAI],
+};
+
+export const BBcrUsdtToken: TokenMeta = {
+  address: config.tokens.bbcrUsdt,
+  symbol: KnownTokens.bbcrUSDT,
+  name: 'BarnBridge crUSDT',
+  decimals: 6,
+  icon: 'token-usdt',
+  priceFeed: config.tokens.bbcrUsdt, // bbcrUSDT -> USDT
+  pricePath: [KnownTokens.USDT],
 };
 
 export const ProjectToken: TokenMeta = BondToken;
@@ -229,7 +298,13 @@ const KNOWN_TOKENS: TokenMeta[] = [
   StkAaveToken,
   BBcUsdcToken,
   BBcDaiToken,
+  BBaUsdcToken,
   BBaDaiToken,
+  BBaUsdtToken,
+  BBaGusdToken,
+  BBcrUsdcToken,
+  BBcrDaiToken,
+  BBcrUsdtToken,
 ];
 
 (window as any).KNOWN_TOKENS = KNOWN_TOKENS;
@@ -437,7 +512,13 @@ const KnownTokensProvider: FC = props => {
               break;
             case KnownTokens.bbcUSDC:
             case KnownTokens.bbcDAI:
+            case KnownTokens.bbcrDAI:
+            case KnownTokens.bbcrUSDC:
+            case KnownTokens.bbcrUSDT:
             case KnownTokens.bbaDAI:
+            case KnownTokens.bbaUSDC:
+            case KnownTokens.bbaUSDT:
+            case KnownTokens.bbaGUSD:
               token.price = await getJTokenPrice(token.symbol);
               break;
             default:

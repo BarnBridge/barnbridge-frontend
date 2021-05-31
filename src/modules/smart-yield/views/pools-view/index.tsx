@@ -92,7 +92,7 @@ const PoolsView: FC = () => {
             }
 
             return (
-              <div className="flex flow-row mb-40">
+              <div key={selectedMarket.id} className="flex flow-row mb-40">
                 <div className="flex wrap align-center col-gap-64 row-gap-16 mb-32">
                   <div className="flex">
                     <Icon
