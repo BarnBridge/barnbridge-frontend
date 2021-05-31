@@ -98,10 +98,10 @@ const PoolView: FC = () => {
               }) ?? '-'}
             </dd>
           </div>
-          <div className={s.headerTermRow}>
+          {/* <div className={s.headerTermRow}>
             <dt>APR</dt>
             <dd>{formatPercent(apr) ?? '-'}</dd>
-          </div>
+          </div> */}
           {rewardTokens.map(rewardToken => (
             <React.Fragment key={rewardToken.address}>
               {rewardToken.symbol === KnownTokens.BOND ? (
