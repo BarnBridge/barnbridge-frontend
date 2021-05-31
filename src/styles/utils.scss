@@ -225,6 +225,26 @@
   }
 }
 
+.apr-label-r {
+  @include font-sm-semi-bold;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border: 1px solid var(--theme-border-color);
+  border-radius: 38px;
+  padding: 0 2px;
+  background-color: var(--theme-body-color);
+
+  svg {
+    width: 16px !important;
+    height: 16px !important;
+
+    &:not(:first-child) {
+      margin-left: -6px !important;
+    }
+  }
+}
+
 .apr-label__text {
   color: var(--theme-red-color);
 

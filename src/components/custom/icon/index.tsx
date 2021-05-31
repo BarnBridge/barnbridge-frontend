@@ -25,7 +25,6 @@ export type TokenIconNames =
   | 'static/token-staked-aave'
   | 'compound'
   | 'static/aave'
-  | 'static/staked_aave'
   | 'cream_finance'
   | 'aave_polygon'
   | 'token-all';

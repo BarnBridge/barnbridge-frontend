@@ -1,6 +1,5 @@
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
 import { formatPercent, formatToken } from 'web3/utils';
@@ -9,8 +8,15 @@ import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
+import IconsSet from 'components/custom/icons-set';
 import { Hint, Text } from 'components/custom/typography';
-import { KnownTokens, ProjectToken, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import {
+  BondToken,
+  KnownTokens,
+  ProjectToken,
+  StkAaveToken,
+  getTokenBySymbol,
+} from 'components/providers/known-tokens-provider';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
@@ -25,7 +31,7 @@ export type PoolCardProps = {
 export const PoolCard: FC<PoolCardProps> = props => {
   const { className, pool } = props;
 
-  const { smartYield, rewardPool } = pool;
+  const { smartYield, rewardPool, apr } = pool;
   const rewardTokens = Array.from(pool.rewardTokens.values());
 
   const poolMarket = getKnownMarketById(pool.meta.protocolId);
@@ -52,32 +58,6 @@ export const PoolCard: FC<PoolCardProps> = props => {
 
     setClaiming(false);
   };
-
-  const apr = BigNumber.ZERO;
-  // const apr = React.useMemo(() => { /// ???
-  //   const { poolSize, dailyReward } = rewardPool.pool;
-  //
-  //   if (!poolSize || !dailyReward) {
-  //     return undefined;
-  //   }
-  //
-  //   const jTokenPrice = rewardPool.poolToken.price ?? 1;
-  //
-  //   const yearlyReward = dailyReward
-  //     .dividedBy(10 ** BondToken.decimals)
-  //     .multipliedBy(BondToken.price ?? 1)
-  //     .multipliedBy(365);
-  //   const poolBalance = poolSize
-  //     .dividedBy(10 ** (rewardPool.poolToken.decimals ?? 0))
-  //     .multipliedBy(jTokenPrice)
-  //     .multipliedBy(1);
-  //
-  //   if (poolBalance.isEqualTo(BigNumber.ZERO)) {
-  //     return BigNumber.ZERO;
-  //   }
-  //
-  //   return yearlyReward.dividedBy(poolBalance);
-  // }, [rewardPool.pool.poolSize, rewardPool.pool.dailyReward, BondToken.price]);
 
   return (
     <>
@@ -113,10 +93,23 @@ export const PoolCard: FC<PoolCardProps> = props => {
         </div>
         {activeTab === 'pool' && (
           <dl>
-            {/* <div className={s.defRow}>
+            <div className={s.defRow}>
               <dt>APR</dt>
-              <dd>{formatPercent(apr)}</dd>
-            </div> */}
+              <dd className="apr-label-r">
+                {pool.meta.poolType === 'MULTI' ? (
+                  <IconsSet
+                    className="mr-4"
+                    icons={[
+                      <Icon key={BondToken.symbol} width={16} height={16} name={BondToken.icon!} />,
+                      <Icon key={StkAaveToken.symbol} width={16} height={16} name={StkAaveToken.icon!} />,
+                    ]}
+                  />
+                ) : (
+                  <Icon width={16} height={16} name="static/token-bond" className="mr-4" />
+                )}
+                {formatPercent(apr)}
+              </dd>
+            </div>
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.symbol}>
                 {rewardToken.symbol === KnownTokens.BOND ? (
@@ -174,10 +167,23 @@ export const PoolCard: FC<PoolCardProps> = props => {
         )}
         {activeTab === 'my' && walletCtx.isActive && (
           <dl>
-            {/* <div className={s.defRow}>
+            <div className={s.defRow}>
               <dt>APR</dt>
-              <dd>{formatPercent(apr)}</dd>
-            </div> */}
+              <dd className="apr-label-r">
+                {pool.meta.poolType === 'MULTI' ? (
+                  <IconsSet
+                    className="mr-4"
+                    icons={[
+                      <Icon key={BondToken.symbol} width={16} height={16} name={BondToken.icon!} />,
+                      <Icon key={StkAaveToken.symbol} width={16} height={16} name={StkAaveToken.icon!} />,
+                    ]}
+                  />
+                ) : (
+                  <Icon width={16} height={16} name="static/token-bond" className="mr-4" />
+                )}
+                {formatPercent(apr)}
+              </dd>
+            </div>
             {rewardTokens.map(rewardToken => (
               <React.Fragment key={rewardToken.address}>
                 {rewardToken.symbol === KnownTokens.BOND ? (
@@ -197,7 +203,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                   </div>
                 ) : null}
                 <div className={s.defRow}>
-                  <dt>My current reward</dt>
+                  <dt>My current {rewardToken.symbol} reward</dt>
                   <dd>
                     <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
                     {formatToken(rewardPool.getClaimFor(rewardToken.address), {
