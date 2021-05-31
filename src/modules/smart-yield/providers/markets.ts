@@ -7,7 +7,7 @@ export type MarketMeta = {
   };
 };
 
-const CompoundMarket: MarketMeta = {
+export const CompoundMarket: MarketMeta = {
   id: 'compound/v2',
   name: 'Compound',
   icon: {
