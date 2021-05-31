@@ -33,7 +33,11 @@ class SYAaveTokenContract extends Web3Contract {
   totalSupply?: BigNumber;
   incentivesController?: SYAaveIncentivesContract;
 
-  calculateIncentivesAPY(aTokenPriceInEth: BigNumber, uTokenPriceInEth: BigNumber, uTokenDecimals: number): BigNumber | undefined {
+  calculateIncentivesAPY(
+    aTokenPriceInEth: BigNumber,
+    uTokenPriceInEth: BigNumber,
+    uTokenDecimals: number,
+  ): BigNumber | undefined {
     if (!this.incentivesController) {
       return undefined;
     }
