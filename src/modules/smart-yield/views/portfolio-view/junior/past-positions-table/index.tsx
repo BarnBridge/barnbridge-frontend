@@ -2,14 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import {
-  ZERO_BIG_NUMBER,
-  formatBigValue,
-  formatUSDValue,
-  getEtherscanAddressUrl,
-  getEtherscanTxUrl,
-  shortenAddr,
-} from 'web3/utils';
+import { formatBigValue, formatUSDValue, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -17,6 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -34,7 +28,7 @@ const Columns: ColumnsType<TableEntity> = [
       <div className="flex flow-col align-center">
         <IconBubble
           name={entity.pool?.meta?.icon}
-          bubbleName="static/token-bond"
+          bubbleName={ProjectToken.icon!}
           secondBubbleName={entity.pool?.market?.icon}
           className="mr-16"
         />
@@ -78,7 +72,7 @@ const Columns: ColumnsType<TableEntity> = [
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.tokensIn.multipliedBy(entity.pool?.state.jTokenPrice ?? ZERO_BIG_NUMBER))}
+          {formatUSDValue(entity.tokensIn.multipliedBy(entity.pool?.state.jTokenPrice ?? BigNumber.ZERO))}
         </Text>
       </>
     ),
@@ -107,14 +101,14 @@ const Columns: ColumnsType<TableEntity> = [
     sorter: (a, b) => a.forfeits?.toNumber() ?? 0 - b.underlyingOut?.toNumber() ?? 0,
     render: (_, entity) => (
       <>
-        <Tooltip title={formatBigValue(entity.forfeits ?? ZERO_BIG_NUMBER, entity.pool?.underlyingDecimals)}>
+        <Tooltip title={formatBigValue(entity.forfeits ?? BigNumber.ZERO, entity.pool?.underlyingDecimals)}>
           <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.forfeits ?? ZERO_BIG_NUMBER)}
+            {formatBigValue(entity.forfeits ?? BigNumber.ZERO)}
             {` ${entity.pool?.underlyingSymbol}`}
           </Text>
         </Tooltip>
         <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.forfeits ?? ZERO_BIG_NUMBER)}
+          {formatUSDValue(entity.forfeits ?? BigNumber.ZERO)}
         </Text>
       </>
     ),

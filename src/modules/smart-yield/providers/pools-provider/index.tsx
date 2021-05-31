@@ -1,17 +1,29 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getEtherscanTxUrl } from 'web3/utils';
+import Erc20Contract from 'web3/erc20Contract';
+import { getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
+import {
+  DaiToken,
+  EthToken,
+  GusdToken,
+  StkAaveToken,
+  UsdcToken,
+  UsdtToken,
+  convertTokenIn,
+} from 'components/providers/known-tokens-provider';
+import config from 'config';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
+import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import SYUnderlyingContract from 'modules/smart-yield/contracts/syUnderlyingContract';
+import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
 
 export type PoolsSYPool = APISYPool & {
@@ -19,9 +31,10 @@ export type PoolsSYPool = APISYPool & {
   market?: SYMarketMeta;
   contracts: {
     smartYield?: SYSmartYieldContract;
-    underlying?: SYUnderlyingContract;
+    underlying?: Erc20Contract;
     rewardPool?: SYRewardPoolContract;
   };
+  apy?: BigNumber;
   rewardAPR?: BigNumber;
 };
 
@@ -36,6 +49,7 @@ const InitialState: State = {
 };
 
 type ContextType = State & {
+  getMarketTVL: (marketId?: string) => BigNumber;
   redeemBond: (smartYieldAddress: string, sBondId: number, gasPrice: number) => Promise<void>;
   redeemJuniorBond: (smartYieldAddress: string, jBondId: number, gasPrice: number) => Promise<void>;
   transferFrom: (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => Promise<void>;
@@ -43,6 +57,7 @@ type ContextType = State & {
 
 const Context = React.createContext<ContextType>({
   ...InitialState,
+  getMarketTVL: () => BigNumber.ZERO,
   redeemBond: () => Promise.reject(),
   redeemJuniorBond: () => Promise.reject(),
   transferFrom: () => Promise.reject(),
@@ -57,6 +72,48 @@ type StatusModal = {
 
 export function usePools(): ContextType {
   return React.useContext(Context);
+}
+
+async function getAaveIncentivesAPY(
+  cTokenAddress: string,
+  uDecimals: number,
+  uSymbol: string,
+): Promise<BigNumber | undefined> {
+  let aTokenAddress = '';
+  let aTokenDecimals = 0;
+
+  if (config.isProd) {
+    aTokenAddress = cTokenAddress;
+    aTokenDecimals = uDecimals;
+  } else {
+    switch (uSymbol) {
+      case UsdcToken.symbol:
+        aTokenAddress = config.tokens.aUsdc;
+        aTokenDecimals = UsdcToken.decimals;
+        break;
+      case DaiToken.symbol:
+        aTokenAddress = config.tokens.aDai;
+        aTokenDecimals = DaiToken.decimals;
+        break;
+      case UsdtToken.symbol:
+        aTokenAddress = config.tokens.aUsdt;
+        aTokenDecimals = UsdtToken.decimals;
+        break;
+      case GusdToken.symbol:
+        aTokenAddress = config.tokens.aGusd;
+        aTokenDecimals = GusdToken.decimals;
+        break;
+    }
+  }
+
+  const aToken = new SYAaveTokenContract(aTokenAddress);
+  aToken.setCallProvider(MainnetHttpsWeb3Provider);
+  await aToken.loadCommon();
+
+  const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), StkAaveToken.symbol, EthToken.symbol);
+  const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, EthToken.symbol);
+
+  return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
 }
 
 const PoolsProvider: React.FC = props => {
@@ -91,7 +148,7 @@ const PoolsProvider: React.FC = props => {
           pools: pools.map(pool => {
             const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
             smartYield.on(Web3Contract.UPDATE_DATA, reload);
-            const underlying = new SYUnderlyingContract(pool.underlyingAddress);
+            const underlying = new Erc20Contract([], pool.underlyingAddress);
             underlying.on(Web3Contract.UPDATE_DATA, reload);
 
             smartYield.loadCommon();
@@ -104,7 +161,7 @@ const PoolsProvider: React.FC = props => {
               rewardPool.loadCommon();
             }
 
-            return {
+            const result: PoolsSYPool = {
               ...pool,
               meta: Pools.get(pool.underlyingSymbol),
               market: Markets.get(pool.protocolId),
@@ -113,7 +170,18 @@ const PoolsProvider: React.FC = props => {
                 underlying,
                 rewardPool,
               },
+              apy: undefined,
             };
+
+            if (pool.protocolId === AaveMarket.id) {
+              getAaveIncentivesAPY(pool.cTokenAddress, pool.underlyingDecimals, pool.underlyingSymbol).then(apy => {
+                result.apy = apy;
+
+                reload();
+              });
+            }
+
+            return result;
           }),
         }));
       } catch {
@@ -139,38 +207,49 @@ const PoolsProvider: React.FC = props => {
     });
   }, [state.pools, wallet.account]);
 
-  React.useEffect(() => {
-    state.pools.forEach(pool => {
-      const { smartYield, rewardPool } = pool.contracts;
+  // React.useEffect(() => { /// ???
+  //   state.pools.forEach(pool => {
+  //     const { smartYield, rewardPool } = pool.contracts;
+  //
+  //     if (!smartYield || !rewardPool) {
+  //       return;
+  //     }
+  //
+  //     const { poolSize, dailyReward } = rewardPool;
+  //
+  //     if (poolSize && dailyReward) {
+  //       const bondPrice = BondToken.price ?? 1;
+  //       const jTokenPrice = smartYield.price ?? 1;
+  //
+  //       const yearlyReward = dailyReward
+  //         .dividedBy(10 ** BondToken.decimals)
+  //         .multipliedBy(bondPrice)
+  //         .multipliedBy(365);
+  //       const poolBalance = poolSize
+  //         .dividedBy(10 ** (smartYield.decimals ?? 0))
+  //         .multipliedBy(jTokenPrice)
+  //         .multipliedBy(1);
+  //
+  //       if (poolBalance.isEqualTo(BigNumber.ZERO)) {
+  //         return BigNumber.ZERO;
+  //       }
+  //
+  //       pool.rewardAPR = yearlyReward.dividedBy(poolBalance);
+  //       reload();
+  //     }
+  //   });
+  // }, [state.pools, BondToken.price, version]);
 
-      if (!smartYield || !rewardPool) {
-        return;
-      }
-
-      const { poolSize, dailyReward } = rewardPool;
-
-      if (poolSize && dailyReward) {
-        const bondPrice = BondToken.price ?? 1;
-        const jTokenPrice = smartYield.price ?? 1;
-
-        const yearlyReward = dailyReward
-          .dividedBy(10 ** BondToken.decimals)
-          .multipliedBy(bondPrice)
-          .multipliedBy(365);
-        const poolBalance = poolSize
-          .dividedBy(10 ** (smartYield.decimals ?? 0))
-          .multipliedBy(jTokenPrice)
-          .multipliedBy(1);
-
-        if (poolBalance.isEqualTo(ZERO_BIG_NUMBER)) {
-          return ZERO_BIG_NUMBER;
-        }
-
-        pool.rewardAPR = yearlyReward.dividedBy(poolBalance);
-        reload();
-      }
-    });
-  }, [state.pools, BondToken.price, version]);
+  const getMarketTVL = React.useCallback(
+    (marketId?: string) => {
+      return state.pools
+        .filter(pool => pool.protocolId === (marketId ?? pool.protocolId))
+        .reduce((sum, entity) => {
+          return sum.plus(entity.state.seniorLiquidity).plus(entity.state.juniorLiquidity);
+        }, BigNumber.ZERO);
+    },
+    [state.pools],
+  );
 
   const redeemBond = React.useCallback(
     (smartYieldAddress: string, sBondId: number, gasPrice: number) => {
@@ -301,6 +380,7 @@ const PoolsProvider: React.FC = props => {
   const value = React.useMemo<ContextType>(() => {
     return {
       ...state,
+      getMarketTVL,
       redeemBond,
       transferFrom,
       redeemJuniorBond,

@@ -1,92 +1,133 @@
-import React from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
+import { useSessionStorage } from 'react-use-storage';
 import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
-import { ZERO_BIG_NUMBER, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
-import { PoolsCard } from 'modules/smart-yield/views/pools-view/pool-card';
+import { PoolCard } from 'modules/smart-yield/views/pools-view/pool-card';
 
-const PoolsView: React.FC = () => {
-  const knownTokensCtx = useKnownTokens();
+const PoolsView: FC = () => {
   const rewardPoolsCtx = useRewardPools();
-  const { loading, rewardPools } = rewardPoolsCtx;
+  const { loading, pools } = rewardPoolsCtx;
 
-  const [activeMarket, setActiveMarket] = React.useState<SYMarketMeta | undefined>();
+  const [marketsSelection, setMarketsSelection] = useSessionStorage<string | undefined>('sy-markets-selection');
 
-  React.useEffect(() => {
-    const market = Array.from(Markets.values()).find(market => market.id === rewardPoolsCtx.rewardPools[0]?.protocolId);
-    setActiveMarket(market);
-  }, [rewardPoolsCtx.rewardPools]);
+  const [selectedMarkets, setSelectedMarkets] = useState<SYMarketMeta[]>([]);
 
-  const activeMarketTotalValueLocked = React.useMemo(() => {
-    return rewardPools
-      .filter(pool => pool.protocolId === activeMarket?.id)
-      .reduce((sum, c) => {
-        if (!c.pool.poolSize) {
-          return sum;
-        }
+  const marketsToDisplay = useMemo(() => {
+    if (!selectedMarkets.length) {
+      return Array.from(Markets.values()).filter(market => {
+        return pools.some(pool => pool.meta.protocolId === market.id);
+      });
+    }
 
-        const usdValue = knownTokensCtx.convertTokenInUSD(
-          c.pool.poolSize.unscaleBy(c.poolToken.decimals),
-          c.poolToken.symbol!,
-        );
+    return selectedMarkets;
+  }, [selectedMarkets, pools]);
 
-        if (!usdValue) {
-          return sum;
-        }
+  useEffect(() => {
+    const markets = Array.from(Markets.values());
+    const activeMarkets = marketsSelection
+      ?.split('<#>')
+      .map(marketId => {
+        return markets.find(mk => mk.id === marketId)!;
+      })
+      .filter(Boolean);
 
-        return sum.plus(usdValue);
-      }, ZERO_BIG_NUMBER);
-  }, [rewardPoolsCtx, activeMarket]);
+    setSelectedMarkets(activeMarkets ?? []);
+  }, [marketsSelection]);
 
   return (
     <>
       <div className="tab-cards mb-64">
         {Array.from(Markets.values()).map(market => {
-          const isActive = rewardPoolsCtx.rewardPools.some(pool => pool.protocolId === market.id);
+          const isActive = pools.some(pool => pool.meta.protocolId === market.id);
+          const isSelected = selectedMarkets.includes(market);
 
           return (
             <button
               key={market.name}
               type="button"
-              className={cn('tab-card', activeMarket === market && 'active')}
+              className={cn('tab-card', isActive && isSelected && 'active')}
               disabled={!isActive}
               style={{ color: !isActive ? 'red' : '' }}
-              onClick={() => setActiveMarket(market)}>
-              <Icon name={market.icon as IconNames} width={40} height={40} className="mr-16" color="inherit" />
-              <div>
-                <Text type="p1" weight="semibold" color="primary">
-                  {market.name}
-                </Text>
-                <Text type="small" weight="semibold" color="secondary">
-                  {isActive ? 'Markets' : 'Coming soon'}
-                </Text>
-              </div>
+              onClick={() => {
+                const newSelection = selectedMarkets.includes(market)
+                  ? selectedMarkets.filter(ps => ps !== market)
+                  : [...selectedMarkets, market];
+                setSelectedMarkets(newSelection);
+                setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
+              }}>
+              <Icon name={market.icon as IconNames} width={24} height={24} className="mr-16" color="inherit" />
+              <Text type="p1" weight="semibold" color="primary">
+                {market.name}
+              </Text>
+              <Icon
+                name={isActive && isSelected ? 'checkbox-checked' : 'checkbox'}
+                style={{
+                  marginLeft: 24,
+                  flexShrink: 0,
+                }}
+              />
             </button>
           );
         })}
       </div>
-      <div className="flex mb-32">
-        <div>
-          <Text type="p1" weight="semibold" color="secondary">
-            Total value locked
-          </Text>
-          <Text type="h2" weight="bold" color="primary">
-            {formatUSD(activeMarketTotalValueLocked)}
-          </Text>
-        </div>
-      </div>
+      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
+        Total value locked
+      </Text>
+      <Text type="h2" weight="bold" color="primary" className="mb-40">
+        {formatUSD(rewardPoolsCtx.getMarketTVL())}
+      </Text>
       <AntdSpin spinning={loading}>
-        <div className="flex row-gap-32 col-gap-32">
-          {rewardPools
-            .filter(pool => pool.protocolId === activeMarket?.id)
-            .map(rewardPool => (
-              <PoolsCard key={rewardPool.poolAddress} rewardPool={rewardPool} />
-            ))}
+        <div className="flex flow-row row-gap-32">
+          {marketsToDisplay.map(selectedMarket => {
+            const marketPools = pools.filter(pool => pool.meta.protocolId === selectedMarket.id);
+
+            if (marketPools.length === 0) {
+              return null;
+            }
+
+            return (
+              <div className="flex flow-row mb-40">
+                <div className="flex wrap align-center col-gap-64 row-gap-16 mb-32">
+                  <div className="flex">
+                    <Icon
+                      name={selectedMarket.icon as IconNames}
+                      width={40}
+                      height={40}
+                      className="mr-16"
+                      color="inherit"
+                    />
+                    <div>
+                      <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                        {selectedMarket.name}
+                      </Text>
+                      <Text type="small" weight="semibold" color="secondary">
+                        Markets
+                      </Text>
+                    </div>
+                  </div>
+                  <div>
+                    <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                      Total value locked
+                    </Text>
+                    <Text type="p1" weight="semibold" color="primary">
+                      {formatUSD(rewardPoolsCtx.getMarketTVL(selectedMarket.id))}
+                    </Text>
+                  </div>
+                </div>
+                <div className="flex row-gap-32 col-gap-32">
+                  {marketPools.map(marketPool => (
+                    <PoolCard key={marketPool.smartYield.address} pool={marketPool} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </AntdSpin>
     </>

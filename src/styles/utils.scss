@@ -1,3 +1,5 @@
+@import 'src/styles/text';
+
 .content-container {
   --content-container-v-padding: 40px;
 
@@ -200,5 +202,39 @@
     background-color: var(--progress-color, var(--theme-blue-color));
     border-radius: 10px 0 0 10px;
     border-right: 2px solid var(--theme-card-color);
+  }
+}
+
+.apr-label {
+  @include font-sm-semi-bold;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border: 1px solid var(--theme-border-color);
+  border-radius: 38px;
+  padding: 0 2px;
+  background-color: var(--theme-body-color);
+
+  svg {
+    width: 12px !important;
+    height: 12px !important;
+
+    &:not(:first-child) {
+      margin-left: -6px !important;
+    }
+  }
+}
+
+.apr-label__text {
+  color: var(--theme-red-color);
+
+  &.apr-label__text--gradient {
+    background-color: var(--theme-blue-color);
+    background-image: linear-gradient(45deg, var(--theme-blue-color), var(--theme-red-color));
+    background-size: 100%;
+    -webkit-background-clip: text;
+    -moz-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
   }
 }

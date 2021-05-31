@@ -8,6 +8,7 @@ import { Hint, Text } from 'components/custom/typography';
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { UNISWAP_MARKET_LINK } from 'config';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 import { useYFPools } from '../../providers/pools-provider';
 
@@ -21,10 +22,11 @@ type Props = {
 
 const PoolStats: React.FC<Props> = ({ className }) => {
   const yfPoolsCtx = useYFPools();
+  const rewardPoolsCtx = useRewardPools();
 
   const yfTotalStakedInUSD = yfPoolsCtx.getYFTotalStakedInUSD();
   const yfTotalEffectiveStakedInUSD = yfPoolsCtx.getYFTotalEffectiveStakedInUSD();
-  const syTotalStakedInUSD = yfPoolsCtx.getSYTotalStakedInUSD();
+  const syTotalStakedInUSD = rewardPoolsCtx.getSYTotalStakedInUSD();
   const totalStakedInUSD = BigNumber.sumEach([yfTotalStakedInUSD, syTotalStakedInUSD], bn => bn);
   const totalEffectiveStakedInUSD = BigNumber.sumEach([yfTotalEffectiveStakedInUSD, syTotalStakedInUSD], bn => bn);
   const yfTotalSupply = yfPoolsCtx.getYFTotalSupply();

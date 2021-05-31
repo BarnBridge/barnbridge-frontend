@@ -1450,5 +1450,13 @@
     <path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M16 23.2a4 4 0 100-8 4 4 0 000 8z"
           clip-rule="evenodd"/>
   </symbol>
-
+  <!-- CHECKBOX CHECKED -->
+  <symbol id="icon__checkbox-checked" fill="none" viewBox="0 0 24 24">
+    <rect width="24" height="24" fill="#FF4339" rx="8"/>
+    <path stroke="#fff" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 7.667l-8.626 8.626a1 1 0 01-1.414 0L5 12.333"/>
+  </symbol>
+  <!-- CHECKBOX -->
+  <symbol id="icon__checkbox" fill="none" viewBox="0 0 24 24">
+    <rect width="22" height="22" x="1" y="1" stroke="#E3E4E6" stroke-width="2" rx="7"/>
+  </symbol>
 </svg>

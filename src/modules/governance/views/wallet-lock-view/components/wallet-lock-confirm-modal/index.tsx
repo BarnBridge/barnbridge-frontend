@@ -1,6 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { formatBONDValue } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
@@ -28,7 +28,7 @@ const WalletLockConfirmModal: React.FC<WalletLockConfirmModalProps> = props => {
               Are you sure you want to lock your balance?
             </Text>
             <Text type="p2" weight="semibold" color="secondary">
-              You are about to lock {formatBONDValue(balance)} $BOND for {getFormattedDuration(0, duration)}.
+              You are about to lock {formatToken(balance)} $BOND for {getFormattedDuration(0, duration)}.
               <br />
               <br />
               You cannot undo this or partially lock your balance.

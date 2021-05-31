@@ -1,6 +1,7 @@
 import React from 'react';
 import AntdSpin from 'antd/lib/spin';
-import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
+import BigNumber from 'bignumber.js';
+import { getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
 import { Text } from 'components/custom/typography';
@@ -126,18 +127,18 @@ const SeniorPortfolio: React.FC = () => {
   }, [state.data, filtersMap, activeTab]);
 
   const totalPrincipal = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER);
-  }, ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.principal, c.pool.underlyingDecimals)?.multipliedBy(1) ?? BigNumber.ZERO);
+  }, BigNumber.ZERO);
 
   const totalGain = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals)?.multipliedBy(1) ?? ZERO_BIG_NUMBER);
-  }, ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.gain, c.pool.underlyingDecimals)?.multipliedBy(1) ?? BigNumber.ZERO);
+  }, BigNumber.ZERO);
 
-  const total = totalPrincipal?.plus(totalGain ?? ZERO_BIG_NUMBER);
+  const total = totalPrincipal?.plus(totalGain ?? BigNumber.ZERO);
 
   const totalRedeemable = state.data?.reduce((a, c) => {
-    return a.plus(getHumanValue(c.sBond.principal.plus(c.sBond.gain), c.pool.underlyingDecimals) ?? ZERO_BIG_NUMBER);
-  }, ZERO_BIG_NUMBER);
+    return a.plus(getHumanValue(c.sBond.principal.plus(c.sBond.gain), c.pool.underlyingDecimals) ?? BigNumber.ZERO);
+  }, BigNumber.ZERO);
 
   const aggregatedAPY = React.useMemo(() => {
     return state.data
@@ -151,7 +152,7 @@ const SeniorPortfolio: React.FC = () => {
           .dividedBy(10 ** c.pool.underlyingDecimals);
 
         return a.plus(principal.plus(gain).multipliedBy(apy));
-      }, ZERO_BIG_NUMBER)
+      }, BigNumber.ZERO)
       .dividedBy(totalRedeemable);
   }, [state.data, totalRedeemable]);
 

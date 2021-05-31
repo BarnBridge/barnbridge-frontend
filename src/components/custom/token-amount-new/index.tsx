@@ -1,3 +1,4 @@
+import { ButtonHTMLAttributes, FC, ReactNode, forwardRef } from 'react';
 import cn from 'classnames';
 
 import { DropdownList } from 'components/custom/dropdown';
@@ -11,8 +12,8 @@ import s from './s.module.scss';
 type TokenAmountType = {
   value: string;
   onChange: (value: string) => void;
-  before: React.ReactNode;
-  secondary?: React.ReactNode;
+  before: ReactNode;
+  secondary?: ReactNode;
   className?: string;
   classNameBefore?: string;
   placeholder?: string;
@@ -22,71 +23,65 @@ type TokenAmountType = {
   decimals?: number;
 };
 
-export const TokenAmount: React.FC<TokenAmountType> = ({
-  onChange,
-  before,
-  secondary,
-  className,
-  classNameBefore,
-  slider,
-  decimals = 6,
-  ...rest
-}) => {
-  return (
-    <div className={className}>
-      <div className={s.tokenAmount}>
-        {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
-        <div className={s.tokenAmountValues}>
-          <input
-            className={s.tokenAmountValue}
-            type="number"
-            onWheel={ev => {
-              ev.currentTarget.blur();
-            }}
+export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, TokenAmountType>(
+  ({ onChange, before, secondary, className, classNameBefore, slider, decimals = 6, ...rest }, ref) => {
+    return (
+      <div className={className}>
+        <div className={s.tokenAmount}>
+          {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
+          <div className={s.tokenAmountValues}>
+            <input
+              ref={ref}
+              className={s.tokenAmountValue}
+              type="number"
+              onWheel={ev => {
+                ev.currentTarget.blur();
+              }}
+              onChange={e => {
+                onChange(e.target.value);
+              }}
+              {...rest}
+            />
+            <div className={s.tokenAmountHint}>{secondary}</div>
+          </div>
+          {Number.isFinite(rest.max) && (
+            <button
+              type="button"
+              className="button-ghost"
+              style={{ alignSelf: 'center' }}
+              disabled={rest.disabled || rest.max === 0}
+              onClick={() => onChange(String(rest.max))}>
+              MAX
+            </button>
+          )}
+        </div>
+        {slider && Number.isFinite(rest.max) ? (
+          <Slider
+            type="range"
+            className={s.tokenAmountSlider}
+            min="0"
+            max={rest.max}
+            step={1 / 10 ** Math.min(decimals, 6)}
+            value={rest.value ?? 0}
+            disabled={rest.disabled || rest.max === 0}
             onChange={e => {
               onChange(e.target.value);
             }}
-            {...rest}
           />
-          <div className={s.tokenAmountHint}>{secondary}</div>
-        </div>
-        {Number.isFinite(rest.max) && (
-          <button
-            type="button"
-            className="button-ghost"
-            style={{ alignSelf: 'center' }}
-            disabled={rest.disabled || rest.max === 0}
-            onClick={() => onChange(String(rest.max))}>
-            MAX
-          </button>
-        )}
+        ) : null}
       </div>
-      {slider && Number.isFinite(rest.max) ? (
-        <Slider
-          type="range"
-          className={s.tokenAmountSlider}
-          min="0"
-          max={rest.max}
-          step={1 / 10 ** Math.min(decimals, 6)}
-          value={rest.value ?? 0}
-          disabled={rest.disabled || rest.max === 0}
-          onChange={e => {
-            onChange(e.target.value);
-          }}
-        />
-      ) : null}
-    </div>
-  );
-};
+    );
+  },
+);
 
 type TokenAmountPreviewType = {
   value?: string;
-  before: React.ReactNode;
-  secondary?: React.ReactNode;
+  before: ReactNode;
+  secondary?: ReactNode;
   className?: string;
 };
 
-export const TokenAmountPreview: React.FC<TokenAmountPreviewType> = ({ value, before, secondary, className }) => {
+export const TokenAmountPreview: FC<TokenAmountPreviewType> = ({ value, before, secondary, className }) => {
   return (
     <div className={cn(s.tokenAmountPreview, className)}>
       {before && <div className={s.tokenAmountPreviewBefore}>{before}</div>}
@@ -104,12 +99,12 @@ type TokenSelectType = {
   tokens: KnownTokens[];
 };
 
-export const TokenSelect: React.FC<TokenSelectType> = ({ value, onChange, tokens }) => {
+export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens }) => {
   const foundToken = getTokenBySymbol(value);
 
   return (
     <DropdownList
-      items={tokens.reduce((acc: React.ButtonHTMLAttributes<HTMLButtonElement>[], token) => {
+      items={tokens.reduce((acc: ButtonHTMLAttributes<HTMLButtonElement>[], token) => {
         const found = getTokenBySymbol(token);
         if (!found) return acc;
         return [

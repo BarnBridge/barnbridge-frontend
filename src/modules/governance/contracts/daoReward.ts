@@ -1,6 +1,6 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { ZERO_BIG_NUMBER, getHumanValue } from 'web3/utils';
+import { getHumanValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
@@ -49,7 +49,7 @@ function loadUserData(userAddress?: string): Promise<any> {
         from: userAddress,
       },
       transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals),
-      onError: () => ZERO_BIG_NUMBER,
+      onError: () => BigNumber.ZERO,
     },
   ]).then(([claimValue]) => {
     return {
@@ -111,7 +111,7 @@ export function useDAORewardContract(): DAORewardContract {
     const now = Date.now() / 1_000;
 
     if (startTs > now) {
-      return ZERO_BIG_NUMBER;
+      return BigNumber.ZERO;
     }
 
     if (endTs <= now) {

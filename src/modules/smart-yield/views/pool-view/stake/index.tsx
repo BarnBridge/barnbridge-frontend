@@ -1,124 +1,180 @@
-import React, { useState } from 'react';
-import * as Antd from 'antd';
+import React, { FC, useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
-import { formatToken, getHumanValue, getNonHumanValue } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 
-import Form from 'components/antd/form';
 import Spin from 'components/antd/spin';
 import Tabs from 'components/antd/tabs';
+import Tooltip from 'components/antd/tooltip';
+import { VFormValidationResolver } from 'components/custom/form';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import TokenAmount from 'components/custom/token-amount';
+import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { Markets, Pools } from 'modules/smart-yield/api';
+import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { FCx } from 'components/types.tx';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-type FormStateType = {
-  amount: number;
+type StakeFormValues = {
+  amount: string;
 };
 
-const StakeForm: React.FC = () => {
-  const [form] = Antd.Form.useForm<FormStateType>();
-  const { rewardPool, sendDeposit } = useRewardPool();
+const StakeForm: FC = () => {
+  const walletCtx = useWallet();
+  const rewardPoolCtx = useRewardPool();
 
-  const [values, setValues] = useState<FormStateType>({
-    amount: 0,
+  const [enabling, setEnabled] = useState(false);
+  const [visibleConfirm, showConfirm] = useState(false);
+
+  const { pool, market: poolMarket, uToken } = rewardPoolCtx;
+
+  const walletBalance = pool?.smartYield.balance;
+  const maxAmountUnscaled = walletBalance?.unscaleBy(pool?.smartYield.decimals);
+
+  const formCtx = useForm<StakeFormValues>({
+    defaultValues: {
+      amount: '0',
+    },
+    mode: 'onChange',
+    resolver: VFormValidationResolver,
+    context: {
+      scheme: {
+        amount: {
+          rules: {
+            required: true,
+            min: 0,
+            max: maxAmountUnscaled?.toNumber(),
+          },
+          messages: {
+            required: 'Value is required.',
+            min: 'Should be a positive value.',
+            max: 'Should be less than maximum allowed',
+          },
+        },
+      },
+    },
   });
-  const [confirmVisible, setConfirm] = useState(false);
-  const [saving, setSaving] = useState(false);
 
-  const enabled = rewardPool?.poolToken.isAllowedOf(rewardPool?.poolAddress) === true;
-  const canStake = values.amount > 0;
-
-  const market = Markets.get(rewardPool?.protocolId ?? '');
-  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
-
-  function handleValuesChange(_: any, formValues: FormStateType) {
-    setValues(formValues);
+  if (!pool) {
+    return null;
   }
 
-  function submitHandler() {
-    setConfirm(true);
-  }
+  const { smartYield, rewardPool } = pool;
+  const notAllowed = smartYield.isAllowedOf(rewardPool.address) === false;
+  const amount = formCtx.watch('amount');
+  const bnAmount = BigNumber.from(amount);
+  const formDisabled = formCtx.formState.isSubmitting || enabling;
+  const stakeDisabled = notAllowed || formDisabled || !formCtx.formState.isValid || bnAmount?.eq(BigNumber.ZERO);
 
-  const confirmStake = async <A extends ConfirmTxModalArgs>(args: A) => {
-    setConfirm(false);
-    setSaving(true);
+  async function handleEnable() {
+    setEnabled(true);
 
     try {
-      const amount = getNonHumanValue(values.amount, rewardPool?.poolToken.decimals!);
-      await sendDeposit(amount, args.gasPrice);
-      form.resetFields();
-    } catch {}
+      await smartYield.approve(rewardPool.address, true);
+    } catch (e) {
+      console.error('StakeForm:handleEnable', e);
+    }
 
-    setSaving(false);
-  };
+    setEnabled(false);
+  }
+
+  function handleConfirm({ gasPrice }: ConfirmTxModalArgs): Promise<void> {
+    return formCtx.handleSubmit(values => handleSubmit(gasPrice, values).then(() => formCtx.setValue('amount', '0')))();
+  }
+
+  async function handleSubmit(gasPrice: number, values: StakeFormValues) {
+    const bnAmount = BigNumber.from(values.amount);
+
+    if (!bnAmount) {
+      return;
+    }
+
+    showConfirm(false);
+
+    try {
+      const amount = bnAmount.scaleBy(smartYield.decimals);
+
+      if (amount) {
+        await rewardPool.sendDeposit(amount, gasPrice);
+        rewardPool.loadCommon().catch(Error);
+        smartYield.loadBalance().catch(Error);
+        rewardPool.loadBalanceFor(walletCtx.account!).catch(Error);
+        formCtx.reset();
+      }
+    } catch (e) {
+      console.error('StakeForm:handleSubmit', e);
+    }
+  }
 
   return (
     <>
-      <Form
-        className={s.form}
-        form={form}
-        initialValues={{
-          amount: 0,
-        }}
-        validateTrigger={['onSubmit']}
-        onValuesChange={handleValuesChange}
-        onFinish={submitHandler}>
-        <Form.Item
+      <form className="flex flow-row full-height">
+        <Text type="small" weight="semibold" color="secondary">
+          Amount
+        </Text>
+        <Controller
           name="amount"
-          label="Amount"
-          rules={[{ required: true, message: 'Required' }]}
-          className="mb-32"
-          extra={
-            <Text type="small" weight="semibold" color="secondary">
-              Portfolio balance:{' '}
-              {formatToken(rewardPool?.poolToken.balance, {
-                scale: rewardPool?.poolToken.decimals,
-                tokenName: rewardPool?.poolToken.symbol,
-              }) ?? '-'}
-            </Text>
-          }>
-          <TokenAmount
-            tokenIcon={
-              <IconBubble
-                name={meta?.icon}
-                bubbleName="static/token-bond"
-                secondBubbleName={market?.icon}
-                width={32}
-                height={32}
-                className="mr-8"
+          control={formCtx.control}
+          render={({ field, fieldState }) => (
+            <>
+              <TokenAmount
+                {...field}
+                className="mb-12"
+                before={
+                  <IconBubble
+                    name={uToken?.icon}
+                    bubbleName={ProjectToken.icon}
+                    secondBubbleName={poolMarket?.icon.active}
+                    width={32}
+                    height={32}
+                    className="mr-8"
+                  />
+                }
+                disabled={formDisabled}
+                max={maxAmountUnscaled?.toNumber()}
+                decimals={smartYield.decimals}
+                slider
+                placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
-            }
-            max={getHumanValue(rewardPool?.poolToken.balance, rewardPool?.poolToken.decimals)}
-            maximumFractionDigits={rewardPool?.poolToken.decimals}
-            displayDecimals={4}
-            disabled={saving || !enabled}
-            slider
-          />
-        </Form.Item>
-        <div className="flex col-gap-24 mt-auto">
-          <button type="submit" className="button-primary" disabled={saving || !canStake}>
-            {saving && <Spin type="circle" />}
+              <Text type="small" weight="semibold" color="red">
+                {(fieldState.error as any)?.message}
+              </Text>
+            </>
+          )}
+        />
+
+        <div className="flex align-center mt-auto">
+          {walletCtx.isActive && notAllowed && (
+            <button type="button" className="button-primary mr-16" disabled={enabling} onClick={handleEnable}>
+              {enabling && <Spin spinning />}
+              Enable {smartYield.symbol}
+            </button>
+          )}
+
+          <button type="button" className="button-primary" disabled={stakeDisabled} onClick={() => showConfirm(true)}>
+            {formCtx.formState.isSubmitting && <Spin spinning />}
             Stake
           </button>
         </div>
-      </Form>
-      {confirmVisible && (
+      </form>
+
+      {visibleConfirm && (
         <TxConfirmModal
           title="Confirm your stake"
           header={
             <div className="flex col-gap-8 align-center justify-center">
               <Text type="h2" weight="semibold" color="primary">
-                {formatToken(values.amount, {}) ?? '-'}
+                {formatToken(bnAmount) ?? '-'}
               </Text>
               <IconBubble
-                name={meta?.icon}
-                bubbleName="static/token-bond"
-                secondBubbleName={market?.icon}
+                name={uToken?.icon}
+                bubbleName={ProjectToken.icon}
+                secondBubbleName={poolMarket?.icon.active}
                 width={32}
                 height={32}
                 className="mr-8"
@@ -126,118 +182,161 @@ const StakeForm: React.FC = () => {
             </div>
           }
           submitText="Stake"
-          onCancel={() => setConfirm(false)}
-          onConfirm={confirmStake}
+          onCancel={() => showConfirm(false)}
+          onConfirm={handleConfirm}
         />
       )}
     </>
   );
 };
 
-const UnstakeForm: React.FC = () => {
-  const [form] = Antd.Form.useForm<FormStateType>();
-  const { rewardPool, sendWithdraw, sendWithdrawAndClaim } = useRewardPool();
+type UnstakeFormValues = {
+  amount: string;
+};
 
-  const [values, setValues] = useState<FormStateType>({
-    amount: 0,
-  });
+const UnstakeForm: FC = () => {
+  const walletCtx = useWallet();
+  const rewardPoolCtx = useRewardPool();
+
   const [isClaimUnstake, setClaimUnstake] = useState(false);
-  const [confirmVisible, setConfirm] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [visibleConfirm, showConfirm] = useState(false);
 
-  const canUnstake = values.amount > 0;
+  const { pool, market: poolMarket, uToken } = rewardPoolCtx;
 
-  const market = Markets.get(rewardPool?.protocolId ?? '');
-  const meta = Pools.get(rewardPool?.underlyingSymbol ?? '');
+  const stakedBalance = pool?.rewardPool.getBalanceFor(walletCtx.account!);
+  const maxAmountUnscaled = stakedBalance?.unscaleBy(pool?.smartYield.decimals);
 
-  function handleValuesChange(_: any, formValues: FormStateType) {
-    setValues(formValues);
+  const formCtx = useForm<UnstakeFormValues>({
+    defaultValues: {
+      amount: '0',
+    },
+    mode: 'onChange',
+    resolver: VFormValidationResolver,
+    context: {
+      scheme: {
+        amount: {
+          rules: {
+            required: true,
+            min: 0,
+            max: maxAmountUnscaled?.toNumber(),
+          },
+          messages: {
+            required: 'Value is required.',
+            min: 'Should be a positive value.',
+            max: 'Should be less than maximum allowed',
+          },
+        },
+      },
+    },
+  });
+
+  if (!pool) {
+    return null;
   }
 
-  function handleUnstake() {
-    setClaimUnstake(false);
-    setConfirm(true);
+  const { smartYield, rewardPool } = pool;
+  const rewardTokens = Array.from(pool.rewardTokens.values());
+  const amount = formCtx.watch('amount');
+  const bnAmount = BigNumber.from(amount);
+  const formDisabled = formCtx.formState.isSubmitting;
+  const unstakeDisabled = formDisabled || !formCtx.formState.isValid || bnAmount?.eq(BigNumber.ZERO);
+
+  function handleConfirm({ gasPrice }: ConfirmTxModalArgs): Promise<void> {
+    return formCtx.handleSubmit(values => handleSubmit(values, gasPrice).then(() => formCtx.setValue('amount', '0')))();
   }
 
-  function handleClaimUnstake() {
-    setClaimUnstake(true);
-    setConfirm(true);
-  }
+  async function handleSubmit(values: StakeFormValues, gasPrice: number) {
+    const bnAmount = BigNumber.from(values.amount);
 
-  const handleConfirm = async <A extends ConfirmTxModalArgs>(args: A) => {
-    setConfirm(false);
-    setSaving(true);
+    if (!bnAmount) {
+      return;
+    }
+
+    showConfirm(false);
 
     try {
-      const amount = getNonHumanValue(values.amount, rewardPool?.poolToken.decimals!);
+      const amount = bnAmount.scaleBy(smartYield.decimals);
 
-      if (isClaimUnstake) {
-        await sendWithdrawAndClaim(amount, args.gasPrice);
-      } else {
-        await sendWithdraw(amount, args.gasPrice);
+      if (amount) {
+        if (isClaimUnstake) {
+          await rewardPool.sendWithdrawAndClaim(amount, gasPrice);
+        } else {
+          await rewardPool.sendWithdraw(amount, gasPrice);
+        }
+        rewardPool.loadCommon().catch(Error);
+        smartYield.loadBalance().catch(Error);
+        rewardPool.loadBalanceFor(walletCtx.account!).catch(Error);
+        formCtx.reset();
       }
-
-      form.resetFields();
-    } catch {}
-
-    setSaving(false);
-  };
+    } catch (e) {
+      console.error('UnstakeForm:handleSubmit', e);
+    }
+  }
 
   return (
     <>
-      <Form
-        className={s.form}
-        form={form}
-        initialValues={{
-          amount: 0,
-        }}
-        onValuesChange={handleValuesChange}
-        validateTrigger={['onSubmit']}>
-        <Form.Item
+      <form className="flex flow-row full-height">
+        <Text type="small" weight="semibold" color="secondary">
+          Amount
+        </Text>
+        <Controller
           name="amount"
-          label="Amount"
-          rules={[{ required: true, message: 'Required' }]}
-          className="mb-32"
-          extra={
-            <Text type="small" weight="semibold" color="secondary">
-              Staked balance:{' '}
-              {formatToken(rewardPool?.pool.balance, {
-                scale: rewardPool?.poolToken.decimals,
-                tokenName: rewardPool?.poolToken.symbol,
-              }) ?? '-'}
-            </Text>
-          }>
-          <TokenAmount
-            tokenIcon={
-              <IconBubble
-                name={meta?.icon}
-                bubbleName="static/token-bond"
-                secondBubbleName={market?.icon}
-                width={32}
-                height={32}
-                className="mr-8"
+          control={formCtx.control}
+          render={({ field, fieldState }) => (
+            <>
+              <TokenAmount
+                {...field}
+                className="mb-12"
+                before={
+                  <IconBubble
+                    name={uToken?.icon}
+                    bubbleName={ProjectToken.icon}
+                    secondBubbleName={poolMarket?.icon.active}
+                    width={32}
+                    height={32}
+                    className="mr-8"
+                  />
+                }
+                disabled={formDisabled}
+                max={maxAmountUnscaled?.toNumber()}
+                decimals={smartYield.decimals}
+                slider
+                placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
-            }
-            max={getHumanValue(rewardPool?.pool.balance, rewardPool?.poolToken.decimals)}
-            maximumFractionDigits={rewardPool?.poolToken.decimals}
-            displayDecimals={4}
-            disabled={saving}
-            slider
-          />
-        </Form.Item>
-        <div className="flex col-gap-24 mt-auto">
-          <button type="button" className="button-primary" disabled={saving || !canUnstake} onClick={handleUnstake}>
-            {saving && !isClaimUnstake && <Spin type="circle" />}
+              <Text type="small" weight="semibold" color="red">
+                {(fieldState.error as any)?.message}
+              </Text>
+            </>
+          )}
+        />
+
+        <div className="flex align-center mt-auto">
+          <button
+            type="button"
+            className="button-primary mr-16"
+            disabled={unstakeDisabled}
+            onClick={() => {
+              setClaimUnstake(false);
+              showConfirm(true);
+            }}>
+            {formCtx.formState.isSubmitting && !isClaimUnstake && <Spin spinning />}
             Unstake
           </button>
-          <button type="button" className="button-ghost" disabled={saving || !canUnstake} onClick={handleClaimUnstake}>
-            {saving && isClaimUnstake && <Spin type="circle" />}
+          <button
+            type="button"
+            className="button-primary"
+            disabled={unstakeDisabled}
+            onClick={() => {
+              setClaimUnstake(true);
+              showConfirm(true);
+            }}>
+            {formCtx.formState.isSubmitting && isClaimUnstake && <Spin spinning />}
             Claim & Unstake
           </button>
         </div>
-      </Form>
+      </form>
 
-      {confirmVisible && (
+      {visibleConfirm && (
         <TxConfirmModal
           title={isClaimUnstake ? 'Confirm your claim and unstake' : 'Confirm your unstake'}
           header={
@@ -248,12 +347,12 @@ const UnstakeForm: React.FC = () => {
                 </Text>
                 <div className="flex col-gap-8 align-center justify-center">
                   <Text type="h2" weight="semibold" color="primary">
-                    {formatToken(values.amount, {}) ?? '-'}
+                    {formatToken(bnAmount) ?? '-'}
                   </Text>
                   <IconBubble
-                    name={meta?.icon}
-                    bubbleName="static/token-bond"
-                    secondBubbleName={market?.icon}
+                    name={uToken?.icon}
+                    bubbleName={ProjectToken.icon!}
+                    secondBubbleName={poolMarket?.icon.active}
                     width={32}
                     height={32}
                     className="mr-8"
@@ -266,20 +365,26 @@ const UnstakeForm: React.FC = () => {
                   <Text type="p1" weight="semibold" color="secondary">
                     Claim
                   </Text>
-                  <div className="flex col-gap-8 align-center justify-center">
-                    <Text type="h2" weight="semibold" color="primary">
-                      {formatToken(rewardPool?.pool.toClaim, {
-                        scale: rewardPool?.rewardToken.decimals,
-                      }) ?? '-'}
-                    </Text>
-                    <Icon name="static/token-bond" width={32} height={32} />
-                  </div>
+                  {rewardTokens.map(rewardToken => {
+                    const toClaim = rewardPool.getClaimFor(rewardToken.address);
+
+                    return (
+                      <div className="flex col-gap-8 align-center justify-center">
+                        <Text type="h2" weight="semibold" color="primary">
+                          {formatToken(toClaim, {
+                            scale: rewardToken.decimals,
+                          }) ?? '-'}
+                        </Text>
+                        <Icon name={rewardToken.icon!} width={32} height={32} />
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>
           }
           submitText={isClaimUnstake ? 'Claim and unstake' : 'Unstake'}
-          onCancel={() => setConfirm(false)}
+          onCancel={() => showConfirm(false)}
           onConfirm={handleConfirm}
         />
       )}
@@ -287,26 +392,61 @@ const UnstakeForm: React.FC = () => {
   );
 };
 
-type TabsType = 'stake' | 'unstake';
+const Stake: FCx = props => {
+  const { className } = props;
 
-type Props = {
-  className?: string;
-};
+  const walletCtx = useWallet();
+  const [activeTab, setActiveTab] = useState('stake');
 
-const Stake: React.FC<Props> = ({ className }) => {
-  const [activeTab, setActiveTab] = useState<TabsType>('stake');
+  const rewardPoolCtx = useRewardPool();
+  const { pool } = rewardPoolCtx;
 
-  function handleTabChange(tabKey: TabsType) {
-    setActiveTab(tabKey);
+  if (!pool) {
+    return null;
   }
+
+  const { smartYield, rewardPool } = pool;
+
+  const walletBalance = smartYield.balance?.unscaleBy(smartYield.decimals);
+  const stakedBalance = rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(smartYield.decimals);
 
   return (
     <div className={cn('card', className)}>
-      <Tabs className={s.tabs} activeKey={activeTab} onChange={handleTabChange as (tabKey: string) => void}>
+      <Tabs className={s.tabs} activeKey={activeTab} onChange={setActiveTab}>
         <Tabs.Tab key="stake" tab="Stake" />
         <Tabs.Tab key="unstake" tab="Unstake" />
       </Tabs>
-      <div className="p-24 full-height">{activeTab === 'stake' ? <StakeForm /> : <UnstakeForm />}</div>
+      <div className="flex flow-row flex-grow p-24">
+        <div className={cn('flexbox-list p-16 mb-32', s.stakeBlock)}>
+          <div className="flex flow-row mr-16">
+            <Text type="small" weight="semibold" color="secondary" className="mb-8">
+              Staked balance
+            </Text>
+            <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, smartYield.symbol!)) ?? '-'}>
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(stakedBalance, {
+                  decimals: smartYield.decimals,
+                }) ?? '-'}
+              </Text>
+            </Tooltip>
+          </div>
+          <div className="flex flow-row">
+            <Text type="small" weight="semibold" color="secondary" className="mb-8">
+              Wallet balance
+            </Text>
+            <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, smartYield.symbol!)) ?? '-'}>
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(walletBalance, {
+                  decimals: smartYield.decimals,
+                }) ?? '-'}
+              </Text>
+            </Tooltip>
+          </div>
+        </div>
+
+        {activeTab === 'stake' && <StakeForm />}
+        {activeTab === 'unstake' && <UnstakeForm />}
+      </div>
     </div>
   );
 };

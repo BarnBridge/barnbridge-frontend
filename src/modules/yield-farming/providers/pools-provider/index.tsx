@@ -1,4 +1,4 @@
-import React, { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Web3Contract from 'web3/web3Contract';
@@ -11,13 +11,9 @@ import {
   UniV2Token,
   UsdcToken,
   convertTokenInUSD,
-  useKnownTokens,
 } from 'components/providers/known-tokens-provider';
 import config from 'config';
 import { useReload } from 'hooks/useReload';
-import { fetchSYRewardPools } from 'modules/smart-yield/api';
-import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
-import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { YfStakingContract } from 'modules/yield-farming/contracts/yfStaking';
 import { useWallet } from 'wallets/wallet';
@@ -31,8 +27,6 @@ export enum YFPoolID {
 export type YFPoolMeta = {
   name: YFPoolID;
   label: string;
-  icons: string[];
-  colors: string[];
   tokens: TokenMeta[];
   contract: YfPoolContract;
 };
@@ -40,8 +34,6 @@ export type YFPoolMeta = {
 export const StableYfPool: YFPoolMeta = {
   name: YFPoolID.STABLE,
   label: 'USDC/DAI/sUSD',
-  icons: ['token-usdc', 'token-dai', 'token-susd'],
-  colors: ['#4f6ae5', '#ffd160', '#1e1a31'],
   tokens: [UsdcToken, DaiToken, SusdToken],
   contract: new YfPoolContract(config.contracts.yf.stable),
 };
@@ -49,8 +41,6 @@ export const StableYfPool: YFPoolMeta = {
 export const UnilpYfPool: YFPoolMeta = {
   name: YFPoolID.UNILP,
   label: 'USDC_BOND_UNI_LP',
-  icons: ['static/token-uniswap'],
-  colors: ['var(--theme-red-color)'],
   tokens: [UniV2Token],
   contract: new YfPoolContract(config.contracts.yf.unilp),
 };
@@ -58,8 +48,6 @@ export const UnilpYfPool: YFPoolMeta = {
 export const BondYfPool: YFPoolMeta = {
   name: YFPoolID.BOND,
   label: 'BOND',
-  icons: ['static/token-bond'],
-  colors: ['var(--theme-red-color)'],
   tokens: [BondToken],
   contract: new YfPoolContract(config.contracts.yf.bond),
 };
@@ -70,14 +58,8 @@ export function getYFKnownPoolByName(name: string): YFPoolMeta | undefined {
   return KNOWN_POOLS.find(pool => pool.name === name);
 }
 
-export type SYPoolMeta = {
-  poolContract: SYSmartYieldContract;
-  rewardContract: SYRewardPoolContract;
-};
-
 export type YFPoolsType = {
   yfPools: YFPoolMeta[];
-  syPools: SYPoolMeta[];
   getYFKnownPoolByName: (name: string) => YFPoolMeta | undefined;
   stakingContract?: YfStakingContract;
   getPoolBalanceInUSD: (name: string) => BigNumber | undefined;
@@ -88,12 +70,10 @@ export type YFPoolsType = {
   getYFTotalEffectiveStakedInUSD: () => BigNumber | undefined;
   getYFDistributedRewards: () => BigNumber | undefined;
   getYFTotalSupply: () => BigNumber | undefined;
-  getSYTotalStakedInUSD: () => BigNumber | undefined;
 };
 
 const YFPoolsContext = createContext<YFPoolsType>({
   yfPools: KNOWN_POOLS,
-  syPools: [],
   getYFKnownPoolByName: getYFKnownPoolByName,
   stakingContract: undefined,
   getPoolBalanceInUSD: () => undefined,
@@ -104,7 +84,6 @@ const YFPoolsContext = createContext<YFPoolsType>({
   getYFTotalEffectiveStakedInUSD: () => undefined,
   getYFDistributedRewards: () => undefined,
   getYFTotalSupply: () => undefined,
-  getSYTotalStakedInUSD: () => undefined,
 });
 
 export function useYFPools(): YFPoolsType {
@@ -114,11 +93,8 @@ export function useYFPools(): YFPoolsType {
 const YFPoolsProvider: FC = props => {
   const { children } = props;
 
-  const knownTokensCtx = useKnownTokens();
   const walletCtx = useWallet();
   const [reload] = useReload();
-
-  const [syPools, setSYPools] = useState<SYPoolMeta[]>([]);
 
   const stakingContract = useMemo(() => {
     const staking = new YfStakingContract();
@@ -161,39 +137,6 @@ const YFPoolsProvider: FC = props => {
       }
     });
   }, [walletCtx.account]);
-
-  useEffect(() => {
-    (async () => {
-      const result = await fetchSYRewardPools();
-
-      const pools = result.map(rewardPool => {
-        const poolContract = new SYSmartYieldContract(rewardPool.poolTokenAddress);
-        poolContract.on(Web3Contract.UPDATE_DATA, reload);
-        poolContract.loadCommon().catch(Error);
-
-        const rewardContract = new SYRewardPoolContract(rewardPool.poolAddress);
-        rewardContract.on(Web3Contract.UPDATE_DATA, reload);
-        rewardContract.loadCommon().catch(Error);
-
-        return {
-          poolContract,
-          rewardContract,
-        };
-      });
-
-      setSYPools(pools);
-    })();
-  }, []);
-
-  useEffect(() => {
-    syPools.forEach(syPool => {
-      syPool.rewardContract.setAccount(walletCtx.account);
-
-      if (walletCtx.account) {
-        syPool.rewardContract.loadBalance().catch(Error);
-      }
-    });
-  }, [syPools, walletCtx.account]);
 
   const getPoolBalanceInUSD = useCallback(
     (poolId: string): BigNumber | undefined => {
@@ -315,32 +258,12 @@ const YFPoolsProvider: FC = props => {
     });
   }, []);
 
-  const getSYTotalStakedInUSD = useCallback(() => {
-    return BigNumber.sumEach(syPools, syPool => {
-      const { poolSize } = syPool.rewardContract;
-
-      if (poolSize === undefined) {
-        return undefined;
-      }
-
-      const tokenMeta = knownTokensCtx.getTokenByAddress(syPool.poolContract.address);
-
-      if (!tokenMeta) {
-        return BigNumber.ZERO;
-      }
-
-      return knownTokensCtx.convertTokenInUSD(poolSize.unscaleBy(tokenMeta.decimals), tokenMeta.symbol);
-    });
-  }, [syPools]);
-
   const value: YFPoolsType = {
     yfPools: KNOWN_POOLS,
-    syPools,
     getYFKnownPoolByName,
     stakingContract,
     getYFTotalStakedInUSD,
     getYFTotalEffectiveStakedInUSD,
-    getSYTotalStakedInUSD,
     getPoolBalanceInUSD,
     getPoolEffectiveBalanceInUSD,
     getMyPoolBalanceInUSD,

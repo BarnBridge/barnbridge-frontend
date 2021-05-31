@@ -97,15 +97,13 @@ class Web3Contract extends EventEmitter {
     });
   }
 
-  readonly _abi: AbiItem[];
-
   readonly address: string;
 
+  readonly _abi: AbiItem[];
   readonly _callContract: EthContract;
   readonly _sendContract: EthContract;
 
   name: string;
-
   account?: string;
 
   constructor(abi: AbiItem[], address: string, name: string) {
@@ -127,22 +125,36 @@ class Web3Contract extends EventEmitter {
     return this._abi.filter(r => r.type === 'function' && !r.constant);
   }
 
+  get callProvider(): any {
+    return this._callContract.currentProvider;
+  }
+
+  get provider(): any {
+    return this._sendContract.currentProvider;
+  }
+
   setCallProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
-    this._callContract.setProvider(provider);
+    if (this._callContract !== provider) {
+      this._callContract.setProvider(provider);
+    }
   }
 
   setProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
-    this._sendContract.setProvider(provider);
+    if (this._sendContract !== provider) {
+      this._sendContract.setProvider(provider);
+    }
   }
 
   setAccount(account?: string): void {
-    this.account = account;
-    this.emit(Web3Contract.UPDATE_ACCOUNT, account);
+    if (this.account !== account) {
+      this.account = account;
+      this.emit(Web3Contract.UPDATE_ACCOUNT, account);
+    }
   }
 
   assertAccount() {
     if (!this.account) {
-      throw new Error('This operation requires account to be connected!');
+      throw new Error('This operation requires wallet to be connected!');
     }
   }
 

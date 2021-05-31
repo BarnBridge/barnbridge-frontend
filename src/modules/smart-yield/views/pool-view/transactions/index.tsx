@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
@@ -11,23 +11,20 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
 import {
   APISYRewardPoolTransaction,
   APISYRewardTxHistoryType,
-  Markets,
-  Pools,
   RewardHistoryShortTypes,
   fetchSYRewardPoolTransactions,
 } from 'modules/smart-yield/api';
-import { SYRewardPool, useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
-type TableEntity = APISYRewardPoolTransaction & {
-  pool?: SYRewardPool;
-};
+type TableEntity = APISYRewardPoolTransaction;
 
 type State = {
   transactions: TableEntity[];
@@ -56,21 +53,24 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
     {
       title: 'Transaction',
       width: '25%',
-      render: (_, entity) => {
-        const market = Markets.get(entity.pool?.protocolId ?? '');
-        const meta = Pools.get(entity.pool?.underlyingSymbol ?? '');
+      render: function TransactionRender(_, entity) {
+        const rpCtx = useRewardPool();
+        const { market: poolMarket, uToken, pool } = rpCtx;
+        const { smartYield } = pool!;
 
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            {market && meta && (
-              <IconBubble name={meta.icon} bubbleName="static/token-bond" secondBubbleName={market.icon} />
-            )}
+            <IconBubble
+              name={uToken?.icon}
+              bubbleName={ProjectToken.icon!}
+              secondBubbleName={poolMarket?.icon.active}
+            />
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
               </Text>
               <Text type="small" weight="semibold" wrap={false}>
-                {entity.pool?.poolToken.symbol}
+                {smartYield.symbol}
               </Text>
             </div>
           </div>
@@ -80,8 +80,12 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
     {
       title: 'Amount',
       width: '25%',
-      render: (_, entity) => {
+      render: function TransactionRender(_, entity) {
+        const rpCtx = useRewardPool();
+        const { pool } = rpCtx;
+        const { smartYield } = pool!;
         const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
+        const amountInUSD = convertTokenInUSD(entity.amount, smartYield.symbol!);
 
         return (
           <>
@@ -89,18 +93,18 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
               placement="bottomLeft"
               title={
                 formatToken(entity.amount, {
-                  decimals: entity.pool?.poolTokenDecimals,
+                  decimals: smartYield.decimals,
                 }) ?? '-'
               }>
               <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
                 {isStake ? '+' : '-'}
                 {formatToken(entity.amount, {
-                  tokenName: entity.pool?.poolToken.symbol,
+                  tokenName: smartYield.symbol,
                 }) ?? '-'}
               </Text>
             </Tooltip>
             <Text type="small" weight="semibold" wrap={false}>
-              {formatUSD(entity.pool?.poolToken.convertInUnderlying(entity.amount)?.multipliedBy(1))}
+              {formatUSD(amountInUSD)}
             </Text>
           </>
         );
@@ -139,7 +143,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
   ];
 }
 
-const Transactions: React.FC = () => {
+const Transactions: FC = () => {
   const wallet = useWallet();
   const rewardPool = useRewardPool();
 
@@ -175,19 +179,19 @@ const Transactions: React.FC = () => {
       }
     }
 
-    rewardPool.rewardPool?.pool.on('tx:success', onPoolTx);
+    rewardPool.pool?.rewardPool.on('tx:success', onPoolTx);
 
     return () => {
-      rewardPool.rewardPool?.pool.off('tx:success', onPoolTx);
+      rewardPool.pool?.rewardPool.off('tx:success', onPoolTx);
     };
-  }, [rewardPool.rewardPool]);
+  }, [rewardPool.pool]);
 
   React.useEffect(() => {
-    if (!rewardPool.rewardPool) {
+    if (!rewardPool.pool) {
       return;
     }
 
-    const { poolAddress } = rewardPool.rewardPool;
+    const { meta } = rewardPool.pool;
 
     setState(prevState => ({
       ...prevState,
@@ -201,7 +205,7 @@ const Transactions: React.FC = () => {
           data: transactions,
           meta: { count },
         } = await fetchSYRewardPoolTransactions(
-          poolAddress,
+          meta.poolAddress,
           state.page,
           state.pageSize,
           activeTab === 'own' ? wallet.account : 'all',
@@ -211,10 +215,7 @@ const Transactions: React.FC = () => {
         setState(prevState => ({
           ...prevState,
           loading: false,
-          transactions: transactions.map(transaction => ({
-            ...transaction,
-            pool: rewardPool.rewardPool,
-          })),
+          transactions: transactions,
           total: count,
         }));
       } catch {
@@ -225,7 +226,7 @@ const Transactions: React.FC = () => {
         }));
       }
     })();
-  }, [rewardPool.rewardPool, wallet, activeTab, state.page, state.pageSize, state.filters, version]);
+  }, [rewardPool.pool, wallet, activeTab, state.page, state.pageSize, state.filters, version]);
 
   React.useEffect(() => {
     setActiveTab(wallet.isActive ? 'own' : 'all');
