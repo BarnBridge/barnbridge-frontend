@@ -1,7 +1,7 @@
 import { Pagination } from 'components/custom/pagination';
 import { Text } from 'components/custom/typography';
 
-type ColumnType<T> = {
+export type ColumnType<T> = {
   heading: React.ReactNode;
   render: (item: T) => React.ReactNode;
 };

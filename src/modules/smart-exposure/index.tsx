@@ -14,8 +14,8 @@ import { PoolActionsView } from './views/pool-actions-view';
 
 import s from './s.module.scss';
 
-const PairsView = lazy(() => import('./views/pairs-view'));
-const PoolView = lazy(() => import('./views/pool-view'));
+const PoolsView = lazy(() => import('./views/pools-view'));
+const TrancheView = lazy(() => import('./views/tranche-view'));
 
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 
@@ -55,10 +55,10 @@ const SmartExposureView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="finance" className="mr-8" /> Pairs
+          <Icon name="finance" className="mr-8" /> Pools
         </>
       ),
-      to: '/smart-exposure/pairs',
+      to: '/smart-exposure/pools',
     },
     {
       children: (
@@ -101,19 +101,19 @@ const SmartExposureView: React.FC = () => {
         <SEPoolsProvider>
           <Suspense fallback={<AntdSpin />}>
             <Switch>
-              <Route path="/smart-exposure/pairs" exact>
-                <PairsView />
+              <Route path="/smart-exposure/pools" exact>
+                <PoolsView />
               </Route>
-              <Route path="/smart-exposure/pairs/:pool" exact>
-                <PoolView />
+              <Route path="/smart-exposure/pools/:pool/:tranche" exact>
+                <TrancheView />
               </Route>
-              <Route path="/smart-exposure/pairs/:pool/:path(deposit|withdraw|change-tranche)" exact>
+              <Route path="/smart-exposure/pools/:pool/:tranche/:path(deposit|withdraw|change-tranche)" exact>
                 <PoolActionsView />
               </Route>
               <Route path="/smart-exposure/portfolio" exact>
                 <PortfolioView />
               </Route>
-              <Redirect to="/smart-exposure/pairs" />
+              <Redirect to="/smart-exposure/pools" />
             </Switch>
           </Suspense>
         </SEPoolsProvider>

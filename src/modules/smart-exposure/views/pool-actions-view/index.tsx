@@ -16,21 +16,21 @@ export const PoolActionsView: React.FC = () => {
   }
 
   if (!wallet.isActive) {
-    return <Redirect to={`/smart-exposure/pairs/${pool}`} />;
+    return <Redirect to={`/smart-exposure/pools/${pool}`} />;
   }
 
   return (
     <Switch>
-      <Route path="/smart-exposure/pairs/:pool/deposit" exact>
+      <Route path="/smart-exposure/pools/:pool/:tranche/deposit" exact>
         <DepositView />
       </Route>
-      <Route path="/smart-exposure/pairs/:pool/withdraw" exact>
+      <Route path="/smart-exposure/pools/:pool/:tranche/withdraw" exact>
         <WithdrawView />
       </Route>
-      <Route path="/smart-exposure/pairs/:pool/change-tranche" exact>
+      <Route path="/smart-exposure/pools/:pool/:tranche/change-tranche" exact>
         <ChangeTrancheView />
       </Route>
-      <Redirect to={`/smart-exposure/pairs/${pool}`} />
+      <Redirect to={`/smart-exposure/pools/${pool}`} />
     </Switch>
   );
 };

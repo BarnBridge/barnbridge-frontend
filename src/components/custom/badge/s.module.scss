@@ -2,7 +2,7 @@
 
 .badge {
   @include font-lb2-bold;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 8px 24px;
