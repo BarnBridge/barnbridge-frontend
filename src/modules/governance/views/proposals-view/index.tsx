@@ -98,7 +98,7 @@ const ProposalsViewInner: React.FC = () => {
                         </li>
                       </ul>
 
-                      <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/proposals-and-voting">
+                      <ExternalLink href="https://integrations.barnbridge.com/specs/dao-specifications#proposals-and-voting">
                         Learn more
                       </ExternalLink>
                     </Grid>

@@ -120,7 +120,7 @@ const PoolsView: FC = () => {
                     </Text>
                   </div>
                 </div>
-                <div className="flex row-gap-32 col-gap-32">
+                <div className="flex wrap row-gap-32 col-gap-32">
                   {marketPools.map(marketPool => (
                     <PoolCard key={marketPool.smartYield.address} pool={marketPool} />
                   ))}

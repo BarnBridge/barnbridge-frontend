@@ -192,7 +192,9 @@ const JuniorPortfolioInner: React.FC = () => {
     })();
   }, [walletCtx.account, pools, versionLocked]);
 
-  const dataStaked = rewardPoolsCtx.pools.filter(pool => pool.smartYield.balance?.gt(BigNumber.ZERO));
+  const dataStaked = rewardPoolsCtx.pools.filter(pool =>
+    pool.rewardPool.getBalanceFor(walletCtx.account!)?.gt(BigNumber.ZERO),
+  );
 
   function handleFiltersApply(values: PositionsFilterValues) {
     setFiltersMap(prevState => ({
@@ -315,7 +317,7 @@ const JuniorPortfolioInner: React.FC = () => {
                   The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
                   positions might differ. This number shows a weighted average of these APYs for your active positions.
                 </Text>
-                <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">
+                <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
                   Learn more
                 </ExternalLink>
               </Grid>
