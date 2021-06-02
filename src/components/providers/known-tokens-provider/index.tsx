@@ -433,7 +433,21 @@ async function getJTokenPrice(symbol: string): Promise<BigNumber> {
   }
 
   const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
-  // priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+
+  const price = await priceFeedContract.call('price');
+
+  return new BigNumber(price).dividedBy(1e18);
+}
+
+async function getJATokenPrice(symbol: string): Promise<BigNumber> {
+  const token = getTokenBySymbol(symbol);
+
+  if (!token || !token.priceFeed) {
+    return Promise.reject();
+  }
+
+  const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
+  priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
 
   const price = await priceFeedContract.call('price');
 
@@ -515,11 +529,13 @@ const KnownTokensProvider: FC = props => {
             case KnownTokens.bbcrDAI:
             case KnownTokens.bbcrUSDC:
             case KnownTokens.bbcrUSDT:
+              token.price = await getJTokenPrice(token.symbol);
+              break;
             case KnownTokens.bbaDAI:
             case KnownTokens.bbaUSDC:
             case KnownTokens.bbaUSDT:
             case KnownTokens.bbaGUSD:
-              token.price = await getJTokenPrice(token.symbol);
+              token.price = await getJATokenPrice(token.symbol);
               break;
             default:
               token.price = await getFeedPrice(token.symbol);
