@@ -1,28 +1,20 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import format from 'date-fns/format';
+import { formatUSD } from 'web3/utils';
 
 import { Badge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
+import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import config from 'config';
 
-type TokenTypeApi = {
-  address: string;
-  symbol: string;
-  decimals: number;
-};
-
-export type PoolType = {
-  poolAddress: string;
-  poolName: string;
-  tokenA: TokenTypeApi;
-  tokenB: TokenTypeApi;
-};
+import { PoolType, calcTokensRatio } from 'modules/smart-exposure/utils';
+import { numberFormat } from 'utils';
 
 type TrancheTypeApi = {
   eTokenAddress: string;
+  eTokenSymbol: string;
   sFactorE: string;
   state: {
     blockNumber: number;
@@ -61,6 +53,7 @@ export const PairsTable: React.FC<Props> = ({ pool }) => {
         render: item => {
           const tokenA = getTokenBySymbol(pool.tokenA.symbol);
           const tokenB = getTokenBySymbol(pool.tokenB.symbol);
+          const [tokenARatio, tokenBRatio] = calcTokensRatio(item.targetRatio);
 
           return (
             <>
@@ -68,52 +61,36 @@ export const PairsTable: React.FC<Props> = ({ pool }) => {
                 <div className="flex">
                   <Icon name={tokenA?.icon!} className="mr-8" />
                   <div>
-                    <div className="text-p1 fw-semibold color-primary">{Number(item.tokenARatio) * 100}%</div>
-                    <div className="text-sm fw-semibold color-red flex">
-                      {Number(item.tokenARatio) * 100}%
-                      <Icon name="arrow-bottom-right-thin" className="mr-8" width={16} height={16} color="red" />
+                    <div className="text-p1 fw-semibold color-primary">
+                      {numberFormat(tokenARatio, { minimumFractionDigits: 2 })}%
                     </div>
+                    <RatioLabel current={Number(item.tokenARatio) * 100} target={tokenARatio} />
                   </div>
                 </div>
                 <div>
                   <div className="flex">
                     <Icon name={tokenB?.icon!} className="mr-8" />
                     <div>
-                      <div className="text-p1 fw-semibold color-primary">{Number(item.tokenBRatio) * 100}%</div>
-                      <div className="text-sm fw-semibold color-green flex">
-                        {Number(item.tokenBRatio) * 100}%
-                        <Icon name="arrow-top-right-thin" className="mr-8" width={16} height={16} color="green" />
+                      <div className="text-p1 fw-semibold color-primary">
+                        {numberFormat(tokenBRatio, { minimumFractionDigits: 2 })}%
                       </div>
+                      <RatioLabel current={Number(item.tokenBRatio) * 100} target={tokenBRatio} />
                     </div>
                   </div>
                 </div>
               </div>
-              <progress
-                max="100"
-                value="75"
-                className="progress"
-                style={{ '--background-color': '#627EEA', '--progress-color': '#F7931A' } as React.CSSProperties}>
-                75%
-              </progress>
+              <TranchePercentageProgress target={Number(item.tokenARatio) * 100} value={tokenARatio} />
             </>
           );
         },
       },
       {
-        heading: 'Last rebalance',
-        render: item => {
-          const date = new Date();
-          return (
-            <time dateTime={date.toJSON()}>
-              <div className="text-p1 fw-semibold color-primary">{format(date, 'dd.MM.yyyy')}</div>
-              <div className="text-sm fw-semibold color-secondary">{format(date, 'HH:mm')}</div>
-            </time>
-          );
-        },
-      },
-      {
         heading: 'Tranche liquidity',
-        render: item => <div className="text-p1 fw-semibold color-primary">asd</div>,
+        render: item => (
+          <div className="text-p1 fw-semibold color-primary">
+            {formatUSD(Number(item.state.tokenALiquidity) + Number(item.state.tokenBLiquidity))}
+          </div>
+        ),
       },
       {
         heading: 'Performance since inception',
@@ -123,8 +100,8 @@ export const PairsTable: React.FC<Props> = ({ pool }) => {
         heading: 'Exposure token conversion rate',
         render: item => (
           <>
-            <div className="text-p1 fw-semibold color-primary">$ 48,813.31</div>
-            <div className="text-sm fw-semibold color-secondary">per bb_ET_WBTC75/ETH25</div>
+            <div className="text-p1 fw-semibold color-primary">{formatUSD(item.state.eTokenPrice)}</div>
+            <div className="text-sm fw-semibold color-secondary">per {item.eTokenSymbol}</div>
           </>
         ),
       },
@@ -141,4 +118,34 @@ export const PairsTable: React.FC<Props> = ({ pool }) => {
   );
 
   return <Table<TrancheTypeApi> columns={tableColumns} data={tranches} />;
+};
+
+type RatioLabelPropsType = {
+  current: number;
+  target: number;
+};
+
+const RatioLabel: React.FC<RatioLabelPropsType> = ({ current, target }) => {
+  const currentLabel = numberFormat(current, {
+    minimumFractionDigits: 2,
+  });
+
+  if (current < target) {
+    return (
+      <div className="text-sm fw-semibold color-red flex">
+        {currentLabel}%
+        <Icon name="arrow-bottom-right-thin" className="mr-8" width={16} height={16} color="red" />
+      </div>
+    );
+  }
+  if (current > target) {
+    return (
+      <div className="text-sm fw-semibold color-green flex">
+        {currentLabel}%
+        <Icon name="arrow-top-right-thin" className="mr-8" width={16} height={16} color="green" />
+      </div>
+    );
+  }
+
+  return <div className="text-sm fw-semibold color-secondary flex">{currentLabel}%</div>;
 };

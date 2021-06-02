@@ -97,6 +97,7 @@
   background: rgba(113, 121, 128, 0.08);
   border-radius: 22px;
   padding: 4px;
+  flex-shrink: 0;
 
   [data-theme='dark'] & {
     background: rgba(147, 148, 150, 0.08);

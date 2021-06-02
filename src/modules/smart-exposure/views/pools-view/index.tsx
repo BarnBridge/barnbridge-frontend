@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import cn from 'classnames';
+import { format } from 'date-fns';
+import { formatUSD } from 'web3/utils';
 
 import { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
@@ -7,7 +9,10 @@ import { Text } from 'components/custom/typography';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import config from 'config';
 
-import { PairsTable, PoolType } from './table';
+import { PairsTable } from './table';
+
+import { PoolType } from 'modules/smart-exposure/utils';
+import { getRelativeTime } from 'utils';
 
 import s from './s.module.scss';
 
@@ -59,18 +64,28 @@ const PoolsView: React.FC = () => {
           );
         })}
       </div>
-      <div className={cn(s.stats, 'mb-40')}>
-        <div>
-          <div className="text-p1 fw-semibold color-secondary">WBTC/ETH total liquidity</div>
-          <div className="text-h2 fw-bold">$ 310,000,000.00</div>
-        </div>
-        <div>
-          <div className="text-sm fw-semibold color-secondary">Rebalancing strategies</div>
-          <div className="flex align-center text-p1 fw-semibold">
-            Every day <span className="middle-dot ph-16 color-border" /> {'>'} 2% deviation from target
+      {activePool ? (
+        <div className={cn(s.stats, 'mb-40')}>
+          <div>
+            <div className="text-p1 fw-semibold color-secondary">{activePool.poolName} total liquidity</div>
+            <div className="text-h2 fw-bold">{formatUSD(activePool.state.poolLiquidity)}</div>
+          </div>
+          <div>
+            <div className="text-sm fw-semibold color-secondary">Rebalancing strategies</div>
+            <div className="flex align-center text-p1 fw-semibold">
+              {getRelativeTime(activePool.state.rebalancingInterval)}
+              <span className="middle-dot ph-16 color-border" /> {'>'} {activePool.state.rebalancingCondition}%
+              deviation from target
+            </div>
+          </div>
+          <div>
+            <div className="text-sm fw-semibold color-secondary">Last rebalance</div>
+            <div className="flex align-center text-p1 fw-semibold">
+              {format(new Date(activePool.state.lastRebalance * 1000), 'dd.MM.yyyy HH:mm')}
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
       {activePool && (
         <div className="card">
           <PairsTable pool={activePool} />

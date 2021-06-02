@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import cn from 'classnames';
+import { format } from 'date-fns';
+import * as ReCharts from 'recharts';
+import { formatPercent, formatUSD } from 'web3/utils';
 
+import Spin from 'components/antd/spin';
 import { Tabs } from 'components/custom/tabs';
+import config from 'config';
 
 import s from './s.module.scss';
 
@@ -26,102 +31,70 @@ const tabs = [
   },
 ];
 
-// type State = {
-//   loading: boolean;
-//   data: ChartEntity[];
-// };
+type ETokenPriceType = {
+  eTokenPrice: string;
+  point: string;
+};
 
-// const InitialState: State = {
-//   loading: false,
-//   data: [],
-// };
+type PropsType = {
+  poolAddress: string;
+  trancheAddress: string;
+};
 
-export const PriceTrend: React.FC = () => {
-  // const poolCtx = useSYPool();
-  // const { pool } = poolCtx;
+export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress }) => {
+  const [activeTab, setActiveTab] = useState('24h');
+  const [priceList, setPriceList] = useState<ETokenPriceType[]>([]);
 
-  const [activeTab, setActiveTab] = React.useState('24h');
-  // const [state, setState] = React.useState<State>(InitialState);
+  useEffect(() => {
+    const searchParams = new URLSearchParams({ window: activeTab });
 
-  // React.useEffect(() => {
-  //   if (!pool) {
-  //     setState(
-  //       mergeState<State>({
-  //         data: [],
-  //       }),
-  //     );
-  //     return;
-  //   }
+    const url = new URL(
+      `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/etoken-price?${searchParams.toString()}`,
+      config.api.baseUrl,
+    );
 
-  //   (async () => {
-  //     setState(
-  //       mergeState<State>({
-  //         loading: true,
-  //       }),
-  //     );
+    fetch(url.toString())
+      .then(result => result.json())
+      .then(result => {
+        setPriceList(result.data);
+      });
+  }, [poolAddress, trancheAddress, activeTab]);
 
-  //     try {
-  //       const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress, activeTab);
+  const ticks = React.useMemo(() => {
+    const dates = priceList.map(d => new Date(d.point).getTime());
+    const minDate = Math.min(...dates);
+    const maxDate = Math.max(...dates);
 
-  //       setState(
-  //         mergeState<State>({
-  //           loading: false,
-  //           data: poolAPYs.map(apy => ({
-  //             ...apy,
-  //             point: new Date(apy.point).valueOf(),
-  //           })),
-  //         }),
-  //       );
-  //     } catch {
-  //       setState(
-  //         mergeState<State>({
-  //           loading: false,
-  //           data: [],
-  //         }),
-  //       );
-  //     }
-  //   })();
-  // }, [pool, activeTab]);
+    if (!Number.isFinite(minDate) || !Number.isFinite(maxDate)) {
+      return [];
+    }
 
-  // const ticks = React.useMemo(() => {
-  //   const dates = state.data.map(d => d.point);
-  //   const minDate = Math.min(...dates);
-  //   const maxDate = Math.max(...dates);
+    let count = 0;
+    let range = 0;
 
-  //   if (!Number.isFinite(minDate) || !Number.isFinite(maxDate)) {
-  //     return [];
-  //   }
+    switch (activeTab) {
+      case '24h':
+        count = 3;
+        range = 8 * 60 * 60 * 1_000; // 8 hours
+        break;
+      case '1w':
+        count = 7;
+        range = 24 * 60 * 60 * 1_000; // 24 hours
+        break;
+      case '30d':
+        count = 4;
+        range = 7 * 24 * 60 * 60 * 1_000; // 7 days
+        break;
+      default:
+        return [];
+    }
 
-  //   let count = 0;
-  //   let range = 0;
+    const minDt = maxDate - count * range;
 
-  //   switch (activeTab) {
-  //     case '24h':
-  //       count = 3;
-  //       range = 8 * 60 * 60 * 1_000; // 8 hours
-  //       break;
-  //     case '1w':
-  //       count = 7;
-  //       range = 24 * 60 * 60 * 1_000; // 24 hours
-  //       break;
-  //     case '30d':
-  //       count = 4;
-  //       range = 7 * 24 * 60 * 60 * 1_000; // 7 days
-  //       break;
-  //     default:
-  //       return [];
-  //   }
+    return Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
+  }, [priceList, activeTab]);
 
-  //   const minDt = maxDate - count * range;
-
-  //   return Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
-  // }, [state.data, activeTab]);
-
-  // function formatTick(value: number) {
-  //   if (!Number.isInteger(value)) {
-  //     return '';
-  //   }
-
+  // function formatTick(value: string) {
   //   switch (activeTab) {
   //     case '24h':
   //       return format(new Date(value), 'HH:mm');
@@ -134,14 +107,10 @@ export const PriceTrend: React.FC = () => {
   //   }
   // }
 
-  // if (!pool) {
-  //   return null;
-  // }
-
   return (
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>
-        <div className="text-p1 fw-semibold color-primary">APY trend</div>
+        <div className="text-p1 fw-semibold color-primary mr-8">Etoken price trend</div>
         <Tabs
           tabs={tabs}
           activeKey={activeTab}
@@ -152,72 +121,57 @@ export const PriceTrend: React.FC = () => {
         />
       </header>
       <div className="p-24">
-        {/* <Spin spinning={state.loading}>
+        <Spin spinning={!priceList.length}>
           <ReCharts.ResponsiveContainer width="100%" height={300} className="mb-24">
-            <ReCharts.AreaChart data={state.data} margin={{ left: -12 }}>
+            <ReCharts.AreaChart data={priceList}>
               <defs>
-                <linearGradient id="chart-green-gradient" gradientTransform="rotate(180)">
-                  <stop offset="0%" stopColor="rgba(var(--theme-green-color-rgb), 0.08)" />
-                  <stop offset="100%" stopColor="rgba(var(--theme-green-color-rgb), 0)" />
-                </linearGradient>
-                <linearGradient id="chart-purple-gradient" gradientTransform="rotate(180)">
-                  <stop offset="0%" stopColor="rgba(var(--theme-purple-color-rgb), 0.08)" />
-                  <stop offset="100%" stopColor="rgba(var(--theme-purple-color-rgb), 0)" />
+                <linearGradient id="chart-red-gradient" gradientTransform="rotate(180)">
+                  <stop offset="0%" stopColor="rgba(var(--theme-red-color-rgb), 0.08)" />
+                  <stop offset="100%" stopColor="rgba(var(--theme-red-color-rgb), 0)" />
                 </linearGradient>
               </defs>
               <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
               <ReCharts.XAxis
+                // dataKey="point"
+                // axisLine={false}
+                // tickLine={false}
+                // tickFormatter={value => formatTick(value)}
+
                 dataKey="point"
                 ticks={ticks}
                 tickMargin={12}
                 minTickGap={0}
-                tickFormatter={value => formatTick(value)}
+                // tickFormatter={value => formatTick(value)}
               />
               <ReCharts.YAxis
                 axisLine={false}
                 tickLine={false}
-                tickFormatter={value => formatPercent(value, 0) ?? ''}
+                tickFormatter={value =>
+                  Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value)
+                }
               />
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
-                  <Text type="p2" tag="span" weight="semibold" color="primary">
+                  <span className="text-p2 fw-semibold color-primary">
                     {value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
-                  </Text>
+                  </span>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
-                  <Text type="p2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
-                    {formatPercent(value)}
-                  </Text>
+                  <span className="text-p2 fw-semibold color-red">{formatUSD(value)}</span>
                 )}
               />
               <ReCharts.Area
-                name="Senior APY "
-                dataKey="seniorApy"
+                name="Value "
+                dataKey="eTokenPrice"
                 type="monotone"
-                fill="url(#chart-green-gradient)"
-                stroke="var(--theme-green-color)"
-                strokeWidth={2}
-              />
-              <ReCharts.Area
-                name="Junior APY "
-                dataKey="juniorApy"
-                type="monotone"
-                fill="url(#chart-purple-gradient)"
-                stroke="var(--theme-purple-color)"
+                fill="url(#chart-red-gradient)"
+                stroke="var(--theme-red-color)"
                 strokeWidth={2}
               />
             </ReCharts.AreaChart>
           </ReCharts.ResponsiveContainer>
-        </Spin> */}
-        <footer className="flex flow-col justify-center col-gap-24 row-gap-16">
-          <div className="chart-label" style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}>
-            Senior APY
-          </div>
-          <div className="chart-label" style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}>
-            Junior APY
-          </div>
-        </footer>
+        </Spin>
       </div>
     </section>
   );

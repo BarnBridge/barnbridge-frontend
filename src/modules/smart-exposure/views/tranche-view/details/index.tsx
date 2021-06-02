@@ -1,10 +1,16 @@
 ﻿import React from 'react';
 import cn from 'classnames';
+import { formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
+import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { TrancheApiType } from 'modules/smart-exposure/api';
+
+import { calcTokensRatio } from 'modules/smart-exposure/utils';
+import { getRelativeTime, numberFormat } from 'utils';
 
 import s from './s.module.scss';
 
@@ -19,7 +25,11 @@ const tabs = [
   },
 ];
 
-export const TrancheDetails: React.FC = () => {
+type Props = {
+  tranche: TrancheApiType;
+};
+
+export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
   const [activeTab, setActiveTab] = React.useState('rebalancing');
   // const poolCtx = useSYPool();
   // const { pool } = poolCtx;
@@ -30,6 +40,11 @@ export const TrancheDetails: React.FC = () => {
 
   // const abond = pool.contracts.smartYield.abond;
   // const abondDebt = pool.contracts.smartYield.abondDebt;
+
+  const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
+  const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
+
+  const [tokenARatio, tokenBRatio] = calcTokensRatio(tranche.targetRatio);
 
   return (
     <section className="card">
@@ -44,8 +59,10 @@ export const TrancheDetails: React.FC = () => {
                 Target ratio
               </Text>
               <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
-                <Icon name="token-wbtc" width={16} height={16} /> 75.00% <span className="ph-4">:</span>{' '}
-                <Icon name="token-eth" width={16} height={16} /> 25.00%
+                <Icon name={tokenA?.icon!} width={16} height={16} />{' '}
+                {numberFormat(tokenARatio, { minimumFractionDigits: 2 })}% <span className="ph-4">:</span>{' '}
+                <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
+                {numberFormat(tokenBRatio, { minimumFractionDigits: 2 })}%
               </Text>
             </div>
             <div className="flex flow-row">
@@ -53,8 +70,10 @@ export const TrancheDetails: React.FC = () => {
                 Current ratio
               </Text>
               <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
-                <Icon name="token-wbtc" width={16} height={16} /> 74.00% <span className="ph-4">:</span>{' '}
-                <Icon name="token-eth" width={16} height={16} /> 26.00%
+                <Icon name={tokenA?.icon!} width={16} height={16} />{' '}
+                {numberFormat(Number(tranche.tokenARatio) * 100, { minimumFractionDigits: 2 })}%{' '}
+                <span className="ph-4">:</span> <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
+                {numberFormat(Number(tranche.tokenBRatio) * 100, { minimumFractionDigits: 2 })}%
               </Text>
             </div>
           </div>
@@ -65,7 +84,9 @@ export const TrancheDetails: React.FC = () => {
                 Rebalancing strategies
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                Every day <span className="middle-dot ph-16 color-border" /> {'>'} 2% deviation from target
+                {getRelativeTime(tranche.rebalancingInterval)}
+                <span className="middle-dot ph-16 color-border" /> {'>'} {tranche.rebalancingCondition}% deviation from
+                target
               </Text>
             </div>
           </div>
@@ -101,18 +122,18 @@ export const TrancheDetails: React.FC = () => {
           <div className="flexbox-grid p-24">
             <div className="flex flow-row">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                WBTC price
+                {tranche.tokenA.symbol} price
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                $ 64,188.20
+                {formatUSD(tranche.tokenA.state.price)}
               </Text>
             </div>
             <div className="flex flow-row">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                ETH price
+                {tranche.tokenB.symbol} price
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                $ 2,376.66
+                {formatUSD(tranche.tokenB.state.price)}
               </Text>
             </div>
           </div>
@@ -120,7 +141,7 @@ export const TrancheDetails: React.FC = () => {
           <div className="flexbox-grid p-24">
             <div className="flex flow-row">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Wallet WBTC balance
+                Wallet {tranche.tokenA.symbol} balance
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 9.3000
@@ -131,7 +152,7 @@ export const TrancheDetails: React.FC = () => {
             </div>
             <div className="flex flow-row">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Wallet ETH balance
+                Wallet {tranche.tokenB.symbol} balance
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 167.7000
@@ -145,24 +166,24 @@ export const TrancheDetails: React.FC = () => {
           <div className="flexbox-grid p-24">
             <div className="flex flow-row">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Pool WBTC balance
+                Pool {tranche.tokenA.symbol} balance
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                930.0000
+                {tranche.state.tokenALiquidity}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                $ 51,496,146.00
+                {formatUSD(Number(tranche.state.tokenALiquidity) * Number(tranche.tokenA.state.price))}
               </Text>
             </div>
             <div className="flex flow-row">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                Pool ETH balance
+                Pool {tranche.tokenB.symbol} balance
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                16,777.0000
+                {tranche.state.tokenBLiquidity}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                $ 40,400,693.70
+                {formatUSD(Number(tranche.state.tokenBLiquidity) * Number(tranche.tokenB.state.price))}
               </Text>
             </div>
           </div>

@@ -12,6 +12,8 @@ import { useWallet } from 'wallets/wallet';
 import { TrancheDetails } from './details';
 import { PriceTrend } from './trend';
 
+import { calcTokensRatio } from 'modules/smart-exposure/utils';
+
 import s from './s.module.scss';
 
 const TrancheView: React.FC = () => {
@@ -34,6 +36,8 @@ const TrancheView: React.FC = () => {
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 
+  const [tokenARation, tokenBRation] = calcTokensRatio(tranche.targetRatio);
+
   return (
     <>
       <div className="flex mb-16">
@@ -47,9 +51,7 @@ const TrancheView: React.FC = () => {
           <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">
-              {`${Number(tranche.tokenARatio) * 100}% ${tokenA?.symbol} / ${Number(tranche.tokenBRatio) * 100}% ${
-                tokenB?.symbol
-              }`}
+              {`${tokenARation}% ${tokenA?.symbol} / ${tokenBRation}% ${tokenB?.symbol}`}
             </div>
             <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
@@ -86,8 +88,8 @@ const TrancheView: React.FC = () => {
         ) : null}
       </div>
       <div className={cn(s.trendDetailsRow, 'mb-32')}>
-        <PriceTrend />
-        <TrancheDetails />
+        <PriceTrend poolAddress={poolAddress} trancheAddress={trancheAddress} />
+        <TrancheDetails tranche={tranche} />
       </div>
     </>
   );
