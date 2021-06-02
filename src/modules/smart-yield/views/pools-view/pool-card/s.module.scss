@@ -5,7 +5,7 @@
   box-shadow: var(--theme-card-shadow);
   border-radius: 4px;
   padding: 24px;
-  min-width: 320px;
+  min-width: 392px;
   max-width: 392px;
   flex-grow: 1;
   display: flex;
@@ -98,4 +98,10 @@
 
 .footer button {
   flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+  .card {
+    min-width: 320px;
+  }
 }
