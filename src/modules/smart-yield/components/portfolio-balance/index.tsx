@@ -17,7 +17,6 @@ type Props = {
   aggregatedApr?: number;
   aggregatedText?: React.ReactNode;
   aggregatedColor: TextProps['color'];
-  rewardTokensCount?: number;
   data: [[string, number | undefined, string], [string, number | undefined, string]];
 };
 
@@ -29,7 +28,6 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     aggregatedApr,
     aggregatedColor,
     aggregatedText,
-    rewardTokensCount,
     data: [[label1, value1, color1], [label2, value2, color2]],
   } = props;
 
@@ -63,16 +61,18 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
             <Text type="p1" weight="semibold" color={aggregatedColor}>
               {formatPercent(aggregated)}
             </Text>
-            <div className="apr-label">
-              <IconsSet
-                className="mr-4"
-                icons={[
-                  <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
-                  <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
-                ]}
-              />
-              <div className="apr-label__text apr-label__text--gradient"> +{formatPercent(aggregatedApr)} APR</div>
-            </div>
+            {Boolean(aggregatedApr) && (
+              <div className="apr-label">
+                <IconsSet
+                  className="mr-4"
+                  icons={[
+                    <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
+                    <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
+                  ]}
+                />
+                <div className="apr-label__text apr-label__text--gradient"> +{formatPercent(aggregatedApr)} APR</div>
+              </div>
+            )}
           </div>
         )}
       </div>
