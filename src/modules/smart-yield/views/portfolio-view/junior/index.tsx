@@ -224,55 +224,54 @@ const JuniorPortfolioInner: React.FC = () => {
     });
   }
 
-  const activeBalance = state.dataActive?.reduce((a, c) => {
-    return a.plus(
-      getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
-        ?.multipliedBy(c.state.jTokenPrice ?? 0)
-        .multipliedBy(1) ?? BigNumber.ZERO,
-    ); /// price
+  const activeBalance = state.dataActive?.reduce((sum, c) => {
+    const val = c.smartYieldBalance.unscaleBy(c.underlyingDecimals);
+    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
+    return sum.plus(valInUSD ?? 0);
   }, BigNumber.ZERO);
 
-  const lockedBalance = state.dataLocked?.reduce((a, c) => {
-    return a.plus(
-      getHumanValue(c.jBond.tokens, c.pool.underlyingDecimals)
-        ?.multipliedBy(c.pool.state.jTokenPrice ?? 0)
-        .multipliedBy(1) ?? BigNumber.ZERO,
-    ); /// price
+  const lockedBalance = state.dataLocked?.reduce((sum, c) => {
+    const val = c.jBond.tokens.unscaleBy(c.pool.underlyingDecimals);
+    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.pool.contracts.smartYield?.symbol!);
+    return sum.plus(valInUSD ?? 0);
   }, BigNumber.ZERO);
 
-  const stakedBalance = dataStaked?.reduce((a, c) => {
+  const stakedBalance = dataStaked?.reduce((sum, c) => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
     const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
-    return a.plus(valInUSD ?? BigNumber.ZERO);
+    return sum.plus(valInUSD ?? BigNumber.ZERO);
   }, BigNumber.ZERO);
 
-  const apySum = state.dataActive.reduce((a, c) => {
-    return a.plus(
-      getHumanValue(c.smartYieldBalance, c.underlyingDecimals)
-        ?.multipliedBy(c.state.jTokenPrice)
-        .multipliedBy(1)
-        .multipliedBy(c.state.juniorApy) ?? BigNumber.ZERO,
-    );
+  const apySum = state.dataActive.reduce((sum, c) => {
+    const val = c.smartYieldBalance.unscaleBy(c.underlyingDecimals);
+    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
+    return sum.plus(valInUSD?.multipliedBy(c.state.juniorApy) ?? 0);
   }, BigNumber.ZERO);
 
-  const stakedApySum = dataStaked.reduce((a, c) => {
+  const stakedApySum = dataStaked.reduce((sum, c) => {
     const item = pools.find(p => p.smartYieldAddress === c.smartYield.address);
 
     if (!item) {
-      return a;
+      return sum;
     }
 
-    return a; /*.plus(
-      getHumanValue(c.pool.balance, c.poolToken.decimals)
-        ?.multipliedBy(item.state.jTokenPrice ?? 0)
-        .multipliedBy(1)
-        .multipliedBy(item.state.juniorApy) ?? BigNumber.ZERO,
-    )*/ /// ???
+    const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
+    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
+
+    return sum.plus(valInUSD?.multipliedBy(item.state.juniorApy) ?? 0);
+  }, BigNumber.ZERO);
+
+  const stakedAprSum = dataStaked.reduce((sum, c) => {
+    const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
+    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
+
+    return sum.plus(valInUSD?.multipliedBy(c.apr ?? 0) ?? 0);
   }, BigNumber.ZERO);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? BigNumber.ZERO).plus(stakedBalance ?? BigNumber.ZERO);
   const pTotalBalance = activeBalance?.plus(stakedBalance ?? BigNumber.ZERO);
   const apy = pTotalBalance?.gt(BigNumber.ZERO) ? apySum.plus(stakedApySum).dividedBy(pTotalBalance).toNumber() : 0; /// calculate by formula
+  const apr = stakedBalance?.gt(BigNumber.ZERO) ? stakedAprSum.dividedBy(stakedBalance).toNumber() : 0;
 
   const dataActiveFilters = React.useMemo(() => {
     const filter = filtersMap.active;
@@ -310,6 +309,7 @@ const JuniorPortfolioInner: React.FC = () => {
           <PortfolioBalance
             total={totalBalance?.toNumber()}
             aggregated={apy}
+            aggregatedApr={apr}
             aggregatedColor="purple"
             aggregatedText={
               <Grid flow="row" gap={8} align="start">
