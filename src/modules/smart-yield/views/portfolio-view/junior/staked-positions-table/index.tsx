@@ -1,18 +1,21 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
+import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import { Text } from 'components/custom/typography';
-import { BondToken, ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import IconsSet from 'components/custom/icons-set';
+import { Hint, Text } from 'components/custom/typography';
+import { BondToken, ProjectToken, StkAaveToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
+import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 export type StakedPositionsTableEntity = SYRewardPoolEntity;
@@ -75,6 +78,65 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             {formatUSD(stakedBalanceInUSD)}
           </Text>
         </>
+      );
+    },
+  },
+  {
+    title: (
+      <Hint
+        text={
+          <>
+            <Text type="p2" className="mb-16">
+              The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
+              positions might differ.
+            </Text>
+            <Text type="p2" className="mb-8">
+              The number below is the SMART Yield junior rewards APR. You can add that by staking tokens in Pools
+            </Text>
+            <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
+              Learn more
+            </ExternalLink>
+          </>
+        }>
+        APY
+      </Hint>
+    ),
+    render: function APYRender(_, entity) {
+      const poolsCtx = usePools();
+      const pool = poolsCtx.pools.find(
+        pool => pool.protocolId === entity.meta.protocolId && pool.underlyingAddress === entity.meta.underlyingAddress,
+      );
+
+      if (!pool) {
+        return null;
+      }
+
+      return (
+        <div>
+          <Text type="p1" weight="semibold" color="purple">
+            {formatPercent(pool.state.juniorApy)}
+          </Text>
+          {entity.rewardPool?.rewardTokensCount! > 1 ? (
+            <div className="apr-label">
+              <IconsSet
+                className="mr-4"
+                icons={[
+                  <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
+                  <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
+                ]}
+              />
+              <div className="apr-label__text apr-label__text--gradient">
+                {' '}
+                +{formatPercent(entity.apr?.plus(pool.apy ?? 0))} APR
+              </div>
+            </div>
+          ) : entity.apr ? (
+            <div className="apr-label">
+              <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
+              <div className="apr-label__text"> +{formatPercent(entity.apr)} APR</div>
+            </div>
+          ) : null}
+        </div>
       );
     },
   },

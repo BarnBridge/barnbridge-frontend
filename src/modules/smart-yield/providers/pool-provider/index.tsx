@@ -3,9 +3,11 @@ import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import { getEtherscanTxUrl } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import {
+  BondToken,
   DaiToken,
   EthToken,
   GusdToken,
@@ -13,13 +15,23 @@ import {
   UsdcToken,
   UsdtToken,
   convertTokenIn,
+  convertTokenInUSD,
 } from 'components/providers/known-tokens-provider';
 import config from 'config';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPool } from 'modules/smart-yield/api';
+import {
+  APISYPool,
+  Markets,
+  Pools,
+  SYMarketMeta,
+  SYPoolMeta,
+  fetchSYPool,
+  fetchSYRewardPools,
+} from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
+import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/wallet';
@@ -31,8 +43,10 @@ export type SYPool = APISYPool & {
     smartYield: SYSmartYieldContract;
     underlying: Erc20Contract;
     controller: SYControllerContract;
+    rewardPool?: SYRewardPoolContract;
   };
   apy?: BigNumber;
+  apr?: BigNumber;
 };
 
 type StatusModal = {
@@ -202,8 +216,11 @@ const PoolProvider: React.FC = props => {
           return await Promise.reject();
         }
 
+        let extPool: SYPool;
+
         const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
         smartYield.setProvider(wallet.provider);
+        await smartYield.loadCommon().catch(Error);
 
         const underlying = new Erc20Contract([], pool.underlyingAddress);
         underlying.setProvider(wallet.provider);
@@ -219,7 +236,9 @@ const PoolProvider: React.FC = props => {
 
         await Promise.all([smartYield.loadCommon(), underlying.loadCommon()]);
 
-        const extPool: SYPool = {
+        let rewardPool: SYRewardPoolContract | undefined;
+
+        extPool = {
           ...pool,
           meta: Pools.get(pool.underlyingSymbol),
           market: Markets.get(pool.protocolId),
@@ -227,9 +246,41 @@ const PoolProvider: React.FC = props => {
             smartYield,
             underlying,
             controller,
+            rewardPool,
           },
+          apr: undefined,
           apy,
         };
+
+        const rewardPools = await fetchSYRewardPools(pool.protocolId, pool.underlyingSymbol);
+
+        if (rewardPools.length > 0) {
+          rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress, rewardPools[0].poolType === 'MULTI');
+          extPool.contracts.rewardPool = rewardPool;
+          rewardPool.setProvider(wallet.provider);
+          rewardPool.on(Web3Contract.UPDATE_DATA, reload);
+          rewardPool
+            .loadCommon()
+            .then(() => {
+              return rewardPool?.loadRewardRateFor(BondToken.address) as any;
+            })
+            .then(() => {
+              const { poolSize } = rewardPool!;
+
+              if (poolSize) {
+                const r = rewardPool?.getDailyRewardFor(BondToken.address)?.unscaleBy(BondToken.decimals);
+                const yearlyReward = convertTokenInUSD(r, BondToken.symbol!)?.multipliedBy(365);
+
+                const p = poolSize?.dividedBy(10 ** (smartYield.decimals ?? 0));
+                const poolBalance = convertTokenInUSD(p, smartYield.symbol!);
+
+                if (yearlyReward && poolBalance && poolBalance.gt(BigNumber.ZERO)) {
+                  extPool.apr = yearlyReward.dividedBy(poolBalance);
+                  reload();
+                }
+              }
+            });
+        }
 
         setState(prevState => ({
           ...prevState,
@@ -256,6 +307,7 @@ const PoolProvider: React.FC = props => {
     pool.contracts.smartYield.setProvider(wallet.provider);
     pool.contracts.underlying.setProvider(wallet.provider);
     pool.contracts.controller.setProvider(wallet.provider);
+    pool.contracts.rewardPool?.setProvider(wallet.provider);
   }, [state.pool, wallet.provider]);
 
   React.useEffect(() => {
