@@ -113,7 +113,7 @@ const InitiateWithdraw: React.FC = () => {
                     the price may differ and be higher or lower.
                   </Text>
                   <ExternalLink
-                    href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit"
+                    href="https://integrations.barnbridge.com/specs/smart-yield-specifications#steps-for-exit"
                     className="link-blue"
                     style={{ fontWeight: 600 }}>
                     Learn more
@@ -172,7 +172,7 @@ const InitiateWithdraw: React.FC = () => {
                 receive an NFT that can be redeemed after the current seniors reach their maturity dates.
               </div>
               <ExternalLink
-                href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit"
+                href="https://integrations.barnbridge.com/specs/smart-yield-specifications#steps-for-exit"
                 className={s.alertLink}>
                 Learn more
               </ExternalLink>
@@ -199,7 +199,7 @@ const InitiateWithdraw: React.FC = () => {
                 Using this function, you forfeit your locked underlying.
               </div>
               <ExternalLink
-                href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit"
+                href="https://integrations.barnbridge.com/specs/smart-yield-specifications#steps-for-exit"
                 className={s.alertLink}>
                 Learn more
               </ExternalLink>

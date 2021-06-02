@@ -64,7 +64,10 @@ export class SYRewardPoolEntity extends ManagedEntity {
     this.rewardPool.loadCommon().catch(Error);
     this.rewardTokens.forEach(rewardToken => {
       this.rewardPool.loadRewardLeftFor(rewardToken.address).catch(Error);
-      this.rewardPool.loadRewardRateFor(rewardToken.address).catch(Error);
+      this.rewardPool.loadRewardRateFor(rewardToken.address).catch(Error)
+        .then(() => {
+          console.log('AAAA', this.rewardPool.address, rewardToken.address, this.rewardPool.getDailyRewardFor(rewardToken.address)?.toNumber());
+        });
       (rewardToken.contract as Erc20Contract)?.loadBalance(this.meta.poolAddress).catch(Error);
     });
   }

@@ -2,6 +2,7 @@ import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
@@ -116,7 +117,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                   <div className={s.defRow}>
                     <dt>
                       <Hint text={`This number shows the $${rewardToken.symbol} token rewards distributed per day.`}>
-                        {rewardToken.symbol} daily reward
+                        {rewardToken.symbol} daily rewards
                       </Hint>
                     </dt>
                     <dd>
@@ -129,22 +130,30 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 ) : null}
                 <div className={s.defRow}>
                   <dt>
-                    {rewardToken.symbol === KnownTokens.BOND ? (
+                    {rewardToken === BondToken && (
                       <Hint text={`This number shows the $${rewardToken.symbol} token rewards remaining.`}>
-                        {rewardToken.symbol} reward left
+                        {rewardToken.symbol} rewards left
                       </Hint>
-                    ) : (
+                    )}
+                    {rewardToken === StkAaveToken && (
                       <Hint
-                        text={`This number shows the stkAAVE amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>
-                        {rewardToken.symbol} reward balance
+                        text={`This number shows the ${StkAaveToken.symbol} amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>
+                        {rewardToken.symbol} rewards balance
                       </Hint>
                     )}
                   </dt>
                   <dd>
                     <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                    {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
-                      scale: rewardToken.decimals,
-                    }) ?? '-'}
+                    {(rewardToken === BondToken &&
+                      formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
+                        scale: rewardToken.decimals,
+                      })) ??
+                      '-'}
+                    {rewardToken === StkAaveToken &&
+                      (formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {
+                        scale: rewardToken.decimals,
+                      }) ??
+                        '-')}
                   </dd>
                 </div>
               </React.Fragment>
