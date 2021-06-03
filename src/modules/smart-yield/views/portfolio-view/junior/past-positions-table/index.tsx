@@ -2,7 +2,14 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { formatBigValue, formatUSDValue, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import {
+  formatBigValue,
+  formatUSD,
+  formatUSDValue,
+  getEtherscanAddressUrl,
+  getEtherscanTxUrl,
+  shortenAddr,
+} from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -10,7 +17,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -63,19 +70,26 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Tokens in',
     align: 'right',
     sorter: (a, b) => a.tokensIn.toNumber() - b.tokensIn.toNumber(),
-    render: (_, entity) => (
-      <>
-        <Tooltip title={formatBigValue(entity.tokensIn, entity.pool?.underlyingDecimals)}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.tokensIn)}
-            {` ${entity.pool?.contracts.smartYield?.symbol}`}
+    render: function Render(_, entity) {
+      const knownTokensCtx = useKnownTokens();
+      const value = entity.tokensIn;
+      const uValue = value?.multipliedBy(entity.pool?.state.jTokenPrice ?? 0);
+      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.pool?.underlyingSymbol!);
+
+      return (
+        <>
+          <Tooltip title={formatBigValue(entity.tokensIn, entity.pool?.underlyingDecimals)}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatBigValue(entity.tokensIn)}
+              {` ${entity.pool?.contracts.smartYield?.symbol}`}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(valueInUSD)}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.tokensIn.multipliedBy(entity.pool?.state.jTokenPrice ?? BigNumber.ZERO))}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Underlying out',

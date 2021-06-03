@@ -11,7 +11,13 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import IconsSet from 'components/custom/icons-set';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, ProjectToken, StkAaveToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import {
+  BondToken,
+  KnownTokens,
+  ProjectToken,
+  StkAaveToken,
+  useKnownTokens,
+} from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -56,24 +62,25 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     render: function PoolBalanceRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const walletCtx = useWallet();
-      const stakedBalance = entity.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(entity.smartYield.decimals);
-      const stakedBalanceInUSD = knownTokensCtx.convertTokenInUSD(stakedBalance, entity.smartYield.symbol!);
+      const val = entity.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(entity.meta.poolTokenDecimals);
+      const uVal = val?.multipliedBy(entity.smartYield.price ?? 0);
+      const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, entity.meta.underlyingSymbol);
 
       return (
         <>
           <Tooltip
-            title={formatToken(stakedBalance, {
+            title={formatToken(val, {
               tokenName: entity.smartYield.symbol,
               decimals: entity.smartYield.decimals,
             })}>
             <Text type="p1" weight="semibold" color="primary">
-              {formatToken(stakedBalance, {
+              {formatToken(val, {
                 tokenName: entity.smartYield.symbol,
               })}
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(stakedBalanceInUSD)}
+            {formatUSD(valInUSD)}
           </Text>
         </>
       );
