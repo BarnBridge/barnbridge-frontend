@@ -7,7 +7,6 @@ import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import IconsSet from 'components/custom/icons-set';
@@ -54,7 +53,6 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     title: 'My pool balance',
     width: '20%',
     align: 'right',
-    sorter: (a, b) => 0,
     render: function PoolBalanceRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const walletCtx = useWallet();
@@ -144,7 +142,6 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     title: `My $${ProjectToken.symbol} rewards`,
     width: '20%',
     align: 'right',
-    sorter: (a, b) => 0,
     render: function RewardsRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const bondToClaim = entity.rewardPool.getClaimFor(BondToken.address)?.unscaleBy(BondToken.decimals);

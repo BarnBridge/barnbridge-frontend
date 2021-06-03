@@ -68,10 +68,14 @@ class SYAaveTokenContract extends Web3Contract {
       { method: 'getIncentivesController' },
     ]);
 
-    this.totalSupply = new BigNumber(totalSupply);
-    this.incentivesController = new SYAaveIncentivesContract(incentivesControllerAddress);
-    this.incentivesController.setCallProvider(this.callProvider);
-    await this.incentivesController.loadAssetData(this.address);
+    this.totalSupply = BigNumber.from(totalSupply);
+
+    if (incentivesControllerAddress) {
+      this.incentivesController = new SYAaveIncentivesContract(incentivesControllerAddress);
+      this.incentivesController.setCallProvider(this.callProvider);
+      await this.incentivesController.loadAssetData(this.address);
+    }
+
     this.emit(Web3Contract.UPDATE_DATA);
   }
 }
