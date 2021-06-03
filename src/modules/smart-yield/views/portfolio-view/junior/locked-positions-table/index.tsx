@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatBigValue, formatUSDValue, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatUSD, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -10,7 +10,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
@@ -66,27 +66,30 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     width: '20%',
     align: 'right',
     sorter: (a, b) => a.jBond.tokens.toNumber() - b.jBond.tokens.toNumber(),
-    render: (_, entity) => (
-      <>
-        <Tooltip
-          title={formatBigValue(
-            getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals),
-            entity.pool.underlyingDecimals,
-          )}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
-            {` ${entity.pool.contracts.smartYield?.symbol}`}
+    render: function Render(_, entity) {
+      const knownTokensCtx = useKnownTokens();
+      const value = entity.jBond.tokens.unscaleBy(entity.pool.underlyingDecimals);
+      const uValue = value?.multipliedBy(entity.pool.state.jTokenPrice);
+      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.pool.underlyingSymbol);
+
+      return (
+        <>
+          <Tooltip
+            title={formatBigValue(
+              getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals),
+              entity.pool.underlyingDecimals,
+            )}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
+              {` ${entity.pool.contracts.smartYield?.symbol}`}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(valueInUSD)}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(
-            getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals)?.multipliedBy(
-              entity.pool.state.jTokenPrice,
-            ),
-          )}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Time left',

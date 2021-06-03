@@ -12,7 +12,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
@@ -58,6 +58,10 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
         .unscaleBy(a.underlyingDecimals)
         ?.comparedTo(b.smartYieldBalance.unscaleBy(b.underlyingDecimals)!) ?? 0,
     render: function BalanceRender(_, entity) {
+      const knownTokensCtx = useKnownTokens();
+      const value = entity.smartYieldBalance.unscaleBy(entity.underlyingDecimals);
+      const uValue = value?.multipliedBy(entity.state.jTokenPrice);
+      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.underlyingSymbol);
       return (
         <>
           <Tooltip
@@ -73,9 +77,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(
-              entity.smartYieldBalance.unscaleBy(entity.underlyingDecimals)?.multipliedBy(entity.state.jTokenPrice),
-            )}
+            {formatUSD(valueInUSD)}
           </Text>
         </>
       );
