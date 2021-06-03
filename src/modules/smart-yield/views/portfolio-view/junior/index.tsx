@@ -226,25 +226,30 @@ const JuniorPortfolioInner: React.FC = () => {
 
   const activeBalance = state.dataActive?.reduce((sum, c) => {
     const val = c.smartYieldBalance.unscaleBy(c.underlyingDecimals);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
+    const valInUSD = val?.multipliedBy(c.state.jTokenPrice);
+    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
     return sum.plus(valInUSD ?? 0);
   }, BigNumber.ZERO);
 
   const lockedBalance = state.dataLocked?.reduce((sum, c) => {
     const val = c.jBond.tokens.unscaleBy(c.pool.underlyingDecimals);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.pool.contracts.smartYield?.symbol!);
+    const valInUSD = val?.multipliedBy(c.pool.state.jTokenPrice);
+    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.pool.contracts.smartYield?.symbol!);
     return sum.plus(valInUSD ?? 0);
   }, BigNumber.ZERO);
 
   const stakedBalance = dataStaked?.reduce((sum, c) => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
+    const pool = pools.find(pool => pool.smartYieldAddress === c.meta.poolTokenAddress);
+    const valInUSD = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
+    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
     return sum.plus(valInUSD ?? BigNumber.ZERO);
   }, BigNumber.ZERO);
 
   const apySum = state.dataActive.reduce((sum, c) => {
     const val = c.smartYieldBalance.unscaleBy(c.underlyingDecimals);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
+    const valInUSD = val?.multipliedBy(c.state.jTokenPrice ?? 0);
+    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
     return sum.plus(valInUSD?.multipliedBy(c.state.juniorApy) ?? 0);
   }, BigNumber.ZERO);
 
@@ -256,15 +261,17 @@ const JuniorPortfolioInner: React.FC = () => {
     }
 
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
-
+    const pool = pools.find(pool => pool.smartYieldAddress === c.meta.poolTokenAddress);
+    const valInUSD = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
+    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
     return sum.plus(valInUSD?.multipliedBy(item.state.juniorApy) ?? 0);
   }, BigNumber.ZERO);
 
   const stakedAprSum = dataStaked.reduce((sum, c) => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
-
+    const pool = pools.find(pool => pool.smartYieldAddress === c.meta.poolTokenAddress);
+    const valInUSD = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
+    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
     return sum.plus(valInUSD?.multipliedBy(c.apr ?? 0) ?? 0);
   }, BigNumber.ZERO);
 

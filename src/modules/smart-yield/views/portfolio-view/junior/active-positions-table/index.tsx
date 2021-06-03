@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatPercent, formatUSDValue, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -54,27 +54,32 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     width: '20%',
     align: 'right',
     sorter: (a, b) =>
-      (getHumanValue(a.smartYieldBalance, a.underlyingDecimals)?.toNumber() ?? 0) -
-      (getHumanValue(b.smartYieldBalance, b.underlyingDecimals)?.toNumber() ?? 0),
-    render: (_, entity) => (
-      <>
-        <Tooltip
-          title={formatBigValue(
-            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals),
-            entity.underlyingDecimals,
-          )}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
-            {` ${entity.contracts.smartYield?.symbol}`}
+      a.smartYieldBalance
+        .unscaleBy(a.underlyingDecimals)
+        ?.comparedTo(b.smartYieldBalance.unscaleBy(b.underlyingDecimals)!) ?? 0,
+    render: function BalanceRender(_, entity) {
+      return (
+        <>
+          <Tooltip
+            title={formatToken(entity.smartYieldBalance, {
+              scale: entity.underlyingDecimals,
+              decimals: entity.underlyingDecimals,
+            })}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatToken(entity.smartYieldBalance, {
+                scale: entity.underlyingDecimals,
+                tokenName: entity.contracts.smartYield?.symbol,
+              })}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(
+              entity.smartYieldBalance.unscaleBy(entity.underlyingDecimals)?.multipliedBy(entity.state.jTokenPrice),
+            )}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(
-            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals)?.multipliedBy(entity.state.jTokenPrice),
-          )}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: (
