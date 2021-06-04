@@ -3,8 +3,7 @@ import { formatPercent, formatUSDValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Progress from 'components/antd/progress';
-import Icon from 'components/custom/icon';
-import IconsSet from 'components/custom/icons-set';
+import { AprLabel } from 'components/custom/label';
 import { Hint, Text, TextProps } from 'components/custom/typography';
 import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
 
@@ -62,16 +61,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
               {formatPercent(aggregated)}
             </Text>
             {Boolean(aggregatedApr) && (
-              <div className="apr-label">
-                <IconsSet
-                  className="mr-4"
-                  icons={[
-                    <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
-                    <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
-                  ]}
-                />
-                <div className="apr-label__text apr-label__text--gradient"> +{formatPercent(aggregatedApr)} APR</div>
-              </div>
+              <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}> +{formatPercent(aggregatedApr)} APR</AprLabel>
             )}
           </div>
         )}
