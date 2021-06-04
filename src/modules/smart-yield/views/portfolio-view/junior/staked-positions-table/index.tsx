@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -9,10 +9,18 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import { Text } from 'components/custom/typography';
-import { BondToken, ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import IconsSet from 'components/custom/icons-set';
+import { Hint, Text } from 'components/custom/typography';
+import {
+  BondToken,
+  KnownTokens,
+  ProjectToken,
+  StkAaveToken,
+  useKnownTokens,
+} from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
+import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 export type StakedPositionsTableEntity = SYRewardPoolEntity;
@@ -51,30 +59,89 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     title: 'My pool balance',
     width: '20%',
     align: 'right',
-    sorter: (a, b) => 0,
     render: function PoolBalanceRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const walletCtx = useWallet();
-      const stakedBalance = entity.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(entity.smartYield.decimals);
-      const stakedBalanceInUSD = knownTokensCtx.convertTokenInUSD(stakedBalance, entity.smartYield.symbol!);
+      const val = entity.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(entity.meta.poolTokenDecimals);
+      const uVal = val?.multipliedBy(entity.smartYield.price ?? 0);
+      const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, entity.meta.underlyingSymbol);
 
       return (
         <>
           <Tooltip
-            title={formatToken(stakedBalance, {
+            title={formatToken(val, {
               tokenName: entity.smartYield.symbol,
               decimals: entity.smartYield.decimals,
             })}>
             <Text type="p1" weight="semibold" color="primary">
-              {formatToken(stakedBalance, {
+              {formatToken(val, {
                 tokenName: entity.smartYield.symbol,
               })}
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(stakedBalanceInUSD)}
+            {formatUSD(valInUSD)}
           </Text>
         </>
+      );
+    },
+  },
+  {
+    title: (
+      <Hint
+        text={
+          <>
+            <Text type="p2" className="mb-16">
+              The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
+              positions might differ.
+            </Text>
+            <Text type="p2" className="mb-8">
+              The number below is the SMART Yield junior rewards APR. You can add that by staking tokens in Pools
+            </Text>
+            <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
+              Learn more
+            </ExternalLink>
+          </>
+        }>
+        APY
+      </Hint>
+    ),
+    render: function APYRender(_, entity) {
+      const poolsCtx = usePools();
+      const pool = poolsCtx.pools.find(
+        pool => pool.protocolId === entity.meta.protocolId && pool.underlyingAddress === entity.meta.underlyingAddress,
+      );
+
+      if (!pool) {
+        return null;
+      }
+
+      return (
+        <div>
+          <Text type="p1" weight="semibold" color="purple">
+            {formatPercent(pool.state.juniorApy)}
+          </Text>
+          {entity.rewardPool?.rewardTokensCount! > 1 ? (
+            <div className="apr-label">
+              <IconsSet
+                className="mr-4"
+                icons={[
+                  <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
+                  <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
+                ]}
+              />
+              <div className="apr-label__text apr-label__text--gradient">
+                {' '}
+                +{formatPercent(entity.apr?.plus(pool.apy ?? 0))} APR
+              </div>
+            </div>
+          ) : entity.apr ? (
+            <div className="apr-label">
+              <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
+              <div className="apr-label__text"> +{formatPercent(entity.apr)} APR</div>
+            </div>
+          ) : null}
+        </div>
       );
     },
   },
@@ -82,7 +149,6 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     title: `My $${ProjectToken.symbol} rewards`,
     width: '20%',
     align: 'right',
-    sorter: (a, b) => 0,
     render: function RewardsRender(_, entity) {
       const knownTokensCtx = useKnownTokens();
       const bondToClaim = entity.rewardPool.getClaimFor(BondToken.address)?.unscaleBy(BondToken.decimals);

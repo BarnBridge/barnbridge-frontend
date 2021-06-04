@@ -13,6 +13,9 @@ import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
+import IconsSet from 'components/custom/icons-set';
+import Icon from 'components/custom/icon';
+import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
 
 const tabs = [
   {
@@ -160,13 +163,33 @@ const MarketDetails: React.FC = () => {
                 {formatPercent(pool.state.seniorApy)}
               </Text>
             </div>
-            <div className="flex flow-row">
+            <div className="flex flow-row align-start">
               <Text type="small" weight="semibold" color="secondary" className="mb-4">
                 Junior APY
               </Text>
               <Text type="p1" weight="semibold" color="purple">
                 {formatPercent(pool.state.juniorApy)}
               </Text>
+              {pool.contracts.rewardPool?.rewardTokensCount! > 1 ? (
+                <div className="apr-label">
+                  <IconsSet
+                    className="mr-4"
+                    icons={[
+                      <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
+                      <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
+                    ]}
+                  />
+                  <div className="apr-label__text apr-label__text--gradient">
+                    {' '}
+                    +{formatPercent(pool.apr)} APR
+                  </div>
+                </div>
+              ) : pool.apr ? (
+                <div className="apr-label">
+                  <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
+                  <div className="apr-label__text"> +{formatPercent(pool.apr)} APR</div>
+                </div>
+              ) : null}
             </div>
           </div>
           <Divider />

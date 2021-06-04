@@ -61,10 +61,22 @@ const MULTI_ABI: AbiItem[] = [
     outputs: [{ name: 'amount', type: 'uint256' }],
   },
   {
+    name: 'numRewardTokens',
+    type: 'function',
+    inputs: [],
+    outputs: [{ name: '', type: 'uint256' }],
+  },
+  {
     name: 'rewardLeft',
     type: 'function',
     inputs: [{ name: 'address', type: 'address' }],
     outputs: [{ name: 'amount', type: 'uint256' }],
+  },
+  {
+    name: 'rewardTokens',
+    type: 'function',
+    inputs: [{ name: '', type: 'uint256' }],
+    outputs: [{ name: '', type: 'address' }],
   },
   {
     name: 'claim',
@@ -125,6 +137,7 @@ class SYRewardPoolContract extends Web3Contract {
 
   // common data
   poolSize?: BigNumber;
+  rewardTokensCount?: number;
   rewardLeft: Map<string, BigNumber> = new Map();
   rewardRates: Map<string, BigNumber> = new Map();
 
@@ -135,14 +148,10 @@ class SYRewardPoolContract extends Web3Contract {
   async loadCommon(): Promise<void> {
     this.poolSize = undefined;
 
-    const [poolSize] = await this.batch([
-      {
-        method: 'poolSize',
-        transform: value => new BigNumber(value),
-      },
-    ]);
+    const [poolSize, numRewardTokens] = await this.batch([{ method: 'poolSize' }, { method: 'numRewardTokens' }]);
 
     this.poolSize = new BigNumber(poolSize);
+    this.rewardTokensCount = Number(numRewardTokens) || 1;
     this.emit(Web3Contract.UPDATE_DATA);
   }
 

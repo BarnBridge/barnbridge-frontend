@@ -1,7 +1,8 @@
+import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import { TokenMeta, getTokenByAddress } from 'components/providers/known-tokens-provider';
+import { BondToken, TokenMeta, convertTokenInUSD, getTokenByAddress } from 'components/providers/known-tokens-provider';
 import ManagedEntity from 'models/managedEntity';
 import { APISYRewardPool } from 'modules/smart-yield/api';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
@@ -37,24 +38,43 @@ export class SYRewardPoolEntity extends ManagedEntity {
     });
   }
 
+  get apr(): BigNumber | undefined {
+    const { rewardPool, smartYield } = this;
+    const { poolSize } = rewardPool;
+
+    if (!poolSize) {
+      return undefined;
+    }
+
+    const r = rewardPool.getDailyRewardFor(BondToken.address)?.unscaleBy(BondToken.decimals);
+    const yearlyReward = convertTokenInUSD(r, BondToken.symbol!)?.multipliedBy(365);
+
+    const p = poolSize.dividedBy(10 ** (smartYield.decimals ?? 0));
+    const poolBalance = convertTokenInUSD(p, smartYield.symbol!);
+
+    if (!yearlyReward || !poolBalance || poolBalance.eq(BigNumber.ZERO)) {
+      return undefined;
+    }
+
+    return yearlyReward.dividedBy(poolBalance);
+  }
+
   loadCommonData() {
     this.smartYield.loadCommon().catch(Error);
     this.rewardPool.loadCommon().catch(Error);
     this.rewardTokens.forEach(rewardToken => {
       this.rewardPool.loadRewardLeftFor(rewardToken.address).catch(Error);
       this.rewardPool.loadRewardRateFor(rewardToken.address).catch(Error);
+      (rewardToken.contract as Erc20Contract)?.loadBalance(this.meta.poolAddress).catch(Error);
     });
   }
 
-  loadBalances() {
+  loadUserBalances() {
     this.smartYield.loadBalance().catch(Error);
     this.rewardTokens.forEach(rewardToken => {
       (rewardToken.contract as Erc20Contract)?.loadBalance().catch(Error);
+      this.rewardPool.loadBalanceFor(rewardToken.address).catch(Error);
     });
-    this.rewardTokens.forEach(rewardContract => {
-      this.rewardPool.loadBalanceFor(rewardContract.address).catch(Error);
-    });
-
     if (this.rewardPool.account) {
       this.rewardPool.loadBalanceFor(this.rewardPool.account).catch(Error);
     }
@@ -67,7 +87,7 @@ export class SYRewardPoolEntity extends ManagedEntity {
   }
 
   loadUserData() {
-    this.loadBalances();
+    this.loadUserBalances();
     this.loadClaims();
   }
 

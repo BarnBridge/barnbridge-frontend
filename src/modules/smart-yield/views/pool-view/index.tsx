@@ -1,12 +1,13 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
-import BigNumber from 'bignumber.js';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
+import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, ProjectToken } from 'components/providers/known-tokens-provider';
+import { BondToken, KnownTokens, ProjectToken, StkAaveToken } from 'components/providers/known-tokens-provider';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
 import Statistics from 'modules/smart-yield/views/pool-view/statistics';
@@ -22,42 +23,11 @@ const PoolView: FC = () => {
   const { market: poolMarket, uToken, pool } = rewardPoolCtx;
   const rewardTokens = pool ? Array.from(pool.rewardTokens.values()) : [];
 
-  const apr = BigNumber.ZERO;
-  // const apr = React.useMemo(() => { /// ???
-  //   if (!rewardPool) {
-  //     return undefined;
-  //   }
-  //
-  //   const { poolSize, dailyReward } = rewardPool.pool;
-  //
-  //   if (!poolSize || !dailyReward) {
-  //     return undefined;
-  //   }
-  //
-  //   const bondPrice = BondToken.price ?? 1;
-  //   const jTokenPrice = rewardPool.poolToken.price ?? 1;
-  //
-  //   const yearlyReward = dailyReward
-  //     .dividedBy(10 ** BondToken.decimals)
-  //     .multipliedBy(bondPrice)
-  //     .multipliedBy(365);
-  //   const poolBalance = poolSize
-  //     .dividedBy(10 ** (rewardPool.poolToken.decimals ?? 0))
-  //     .multipliedBy(jTokenPrice)
-  //     .multipliedBy(1);
-  //
-  //   if (poolBalance.isEqualTo(BigNumber.ZERO)) {
-  //     return BigNumber.ZERO;
-  //   }
-  //
-  //   return yearlyReward.dividedBy(poolBalance);
-  // }, [rewardPool?.pool.poolSize, rewardPool?.pool.dailyReward, BondToken.price]);
-
   if (!pool) {
     return null;
   }
 
-  const { rewardPool, smartYield } = pool;
+  const { rewardPool, smartYield, apr } = pool;
 
   return (
     <div className="container-limit">
@@ -98,10 +68,23 @@ const PoolView: FC = () => {
               }) ?? '-'}
             </dd>
           </div>
-          {/* <div className={s.headerTermRow}>
+          <div className={s.headerTermRow}>
             <dt>APR</dt>
-            <dd>{formatPercent(apr) ?? '-'}</dd>
-          </div> */}
+            <dd className="apr-label-r">
+              {pool.meta.poolType === 'MULTI' ? (
+                <IconsSet
+                  className="mr-4"
+                  icons={[
+                    <Icon key={BondToken.symbol} width={16} height={16} name={BondToken.icon!} />,
+                    <Icon key={StkAaveToken.symbol} width={16} height={16} name={StkAaveToken.icon!} />,
+                  ]}
+                />
+              ) : (
+                <Icon width={16} height={16} name="static/token-bond" className="mr-4" />
+              )}
+              {formatPercent(apr)}
+            </dd>
+          </div>
           {rewardTokens.map(rewardToken => (
             <React.Fragment key={rewardToken.address}>
               {rewardToken.symbol === KnownTokens.BOND ? (
@@ -130,7 +113,7 @@ const PoolView: FC = () => {
                   <dt>{rewardToken.symbol} rewards balance</dt>
                   <dd>
                     <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
-                    {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
+                    {formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
                   </dd>

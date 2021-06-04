@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatPercent, formatUSDValue, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -12,7 +12,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
@@ -54,27 +54,34 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     width: '20%',
     align: 'right',
     sorter: (a, b) =>
-      (getHumanValue(a.smartYieldBalance, a.underlyingDecimals)?.toNumber() ?? 0) -
-      (getHumanValue(b.smartYieldBalance, b.underlyingDecimals)?.toNumber() ?? 0),
-    render: (_, entity) => (
-      <>
-        <Tooltip
-          title={formatBigValue(
-            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals),
-            entity.underlyingDecimals,
-          )}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals))}
-            {` ${entity.contracts.smartYield?.symbol}`}
+      a.smartYieldBalance
+        .unscaleBy(a.underlyingDecimals)
+        ?.comparedTo(b.smartYieldBalance.unscaleBy(b.underlyingDecimals)!) ?? 0,
+    render: function BalanceRender(_, entity) {
+      const knownTokensCtx = useKnownTokens();
+      const value = entity.smartYieldBalance.unscaleBy(entity.underlyingDecimals);
+      const uValue = value?.multipliedBy(entity.state.jTokenPrice);
+      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.underlyingSymbol);
+      return (
+        <>
+          <Tooltip
+            title={formatToken(entity.smartYieldBalance, {
+              scale: entity.underlyingDecimals,
+              decimals: entity.underlyingDecimals,
+            })}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatToken(entity.smartYieldBalance, {
+                scale: entity.underlyingDecimals,
+                tokenName: entity.contracts.smartYield?.symbol,
+              })}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(valueInUSD)}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(
-            getHumanValue(entity.smartYieldBalance, entity.underlyingDecimals)?.multipliedBy(entity.state.jTokenPrice),
-          )}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: (
@@ -85,7 +92,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
               The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
               positions might differ.
             </Text>
-            <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">
+            <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
               Learn more
             </ExternalLink>
           </Grid>
@@ -111,7 +118,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
               This is the amount of time you would have to wait if you chose to go through the 2 step withdrawal
               process.
             </Text>
-            <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#steps-for-exit">
+            <ExternalLink href="https://integrations.barnbridge.com/specs/smart-yield-specifications#steps-for-exit">
               Learn more
             </ExternalLink>
           </Grid>

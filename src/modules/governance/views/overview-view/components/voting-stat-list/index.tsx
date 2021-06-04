@@ -69,7 +69,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                   $BOND staked because of the multiplier mechanic
                 </Text>
                 <ExternalLink
-                  href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
+                  href="https://integrations.barnbridge.com/specs/dao-specifications#multiplier-and-voting-power"
                   className="link-blue"
                   style={{ fontWeight: 600 }}>
                   Learn more
@@ -98,7 +98,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                   advantage of the voting power bonus.
                 </Text>
                 <ExternalLink
-                  href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
+                  href="https://integrations.barnbridge.com/specs/dao-specifications#users-can-lock-bond-for-vbond"
                   className="link-blue"
                   style={{ fontWeight: 600 }}>
                   Learn more
@@ -156,7 +156,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               <Grid flow="row" gap={8} align="start">
                 <Text type="p2">This number shows the amount of vBOND that is delegated to other addresses.</Text>
                 <ExternalLink
-                  href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power#3-you-can-delegate-vbonds-to-other-users"
+                  href="https://integrations.barnbridge.com/specs/dao-specifications#users-can-delegate-vbond-to-other-users"
                   className="link-blue"
                   style={{ fontWeight: 600 }}>
                   Learn more

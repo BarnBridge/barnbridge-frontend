@@ -7,6 +7,7 @@ import Web3Contract from 'web3/web3Contract';
 
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import {
+  BondToken,
   DaiToken,
   EthToken,
   GusdToken,
@@ -14,6 +15,7 @@ import {
   UsdcToken,
   UsdtToken,
   convertTokenIn,
+  convertTokenInUSD,
 } from 'components/providers/known-tokens-provider';
 import config from 'config';
 import { useReload } from 'hooks/useReload';
@@ -35,7 +37,7 @@ export type PoolsSYPool = APISYPool & {
     rewardPool?: SYRewardPoolContract;
   };
   apy?: BigNumber;
-  rewardAPR?: BigNumber;
+  apr?: BigNumber;
 };
 
 type State = {
@@ -154,13 +156,6 @@ const PoolsProvider: React.FC = props => {
             smartYield.loadCommon();
             underlying.loadCommon();
 
-            let rewardPool;
-            if (pool.rewardPoolAddress) {
-              rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress);
-              rewardPool.on(Web3Contract.UPDATE_DATA, reload);
-              rewardPool.loadCommon();
-            }
-
             const result: PoolsSYPool = {
               ...pool,
               meta: Pools.get(pool.underlyingSymbol),
@@ -168,15 +163,42 @@ const PoolsProvider: React.FC = props => {
               contracts: {
                 smartYield,
                 underlying,
-                rewardPool,
+                rewardPool: undefined,
               },
               apy: undefined,
+              apr: undefined,
             };
+
+            if (pool.rewardPoolAddress) {
+              const rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress, pool.protocolId === AaveMarket.id);
+              rewardPool.on(Web3Contract.UPDATE_DATA, reload);
+              rewardPool
+                .loadCommon()
+                .then(() => {
+                  return rewardPool.loadRewardRateFor(BondToken.address) as any;
+                })
+                .then(() => {
+                  const { poolSize } = rewardPool;
+
+                  if (poolSize) {
+                    const r = rewardPool.getDailyRewardFor(BondToken.address)?.unscaleBy(BondToken.decimals);
+                    const yearlyReward = convertTokenInUSD(r, BondToken.symbol!)?.multipliedBy(365);
+
+                    const p = poolSize.dividedBy(10 ** (smartYield.decimals ?? 0));
+                    const poolBalance = convertTokenInUSD(p, smartYield.symbol!);
+
+                    if (yearlyReward && poolBalance && poolBalance.gt(BigNumber.ZERO)) {
+                      result.apr = yearlyReward.dividedBy(poolBalance);
+                      reload();
+                    }
+                  }
+                });
+              result.contracts.rewardPool = rewardPool;
+            }
 
             if (pool.protocolId === AaveMarket.id) {
               getAaveIncentivesAPY(pool.cTokenAddress, pool.underlyingDecimals, pool.underlyingSymbol).then(apy => {
                 result.apy = apy;
-
                 reload();
               });
             }

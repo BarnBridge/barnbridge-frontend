@@ -11,6 +11,7 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import IconsSet from 'components/custom/icons-set';
 import { Hint, Text } from 'components/custom/typography';
+import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
 import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { Wallet, useWallet } from 'wallets/wallet';
@@ -128,7 +129,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
               <Text type="p2" className="mb-8">
                 The number below is the SMART Yield junior rewards APR. You can add that by staking tokens in Pools
               </Text>
-              <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches#jtokens-apy">
+              <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
                 Learn more
               </ExternalLink>
             </>
@@ -142,24 +143,26 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
           <Text type="p1" weight="semibold" color="purple">
             {formatPercent(entity.state.juniorApy)}
           </Text>
-          <Text type="small" weight="semibold" color="purple">
-            {entity.rewardAPR && `+${formatPercent(entity.rewardAPR)}`}
-            {/* {entity.apy && formatPercent(entity.apy.toNumber())} */}
-          </Text>
-          {/* <div className="apr-label">
-            <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
-            <div className="apr-label__text"> +14.32% APR</div>
-          </div>
-          <div className="apr-label">
-            <IconsSet
-              className="mr-4"
-              icons={[
-                <Icon width={12} height={12} name="static/token-bond" />,
-                <Icon width={12} height={12} name="static/staked_aave" />,
-              ]}
-            />
-            <div className="apr-label__text apr-label__text--gradient"> +14.32% APR</div>
-          </div> */}
+          {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
+            <div className="apr-label">
+              <IconsSet
+                className="mr-4"
+                icons={[
+                  <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
+                  <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
+                ]}
+              />
+              <div className="apr-label__text apr-label__text--gradient">
+                {' '}
+                +{formatPercent(entity.apr?.plus(entity.apy ?? 0))} APR
+              </div>
+            </div>
+          ) : entity.apr ? (
+            <div className="apr-label">
+              <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
+              <div className="apr-label__text"> +{formatPercent(entity.apr)} APR</div>
+            </div>
+          ) : null}
         </div>
       ),
     },

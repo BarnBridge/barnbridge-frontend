@@ -34,6 +34,10 @@ const config = {
     aGusd: toLowerCase(process.env.REACT_APP_TOKEN_AGUSD_ADDR),
     aUsdc: toLowerCase(process.env.REACT_APP_TOKEN_AUSDC_ADDR),
     aUsdt: toLowerCase(process.env.REACT_APP_TOKEN_AUSDT_ADDR),
+
+    bbcrUsdc: toLowerCase(process.env.REACT_APP_TOKEN_BBCR_USDC_ADDR),
+    bbcrDai: toLowerCase(process.env.REACT_APP_TOKEN_BBCR_DAI_ADDR),
+    bbcrUsdt: toLowerCase(process.env.REACT_APP_TOKEN_BBCR_USDT_ADDR),
   },
   feeds: {
     btc: toLowerCase(process.env.REACT_APP_FEED_BTC_ADDR),
