@@ -1,0 +1,47 @@
+@import 'src/styles/text';
+
+.aprLabel {
+  @include font-sm-semi-bold;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  border: 1px solid var(--theme-border-color);
+  border-radius: 38px;
+  padding: 0 2px;
+  background-color: var(--theme-body-color);
+
+  &.aprLabelLarge {
+    @include font-p1-semi-bold;
+
+    svg {
+      width: 16px !important;
+      height: 16px !important;
+    }
+
+    .aprLabelText {
+      color: var(--theme-primary-color);
+    }
+  }
+
+  svg {
+    width: 12px !important;
+    height: 12px !important;
+
+    &:not(:first-child) {
+      margin-left: -6px !important;
+    }
+  }
+}
+
+.aprLabelText {
+  color: var(--theme-red-color);
+
+  &.aprLabelTextGradient {
+    background-color: var(--theme-blue-color);
+    background-image: linear-gradient(45deg, var(--theme-blue-color), var(--theme-red-color));
+    background-size: 100%;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    -moz-text-fill-color: transparent;
+  }
+}
