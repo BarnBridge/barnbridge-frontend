@@ -6,16 +6,17 @@ import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils'
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
+import Icon from 'components/custom/icon';
+import IconsSet from 'components/custom/icons-set';
+import { AprLabel } from 'components/custom/label';
 import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
+import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
-import IconsSet from 'components/custom/icons-set';
-import Icon from 'components/custom/icon';
-import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
 
 const tabs = [
   {
@@ -171,24 +172,9 @@ const MarketDetails: React.FC = () => {
                 {formatPercent(pool.state.juniorApy)}
               </Text>
               {pool.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-                <div className="apr-label">
-                  <IconsSet
-                    className="mr-4"
-                    icons={[
-                      <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
-                      <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
-                    ]}
-                  />
-                  <div className="apr-label__text apr-label__text--gradient">
-                    {' '}
-                    +{formatPercent(pool.apr)} APR
-                  </div>
-                </div>
+                <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}>+{formatPercent(pool.apr)} APR</AprLabel>
               ) : pool.apr ? (
-                <div className="apr-label">
-                  <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
-                  <div className="apr-label__text"> +{formatPercent(pool.apr)} APR</div>
-                </div>
+                <AprLabel icons={['static/token-bond']}>+{formatPercent(pool.apr)} APR</AprLabel>
               ) : null}
             </div>
           </div>

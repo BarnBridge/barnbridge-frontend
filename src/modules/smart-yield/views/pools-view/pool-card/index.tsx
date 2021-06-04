@@ -9,7 +9,7 @@ import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import IconsSet from 'components/custom/icons-set';
+import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import {
   BondToken,
@@ -96,19 +96,12 @@ export const PoolCard: FC<PoolCardProps> = props => {
           <dl>
             <div className={s.defRow}>
               <dt>APR</dt>
-              <dd className="apr-label-r">
-                {pool.meta.poolType === 'MULTI' ? (
-                  <IconsSet
-                    className="mr-4"
-                    icons={[
-                      <Icon key={BondToken.symbol} width={16} height={16} name={BondToken.icon!} />,
-                      <Icon key={StkAaveToken.symbol} width={16} height={16} name={StkAaveToken.icon!} />,
-                    ]}
-                  />
-                ) : (
-                  <Icon width={16} height={16} name="static/token-bond" className="mr-4" />
-                )}
-                {formatPercent(apr)}
+              <dd>
+                <AprLabel
+                  icons={pool.meta.poolType === 'MULTI' ? [BondToken.icon!, StkAaveToken.icon!] : ['static/token-bond']}
+                  size="large">
+                  {formatPercent(apr)}
+                </AprLabel>
               </dd>
             </div>
             {rewardTokens.map(rewardToken => (
@@ -178,19 +171,12 @@ export const PoolCard: FC<PoolCardProps> = props => {
           <dl>
             <div className={s.defRow}>
               <dt>APR</dt>
-              <dd className="apr-label-r">
-                {pool.meta.poolType === 'MULTI' ? (
-                  <IconsSet
-                    className="mr-4"
-                    icons={[
-                      <Icon key={BondToken.symbol} width={16} height={16} name={BondToken.icon!} />,
-                      <Icon key={StkAaveToken.symbol} width={16} height={16} name={StkAaveToken.icon!} />,
-                    ]}
-                  />
-                ) : (
-                  <Icon width={16} height={16} name="static/token-bond" className="mr-4" />
-                )}
-                {formatPercent(apr)}
+              <dd>
+                <AprLabel
+                  icons={pool.meta.poolType === 'MULTI' ? [BondToken.icon!, StkAaveToken.icon!] : ['static/token-bond']}
+                  size="large">
+                  {formatPercent(apr)}
+                </AprLabel>
               </dd>
             </div>
             {rewardTokens.map(rewardToken => (
