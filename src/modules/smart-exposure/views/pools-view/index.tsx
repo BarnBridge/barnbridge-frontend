@@ -7,28 +7,23 @@ import { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Text } from 'components/custom/typography';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
-import { PoolType } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 import s from './s.module.scss';
 
 const PoolsView: React.FC = () => {
-  const [pools, setPools] = useState<PoolType[]>([]);
-  const [activePool, setActivePool] = useState<PoolType>();
+  const [pools, setPools] = useState<PoolApiType[]>([]);
+  const [activePool, setActivePool] = useState<PoolApiType>();
 
   useEffect(() => {
-    const url = new URL(`/api/smartexposure/pools`, config.api.baseUrl);
-
-    fetch(url.toString())
-      .then(result => result.json())
-      .then(result => {
-        setPools(result.data);
-        setActivePool(result.data[0]);
-      });
+    fetchPools().then(result => {
+      setPools(result);
+      setActivePool(result[0]);
+    });
   }, []);
 
   return (

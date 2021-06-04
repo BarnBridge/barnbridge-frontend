@@ -9,6 +9,7 @@ import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/wallet';
 
+import { Charts } from './charts';
 import { TrancheDetails } from './details';
 import { PriceTrend } from './trend';
 
@@ -91,6 +92,7 @@ const TrancheView: React.FC = () => {
         <PriceTrend poolAddress={poolAddress} trancheAddress={trancheAddress} />
         <TrancheDetails tranche={tranche} />
       </div>
+      <Charts />
     </>
   );
 };

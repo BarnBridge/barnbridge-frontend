@@ -5,6 +5,7 @@
   display: flex;
   scroll-snap-type: x proximity;
   height: 72px;
+  flex-shrink: 0;
 
   &.shadows {
     --tabs-bg: var(--theme-body-color);

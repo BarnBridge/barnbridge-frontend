@@ -7,46 +7,23 @@ import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { PoolApiType, TranchesItemTypeApiType, fetchTranches } from 'modules/smart-exposure/api';
 
-import { PoolType, calcTokensRatio } from 'modules/smart-exposure/utils';
+import { calcTokensRatio } from 'modules/smart-exposure/utils';
 import { numberFormat } from 'utils';
 
-type TrancheTypeApi = {
-  eTokenAddress: string;
-  eTokenSymbol: string;
-  sFactorE: string;
-  state: {
-    blockNumber: number;
-    blockTimestamp: string;
-    eTokenPrice: string;
-    tokenALiquidity: string;
-    tokenBLiquidity: string;
-  };
-  targetRatio: string;
-  tokenARatio: string;
-  tokenBRatio: string;
-};
-
 type Props = {
-  pool: PoolType;
+  pool: PoolApiType;
 };
 
 export const PairsTable: React.FC<Props> = ({ pool }) => {
-  const [tranches, setTranches] = useState<TrancheTypeApi[]>([]);
+  const [tranches, setTranches] = useState<TranchesItemTypeApiType[]>([]);
 
   useEffect(() => {
-    const url = new URL(`/api/smartexposure/pools/${pool.poolAddress}/tranches`, config.api.baseUrl);
-
-    fetch(url.toString())
-      .then(result => result.json())
-      .then(result => {
-        setTranches(result.data);
-        console.log('tranches', result.data);
-      });
+    fetchTranches(pool.poolAddress).then(setTranches);
   }, [pool.poolAddress]);
 
-  const tableColumns: ColumnType<TrancheTypeApi>[] = useMemo(
+  const tableColumns: ColumnType<TranchesItemTypeApiType>[] = useMemo(
     () => [
       {
         heading: 'Target / current ratio',
@@ -117,7 +94,7 @@ export const PairsTable: React.FC<Props> = ({ pool }) => {
     [pool],
   );
 
-  return <Table<TrancheTypeApi> columns={tableColumns} data={tranches} />;
+  return <Table<TranchesItemTypeApiType> columns={tableColumns} data={tranches} />;
 };
 
 type RatioLabelPropsType = {

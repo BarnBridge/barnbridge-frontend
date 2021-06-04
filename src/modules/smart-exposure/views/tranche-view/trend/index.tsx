@@ -5,8 +5,9 @@ import * as ReCharts from 'recharts';
 import { formatPercent, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
-import { Tabs } from 'components/custom/tabs';
+import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
 import config from 'config';
+import { fetchEtokenPrice } from 'modules/smart-exposure/api';
 
 import s from './s.module.scss';
 
@@ -15,21 +16,6 @@ import s from './s.module.scss';
 // type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
 //   point: number;
 // };
-
-const tabs = [
-  {
-    id: '24h',
-    children: '24h',
-  },
-  {
-    id: '1w',
-    children: '1w',
-  },
-  {
-    id: '30d',
-    children: '1mo',
-  },
-];
 
 type ETokenPriceType = {
   eTokenPrice: string;
@@ -42,22 +28,11 @@ type PropsType = {
 };
 
 export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress }) => {
-  const [activeTab, setActiveTab] = useState('24h');
+  const [activeTab, setActiveTab] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const [priceList, setPriceList] = useState<ETokenPriceType[]>([]);
 
   useEffect(() => {
-    const searchParams = new URLSearchParams({ window: activeTab });
-
-    const url = new URL(
-      `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/etoken-price?${searchParams.toString()}`,
-      config.api.baseUrl,
-    );
-
-    fetch(url.toString())
-      .then(result => result.json())
-      .then(result => {
-        setPriceList(result.data);
-      });
+    fetchEtokenPrice(poolAddress, trancheAddress, activeTab).then(setPriceList);
   }, [poolAddress, trancheAddress, activeTab]);
 
   const ticks = React.useMemo(() => {
@@ -111,14 +86,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>
         <div className="text-p1 fw-semibold color-primary mr-8">Etoken price trend</div>
-        <Tabs
-          tabs={tabs}
-          activeKey={activeTab}
-          onClick={setActiveTab}
-          className="ml-auto"
-          variation="elastic"
-          size="small"
-        />
+        <PeriodChartTabs activeKey={activeTab} onClick={setActiveTab} size="small" className="ml-auto" />
       </header>
       <div className="p-24">
         <Spin spinning={!priceList.length}>

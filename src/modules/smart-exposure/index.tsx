@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
@@ -19,37 +19,8 @@ const TrancheView = lazy(() => import('./views/tranche-view'));
 
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
 
-type SmartYieldViewParams = {
-  vt: string;
-};
-
 const SmartExposureView: React.FC = () => {
-  const {
-    params: { vt = 'markets' },
-  } = useRouteMatch<SmartYieldViewParams>();
   const wallet = useWallet();
-  const [activeTab, setActiveTab] = React.useState<string>(vt);
-
-  React.useEffect(() => {
-    if (['stats', 'deposit'].includes(vt)) {
-      setActiveTab('markets');
-      return;
-    }
-
-    if (vt === 'withdraw') {
-      setActiveTab('portfolio');
-      return;
-    }
-
-    if (vt === 'pool') {
-      setActiveTab('pools');
-      return;
-    }
-
-    if (vt !== activeTab) {
-      setActiveTab(vt);
-    }
-  }, [vt]);
 
   const tabs = [
     {
