@@ -132,14 +132,6 @@ const AggregatedPoolCard: FCx = props => {
 
         {activeTab === 'my' && walletCtx.isActive && (
           <div className="flex flow-row">
-            <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
-                APR
-              </Text>
-              <Text type="p1" weight="semibold" color="primary">
-                {formatPercent(aggregatedAPR) ?? '-'}
-              </Text>
-            </div>
             {Array.from(rewardTokens.values()).map(rewardToken => (
               <div key={rewardToken.symbol} className="flex align-center justify-space-between mb-24">
                 <Text type="small" weight="semibold" color="secondary">
