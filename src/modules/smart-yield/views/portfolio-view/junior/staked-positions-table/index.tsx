@@ -10,6 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import IconsSet from 'components/custom/icons-set';
+import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import {
   BondToken,
@@ -122,24 +123,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             {formatPercent(pool.state.juniorApy)}
           </Text>
           {entity.rewardPool?.rewardTokensCount! > 1 ? (
-            <div className="apr-label">
-              <IconsSet
-                className="mr-4"
-                icons={[
-                  <Icon key={BondToken.symbol} width={12} height={12} name={BondToken.icon!} />,
-                  <Icon key={StkAaveToken.symbol} width={12} height={12} name={StkAaveToken.icon!} />,
-                ]}
-              />
-              <div className="apr-label__text apr-label__text--gradient">
-                {' '}
-                +{formatPercent(entity.apr?.plus(pool.apy ?? 0))} APR
-              </div>
-            </div>
+            <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}>
+              +{formatPercent(entity.apr?.plus(pool.apy ?? 0))} APR
+            </AprLabel>
           ) : entity.apr ? (
-            <div className="apr-label">
-              <Icon width={12} height={12} name="static/token-bond" className="mr-4" />
-              <div className="apr-label__text"> +{formatPercent(entity.apr)} APR</div>
-            </div>
+            <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
           ) : null}
         </div>
       );
