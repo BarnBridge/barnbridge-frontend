@@ -4,11 +4,13 @@ import { Link, useParams } from 'react-router-dom';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Tabs } from 'components/custom/tabs';
-import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
+import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
+
+import { numberFormat } from 'utils';
 
 const DepositView: React.FC = () => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
@@ -28,6 +30,9 @@ const DepositView: React.FC = () => {
 
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
+
+  const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
+  const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
   const tabs = [
     {
@@ -53,11 +58,11 @@ const DepositView: React.FC = () => {
           } as React.CSSProperties
         }>
         <div className="flex">
-          <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={40} className="mr-16" />
+          <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
-              tokenA?.symbol
-            } / ${Number(tranche.tokenBRatio) * 100}% ${tokenB?.symbol}`}</div>
+              tranche.tokenA.symbol
+            } / ${Number(tranche.tokenBRatio) * 100}% ${tranche.tokenB.symbol}`}</div>
             <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
@@ -69,7 +74,12 @@ const DepositView: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="card ph-32 pv-32 mh-auto" style={{ width: '100%', maxWidth: 640 }}>
+      <div
+        className="card ph-32 pv-32 mh-auto"
+        style={{
+          width: '100%',
+          maxWidth: 640,
+        }}>
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
           Withdraw
         </Text>
@@ -97,16 +107,16 @@ const MultipleTokensForm = ({ tranche }: { tranche: TrancheApiType }) => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenState, setTokenState] = React.useState<string>('');
 
-  const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
-  const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
+  const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
+  const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
   return (
     <form>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
+        <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
-        before={<IconsPair icon1={tokenA?.icon!} icon2={tokenB?.icon!} size={24} />}
+        before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
         value={tokenState}
         onChange={setTokenState}
         max={9.789}
@@ -116,22 +126,22 @@ const MultipleTokensForm = ({ tranche }: { tranche: TrancheApiType }) => {
       />
 
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">WBTC amount</span>
+        <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>
       </div>
       <TokenAmountPreview
-        before={<Icon name={tokenA?.icon!} width={24} height={24} />}
+        before={<Icon name={tokenAIcon} width={24} height={24} />}
         value="1.8716"
         secondary="$ 107,319.4467"
         className="mb-32"
       />
 
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">ETH amount</span>
+        <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 26.13%</span>
       </div>
       <TokenAmountPreview
-        before={<Icon name={tokenB?.icon!} width={24} height={24} />}
+        before={<Icon name={tokenBIcon} width={24} height={24} />}
         value="2.3116"
         secondary="$ 107,319.4467"
         className="mb-32"
@@ -154,16 +164,21 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenState, setTokenState] = React.useState<string>('');
 
-  const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
-  const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
+  const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
+  const [selectedTokenSymbol, setSelectedTokenSymbol] = React.useState<KnownTokens>(tokens[0]);
+
+  const selectedToken = getTokenBySymbol(selectedTokenSymbol);
+
+  const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
+  const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
   return (
     <form>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
+        <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
-        before={<IconsPair icon1={tokenA?.icon!} icon2={tokenB?.icon!} size={24} />}
+        before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
         value={tokenState}
         onChange={setTokenState}
         max={9.789}
@@ -173,14 +188,26 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
       />
 
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">WBTC amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>
+        <span className="text-sm fw-semibold color-secondary">{selectedToken?.symbol} amount</span>
+        <span className="text-sm fw-semibold color-secondary ml-auto">
+          Current ratio:{' '}
+          {numberFormat(
+            Number(selectedToken?.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio) * 100,
+            {
+              minimumFractionDigits: 2,
+            },
+          )}
+          %
+        </span>
       </div>
-      <TokenAmountPreview
-        before={<Icon name={tokenA?.icon!} width={24} height={24} />}
-        value="1.8716"
-        secondary="$ 107,319.4467"
-        className="mb-32"
+      <TokenAmount
+        before={<TokenSelect value={selectedTokenSymbol} onChange={setSelectedTokenSymbol} tokens={tokens} />}
+        value={tokenState}
+        onChange={setTokenState}
+        max={9.789}
+        placeholder={`0 (Max ${9.789})`}
+        className="mb-40"
+        classNameBefore="ph-0"
       />
 
       <TransactionDetails

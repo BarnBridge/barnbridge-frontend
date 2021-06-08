@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import cn from 'classnames';
 
-import { DropdownList } from 'components/custom/dropdown';
+// import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
@@ -11,6 +11,7 @@ import { useWallet } from 'wallets/wallet';
 
 import { Charts } from './charts';
 import { TrancheDetails } from './details';
+import { TransactionsView } from './transactions';
 import { PriceTrend } from './trend';
 
 import { calcTokensRatio } from 'modules/smart-exposure/utils';
@@ -26,7 +27,6 @@ const TrancheView: React.FC = () => {
   useEffect(() => {
     fetchTranche(poolAddress, trancheAddress).then(result => {
       setTranche(result);
-      console.log('tranche', result);
     });
   }, [poolAddress, trancheAddress]);
 
@@ -65,7 +65,7 @@ const TrancheView: React.FC = () => {
             <Link to={`${location.pathname}/withdraw`} className="button-ghost">
               Withdraw
             </Link>
-            <DropdownList
+            {/* <DropdownList
               items={[
                 {
                   to: `${location.pathname}/change-tranche`,
@@ -84,7 +84,7 @@ const TrancheView: React.FC = () => {
                   <Icon name="vertical-dots" />
                 </button>
               )}
-            </DropdownList>
+            </DropdownList> */}
           </div>
         ) : null}
       </div>
@@ -92,7 +92,8 @@ const TrancheView: React.FC = () => {
         <PriceTrend poolAddress={poolAddress} trancheAddress={trancheAddress} />
         <TrancheDetails tranche={tranche} />
       </div>
-      <Charts />
+      <Charts tranche={tranche} className="mb-32" />
+      <TransactionsView />
     </>
   );
 };

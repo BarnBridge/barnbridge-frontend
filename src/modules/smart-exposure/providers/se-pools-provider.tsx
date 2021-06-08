@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 
 import config from 'config';
 import { useReload } from 'hooks/useReload';
@@ -7,13 +7,13 @@ import SeEPoolPeripheryContract from 'modules/smart-exposure/contracts/seEPoolPe
 import { useWallet } from 'wallets/wallet';
 
 type SEContextType = {
-  pools: any[];
+  // pools: any[];
   ePoolContract?: SeEPoolContract;
   ePoolPeripheryContract?: SeEPoolPeripheryContract;
 };
 
 const Context = createContext<SEContextType>({
-  pools: [],
+  // pools: [],
   ePoolContract: undefined,
   ePoolPeripheryContract: undefined,
 });
@@ -27,7 +27,7 @@ export const SEPoolsProvider: React.FC = props => {
 
   const walletCtx = useWallet();
   const [reload] = useReload();
-  const [pools, setPools] = useState([]);
+  // const [pools, setPools] = useState([]);
 
   const ePoolContract = useMemo(
     () =>
@@ -61,7 +61,7 @@ export const SEPoolsProvider: React.FC = props => {
   }, [ePoolContract, reload]);
 
   const value = {
-    pools,
+    // pools,
     ePoolContract,
     ePoolPeripheryContract,
   };

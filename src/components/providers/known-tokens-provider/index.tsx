@@ -353,6 +353,11 @@ export function getTokenByAddress(address: string): TokenMeta | undefined {
   return KNOWN_TOKENS.find(token => token.address.toLowerCase() === address.toLowerCase());
 }
 
+export function getTokenIconBySymbol(symbol: string): TokenIconNames {
+  const foundToken = KNOWN_TOKENS.find(token => token.symbol === symbol);
+  return foundToken?.icon || 'token-unknown';
+}
+
 async function getFeedPrice(symbol: string): Promise<BigNumber> {
   const token = getTokenBySymbol(symbol);
 

@@ -173,6 +173,11 @@ type SmartYieldTokenBoughtType = ProposalBaseType & {
   };
 };
 
+type ToastGeneralMessageType = {
+  notificationType: 'toast-general-message';
+  message: string;
+};
+
 export type NotificationType =
   | ProposalCreatedType
   | ProposalActivatedSoonType

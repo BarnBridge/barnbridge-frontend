@@ -1,10 +1,11 @@
+import { KnownTokens } from 'components/providers/known-tokens-provider';
 import config from 'config';
 
 import { processResponse, queryfy } from 'utils/fetch';
 
 type PoolTokenApiType = {
   address: string;
-  symbol: string;
+  symbol: KnownTokens;
   decimals: number;
 };
 
@@ -57,7 +58,7 @@ export function fetchTranches(poolAddress: string): Promise<TranchesItemTypeApiT
 
 type TrancheTokenApiType = {
   address: string;
-  symbol: string;
+  symbol: KnownTokens;
   decimals: number;
   state: {
     price: string;
@@ -68,6 +69,7 @@ type TrancheTokenApiType = {
 
 export type TrancheApiType = {
   eTokenAddress: string;
+  eTokenSymbol: string;
   sFactorE: string;
   targetRatio: string;
   tokenARatio: string;
@@ -139,6 +141,65 @@ export function fetchRatioDeviation(
     `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/ratio-deviation?${query}`,
     config.api.baseUrl,
   );
+
+  return fetch(url.toString())
+    .then(processResponse)
+    .then(result => result.data);
+}
+
+export type TrancheLiquidityApiType = {
+  point: string;
+  tokenALiquidity: number;
+  tokenBLiquidity: number;
+};
+
+export function fetchTrancheLiquidity(
+  poolAddress: string,
+  trancheAddress: string,
+  windowFilter?: string,
+): Promise<TrancheLiquidityApiType[]> {
+  const query = queryfy({
+    window: windowFilter,
+  });
+
+  const url = new URL(
+    `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/liquidity?${query}`,
+    config.api.baseUrl,
+  );
+
+  return fetch(url.toString())
+    .then(processResponse)
+    .then(result => result.data);
+}
+
+export type TransactionApiType = {
+  eTokenAddress: string;
+  accountAddress: string;
+  tokenA: {
+    address: string;
+    symbol: KnownTokens;
+    decimals: number;
+  };
+  tokenB: {
+    address: string;
+    symbol: KnownTokens;
+    decimals: number;
+  };
+  amountA: string;
+  amountB: string;
+  amountEToken: string;
+  transactionType: string;
+  transactionHash: string;
+  blockTimestamp: string;
+  blockNumber: number;
+};
+
+export function fetchTransactions(): Promise<TransactionApiType[]> {
+  const query = queryfy({
+    // window: windowFilter,
+  });
+
+  const url = new URL(`/api/smartexposure/transactions?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(processResponse)

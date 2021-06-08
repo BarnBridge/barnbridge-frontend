@@ -1,21 +1,17 @@
 import React, { useEffect, useState } from 'react';
+import AntdNotification from 'antd/lib/notification';
 import cn from 'classnames';
 import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
-import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
-import config from 'config';
+import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { fetchEtokenPrice } from 'modules/smart-exposure/api';
 
+import { formatTick, generateTicks } from 'utils/chart';
+
 import s from './s.module.scss';
-
-// import { APISYPoolAPY } from 'modules/smart-yield/api';
-
-// type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
-//   point: number;
-// };
 
 type ETokenPriceType = {
   eTokenPrice: string;
@@ -29,58 +25,26 @@ type PropsType = {
 
 export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress }) => {
   const [activeTab, setActiveTab] = useState<PeriodTabsKey>(PeriodTabsKey.day);
-  const [priceList, setPriceList] = useState<ETokenPriceType[]>([]);
+  const [priceList, setDataList] = useState<ETokenPriceType[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    fetchEtokenPrice(poolAddress, trancheAddress, activeTab).then(setPriceList);
+    setLoading(true);
+    fetchEtokenPrice(poolAddress, trancheAddress, activeTab)
+      .then(setDataList)
+      .catch(err => {
+        setDataList([]);
+        console.error(err);
+        AntdNotification.error({
+          message: err.data,
+        });
+      })
+      .finally(() => setLoading(false));
   }, [poolAddress, trancheAddress, activeTab]);
 
   const ticks = React.useMemo(() => {
-    const dates = priceList.map(d => new Date(d.point).getTime());
-    const minDate = Math.min(...dates);
-    const maxDate = Math.max(...dates);
-
-    if (!Number.isFinite(minDate) || !Number.isFinite(maxDate)) {
-      return [];
-    }
-
-    let count = 0;
-    let range = 0;
-
-    switch (activeTab) {
-      case '24h':
-        count = 3;
-        range = 8 * 60 * 60 * 1_000; // 8 hours
-        break;
-      case '1w':
-        count = 7;
-        range = 24 * 60 * 60 * 1_000; // 24 hours
-        break;
-      case '30d':
-        count = 4;
-        range = 7 * 24 * 60 * 60 * 1_000; // 7 days
-        break;
-      default:
-        return [];
-    }
-
-    const minDt = maxDate - count * range;
-
-    return Array.from({ length: count + 1 }).map((_, index) => minDt + range * index);
+    return generateTicks(priceList, activeTab);
   }, [priceList, activeTab]);
-
-  // function formatTick(value: string) {
-  //   switch (activeTab) {
-  //     case '24h':
-  //       return format(new Date(value), 'HH:mm');
-  //     case '1w':
-  //       return format(new Date(value), 'EEE');
-  //     case '30d':
-  //       return format(new Date(value), 'dd MMM');
-  //     default:
-  //       return '';
-  //   }
-  // }
 
   return (
     <section className="card">
@@ -89,7 +53,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
         <PeriodChartTabs activeKey={activeTab} onClick={setActiveTab} size="small" className="ml-auto" />
       </header>
       <div className="p-24">
-        <Spin spinning={!priceList.length}>
+        <Spin spinning={loading}>
           <ReCharts.ResponsiveContainer width="100%" height={300} className="mb-24">
             <ReCharts.AreaChart data={priceList}>
               <defs>
@@ -100,16 +64,10 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
               </defs>
               <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
               <ReCharts.XAxis
-                // dataKey="point"
-                // axisLine={false}
-                // tickLine={false}
-                // tickFormatter={value => formatTick(value)}
-
                 dataKey="point"
-                ticks={ticks}
-                tickMargin={12}
-                minTickGap={0}
-                // tickFormatter={value => formatTick(value)}
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={value => formatTick(value, activeTab)}
               />
               <ReCharts.YAxis
                 axisLine={false}
