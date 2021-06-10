@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
-import { formatPercent, formatToken } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Icon from 'components/custom/icon';
@@ -54,6 +54,21 @@ const DepositView: React.FC = () => {
       console.log('tranche', result);
     });
   }, [poolAddress, trancheAddress]);
+
+  const selectedTokenContract = useMemo(() => {
+    const contract = new Erc20Contract([], trancheAddress);
+    contract.setProvider(wallet.provider);
+
+    contract.setAccount(wallet.account);
+    contract.loadBalance();
+    contract
+      .loadCommon()
+      .then(() => reload())
+      .catch(Error);
+
+    contract.on(Web3Contract.UPDATE_DATA, reload);
+    return contract;
+  }, [reload, trancheAddress, wallet.account, wallet.provider]);
 
   useEffect(() => {
     if (tranche) {
@@ -109,17 +124,7 @@ const DepositView: React.FC = () => {
 
   return (
     <>
-      <div
-        className="flexbox-list align-middle mb-40 mh-auto"
-        style={
-          {
-            maxWidth: 640,
-            width: '100%',
-            '--gap': '24px 64px',
-            '--sm-gap': '24px',
-            '--min': 'auto',
-          } as React.CSSProperties
-        }>
+      <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
         <div className="flex">
           <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
           <div>
@@ -150,6 +155,17 @@ const DepositView: React.FC = () => {
               }) ?? '-'}
             </span>
             <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol}</span>
+          </div>
+        </div>
+        <div>
+          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
+          <div>
+            <span className="text-p1 fw-semibold color-primary mr-8">
+              {formatToken(selectedTokenContract.getBalanceOf(wallet.account), {
+                scale: selectedTokenContract.decimals,
+              }) ?? '-'}
+            </span>
+            <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
           </div>
         </div>
       </div>
@@ -281,6 +297,7 @@ const MultipleTokensForm = ({
       <TokenAmount
         before={<Icon name={tokenAIcon} width={24} height={24} />}
         value={tokenAState}
+        secondary={formatUSD(BigNumber.from(tokenAState)?.multipliedBy(tranche.tokenA.state.price) ?? 0)}
         onChange={value => {
           setTokenAState(value);
           handleAmountTokenA(value);
@@ -307,6 +324,7 @@ const MultipleTokensForm = ({
       <TokenAmount
         before={<Icon name={tokenBIcon} width={24} height={24} />}
         value={tokenBState}
+        secondary={formatUSD(BigNumber.from(tokenBState)?.multipliedBy(tranche.tokenB.state.price) ?? 0)}
         onChange={value => {
           setTokenBState(value);
           handleAmountTokenB(value);
@@ -465,18 +483,18 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
     );
   };
 
-  if (!ePoolPeripheryContract) {
+  if (!ePoolPeripheryContract || !selectedToken) {
     return null;
   }
 
   return (
     <form onSubmit={handleDeposit}>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{selectedToken?.symbol} amount</span>
+        <span className="text-sm fw-semibold color-secondary">{selectedToken.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">
           Current ratio:{' '}
           {numberFormat(
-            Number(selectedToken?.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio) * 100,
+            Number(selectedToken.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio) * 100,
             {
               minimumFractionDigits: 2,
             },
@@ -487,6 +505,9 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
       <TokenAmount
         before={<TokenSelect value={selectedTokenSymbol} onChange={setSelectedTokenSymbol} tokens={tokens} />}
         value={tokenState}
+        secondary={formatUSD(
+          BigNumber.from(tokenState)?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
+        )}
         onChange={setTokenState}
         max={9.789}
         placeholder={`0 (Max ${9.789})`}
@@ -505,7 +526,9 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
           <TokenAmountPreview
             before={<Icon name={tokenAIcon} width={24} height={24} />}
             value={tokenAState?.unscaleBy(tranche.tokenA.decimals)?.toString() || '0'}
-            secondary="$ 107,319.4467"
+            secondary={formatUSD(
+              tokenAState?.unscaleBy(tranche.tokenA.decimals)?.multipliedBy(tranche.tokenA.state.price) ?? 0,
+            )}
           />
         </div>
         <div>
@@ -518,7 +541,9 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
           <TokenAmountPreview
             before={<Icon name={tokenBIcon} width={24} height={24} />}
             value={tokenBState?.unscaleBy(tranche.tokenB.decimals)?.toString() || '0'}
-            secondary="$ 107,319.4467"
+            secondary={formatUSD(
+              tokenBState?.unscaleBy(tranche.tokenB.decimals)?.multipliedBy(tranche.tokenB.state.price) ?? 0,
+            )}
           />
         </div>
       </div>
@@ -533,7 +558,7 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
       />
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">$ 63,132.11 per bb_ET_WBTC50/ETH50</span>
+        {/* <span className="text-sm fw-semibold color-secondary ml-auto">$ 63,132.11 per bb_ET_WBTC50/ETH50</span> */}
       </div>
       <TokenAmountPreview
         before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}

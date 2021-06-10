@@ -1,18 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import useDebounce from '@rooks/use-debounce';
+import BigNumber from 'bignumber.js';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken, formatUSD } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
+import { TransactionSummary } from 'components/custom/transaction-summary';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { useReload } from 'hooks/useReload';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
+import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
+import { useWallet } from 'wallets/wallet';
 
 import { numberFormat } from 'utils';
 
-const DepositView: React.FC = () => {
+const WithdrawView: React.FC = () => {
+  const wallet = useWallet();
+  const [reload] = useReload();
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tranche, setTranche] = useState<TrancheApiType>();
   const [activeTab, setActiveTab] = React.useState<string>('multiple');
@@ -23,6 +34,21 @@ const DepositView: React.FC = () => {
       console.log('tranche', result);
     });
   }, [poolAddress, trancheAddress]);
+
+  const selectedTokenContract = useMemo(() => {
+    const contract = new Erc20Contract([], trancheAddress);
+    contract.setProvider(wallet.provider);
+
+    contract.setAccount(wallet.account);
+    contract.loadBalance();
+    contract
+      .loadCommon()
+      .then(() => reload())
+      .catch(Error);
+
+    contract.on(Web3Contract.UPDATE_DATA, reload);
+    return contract;
+  }, [reload, trancheAddress, wallet.account, wallet.provider]);
 
   if (!tranche) {
     return null;
@@ -44,6 +70,7 @@ const DepositView: React.FC = () => {
       id: 'single',
     },
   ];
+
   return (
     <>
       <div
@@ -67,10 +94,14 @@ const DepositView: React.FC = () => {
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">25:75_WBTC_ETH balance</div>
+          <div className="text-sm fw-semibold color-secondary mb-4">{tranche.eTokenSymbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">9.789</span>
-            <span className="text-sm fw-semibold color-secondary">WBTC</span>
+            <span className="text-p1 fw-semibold color-primary mr-8">
+              {formatToken(selectedTokenContract.getBalanceOf(wallet.account), {
+                scale: selectedTokenContract.decimals,
+              }) ?? '-'}
+            </span>
+            <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
           </div>
         </div>
       </div>
@@ -101,50 +132,137 @@ const DepositView: React.FC = () => {
   );
 };
 
-export default DepositView;
+export default WithdrawView;
 
 const MultipleTokensForm = ({ tranche }: { tranche: TrancheApiType }) => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenState, setTokenState] = React.useState<string>('');
+  const [tokenAState, setTokenAState] = React.useState<BigNumber | undefined>();
+  const [tokenBState, setTokenBState] = React.useState<BigNumber | undefined>();
+  const { ePoolContract, ePoolPeripheryContract } = useSEPools();
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
+  const tokenAmountHandler = useDebounce((value: string) => {
+    if (!ePoolPeripheryContract) {
+      return;
+    }
+
+    const amount = BigNumber.from(value)?.multipliedBy(tranche.sFactorE) ?? BigNumber.ZERO;
+
+    if (!amount) {
+      return;
+    }
+
+    ePoolPeripheryContract
+      .getTokenATokenBForEToken(poolAddress, trancheAddress, amount)
+      .then(({ amountA, amountB }) => {
+        setTokenAState(amountA);
+        setTokenBState(amountB);
+      });
+  }, 400);
+
+  const submitHandler = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // TODO:
+    const amount = BigNumber.from(tokenState) ?? BigNumber.ZERO;
+
+    if (!amount) {
+      return;
+    }
+
+    ePoolContract?.redeem(tranche.eTokenAddress, amount);
+  };
+
   return (
-    <form>
+    <form onSubmit={submitHandler}>
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
         before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
         value={tokenState}
-        onChange={setTokenState}
+        onChange={value => {
+          setTokenState(value);
+          tokenAmountHandler(value);
+        }}
         max={9.789}
         placeholder={`0 (Max ${9.789})`}
-        className="mb-40"
+        className="mb-8"
         slider
       />
-
+      <Icon
+        name="down-arrow-circle"
+        width={32}
+        height={32}
+        style={{
+          display: 'block',
+          margin: '0 auto',
+        }}
+      />
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 73.87%</span>
       </div>
       <TokenAmountPreview
         before={<Icon name={tokenAIcon} width={24} height={24} />}
-        value="1.8716"
-        secondary="$ 107,319.4467"
-        className="mb-32"
+        value={tokenAState?.unscaleBy(tranche.tokenA.decimals)?.toString() || '0'}
+        secondary={formatUSD(
+          tokenAState?.unscaleBy(tranche.tokenA.decimals)?.multipliedBy(tranche.tokenA.state.price) ?? 0,
+        )}
+        className="mb-16"
       />
-
+      <Icon
+        name="plus-circle"
+        width={32}
+        height={32}
+        style={{
+          display: 'block',
+          margin: '0 auto',
+        }}
+      />
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">Current ratio: 26.13%</span>
       </div>
       <TokenAmountPreview
         before={<Icon name={tokenBIcon} width={24} height={24} />}
-        value="2.3116"
-        secondary="$ 107,319.4467"
+        value={tokenBState?.unscaleBy(tranche.tokenB.decimals)?.toString() || '0'}
+        secondary={formatUSD(
+          tokenBState?.unscaleBy(tranche.tokenB.decimals)?.multipliedBy(tranche.tokenB.state.price) ?? 0,
+        )}
         className="mb-32"
+      />
+
+      <TransactionSummary
+        className="mb-32"
+        items={[
+          [
+            <Text type="small" weight="semibold" color="secondary">
+              Transaction fees
+            </Text>,
+            <Text type="p2" weight="semibold" color="primary">
+              3.1 USDC (5%)
+            </Text>,
+          ],
+          [
+            <Text type="small" weight="semibold" color="secondary">
+              Token 1 amount
+            </Text>,
+            <Text type="p1" weight="bold" color="primary">
+              {tokenAState?.unscaleBy(tranche.tokenA.decimals)?.toString() || '0'} {tranche.tokenA.symbol}
+            </Text>,
+          ],
+          [
+            <Text type="small" weight="semibold" color="secondary">
+              Token 2 amount
+            </Text>,
+            <Text type="p1" weight="bold" color="primary">
+              {tokenAState?.unscaleBy(tranche.tokenB.decimals)?.toString() || '0'} {tranche.tokenB.symbol}
+            </Text>,
+          ],
+        ]}
       />
 
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
@@ -166,14 +284,29 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
 
   const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
   const [selectedTokenSymbol, setSelectedTokenSymbol] = React.useState<KnownTokens>(tokens[0]);
+  const { ePoolContract, ePoolPeripheryContract } = useSEPools();
 
   const selectedToken = getTokenBySymbol(selectedTokenSymbol);
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
+  const submitHandler = (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // TODO:
+    const amount = BigNumber.from(tokenState) ?? BigNumber.ZERO;
+
+    if (!amount) {
+      return;
+    }
+
+    ePoolContract?.redeem(tranche.eTokenAddress, amount);
+  };
+
+  const isTokenA = selectedTokenSymbol === tranche.tokenA.symbol;
+
   return (
-    <form>
+    <form onSubmit={submitHandler}>
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
@@ -183,10 +316,18 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
         onChange={setTokenState}
         max={9.789}
         placeholder={`0 (Max ${9.789})`}
-        className="mb-40"
+        className="mb-8"
         slider
       />
-
+      <Icon
+        name="down-arrow-circle"
+        width={32}
+        height={32}
+        style={{
+          display: 'block',
+          margin: '0 auto',
+        }}
+      />
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{selectedToken?.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">
@@ -203,6 +344,9 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
       <TokenAmount
         before={<TokenSelect value={selectedTokenSymbol} onChange={setSelectedTokenSymbol} tokens={tokens} />}
         value={tokenState}
+        secondary={formatUSD(
+          BigNumber.from(tokenState)?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
+        )}
         onChange={setTokenState}
         max={9.789}
         placeholder={`0 (Max ${9.789})`}
