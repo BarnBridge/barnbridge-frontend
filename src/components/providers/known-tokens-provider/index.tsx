@@ -100,6 +100,7 @@ export const WEthToken: TokenMeta = {
   decimals: 18,
   icon: 'token-weth',
   pricePath: [KnownTokens.ETH],
+  contract: new Erc20Contract([], config.tokens.wEth),
 };
 
 export const UsdcToken: TokenMeta = {

@@ -53,6 +53,7 @@ export type IconNames =
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'
+  | 'plus-circle'
   | 'refresh'
   | 'notification'
   | 'chevron-right'

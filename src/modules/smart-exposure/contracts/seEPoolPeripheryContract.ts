@@ -19,6 +19,7 @@ class SeEPoolPeripheryContract extends Web3Contract {
         // call
         createAbiItem('currentRatio', ['address', 'address'], ['uint256']),
         createAbiItem('delta', ['address'], ['uint256', 'uint256', 'uint256']),
+        createAbiItem('router', [], ['address']),
         createAbiItem('eTokenForTokenATokenB', ['address', 'address', 'uint256', 'uint256'], ['uint256']),
         createAbiItem('tokenATokenBForEToken', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
         createAbiItem('tokenATokenBForTokenA', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
@@ -38,6 +39,10 @@ class SeEPoolPeripheryContract extends Web3Contract {
 
   getCurrentRatio(ePoolAddress: string, eTokenAddress: string): Promise<BigNumber> {
     return this.call('currentRatio', [ePoolAddress, eTokenAddress]).then(value => new BigNumber(value));
+  }
+
+  getRouter(): Promise<string> {
+    return this.call('router');
   }
 
   getDelta(ePoolAddress: string): Promise<DeltaResult> {
@@ -97,7 +102,7 @@ class SeEPoolPeripheryContract extends Web3Contract {
   }
 
   getAmountAForAmountB(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-    return this.call('amountBForAmountA', [ePoolAddress, eTokenAddress, amountB]).then(value => new BigNumber(value));
+    return this.call('amountAForAmountB', [ePoolAddress, eTokenAddress, amountB]).then(value => new BigNumber(value));
   }
 
   depositForMaxTokenA(

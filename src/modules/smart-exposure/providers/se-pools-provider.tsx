@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import ContractListener from 'web3/components/contract-listener';
 
 import config from 'config';
 import { useReload } from 'hooks/useReload';
@@ -66,6 +67,11 @@ export const SEPoolsProvider: React.FC = props => {
     ePoolPeripheryContract,
   };
 
-  console.log(value);
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      {children}
+      <ContractListener contract={ePoolContract} />
+      <ContractListener contract={ePoolPeripheryContract} />
+    </Context.Provider>
+  );
 };
