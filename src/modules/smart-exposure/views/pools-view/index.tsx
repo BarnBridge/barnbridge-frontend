@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { format } from 'date-fns';
-import { formatUSD } from 'web3/utils';
+import { formatPercent, formatUSD } from 'web3/utils';
 
 import { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
@@ -69,8 +70,9 @@ const PoolsView: React.FC = () => {
             <div className="text-sm fw-semibold color-secondary">Rebalancing strategies</div>
             <div className="flex align-center text-p1 fw-semibold">
               {getRelativeTime(activePool.state.rebalancingInterval)}
-              <span className="middle-dot ph-16 color-border" /> {'>'} {activePool.state.rebalancingCondition}%
-              deviation from target
+              <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
+              {formatPercent(BigNumber.from(activePool.state.rebalancingCondition)?.unscaleBy(18) ?? 0)} deviation from
+              target
             </div>
           </div>
           <div>

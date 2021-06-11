@@ -22,10 +22,10 @@ class SeEPoolContract extends Web3Contract {
     );
   }
 
-  feeRate?: Number;
-  rebalanceMinDeltaA?: Number;
-  rebalanceInterval?: Number;
-  lastRebalance?: Number;
+  feeRate?: number;
+  rebalanceMinDeltaA?: number;
+  rebalanceInterval?: number;
+  lastRebalance?: number;
   rate?: BigNumber;
   tranches?: any;
   tranche?: any;
@@ -53,7 +53,7 @@ class SeEPoolContract extends Web3Contract {
         ],
       );
 
-      this.feeRate = feeRate;
+      this.feeRate = feeRate; // 0.05 * 10 ** 18;
       this.rebalanceMinDeltaA = rebalanceMinDeltaA;
       this.rebalanceInterval = rebalanceInterval;
       this.lastRebalance = lastRebalance;

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useEffect } from 'react';
 import ContractListener from 'web3/components/contract-listener';
 
 import config from 'config';
@@ -8,15 +8,16 @@ import SeEPoolPeripheryContract from 'modules/smart-exposure/contracts/seEPoolPe
 import { useWallet } from 'wallets/wallet';
 
 type SEContextType = {
-  // pools: any[];
-  ePoolContract?: SeEPoolContract;
-  ePoolPeripheryContract?: SeEPoolPeripheryContract;
+  ePoolContract: SeEPoolContract;
+  ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
 
+const ePoolContract = new SeEPoolContract(config.contracts.se.ePool);
+const ePoolPeripheryContract = new SeEPoolPeripheryContract(config.contracts.se.ePoolPeriphery);
+
 const Context = createContext<SEContextType>({
-  // pools: [],
-  ePoolContract: undefined,
-  ePoolPeripheryContract: undefined,
+  ePoolContract: ePoolContract,
+  ePoolPeripheryContract: ePoolPeripheryContract,
 });
 
 export function useSEPools(): SEContextType {
@@ -28,41 +29,22 @@ export const SEPoolsProvider: React.FC = props => {
 
   const walletCtx = useWallet();
   const [reload] = useReload();
-  // const [pools, setPools] = useState([]);
-
-  const ePoolContract = useMemo(
-    () =>
-      new SeEPoolContract(
-        config.contracts.se.ePool,
-        // '0x984b81e730b6a4f1b90c3cb77caed8dff38143f2'
-      ),
-    [],
-  );
-  const ePoolPeripheryContract = useMemo(
-    () =>
-      new SeEPoolPeripheryContract(
-        config.contracts.se.ePoolPeriphery,
-        // '0xd3361db31ee22db5ea8cb37e60532c6a8e29e7c1'
-      ),
-    [],
-  );
 
   useEffect(() => {
     ePoolContract.setProvider(walletCtx.provider);
     ePoolPeripheryContract.setProvider(walletCtx.provider);
-  }, [ePoolContract, ePoolPeripheryContract, walletCtx.provider]);
+  }, [walletCtx.provider]);
 
   useEffect(() => {
     ePoolContract.setAccount(walletCtx.account);
     ePoolPeripheryContract.setAccount(walletCtx.account);
-  }, [ePoolContract, ePoolPeripheryContract, walletCtx.account]);
+  }, [walletCtx.account]);
 
   useEffect(() => {
     ePoolContract.loadCommon().then(reload).catch(Error);
-  }, [ePoolContract, reload]);
+  }, [reload]);
 
   const value = {
-    // pools,
     ePoolContract,
     ePoolPeripheryContract,
   };

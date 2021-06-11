@@ -2,12 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
-import classNames from 'classnames';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
+import { EnableTokenButton, EnableTokens } from 'components/custom/enable-token';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Tabs } from 'components/custom/tabs';
@@ -576,15 +576,14 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
         onChange={fd => console.log({ fd })}>
         Uniswap transaction details
       </TransactionDetails>
-      {selectedTokenContract.isAllowedOf(ePoolPeripheryContract.address) === false && (
-        <div className={'flex align-center col-gap-24 mb-32'}>
-          <EnableTokenButton
-            contract={selectedTokenContract}
-            address={ePoolPeripheryContract.address}
-            tokenSymbol={selectedTokenSymbol}
-          />
-        </div>
-      )}
+
+      <EnableTokenButton
+        contract={selectedTokenContract}
+        address={ePoolPeripheryContract.address}
+        tokenSymbol={selectedTokenSymbol}
+        className="mb-32"
+        style={{ width: '100%' }}
+      />
 
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
         <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-back">
@@ -596,59 +595,5 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
         </button>
       </div>
     </form>
-  );
-};
-
-const EnableTokens = ({
-  tokenAContract,
-  tokenBContract,
-  poolAddress,
-  tranche,
-  className,
-}: {
-  tokenAContract: Erc20Contract;
-  tokenBContract: Erc20Contract;
-  poolAddress: string;
-  tranche: TrancheApiType;
-  className?: string;
-}) => {
-  return (
-    <div className={classNames('flex align-center col-gap-24', className)}>
-      {tokenAContract.isAllowedOf(poolAddress) === false && (
-        <EnableTokenButton contract={tokenAContract} address={poolAddress} tokenSymbol={tranche.tokenA.symbol} />
-      )}
-      {tokenAContract.isAllowedOf(poolAddress) === false && tokenBContract.isAllowedOf(poolAddress) === false && (
-        <span className="middle-dot color-border" />
-      )}
-      {tokenBContract.isAllowedOf(poolAddress) === false && (
-        <EnableTokenButton contract={tokenBContract} address={poolAddress} tokenSymbol={tranche.tokenB.symbol} />
-      )}
-    </div>
-  );
-};
-
-const EnableTokenButton = ({
-  contract,
-  address,
-  tokenSymbol,
-}: {
-  contract: Erc20Contract;
-  address: string;
-  tokenSymbol: KnownTokens;
-}) => {
-  const [loading, setLoading] = useState(false);
-
-  return (
-    <button
-      type="button"
-      className="button-primary"
-      style={{ flexGrow: 1 }}
-      disabled={loading}
-      onClick={() => {
-        setLoading(true);
-        contract.approve(address, true).finally(() => setLoading(false));
-      }}>
-      Enable {tokenSymbol}
-    </button>
   );
 };
