@@ -79,12 +79,19 @@ type TokenAmountPreviewType = {
   before: ReactNode;
   secondary?: ReactNode;
   className?: string;
+  classNameBefore?: string;
 };
 
-export const TokenAmountPreview: FC<TokenAmountPreviewType> = ({ value, before, secondary, className }) => {
+export const TokenAmountPreview: FC<TokenAmountPreviewType> = ({
+  value,
+  before,
+  secondary,
+  className,
+  classNameBefore,
+}) => {
   return (
     <div className={cn(s.tokenAmountPreview, className)}>
-      {before && <div className={s.tokenAmountPreviewBefore}>{before}</div>}
+      {before && <div className={cn(s.tokenAmountPreviewBefore, classNameBefore)}>{before}</div>}
       <div className={s.tokenAmountPreviewValues}>
         <input className={s.tokenAmountPreviewValue} type="text" value={value || ''} readOnly />
         <div className={s.tokenAmountPreviewHint}>{secondary}</div>
@@ -97,9 +104,11 @@ type TokenSelectType = {
   value: KnownTokens;
   onChange: (value: KnownTokens) => void;
   tokens: KnownTokens[];
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens }) => {
+export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, className, style }) => {
   const foundToken = getTokenBySymbol(value);
 
   return (
@@ -128,7 +137,8 @@ export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens }) =>
           type="button"
           ref={ref}
           onClick={() => setOpen(isOpen => !isOpen)}
-          className="token-amount-select-token">
+          className={cn(s.tokenAmountSelectToken, className)}
+          style={style}>
           {foundToken ? (
             <Icon name={foundToken.icon as TokenIconNames} width={24} height={24} className="mr-16" />
           ) : null}

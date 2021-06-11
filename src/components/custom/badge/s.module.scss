@@ -2,13 +2,14 @@
 
 .badge {
   @include font-lb2-bold;
-  display: flex;
+  display: inline-flex;
   flex-direction: row;
   align-items: flex-start;
   padding: 8px 24px;
   background: rgba(var(--theme-secondary-color-rgb), 0.08);
   color: var(--theme-secondary-color);
   border-radius: 32px;
+  white-space: nowrap;
 
   &.green {
     background: rgba(var(--theme-green-color-rgb), 0.08);

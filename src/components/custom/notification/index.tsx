@@ -21,6 +21,8 @@ import { useReload } from 'hooks/useReload';
 import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';
 
+import { getRelativeTime } from 'utils';
+
 import s from './s.module.scss';
 
 // @ts-ignore
@@ -43,10 +45,6 @@ function getStrongText(text: string = ''): React.ReactNode {
       {text}
     </Text>
   );
-}
-
-function getRelativeTime(seconds: number) {
-  return formatDuration(intervalToDuration({ start: 0, end: seconds * 1000 }));
 }
 
 function getData(n: NotificationType, reload: Function): [IconNames, [string, string], React.ReactNode] {

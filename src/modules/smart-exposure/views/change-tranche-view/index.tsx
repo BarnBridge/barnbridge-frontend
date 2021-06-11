@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import { DropdownList } from 'components/custom/dropdown';
@@ -7,6 +7,8 @@ import IconsPair from 'components/custom/icons-pair';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
+import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 
 type ETokenType = '75:25_WBTC_ETH' | '50:50_WBTC_ETH' | '25:75_WBTC_ETH';
 
@@ -16,10 +18,19 @@ type ETokenOptionType = {
 };
 
 const ChangeTrancheView: React.FC = () => {
-  const { pool } = useParams<{ pool: string }>();
-  const [tokenState, setTokenState] = React.useState<string>('');
+  const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
+  const [tranche, setTranche] = useState<TrancheApiType>();
 
-  const tokens: ETokenOptionType[] = React.useMemo(() => {
+  useEffect(() => {
+    fetchTranche(poolAddress, trancheAddress).then(result => {
+      setTranche(result);
+      console.log('tranche', result);
+    });
+  }, [poolAddress, trancheAddress]);
+
+  const [tokenState, setTokenState] = useState<string>('');
+
+  const tokens: ETokenOptionType[] = useMemo(() => {
     return [
       {
         value: '75:25_WBTC_ETH',
@@ -36,7 +47,14 @@ const ChangeTrancheView: React.FC = () => {
     ];
   }, []);
 
-  const [selectedToken, setSelectedToken] = React.useState<ETokenOptionType>(tokens[0]);
+  const [selectedToken, setSelectedToken] = useState<ETokenOptionType>(tokens[0]);
+
+  if (!tranche) {
+    return null;
+  }
+
+  const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
+  const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 
   return (
     <>
@@ -52,10 +70,12 @@ const ChangeTrancheView: React.FC = () => {
           } as React.CSSProperties
         }>
         <div className="flex">
-          <IconsPair icon1="token-wbtc" icon2="token-eth" size={40} className="mr-16" />
+          <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={40} className="mr-16" />
           <div>
-            <div className="text-p1 fw-semibold color-primary mr-4">75% WBTC / 25% ETH</div>
-            <div className="text-sm fw-semibold color-secondary">Wrapped Bitcoin / Ethereum</div>
+            <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
+              tokenA?.symbol
+            } / ${Number(tranche.tokenBRatio) * 100}% ${tokenB?.symbol}`}</div>
+            <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
         <div>
@@ -81,7 +101,7 @@ const ChangeTrancheView: React.FC = () => {
           <DropdownList items={tokens.map(token => ({ children: token.name, onClick: () => setSelectedToken(token) }))}>
             {({ ref, setOpen, open }) => (
               <button type="button" ref={ref} onClick={() => setOpen(isOpen => !isOpen)} className="token-select mb-32">
-                <IconsPair icon1="token-wbtc" icon2="token-eth" size={24} className="mr-16" />
+                <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} className="mr-16" />
                 <Text type="p1" weight="semibold" color="primary">
                   {selectedToken.name}
                 </Text>
@@ -100,7 +120,7 @@ const ChangeTrancheView: React.FC = () => {
             <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
           </div>
           <TokenAmount
-            before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
+            before={<IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} />}
             value={tokenState}
             onChange={setTokenState}
             max={9.789}
@@ -113,7 +133,7 @@ const ChangeTrancheView: React.FC = () => {
             <span className="text-sm fw-semibold color-secondary">50:50_WBTC_ETH amount</span>
           </div>
           <TokenAmountPreview
-            before={<IconsPair icon1="token-wbtc" icon2="token-eth" size={24} />}
+            before={<IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} />}
             value="2.3116"
             className="mb-32"
           />
@@ -130,7 +150,7 @@ const ChangeTrancheView: React.FC = () => {
           </TransactionDetails>
 
           <div className="grid flow-col col-gap-32 align-center justify-space-between">
-            <Link to={`/smart-exposure/pairs/${pool}`} className="button-back">
+            <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-back">
               <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
               Cancel
             </Link>

@@ -65,6 +65,10 @@ const config = {
       barn: toLowerCase(process.env.REACT_APP_CONTRACT_DAO_BARN_ADDR),
       reward: toLowerCase(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR),
     },
+    se: {
+      ePool: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL),
+      ePoolPeriphery: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL_PERIPHERY),
+    },
   },
   testnet: {
     comp: {
