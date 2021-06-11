@@ -473,7 +473,14 @@ const SingleTokenForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; 
         </span>
       </div>
       <TokenAmountPreview
-        before={<TokenSelect value={selectedTokenSymbol} onChange={setSelectedTokenSymbol} tokens={tokens} />}
+        before={
+          <TokenSelect
+            value={selectedTokenSymbol}
+            onChange={setSelectedTokenSymbol}
+            tokens={tokens}
+            style={{ backgroundColor: 'var(--theme-card-color)' }}
+          />
+        }
         value={formatToken(selectedTokenValue?.unscaleBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].decimals)) ?? '-'}
         secondary={formatUSD(
           selectedTokenValue
@@ -481,7 +488,7 @@ const SingleTokenForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; 
             ?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
         )}
         className="mb-40"
-        // classNameBefore="ph-0"
+        classNameBefore="ph-0"
       />
 
       <TransactionDetails
