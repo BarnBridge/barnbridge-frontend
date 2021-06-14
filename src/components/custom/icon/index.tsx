@@ -9,6 +9,7 @@ export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
   | 'bond-square-token'
+  | 'bond-add-token'
   | 'token-unknown'
   | 'token-eth'
   | 'token-btc'
@@ -50,6 +51,9 @@ export type IconNames =
   | TokenIconNames
   | NavIconNames
   | ThemeIconNames
+  | 'mainnet-logo'
+  | 'testnet-logo'
+  | 'polygon-logo'
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'

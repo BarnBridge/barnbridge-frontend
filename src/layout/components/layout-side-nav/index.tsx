@@ -8,13 +8,15 @@ import cn from 'classnames';
 import Tooltip from 'components/antd/tooltip';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import { useGeneral } from 'components/providers/general-provider';
-import config from 'config';
+import { TestnetNetwork } from 'networks';
 
 import s from './s.module.scss';
 
 const LayoutSideNav: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
+  const ethWeb3 = useEthWeb3();
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
@@ -50,7 +52,7 @@ const LayoutSideNav: React.FC = () => {
           </Link>
         </div>
         <nav className={s.top}>
-          {config.isTestnet ? (
+          {ethWeb3.activeNetwork === TestnetNetwork ? (
             <Tooltip title={displayTooltip && 'Faucets'} placement="right">
               <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
                 <Icon name="building" />
@@ -103,7 +105,7 @@ const LayoutSideNav: React.FC = () => {
           </Tooltip>
         </nav>
         <div className={s.bottom}>
-          {config.isTestnet ? (
+          {ethWeb3.activeNetwork === TestnetNetwork ? (
             <Tooltip title={displayTooltip && 'Mainnet'} placement="right">
               <a rel="noopener noreferrer" target="_blank" href="https://app.barnbridge.com/" className={s.button}>
                 <Icon name="internet" />

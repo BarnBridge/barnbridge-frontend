@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -16,6 +16,7 @@ import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
+import { getEtherscanAddressUrl } from 'networks';
 
 import { getFormattedDuration } from 'utils';
 

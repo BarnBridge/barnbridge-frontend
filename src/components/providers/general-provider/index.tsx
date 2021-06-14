@@ -1,24 +1,24 @@
-import { createContext, useContext, useEffect, useState } from 'react';
+import { Dispatch, FC, SetStateAction, createContext, useContext, useEffect, useState } from 'react';
 import { useLocalStorage } from 'react-use-storage';
 
 export type GeneralContextType = {
   navOpen: boolean;
-  setNavOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setNavOpen: Dispatch<SetStateAction<boolean>>;
   theme: 'light' | 'dark';
   selectedTheme: 'light' | 'dark' | undefined;
   toggleTheme: () => void;
 };
 
-const GeneralContext = createContext<GeneralContextType>({} as any);
+const Context = createContext<GeneralContextType>({} as any);
 
 const mqlDark = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultTheme = mqlDark.matches ? 'dark' : 'light';
 
-type Props = {
-  children: React.ReactNode;
-};
+export function useGeneral(): GeneralContextType {
+  return useContext<GeneralContextType>(Context);
+}
 
-const GeneralContextProvider: React.FC<Props> = ({ children }) => {
+const GeneralProvider: FC = props => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
   const [osColorScheme, setOsColorScheme] = useState<'light' | 'dark'>(defaultTheme);
   const [selectedTheme, setSelectedTheme, removeSelectedTheme] = useLocalStorage<'light' | 'dark' | undefined>(
@@ -43,30 +43,25 @@ const GeneralContextProvider: React.FC<Props> = ({ children }) => {
     }
   }, [theme]);
 
-  return (
-    <GeneralContext.Provider
-      value={{
-        navOpen,
-        setNavOpen,
-        theme,
-        selectedTheme,
-        toggleTheme: () => {
-          if (selectedTheme === 'light') {
-            setSelectedTheme('dark');
-          } else if (selectedTheme === 'dark') {
-            removeSelectedTheme();
-          } else {
-            setSelectedTheme('light');
-          }
-        },
-      }}>
-      {children}
-    </GeneralContext.Provider>
-  );
+  function toggleTheme() {
+    if (selectedTheme === 'light') {
+      setSelectedTheme('dark');
+    } else if (selectedTheme === 'dark') {
+      removeSelectedTheme();
+    } else {
+      setSelectedTheme('light');
+    }
+  }
+
+  const value: GeneralContextType = {
+    navOpen,
+    setNavOpen,
+    theme,
+    selectedTheme,
+    toggleTheme,
+  };
+
+  return <Context.Provider value={value}>{props.children}</Context.Provider>;
 };
 
-export default GeneralContextProvider;
-
-export function useGeneral(): GeneralContextType {
-  return useContext<GeneralContextType>(GeneralContext);
-}
+export default GeneralProvider;

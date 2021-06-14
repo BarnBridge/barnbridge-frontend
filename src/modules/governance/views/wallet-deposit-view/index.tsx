@@ -14,10 +14,12 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
+import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
+import { TestnetNetwork } from 'networks';
 
 import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
@@ -50,6 +52,7 @@ const InitialState: WalletDepositViewState = {
 };
 
 const WalletDepositView: React.FC = () => {
+  const ethWeb3 = useEthWeb3();
   const daoCtx = useDAO();
   const [form] = AntdForm.useForm<DepositFormData>();
 
@@ -146,7 +149,7 @@ const WalletDepositView: React.FC = () => {
             onChange={handleSwitchChange}
           />
         </Grid>
-        {config.isTestnet && (
+        {ethWeb3.activeNetwork === TestnetNetwork && (
           <Link to="/faucets" className="button-ghost ml-auto">
             Faucets
           </Link>

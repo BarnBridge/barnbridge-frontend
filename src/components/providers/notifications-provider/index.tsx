@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { useLocalStorage } from 'react-use-storage';
 
 import { Toast } from 'components/custom/notification';
-import config from 'config';
+import { config } from 'config';
 import { useWallet } from 'wallets/wallet';
 
 export type NotificationsContextType = {

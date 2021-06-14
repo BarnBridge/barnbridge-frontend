@@ -2,14 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import {
-  formatBigValue,
-  formatUSD,
-  formatUSDValue,
-  getEtherscanAddressUrl,
-  getEtherscanTxUrl,
-  shortenAddr,
-} from 'web3/utils';
+import { formatBigValue, formatUSD, formatUSDValue, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -21,6 +14,7 @@ import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
+import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 type TableEntity = APISYJuniorPastPosition & {

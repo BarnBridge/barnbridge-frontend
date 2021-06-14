@@ -16,7 +16,7 @@ import Textarea from 'components/antd/textarea';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
-import config from 'config';
+import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 
 import AddZerosPopup from '../add-zeros-popup';

@@ -1,6 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatBigValue, formatUSD, getEtherscanAddressUrl, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatUSD, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -14,6 +14,7 @@ import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
+import { getEtherscanAddressUrl } from 'networks';
 
 import { getFormattedDuration } from 'utils';
 

@@ -2,13 +2,14 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
+import { getEtherscanAddressUrl } from 'networks';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {

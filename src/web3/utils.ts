@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import config from 'config';
+import { getEtherscanABIUrl, getEtherscanGasUrl } from 'networks';
 
 BigNumber.prototype.scaleBy = function (decimals?: number): BigNumber | undefined {
   if (decimals === undefined) {
@@ -54,58 +54,6 @@ BigNumber.sumEach = <T = any>(items: T[], predicate: (item: T) => BigNumber | un
 
   return sum;
 };
-
-export function getEtherscanTxUrl(txHash?: string, chainId = config.web3.chainId): string | undefined {
-  if (txHash) {
-    switch (chainId) {
-      case 1:
-        return `https://etherscan.io/tx/${txHash}`;
-      case 4:
-        return `https://rinkeby.etherscan.io/tx/${txHash}`;
-      case 42:
-        return `https://kovan.etherscan.io/tx/${txHash}`;
-      default:
-    }
-  }
-
-  return undefined;
-}
-
-export function getEtherscanAddressUrl(address?: string, chainId = config.web3.chainId): string | undefined {
-  if (address) {
-    switch (chainId) {
-      case 1:
-        return `https://etherscan.io/address/${address}`;
-      case 4:
-        return `https://rinkeby.etherscan.io/address/${address}`;
-      case 42:
-        return `https://kovan.etherscan.io/address/${address}`;
-      default:
-    }
-  }
-
-  return undefined;
-}
-
-export function getEtherscanABIUrl(
-  address?: string,
-  apiKey?: string,
-  chainId = config.web3.chainId,
-): string | undefined {
-  if (address) {
-    switch (chainId) {
-      case 1:
-        return `https://api.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apiKey}`;
-      case 4:
-        return `https://api-rinkeby.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apiKey}`;
-      case 42:
-        return `https://api-kovan.etherscan.io/api?module=contract&action=getabi&address=${address}&apikey=${apiKey}`;
-      default:
-    }
-  }
-
-  return undefined;
-}
 
 export function getExponentValue(decimals = 0): BigNumber {
   return new BigNumber(10).pow(decimals);
@@ -297,7 +245,7 @@ export function shortenAddr(addr: string | undefined, first = 6, last = 4): stri
 }
 
 export function fetchContractABI(address: string): any {
-  const url = getEtherscanABIUrl(address, config.web3.etherscan.apiKey);
+  const url = getEtherscanABIUrl(address);
 
   if (!url) {
     return Promise.reject();
@@ -322,7 +270,7 @@ type GasPriceResult = {
 };
 
 export function fetchGasPrice(): Promise<GasPriceResult> {
-  return fetch(`https://api.etherscan.io/api?module=gastracker&action=gasoracle&apikey=${config.web3.etherscan.apiKey}`)
+  return fetch(getEtherscanGasUrl())
     .then(result => result.json())
     .then(result => result.result)
     .then(result => {

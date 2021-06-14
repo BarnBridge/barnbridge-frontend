@@ -4,7 +4,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { BondToken, DaiToken, EthToken, UsdcToken, UsdtToken } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 

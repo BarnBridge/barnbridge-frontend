@@ -4,7 +4,7 @@ import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
@@ -126,7 +126,6 @@ function lockSend(timestamp: number, from: string, gasPrice: number): Promise<vo
 
 export type DAOBarnContractData = {
   contract: Web3Contract;
-  activationThreshold?: BigNumber;
   bondStaked?: BigNumber;
   balance?: BigNumber;
   votingPower?: BigNumber;
@@ -138,7 +137,6 @@ export type DAOBarnContractData = {
 
 const InitialState: DAOBarnContractData = {
   contract: Contract,
-  activationThreshold: config.dao.activationThreshold,
   bondStaked: undefined,
   balance: undefined,
   votingPower: undefined,

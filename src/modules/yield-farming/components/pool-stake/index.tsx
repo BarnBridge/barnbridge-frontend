@@ -13,7 +13,7 @@ import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 
 import { useYFPool } from '../../providers/pool-provider';

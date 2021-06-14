@@ -9,7 +9,7 @@ import intervalToDuration from 'date-fns/intervalToDuration';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
 import Erc20Contract from 'web3/erc20Contract';
-import { formatToken, getEtherscanAddressUrl, getHumanValue, shortenAddr } from 'web3/utils';
+import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
@@ -17,6 +17,7 @@ import { Text } from 'components/custom/typography';
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { NotificationType, useNotifications } from 'components/providers/notifications-provider';
 import { useReload } from 'hooks/useReload';
+import { getEtherscanAddressUrl } from 'networks';
 
 import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';

@@ -4,7 +4,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
-import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Divider from 'components/antd/divider';
@@ -18,8 +18,9 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, fetchSYPools, Markets, Pools } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
+import { getEtherscanAddressUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 type SYPoolEntity = APISYPool & {
@@ -71,7 +72,8 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
       provider.setAccount(wallet.account);
       await provider.transferFeesSend();
       reloadFees();
-    } catch {}
+    } catch {
+    }
 
     setHarvesting(false);
   }, [provider]);

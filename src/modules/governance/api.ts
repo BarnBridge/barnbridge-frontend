@@ -3,7 +3,7 @@ import QueryString from 'query-string';
 import { getHumanValue } from 'web3/utils';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 
 import { PaginatedResult } from 'utils/fetch';
 

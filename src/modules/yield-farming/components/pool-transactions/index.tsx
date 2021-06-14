@@ -2,7 +2,7 @@
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -12,6 +12,7 @@ import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { convertTokenInUSD, getTokenByAddress } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
+import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 import { APIYFPoolActionType, APIYFPoolTransaction, fetchYFPoolTransactions } from '../../api';

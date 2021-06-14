@@ -1,5 +1,5 @@
 import React from 'react';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Skeleton from 'components/antd/skeleton';
@@ -9,6 +9,7 @@ import Icon from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Hint, Text } from 'components/custom/typography';
 import { APIProposalState } from 'modules/governance/api';
+import { getEtherscanAddressUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 import ProposalActionCard from '../../../../components/proposal-action-card';

@@ -12,7 +12,7 @@ import {
   UsdcToken,
   convertTokenInUSD,
 } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { YfStakingContract } from 'modules/yield-farming/contracts/yfStaking';

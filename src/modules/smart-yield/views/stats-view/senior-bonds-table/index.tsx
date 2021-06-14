@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -13,6 +13,7 @@ import { Text } from 'components/custom/typography';
 import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { APISYSeniorBonds, fetchSYSeniorBonds } from 'modules/smart-yield/api';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
+import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 
 type TableEntity = APISYSeniorBonds & {
   poolEntity?: SYPool;

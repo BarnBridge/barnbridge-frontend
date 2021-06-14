@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -20,6 +20,7 @@ import {
   fetchSYRewardPoolTransactions,
 } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';

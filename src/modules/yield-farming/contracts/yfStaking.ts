@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import config from 'config';
+import { config } from 'config';
 
 const ABI: AbiItem[] = [
   createAbiItem('epoch1Start', [], ['uint256']),

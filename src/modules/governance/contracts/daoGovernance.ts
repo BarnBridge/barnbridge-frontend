@@ -3,7 +3,7 @@ import { Web3EventType } from 'web3/types';
 import { getGasValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
-import config from 'config';
+import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';

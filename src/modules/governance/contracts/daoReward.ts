@@ -4,7 +4,7 @@ import { getHumanValue } from 'web3/utils';
 import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';

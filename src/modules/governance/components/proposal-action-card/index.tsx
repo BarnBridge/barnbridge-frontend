@@ -2,7 +2,7 @@ import React from 'react';
 import AntdTypography from 'antd/lib/typography';
 import cn from 'classnames';
 import { AbiDecodeResult, AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
@@ -11,6 +11,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { getEtherscanAddressUrl } from 'networks';
 
 import s from './s.module.scss';
 

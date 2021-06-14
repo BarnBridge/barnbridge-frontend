@@ -7,7 +7,7 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue } from 'web3/utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { DEFAULT_WEB3, DEFAULT_WEB3_PROVIDER, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
+import { DefaultWeb3, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
 
 export type Web3ContractAbiItem = AbiItem;
 
@@ -89,7 +89,7 @@ class Web3Contract extends EventEmitter {
   }, 250);
 
   static tryCall(to: string, from: string, data: string, value: string): any {
-    return DEFAULT_WEB3.eth.call({
+    return DefaultWeb3.eth.call({
       to,
       from,
       data,
@@ -117,8 +117,8 @@ class Web3Contract extends EventEmitter {
     this.address = address;
     this.name = name;
 
-    this._callContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
-    this._sendContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
+    this._callContract = new DefaultWeb3.eth.Contract(abi, address) as EthContract;
+    this._sendContract = new DefaultWeb3.eth.Contract(abi, address) as EthContract;
   }
 
   get writeFunctions(): AbiItem[] {
@@ -133,13 +133,13 @@ class Web3Contract extends EventEmitter {
     return this._sendContract.currentProvider;
   }
 
-  setCallProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
+  setCallProvider(provider: any): void {
     if (this._callContract !== provider) {
       this._callContract.setProvider(provider);
     }
   }
 
-  setProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
+  setProvider(provider: any): void {
     if (this._sendContract !== provider) {
       this._sendContract.setProvider(provider);
     }

@@ -7,7 +7,7 @@ import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { TokenIconNames } from 'components/custom/icon';
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
-import config from 'config';
+import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/wallet';
 
@@ -16,7 +16,6 @@ export enum KnownTokens {
   BTC = 'BTC',
   WETH = 'WETH',
   WBTC = 'WBTC',
-  REN_BTC = 'renBTC',
   BOND = 'BOND',
   USDC = 'USDC',
   DAI = 'DAI',
@@ -30,7 +29,7 @@ export enum KnownTokens {
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
   // compound
-  export const bbcUSDC = config.isDev ? 'bbcUSDC' : 'bb_cUSDC';
+  export const bbcUSDC = config.env === 'development' ? 'bbcUSDC' : 'bb_cUSDC';
   export const bbcDAI = 'bb_cDAI';
   // aave
   export const bbaUSDC = 'bb_aUSDC';
@@ -72,15 +71,6 @@ export const WBtcToken: TokenMeta = {
   name: 'Wrapped BTC',
   decimals: 8,
   icon: 'token-wbtc',
-  pricePath: [KnownTokens.BTC],
-};
-
-export const RenBtcToken: TokenMeta = {
-  address: config.tokens.renBtc,
-  symbol: KnownTokens.REN_BTC,
-  name: 'renBTC',
-  decimals: 8,
-  icon: 'token-renbtc',
   pricePath: [KnownTokens.BTC],
 };
 
@@ -285,7 +275,6 @@ export const ProjectToken: TokenMeta = BondToken;
 const KNOWN_TOKENS: TokenMeta[] = [
   BtcToken,
   WBtcToken,
-  RenBtcToken,
   EthToken,
   WEthToken,
   UsdcToken,

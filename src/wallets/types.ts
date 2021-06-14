@@ -1,6 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 
-export type WalletConnector = {
+export type BaseWalletConfig = {
   id: string;
   /** @description use string value for all theme image, or tuple [light, dark] to display different theme images */
   logo: string | [string, string];

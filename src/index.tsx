@@ -1,4 +1,7 @@
 import 'styles/index.scss';
+import 'networks';
+import 'utils';
+import 'web3/utils';
 
 import React from 'react';
 import ReactDOM from 'react-dom';
@@ -6,7 +9,7 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 import ErrorBoundary from 'components/custom/error-boundary';
 import EthWeb3Provider from 'components/providers/eth-web3-provider';
-import GeneralContextProvider from 'components/providers/general-provider';
+import GeneralProvider from 'components/providers/general-provider';
 import KnownTokensProvider from 'components/providers/known-tokens-provider';
 import NotificationsProvider from 'components/providers/notifications-provider';
 import WindowStateProvider from 'components/providers/window-state';
@@ -23,7 +26,7 @@ const App: React.FC = () => {
       <StaticSprite />
       <WindowStateProvider>
         <EthWeb3Provider>
-          <GeneralContextProvider>
+          <GeneralProvider>
             <Web3WalletProvider>
               <KnownTokensProvider>
                 <Router>
@@ -33,7 +36,7 @@ const App: React.FC = () => {
                 </Router>
               </KnownTokensProvider>
             </Web3WalletProvider>
-          </GeneralContextProvider>
+          </GeneralProvider>
         </EthWeb3Provider>
       </WindowStateProvider>
     </ErrorBoundary>

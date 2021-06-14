@@ -1,7 +1,7 @@
 import React from 'react';
 import { isMobile } from 'react-device-detect';
 import cn from 'classnames';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -12,8 +12,11 @@ import Icon from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
+import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import { useNotifications } from 'components/providers/notifications-provider';
+import { getEtherscanAddressUrl } from 'networks';
 import Notifications from 'wallets/components/notifications';
+import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
@@ -56,6 +59,7 @@ const NotificationSection: React.FC = () => {
 };
 
 const ConnectedWallet: React.FC = () => {
+  const ethWeb3 = useEthWeb3();
   const wallet = useWallet();
 
   if (wallet.connecting) {
@@ -85,12 +89,16 @@ const ConnectedWallet: React.FC = () => {
                 </Text>
               </Grid>
             </Grid>
-            <Divider />
-            <Grid padding={24}>
-              <Button type="ghost" onClick={() => wallet.disconnect()}>
-                Disconnect
-              </Button>
-            </Grid>
+            {wallet.meta !== GnosisSafeConfig && (
+              <>
+                <Divider />
+                <Grid padding={24}>
+                  <Button type="ghost" onClick={() => wallet.disconnect()}>
+                    Disconnect
+                  </Button>
+                </Grid>
+              </>
+            )}
           </div>
         }
         trigger="click">
@@ -139,7 +147,7 @@ const ConnectedWallet: React.FC = () => {
                 Wallet
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {wallet.connector?.name}
+                {wallet.meta?.name}
               </Text>
             </Grid>
             <Grid flow="col" gap={16} colsTemplate="24px 1fr auto">
@@ -148,16 +156,20 @@ const ConnectedWallet: React.FC = () => {
                 Network
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {wallet.networkName}
+                {ethWeb3.activeNetwork?.name}
               </Text>
             </Grid>
           </Grid>
-          <Divider />
-          <Grid padding={24}>
-            <Button type="ghost" onClick={() => wallet.disconnect()}>
-              Disconnect
-            </Button>
-          </Grid>
+          {wallet.meta !== GnosisSafeConfig && (
+            <>
+              <Divider />
+              <Grid padding={24}>
+                <Button type="ghost" onClick={() => wallet.disconnect()}>
+                  Disconnect
+                </Button>
+              </Grid>
+            </>
+          )}
         </div>
       }>
       <Button type="link" className={s.accountLink}>

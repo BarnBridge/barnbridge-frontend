@@ -1,63 +1,75 @@
-import React from 'react';
+import React, { FC, createContext, useContext, useEffect, useState } from 'react';
+import { useLocalStorage } from 'react-use-storage';
 import SafeProvider from '@gnosis.pm/safe-apps-react-sdk';
 import Web3 from 'web3';
+import { HttpProvider } from 'web3-core';
 
+import Icon, { IconNames } from 'components/custom/icon';
+import { Modal } from 'components/custom/modal';
+import { Text } from 'components/custom/typography';
 import { useWindowState } from 'components/providers/window-state';
-import config from 'config';
+import { config } from 'config';
+import { DefaultNetwork, KnownNetworks, NetworkMeta } from 'networks';
+import { metamask_AddEthereumChain } from 'wallets/connectors/metamask';
 
-export const HttpsWeb3Provider = new Web3.providers.HttpProvider(config.web3.rpc.httpsUrl);
-export const WssWeb3Provider = new Web3.providers.WebsocketProvider(config.web3.rpc.wssUrl);
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
   'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',
 );
-export const DEFAULT_WEB3_PROVIDER = HttpsWeb3Provider;
 
-export const HttpsWeb3 = new Web3(HttpsWeb3Provider);
+export const WssWeb3Provider = new Web3.providers.WebsocketProvider(
+  `wss://mainnet.infura.io/ws/v3/${config.web3.rpcKey}`,
+);
 export const WssWeb3 = new Web3(WssWeb3Provider);
-export const DEFAULT_WEB3 = HttpsWeb3;
 
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 
-export function getNetworkName(chainId: number | undefined): string {
-  switch (chainId) {
-    case 1:
-      return 'Mainnet';
-    case 4:
-      return 'Rinkeby';
-    case 42:
-      return 'Kovan';
-    default:
-      return '-';
-  }
+export let DefaultWeb3Provider: HttpProvider;
+export let DefaultWeb3: Web3;
+
+export function setProviderByUrl(rpcUrl: string) {
+  DefaultWeb3Provider = new Web3.providers.HttpProvider(rpcUrl);
+  DefaultWeb3 = new Web3(DefaultWeb3Provider);
 }
 
 export type EthWeb3ContextType = {
-  chainId: number;
   web3: Web3;
   blockNumber?: number;
-  networkName: string;
+  activeNetwork?: NetworkMeta;
+  activeProvider?: any;
+  selectNetwork: (networkId?: string) => void;
+  showNetworkSelect: () => void;
+  setActiveProvider: (provider: any) => void;
+  getTxUrl: (txHash: string) => string | undefined;
+  getAccountUrl: (account: string) => string | undefined;
 };
 
-const InitialContextValue = {
-  chainId: config.web3.chainId,
-  web3: HttpsWeb3,
+const Context = createContext<EthWeb3ContextType>({
+  web3: DefaultWeb3!,
   blockNumber: undefined,
-  networkName: getNetworkName(config.web3.chainId),
-};
-
-const EthWeb3Context = React.createContext<EthWeb3ContextType>(InitialContextValue);
+  activeNetwork: undefined,
+  activeProvider: undefined,
+  selectNetwork: () => undefined,
+  showNetworkSelect: () => undefined,
+  setActiveProvider: () => undefined,
+  getTxUrl: () => undefined,
+  getAccountUrl: () => undefined,
+});
 
 export function useEthWeb3(): EthWeb3ContextType {
-  return React.useContext(EthWeb3Context);
+  return useContext(Context);
 }
 
-const EthWeb3Provider: React.FC = props => {
+const EthWeb3Provider: FC = props => {
   const { children } = props;
 
   const windowState = useWindowState();
-  const [blockNumber, setBlockNumber] = React.useState<number | undefined>();
+  const [storedNetwork, setStoredNetwork] = useLocalStorage('bb_last_network', DefaultNetwork.id);
+  const [blockNumber, setBlockNumber] = useState<number | undefined>();
+  const [activeNetwork, setNetwork] = useState<NetworkMeta | undefined>();
+  const [activeProvider, setActiveProvider] = useState<any>(DefaultWeb3Provider);
+  const [networkSelectVisible, showNetworkSelect] = useState(false);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!windowState.isVisible) {
       return undefined;
     }
@@ -90,18 +102,106 @@ const EthWeb3Provider: React.FC = props => {
     };
   }, [windowState.isVisible]);
 
-  const value = React.useMemo(
-    () => ({
-      ...InitialContextValue,
-      blockNumber,
-    }),
-    [blockNumber],
-  );
+  useEffect(() => {
+    const network = KnownNetworks.find(ntw => ntw.id === storedNetwork);
+
+    if (network) {
+      setNetwork(network);
+    }
+  }, [storedNetwork]);
+
+  async function selectNetwork(networkId: string = DefaultNetwork.id) {
+    const network = KnownNetworks.find(ntw => ntw.id === networkId);
+
+    let canSetNetwork = true;
+
+    if (network) {
+      // if (activeProvider.isMetaMask && network?.metamaskChain) {
+      //   try {
+      //     const error = await metamask_AddEthereumChain(activeProvider, [network.metamaskChain]);
+      //     console.log({ error });
+      //     if (error) {
+      //       canSetNetwork = false;
+      //     }
+      //   } catch (e) {
+      //     canSetNetwork = false;
+      //     console.error(e);
+      //   }
+      // }
+
+      if (canSetNetwork) {
+        if (storedNetwork !== network.id) {
+          setStoredNetwork(network.id);
+          window.location.reload();
+        }
+      }
+    }
+  }
+
+  function getTxUrl(txHash?: string): string | undefined {
+    if (!txHash || !activeNetwork?.explorerUrl) {
+      return;
+    }
+
+    return `${activeNetwork.explorerUrl}/tx/${txHash}`;
+  }
+
+  function getAccountUrl(address?: string): string | undefined {
+    if (!address || !activeNetwork?.explorerUrl) {
+      return;
+    }
+
+    return `${activeNetwork.explorerUrl}/address/${address}`;
+  }
+
+  const value = {
+    web3: DefaultWeb3,
+    blockNumber,
+    activeNetwork,
+    activeProvider,
+    selectNetwork,
+    showNetworkSelect: () => {
+      showNetworkSelect(true);
+    },
+    setActiveProvider: (provider: any) => {
+      setActiveProvider(provider);
+    },
+    getTxUrl,
+    getAccountUrl,
+  };
 
   return (
-    <EthWeb3Context.Provider value={value}>
+    <Context.Provider value={value}>
       <SafeProvider>{children}</SafeProvider>
-    </EthWeb3Context.Provider>
+      {networkSelectVisible && (
+        <Modal heading="Select network" closeHandler={showNetworkSelect}>
+          <div className="flex flow-row row-gap-16 p-24">
+            {KnownNetworks.map(network => (
+              <button
+                key={network.id}
+                className="button-ghost-monochrome p-16"
+                style={{ height: 'inherit' }}
+                onClick={() => {
+                  showNetworkSelect(false);
+                  selectNetwork(network.id);
+                }}>
+                <Icon name={network.logo as IconNames} width={40} height={40} className="mr-12" />
+                <div className="flex flow-row align-start">
+                  <Text type="p1" weight="semibold" color="primary">
+                    {network.name}
+                  </Text>
+                  {activeNetwork?.id === network.id && (
+                    <Text type="small" weight="semibold" color="secondary">
+                      Connected
+                    </Text>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
+    </Context.Provider>
   );
 };
 

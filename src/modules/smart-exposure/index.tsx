@@ -5,7 +5,7 @@ import AntdSpin from 'antd/lib/spin';
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import config from 'config';
+import { config } from 'config';
 import RocketSvg from 'resources/img/rocket.png';
 import { useWallet } from 'wallets/wallet';
 
@@ -70,7 +70,7 @@ const SmartExposureView: React.FC = () => {
     },
   ];
 
-  if (!config.isDev) {
+  if (config.env !== 'development') {
     return (
       <div className="flex flow-row row-gap-48 align-center justify-center full-height">
         <img src={RocketSvg} alt="Rocket" style={{ maxWidth: '310px', maxHeight: '377px' }} />

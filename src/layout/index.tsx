@@ -3,11 +3,12 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import ErrorBoundary from 'components/custom/error-boundary';
+import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import WarningProvider from 'components/providers/warning-provider';
-import config from 'config';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
+import { TestnetNetwork } from 'networks';
 
 import s from './s.module.scss';
 
@@ -19,6 +20,8 @@ const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
+  const ethWeb3 = useEthWeb3();
+
   return (
     <div className={s.layout}>
       <LayoutSideNav />
@@ -29,7 +32,7 @@ const LayoutView: React.FC = () => {
             <ErrorBoundary>
               <Suspense fallback={<AntdSpin className="pv-24 ph-64" />}>
                 <Switch>
-                  {config.isTestnet ? (
+                  {ethWeb3.activeNetwork === TestnetNetwork ? (
                     <Route path="/faucets" component={FaucetsView} />
                   ) : (
                     <Route path="/yield-farming" component={YieldFarmingView} />

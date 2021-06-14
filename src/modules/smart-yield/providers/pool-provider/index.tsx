@@ -2,7 +2,6 @@ import React from 'react';
 import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
-import { getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
@@ -17,7 +16,7 @@ import {
   convertTokenIn,
   convertTokenInUSD,
 } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import {
   APISYPool,
@@ -34,6 +33,7 @@ import SYControllerContract from 'modules/smart-yield/contracts/syControllerCont
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
+import { getEtherscanTxUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 export type SYPool = APISYPool & {
@@ -130,7 +130,7 @@ async function getAaveIncentivesAPY(
   let aTokenAddress = '';
   let aTokenDecimals = 0;
 
-  if (config.isProd) {
+  if (config.env === 'production') {
     aTokenAddress = cTokenAddress;
     aTokenDecimals = uDecimals;
   } else {

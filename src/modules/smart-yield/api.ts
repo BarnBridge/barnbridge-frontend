@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 
-import config from 'config';
+import { config } from 'config';
 
 import { PaginatedResult, queryfy } from 'utils/fetch';
 

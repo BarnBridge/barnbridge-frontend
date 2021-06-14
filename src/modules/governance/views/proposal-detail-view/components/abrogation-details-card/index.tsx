@@ -1,11 +1,12 @@
 import React from 'react';
-import { getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { shortenAddr } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
+import { getEtherscanAddressUrl } from 'networks';
 
 import { useAbrogation } from '../../providers/AbrogationProvider';
 

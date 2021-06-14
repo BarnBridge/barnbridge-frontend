@@ -4,7 +4,7 @@ import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { DAOBarnContract, useDAOBarnContract } from 'modules/governance/contracts/daoBarn';
 import { DAOGovernanceContract, useDAOGovernanceContract } from 'modules/governance/contracts/daoGovernance';
@@ -17,7 +17,6 @@ export type DAOProviderState = {
   minThreshold: number;
   isActive?: boolean;
   bondStaked?: BigNumber;
-  activationThreshold?: BigNumber;
   activationRate?: number;
   thresholdRate?: number;
 };
@@ -26,7 +25,6 @@ const InitialState: DAOProviderState = {
   minThreshold: 1,
   isActive: undefined,
   bondStaked: undefined,
-  activationThreshold: undefined,
   activationRate: undefined,
   thresholdRate: undefined,
 };
@@ -90,12 +88,12 @@ const DAOProvider: React.FC = props => {
 
   React.useEffect(() => {
     const { isActive } = daoGovernance;
-    const { bondStaked, activationThreshold, votingPower } = daoBarn;
+    const { bondStaked, votingPower } = daoBarn;
 
     let activationRate: number | undefined;
 
-    if (bondStaked && activationThreshold?.gt(BigNumber.ZERO)) {
-      activationRate = bondStaked.multipliedBy(100).div(activationThreshold).toNumber();
+    if (bondStaked && config.dao.activationThreshold.gt(BigNumber.ZERO)) {
+      activationRate = bondStaked.multipliedBy(100).div(config.dao.activationThreshold).toNumber();
       activationRate = Math.min(activationRate, 100);
     }
 
@@ -109,11 +107,10 @@ const DAOProvider: React.FC = props => {
     setState({
       isActive,
       bondStaked,
-      activationThreshold,
       activationRate,
       thresholdRate,
     });
-  }, [daoGovernance.isActive, daoBarn.bondStaked, daoBarn.activationThreshold, daoBarn.votingPower]);
+  }, [daoGovernance.isActive, daoBarn.bondStaked, daoBarn.votingPower]);
 
   function activate() {
     return daoGovernance.actions.activate().then(() => {

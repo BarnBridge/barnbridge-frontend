@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -25,6 +25,7 @@ import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
 } from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
+import { getEtherscanTxUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 type TableEntity = APISYUserTxHistory & {

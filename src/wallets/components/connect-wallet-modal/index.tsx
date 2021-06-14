@@ -9,7 +9,7 @@ import useMergeState from 'hooks/useMergeState';
 import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
 import { WalletConnectors, useWallet } from 'wallets/wallet';
 
-import { WalletConnector } from 'wallets/types';
+import { BaseWalletConfig } from 'wallets/types';
 
 export type ConnectWalletModalProps = ModalProps;
 
@@ -28,7 +28,7 @@ const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
   const wallet = useWallet();
   const [state, setState] = useMergeState<ConnectWalletModalState>(InitialState);
 
-  function handleConnectorSelect(connector: WalletConnector) {
+  function handleConnectorSelect(connector: BaseWalletConfig) {
     if (wallet.isActive) {
       return;
     }

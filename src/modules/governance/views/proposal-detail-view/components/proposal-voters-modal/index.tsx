@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, shortenAddr } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Table from 'components/antd/table';
@@ -11,6 +11,7 @@ import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { APIVoteEntity } from 'modules/governance/api';
+import { getEtherscanAddressUrl } from 'networks';
 
 import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
 

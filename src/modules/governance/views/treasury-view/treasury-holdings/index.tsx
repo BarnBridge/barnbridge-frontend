@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import Erc20Contract from 'web3/erc20Contract';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
@@ -14,7 +14,7 @@ import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -22,6 +22,7 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
+import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 
 type APITreasuryTokenEntity = APITreasuryToken & {
   token: Erc20Contract;

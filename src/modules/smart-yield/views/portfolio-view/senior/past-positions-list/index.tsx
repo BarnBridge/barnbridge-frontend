@@ -3,7 +3,7 @@ import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatBigValue, formatPercent, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue, shortenAddr } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
@@ -14,6 +14,7 @@ import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYSeniorRedeem, fetchSYSeniorRedeems } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
+import { getEtherscanTxUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
