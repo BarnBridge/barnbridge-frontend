@@ -188,9 +188,9 @@ export type TransactionApiType = {
   amountA: string;
   amountB: string;
   amountEToken: string;
-  transactionType: string;
+  transactionType: 'WITHDRAW' | 'DEPOSIT';
   transactionHash: string;
-  blockTimestamp: string;
+  blockTimestamp: number;
   blockNumber: number;
 };
 

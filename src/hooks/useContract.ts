@@ -1,26 +1,40 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
+import isEqual from 'lodash/isEqual';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import { getTokenByAddress } from 'components/providers/known-tokens-provider';
+// import { getTokenByAddress } from 'components/providers/known-tokens-provider';
 import { useWallet } from 'wallets/wallet';
 
 import { useReload } from './useReload';
 
+function useDeepCompareMemoize(value: any): typeof value {
+  const ref = useRef();
+
+  if (!isEqual(value, ref.current)) {
+    ref.current = value;
+  }
+
+  return ref.current;
+}
+
 export const useContract = (
-  address: string,
+  address: string | undefined,
   {
     loadBalance,
     loadCommon,
     loadAllowance,
-  }: { loadBalance?: boolean; loadCommon?: boolean; loadAllowance?: string } = {},
-): Erc20Contract => {
+  }: { loadBalance?: boolean; loadCommon?: boolean; loadAllowance?: string[] } = {},
+): Erc20Contract | null => {
   const wallet = useWallet();
   const [reload] = useReload();
 
   const contract = useMemo(() => {
-    const contract: Erc20Contract =
-      (getTokenByAddress(address)?.contract as Erc20Contract) ?? new Erc20Contract([], address);
+    if (!address) {
+      return null;
+    }
+
+    const contract: Erc20Contract = new Erc20Contract([], address); // (getTokenByAddress(address)?.contract as Erc20Contract) ?? new Erc20Contract([], address);
     contract.setProvider(wallet.provider);
     contract.on(Web3Contract.UPDATE_DATA, reload);
 
@@ -28,14 +42,14 @@ export const useContract = (
   }, [reload, address, wallet.provider]);
 
   useEffect(() => {
-    if (loadBalance) {
+    if (contract && loadBalance) {
       contract.setAccount(wallet.account);
       contract.loadBalance();
     }
   }, [contract, loadBalance, wallet.account]);
 
   useEffect(() => {
-    if (loadCommon) {
+    if (contract && loadCommon) {
       contract
         .loadCommon()
         .then(() => reload())
@@ -43,11 +57,17 @@ export const useContract = (
     }
   }, [contract, loadCommon, reload]);
 
+  const memoisedAllowance = useDeepCompareMemoize(loadAllowance);
+
   useEffect(() => {
-    if (loadAllowance) {
-      contract.loadAllowance(loadAllowance);
+    if (contract && memoisedAllowance) {
+      if (Array.isArray(memoisedAllowance)) {
+        memoisedAllowance.forEach(i => contract.loadAllowance(i));
+      } else {
+        contract.loadAllowance(memoisedAllowance);
+      }
     }
-  }, [contract, loadAllowance]);
+  }, [contract, memoisedAllowance]);
 
   return contract;
 };

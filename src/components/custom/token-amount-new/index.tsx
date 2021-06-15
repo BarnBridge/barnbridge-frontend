@@ -21,10 +21,11 @@ type TokenAmountType = {
   max?: number;
   slider?: boolean;
   decimals?: number;
+  error?: string;
 };
 
 export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, TokenAmountType>(
-  ({ onChange, before, secondary, className, classNameBefore, slider, decimals = 6, ...rest }, ref) => {
+  ({ onChange, before, secondary, className, classNameBefore, slider, error, decimals = 6, ...rest }, ref) => {
     return (
       <div className={className}>
         <div className={s.tokenAmount}>
@@ -55,6 +56,11 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
             </button>
           )}
         </div>
+        {Number(rest.value) > Number(rest.max) && (
+          <Text type="small" weight="semibold" color="red" style={{ marginTop: '8px' }}>
+            insufficient balance
+          </Text>
+        )}
         {slider && Number.isFinite(rest.max) ? (
           <Slider
             type="range"

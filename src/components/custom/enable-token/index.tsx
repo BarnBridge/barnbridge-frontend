@@ -2,7 +2,7 @@ import { useState } from 'react';
 import classNames from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
 
-import { KnownTokens } from 'components/providers/known-tokens-provider';
+import { Spinner } from 'components/custom/spinner';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 
 export const EnableTokens = ({
@@ -18,6 +18,10 @@ export const EnableTokens = ({
   tranche: TrancheApiType;
   className?: string;
 }) => {
+  if (tokenAContract.isAllowedOf(poolAddress) !== false && tokenBContract.isAllowedOf(poolAddress) !== false) {
+    return null;
+  }
+
   return (
     <div className={classNames('flex align-center col-gap-24', className)}>
       <EnableTokenButton contract={tokenAContract} address={poolAddress} tokenSymbol={tranche.tokenA.symbol} />
@@ -61,6 +65,7 @@ export const EnableTokenButton = ({
         setLoading(true);
         contract.approve(address, true).finally(() => setLoading(false));
       }}>
+      {loading && <Spinner className="mr-8" />}
       Enable {tokenSymbol}
     </button>
   );

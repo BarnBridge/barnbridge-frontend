@@ -67,6 +67,7 @@ const config = {
     },
     se: {
       ePool: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL),
+      ePoolHelper: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL_HELPER),
       ePoolPeriphery: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL_PERIPHERY),
     },
   },
