@@ -50,8 +50,8 @@ jobs:
 
         REACT_APP_WEB3_CHAIN_ID: 5
         REACT_APP_WEB3_POLLING_INTERVAL: 12000
-        REACT_APP_WEB3_RPC_WSS_URL: 'wss://rpc.goerli.barnbridge.com/wss'
-        REACT_APP_WEB3_RPC_HTTPS_URL: 'https://rpc.goerli.barnbridge.com/rpc'
+        REACT_APP_WEB3_RPC_WSS_URL: 'wss://goerli.infura.io/ws/v3/5aa7739d0e474570a7561dd546a7dfe3'
+        REACT_APP_WEB3_RPC_HTTPS_URL: 'https://goerli.infura.io/v3/5aa7739d0e474570a7561dd546a7dfe3'
         REACT_APP_WEB3_PORTIS_APP_ID: 'b0b0f776-bbf6-458c-a175-6483e0c452b7'
         REACT_APP_WEB3_WALLET_CONNECT_BRIDGE: 'https://bridge.walletconnect.org'
         REACT_APP_WEB3_COINBASE_WALLET_APP_NAME: 'barnbridge'
