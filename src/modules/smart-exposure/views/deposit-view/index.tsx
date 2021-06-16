@@ -1,32 +1,24 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
-import Web3Contract from 'web3/web3Contract';
 
 import { EnableTokenButton, EnableTokens } from 'components/custom/enable-token';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
+import { Spinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import {
-  KnownTokens,
-  getTokenByAddress,
-  getTokenBySymbol,
-  getTokenIconBySymbol,
-} from 'components/providers/known-tokens-provider';
-import { useReload } from 'hooks/useReload';
+import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
-import SeUniswapRouterContract from 'modules/smart-exposure/contracts/seUniswapRouterContract';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/wallet';
-
-import { numberFormat } from 'utils';
 
 const tabs = [
   {
@@ -41,11 +33,23 @@ const tabs = [
 
 const DepositView: React.FC = () => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
-  const [reload] = useReload();
   const [tranche, setTranche] = useState<TrancheApiType>();
-  const [activeTab, setActiveTab] = React.useState<string>('multiple');
-  const [tokenAContract, setTokenAContract] = useState<Erc20Contract>();
-  const [tokenBContract, setTokenBContract] = useState<Erc20Contract>();
+  const [activeTab, setActiveTab] = useState<string>('multiple');
+  const { ePoolPeripheryContract } = useSEPools();
+  const tokenAContract = useContract(tranche?.tokenA.address, {
+    loadAllowance: [poolAddress, ePoolPeripheryContract.address],
+    loadCommon: true,
+    loadBalance: true,
+  });
+  const tokenBContract = useContract(tranche?.tokenB.address, {
+    loadAllowance: [poolAddress, ePoolPeripheryContract.address],
+    loadCommon: true,
+    loadBalance: true,
+  });
+  const selectedTokenContract = useContract(trancheAddress, {
+    loadCommon: true,
+    loadBalance: true,
+  });
   const wallet = useWallet();
 
   useEffect(() => {
@@ -55,66 +59,8 @@ const DepositView: React.FC = () => {
     });
   }, [poolAddress, trancheAddress]);
 
-  const selectedTokenContract = useMemo(() => {
-    const contract = new Erc20Contract([], trancheAddress);
-    contract.setProvider(wallet.provider);
-
-    contract.setAccount(wallet.account);
-    contract.loadBalance();
-    contract
-      .loadCommon()
-      .then(() => reload())
-      .catch(Error);
-
-    contract.on(Web3Contract.UPDATE_DATA, reload);
-    return contract;
-  }, [reload, trancheAddress, wallet.account, wallet.provider]);
-
-  useEffect(() => {
-    if (tranche) {
-      const tokenAContract: Erc20Contract =
-        (getTokenByAddress(tranche.tokenA.address)?.contract as Erc20Contract) ??
-        new Erc20Contract([], tranche.tokenA.address);
-      tokenAContract.setProvider(wallet.provider);
-
-      tokenAContract.on(Web3Contract.UPDATE_DATA, reload);
-
-      const tokenBContract: Erc20Contract =
-        (getTokenByAddress(tranche.tokenB.address)?.contract as Erc20Contract) ??
-        new Erc20Contract([], tranche.tokenB.address);
-      tokenBContract.setProvider(wallet.provider);
-
-      tokenBContract.on(Web3Contract.UPDATE_DATA, reload);
-
-      setTokenAContract(tokenAContract);
-      setTokenBContract(tokenBContract);
-    }
-  }, [tranche, wallet.account, wallet.provider, reload]);
-
-  useEffect(() => {
-    if (tokenAContract) {
-      tokenAContract.setAccount(wallet.account);
-      tokenAContract.loadBalance();
-    }
-
-    if (tokenBContract) {
-      tokenBContract.setAccount(wallet.account);
-      tokenBContract.loadBalance();
-    }
-  }, [tokenAContract, tokenBContract, wallet.account]);
-
-  useEffect(() => {
-    if (tokenAContract) {
-      tokenAContract.loadAllowance(poolAddress);
-    }
-
-    if (tokenBContract) {
-      tokenBContract.loadAllowance(poolAddress);
-    }
-  }, [tokenAContract, tokenBContract, poolAddress]);
-
-  if (!tranche || !tokenAContract || !tokenBContract) {
-    return null;
+  if (!tranche || !tokenAContract || !tokenBContract || !selectedTokenContract) {
+    return <Spinner className="mh-auto" />;
   }
 
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
@@ -193,11 +139,12 @@ const DepositView: React.FC = () => {
         {activeTab === 'multiple' ? (
           <MultipleTokensForm tranche={tranche} tokenAContract={tokenAContract} tokenBContract={tokenBContract} />
         ) : (
-          <SingleTokenForm tranche={tranche} />
+          <SingleTokenForm tranche={tranche} tokenAContract={tokenAContract} tokenBContract={tokenBContract} />
         )}
       </div>
       <ContractListener contract={tokenAContract} />
       <ContractListener contract={tokenBContract} />
+      <ContractListener contract={selectedTokenContract} />
     </>
   );
 };
@@ -213,22 +160,20 @@ const MultipleTokensForm = ({
   tokenAContract: Erc20Contract;
   tokenBContract: Erc20Contract;
 }) => {
-  const wallet = useWallet();
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenAState, setTokenAState] = useState<string>('');
   const [tokenBState, setTokenBState] = useState<string>('');
   const [tokenEState, setTokenEState] = useState<BigNumber | undefined>();
-  const { ePoolContract, ePoolPeripheryContract } = useSEPools();
-  // console.log({ ePoolContract, ePoolPeripheryContract });
+  const { ePoolContract, ePoolHelperContract } = useSEPools();
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
-  const tokenAMax = tokenAContract.getBalanceOf(wallet.account)?.unscaleBy(tranche.tokenA.decimals) ?? BigNumber.ZERO;
-  const tokenBMax = tokenBContract.getBalanceOf(wallet.account)?.unscaleBy(tranche.tokenB.decimals) ?? BigNumber.ZERO;
+  const tokenAMax = tokenAContract.balance?.unscaleBy(tokenAContract.decimals) ?? BigNumber.ZERO;
+  const tokenBMax = tokenBContract.balance?.unscaleBy(tokenBContract.decimals) ?? BigNumber.ZERO;
 
   const handleAmountTokenA = useDebounce((value: string) => {
-    if (!ePoolPeripheryContract) {
+    if (!ePoolHelperContract) {
       return;
     }
     const amount = BigNumber.from(value)?.scaleBy(tranche.tokenA.decimals);
@@ -238,13 +183,13 @@ const MultipleTokensForm = ({
       return;
     }
 
-    ePoolPeripheryContract
-      .getAmountBForAmountA(poolAddress, tranche.eTokenAddress, amount)
+    ePoolHelperContract
+      .getTokenBForTokenA(poolAddress, trancheAddress, amount)
       .then(amountB => setTokenBState(amountB.unscaleBy(tranche.tokenB.decimals)?.toString() ?? ''));
   }, 400);
 
   const handleAmountTokenB = useDebounce((value: string) => {
-    if (!ePoolPeripheryContract) {
+    if (!ePoolHelperContract) {
       return;
     }
     const amount = BigNumber.from(value)?.scaleBy(tranche.tokenB.decimals);
@@ -254,8 +199,8 @@ const MultipleTokensForm = ({
       return;
     }
 
-    ePoolPeripheryContract
-      .getAmountAForAmountB(poolAddress, tranche.eTokenAddress, amount)
+    ePoolHelperContract
+      .getTokenAForTokenB(poolAddress, trancheAddress, amount)
       .then(amountA => setTokenAState(amountA.unscaleBy(tranche.tokenA.decimals)?.toString() ?? ''));
   }, 400);
 
@@ -268,10 +213,10 @@ const MultipleTokensForm = ({
       return;
     }
 
-    ePoolPeripheryContract
-      ?.getETokenForTokenATokenB(poolAddress, tranche.eTokenAddress, amountA, amountB)
+    ePoolHelperContract
+      ?.getETokenForTokenATokenB(poolAddress, trancheAddress, amountA, amountB)
       .then(val => setTokenEState(BigNumber.from(val)));
-  }, [tokenAState, tokenBState, ePoolPeripheryContract, tranche, poolAddress]);
+  }, [tokenAState, tokenBState, ePoolHelperContract, tranche, poolAddress, trancheAddress]);
 
   const handleDeposit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -279,7 +224,7 @@ const MultipleTokensForm = ({
       return;
     }
 
-    ePoolContract?.deposit(tranche.eTokenAddress, tokenEState);
+    ePoolContract?.deposit(trancheAddress, tokenEState);
   };
 
   if (!ePoolContract) {
@@ -344,7 +289,9 @@ const MultipleTokensForm = ({
       />
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">$ 63,132.11 per {tranche.eTokenSymbol}</span>
+        <span className="text-sm fw-semibold color-secondary ml-auto">
+          {formatUSD(Number(tranche.state.eTokenPrice))} per {tranche.eTokenSymbol}
+        </span>
       </div>
       <TokenAmountPreview
         before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
@@ -365,120 +312,76 @@ const MultipleTokensForm = ({
   );
 };
 
-const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
+const SingleTokenForm = ({
+  tranche,
+  tokenAContract,
+  tokenBContract,
+}: {
+  tranche: TrancheApiType;
+  tokenAContract: Erc20Contract;
+  tokenBContract: Erc20Contract;
+}) => {
   const wallet = useWallet();
-  const [reload] = useReload();
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
 
-  const [selectedTokenSymbol, setSelectedTokenSymbol] = React.useState<KnownTokens>(tokens[0]);
-  const [tokenState, setTokenState] = React.useState<string>('');
-  const [tokenAState, setTokenAState] = React.useState<BigNumber | undefined>();
-  const [tokenBState, setTokenBState] = React.useState<BigNumber | undefined>();
-  const [uniswapRouterContract, setUniswapRouterContract] = React.useState<SeUniswapRouterContract | undefined>();
+  const [selectedTokenSymbol, setSelectedTokenSymbol] = useState<KnownTokens>(tokens[0]);
+  const [tokenState, setTokenState] = useState<string>('');
   const { ePoolPeripheryContract } = useSEPools();
   const [tokenEState, setTokenEState] = useState<BigNumber | undefined>();
+  const [transactionDetails, setTransactionDetails] = useState<{ deadline?: number; slippage?: number }>({
+    deadline: 20,
+    slippage: 0.5,
+  });
 
-  const slippage = 0.005;
-  const deadline = 20;
   const isTokenA = selectedTokenSymbol === tranche.tokenA.symbol;
 
   const selectedToken = getTokenBySymbol(selectedTokenSymbol);
-  const selectedTokenContract = useMemo(() => {
-    const contract = new Erc20Contract([], isTokenA ? tranche.tokenA.address : tranche.tokenB.address);
-    contract.setProvider(wallet.provider);
-    contract.on(Web3Contract.UPDATE_DATA, reload);
-    if (ePoolPeripheryContract) {
-      contract.loadAllowance(ePoolPeripheryContract.address);
-    }
-    return contract;
-  }, [tranche, isTokenA, wallet.provider, ePoolPeripheryContract, reload]);
+  const selectedTokenContract = isTokenA ? tokenAContract : tokenBContract;
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
-  useEffect(() => {
-    ePoolPeripheryContract?.getRouter().then(address => {
-      const uniswapRouterContract = new SeUniswapRouterContract(address);
-      setUniswapRouterContract(uniswapRouterContract);
-    });
-  }, [ePoolPeripheryContract]);
+  const selectedTokenMax =
+    selectedTokenContract.getBalanceOf(wallet.account)?.unscaleBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].decimals) ??
+    BigNumber.ZERO;
 
   useEffect(() => {
-    if (selectedTokenContract && ePoolPeripheryContract) {
-      selectedTokenContract.setProvider(wallet.provider);
-      selectedTokenContract.setAccount(wallet.account);
-      selectedTokenContract.loadAllowance(ePoolPeripheryContract.address);
-    }
-  }, [ePoolPeripheryContract, selectedTokenContract, wallet.account, wallet.provider]);
-
-  useEffect(() => {
-    const amount = BigNumber.from(tokenState)
-      ?.scaleBy(selectedToken?.decimals)
-      ?.multipliedBy(1 - slippage);
-    if (!amount) {
+    const amount = BigNumber.from(tokenState)?.scaleBy(selectedToken?.decimals);
+    if (!amount || !ePoolPeripheryContract) {
       return;
     }
 
-    ePoolPeripheryContract?.[isTokenA ? 'getTokenATokenBForTokenA' : 'getTokenATokenBForTokenB'](
+    ePoolPeripheryContract?.[isTokenA ? 'getMinInputAmountBForEToken' : 'getMinInputAmountAForEToken'](
       poolAddress,
-      tranche.eTokenAddress,
+      trancheAddress,
       amount,
     ).then(val => {
-      console.log({ val });
-      if (isTokenA) {
-        const asd = amount.minus(val.amountA ?? 0);
-        uniswapRouterContract?.getAmountsOut(asd, [tranche.tokenA.address, tranche.tokenB.address]).then(vals => {
-          setTokenAState(val.amountA);
-          setTokenBState(vals[1]);
-        });
-      } else {
-        const asd = amount.minus(val.amountB ?? 0);
-        uniswapRouterContract?.getAmountsOut(asd, [tranche.tokenB.address, tranche.tokenA.address]).then(vals => {
-          setTokenBState(val.amountB);
-          setTokenAState(vals[1]);
-        });
-      }
+      setTokenEState(val.multipliedBy(1 - (transactionDetails.slippage ?? 0) / 100));
     });
   }, [
-    tokenState,
-    selectedTokenSymbol,
-    tranche,
     ePoolPeripheryContract,
-    poolAddress,
-    selectedToken,
-    uniswapRouterContract,
     isTokenA,
+    poolAddress,
+    selectedToken?.decimals,
+    tokenState,
+    trancheAddress,
+    transactionDetails.slippage,
   ]);
-
-  useEffect(() => {
-    const amountA = BigNumber.from(tokenAState);
-    const amountB = BigNumber.from(tokenBState);
-
-    if (!amountA || !amountB) {
-      setTokenEState(undefined);
-      return;
-    }
-
-    ePoolPeripheryContract
-      ?.getETokenForTokenATokenB(poolAddress, tranche.eTokenAddress, amountA, amountB)
-      .then(val => setTokenEState(BigNumber.from(val)));
-  }, [tokenAState, tokenBState, ePoolPeripheryContract, tranche, poolAddress]);
 
   const handleDeposit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!tokenEState || !tokenAState) {
+    if (!tokenState || !tokenEState) {
       return;
     }
 
-    const isTokenA = selectedTokenSymbol === tranche.tokenA.symbol;
-    const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
+    const deadlineTs = Math.floor(Date.now() / 1_000 + Number(transactionDetails.deadline) * 60);
 
     ePoolPeripheryContract?.[isTokenA ? 'depositForMaxTokenA' : 'depositForMaxTokenB'](
       poolAddress,
       tranche.eTokenAddress,
-      tokenEState,
-      tokenAState,
+      BigNumber.from(tokenState)?.scaleBy(selectedToken?.decimals) ?? BigNumber.ZERO,
+      tokenEState.integerValue(),
       deadlineTs,
     );
   };
@@ -493,13 +396,9 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
         <span className="text-sm fw-semibold color-secondary">{selectedToken.symbol} amount</span>
         <span className="text-sm fw-semibold color-secondary ml-auto">
           Current ratio:{' '}
-          {numberFormat(
-            Number(selectedToken.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio) * 100,
-            {
-              minimumFractionDigits: 2,
-            },
+          {formatPercent(
+            Number(selectedToken.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio),
           )}
-          %
         </span>
       </div>
       <TokenAmount
@@ -509,44 +408,12 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
           BigNumber.from(tokenState)?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
         )}
         onChange={setTokenState}
-        max={9.789}
-        placeholder={`0 (Max ${9.789})`}
-        className="mb-40"
+        max={selectedTokenMax.toNumber()}
+        placeholder={`0 (Max ${selectedTokenMax})`}
+        className="mb-16"
         classNameBefore="ph-0"
       />
 
-      <div className="css-grid mb-16" style={{ '--gap': '32px' } as React.CSSProperties}>
-        <div>
-          <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">Uniswap {tranche.tokenA.symbol} amount</span>
-            <span className="text-sm fw-semibold color-secondary ml-auto">
-              {numberFormat(Number(tranche.tokenARatio) * 100, { minimumFractionDigits: 2 })}%
-            </span>
-          </div>
-          <TokenAmountPreview
-            before={<Icon name={tokenAIcon} width={24} height={24} />}
-            value={tokenAState?.unscaleBy(tranche.tokenA.decimals)?.toString() || '0'}
-            secondary={formatUSD(
-              tokenAState?.unscaleBy(tranche.tokenA.decimals)?.multipliedBy(tranche.tokenA.state.price) ?? 0,
-            )}
-          />
-        </div>
-        <div>
-          <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">Uniswap {tranche.tokenB.symbol} amount</span>
-            <span className="text-sm fw-semibold color-secondary ml-auto">
-              {numberFormat(Number(tranche.tokenBRatio) * 100, { minimumFractionDigits: 2 })}%
-            </span>
-          </div>
-          <TokenAmountPreview
-            before={<Icon name={tokenBIcon} width={24} height={24} />}
-            value={tokenBState?.unscaleBy(tranche.tokenB.decimals)?.toString() || '0'}
-            secondary={formatUSD(
-              tokenBState?.unscaleBy(tranche.tokenB.decimals)?.multipliedBy(tranche.tokenB.state.price) ?? 0,
-            )}
-          />
-        </div>
-      </div>
       <Icon
         name="down-arrow-circle"
         width={32}
@@ -569,11 +436,11 @@ const SingleTokenForm = ({ tranche }: { tranche: TrancheApiType }) => {
       <TransactionDetails
         className="mb-32"
         showSlippage
-        slippage={slippage * 100}
+        slippage={transactionDetails.slippage}
         slippageHint="Your transaction will revert if the amount of tokens you actually receive is smaller by this percentage."
         showDeadline
-        deadline={20}
-        onChange={fd => console.log({ fd })}>
+        deadline={transactionDetails.deadline}
+        onChange={setTransactionDetails}>
         Uniswap transaction details
       </TransactionDetails>
 

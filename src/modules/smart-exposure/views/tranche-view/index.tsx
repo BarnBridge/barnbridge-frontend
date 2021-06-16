@@ -93,7 +93,7 @@ const TrancheView: React.FC = () => {
         <TrancheDetails tranche={tranche} />
       </div>
       <Charts tranche={tranche} className="mb-32" />
-      <TransactionsView />
+      <TransactionsView tranche={tranche} />
     </>
   );
 };

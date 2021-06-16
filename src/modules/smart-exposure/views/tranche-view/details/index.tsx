@@ -1,17 +1,14 @@
-﻿import React, { useEffect, useMemo } from 'react';
+﻿import { useState } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
-import Web3Contract from 'web3/web3Contract';
 
 import Divider from 'components/antd/divider';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { getTokenByAddress, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { useContract } from 'hooks/useContract';
-import { useReload } from 'hooks/useReload';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/wallet';
 
@@ -36,7 +33,7 @@ type Props = {
 };
 
 export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
-  const [activeTab, setActiveTab] = React.useState('rebalancing');
+  const [activeTab, setActiveTab] = useState('rebalancing');
 
   return (
     <section className="card">
@@ -130,9 +127,13 @@ const PoolDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   const tokenAContract = useContract(tranche.tokenA.address, { loadBalance: true });
   const tokenBContract = useContract(tranche.tokenB.address, { loadBalance: true });
 
-  const tokenABalance = BigNumber.from(tokenAContract.getBalanceOf(wallet.account)?.unscaleBy(tranche.tokenA.decimals));
+  const tokenABalance = BigNumber.from(
+    tokenAContract?.getBalanceOf(wallet.account)?.unscaleBy(tranche.tokenA.decimals),
+  );
 
-  const tokenBBalance = BigNumber.from(tokenBContract.getBalanceOf(wallet.account)?.unscaleBy(tranche.tokenB.decimals));
+  const tokenBBalance = BigNumber.from(
+    tokenBContract?.getBalanceOf(wallet.account)?.unscaleBy(tranche.tokenB.decimals),
+  );
 
   return (
     <>

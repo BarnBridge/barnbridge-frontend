@@ -127,7 +127,8 @@ export type IconNames =
   | 'building'
   | 'internet'
   | 'checkbox-checked'
-  | 'checkbox';
+  | 'checkbox'
+  | 'loader';
 
 export type IconProps = {
   name: IconNames;
