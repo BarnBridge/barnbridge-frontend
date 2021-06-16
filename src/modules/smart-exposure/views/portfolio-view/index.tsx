@@ -58,7 +58,7 @@ const PortfolioView: React.FC = () => {
         })}
       </div>
       <PortfolioChart className="mb-32" />
-      <PortfolioTable />
+      {activePool && <PortfolioTable poolAddress={activePool?.poolAddress} />}
     </>
   );
 };

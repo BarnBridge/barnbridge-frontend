@@ -1,5 +1,10 @@
+import classNames from 'classnames';
+
 import { Pagination } from 'components/custom/pagination';
+import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
+
+import s from './s.module.scss';
 
 export type ColumnType<T> = {
   heading: React.ReactNode;
@@ -9,12 +14,16 @@ export type ColumnType<T> = {
 type Props<T> = {
   columns: ColumnType<T>[];
   data: T[];
+  loading?: boolean;
 };
 
-export const Table = <T extends Record<string, any>>({ columns, data }: Props<T>) => {
+export const Table = <T extends Record<string, any>>({ columns, data, loading }: Props<T>) => {
   return (
     <div className="table-container">
-      <table className="table">
+      <table
+        className={classNames('table', s.table, {
+          [s.loading]: loading,
+        })}>
         <thead>
           <tr>
             {columns.map((col, dataIdx) => (
@@ -30,6 +39,18 @@ export const Table = <T extends Record<string, any>>({ columns, data }: Props<T>
               ))}
             </tr>
           ))}
+          {loading && (
+            <Spinner
+              className={s.spinner}
+              style={{
+                width: 40,
+                height: 40,
+                position: 'absolute',
+                marginTop: -20,
+                marginLeft: -20,
+              }}
+            />
+          )}
         </tbody>
       </table>
     </div>

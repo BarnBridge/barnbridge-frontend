@@ -5,13 +5,71 @@ import { formatToken } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import Spin from 'components/antd/spin';
 import IconBubble from 'components/custom/icon-bubble';
+import { Table } from 'components/custom/table';
+import { ColumnType } from 'components/custom/table';
 import { FaucetType, useFauceteer } from 'modules/faucets/providers/fauceteerProvider';
 import { useWallet } from 'wallets/wallet';
 
 import s from './s.module.scss';
 
+const columns: ColumnType<FaucetType>[] = [
+  {
+    heading: 'Token Name',
+    // @ts-ignore
+    render: item => {
+      return (
+        <div className="flex align-center">
+          <IconBubble
+            name={item.icon}
+            bubbleName={item.markets?.[0]?.icon!}
+            secondBubbleName={item.markets?.[1]?.icon!}
+            width={40}
+            height={40}
+            className="mr-16"
+          />
+          <div>
+            <div className="text-p1 fw-semibold mb-4">{item.name}</div>
+            {item.label && <div className="text-sm fw-semibold color-secondary">{item.label}</div>}
+            {item.markets && (
+              <div className="text-sm fw-semibold color-secondary">{item.markets.map(m => m.name).join(' / ')}</div>
+            )}
+          </div>
+        </div>
+      );
+    },
+  },
+  {
+    heading: 'Your balance',
+    // @ts-ignore
+    render: function YourBalance(item) {
+      const wallet = useWallet();
+      return (
+        <div className="text-p1 fw-semibold">
+          {formatToken((item.name === 'kETH' ? wallet.ethBalance : item.token?.balance)?.unscaleBy(item.decimals)) ??
+            '-'}
+        </div>
+      );
+    },
+  },
+  {
+    heading: '',
+    // @ts-ignore
+    render: item => {
+      return (
+        <>
+          {item.link && (
+            <a href={item.link.url} target="_blank" rel="noopener noreferrer" className="button-ghost ml-auto">
+              {item.link.label}
+            </a>
+          )}
+          <GetButton faucet={item} />
+        </>
+      );
+    },
+  },
+];
+
 const FaucetListView: React.FC = () => {
-  const wallet = useWallet();
   const { faucets } = useFauceteer();
 
   return (
@@ -22,65 +80,7 @@ const FaucetListView: React.FC = () => {
         className={s.alert}
       />
       <section className={cn('card', s.faucets)}>
-        <div className="table-container">
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Token Name</th>
-                <th>Your balance</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {faucets.map((faucet, idx) => (
-                <tr key={idx}>
-                  <td>
-                    <div className="flex align-center">
-                      <IconBubble
-                        name={faucet.icon}
-                        bubbleName={faucet.markets?.[0]?.icon!}
-                        secondBubbleName={faucet.markets?.[1]?.icon!}
-                        width={40}
-                        height={40}
-                        className="mr-16"
-                      />
-                      <div>
-                        <div className="text-p1 fw-semibold mb-4">{faucet.name}</div>
-                        {faucet.label && <div className="text-sm fw-semibold color-secondary">{faucet.label}</div>}
-                        {faucet.markets && (
-                          <div className="text-sm fw-semibold color-secondary">
-                            {faucet.markets.map(m => m.name).join(' / ')}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </td>
-                  <td>
-                    <div className="text-p1 fw-semibold">
-                      {formatToken(
-                        (faucet.name === 'kETH' ? wallet.ethBalance : faucet.token?.balance)?.unscaleBy(
-                          faucet.decimals,
-                        ),
-                      ) ?? '-'}
-                    </div>
-                  </td>
-                  <td>
-                    {faucet.link && (
-                      <a
-                        href={faucet.link.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="button-ghost ml-auto">
-                        {faucet.link.label}
-                      </a>
-                    )}
-                    <GetButton faucet={faucet} />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <Table<FaucetType> columns={columns} data={faucets} />
       </section>
     </>
   );

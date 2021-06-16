@@ -32,7 +32,7 @@ export function fetchPools(): Promise<PoolApiType[]> {
     .then(result => result.data);
 }
 
-export type TranchesItemTypeApiType = {
+export type TranchesItemApiType = {
   eTokenAddress: string;
   eTokenSymbol: string;
   sFactorE: string;
@@ -48,7 +48,7 @@ export type TranchesItemTypeApiType = {
   tokenBRatio: string;
 };
 
-export function fetchTranches(poolAddress: string): Promise<TranchesItemTypeApiType[]> {
+export function fetchTranches(poolAddress: string): Promise<TranchesItemApiType[]> {
   const url = new URL(`/api/smartexposure/pools/${poolAddress}/tranches`, config.api.baseUrl);
 
   return fetch(url.toString())
@@ -194,14 +194,25 @@ export type TransactionApiType = {
   blockNumber: number;
 };
 
-export function fetchTransactions(): Promise<TransactionApiType[]> {
+export function fetchTransactions({
+  page,
+  limit,
+  accountAddress,
+}: {
+  page: number;
+  limit: number;
+  accountAddress?: string;
+}): Promise<{
+  data: TransactionApiType[];
+  meta: { count: number; block: number };
+}> {
   const query = queryfy({
-    // window: windowFilter,
+    page,
+    limit,
+    accountAddress,
   });
 
   const url = new URL(`/api/smartexposure/transactions?${query}`, config.api.baseUrl);
 
-  return fetch(url.toString())
-    .then(processResponse)
-    .then(result => result.data);
+  return fetch(url.toString()).then(processResponse);
 }
