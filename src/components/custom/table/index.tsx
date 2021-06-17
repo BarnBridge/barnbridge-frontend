@@ -19,7 +19,10 @@ type Props<T> = {
 
 export const Table = <T extends Record<string, any>>({ columns, data, loading }: Props<T>) => {
   return (
-    <div className="table-container">
+    <div
+      className={classNames('table-container', s.tableContainer, {
+        [s.loading]: loading,
+      })}>
       <table
         className={classNames('table', s.table, {
           [s.loading]: loading,
@@ -39,20 +42,20 @@ export const Table = <T extends Record<string, any>>({ columns, data, loading }:
               ))}
             </tr>
           ))}
-          {loading && (
-            <Spinner
-              className={s.spinner}
-              style={{
-                width: 40,
-                height: 40,
-                position: 'absolute',
-                marginTop: -20,
-                marginLeft: -20,
-              }}
-            />
-          )}
         </tbody>
       </table>
+      {loading && (
+        <Spinner
+          className={s.spinner}
+          style={{
+            width: 40,
+            height: 40,
+            position: 'absolute',
+            marginTop: -20,
+            marginLeft: -20,
+          }}
+        />
+      )}
     </div>
   );
 };

@@ -1,16 +1,25 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { formatToken } from 'web3/utils';
 
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
+import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { useContract } from 'hooks/useContract';
 import { TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
 
 const columns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: 'Tranche / Transaction',
     render: item => (
       <div className="flex align-center">
-        <IconsPair icon1="token-wbtc" icon2="token-eth" size={40} className="mr-16" style={{ flexShrink: 0 }} />
+        <IconsPair
+          icon1={getTokenIconBySymbol(item.tokenA.symbol)}
+          icon2={getTokenIconBySymbol(item.tokenB.symbol)}
+          size={40}
+          className="mr-16"
+          style={{ flexShrink: 0 }}
+        />
         <div className="text-p1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
       </div>
     ),
@@ -18,49 +27,42 @@ const columns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: 'Pool token amount',
     render: function PoolTokenAmount(item) {
-      const wallet = useWallet();
-      return <div className="text-p1 fw-semibold color-primary mr-4">TBD {wallet.account}</div>;
+      const contract = useContract(item.eTokenAddress, { loadBalance: true, loadCommon: true });
+
+      return (
+        <div className="text-p1 fw-semibold color-primary mr-4">
+          {formatToken(contract?.balance?.unscaleBy(contract?.decimals)) ?? '–'}
+        </div>
+      );
     },
   },
   {
     heading: 'Actions',
     render: item => (
       <div className="flex align-center col-gap-24">
-        <button type="button" className="button-primary">
+        <Link
+          to={`/smart-exposure/pools/${item.poolAddress}/${item.eTokenAddress}/withdraw`}
+          className="button-primary">
           Withdraw
-        </button>
+        </Link>
         {/* <button type="button" className="button-ghost">
-          Change tranche
-        </button> */}
+        Change tranche
+      </button> */}
       </div>
     ),
   },
 ];
 
 type PositionsTablePropsType = {
-  poolAddress: string;
+  poolAddress?: string;
 };
 
 export const PositionsTable: React.FC<PositionsTablePropsType> = ({ poolAddress }) => {
-  // const [current, setCurrent] = useState(1);
-  // const total = 54;
-  // const pageSize = 10;
   const [tranches, setTranches] = useState<TranchesItemApiType[]>([]);
 
   useEffect(() => {
     fetchTranches(poolAddress).then(setTranches);
   }, [poolAddress]);
 
-  return (
-    <>
-      <Table<TranchesItemApiType> columns={columns} data={tranches} />
-      {/* <TableFooter total={total} current={current} pageSize={pageSize} onChange={setCurrent}>
-        {({ total, from, to }) => (
-          <>
-            Showing {from} to {to} out of {total} entries
-          </>
-        )}
-      </TableFooter> */}
-    </>
-  );
+  return <Table<TranchesItemApiType> columns={columns} data={tranches} />;
 };

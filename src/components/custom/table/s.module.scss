@@ -1,8 +1,8 @@
-.table {
+.tableContainer {
+  position: relative;
+
   &.loading {
     tbody {
-      position: relative;
-
       tr {
         filter: blur(1px) grayscale(1);
         pointer-events: none;

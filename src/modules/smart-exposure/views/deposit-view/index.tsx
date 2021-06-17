@@ -347,7 +347,7 @@ const SingleTokenForm = ({
     selectedTokenContract.getBalanceOf(wallet.account)?.unscaleBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].decimals) ??
     BigNumber.ZERO;
 
-  useEffect(() => {
+  const handleAmountToken = useDebounce((value: string) => {
     const amount = BigNumber.from(tokenState)?.scaleBy(selectedTokenDecimals);
     if (!amount || !ePoolPeripheryContract) {
       return;
@@ -360,7 +360,7 @@ const SingleTokenForm = ({
     ).then(val => {
       setTokenEState(val);
     });
-  }, [ePoolPeripheryContract, isTokenA, poolAddress, selectedTokenDecimals, tokenState, trancheAddress]);
+  }, 400);
 
   const handleDeposit = (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -372,7 +372,7 @@ const SingleTokenForm = ({
 
     ePoolPeripheryContract?.[isTokenA ? 'depositForMaxTokenA' : 'depositForMaxTokenB'](
       poolAddress,
-      tranche.eTokenAddress,
+      trancheAddress,
       tokenEState.integerValue(),
       BigNumber.from(tokenState)
         ?.multipliedBy(1 - (transactionDetails.slippage ?? 0) / 100)
@@ -399,7 +399,10 @@ const SingleTokenForm = ({
         secondary={formatUSD(
           BigNumber.from(tokenState)?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
         )}
-        onChange={setTokenState}
+        onChange={value => {
+          setTokenState(value);
+          handleAmountToken(value);
+        }}
         max={selectedTokenMax.toNumber()}
         placeholder={`0 (Max ${selectedTokenMax})`}
         className="mb-16"
