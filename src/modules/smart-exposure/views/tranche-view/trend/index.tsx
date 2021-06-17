@@ -30,7 +30,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
 
   useEffect(() => {
     setLoading(true);
-    fetchEtokenPrice(poolAddress, trancheAddress, activeTab)
+    fetchEtokenPrice(trancheAddress, activeTab)
       .then(setDataList)
       .catch(err => {
         setDataList([]);
@@ -40,7 +40,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
         });
       })
       .finally(() => setLoading(false));
-  }, [poolAddress, trancheAddress, activeTab]);
+  }, [trancheAddress, activeTab]);
 
   const ticks = React.useMemo(() => {
     return generateTicks(priceList, activeTab);

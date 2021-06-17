@@ -22,11 +22,11 @@ const ChangeTrancheView: React.FC = () => {
   const [tranche, setTranche] = useState<TrancheApiType>();
 
   useEffect(() => {
-    fetchTranche(poolAddress, trancheAddress).then(result => {
+    fetchTranche(trancheAddress).then(result => {
       setTranche(result);
       console.log('tranche', result);
     });
-  }, [poolAddress, trancheAddress]);
+  }, [trancheAddress]);
 
   const [tokenState, setTokenState] = useState<string>('');
 

@@ -39,11 +39,11 @@ const WithdrawView: React.FC = () => {
   const { ePoolPeripheryContract } = useSEPools();
 
   useEffect(() => {
-    fetchTranche(poolAddress, trancheAddress).then(result => {
+    fetchTranche(trancheAddress).then(result => {
       setTranche(result);
       console.log('tranche', result);
     });
-  }, [poolAddress, trancheAddress]);
+  }, [trancheAddress]);
 
   const tokenAContract = useContract(tranche?.tokenA.address, {
     loadAllowance: [poolAddress, ePoolPeripheryContract.address],
