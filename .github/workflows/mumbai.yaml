@@ -1,0 +1,197 @@
+name: Development Environment
+
+on:
+  push:
+    branches:
+    - development
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Notify Slack
+      if: success()
+      id: slack
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel_id: C01D16VJ84C
+        status: BUILD STARTED
+        color: warning
+
+    - name: Setup Nodejs
+      uses: actions/setup-node@v1
+      with:
+        node-version: '12.x'
+
+    - name: Cache dependencies
+      id: node-cache
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install dependencies
+      if: steps.node-cache.outputs.cache-hit != 'true'
+      run: npm ci
+
+    - name: Build
+      run: npm run build
+      env:
+        CI: false
+        SKIP_PREFLIGHT_CHECK: true
+        REACT_APP_ENV: 'development'
+        REACT_APP_HTML_TITLE: 'BarnBridge Mumbai'
+        REACT_APP_WEB3_CHAIN_ID: 80001
+        REACT_APP_WEB3_POLLING_INTERVAL: 12000
+        REACT_APP_WEB3_RPC_WSS_URL: ''
+        REACT_APP_WEB3_RPC_HTTPS_URL: 'https://polygon-mumbai.infura.io/v3/5aa7739d0e474570a7561dd546a7dfe3'
+        REACT_APP_WEB3_PORTIS_APP_ID: 'b0b0f776-bbf6-458c-a175-6483e0c452b7'
+        REACT_APP_WEB3_WALLET_CONNECT_BRIDGE: 'https://bridge.walletconnect.org'
+        REACT_APP_WEB3_COINBASE_APP_NAME: 'barnbridge'
+        REACT_APP_WEB3_TREZOR_EMAIL: 'bogdan@barnbridge.com'
+        REACT_APP_WEB3_TREZOR_APP_URL: 'https://app.barnbridge.com/'
+        REACT_APP_ETHERSCAN_API_KEY: '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32'
+        REACT_APP_TOKEN_WBTC_ADDR: ''
+        REACT_APP_TOKEN_RENBTC_ADDR: ''
+        REACT_APP_TOKEN_WETH_ADDR: ''
+        REACT_APP_TOKEN_BOND_ADDR: '0xebB83c1b86A27eb9e2523A2c117F1d656269dbAE'
+        REACT_APP_TOKEN_USDC_ADDR: '0x2058A9D7613eEE744279e3856Ef0eAda5FCbaA7e'
+        REACT_APP_TOKEN_DAI_ADDR: ''
+        REACT_APP_TOKEN_SUSD_ADDR: ''
+        REACT_APP_TOKEN_GUSD_ADDR: ''
+        REACT_APP_TOKEN_USDT_ADDR: ''
+        REACT_APP_TOKEN_UNIV2_ADDR: ''
+        REACT_APP_TOKEN_STKAAVE_ADDR: ''
+        REACT_APP_TOKEN_AUSDC_ADDR: '0x2271e3Fef9e15046d09E1d78a8FF038c691E9Cf9'
+        REACT_APP_TOKEN_AUSDT_ADDR: ''
+        REACT_APP_TOKEN_AGUSD_ADDR: ''
+        REACT_APP_TOKEN_ADAI_ADDR: ''
+        REACT_APP_TOKEN_BBC_USDC_ADDR: '0x2327c862e8770e10f63eef470686ffd2684a0092'
+        REACT_APP_TOKEN_BBC_DAI_ADDR: '0xebf32075b5ee6e9aff265d3ec6c69a2b381b61b1'
+        REACT_APP_TOKEN_BBA_USDC_ADDR: '0x7Baa74D3091fA1d0FE2d05046EF4C9789b4451a3'
+        REACT_APP_TOKEN_BBA_USDT_ADDR: ''
+        REACT_APP_TOKEN_BBA_GUSD_ADDR: ''
+        REACT_APP_TOKEN_BBA_DAI_ADDR: ''
+        REACT_APP_TOKEN_BBCR_USDC_ADDR: ''
+        REACT_APP_TOKEN_BBCR_USDT_ADDR: ''
+        REACT_APP_TOKEN_BBCR_DAI_ADDR: ''
+        REACT_APP_FEED_BTC_ADDR: ''
+        REACT_APP_FEED_ETH_ADDR: ''
+        REACT_APP_FEED_BOND_ADDR: ''
+        REACT_APP_FEED_USDC_ADDR: ''
+        REACT_APP_FEED_DAI_ADDR: ''
+        REACT_APP_FEED_SUSD_ADDR: ''
+        REACT_APP_FEED_USDT_ADDR: ''
+        REACT_APP_FEED_UNIV2_ADDR: ''
+        REACT_APP_FEED_BBC_USDC_ADDR: ''
+        REACT_APP_FEED_BBC_DAI_ADDR: ''
+        REACT_APP_CONTRACT_YF_STAKING_ADDR: ''
+        REACT_APP_CONTRACT_YF_STABLE_ADDR: ''
+        REACT_APP_CONTRACT_YF_UNILP_ADDR: ''
+        REACT_APP_CONTRACT_YF_BOND_ADDR: ''
+        REACT_APP_CONTRACT_DAO_GOVERNANCE_ADDR: ''
+        REACT_APP_CONTRACT_DAO_BARN_ADDR: ''
+        REACT_APP_CONTRACT_DAO_REWARD_ADDR: ''
+        REACT_APP_CONTRACT_SE_EPOOL: ''
+        REACT_APP_CONTRACT_SE_EPOOL_HELPER: ''
+        REACT_APP_CONTRACT_SE_EPOOL_PERIPHERY: ''
+        REACT_APP_DAO_ACTIVATION_THRESHOLD: 0
+        REACT_APP_BASE_API_URL: 'https://mumbai.api.barnbridge.com'
+    - name: Save artifacts
+      uses: actions/upload-artifact@v2
+      with:
+        name: mumbai-frontend
+        path: build
+
+    - name: Notify Slack success
+      if: success()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: BUILD SUCCESSFUL
+        color: good
+
+    - name: Notify Slack failure
+      if: failure()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: BUILD FAILED
+        color: danger
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+    - name: Notify Slack
+      if: success()
+      id: slack
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT STARTED
+        color: warning
+
+    - name: Get artifacts
+      uses: actions/download-artifact@v2
+      with:
+        name: mumbai-frontend
+
+    - name: Configure AWS credetials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Deploy static site to S3
+      run: ls -l && aws s3 sync . s3://mumbai-mumbaiappbarnbridgecom-origin --delete
+
+    - name: Invalidate CloudFront cache
+      run: |
+        #!/usr/bin/env bash
+        set -eou pipefail
+
+        CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'mumbai.app.barnbridge.com')].Id | [0]" | tr -d \")
+        echo "Clearing cache for ${CF_DIST_ID}..."
+        CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
+        while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
+          echo "CF_DIST_ID=${CF_DIST_ID} CF_INVALIDATION_ID=${CF_INVALIDATION_ID}: Waiting for CloudFront cache invalidation to complete..."
+          sleep 5
+        done
+
+    - name: Notify Slack success
+      if: success()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT SUCCESSFUL
+        color: good
+
+    - name: Notify Slack failure
+      if: failure()
+      env:
+        SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      uses: voxmedia/github-action-slack-notify-build@v1
+      with:
+        message_id: ${{ steps.slack.outputs.message_id }}
+        channel_id: C01D16VJ84C
+        status: DEPLOYMENT FAILED
+        color: danger
