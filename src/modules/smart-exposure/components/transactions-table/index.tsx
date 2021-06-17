@@ -1,82 +1,13 @@
 import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
-import Select from 'components/antd/select';
 import Icon from 'components/custom/icon';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
-import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
-import { TrancheApiType, TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
-
-type FiltersStateType = {
-  originator: string;
-  token: string;
-};
-
-const initialFiltersState: FiltersStateType = {
-  originator: 'all',
-  token: 'all',
-};
-
-const filtersOptions: TableFilterType[] = [
-  {
-    name: 'originator',
-    label: 'Originators',
-    defaultValue: 'all',
-    itemRender: () => {
-      const tokenOpts = [
-        {
-          value: 'all',
-          label: 'All originators',
-        },
-        {
-          value: 'asd',
-          label: 'Asd',
-        },
-        {
-          value: 'qwe',
-          label: 'Qwe',
-        },
-        // ...Array.from(Markets.entries()).map(([key, value]) => ({
-        //   value: key,
-        //   label: value.name ?? '-',
-        // })),
-      ];
-
-      return <Select options={tokenOpts} className="full-width" />;
-    },
-  },
-  {
-    name: 'token',
-    label: 'Token address',
-    defaultValue: 'all',
-    itemRender: () => {
-      const tokenOpts = [
-        {
-          value: 'all',
-          label: 'All tokens',
-        },
-        {
-          value: 'asd1',
-          label: 'Asd1',
-        },
-        {
-          value: 'qwe1',
-          label: 'Qwe1',
-        },
-        // ...Array.from(Pools.entries()).map(([key, value]) => ({
-        //   value: key,
-        //   label: value.name ?? '-',
-        // })),
-      ];
-
-      return <Select options={tokenOpts} className="full-width" />;
-    },
-  },
-];
+import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
 
 export const TransactionsTable = ({ accountAddress }: { accountAddress?: string }) => {
   const [dataList, setDataList] = useState<TransactionApiType[]>([]);
@@ -120,9 +51,9 @@ export const TransactionsTable = ({ accountAddress }: { accountAddress?: string 
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {item.transactionType === 'WITHDRAW' ? 'Withdraw' : 'Deposit'}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          {/* <Text type="small" weight="semibold" color="secondary">
             Multiple tokens
-          </Text>
+          </Text> */}
         </div>
       ),
     },
@@ -132,12 +63,13 @@ export const TransactionsTable = ({ accountAddress }: { accountAddress?: string 
         <div style={{ whiteSpace: 'nowrap' }}>
           <div className="flex align-center mb-4">
             <Icon name={getTokenIconBySymbol(item.tokenA.symbol)} width={16} height={16} className="mr-4" />
-            <Text type="p1" weight="semibold" color="red">
-              - 10.00 TBD
+            <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
+              {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
+              {formatToken(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
             </Text>
           </div>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
+            {formatUSD(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals)?.multipliedBy(item.tokenAPrice))}
           </Text>
         </div>
       ),
@@ -149,12 +81,13 @@ export const TransactionsTable = ({ accountAddress }: { accountAddress?: string 
         <div style={{ whiteSpace: 'nowrap' }}>
           <div className="flex align-center mb-4">
             <Icon name={getTokenIconBySymbol(item.tokenB.symbol)} width={16} height={16} className="mr-4" />
-            <Text type="p1" weight="semibold" color="red">
-              - 10.00 TBD
+            <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
+              {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
+              {formatToken(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}
             </Text>
           </div>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}
+            {formatUSD(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals)?.multipliedBy(item.tokenBPrice))}
           </Text>
         </div>
       ),
@@ -162,7 +95,12 @@ export const TransactionsTable = ({ accountAddress }: { accountAddress?: string 
     {
       heading: 'Pool token amount',
       // @ts-ignore
-      render: item => <div className="text-p1 fw-semibold color-primary mr-4">TBD</div>,
+      render: item => (
+        <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'green' : 'red'}>
+          {item.transactionType === 'DEPOSIT' ? '+' : '-'}{' '}
+          {formatToken(BigNumber.from(item.amountEToken)?.unscaleBy(item.tokenB.decimals))}
+        </Text>
+      ),
     },
     {
       heading: 'Address',

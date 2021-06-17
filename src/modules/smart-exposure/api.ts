@@ -47,8 +47,8 @@ export type TranchesItemApiType = {
   targetRatio: string;
   tokenARatio: string;
   tokenBRatio: string;
-  tokenA: PoolTokenApiType;
-  tokenB: PoolTokenApiType;
+  tokenA: TrancheTokenApiType;
+  tokenB: TrancheTokenApiType;
 };
 
 export function fetchTranches(poolAddress?: string): Promise<TranchesItemApiType[]> {
@@ -98,8 +98,8 @@ export type TrancheApiType = {
   };
 };
 
-export function fetchTranche(poolAddress: string, trancheAddress: string): Promise<TrancheApiType> {
-  const url = new URL(`/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}`, config.api.baseUrl);
+export function fetchTranche(trancheAddress: string): Promise<TrancheApiType> {
+  const url = new URL(`/api/smartexposure/tranches/${trancheAddress}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(processResponse)
@@ -111,19 +111,12 @@ type EtokenPriceApiType = {
   eTokenPrice: string;
 };
 
-export function fetchEtokenPrice(
-  poolAddress: string,
-  trancheAddress: string,
-  windowFilter?: string,
-): Promise<EtokenPriceApiType[]> {
+export function fetchEtokenPrice(trancheAddress: string, windowFilter?: string): Promise<EtokenPriceApiType[]> {
   const query = queryfy({
     window: windowFilter,
   });
 
-  const url = new URL(
-    `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/etoken-price?${query}`,
-    config.api.baseUrl,
-  );
+  const url = new URL(`/api/smartexposure/tranches/${trancheAddress}/etoken-price?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(processResponse)
@@ -135,19 +128,12 @@ export type RatioDeviationApiType = {
   deviation: string;
 };
 
-export function fetchRatioDeviation(
-  poolAddress: string,
-  trancheAddress: string,
-  windowFilter?: string,
-): Promise<RatioDeviationApiType[]> {
+export function fetchRatioDeviation(trancheAddress: string, windowFilter?: string): Promise<RatioDeviationApiType[]> {
   const query = queryfy({
     window: windowFilter,
   });
 
-  const url = new URL(
-    `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/ratio-deviation?${query}`,
-    config.api.baseUrl,
-  );
+  const url = new URL(`/api/smartexposure/tranches/${trancheAddress}/ratio-deviation?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(processResponse)
@@ -161,7 +147,6 @@ export type TrancheLiquidityApiType = {
 };
 
 export function fetchTrancheLiquidity(
-  poolAddress: string,
   trancheAddress: string,
   windowFilter?: string,
 ): Promise<TrancheLiquidityApiType[]> {
@@ -169,10 +154,7 @@ export function fetchTrancheLiquidity(
     window: windowFilter,
   });
 
-  const url = new URL(
-    `/api/smartexposure/pools/${poolAddress}/tranches/${trancheAddress}/liquidity?${query}`,
-    config.api.baseUrl,
-  );
+  const url = new URL(`/api/smartexposure/tranches/${trancheAddress}/liquidity?${query}`, config.api.baseUrl);
 
   return fetch(url.toString())
     .then(processResponse)
@@ -186,6 +168,8 @@ export type TransactionApiType = {
   tokenB: PoolTokenApiType;
   amountA: string;
   amountB: string;
+  tokenAPrice: string;
+  tokenBPrice: string;
   amountEToken: string;
   transactionType: 'WITHDRAW' | 'DEPOSIT';
   transactionHash: string;

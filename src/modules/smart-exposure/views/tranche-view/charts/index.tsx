@@ -98,7 +98,7 @@ const RatioDeviation = ({
 
   useEffect(() => {
     setLoading(true);
-    fetchRatioDeviation(poolAddress, trancheAddress, periodFilter)
+    fetchRatioDeviation(trancheAddress, periodFilter)
       .then(result => setDataList(result))
       .catch(err => {
         setDataList([]);
@@ -108,7 +108,7 @@ const RatioDeviation = ({
         });
       })
       .finally(() => setLoading(false));
-  }, [poolAddress, trancheAddress, periodFilter]);
+  }, [trancheAddress, periodFilter]);
 
   return (
     <Spin spinning={loading}>
@@ -180,7 +180,7 @@ const TrancheLiquidity = ({
 
   useEffect(() => {
     setLoading(true);
-    fetchTrancheLiquidity(poolAddress, trancheAddress, periodFilter)
+    fetchTrancheLiquidity(trancheAddress, periodFilter)
       .then(result => setDataList(result))
       .catch(err => {
         setDataList([]);
@@ -190,7 +190,7 @@ const TrancheLiquidity = ({
         });
       })
       .finally(() => setLoading(false));
-  }, [poolAddress, trancheAddress, periodFilter]);
+  }, [trancheAddress, periodFilter]);
 
   const ticks = useMemo(() => {
     return generateTicks(dataList, periodFilter);

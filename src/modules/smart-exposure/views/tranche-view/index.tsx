@@ -25,10 +25,10 @@ const TrancheView: React.FC = () => {
   const [tranche, setTranche] = useState<TrancheApiType>();
 
   useEffect(() => {
-    fetchTranche(poolAddress, trancheAddress).then(result => {
+    fetchTranche(trancheAddress).then(result => {
       setTranche(result);
     });
-  }, [poolAddress, trancheAddress]);
+  }, [trancheAddress]);
 
   if (!tranche) {
     return null;

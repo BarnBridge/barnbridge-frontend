@@ -53,11 +53,11 @@ const DepositView: React.FC = () => {
   const wallet = useWallet();
 
   useEffect(() => {
-    fetchTranche(poolAddress, trancheAddress).then(result => {
+    fetchTranche(trancheAddress).then(result => {
       setTranche(result);
       console.log('tranche', result);
     });
-  }, [poolAddress, trancheAddress]);
+  }, [trancheAddress]);
 
   if (!tranche || !tokenAContract || !tokenBContract || !selectedTokenContract) {
     return <Spinner className="mh-auto" />;
