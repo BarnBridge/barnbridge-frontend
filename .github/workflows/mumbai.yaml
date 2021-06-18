@@ -49,8 +49,8 @@ jobs:
         REACT_APP_HTML_TITLE: 'BarnBridge Mumbai'
         REACT_APP_WEB3_CHAIN_ID: 80001
         REACT_APP_WEB3_POLLING_INTERVAL: 12000
-        REACT_APP_WEB3_RPC_WSS_URL: ''
-        REACT_APP_WEB3_RPC_HTTPS_URL: 'https://polygon-mumbai.infura.io/v3/5aa7739d0e474570a7561dd546a7dfe3'
+        REACT_APP_WEB3_RPC_WSS_URL: 'wss://rpc-mumbai.maticvigil.com/ws/v1/42d3fea6a96fc0700858bca99dd8224f785420d5'
+        REACT_APP_WEB3_RPC_HTTPS_URL: 'https://rpc-mumbai.maticvigil.com/v1/42d3fea6a96fc0700858bca99dd8224f785420d5'
         REACT_APP_WEB3_PORTIS_APP_ID: 'b0b0f776-bbf6-458c-a175-6483e0c452b7'
         REACT_APP_WEB3_WALLET_CONNECT_BRIDGE: 'https://bridge.walletconnect.org'
         REACT_APP_WEB3_COINBASE_APP_NAME: 'barnbridge'
