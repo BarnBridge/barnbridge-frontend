@@ -32,7 +32,11 @@ export const PortfolioTable: React.FC<Props> = ({ poolAddress, className }) => {
       <header className="card-header flex align-center ph-24 pv-0">
         <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" size="small" />
       </header>
-      {activeTab === 'positions' ? <PositionsTable /> : <TransactionsTable accountAddress={account} />}
+      {activeTab === 'positions' ? (
+        <PositionsTable poolAddress={poolAddress} />
+      ) : (
+        <TransactionsTable poolAddress={poolAddress} accountAddress={account} />
+      )}
     </section>
   );
 };

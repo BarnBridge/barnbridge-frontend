@@ -181,10 +181,12 @@ export function fetchTransactions({
   page,
   limit,
   accountAddress,
+  poolAddress,
 }: {
   page: number;
   limit: number;
   accountAddress?: string;
+  poolAddress?: string;
 }): Promise<{
   data: TransactionApiType[];
   meta: { count: number; block: number };
@@ -193,9 +195,38 @@ export function fetchTransactions({
     page,
     limit,
     accountAddress,
+    // TODO: fix this filter
+    eTokenAddress: poolAddress,
   });
 
   const url = new URL(`/api/smartexposure/transactions?${query}`, config.api.baseUrl);
+
+  return fetch(url.toString()).then(processResponse);
+}
+
+export type PortfolioValueApiType = {
+  point: string;
+  portfolioValueSE: string;
+};
+
+export function fetchPortfolioValue({
+  accountAddress,
+  window,
+  poolAddress,
+}: {
+  accountAddress: string;
+  window?: string;
+  poolAddress?: string;
+}): Promise<{
+  data: PortfolioValueApiType[];
+  meta: { count: number; block: number };
+}> {
+  const query = queryfy({
+    window,
+    poolAddress,
+  });
+
+  const url = new URL(`/api/smartexposure/users/${accountAddress}/portfolio-value?${query}`, config.api.baseUrl);
 
   return fetch(url.toString()).then(processResponse);
 }

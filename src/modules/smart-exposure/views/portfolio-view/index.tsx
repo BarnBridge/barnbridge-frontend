@@ -7,8 +7,8 @@ import { Text } from 'components/custom/typography';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
 
-import { PortfolioChart } from './portfolio-chart';
 import { PortfolioTable } from './portfolio-table';
+import { PortfolioValue } from './portfolio-value';
 
 const PortfolioView: React.FC = () => {
   const [pools, setPools] = useState<PoolApiType[]>([]);
@@ -57,7 +57,7 @@ const PortfolioView: React.FC = () => {
           );
         })}
       </div>
-      <PortfolioChart className="mb-32" />
+      <PortfolioValue poolAddress={activePool?.poolAddress} className="mb-32" />
       <PortfolioTable poolAddress={activePool?.poolAddress} />
     </>
   );

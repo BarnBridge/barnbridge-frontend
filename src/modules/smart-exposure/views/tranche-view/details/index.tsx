@@ -1,6 +1,7 @@
 ﻿import { useState } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
+import { format } from 'date-fns';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -99,10 +100,10 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Last rebalance
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            11.25.2020
+            {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
-            16:32
+            {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
           </Text>
         </div>
         <div className="flex flow-row">
@@ -110,7 +111,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Conversion rate
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            $ 13,872.0007
+            {formatUSD(tranche.state.eTokenPrice)}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
             per eToken
