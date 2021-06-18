@@ -9,10 +9,15 @@ import { Text } from 'components/custom/typography';
 import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
 import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
 
-export const TransactionsTable = ({ accountAddress }: { accountAddress?: string }) => {
+export const TransactionsTable = ({
+  accountAddress,
+  poolAddress,
+}: {
+  accountAddress?: string;
+  poolAddress?: string;
+}) => {
   const [dataList, setDataList] = useState<TransactionApiType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  // const [current, setCurrent] = useState(1);
   const [pagination, setPagination] = useState<{
     total: number;
     page: number;
@@ -25,13 +30,19 @@ export const TransactionsTable = ({ accountAddress }: { accountAddress?: string 
 
   useEffect(() => {
     setLoading(true);
-    fetchTransactions({ page: pagination.page, limit: pagination.pageSize, accountAddress })
+    fetchTransactions({ page: pagination.page, limit: pagination.pageSize, accountAddress, poolAddress })
       .then(result => {
         if (Array.isArray(result.data)) {
           setDataList(result.data);
           setPagination(prevPagination => ({
             ...prevPagination,
             total: result.meta.count,
+          }));
+        } else {
+          setDataList([]);
+          setPagination(prevPagination => ({
+            ...prevPagination,
+            total: 0,
           }));
         }
       })
@@ -40,7 +51,7 @@ export const TransactionsTable = ({ accountAddress }: { accountAddress?: string 
         console.error(err);
       })
       .finally(() => setLoading(false));
-  }, [pagination.page, pagination.pageSize, accountAddress]);
+  }, [pagination.page, pagination.pageSize, accountAddress, poolAddress]);
 
   const columns: ColumnType<TransactionApiType>[] = useMemo(
     () => [

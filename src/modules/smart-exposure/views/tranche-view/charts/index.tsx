@@ -70,7 +70,7 @@ export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
       </header>
       <div className="p-24">
         {activeTab === TabsKey.ratio ? (
-          <RatioDeviation poolAddress={poolAddress} trancheAddress={trancheAddress} periodFilter={periodFilter} />
+          <RatioDeviation trancheAddress={trancheAddress} periodFilter={periodFilter} />
         ) : (
           <TrancheLiquidity
             tranche={tranche}
@@ -84,15 +84,7 @@ export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
   );
 };
 
-const RatioDeviation = ({
-  poolAddress,
-  trancheAddress,
-  periodFilter,
-}: {
-  poolAddress: string;
-  trancheAddress: string;
-  periodFilter: PeriodTabsKey;
-}) => {
+const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: string; periodFilter: PeriodTabsKey }) => {
   const [dataList, setDataList] = useState<RatioDeviationApiType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -192,9 +184,9 @@ const TrancheLiquidity = ({
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
 
-  const ticks = useMemo(() => {
-    return generateTicks(dataList, periodFilter);
-  }, [dataList, periodFilter]);
+  // const ticks = useMemo(() => {
+  //   return generateTicks(dataList, periodFilter);
+  // }, [dataList, periodFilter]);
 
   return (
     <>
@@ -214,11 +206,9 @@ const TrancheLiquidity = ({
             <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
             <ReCharts.XAxis
               dataKey="point"
-              ticks={ticks}
-              tickMargin={12}
-              minTickGap={0}
+              axisLine={false}
+              tickLine={false}
               tickFormatter={value => formatTick(value, periodFilter)}
-              interval={0}
             />
             <ReCharts.YAxis
               axisLine={false}
@@ -233,7 +223,7 @@ const TrancheLiquidity = ({
               separator=""
               labelFormatter={value => (
                 <Text type="p2" tag="span" weight="semibold" color="primary">
-                  {Number.isFinite(value) ? format(value, 'MM.dd.yyyy HH:mm') : ''}
+                  {typeof value === 'string' ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
                 </Text>
               )}
               formatter={(value: number, _: any, { dataKey }: any) => (
