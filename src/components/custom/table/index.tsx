@@ -75,7 +75,7 @@ export const TableFooter: React.FC<TableFooterType> = ({ children, total, curren
         {typeof children === 'function'
           ? children({
               total,
-              from: (current - 1) * pageSize + 1,
+              from: total ? (current - 1) * pageSize + 1 : 0,
               to: current * pageSize > total ? total : current * pageSize,
             })
           : children}

@@ -86,7 +86,12 @@ const ChangeTrancheView: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="card ph-32 pv-32 mh-auto" style={{ width: '100%', maxWidth: 640 }}>
+      <div
+        className="card ph-32 pv-32 mh-auto"
+        style={{
+          width: '100%',
+          maxWidth: 640,
+        }}>
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
           Change tranche
         </Text>

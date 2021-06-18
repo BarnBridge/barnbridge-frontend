@@ -55,13 +55,13 @@ const WithdrawView: React.FC = () => {
     loadCommon: true,
     loadBalance: true,
   });
-  const tokenContract = useContract(trancheAddress, {
+  const tokenEContract = useContract(trancheAddress, {
     loadAllowance: [poolAddress, ePoolPeripheryContract.address],
     loadCommon: true,
     loadBalance: true,
   });
 
-  if (!tranche || !tokenContract || !tokenAContract || !tokenBContract) {
+  if (!tranche || !tokenEContract || !tokenAContract || !tokenBContract) {
     return <Spinner className="mh-auto" />;
   }
 
@@ -110,8 +110,8 @@ const WithdrawView: React.FC = () => {
           <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
           <div>
             <span className="text-p1 fw-semibold color-primary mr-8">
-              {formatToken(tokenContract.getBalanceOf(wallet.account), {
-                scale: tokenContract.decimals,
+              {formatToken(tokenEContract.getBalanceOf(wallet.account), {
+                scale: tokenEContract.decimals,
               }) ?? '-'}
             </span>
             <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
@@ -140,9 +140,19 @@ const WithdrawView: React.FC = () => {
           size="small"
         />
         {activeTab === 'multiple' ? (
-          <MultipleTokensForm tranche={tranche} tokenContract={tokenContract} />
+          <MultipleTokensForm
+            tranche={tranche}
+            tokenAContract={tokenAContract}
+            tokenBContract={tokenBContract}
+            tokenEContract={tokenEContract}
+          />
         ) : (
-          <SingleTokenForm tranche={tranche} tokenContract={tokenContract} />
+          <SingleTokenForm
+            tranche={tranche}
+            tokenAContract={tokenAContract}
+            tokenBContract={tokenBContract}
+            tokenEContract={tokenEContract}
+          />
         )}
       </div>
     </>
@@ -151,7 +161,17 @@ const WithdrawView: React.FC = () => {
 
 export default WithdrawView;
 
-const MultipleTokensForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; tokenContract: Erc20Contract }) => {
+const MultipleTokensForm = ({
+  tranche,
+  tokenAContract,
+  tokenBContract,
+  tokenEContract,
+}: {
+  tranche: TrancheApiType;
+  tokenAContract: Erc20Contract;
+  tokenBContract: Erc20Contract;
+  tokenEContract: Erc20Contract;
+}) => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenEState, setTokenEState] = useState<string>('');
   const [tokenAState, setTokenAState] = useState<BigNumber | undefined>();
@@ -178,19 +198,27 @@ const MultipleTokensForm = ({ tranche, tokenContract }: { tranche: TrancheApiTyp
     });
   }, 400);
 
-  const submitHandler = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const amount = BigNumber.from(tokenEState) ?? BigNumber.ZERO;
 
     if (!amount) {
       return;
     }
+    try {
+      await ePoolContract.redeem(tranche.eTokenAddress, amount.multipliedBy(tranche.sFactorE));
 
-    ePoolContract.redeem(tranche.eTokenAddress, amount.multipliedBy(tranche.sFactorE));
+      setTokenEState('');
+      setTokenAState(undefined);
+      setTokenBState(undefined);
+      tokenAContract.loadBalance();
+      tokenBContract.loadBalance();
+      tokenEContract.loadBalance();
+    } catch (e) {}
   };
 
   const feeRate = new BigNumber(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
-  const tokenEMax = tokenContract.balance?.unscaleBy(tokenContract?.decimals)?.toNumber() ?? 0;
+  const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract?.decimals)?.toNumber() ?? 0;
 
   return (
     <form onSubmit={submitHandler}>
@@ -294,7 +322,7 @@ const MultipleTokensForm = ({ tranche, tokenContract }: { tranche: TrancheApiTyp
       />
 
       <EnableTokenButton
-        contract={tokenContract}
+        contract={tokenEContract}
         address={poolAddress}
         tokenSymbol={tranche.eTokenSymbol}
         className="mb-32"
@@ -314,7 +342,17 @@ const MultipleTokensForm = ({ tranche, tokenContract }: { tranche: TrancheApiTyp
   );
 };
 
-const SingleTokenForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; tokenContract: Erc20Contract }) => {
+const SingleTokenForm = ({
+  tranche,
+  tokenAContract,
+  tokenBContract,
+  tokenEContract,
+}: {
+  tranche: TrancheApiType;
+  tokenAContract: Erc20Contract;
+  tokenBContract: Erc20Contract;
+  tokenEContract: Erc20Contract;
+}) => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenEState, setTokenEState] = useState<string>('');
   const [selectedTokenValue, setSelectedTokenValue] = useState<BigNumber | undefined>();
@@ -355,7 +393,7 @@ const SingleTokenForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; 
     });
   }, 400);
 
-  const submitHandler = (e: React.SyntheticEvent<HTMLFormElement>) => {
+  const submitHandler = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const amount = BigNumber.from(tokenEState)?.scaleBy(selectedTokenDecimals) ?? BigNumber.ZERO;
@@ -366,17 +404,25 @@ const SingleTokenForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; 
 
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(transactionDetails.deadline ?? 0) * 60);
 
-    ePoolPeripheryContract?.[isTokenA ? 'redeemForMinTokenA' : 'redeemForMinTokenB'](
-      poolAddress,
-      trancheAddress,
-      amount,
-      selectedTokenValueMinusSlippage.integerValue(),
-      deadlineTs,
-    );
+    try {
+      await ePoolPeripheryContract?.[isTokenA ? 'redeemForMinTokenA' : 'redeemForMinTokenB'](
+        poolAddress,
+        trancheAddress,
+        amount,
+        selectedTokenValueMinusSlippage.integerValue(),
+        deadlineTs,
+      );
+
+      setTokenEState('');
+      setSelectedTokenValue(undefined);
+      tokenAContract.loadBalance();
+      tokenBContract.loadBalance();
+      tokenEContract.loadBalance();
+    } catch (e) {}
   };
 
   const feeRate = new BigNumber(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
-  const tokenEMax = tokenContract.balance?.unscaleBy(tokenContract?.decimals)?.toNumber() ?? 0;
+  const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract.decimals)?.toNumber() ?? 0;
 
   return (
     <form onSubmit={submitHandler}>
@@ -470,7 +516,7 @@ const SingleTokenForm = ({ tranche, tokenContract }: { tranche: TrancheApiType; 
       />
 
       <EnableTokenButton
-        contract={tokenContract}
+        contract={tokenEContract}
         address={ePoolPeripheryContract.address}
         tokenSymbol={tranche.eTokenSymbol}
         className="mb-32"
