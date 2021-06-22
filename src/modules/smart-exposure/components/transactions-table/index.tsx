@@ -4,15 +4,18 @@ import { format } from 'date-fns';
 import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
+import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
 import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
 
 export const TransactionsTable = ({
+  transactionType,
   accountAddress,
   poolAddress,
 }: {
+  transactionType?: TransactionApiType['transactionType'];
   accountAddress?: string;
   poolAddress?: string;
 }) => {
@@ -30,7 +33,13 @@ export const TransactionsTable = ({
 
   useEffect(() => {
     setLoading(true);
-    fetchTransactions({ page: pagination.page, limit: pagination.pageSize, accountAddress, poolAddress })
+    fetchTransactions({
+      page: pagination.page,
+      limit: pagination.pageSize,
+      accountAddress,
+      poolAddress,
+      transactionType,
+    })
       .then(result => {
         if (Array.isArray(result.data)) {
           setDataList(result.data);
@@ -51,20 +60,28 @@ export const TransactionsTable = ({
         console.error(err);
       })
       .finally(() => setLoading(false));
-  }, [pagination.page, pagination.pageSize, accountAddress, poolAddress]);
+  }, [pagination.page, pagination.pageSize, accountAddress, poolAddress, transactionType]);
 
   const columns: ColumnType<TransactionApiType>[] = useMemo(
     () => [
       {
-        heading: 'Transaction type',
+        heading: 'Tranche / Transaction',
         render: item => (
-          <div style={{ whiteSpace: 'nowrap' }}>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {item.transactionType === 'WITHDRAW' ? 'Withdraw' : 'Deposit'}
-            </Text>
-            {/* <Text type="small" weight="semibold" color="secondary">
-            Multiple tokens
-          </Text> */}
+          <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
+            <IconsPair
+              icon1={getTokenIconBySymbol(item.tokenA.symbol)}
+              icon2={getTokenIconBySymbol(item.tokenB.symbol)}
+              size={32}
+              className="mr-16"
+            />
+            <div>
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                {item.eTokenSymbol}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {item.transactionType === 'WITHDRAW' ? 'Withdraw' : 'Deposit'} – multiple tokens
+              </Text>
+            </div>
           </div>
         ),
       },

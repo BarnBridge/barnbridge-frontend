@@ -34,7 +34,7 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
             <input
               ref={ref}
               className={s.tokenAmountValue}
-              type="number"
+              type="text"
               onWheel={ev => {
                 ev.currentTarget.blur();
               }}

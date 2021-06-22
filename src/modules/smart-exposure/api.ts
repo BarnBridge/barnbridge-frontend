@@ -163,6 +163,7 @@ export function fetchTrancheLiquidity(
 
 export type TransactionApiType = {
   eTokenAddress: string;
+  eTokenSymbol: string;
   accountAddress: string;
   tokenA: PoolTokenApiType;
   tokenB: PoolTokenApiType;
@@ -182,11 +183,13 @@ export function fetchTransactions({
   limit,
   accountAddress,
   poolAddress,
+  transactionType,
 }: {
   page: number;
   limit: number;
   accountAddress?: string;
   poolAddress?: string;
+  transactionType?: TransactionApiType['transactionType'];
 }): Promise<{
   data: TransactionApiType[];
   meta: { count: number; block: number };
@@ -197,6 +200,7 @@ export function fetchTransactions({
     accountAddress,
     // TODO: fix this filter
     eTokenAddress: poolAddress,
+    transactionType,
   });
 
   const url = new URL(`/api/smartexposure/transactions?${query}`, config.api.baseUrl);

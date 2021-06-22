@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { format } from 'date-fns';
@@ -26,9 +26,13 @@ const PoolsView: React.FC = () => {
 
   const poolsToDisplay = selectedPools.length ? selectedPools : pools;
 
+  const totalValueLocked = useMemo(() => pools.reduce((acc, pool) => acc + Number(pool.state.poolLiquidity), 0), [
+    pools,
+  ]);
+
   return (
     <>
-      <div className="tab-cards mb-64">
+      <div className="tab-cards mb-40">
         {pools.map(pool => {
           const tokenA = getTokenBySymbol(pool.tokenA.symbol);
           const tokenB = getTokenBySymbol(pool.tokenB.symbol);
@@ -74,6 +78,14 @@ const PoolsView: React.FC = () => {
           );
         })}
       </div>
+
+      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
+        Total value locked
+      </Text>
+      <Text type="h2" weight="bold" color="primary" className="mb-40">
+        {formatUSD(totalValueLocked)}
+      </Text>
+
       {poolsToDisplay.map(pool => {
         const tokenA = getTokenBySymbol(pool.tokenA.symbol);
         const tokenB = getTokenBySymbol(pool.tokenB.symbol);
@@ -102,7 +114,7 @@ const PoolsView: React.FC = () => {
                   Rebalancing strategies
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                  {getRelativeTime(pool.state.rebalancingInterval)}
+                  Every {getRelativeTime(pool.state.rebalancingInterval) ?? 0}
                   <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
                   {formatPercent(BigNumber.from(pool.state.rebalancingCondition)?.unscaleBy(18) ?? 0)} deviation from
                   target

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import cn from 'classnames';
+import classNames from 'classnames';
 
 // import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
@@ -57,15 +58,19 @@ const TrancheView: React.FC = () => {
             <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
-        {wallet.isActive ? (
-          <div className="flex col-gap-24 ml-auto">
-            <Link to={`${location.pathname}/deposit`} className="button-primary">
-              Deposit
-            </Link>
-            <Link to={`${location.pathname}/withdraw`} className="button-ghost">
-              Withdraw
-            </Link>
-            {/* <DropdownList
+
+        <div className="flex col-gap-24 ml-auto">
+          <Link
+            to={`${location.pathname}/deposit`}
+            className={classNames('button-primary', { disabled: !wallet.account })}>
+            Deposit
+          </Link>
+          <Link
+            to={`${location.pathname}/withdraw`}
+            className={classNames('button-ghost', { disabled: !wallet.account })}>
+            Withdraw
+          </Link>
+          {/* <DropdownList
               items={[
                 {
                   to: `${location.pathname}/change-tranche`,
@@ -85,8 +90,7 @@ const TrancheView: React.FC = () => {
                 </button>
               )}
             </DropdownList> */}
-          </div>
-        ) : null}
+        </div>
       </div>
       <div className={cn(s.trendDetailsRow, 'mb-32')}>
         <PriceTrend poolAddress={poolAddress} trancheAddress={trancheAddress} />

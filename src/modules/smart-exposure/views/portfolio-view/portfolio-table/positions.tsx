@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { formatToken } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
@@ -29,10 +29,15 @@ const columns: ColumnType<TranchesItemApiType>[] = [
     render: function PoolTokenAmount(item) {
       const contract = useContract(item.eTokenAddress, { loadBalance: true, loadCommon: true });
 
+      const unscaledBalance = contract?.balance?.unscaleBy(contract?.decimals);
+
       return (
-        <div className="text-p1 fw-semibold color-primary mr-4">
-          {formatToken(contract?.balance?.unscaleBy(contract?.decimals)) ?? '–'}
-        </div>
+        <>
+          <div className="text-p1 fw-semibold color-primary mb-4">{formatToken(unscaledBalance) ?? '–'}</div>
+          <div className="text-sm fw-semibold color-secondary">
+            {formatUSD(unscaledBalance?.multipliedBy(item.state.eTokenPrice)) ?? '–'}
+          </div>
+        </>
       );
     },
   },

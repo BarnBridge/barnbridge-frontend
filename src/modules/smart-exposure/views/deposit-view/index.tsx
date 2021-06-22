@@ -18,7 +18,6 @@ import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
-import { useWallet } from 'wallets/wallet';
 
 const tabs = [
   {
@@ -50,7 +49,6 @@ const DepositView: React.FC = () => {
     loadCommon: true,
     loadBalance: true,
   });
-  const wallet = useWallet();
 
   useEffect(() => {
     fetchTranche(trancheAddress).then(result => {
@@ -84,7 +82,7 @@ const DepositView: React.FC = () => {
           <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.tokenA.symbol} balance</div>
           <div>
             <span className="text-p1 fw-semibold color-primary mr-8">
-              {formatToken(tokenAContract.getBalanceOf(wallet.account), {
+              {formatToken(tokenAContract.balance, {
                 scale: tranche.tokenA.decimals,
               }) ?? '-'}
             </span>
@@ -96,7 +94,7 @@ const DepositView: React.FC = () => {
           <div>
             <span className="text-p1 fw-semibold color-primary mr-8">
               {' '}
-              {formatToken(tokenBContract.getBalanceOf(wallet.account), {
+              {formatToken(tokenBContract.balance, {
                 scale: tranche.tokenB.decimals,
               }) ?? '-'}
             </span>
@@ -107,7 +105,7 @@ const DepositView: React.FC = () => {
           <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
           <div>
             <span className="text-p1 fw-semibold color-primary mr-8">
-              {formatToken(tokenEContract.getBalanceOf(wallet.account), {
+              {formatToken(tokenEContract.balance, {
                 scale: tokenEContract.decimals,
               }) ?? '-'}
             </span>
@@ -177,6 +175,7 @@ const MultipleTokensForm = ({
   const [tokenBState, setTokenBState] = useState<string>('');
   const [tokenEState, setTokenEState] = useState<BigNumber | undefined>();
   const { ePoolContract, ePoolHelperContract } = useSEPools();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
@@ -236,6 +235,8 @@ const MultipleTokensForm = ({
       return;
     }
 
+    setLoading(true);
+
     try {
       await ePoolContract?.deposit(trancheAddress, tokenEState);
 
@@ -245,7 +246,10 @@ const MultipleTokensForm = ({
       tokenAContract.loadBalance();
       tokenBContract.loadBalance();
       tokenEContract.loadBalance();
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!ePoolContract) {
@@ -326,7 +330,8 @@ const MultipleTokensForm = ({
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </Link>
-        <button type="submit" className="button-primary">
+        <button type="submit" className="button-primary" disabled={loading}>
+          {loading && <Spinner className="mr-8" />}
           Deposit
         </button>
       </div>
@@ -357,6 +362,7 @@ const SingleTokenForm = ({
     deadline: 20,
     slippage: 0.5,
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const isTokenA = selectedTokenSymbol === tranche.tokenA.symbol;
 
@@ -410,6 +416,8 @@ const SingleTokenForm = ({
 
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(transactionDetails.deadline) * 60);
 
+    setLoading(true);
+
     try {
       await ePoolPeripheryContract?.[isTokenA ? 'depositForMaxTokenA' : 'depositForMaxTokenB'](
         poolAddress,
@@ -425,7 +433,10 @@ const SingleTokenForm = ({
       tokenAContract.loadBalance();
       tokenBContract.loadBalance();
       tokenEContract.loadBalance();
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!ePoolPeripheryContract) {
@@ -436,9 +447,9 @@ const SingleTokenForm = ({
     <form onSubmit={handleDeposit}>
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{selectedTokenSymbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        {/* <span className="text-sm fw-semibold color-secondary ml-auto">
           Current ratio: {formatPercent(Number(isTokenA ? tranche.tokenARatio : tranche.tokenBRatio))}
-        </span>
+        </span> */}
       </div>
       <TokenAmountPreview
         before={
@@ -483,6 +494,7 @@ const SingleTokenForm = ({
         max={selectedTokenEMax?.toNumber() ?? 0}
         placeholder={`0 (Max ${selectedTokenEMax ?? 0})`}
         className="mb-32"
+        slider
       />
 
       <TransactionDetails
@@ -509,7 +521,8 @@ const SingleTokenForm = ({
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </Link>
-        <button type="submit" className="button-primary">
+        <button type="submit" className="button-primary" disabled={loading}>
+          {loading && <Spinner className="mr-8" />}
           Deposit
         </button>
       </div>

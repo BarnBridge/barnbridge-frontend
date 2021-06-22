@@ -102,7 +102,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
         sign = '-';
       }
 
-      return <Badge color={color}>{`${sign} ${formatPercent(value, 2)}` ?? '-'}</Badge>;
+      return <Badge color={color}>{`${sign} ${formatPercent(value, 2) ?? '-'}`}</Badge>;
     },
   },
   {
