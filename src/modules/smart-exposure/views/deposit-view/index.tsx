@@ -279,7 +279,13 @@ const MultipleTokensForm = ({
     return errors;
   }, [tokenBMax, tokenBState]);
 
-  const disableSubmit = !tokenAState || !tokenBState || !!tokenAErrors.length || !!tokenBErrors.length;
+  const disableSubmit =
+    !tokenAState ||
+    !tokenBState ||
+    !!tokenAErrors.length ||
+    !!tokenBErrors.length ||
+    tokenAContract.isAllowedOf(poolAddress) === false ||
+    tokenBContract.isAllowedOf(poolAddress) === false;
 
   if (!ePoolContract) {
     return null;
@@ -485,7 +491,10 @@ const SingleTokenForm = ({
     return errors;
   }, [selectedTokenEMax, tokenEState]);
 
-  const disableSubmit = !tokenEState || !!tokenEErrors.length;
+  const disableSubmit =
+    !tokenEState ||
+    !!tokenEErrors.length ||
+    selectedTokenContract.isAllowedOf(ePoolPeripheryContract.address) === false;
 
   if (!ePoolPeripheryContract) {
     return null;

@@ -240,7 +240,7 @@ const MultipleTokensForm = ({
     return errors;
   }, [tokenEMax, tokenEState]);
 
-  const disableSubmit = !tokenEState || !!tokenEErrors.length;
+  const disableSubmit = !tokenEState || !!tokenEErrors.length || tokenEContract.isAllowedOf(poolAddress) === false;
 
   return (
     <form onSubmit={submitHandler}>
@@ -466,7 +466,8 @@ const SingleTokenForm = ({
     return errors;
   }, [tokenEMax, tokenEState]);
 
-  const disableSubmit = !tokenEState || !!tokenEErrors.length;
+  const disableSubmit =
+    !tokenEState || !!tokenEErrors.length || tokenEContract.isAllowedOf(ePoolPeripheryContract.address) === false;
 
   return (
     <form onSubmit={submitHandler}>
