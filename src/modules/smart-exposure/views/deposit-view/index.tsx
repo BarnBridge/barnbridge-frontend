@@ -307,8 +307,8 @@ const MultipleTokensForm = ({
           setTokenAState(value);
           handleAmountTokenA(value);
         }}
-        max={tokenAMax?.toNumber()}
-        placeholder={`0 (Max ${tokenAMax?.toNumber()})`}
+        max={tokenAMax?.toString()}
+        placeholder={`0 (Max ${tokenAMax ?? 0})`}
         className="mb-16"
         errors={tokenAErrors}
       />
@@ -335,8 +335,8 @@ const MultipleTokensForm = ({
           setTokenBState(value);
           handleAmountTokenB(value);
         }}
-        max={tokenBMax?.toNumber()}
-        placeholder={`0 (Max ${tokenBMax?.toNumber()})`}
+        max={tokenBMax?.toString()}
+        placeholder={`0 (Max ${tokenBMax ?? 0})`}
         className="mb-16"
         errors={tokenBErrors}
       />

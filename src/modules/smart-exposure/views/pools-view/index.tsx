@@ -114,7 +114,7 @@ const PoolsView: React.FC = () => {
                   Rebalancing strategies
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                  Every {getRelativeTime(pool.state.rebalancingInterval) ?? 0}
+                  Every {getRelativeTime(pool.state.rebalancingInterval) || '0 seconds'}
                   <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
                   {formatPercent(BigNumber.from(pool.state.rebalancingCondition)?.unscaleBy(18) ?? 0)} deviation from
                   target
