@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
@@ -53,7 +53,6 @@ const DepositView: React.FC = () => {
   useEffect(() => {
     fetchTranche(trancheAddress).then(result => {
       setTranche(result);
-      console.log('tranche', result);
     });
   }, [trancheAddress]);
 
@@ -252,6 +251,36 @@ const MultipleTokensForm = ({
     }
   };
 
+  const tokenAErrors = useMemo(() => {
+    const errors = [];
+
+    if (tokenAState && !tokenAState.match(/^(\d+\.?\d*|\.\d+)$/)) {
+      errors.push('Wrong number format');
+    }
+
+    if (tokenAMax.isLessThan(tokenAState)) {
+      errors.push('Insufficient ballance');
+    }
+
+    return errors;
+  }, [tokenAMax, tokenAState]);
+
+  const tokenBErrors = useMemo(() => {
+    const errors = [];
+
+    if (tokenBState && !tokenBState.match(/^(\d+\.?\d*|\.\d+)$/)) {
+      errors.push('Wrong number format');
+    }
+
+    if (tokenBMax.isLessThan(tokenBState)) {
+      errors.push('Insufficient ballance');
+    }
+
+    return errors;
+  }, [tokenBMax, tokenBState]);
+
+  const disableSubmit = !tokenAState || !tokenBState || !!tokenAErrors.length || !!tokenBErrors.length;
+
   if (!ePoolContract) {
     return null;
   }
@@ -275,6 +304,7 @@ const MultipleTokensForm = ({
         max={tokenAMax?.toNumber()}
         placeholder={`0 (Max ${tokenAMax?.toNumber()})`}
         className="mb-16"
+        errors={tokenAErrors}
       />
       <Icon
         name="plus-circle"
@@ -302,6 +332,7 @@ const MultipleTokensForm = ({
         max={tokenBMax?.toNumber()}
         placeholder={`0 (Max ${tokenBMax?.toNumber()})`}
         className="mb-16"
+        errors={tokenBErrors}
       />
       <Icon
         name="down-arrow-circle"
@@ -330,7 +361,7 @@ const MultipleTokensForm = ({
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </Link>
-        <button type="submit" className="button-primary" disabled={loading}>
+        <button type="submit" className="button-primary" disabled={loading || disableSubmit}>
           {loading && <Spinner className="mr-8" />}
           Deposit
         </button>
@@ -439,6 +470,22 @@ const SingleTokenForm = ({
     }
   };
 
+  const tokenEErrors = useMemo(() => {
+    const errors = [];
+
+    if (tokenEState && !tokenEState.match(/^(\d+\.?\d*|\.\d+)$/)) {
+      errors.push('Wrong number format');
+    }
+
+    if (selectedTokenEMax?.isLessThan(tokenEState)) {
+      errors.push('Insufficient ballance');
+    }
+
+    return errors;
+  }, [selectedTokenEMax, tokenEState]);
+
+  const disableSubmit = !tokenEState || !!tokenEErrors.length;
+
   if (!ePoolPeripheryContract) {
     return null;
   }
@@ -491,10 +538,11 @@ const SingleTokenForm = ({
           setTokenEState(value);
           handleAmountTokenE(value);
         }}
-        max={selectedTokenEMax?.toNumber() ?? 0}
+        max={selectedTokenEMax?.toString() ?? 0}
         placeholder={`0 (Max ${selectedTokenEMax ?? 0})`}
         className="mb-32"
         slider
+        errors={tokenEErrors}
       />
 
       <TransactionDetails
@@ -521,7 +569,7 @@ const SingleTokenForm = ({
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </Link>
-        <button type="submit" className="button-primary" disabled={loading}>
+        <button type="submit" className="button-primary" disabled={loading || disableSubmit}>
           {loading && <Spinner className="mr-8" />}
           Deposit
         </button>

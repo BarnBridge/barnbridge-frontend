@@ -1,5 +1,6 @@
 import { ButtonHTMLAttributes, FC, ReactNode, forwardRef } from 'react';
 import cn from 'classnames';
+import classNames from 'classnames';
 
 import { DropdownList } from 'components/custom/dropdown';
 import Icon, { TokenIconNames } from 'components/custom/icon';
@@ -18,23 +19,28 @@ type TokenAmountType = {
   classNameBefore?: string;
   placeholder?: string;
   disabled?: boolean;
-  max?: number;
+  max?: number | string;
   slider?: boolean;
   decimals?: number;
-  error?: string;
+  errors?: string[];
+  ref?: React.ForwardedRef<HTMLInputElement>;
 };
 
 export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, TokenAmountType>(
-  ({ onChange, before, secondary, className, classNameBefore, slider, error, decimals = 6, ...rest }, ref) => {
+  ({ onChange, before, secondary, className, classNameBefore, slider, errors = [], decimals = 6, ...rest }, ref) => {
+    const max = Number(rest.max);
+
     return (
       <div className={className}>
-        <div className={s.tokenAmount}>
+        <div className={classNames(s.tokenAmount, { [s.error]: errors.length })}>
           {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
           <div className={s.tokenAmountValues}>
             <input
               ref={ref}
               className={s.tokenAmountValue}
               type="text"
+              inputMode="decimal"
+              pattern="[0-9]+([\.,][0-9]+)?"
               onWheel={ev => {
                 ev.currentTarget.blur();
               }}
@@ -45,31 +51,32 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
             />
             <div className={s.tokenAmountHint}>{secondary}</div>
           </div>
-          {Number.isFinite(rest.max) && (
+          {Number.isFinite(max) && (
             <button
               type="button"
               className="button-ghost"
               style={{ alignSelf: 'center' }}
-              disabled={rest.disabled || rest.max === 0}
+              disabled={rest.disabled || max === 0}
               onClick={() => onChange(String(rest.max))}>
               MAX
             </button>
           )}
         </div>
-        {Number(rest.value) > Number(rest.max) && (
-          <Text type="small" weight="semibold" color="red" style={{ marginTop: '8px' }}>
-            insufficient balance
-          </Text>
-        )}
-        {slider && Number.isFinite(rest.max) ? (
+        {!!errors.length &&
+          errors.map((error, idx) => (
+            <Text key={idx} type="small" weight="semibold" color="red" style={{ marginTop: '8px' }}>
+              {error}
+            </Text>
+          ))}
+        {slider && Number.isFinite(max) ? (
           <Slider
             type="range"
             className={s.tokenAmountSlider}
             min="0"
-            max={rest.max}
+            max={max}
             step={1 / 10 ** Math.min(decimals, 6)}
             value={rest.value ?? 0}
-            disabled={rest.disabled || rest.max === 0}
+            disabled={rest.disabled || max === 0}
             onChange={e => {
               onChange(e.target.value);
             }}
