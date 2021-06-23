@@ -279,7 +279,13 @@ const MultipleTokensForm = ({
     return errors;
   }, [tokenBMax, tokenBState]);
 
-  const disableSubmit = !tokenAState || !tokenBState || !!tokenAErrors.length || !!tokenBErrors.length;
+  const disableSubmit =
+    !tokenAState ||
+    !tokenBState ||
+    !!tokenAErrors.length ||
+    !!tokenBErrors.length ||
+    tokenAContract.isAllowedOf(poolAddress) === false ||
+    tokenBContract.isAllowedOf(poolAddress) === false;
 
   if (!ePoolContract) {
     return null;
@@ -437,11 +443,13 @@ const SingleTokenForm = ({
     });
   }, 400);
 
+  const tokenStateWithSlippage = tokenState?.multipliedBy(1 + (transactionDetails.slippage ?? 0) / 100);
+
   const handleDeposit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     const tokenEAmount = BigNumber.from(tokenEState)?.multipliedBy(tranche.sFactorE);
 
-    if (!tokenEAmount || !tokenState) {
+    if (!tokenEAmount || !tokenStateWithSlippage) {
       return;
     }
 
@@ -454,8 +462,7 @@ const SingleTokenForm = ({
         poolAddress,
         trancheAddress,
         tokenEAmount,
-        tokenState?.multipliedBy(1 - (transactionDetails.slippage ?? 0) / 100).scaleBy(selectedTokenDecimals) ??
-          BigNumber.ZERO,
+        tokenStateWithSlippage.scaleBy(selectedTokenDecimals) ?? BigNumber.ZERO,
         deadlineTs,
       );
 
@@ -484,7 +491,10 @@ const SingleTokenForm = ({
     return errors;
   }, [selectedTokenEMax, tokenEState]);
 
-  const disableSubmit = !tokenEState || !!tokenEErrors.length;
+  const disableSubmit =
+    !tokenEState ||
+    !!tokenEErrors.length ||
+    selectedTokenContract.isAllowedOf(ePoolPeripheryContract.address) === false;
 
   if (!ePoolPeripheryContract) {
     return null;
@@ -507,9 +517,9 @@ const SingleTokenForm = ({
             style={{ backgroundColor: 'var(--theme-card-color)' }}
           />
         }
-        value={formatToken(tokenState?.unscaleBy(selectedTokenDecimals)) ?? '0'}
+        value={formatToken(tokenStateWithSlippage?.unscaleBy(selectedTokenDecimals)) ?? '0'}
         secondary={formatUSD(
-          tokenState
+          tokenStateWithSlippage
             ?.unscaleBy(selectedTokenDecimals)
             ?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
         )}
