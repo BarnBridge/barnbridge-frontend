@@ -255,7 +255,7 @@ const MultipleTokensForm = ({
           tokenEAmountHandler(value);
         }}
         max={tokenEMax.toString()}
-        placeholder={`0 (Max ${tokenEMax})`}
+        placeholder={`0 (Max ${tokenEMax ?? 0})`}
         className="mb-8"
         slider
         errors={tokenEErrors}
@@ -482,7 +482,7 @@ const SingleTokenForm = ({
           tokenHandler(val);
         }}
         max={tokenEMax.toString()}
-        placeholder={`0 (Max ${tokenEMax})`}
+        placeholder={`0 (Max ${tokenEMax ?? 0})`}
         className="mb-8"
         slider
         errors={tokenEErrors}
