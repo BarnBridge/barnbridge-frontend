@@ -86,7 +86,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Rebalancing strategies
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-            {getRelativeTime(tranche.rebalancingInterval)}
+            Every {getRelativeTime(1000)}
             <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
             {formatPercent(BigNumber.from(tranche.rebalancingCondition)?.dividedBy(tranche.sFactorE) ?? 0)} deviation
             from target

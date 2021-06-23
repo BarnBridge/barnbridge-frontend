@@ -49,7 +49,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
   return (
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>
-        <div className="text-p1 fw-semibold color-primary mr-8">Etoken price trend</div>
+        <div className="text-p1 fw-semibold color-primary mr-8">eToken price trend</div>
         <PeriodChartTabs activeKey={activeTab} onClick={setActiveTab} size="small" className="ml-auto" />
       </header>
       <div className="p-24">

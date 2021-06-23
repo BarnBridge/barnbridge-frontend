@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
@@ -41,7 +41,6 @@ const WithdrawView: React.FC = () => {
   useEffect(() => {
     fetchTranche(trancheAddress).then(result => {
       setTranche(result);
-      console.log('tranche', result);
     });
   }, [trancheAddress]);
 
@@ -177,6 +176,7 @@ const MultipleTokensForm = ({
   const [tokenAState, setTokenAState] = useState<BigNumber | undefined>();
   const [tokenBState, setTokenBState] = useState<BigNumber | undefined>();
   const { ePoolContract, ePoolHelperContract, ePoolPeripheryContract } = useSEPools();
+  const [loading, setLoading] = useState<boolean>(false);
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
@@ -205,6 +205,9 @@ const MultipleTokensForm = ({
     if (!amount) {
       return;
     }
+
+    setLoading(true);
+
     try {
       await ePoolContract.redeem(tranche.eTokenAddress, amount.multipliedBy(tranche.sFactorE));
 
@@ -214,11 +217,30 @@ const MultipleTokensForm = ({
       tokenAContract.loadBalance();
       tokenBContract.loadBalance();
       tokenEContract.loadBalance();
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const feeRate = new BigNumber(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
-  const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract?.decimals)?.toNumber() ?? 0;
+  const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract?.decimals) ?? BigNumber.ZERO;
+
+  const tokenEErrors = useMemo(() => {
+    const errors = [];
+
+    if (tokenEState && !tokenEState.toString().match(/^(\d+\.?\d*|\.\d+)$/)) {
+      errors.push('Wrong number format');
+    }
+
+    if (tokenEMax.isLessThan(tokenEState)) {
+      errors.push('Insufficient ballance');
+    }
+
+    return errors;
+  }, [tokenEMax, tokenEState]);
+
+  const disableSubmit = !tokenEState || !!tokenEErrors.length;
 
   return (
     <form onSubmit={submitHandler}>
@@ -232,10 +254,11 @@ const MultipleTokensForm = ({
           setTokenEState(value);
           tokenEAmountHandler(value);
         }}
-        max={tokenEMax}
+        max={tokenEMax.toString()}
         placeholder={`0 (Max ${tokenEMax})`}
         className="mb-8"
         slider
+        errors={tokenEErrors}
       />
       <Icon
         name="down-arrow-circle"
@@ -303,7 +326,7 @@ const MultipleTokensForm = ({
               {tranche.tokenA.symbol} amount
             </Text>,
             <Text type="p1" weight="bold" color="primary">
-              {tokenAState?.minus(tokenAState.multipliedBy(feeRate))?.unscaleBy(tranche.tokenA.decimals)?.toString() ||
+              {formatToken(tokenAState?.minus(tokenAState.multipliedBy(feeRate))?.unscaleBy(tranche.tokenA.decimals)) ||
                 '0'}{' '}
               {tranche.tokenA.symbol}
             </Text>,
@@ -313,7 +336,7 @@ const MultipleTokensForm = ({
               {tranche.tokenB.symbol} amount
             </Text>,
             <Text type="p1" weight="bold" color="primary">
-              {tokenBState?.minus(tokenBState.multipliedBy(feeRate))?.unscaleBy(tranche.tokenB.decimals)?.toString() ||
+              {formatToken(tokenBState?.minus(tokenBState.multipliedBy(feeRate))?.unscaleBy(tranche.tokenB.decimals)) ||
                 '0'}{' '}
               {tranche.tokenB.symbol}
             </Text>,
@@ -334,7 +357,8 @@ const MultipleTokensForm = ({
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </Link>
-        <button type="submit" className="button-primary">
+        <button type="submit" className="button-primary" disabled={loading || disableSubmit}>
+          {loading && <Spinner className="mr-8" />}
           Withdraw
         </button>
       </div>
@@ -365,6 +389,7 @@ const SingleTokenForm = ({
     deadline: 20,
     slippage: 0.5,
   });
+  const [loading, setLoading] = useState<boolean>(false);
 
   const selectedToken = getTokenBySymbol(selectedTokenSymbol);
 
@@ -403,7 +428,7 @@ const SingleTokenForm = ({
     }
 
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(transactionDetails.deadline ?? 0) * 60);
-
+    setLoading(true);
     try {
       await ePoolPeripheryContract?.[isTokenA ? 'redeemForMinTokenA' : 'redeemForMinTokenB'](
         poolAddress,
@@ -418,11 +443,30 @@ const SingleTokenForm = ({
       tokenAContract.loadBalance();
       tokenBContract.loadBalance();
       tokenEContract.loadBalance();
-    } catch (e) {}
+    } catch (e) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   const feeRate = new BigNumber(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
-  const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract.decimals)?.toNumber() ?? 0;
+  const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract.decimals) ?? BigNumber.ZERO;
+
+  const tokenEErrors = useMemo(() => {
+    const errors = [];
+
+    if (tokenEState && !tokenEState.match(/^(\d+\.?\d*|\.\d+)$/)) {
+      errors.push('Wrong number format');
+    }
+
+    if (tokenEMax.isLessThan(tokenEState)) {
+      errors.push('Insufficient ballance');
+    }
+
+    return errors;
+  }, [tokenEMax, tokenEState]);
+
+  const disableSubmit = !tokenEState || !!tokenEErrors.length;
 
   return (
     <form onSubmit={submitHandler}>
@@ -436,10 +480,11 @@ const SingleTokenForm = ({
           setTokenEState(val);
           tokenHandler(val);
         }}
-        max={tokenEMax}
+        max={tokenEMax.toString()}
         placeholder={`0 (Max ${tokenEMax})`}
         className="mb-8"
         slider
+        errors={tokenEErrors}
       />
       <Icon
         name="down-arrow-circle"
@@ -452,12 +497,12 @@ const SingleTokenForm = ({
       />
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{selectedToken?.symbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        {/* <span className="text-sm fw-semibold color-secondary ml-auto">
           Current ratio:{' '}
           {formatPercent(
             Number(selectedToken?.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio),
           )}
-        </span>
+        </span> */}
       </div>
       <TokenAmountPreview
         before={
@@ -508,7 +553,7 @@ const SingleTokenForm = ({
               {selectedTokenSymbol} amount
             </Text>,
             <Text type="p1" weight="bold" color="primary">
-              {selectedTokenValueMinusSlippage?.unscaleBy(selectedTokenDecimals)?.toString() || '0'}{' '}
+              {formatToken(selectedTokenValueMinusSlippage?.unscaleBy(selectedTokenDecimals)) || '0'}{' '}
               {selectedTokenSymbol}
             </Text>,
           ],
@@ -528,7 +573,8 @@ const SingleTokenForm = ({
           <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
           Cancel
         </Link>
-        <button type="submit" className="button-primary">
+        <button type="submit" className="button-primary" disabled={loading || disableSubmit}>
+          {loading && <Spinner className="mr-8" />}
           Withdraw
         </button>
       </div>

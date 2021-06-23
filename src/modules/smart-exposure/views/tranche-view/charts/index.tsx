@@ -4,7 +4,7 @@ import AntdNotification from 'antd/lib/notification';
 import classNames from 'classnames';
 import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
-import { formatUSD } from 'web3/utils';
+import { formatPercent, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
@@ -124,13 +124,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
             // minTickGap={0}
             // // tickFormatter={value => formatTick(value)}
           />
-          <ReCharts.YAxis
-            axisLine={false}
-            tickLine={false}
-            tickFormatter={value =>
-              Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value)
-            }
-          />
+          <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value) ?? ''} />
           <ReCharts.Tooltip
             separator=""
             labelFormatter={value => (
@@ -139,11 +133,11 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
               </span>
             )}
             formatter={(value: number, _: any, { dataKey }: any) => (
-              <span className="text-p2 fw-semibold color-red">{formatUSD(value)}</span>
+              <span className="text-p2 fw-semibold color-red">{formatPercent(value) ?? ''}</span>
             )}
           />
           <ReCharts.Area
-            name="Value "
+            name="Ratio deviation "
             dataKey="deviation"
             type="monotone"
             fill="url(#chart-red-gradient)"

@@ -9,6 +9,10 @@
   align-items: stretch;
   height: 64px;
   padding-right: 8px;
+
+  &.error {
+    border-color: var(--theme-red-color);
+  }
 }
 
 .tokenAmountBefore {

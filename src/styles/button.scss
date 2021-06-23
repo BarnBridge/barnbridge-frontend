@@ -19,8 +19,10 @@
   border: 1px solid transparent;
 
   &:disabled,
-  &[disabled] {
+  &[disabled],
+  &.disabled {
     background: rgba(170, 175, 179, 0.08);
+    border: 1px solid rgba(170, 175, 179, 0.08);
     box-shadow: none;
     color: #aaafb3;
     cursor: not-allowed;
