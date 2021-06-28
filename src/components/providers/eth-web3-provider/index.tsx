@@ -9,8 +9,10 @@ import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
 import { useWindowState } from 'components/providers/window-state';
 import { config } from 'config';
-import { DefaultNetwork, KnownNetworks, NetworkMeta } from 'networks';
+import { DefaultNetwork, KnownNetworks } from 'networks';
 import { metamask_AddEthereumChain, metamask_SwitchEthereumChain } from 'wallets/connectors/metamask';
+
+import { NetworkMeta } from 'networks/types';
 
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
   'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',

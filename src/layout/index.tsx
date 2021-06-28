@@ -8,7 +8,6 @@ import WarningProvider from 'components/providers/warning-provider';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
-import { TestnetNetwork } from 'networks';
 
 import s from './s.module.scss';
 
@@ -32,17 +31,31 @@ const LayoutView: React.FC = () => {
             <ErrorBoundary>
               <Suspense fallback={<AntdSpin className="pv-24 ph-64" />}>
                 <Switch>
-                  {ethWeb3.activeNetwork === TestnetNetwork ? (
-                    <Route path="/faucets" component={FaucetsView} />
-                  ) : (
+                  {ethWeb3.activeNetwork?.features.yieldFarming && (
                     <Route path="/yield-farming" component={YieldFarmingView} />
                   )}
-                  <Route path="/governance/:vt(\w+)" component={GovernanceView} />
-                  <Route path="/governance" component={GovernanceView} />
-                  <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
-                  <Route path="/smart-yield" component={SmartYieldView} />
-                  <Route path="/smart-alpha" component={SmartAlphaView} />
-                  <Route path="/smart-exposure" component={SmartExposureView} />
+                  {ethWeb3.activeNetwork?.features.dao && (
+                    <Route path="/governance/:vt(\w+)" component={GovernanceView} />
+                  )}
+                  {ethWeb3.activeNetwork?.features.dao && <Route path="/governance" component={GovernanceView} />}
+                  {ethWeb3.activeNetwork?.features.smartAlpha && (
+                    <Route path="/smart-alpha" component={SmartAlphaView} />
+                  )}
+                  {ethWeb3.activeNetwork?.features.smartExposure && (
+                    <Route path="/smart-exposure" component={SmartExposureView} />
+                  )}
+                  {ethWeb3.activeNetwork?.features.faucets && <Route path="/faucets" component={FaucetsView} />}
+                  {ethWeb3.activeNetwork?.features.smartYield && (
+                    <Route
+                      path="/smart-yield"
+                      render={() => (
+                        <Switch>
+                          <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
+                          <Route path="/smart-yield" component={SmartYieldView} />
+                        </Switch>
+                      )}
+                    />
+                  )}
                   <Redirect from="/" to="/smart-yield" />
                 </Switch>
               </Suspense>

@@ -7,7 +7,6 @@ import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { TestnetNetwork } from 'networks';
 import { useWallet } from 'wallets/wallet';
 
 import DepositHeader from '../deposit-view/deposit-header';
@@ -65,7 +64,7 @@ const StatsView: React.FC = () => {
               {...{ disabled: !wallet.isActive }}>
               Deposit
             </Link>
-            {ethWeb3.activeNetwork === TestnetNetwork && (
+            {ethWeb3.activeNetwork?.features.faucets && (
               <Link to="/faucets" className="button-ghost ml-auto">
                 Faucets
               </Link>

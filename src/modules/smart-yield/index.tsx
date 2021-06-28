@@ -4,6 +4,7 @@ import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
+import { useEthWeb3 } from 'components/providers/eth-web3-provider';
 import RewardPoolProvider from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -29,6 +30,7 @@ const SmartYieldView: React.FC = () => {
   const {
     params: { vt = 'markets' },
   } = useRouteMatch<SmartYieldViewParams>();
+  const ethWeb3 = useEthWeb3();
   const wallet = useWallet();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
@@ -81,14 +83,18 @@ const SmartYieldView: React.FC = () => {
       },
       disabled: !wallet.account,
     } as NavLinkProps,
-    {
-      children: (
-        <>
-          <Icon name="savings-outlined" className="mr-8" /> Pools
-        </>
-      ),
-      to: '/smart-yield/pools',
-    },
+    ...(ethWeb3.activeNetwork?.features.smartYieldReward
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="savings-outlined" className="mr-8" /> Pools
+              </>
+            ),
+            to: '/smart-yield/pools',
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -136,16 +142,20 @@ const SmartYieldView: React.FC = () => {
                 <StatsView />
               </PoolProvider>
             </Route>
-            <Route path="/smart-yield/pools" exact>
-              <RewardPoolsProvider>
-                <PoolsView />
-              </RewardPoolsProvider>
-            </Route>
-            <Route path="/smart-yield/pool" component={PoolView}>
-              <RewardPoolProvider>
-                <PoolView />
-              </RewardPoolProvider>
-            </Route>
+            {ethWeb3.activeNetwork?.features.smartYieldReward && (
+              <Route path="/smart-yield/pools" exact>
+                <RewardPoolsProvider>
+                  <PoolsView />
+                </RewardPoolsProvider>
+              </Route>
+            )}
+            {ethWeb3.activeNetwork?.features.smartYieldReward && (
+              <Route path="/smart-yield/pool" component={PoolView}>
+                <RewardPoolProvider>
+                  <PoolView />
+                </RewardPoolProvider>
+              </Route>
+            )}
             <Redirect to="/smart-yield/markets" />
           </Switch>
         </Suspense>

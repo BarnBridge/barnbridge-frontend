@@ -19,7 +19,6 @@ import { BondToken, ProjectToken } from 'components/providers/known-tokens-provi
 import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
-import { TestnetNetwork } from 'networks';
 
 import WalletDepositConfirmModal from './components/wallet-deposit-confirm-modal';
 
@@ -149,7 +148,7 @@ const WalletDepositView: React.FC = () => {
             onChange={handleSwitchChange}
           />
         </Grid>
-        {ethWeb3.activeNetwork === TestnetNetwork && (
+        {ethWeb3.activeNetwork?.features.faucets && (
           <Link to="/faucets" className="button-ghost ml-auto">
             Faucets
           </Link>
