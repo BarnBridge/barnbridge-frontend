@@ -6,8 +6,6 @@ import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils'
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
-import IconsSet from 'components/custom/icons-set';
 import { AprLabel } from 'components/custom/label';
 import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';

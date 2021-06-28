@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatPercent, formatToken, formatUSD } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import StatusTag from 'components/custom/status-tag';
@@ -10,7 +10,6 @@ import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { BondToken, TokenMeta, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { FCx } from 'components/types.tx';
-import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/wallet';
 

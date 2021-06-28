@@ -24,10 +24,10 @@ import { formatBigValue, formatToken } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/known-tokens-provider';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
 import { inRange } from 'utils';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
 
 enum GranularityType {
   NONE,
@@ -175,8 +175,8 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           text={
             <>
               <Text type="p2">
-                The multiplier mechanic allows users to lock ${ProjectToken.symbol} for a period up to 1 year and get a bonus of up to 2x
-                v{ProjectToken.symbol}. The bonus is linear, as per the following example:
+                The multiplier mechanic allows users to lock ${ProjectToken.symbol} for a period up to 1 year and get a
+                bonus of up to 2x v{ProjectToken.symbol}. The bonus is linear, as per the following example:
               </Text>
               <ul>
                 <li>

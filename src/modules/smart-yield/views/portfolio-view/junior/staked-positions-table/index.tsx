@@ -9,16 +9,9 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import IconsSet from 'components/custom/icons-set';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
-import {
-  BondToken,
-  KnownTokens,
-  ProjectToken,
-  StkAaveToken,
-  useKnownTokens,
-} from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken, StkAaveToken, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';

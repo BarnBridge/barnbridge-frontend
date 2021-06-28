@@ -5,8 +5,7 @@ import { formatToken } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import Spin from 'components/antd/spin';
 import IconBubble from 'components/custom/icon-bubble';
-import { Table } from 'components/custom/table';
-import { ColumnType } from 'components/custom/table';
+import { ColumnType, Table } from 'components/custom/table';
 import { FaucetType, useFauceteer } from 'modules/faucets/providers/fauceteerProvider';
 import { useWallet } from 'wallets/wallet';
 

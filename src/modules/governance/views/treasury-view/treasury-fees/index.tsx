@@ -18,7 +18,7 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, fetchSYPools, Markets, Pools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, fetchSYPools } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
 import { getEtherscanAddressUrl } from 'networks';
 import { useWallet } from 'wallets/wallet';
@@ -72,8 +72,7 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
       provider.setAccount(wallet.account);
       await provider.transferFeesSend();
       reloadFees();
-    } catch {
-    }
+    } catch {}
 
     setHarvesting(false);
   }, [provider]);
