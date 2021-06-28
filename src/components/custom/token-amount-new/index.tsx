@@ -1,5 +1,7 @@
 import { ButtonHTMLAttributes, FC, ReactNode, forwardRef } from 'react';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
+import classNames from 'classnames';
 
 import { DropdownList } from 'components/custom/dropdown';
 import Icon, { TokenIconNames } from 'components/custom/icon';
@@ -18,22 +20,28 @@ type TokenAmountType = {
   classNameBefore?: string;
   placeholder?: string;
   disabled?: boolean;
-  max?: number;
+  max?: number | string;
   slider?: boolean;
   decimals?: number;
+  errors?: string[];
+  ref?: React.ForwardedRef<HTMLInputElement>;
 };
 
 export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, TokenAmountType>(
-  ({ onChange, before, secondary, className, classNameBefore, slider, decimals = 6, ...rest }, ref) => {
+  ({ onChange, before, secondary, className, classNameBefore, slider, errors = [], decimals = 6, ...rest }, ref) => {
+    const max = BigNumber.from(rest.max) ?? new BigNumber(0);
+
     return (
       <div className={className}>
-        <div className={s.tokenAmount}>
+        <div className={classNames(s.tokenAmount, { [s.error]: errors.length })}>
           {before && <div className={cn(s.tokenAmountBefore, classNameBefore)}>{before}</div>}
           <div className={s.tokenAmountValues}>
             <input
               ref={ref}
               className={s.tokenAmountValue}
-              type="number"
+              type="text"
+              inputMode="decimal"
+              pattern="[0-9]+([\.,][0-9]+)?"
               onWheel={ev => {
                 ev.currentTarget.blur();
               }}
@@ -44,26 +52,32 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
             />
             <div className={s.tokenAmountHint}>{secondary}</div>
           </div>
-          {Number.isFinite(rest.max) && (
+          {!max.isZero() && (
             <button
               type="button"
               className="button-ghost"
               style={{ alignSelf: 'center' }}
-              disabled={rest.disabled || rest.max === 0}
-              onClick={() => onChange(String(rest.max))}>
+              disabled={rest.disabled || max.isZero()}
+              onClick={() => onChange(max.toString())}>
               MAX
             </button>
           )}
         </div>
-        {slider && Number.isFinite(rest.max) ? (
+        {!!errors.length &&
+          errors.map((error, idx) => (
+            <Text key={idx} type="small" weight="semibold" color="red" style={{ marginTop: '8px' }}>
+              {error}
+            </Text>
+          ))}
+        {slider && !max.isZero() ? (
           <Slider
             type="range"
             className={s.tokenAmountSlider}
             min="0"
-            max={rest.max}
+            max={max.toString()}
             step={1 / 10 ** Math.min(decimals, 6)}
             value={rest.value ?? 0}
-            disabled={rest.disabled || rest.max === 0}
+            disabled={rest.disabled || max.isZero()}
             onChange={e => {
               onChange(e.target.value);
             }}
@@ -79,12 +93,19 @@ type TokenAmountPreviewType = {
   before: ReactNode;
   secondary?: ReactNode;
   className?: string;
+  classNameBefore?: string;
 };
 
-export const TokenAmountPreview: FC<TokenAmountPreviewType> = ({ value, before, secondary, className }) => {
+export const TokenAmountPreview: FC<TokenAmountPreviewType> = ({
+  value,
+  before,
+  secondary,
+  className,
+  classNameBefore,
+}) => {
   return (
     <div className={cn(s.tokenAmountPreview, className)}>
-      {before && <div className={s.tokenAmountPreviewBefore}>{before}</div>}
+      {before && <div className={cn(s.tokenAmountPreviewBefore, classNameBefore)}>{before}</div>}
       <div className={s.tokenAmountPreviewValues}>
         <input className={s.tokenAmountPreviewValue} type="text" value={value || ''} readOnly />
         <div className={s.tokenAmountPreviewHint}>{secondary}</div>
@@ -97,9 +118,11 @@ type TokenSelectType = {
   value: KnownTokens;
   onChange: (value: KnownTokens) => void;
   tokens: KnownTokens[];
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens }) => {
+export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, className, style }) => {
   const foundToken = getTokenBySymbol(value);
 
   return (
@@ -128,7 +151,8 @@ export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens }) =>
           type="button"
           ref={ref}
           onClick={() => setOpen(isOpen => !isOpen)}
-          className="token-amount-select-token">
+          className={cn(s.tokenAmountSelectToken, className)}
+          style={style}>
           {foundToken ? (
             <Icon name={foundToken.icon as TokenIconNames} width={24} height={24} className="mr-16" />
           ) : null}

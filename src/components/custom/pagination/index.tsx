@@ -17,6 +17,10 @@ function pagination(current: number, last: number, delta: number = 2) {
   const rangeWithDots: (number | null)[] = [];
   let l: number;
 
+  if (last < 2) {
+    return [1];
+  }
+
   range.push(1);
   for (let i = current - delta; i <= current + delta; i++) {
     if (i >= left && i < right && i < last && i > 1) {
@@ -51,6 +55,10 @@ type Props = {
 export const Pagination: React.FC<Props> = ({ className, total, current, pageSize, onChange }) => {
   const pages = Math.ceil(total / pageSize);
   const paginationList = useMemo(() => pagination(current, pages), [current, pages]);
+
+  if (pages < 2) {
+    return null;
+  }
 
   return (
     <div className={cn(s.pagination, className)}>

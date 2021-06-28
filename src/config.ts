@@ -26,6 +26,7 @@ interface IConfig {
   contracts: {
     yf: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
     dao: Record<'governance' | 'barn' | 'reward', string>;
+    se: Record<'ePool' | 'ePoolPeriphery' | 'ePoolHelper', string>;
   };
   testnet: {
     comp: Record<'fauceteer' | 'usdc' | 'dai', string>;
@@ -110,6 +111,11 @@ function getConfigFor(network: string): IConfig {
         barn: toLowerCase(REACT_APP_VARS[`${prefix}_CONTRACT_DAO_BARN_ADDR`]),
         reward: toLowerCase(REACT_APP_VARS[`${prefix}_CONTRACT_DAO_REWARD_ADDR`]),
       },
+      se: {
+        ePool: toLowerCase(REACT_APP_VARS[`${prefix}_CONTRACT_SE_EPOOL_ADDR`]),
+        ePoolPeriphery: toLowerCase(REACT_APP_VARS[`${prefix}_CONTRACT_SE_EPOOL_PERIPHERY_ADDR`]),
+        ePoolHelper: toLowerCase(REACT_APP_VARS[`${prefix}_CONTRACT_SE_EPOOL_HELPER_ADDR`]),
+      },
     },
     testnet: {
       comp: {
@@ -132,7 +138,7 @@ export let config: IConfig = {
 } as any;
 
 export function setConfigFor(network: string): IConfig {
-  return config = getConfigFor(network);
+  return (config = getConfigFor(network));
 }
 
 export const WEBSITE_LINK = 'http://www.barnbridge.com/';

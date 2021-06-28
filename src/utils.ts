@@ -77,3 +77,11 @@ export function doSequential<T, K = any>(
     )
     .then(() => results);
 }
+
+export function getRelativeTime(seconds: number) {
+  return formatDuration(intervalToDuration({ start: 0, end: seconds * 1000 }));
+}
+
+export function numberFormat(number: number, options?: Intl.NumberFormatOptions): string {
+  return new Intl.NumberFormat(navigator.language, options).format(number);
+}

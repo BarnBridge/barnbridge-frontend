@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import AntdForm from 'antd/lib/form';
+import classNames from 'classnames';
 
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
@@ -17,10 +18,11 @@ type Props = {
   filters: TableFilterType[];
   value?: Record<string, any>;
   onChange: (values: Record<string, any>) => void;
+  className?: string;
 };
 
 const TableFilter: React.FC<Props> = props => {
-  const { filters, value, onChange } = props;
+  const { filters, value, onChange, className } = props;
 
   const [form] = AntdForm.useForm<Record<string, any>>();
   const [visible, setVisible] = useState<boolean>(false);
@@ -87,7 +89,7 @@ const TableFilter: React.FC<Props> = props => {
       visible={visible}
       onVisibleChange={setVisible}
       placement="bottomRight">
-      <button type="button" className="button-ghost-monochrome pv-16">
+      <button type="button" className={classNames('button-ghost-monochrome pv-16', className)}>
         <Icon name="filter" className="mr-8" color="inherit" />
         <span className="mr-8">Filters</span>
         <SquareBadge>{countApplied}</SquareBadge>

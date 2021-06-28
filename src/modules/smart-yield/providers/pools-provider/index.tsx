@@ -222,7 +222,9 @@ const PoolsProvider: React.FC = props => {
 
       pool.contracts.underlying?.setProvider(wallet.provider);
       pool.contracts.underlying?.setAccount(wallet.account);
-      pool.contracts.underlying?.loadBalance();
+      if (wallet.account) {
+        pool.contracts.underlying?.loadBalance();
+      }
 
       pool.contracts.rewardPool?.setProvider(wallet.provider);
       pool.contracts.rewardPool?.setAccount(wallet.account);

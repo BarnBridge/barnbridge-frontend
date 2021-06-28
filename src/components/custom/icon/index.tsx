@@ -57,6 +57,7 @@ export type IconNames =
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'
+  | 'plus-circle'
   | 'refresh'
   | 'notification'
   | 'chevron-right'
@@ -130,7 +131,8 @@ export type IconNames =
   | 'building'
   | 'internet'
   | 'checkbox-checked'
-  | 'checkbox';
+  | 'checkbox'
+  | 'loader';
 
 export type IconProps = {
   name: IconNames;

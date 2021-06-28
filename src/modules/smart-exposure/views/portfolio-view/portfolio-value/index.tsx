@@ -1,0 +1,139 @@
+import { useEffect, useMemo, useState } from 'react';
+import AntdNotification from 'antd/lib/notification';
+import classNames from 'classnames';
+import { format } from 'date-fns';
+import * as ReCharts from 'recharts';
+
+import Spin from 'components/antd/spin';
+import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
+import { Text } from 'components/custom/typography';
+import { PortfolioValueApiType, fetchPortfolioValue } from 'modules/smart-exposure/api';
+import { useWallet } from 'wallets/wallet';
+
+import { numberFormat } from 'utils';
+import { formatTick, generateTicks } from 'utils/chart';
+
+type Props = {
+  poolAddress?: string;
+  className?: string;
+};
+
+export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
+  const { account } = useWallet();
+  const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [dataList, setDataList] = useState<PortfolioValueApiType[]>([]);
+
+  useEffect(() => {
+    if (!account) {
+      return;
+    }
+
+    setLoading(true);
+    fetchPortfolioValue({
+      accountAddress: account,
+      window: periodFilter,
+      poolAddress,
+    })
+      .then(result => setDataList(result.data))
+      .catch(err => {
+        setDataList([]);
+        console.error(err);
+        AntdNotification.error({
+          message: err.data,
+        });
+      })
+      .finally(() => setLoading(false));
+  }, [account, poolAddress, periodFilter]);
+
+  const ticks = useMemo(() => {
+    return generateTicks(dataList, periodFilter);
+  }, [dataList, periodFilter]);
+
+  return (
+    <section className={classNames('card', className)}>
+      <header className="card-header flex align-center" style={{ padding: '16px 16px 16px 24px' }}>
+        <Text type="p1" weight="semibold">
+          Portfolio value
+        </Text>
+        <PeriodChartTabs activeKey={periodFilter} onClick={setPeriodFilter} size="small" className="ml-auto" />
+      </header>
+      <div className="p-24">
+        <Spin spinning={loading}>
+          <ReCharts.ResponsiveContainer width="100%" height={300} className="mb-24">
+            <ReCharts.AreaChart data={dataList} margin={{ left: 25 }}>
+              <defs>
+                <linearGradient id="chart-red-gradient" gradientTransform="rotate(180)">
+                  <stop offset="0%" stopColor="rgba(var(--theme-red-color-rgb), 0.08)" />
+                  <stop offset="100%" stopColor="rgba(var(--theme-red-color-rgb), 0)" />
+                </linearGradient>
+                {/* <linearGradient id="chart-blue-gradient" gradientTransform="rotate(180)">
+                  <stop offset="0%" stopColor="rgba(var(--theme-blue-color-rgb), 0.08)" />
+                  <stop offset="100%" stopColor="rgba(var(--theme-blue-color-rgb), 0)" />
+                </linearGradient> */}
+              </defs>
+              <ReCharts.CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
+              <ReCharts.XAxis
+                // dataKey="point"
+                // axisLine={false}
+                // tickLine={false}
+                // tickFormatter={value => formatTick(value, periodFilter)}
+                dataKey="point"
+                ticks={ticks}
+                tickMargin={12}
+                minTickGap={0}
+                tickFormatter={value => formatTick(value, periodFilter)}
+              />
+              <ReCharts.YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={value =>
+                  numberFormat(value, {
+                    notation: 'compact',
+                  }) ?? ''
+                }
+              />
+              <ReCharts.Tooltip
+                separator=""
+                labelFormatter={value => (
+                  <Text type="p2" tag="span" weight="semibold" color="primary">
+                    {typeof value === 'string' ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
+                  </Text>
+                )}
+                formatter={(value: number, _: any, { dataKey, payload }: any) => (
+                  <Text type="p2" tag="span" weight="semibold" color={dataKey === 'portfolioValueSE' ? 'red' : 'blue'}>
+                    {value}
+                  </Text>
+                )}
+              />
+              <ReCharts.Area
+                name={`Value: `}
+                dataKey="portfolioValueSE"
+                type="monotone"
+                fill="url(#chart-red-gradient)"
+                stroke="var(--theme-red-color)"
+                strokeWidth={2}
+              />
+              {/* <ReCharts.Area
+                name={`TBD `}
+                dataKey="tokenBLiquidity"
+                type="monotone"
+                fill="url(#chart-blue-gradient)"
+                stroke="var(--theme-blue-color)"
+                strokeWidth={2}
+              /> */}
+            </ReCharts.AreaChart>
+          </ReCharts.ResponsiveContainer>
+        </Spin>
+        <footer className="flex flow-col justify-center col-gap-24 row-gap-16" style={{ marginTop: 16 }}>
+          <div className="chart-label" style={{ '--dot-color': 'var(--theme-red-color)' } as React.CSSProperties}>
+            Portfolio with strategy
+          </div>
+          {/* <div className="chart-label" style={{ '--dot-color': 'var(--theme-icon-color)' } as React.CSSProperties}>
+            Holding
+          </div> */}
+        </footer>
+      </div>
+    </section>
+  );
+};

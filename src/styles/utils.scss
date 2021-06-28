@@ -41,7 +41,7 @@
   box-shadow: var(--theme-card-shadow);
   display: flex;
   align-items: center;
-  padding: 16px;
+  padding: 15px 16px;
   text-align: left;
 
   &[disabled] {
@@ -72,6 +72,7 @@
 .card-header {
   border-bottom: 1px solid var(--theme-border-color);
   padding: 24px;
+  overflow-x: auto;
 }
 
 .css-grid {
@@ -176,31 +177,5 @@
     height: 8px;
     background-color: var(--dot-color, currentColor);
     border-radius: 50%;
-  }
-}
-
-.progress {
-  display: flex;
-  border-radius: 10px;
-  height: 4px;
-  border: 0;
-  width: 100%;
-  background-color: var(--background-color, var(--theme-border-color));
-
-  &::-webkit-progress-bar {
-    background-color: var(--background-color, var(--theme-border-color));
-    border-radius: 10px;
-  }
-
-  &::-webkit-progress-value {
-    background-color: var(--progress-color, var(--theme-blue-color));
-    border-radius: 10px 0 0 10px;
-    border-right: 2px solid var(--theme-card-color);
-  }
-
-  &::-moz-progress-bar {
-    background-color: var(--progress-color, var(--theme-blue-color));
-    border-radius: 10px 0 0 10px;
-    border-right: 2px solid var(--theme-card-color);
   }
 }
