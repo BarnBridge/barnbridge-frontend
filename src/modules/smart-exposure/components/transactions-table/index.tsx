@@ -21,36 +21,53 @@ export const TransactionsTable = ({
 }) => {
   const [dataList, setDataList] = useState<TransactionApiType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
-  const [pagination, setPagination] = useState<{
+  const [filters, setFilters] = useState<{
     total: number;
     page: number;
     pageSize: number;
+    accountAddress?: string;
+    poolAddress?: string;
+    transactionType?: TransactionApiType['transactionType'];
   }>({
     total: 0,
     page: 1,
-    pageSize: 10,
+    pageSize: 2,
+    accountAddress,
+    poolAddress,
+    transactionType,
   });
 
   useEffect(() => {
-    setLoading(true);
-    fetchTransactions({
-      page: pagination.page,
-      limit: pagination.pageSize,
+    setFilters(prevFilters => ({
+      ...prevFilters,
+      page: 1,
       accountAddress,
       poolAddress,
       transactionType,
+    }));
+  }, [accountAddress, poolAddress, transactionType]);
+
+  useEffect(() => {
+    setLoading(true);
+
+    fetchTransactions({
+      page: filters.page,
+      limit: filters.pageSize,
+      accountAddress: filters.accountAddress,
+      poolAddress: filters.poolAddress,
+      transactionType: filters.transactionType,
     })
       .then(result => {
         if (Array.isArray(result.data)) {
           setDataList(result.data);
-          setPagination(prevPagination => ({
-            ...prevPagination,
+          setFilters(prevFilters => ({
+            ...prevFilters,
             total: result.meta.count,
           }));
         } else {
           setDataList([]);
-          setPagination(prevPagination => ({
-            ...prevPagination,
+          setFilters(prevFilters => ({
+            ...prevFilters,
             total: 0,
           }));
         }
@@ -60,7 +77,7 @@ export const TransactionsTable = ({
         console.error(err);
       })
       .finally(() => setLoading(false));
-  }, [pagination.page, pagination.pageSize, accountAddress, poolAddress, transactionType]);
+  }, [filters.page, filters.pageSize, filters.accountAddress, filters.poolAddress, filters.transactionType]);
 
   const columns: ColumnType<TransactionApiType>[] = useMemo(
     () => [
@@ -182,12 +199,12 @@ export const TransactionsTable = ({
     <>
       <Table<TransactionApiType> columns={columns} data={dataList} loading={loading} />
       <TableFooter
-        total={pagination.total}
-        current={pagination.page}
-        pageSize={pagination.pageSize}
+        total={filters.total}
+        current={filters.page}
+        pageSize={filters.pageSize}
         onChange={page =>
-          setPagination(prevPagination => ({
-            ...prevPagination,
+          setFilters(prevFilters => ({
+            ...prevFilters,
             page,
           }))
         }>
