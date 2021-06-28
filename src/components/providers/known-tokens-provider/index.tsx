@@ -100,6 +100,7 @@ export const WEthToken: TokenMeta = {
   decimals: 18,
   icon: 'token-weth',
   pricePath: [KnownTokens.ETH],
+  contract: new Erc20Contract([], config.tokens.wEth),
 };
 
 export const UsdcToken: TokenMeta = {
@@ -351,6 +352,11 @@ export function getTokenBySymbol(symbol: string): TokenMeta | undefined {
 
 export function getTokenByAddress(address: string): TokenMeta | undefined {
   return KNOWN_TOKENS.find(token => token.address.toLowerCase() === address.toLowerCase());
+}
+
+export function getTokenIconBySymbol(symbol: string): TokenIconNames {
+  const foundToken = KNOWN_TOKENS.find(token => token.symbol === symbol);
+  return foundToken?.icon || 'token-unknown';
 }
 
 async function getFeedPrice(symbol: string): Promise<BigNumber> {

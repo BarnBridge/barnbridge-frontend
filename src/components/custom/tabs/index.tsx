@@ -49,25 +49,25 @@ export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) 
   );
 };
 
-type TabProps = {
-  id: string;
+type TabProps<T> = {
+  id: T;
   children: ReactNode;
   className?: string;
   disabled?: boolean;
-  onClick?: Function;
+  onClick?: (id: T) => void;
 };
 
-type TabsProps = {
+type TabsProps<T> = {
   variation?: 'normal' | 'elastic';
-  tabs: TabProps[];
-  activeKey: TabProps['id'];
+  tabs: TabProps<T>[];
+  activeKey: TabProps<T>['id'];
   size?: 'normal' | 'small';
   className?: string;
   style?: CSSProperties;
-  onClick?: (id: TabProps['id']) => void;
+  onClick?: (id: TabProps<T>['id']) => void;
 };
 
-export const Tabs: FC<TabsProps> = props => {
+export const Tabs = <T extends string>(props: TabsProps<T>) => {
   const { variation = 'normal', tabs, activeKey, size, className, style } = props;
 
   const totalTabs = tabs.length;
@@ -97,11 +97,38 @@ export const Tabs: FC<TabsProps> = props => {
           type="button"
           onClick={() => {
             props.onClick?.(id);
-            onClick?.();
+            onClick?.(id);
           }}
           {...tabRest}
         />
       ))}
     </div>
   );
+};
+
+export enum PeriodTabsKey {
+  day = '24h',
+  week = '1w',
+  month = '30d',
+}
+
+const periodTabs = [
+  {
+    id: PeriodTabsKey.day,
+    children: '24h',
+  },
+  {
+    id: PeriodTabsKey.week,
+    children: '1w',
+  },
+  {
+    id: PeriodTabsKey.month,
+    children: '1mo',
+  },
+];
+
+type PeriodChartTabsProps = Omit<TabsProps<PeriodTabsKey>, 'tabs' | 'variation'>;
+
+export const PeriodChartTabs: React.FC<PeriodChartTabsProps> = props => {
+  return <Tabs<PeriodTabsKey> {...props} tabs={periodTabs} variation="elastic" />;
 };

@@ -27,6 +27,11 @@
   &.next {
     color: var(--theme-icon-color);
 
+    &:disabled,
+    &[disabled] {
+      pointer-events: none;
+    }
+
     &:hover {
       color: var(--theme-icon-hover-color);
     }

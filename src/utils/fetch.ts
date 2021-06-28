@@ -16,3 +16,11 @@ export type PaginatedResult<T extends Record<string, any>> = {
     block: number;
   };
 };
+
+export async function processResponse(response: Response) {
+  if (!response.ok) {
+    throw await response.json();
+  }
+
+  return response.json();
+}
