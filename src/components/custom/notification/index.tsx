@@ -4,8 +4,6 @@ import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import * as dateFns from 'date-fns';
 import format from 'date-fns/format';
-import formatDuration from 'date-fns/formatDuration';
-import intervalToDuration from 'date-fns/intervalToDuration';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
 import Erc20Contract from 'web3/erc20Contract';

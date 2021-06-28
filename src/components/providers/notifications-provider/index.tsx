@@ -6,8 +6,6 @@ import { Toast } from 'components/custom/notification';
 import { config } from 'config';
 import { useWallet } from 'wallets/wallet';
 
-import { useEthWeb3 } from '../eth-web3-provider';
-
 export type NotificationsContextType = {
   notifications: NotificationType[];
   notificationsReadUntil: number;
