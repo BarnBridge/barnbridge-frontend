@@ -9,7 +9,7 @@ import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { fetchEtokenPrice } from 'modules/smart-exposure/api';
 
-import { formatTick, generateTicks } from 'utils/chart';
+import { formatTick } from 'utils/chart';
 
 import s from './s.module.scss';
 
@@ -41,10 +41,6 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
       })
       .finally(() => setLoading(false));
   }, [trancheAddress, activeTab]);
-
-  const ticks = React.useMemo(() => {
-    return generateTicks(priceList, activeTab);
-  }, [priceList, activeTab]);
 
   return (
     <section className="card">

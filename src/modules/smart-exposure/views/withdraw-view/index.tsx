@@ -234,7 +234,7 @@ const MultipleTokensForm = ({
     }
 
     if (tokenEMax.isLessThan(tokenEState)) {
-      errors.push('Insufficient ballance');
+      errors.push('Insufficient balance');
     }
 
     return errors;
@@ -460,7 +460,7 @@ const SingleTokenForm = ({
     }
 
     if (tokenEMax.isLessThan(tokenEState)) {
-      errors.push('Insufficient ballance');
+      errors.push('Insufficient balance');
     }
 
     return errors;

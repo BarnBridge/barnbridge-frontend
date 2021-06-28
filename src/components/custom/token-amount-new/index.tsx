@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, FC, ReactNode, forwardRef } from 'react';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import classNames from 'classnames';
 
@@ -28,7 +29,7 @@ type TokenAmountType = {
 
 export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, TokenAmountType>(
   ({ onChange, before, secondary, className, classNameBefore, slider, errors = [], decimals = 6, ...rest }, ref) => {
-    const max = Number(rest.max);
+    const max = BigNumber.from(rest.max) ?? new BigNumber(0);
 
     return (
       <div className={className}>
@@ -51,13 +52,13 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
             />
             <div className={s.tokenAmountHint}>{secondary}</div>
           </div>
-          {Number.isFinite(max) && (
+          {!max.isZero() && (
             <button
               type="button"
               className="button-ghost"
               style={{ alignSelf: 'center' }}
-              disabled={rest.disabled || max === 0}
-              onClick={() => onChange(String(rest.max))}>
+              disabled={rest.disabled || max.isZero()}
+              onClick={() => onChange(max.toString())}>
               MAX
             </button>
           )}
@@ -68,15 +69,15 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
               {error}
             </Text>
           ))}
-        {slider && Number.isFinite(max) ? (
+        {slider && !max.isZero() ? (
           <Slider
             type="range"
             className={s.tokenAmountSlider}
             min="0"
-            max={max}
+            max={max.toString()}
             step={1 / 10 ** Math.min(decimals, 6)}
             value={rest.value ?? 0}
-            disabled={rest.disabled || max === 0}
+            disabled={rest.disabled || max.isZero()}
             onChange={e => {
               onChange(e.target.value);
             }}

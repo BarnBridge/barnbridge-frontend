@@ -17,7 +17,7 @@ import {
   fetchTrancheLiquidity,
 } from 'modules/smart-exposure/api';
 
-import { formatTick, generateTicks } from 'utils/chart';
+import { formatTick } from 'utils/chart';
 
 export enum TabsKey {
   ratio = 'ratio',
@@ -41,7 +41,7 @@ type PropsType = {
 };
 
 export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
-  const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
+  const { tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [activeTab, setActiveTab] = useState<TabsKey>(TabsKey.ratio);
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
 
@@ -53,31 +53,15 @@ export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
           borderBottom: '1px solid var(--theme-border-color)',
           padding: '0 16px 0 24px',
           overflowX: 'auto',
-          // width: 100%;
         }}>
-        <Tabs<TabsKey>
-          tabs={tabs}
-          activeKey={activeTab}
-          onClick={setActiveTab}
-          variation="normal"
-          // className="mb-40"
-          // style={{
-          //   width: 248,
-          //   height: 40,
-          // }}
-        />
+        <Tabs<TabsKey> tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" />
         <PeriodChartTabs activeKey={periodFilter} onClick={setPeriodFilter} size="small" className="ml-auto" />
       </header>
       <div className="p-24">
         {activeTab === TabsKey.ratio ? (
           <RatioDeviation trancheAddress={trancheAddress} periodFilter={periodFilter} />
         ) : (
-          <TrancheLiquidity
-            tranche={tranche}
-            poolAddress={poolAddress}
-            trancheAddress={trancheAddress}
-            periodFilter={periodFilter}
-          />
+          <TrancheLiquidity tranche={tranche} trancheAddress={trancheAddress} periodFilter={periodFilter} />
         )}
       </div>
     </section>
@@ -152,12 +136,10 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
 
 const TrancheLiquidity = ({
   tranche,
-  poolAddress,
   trancheAddress,
   periodFilter,
 }: {
   tranche: TrancheApiType;
-  poolAddress: string;
   trancheAddress: string;
   periodFilter: PeriodTabsKey;
 }) => {
@@ -178,9 +160,10 @@ const TrancheLiquidity = ({
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
 
-  // const ticks = useMemo(() => {
-  //   return generateTicks(dataList, periodFilter);
-  // }, [dataList, periodFilter]);
+  const max = useMemo(
+    () => dataList.reduce((acc, item) => Math.max(acc, item.tokenALiquidity, item.tokenBLiquidity), 0),
+    [dataList],
+  );
 
   return (
     <>
@@ -205,6 +188,8 @@ const TrancheLiquidity = ({
               tickFormatter={value => formatTick(value, periodFilter)}
             />
             <ReCharts.YAxis
+              type="number"
+              domain={[0, max * 1.1]}
               axisLine={false}
               tickLine={false}
               tickFormatter={value =>
