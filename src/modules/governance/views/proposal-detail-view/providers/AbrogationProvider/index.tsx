@@ -114,7 +114,7 @@ const AbrogationProvider: React.FC = props => {
 
       if (bondStakedAt?.gt(BigNumber.ZERO)) {
         approvalRate = forVotes.multipliedBy(100).div(bondStakedAt).toNumber();
-        approvalRate = Math.min(approvalRate, 100);
+        approvalRate = Math.min(approvalRate!, 100);
       }
 
       setState({

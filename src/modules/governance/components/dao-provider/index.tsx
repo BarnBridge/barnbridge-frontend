@@ -94,14 +94,14 @@ const DAOProvider: React.FC = props => {
 
     if (bondStaked && config.dao.activationThreshold.gt(BigNumber.ZERO)) {
       activationRate = bondStaked.multipliedBy(100).div(config.dao.activationThreshold).toNumber();
-      activationRate = Math.min(activationRate, 100);
+      activationRate = Math.min(activationRate!, 100);
     }
 
     let thresholdRate: number | undefined;
 
     if (votingPower && bondStaked?.gt(BigNumber.ZERO)) {
       thresholdRate = votingPower.multipliedBy(100).div(bondStaked).toNumber();
-      thresholdRate = Math.min(thresholdRate, 100);
+      thresholdRate = Math.min(thresholdRate!, 100);
     }
 
     setState({

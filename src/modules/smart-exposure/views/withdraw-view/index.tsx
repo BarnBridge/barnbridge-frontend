@@ -227,7 +227,7 @@ const MultipleTokensForm = ({
   const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract?.decimals) ?? BigNumber.ZERO;
 
   const tokenEErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenEState && !tokenEState.toString().match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');
@@ -453,7 +453,7 @@ const SingleTokenForm = ({
   const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract.decimals) ?? BigNumber.ZERO;
 
   const tokenEErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenEState && !tokenEState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');

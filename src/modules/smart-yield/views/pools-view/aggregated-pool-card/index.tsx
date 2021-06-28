@@ -8,8 +8,9 @@ import Icon from 'components/custom/icon';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { TokenMeta, convertTokenInUSD, useKnownTokens, BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken, TokenMeta, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
 import { FCx } from 'components/types.tx';
+import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/wallet';
 
@@ -60,7 +61,7 @@ const AggregatedPoolCard: FCx = props => {
     return map;
   }, new Map<string, BigNumber>());
 
-  const totalStakedInUSD = BigNumber.sumEach(rewardPools, ({ rewardPool, smartYield, rewardTokens }) => {
+  const totalStakedInUSD = BigNumber.sumEach(rewardPools, ({ rewardPool, smartYield }) => {
     const value = rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(smartYield.decimals);
     return knownTokensCtx.convertTokenInUSD(value, smartYield.symbol!);
   });

@@ -1,0 +1,31 @@
+declare module 'bignumber.js' {
+  import BigNumber from 'bignumber.js';
+
+  export = class extends BigNumber {
+    static ZERO: BigNumber;
+    static MAX_UINT_256: BigNumber;
+
+    static from(value?: BigNumber.Value): BigNumber | undefined;
+    static parse(value: BigNumber.Value): BigNumber;
+    static sumEach<T = any>(items: T[], predicate: (item: T) => BigNumber | undefined): BigNumber | undefined;
+
+    scaleBy(decimals?: number): BigNumber | undefined;
+    unscaleBy(decimals?: number): BigNumber | undefined;
+  };
+}
+
+declare module 'valirator' {
+  namespace Module {
+    function validate(schema: any, values: any): any;
+  }
+
+  export = Module;
+}
+
+declare module 'outy' {
+  export default function outy(
+    nodes: HTMLElement[],
+    types: (Event | MouseEvent | TouchEvent)[],
+    eventHandler: Function,
+  ): { remove: () => void };
+}

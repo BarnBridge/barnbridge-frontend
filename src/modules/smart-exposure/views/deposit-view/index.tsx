@@ -252,7 +252,7 @@ const MultipleTokensForm = ({
   };
 
   const tokenAErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenAState && !tokenAState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');
@@ -266,7 +266,7 @@ const MultipleTokensForm = ({
   }, [tokenAMax, tokenAState]);
 
   const tokenBErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenBState && !tokenBState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');
@@ -478,7 +478,7 @@ const SingleTokenForm = ({
   };
 
   const tokenEErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenEState && !tokenEState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');
