@@ -1,7 +1,8 @@
 import React from 'react';
+import { AbiItem } from 'web3-utils';
 import { Web3EventType } from 'web3/types';
 import { getGasValue } from 'web3/utils';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
+import Web3Contract from 'web3/web3Contract';
 
 import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
@@ -10,11 +11,7 @@ import { useWallet } from 'wallets/wallet';
 
 import DAO_GOVERNANCE_ABI from './daoGovernance.json';
 
-const Contract = new Web3Contract(
-  DAO_GOVERNANCE_ABI as Web3ContractAbiItem[],
-  config.contracts.dao.governance,
-  'DAO Governance',
-);
+const Contract = new Web3Contract(DAO_GOVERNANCE_ABI as AbiItem[], config.contracts.dao.governance, 'DAO Governance');
 
 function loadCommonData(): Promise<any> {
   return Contract.batch([

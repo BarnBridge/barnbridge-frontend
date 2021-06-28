@@ -1,7 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { AbiItem } from 'web3-utils';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
+import Web3Contract from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { config } from 'config';
@@ -13,7 +14,7 @@ import DAO_BARN_ABI from './daoBarn.json';
 
 import { getNowTs } from 'utils';
 
-const Contract = new Web3Contract(DAO_BARN_ABI as Web3ContractAbiItem[], config.contracts.dao.barn, 'DAO Barn');
+const Contract = new Web3Contract(DAO_BARN_ABI as AbiItem[], config.contracts.dao.barn, 'DAO Barn');
 
 function loadCommonData(): Promise<any> {
   return Contract.batch([

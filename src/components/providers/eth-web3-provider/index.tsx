@@ -10,7 +10,7 @@ import { Text } from 'components/custom/typography';
 import { useWindowState } from 'components/providers/window-state';
 import { config } from 'config';
 import { DefaultNetwork, KnownNetworks, NetworkMeta } from 'networks';
-import { metamask_AddEthereumChain } from 'wallets/connectors/metamask';
+import { metamask_AddEthereumChain, metamask_SwitchEthereumChain } from 'wallets/connectors/metamask';
 
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
   'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',
@@ -115,19 +115,24 @@ const EthWeb3Provider: FC = props => {
 
     let canSetNetwork = true;
 
-    if (network) {
-      // if (activeProvider.isMetaMask && network?.metamaskChain) {
-      //   try {
-      //     const error = await metamask_AddEthereumChain(activeProvider, [network.metamaskChain]);
-      //     console.log({ error });
-      //     if (error) {
-      //       canSetNetwork = false;
-      //     }
-      //   } catch (e) {
-      //     canSetNetwork = false;
-      //     console.error(e);
-      //   }
-      // }
+    if (network && activeProvider) {
+      if (activeProvider.isMetaMask && network.metamaskChain) {
+        try {
+          const error = await metamask_SwitchEthereumChain(activeProvider, {
+            chainId: network.metamaskChain.chainId,
+          });
+
+          if (error) {
+            canSetNetwork = false;
+          }
+        } catch (e) {
+          canSetNetwork = false;
+
+          if (e.code === 4902) {
+            await metamask_AddEthereumChain(activeProvider, network.metamaskChain);
+          }
+        }
+      }
 
       if (canSetNetwork) {
         if (storedNetwork !== network.id) {

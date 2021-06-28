@@ -1,7 +1,8 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
+import { AbiItem } from 'web3-utils';
 import { getHumanValue } from 'web3/utils';
-import Web3Contract, { Web3ContractAbiItem } from 'web3/web3Contract';
+import Web3Contract from 'web3/web3Contract';
 
 import { BondToken } from 'components/providers/known-tokens-provider';
 import { config } from 'config';
@@ -11,7 +12,7 @@ import { useWallet } from 'wallets/wallet';
 
 import DAO_REWARD_ABI from './daoReward.json';
 
-const Contract = new Web3Contract(DAO_REWARD_ABI as Web3ContractAbiItem[], config.contracts.dao.reward, 'DAO Reward');
+const Contract = new Web3Contract(DAO_REWARD_ABI as AbiItem[], config.contracts.dao.reward, 'DAO Reward');
 
 export type DaoRewardPullFeature = {
   source: string;
