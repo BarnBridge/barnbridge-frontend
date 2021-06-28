@@ -83,7 +83,10 @@ export const Tabs = <T extends string>(props: TabsProps<T>) => {
       {variation === 'elastic' && (
         <div
           className={s.elasticToggle}
-          style={{ left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`, width: `calc(100% / ${totalTabs} - 8px)` }}
+          style={{
+            left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`,
+            width: `calc(100% / ${totalTabs} - 8px)`,
+          }}
         />
       )}
       {tabs.map(({ id, className, onClick, ...tabRest }) => (
