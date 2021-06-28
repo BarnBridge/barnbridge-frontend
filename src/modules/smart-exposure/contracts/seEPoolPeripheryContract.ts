@@ -157,14 +157,6 @@ class SeEPoolPeripheryContract extends Web3Contract {
       return Promise.reject();
     }
 
-    console.log({
-      ePoolAddress,
-      eTokenAddress,
-      amount: amount.toString(),
-      maxAmountA: maxAmountA.toString(),
-      deadline,
-    });
-
     return this.send('issueForMaxTokenA', [ePoolAddress, eTokenAddress, amount, maxAmountA, deadline], {
       from: this.account,
     });
