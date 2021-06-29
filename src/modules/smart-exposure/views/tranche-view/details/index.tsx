@@ -84,7 +84,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
       <div className="flexbox-grid p-24">
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
-            Rebalancing strategies
+            Rebalancing Strategy
             <InfoTooltip>
               Rebalancing can happen when both the time constraint and the minimal deviation are surpassed.
             </InfoTooltip>

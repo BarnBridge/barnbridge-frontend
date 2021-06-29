@@ -3,7 +3,6 @@ import { NavLink } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { formatPercent, formatUSD } from 'web3/utils';
 
-import Tooltip from 'components/antd/tooltip';
 import { Badge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
