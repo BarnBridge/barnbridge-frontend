@@ -125,14 +125,6 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
             </ReCharts.AreaChart>
           </ReCharts.ResponsiveContainer>
         </Spin>
-        <footer className="flex flow-col justify-center col-gap-24 row-gap-16" style={{ marginTop: 16 }}>
-          <div className="chart-label" style={{ '--dot-color': 'var(--theme-red-color)' } as React.CSSProperties}>
-            Portfolio with strategy
-          </div>
-          {/* <div className="chart-label" style={{ '--dot-color': 'var(--theme-icon-color)' } as React.CSSProperties}>
-            Holding
-          </div> */}
-        </footer>
       </div>
     </section>
   );

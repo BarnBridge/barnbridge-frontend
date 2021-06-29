@@ -12,6 +12,7 @@ import IconsPair from 'components/custom/icons-pair';
 import { Spinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
+import { InfoTooltip } from 'components/custom/tooltip';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
@@ -67,6 +68,12 @@ const DepositView: React.FC = () => {
 
   return (
     <>
+      <div className="flex mb-16">
+        <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-text">
+          <Icon name="arrow-back" color="inherit" className="mr-8" />
+          Tranche details
+        </Link>
+      </div>
       <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
         <div className="flex">
           <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
@@ -122,8 +129,9 @@ const DepositView: React.FC = () => {
           Deposit
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur odio nunc, a sodales ligula
-          varius nec
+          {activeTab === 'multiple'
+            ? 'Build your SMART Exposure position by minting eTokens with both the tokens in the tranche according to the current tranche ratio.'
+            : 'Build your SMART Exposure position by minting a specified amount of eTokens with a single input token. The amount of deposited token you see will have a portion of it swapped for the second token, which is where the slippage and deadline parameters will be used.'}
         </Text>
         <Tabs
           tabs={tabs}
@@ -350,7 +358,9 @@ const MultipleTokensForm = ({
         }}
       />
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
+        <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+          {tranche.eTokenSymbol} amount <InfoTooltip>These tokens represent your share in the tranche.</InfoTooltip>
+        </Text>
         <span className="text-sm fw-semibold color-secondary ml-auto">
           {formatUSD(Number(tranche.state.eTokenPrice))} per {tranche.eTokenSymbol}
         </span>
@@ -537,7 +547,9 @@ const SingleTokenForm = ({
         }}
       />
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
+        <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+          {tranche.eTokenSymbol} amount <InfoTooltip>These tokens represent your share in the tranche.</InfoTooltip>
+        </Text>
         {/* <span className="text-sm fw-semibold color-secondary ml-auto">$ 63,132.11 per bb_ET_WBTC50/ETH50</span> */}
       </div>
       <TokenAmount
@@ -563,7 +575,7 @@ const SingleTokenForm = ({
         showDeadline
         deadline={transactionDetails.deadline}
         onChange={setTransactionDetails}>
-        Uniswap transaction details
+        SushiSwap transaction details
       </TransactionDetails>
 
       <EnableTokenButton
