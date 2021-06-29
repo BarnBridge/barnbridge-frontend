@@ -142,7 +142,7 @@ export const TransactionsTable = ({
         render: item => (
           <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'green' : 'red'}>
             {item.transactionType === 'DEPOSIT' ? '+' : '-'}{' '}
-            {formatToken(BigNumber.from(item.amountEToken)?.unscaleBy(item.tokenB.decimals))}
+            {formatToken(BigNumber.from(item.amountEToken)?.dividedBy(item.sFactorE))}
           </Text>
         ),
       },

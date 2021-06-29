@@ -176,6 +176,7 @@ export type TransactionApiType = {
   transactionHash: string;
   blockTimestamp: number;
   blockNumber: number;
+  sFactorE: string;
 };
 
 export function fetchTransactions({
