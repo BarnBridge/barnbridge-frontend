@@ -7,6 +7,7 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Divider from 'components/antd/divider';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { useContract } from 'hooks/useContract';
@@ -24,8 +25,8 @@ const tabs = [
     children: 'Rebalancing details',
   },
   {
-    id: 'pool',
-    children: 'Pool details',
+    id: 'tranche',
+    children: 'Tranche details',
   },
 ];
 
@@ -42,7 +43,7 @@ export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
         <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" />
       </header>
       {activeTab === 'rebalancing' && <RebalancingDetails tranche={tranche} />}
-      {activeTab === 'pool' && <PoolDetails tranche={tranche} />}
+      {activeTab === 'tranche' && <PoolDetails tranche={tranche} />}
     </section>
   );
 };
@@ -82,8 +83,11 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
       <Divider />
       <div className="flexbox-grid p-24">
         <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Rebalancing strategies
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
+            Rebalancing Strategy
+            <InfoTooltip>
+              Rebalancing of the tranche is triggered when both the time and deviation conditions are met
+            </InfoTooltip>
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
             Every {getRelativeTime(tranche.rebalancingInterval) || '0 seconds'}
@@ -99,12 +103,20 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Last rebalance
           </Text>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
-          </Text>
+          {tranche.state.lastRebalance ? (
+            <>
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
+              </Text>
+            </>
+          ) : (
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              Always
+            </Text>
+          )}
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">

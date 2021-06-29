@@ -72,6 +72,12 @@ const WithdrawView: React.FC = () => {
 
   return (
     <>
+      <div className="flex mb-16">
+        <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-text">
+          <Icon name="arrow-back" color="inherit" className="mr-8" />
+          Tranche details
+        </Link>
+      </div>
       <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
         <div className="flex">
           <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
@@ -127,8 +133,9 @@ const WithdrawView: React.FC = () => {
           Withdraw
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur odio nunc, a sodales ligula
-          varius nec
+          {activeTab === 'multiple'
+            ? 'Withdraw from your position by burning eTokens of this tranche for the underlying tranche tokens according to the current tranche ratio.'
+            : 'Withdraw from your position by burning eTokens of this tranche for one of the underlying tranche tokens. The second underlying token will be swapped for the token you want to receive, which is where the slippage and deadline parameters will be used.'}
         </Text>
         <Tabs
           tabs={tabs}
@@ -532,7 +539,7 @@ const SingleTokenForm = ({
         showDeadline
         deadline={transactionDetails.deadline}
         onChange={setTransactionDetails}>
-        Uniswap transaction details
+        SushiSwap transaction details
       </TransactionDetails>
 
       <TransactionSummary

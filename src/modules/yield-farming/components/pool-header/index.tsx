@@ -111,7 +111,12 @@ const PoolHeader: FC = () => {
                     tokenName: token.symbol,
                     decimals: token.decimals,
                   })}>
-                  <div style={{ background: token.color || 'var(--theme-red-color)', width: `${rate}%` }} />
+                  <div
+                    style={{
+                      background: token.color || 'var(--theme-red-color)',
+                      width: `${rate}%`,
+                    }}
+                  />
                 </Tooltip>
               );
             })}

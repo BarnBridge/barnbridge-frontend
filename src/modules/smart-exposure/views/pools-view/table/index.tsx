@@ -7,6 +7,7 @@ import { Badge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { PoolApiType, TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
@@ -16,7 +17,12 @@ import { numberFormat } from 'utils';
 
 const tableColumns: ColumnType<TranchesItemApiType>[] = [
   {
-    heading: 'Target / current ratio',
+    heading: (
+      <div className="flex align-center col-gap-4">
+        Target & current ratio{' '}
+        <InfoTooltip>The target funds ratio (top) and the current actual ratio (bottom)</InfoTooltip>
+      </div>
+    ),
     render: item => {
       const tokenA = getTokenBySymbol(item.tokenA.symbol);
       const tokenB = getTokenBySymbol(item.tokenB.symbol);
@@ -52,7 +58,11 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
     },
   },
   {
-    heading: 'Tranche liquidity',
+    heading: (
+      <div className="flex align-center col-gap-4">
+        Tranche liquidity <InfoTooltip>Total value locked in the tranche</InfoTooltip>
+      </div>
+    ),
     render: item => (
       <div className="text-p1 fw-semibold color-primary">
         {formatUSD(Number(item.state.tokenALiquidity) + Number(item.state.tokenBLiquidity))}
@@ -60,7 +70,12 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
     ),
   },
   {
-    heading: 'Performance since inception',
+    heading: (
+      <div className="flex align-center col-gap-4">
+        Performance since inception{' '}
+        <InfoTooltip>Overall performance of a hypothetical investment made at inception of the tranche</InfoTooltip>
+      </div>
+    ),
     render: function PerformanceSinceInception(item) {
       const { ePoolHelperContract } = useSEPools();
       const [value, setValue] = useState<BigNumber | undefined>();
@@ -102,11 +117,16 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
         sign = '-';
       }
 
-      return <Badge color={color}>{`${sign} ${formatPercent(value, 2) ?? '-'}`}</Badge>;
+      return <Badge color={color}>{`${sign} ${formatPercent(value?.abs(), 2) ?? '-'}`}</Badge>;
     },
   },
   {
-    heading: 'Exposure token conversion rate',
+    heading: (
+      <div className="flex align-center col-gap-4">
+        Exposure token conversion rate{' '}
+        <InfoTooltip>1 token of this tranche can be redeemed for this amount</InfoTooltip>
+      </div>
+    ),
     render: item => (
       <>
         <div className="text-p1 fw-semibold color-primary">{formatUSD(item.state.eTokenPrice)}</div>

@@ -142,8 +142,8 @@ export function fetchRatioDeviation(trancheAddress: string, windowFilter?: strin
 
 export type TrancheLiquidityApiType = {
   point: string;
-  tokenALiquidity: number;
-  tokenBLiquidity: number;
+  tokenALiquidity: string;
+  tokenBLiquidity: string;
 };
 
 export function fetchTrancheLiquidity(
@@ -176,6 +176,7 @@ export type TransactionApiType = {
   transactionHash: string;
   blockTimestamp: number;
   blockNumber: number;
+  sFactorE: string;
 };
 
 export function fetchTransactions({
