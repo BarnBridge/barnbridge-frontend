@@ -127,8 +127,9 @@ const WithdrawView: React.FC = () => {
           Withdraw
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur odio nunc, a sodales ligula
-          varius nec
+          {activeTab === 'multiple'
+            ? 'Withdraw from your position by providing Exposure Tokens of this tranche.'
+            : 'Withdraw from your position by specifying the withdrawal amount.'}
         </Text>
         <Tabs
           tabs={tabs}

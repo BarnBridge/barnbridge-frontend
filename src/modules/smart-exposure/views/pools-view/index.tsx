@@ -6,6 +6,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
@@ -110,8 +111,11 @@ const PoolsView: React.FC = () => {
                 </div>
               </div>
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
                   Rebalancing strategies
+                  <InfoTooltip>
+                    Rebalancing can happen when both the time constraint and the minimal deviation are surpassed.
+                  </InfoTooltip>
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                   Every {getRelativeTime(pool.state.rebalancingInterval) || '0 seconds'}
