@@ -75,7 +75,7 @@ const WithdrawView: React.FC = () => {
       <div className="flex mb-16">
         <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-text">
           <Icon name="arrow-back" color="inherit" className="mr-8" />
-          Tranche Details
+          Tranche details
         </Link>
       </div>
       <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
