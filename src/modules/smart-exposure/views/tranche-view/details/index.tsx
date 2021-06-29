@@ -25,8 +25,8 @@ const tabs = [
     children: 'Rebalancing details',
   },
   {
-    id: 'pool',
-    children: 'Pool details',
+    id: 'tranche',
+    children: 'Tranche details',
   },
 ];
 
@@ -43,7 +43,7 @@ export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
         <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" />
       </header>
       {activeTab === 'rebalancing' && <RebalancingDetails tranche={tranche} />}
-      {activeTab === 'pool' && <PoolDetails tranche={tranche} />}
+      {activeTab === 'tranche' && <PoolDetails tranche={tranche} />}
     </section>
   );
 };
