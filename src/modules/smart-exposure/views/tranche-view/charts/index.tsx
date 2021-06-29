@@ -86,6 +86,8 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
 
+  const max = useMemo(() => dataList.reduce((acc, item) => Math.max(acc, Number(item.deviation)), 0), [dataList]);
+
   return (
     <Spin spinning={loading}>
       <ReCharts.ResponsiveContainer width="100%" height={300} className="mb-24">
@@ -102,13 +104,14 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
             axisLine={false}
             tickLine={false}
             tickFormatter={value => formatTick(value, periodFilter)}
-            // dataKey="point"
-            // // ticks={ticks}
-            // tickMargin={12}
-            // minTickGap={0}
-            // // tickFormatter={value => formatTick(value)}
           />
-          <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value) ?? ''} />
+          <ReCharts.YAxis
+            type="number"
+            domain={[0, max * 1.1]}
+            axisLine={false}
+            tickLine={false}
+            tickFormatter={value => formatPercent(value) ?? ''}
+          />
           <ReCharts.Tooltip
             separator=""
             labelFormatter={value => (
@@ -161,7 +164,7 @@ const TrancheLiquidity = ({
   }, [trancheAddress, periodFilter]);
 
   const max = useMemo(
-    () => dataList.reduce((acc, item) => Math.max(acc, item.tokenALiquidity, item.tokenBLiquidity), 0),
+    () => dataList.reduce((acc, item) => Math.max(acc, Number(item.tokenALiquidity), Number(item.tokenBLiquidity)), 0),
     [dataList],
   );
 
