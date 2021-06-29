@@ -103,12 +103,20 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Last rebalance
           </Text>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
-          </Text>
+          {tranche.state.lastRebalance ? (
+            <>
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
+              </Text>
+            </>
+          ) : (
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              Always
+            </Text>
+          )}
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">

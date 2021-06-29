@@ -129,7 +129,9 @@ const PoolsView: React.FC = () => {
                   Last rebalance
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                  {format(new Date(pool.state.lastRebalance * 1000), 'dd.MM.yyyy HH:mm')}
+                  {pool.state.lastRebalance
+                    ? format(new Date(pool.state.lastRebalance * 1000), 'dd.MM.yyyy HH:mm')
+                    : 'Always'}
                 </Text>
               </div>
             </div>
