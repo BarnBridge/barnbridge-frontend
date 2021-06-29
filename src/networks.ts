@@ -6,9 +6,9 @@ import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
-import { NetworkMeta } from 'networks/types';
+import { Web3Network } from 'networks/types';
 
-export const KnownNetworks: NetworkMeta[] = [
+export const KnownNetworks: Web3Network[] = [
   ...(config.env === 'development' ? [KovanNetwork, MumbaiNetwork, GoerliNetwork] : []),
   MainnetNetwork,
   PolygonNetwork,
@@ -32,33 +32,33 @@ export let DefaultNetwork = KnownNetworks[0];
   const network = KnownNetworks.find(kn => kn.id === lastNetwork);
   const newConfig = setConfigFor(network!.id.toUpperCase());
 
-  const rpcUrl = `${network!.rpcUrls[0]}/${newConfig.web3.rpcKey}`;
+  const rpcUrl = `${network!.rpc.httpsUrl}/${newConfig.web3.rpcKey}`;
   const { setProviderByUrl } = require('components/providers/eth-web3-provider');
   setProviderByUrl(rpcUrl);
 })();
 
 export function getHttpRpcUrl(): string {
-  return `${DefaultNetwork.rpcUrls[0]}/${config.web3.rpcKey}`;
+  return `${DefaultNetwork.rpc.httpsUrl}/${config.web3.rpcKey}`;
 }
 
 export function getWsRpcUrl(): string {
-  return `${DefaultNetwork.rpcUrls[1]}/${config.web3.rpcKey}`;
+  return `${DefaultNetwork.rpc.wssUrl}/${config.web3.rpcKey}`;
 }
 
 export function getEtherscanTxUrl(txHash?: string): string | undefined {
-  return txHash ? `${DefaultNetwork.explorerUrl}/tx/${txHash}` : undefined;
+  return txHash ? `${DefaultNetwork.explorer.url}/tx/${txHash}` : undefined;
 }
 
 export function getEtherscanAddressUrl(address?: string): string | undefined {
-  return address ? `${DefaultNetwork.explorerUrl}/address/${address}` : undefined;
+  return address ? `${DefaultNetwork.explorer.url}/address/${address}` : undefined;
 }
 
 export function getEtherscanABIUrl(address: string): string | undefined {
   return address
-    ? `${DefaultNetwork.explorerUrl}/api?module=contract&action=getabi&address=${address}&apikey=${config.web3.etherscanKey}`
+    ? `${DefaultNetwork.explorer.url}/api?module=contract&action=getabi&address=${address}&apikey=${config.web3.etherscanKey}`
     : undefined;
 }
 
 export function getEtherscanGasUrl(): string {
-  return `${DefaultNetwork.explorerUrl}//api?module=gastracker&action=gasoracle&apikey=${config.web3.etherscanKey}`;
+  return `${DefaultNetwork.explorer.url}//api?module=gastracker&action=gasoracle&apikey=${config.web3.etherscanKey}`;
 }

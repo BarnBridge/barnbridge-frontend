@@ -16,7 +16,7 @@ const TrezorWalletConfig: BaseWalletConfig = {
     return new TrezorConnector({
       chainId,
       url: getHttpRpcUrl(),
-      pollingInterval: DefaultNetwork.poolingInterval,
+      pollingInterval: DefaultNetwork.rpc.poolingInterval,
       manifestEmail: config.wallets.trezorEmail,
       manifestAppUrl: config.wallets.trezorAppUrl,
       config: {

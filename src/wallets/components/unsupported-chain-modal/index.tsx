@@ -23,7 +23,7 @@ const UnsupportedChainModal: React.FC<UnsupportedChainModalProps> = props => {
             Wrong network
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            Please switch your wallet network to {ethWeb3.activeNetwork?.name ?? '<!>'} to use the app
+            Please switch your wallet network to {ethWeb3.activeNetwork?.meta.name ?? '<!>'} to use the app
           </Text>
           <Text type="p1" color="secondary">
             If you still encounter problems, you may want to switch to a different wallet

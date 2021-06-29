@@ -1,4 +1,4 @@
-import React, { FC, createContext, useContext } from 'react';
+import React, { FC, createContext, useContext, useEffect } from 'react';
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Erc20Contract from 'web3/erc20Contract';
@@ -506,7 +506,7 @@ const KnownTokensProvider: FC = props => {
   const wallet = useWallet();
   const [reload] = useReload();
 
-  React.useEffect(() => {
+  useEffect(() => {
     (BondToken.contract as Erc20Contract).loadCommon().catch(Error);
 
     (async () => {
@@ -562,13 +562,13 @@ const KnownTokensProvider: FC = props => {
     })();
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     KNOWN_TOKENS.forEach(token => {
       token.contract?.setProvider(wallet.provider);
     });
   }, [wallet.provider]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     KNOWN_TOKENS.forEach(token => {
       token.contract?.setAccount(wallet.account);
     });

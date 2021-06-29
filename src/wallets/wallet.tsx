@@ -104,7 +104,7 @@ const WalletProvider: FC = props => {
       setConnecting(walletConfig);
       setWalletsModal(false);
 
-      const connector = walletConfig.factory(ethWeb3.activeNetwork.chainId, args);
+      const connector = walletConfig.factory(ethWeb3.activeNetwork.meta.chainId, args);
 
       function onError(error: Error) {
         console.error('Wallet::Connect().onError', { error });

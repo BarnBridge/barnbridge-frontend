@@ -64,7 +64,7 @@ const StatsView: React.FC = () => {
               {...{ disabled: !wallet.isActive }}>
               Deposit
             </Link>
-            {ethWeb3.activeNetwork?.features.faucets && (
+            {ethWeb3.activeNetwork?.config.features.faucets && (
               <Link to="/faucets" className="button-ghost ml-auto">
                 Faucets
               </Link>

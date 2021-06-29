@@ -148,7 +148,7 @@ const WalletDepositView: React.FC = () => {
             onChange={handleSwitchChange}
           />
         </Grid>
-        {ethWeb3.activeNetwork?.features.faucets && (
+        {ethWeb3.activeNetwork?.config.features.faucets && (
           <Link to="/faucets" className="button-ghost ml-auto">
             Faucets
           </Link>

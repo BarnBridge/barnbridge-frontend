@@ -156,7 +156,7 @@ const ConnectedWallet: React.FC = () => {
                 Network
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {ethWeb3.activeNetwork?.name}
+                {ethWeb3.activeNetwork?.meta.name}
               </Text>
             </Grid>
           </Grid>

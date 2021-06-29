@@ -19,7 +19,13 @@ const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
-  const ethWeb3 = useEthWeb3();
+  const { activeNetwork } = useEthWeb3();
+
+  if (!activeNetwork) {
+    return null;
+  }
+
+  const { features } = activeNetwork.config;
 
   return (
     <div className={s.layout}>
@@ -31,21 +37,13 @@ const LayoutView: React.FC = () => {
             <ErrorBoundary>
               <Suspense fallback={<AntdSpin className="pv-24 ph-64" />}>
                 <Switch>
-                  {ethWeb3.activeNetwork?.features.yieldFarming && (
-                    <Route path="/yield-farming" component={YieldFarmingView} />
-                  )}
-                  {ethWeb3.activeNetwork?.features.dao && (
-                    <Route path="/governance/:vt(\w+)" component={GovernanceView} />
-                  )}
-                  {ethWeb3.activeNetwork?.features.dao && <Route path="/governance" component={GovernanceView} />}
-                  {ethWeb3.activeNetwork?.features.smartAlpha && (
-                    <Route path="/smart-alpha" component={SmartAlphaView} />
-                  )}
-                  {ethWeb3.activeNetwork?.features.smartExposure && (
-                    <Route path="/smart-exposure" component={SmartExposureView} />
-                  )}
-                  {ethWeb3.activeNetwork?.features.faucets && <Route path="/faucets" component={FaucetsView} />}
-                  {ethWeb3.activeNetwork?.features.smartYield && (
+                  {features.yieldFarming && <Route path="/yield-farming" component={YieldFarmingView} />}
+                  {features.dao && <Route path="/governance/:vt(\w+)" component={GovernanceView} />}
+                  {features.dao && <Route path="/governance" component={GovernanceView} />}
+                  {features.smartAlpha && <Route path="/smart-alpha" component={SmartAlphaView} />}
+                  {features.smartExposure && <Route path="/smart-exposure" component={SmartExposureView} />}
+                  {features.faucets && <Route path="/faucets" component={FaucetsView} />}
+                  {features.smartYield && (
                     <Route
                       path="/smart-yield"
                       render={() => (

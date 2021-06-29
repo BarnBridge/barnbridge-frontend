@@ -27,7 +27,7 @@ const LedgerWalletConfig: BaseWalletConfig = {
     return new LedgerConnector({
       chainId,
       url: getHttpRpcUrl(),
-      pollingInterval: DefaultNetwork.poolingInterval,
+      pollingInterval: DefaultNetwork.rpc.poolingInterval,
       baseDerivationPath,
     });
   },

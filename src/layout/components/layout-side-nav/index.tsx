@@ -15,7 +15,7 @@ import s from './s.module.scss';
 
 const LayoutSideNav: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
-  const ethWeb3 = useEthWeb3();
+  const { activeNetwork } = useEthWeb3();
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
@@ -37,6 +37,12 @@ const LayoutSideNav: React.FC = () => {
 
   const displayTooltip = !isMobile && !expanded;
 
+  if (!activeNetwork) {
+    return null;
+  }
+
+  const { features } = activeNetwork.config;
+
   return (
     <>
       <div className={cn(s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
@@ -51,7 +57,7 @@ const LayoutSideNav: React.FC = () => {
           </Link>
         </div>
         <nav className={s.top}>
-          {ethWeb3.activeNetwork?.features.faucets && (
+          {features.faucets && (
             <Tooltip title={displayTooltip && 'Faucets'} placement="right">
               <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
                 <Icon name="building" />
@@ -61,7 +67,7 @@ const LayoutSideNav: React.FC = () => {
               </NavLink>
             </Tooltip>
           )}
-          {ethWeb3.activeNetwork?.features.yieldFarming && (
+          {features.yieldFarming && (
             <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
               <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
                 <Icon name="tractor-outlined" />

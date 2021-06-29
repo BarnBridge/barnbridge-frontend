@@ -62,9 +62,9 @@ const LayoutHeader: React.FC = () => {
             className="button-ghost-monochrome mr-24"
             style={{ padding: '8px 12px 8px 8px' }}
             onClick={() => ethWeb3.showNetworkSelect()}>
-            <Icon name={ethWeb3.activeNetwork?.logo as IconNames} width={24} height={24} className="mr-8" />
+            <Icon name={ethWeb3.activeNetwork?.meta.logo as IconNames} width={24} height={24} className="mr-8" />
             <Text type="p2" weight="semibold" color="secondary">
-              {ethWeb3.activeNetwork?.name}
+              {ethWeb3.activeNetwork?.meta.name}
             </Text>
           </button>
         )}

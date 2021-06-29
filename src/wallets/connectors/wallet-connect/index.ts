@@ -16,7 +16,7 @@ const WalletConnectConfig: BaseWalletConfig = {
       rpc: {
         [chainId]: getHttpRpcUrl(),
       },
-      pollingInterval: DefaultNetwork.poolingInterval,
+      pollingInterval: DefaultNetwork.rpc.poolingInterval,
       bridge: config.wallets.walletConnectBridge,
       qrcode: true,
     });

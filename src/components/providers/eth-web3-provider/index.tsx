@@ -12,7 +12,7 @@ import { config } from 'config';
 import { DefaultNetwork, KnownNetworks } from 'networks';
 import { metamask_AddEthereumChain, metamask_SwitchEthereumChain } from 'wallets/connectors/metamask';
 
-import { NetworkMeta } from 'networks/types';
+import { Web3Network } from 'networks/types';
 
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
   'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',
@@ -36,7 +36,7 @@ export function setProviderByUrl(rpcUrl: string) {
 export type EthWeb3ContextType = {
   web3: Web3;
   blockNumber?: number;
-  activeNetwork?: NetworkMeta;
+  activeNetwork?: Web3Network;
   activeProvider?: any;
   selectNetwork: (networkId?: string) => void;
   showNetworkSelect: () => void;
@@ -67,7 +67,7 @@ const EthWeb3Provider: FC = props => {
   const windowState = useWindowState();
   const [storedNetwork, setStoredNetwork] = useLocalStorage('bb_last_network', DefaultNetwork.id);
   const [blockNumber, setBlockNumber] = useState<number | undefined>();
-  const [activeNetwork, setNetwork] = useState<NetworkMeta | undefined>();
+  const [activeNetwork, setNetwork] = useState<Web3Network | undefined>();
   const [activeProvider, setActiveProvider] = useState<any>(DefaultWeb3Provider);
   const [networkSelectVisible, showNetworkSelect] = useState(false);
 
@@ -146,19 +146,19 @@ const EthWeb3Provider: FC = props => {
   }
 
   function getTxUrl(txHash?: string): string | undefined {
-    if (!txHash || !activeNetwork?.explorerUrl) {
+    if (!txHash || !activeNetwork?.explorer.url) {
       return;
     }
 
-    return `${activeNetwork.explorerUrl}/tx/${txHash}`;
+    return `${activeNetwork.explorer.url}/tx/${txHash}`;
   }
 
   function getAccountUrl(address?: string): string | undefined {
-    if (!address || !activeNetwork?.explorerUrl) {
+    if (!address || !activeNetwork?.explorer.url) {
       return;
     }
 
-    return `${activeNetwork.explorerUrl}/address/${address}`;
+    return `${activeNetwork.explorer.url}/address/${address}`;
   }
 
   const value = {
@@ -192,10 +192,10 @@ const EthWeb3Provider: FC = props => {
                   showNetworkSelect(false);
                   selectNetwork(network.id);
                 }}>
-                <Icon name={network.logo as IconNames} width={40} height={40} className="mr-12" />
+                <Icon name={network.meta.logo as IconNames} width={40} height={40} className="mr-12" />
                 <div className="flex flow-row align-start">
                   <Text type="p1" weight="semibold" color="primary">
-                    {network.name}
+                    {network.meta.name}
                   </Text>
                   {activeNetwork?.id === network.id && (
                     <Text type="small" weight="semibold" color="secondary">

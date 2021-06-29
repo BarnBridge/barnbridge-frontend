@@ -70,7 +70,7 @@ const MetamaskWalletConfig: BaseWalletConfig = {
   onConnect(connector: AbstractConnector, args?: Record<string, any>) {
     connector.getProvider().then(ethereum => {
       ethereum.on('chainChanged', (chainId: number) => {
-        const network = KnownNetworks.find(kn => kn.chainId === Number(chainId)) ?? DefaultNetwork;
+        const network = KnownNetworks.find(kn => kn.meta.chainId === Number(chainId)) ?? DefaultNetwork;
 
         if (network) {
           localStorage.setItem('bb_last_network', `"${network.id}"`);

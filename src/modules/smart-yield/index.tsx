@@ -83,7 +83,7 @@ const SmartYieldView: React.FC = () => {
       },
       disabled: !wallet.account,
     } as NavLinkProps,
-    ...(ethWeb3.activeNetwork?.features.smartYieldReward
+    ...(ethWeb3.activeNetwork?.config.features.smartYieldReward
       ? [
           {
             children: (
@@ -142,14 +142,14 @@ const SmartYieldView: React.FC = () => {
                 <StatsView />
               </PoolProvider>
             </Route>
-            {ethWeb3.activeNetwork?.features.smartYieldReward && (
+            {ethWeb3.activeNetwork?.config.features.smartYieldReward && (
               <Route path="/smart-yield/pools" exact>
                 <RewardPoolsProvider>
                   <PoolsView />
                 </RewardPoolsProvider>
               </Route>
             )}
-            {ethWeb3.activeNetwork?.features.smartYieldReward && (
+            {ethWeb3.activeNetwork?.config.features.smartYieldReward && (
               <Route path="/smart-yield/pool" component={PoolView}>
                 <RewardPoolProvider>
                   <PoolView />
