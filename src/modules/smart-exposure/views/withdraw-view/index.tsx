@@ -134,8 +134,8 @@ const WithdrawView: React.FC = () => {
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
           {activeTab === 'multiple'
-            ? 'Withdraw from your position by providing Exposure Tokens of this tranche.'
-            : 'Withdraw from your position by specifying the withdrawal amount.'}
+            ? 'Withdraw from your position by burning eTokens of this tranche for the underlying tranche tokens according to the current tranche ratio.'
+            : 'Withdraw from your position by burning eTokens of this tranche for one of the underlying tranche tokens. The second underlying token will be swapped for the token you want to receive, which is where the slippage and deadline parameters will be used.'}
         </Text>
         <Tabs
           tabs={tabs}
@@ -539,7 +539,7 @@ const SingleTokenForm = ({
         showDeadline
         deadline={transactionDetails.deadline}
         onChange={setTransactionDetails}>
-        Uniswap transaction details
+        SushiSwap transaction details
       </TransactionDetails>
 
       <TransactionSummary

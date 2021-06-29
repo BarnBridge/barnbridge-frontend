@@ -130,8 +130,8 @@ const DepositView: React.FC = () => {
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
           {activeTab === 'multiple'
-            ? 'Build your SmartExposure position by depositing both of the tokens in the tranche.'
-            : 'Build your SmartExposure position by minting a specified amount of Exposure Tokens.'}
+            ? 'Build your SMART Exposure position by minting eTokens with both the tokens in the tranche according to the current tranche ratio.'
+            : 'Build your SMART Exposure position by minting a specified amount of eTokens with a single input token. The amount of deposited token you see will have a portion of it swapped for the second token, which is where the slippage and deadline parameters will be used.'}
         </Text>
         <Tabs
           tabs={tabs}
@@ -575,7 +575,7 @@ const SingleTokenForm = ({
         showDeadline
         deadline={transactionDetails.deadline}
         onChange={setTransactionDetails}>
-        Uniswap transaction details
+        SushiSwap transaction details
       </TransactionDetails>
 
       <EnableTokenButton

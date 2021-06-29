@@ -86,7 +86,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
             Rebalancing Strategy
             <InfoTooltip>
-              Rebalancing can happen when both the time constraint and the minimal deviation are surpassed.
+              Rebalancing of the tranche is triggered when both the time and deviation conditions are met
             </InfoTooltip>
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">

@@ -72,7 +72,8 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: (
       <div className="flex align-center col-gap-4">
-        Performance since inception <InfoTooltip>Performance vs. an equivalent buy & hold strategy</InfoTooltip>
+        Performance since inception{' '}
+        <InfoTooltip>Overall performance of a hypothetical investment made at inception of the tranche</InfoTooltip>
       </div>
     ),
     render: function PerformanceSinceInception(item) {
