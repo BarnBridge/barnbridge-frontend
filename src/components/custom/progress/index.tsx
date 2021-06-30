@@ -1,3 +1,5 @@
+import { formatPercent } from 'web3/utils';
+
 import s from './s.module.scss';
 
 type TranchePercentageProgressPropsType = {
@@ -24,18 +26,18 @@ export const TranchePercentageProgress: React.FC<TranchePercentageProgressPropsT
   return (
     <progress
       max="100"
-      value={target}
+      value={target * 100}
       className={s.progress}
       style={
         {
           '--background-color': backgroundColor,
           '--progress-color': progressColor,
           '--current-color': currentColor,
-          '--current-progress': value,
-          '--target-progress': target,
+          '--current-progress': value * 100,
+          '--target-progress': target * 100,
         } as React.CSSProperties
       }>
-      {target}%
+      {formatPercent(target)}
     </progress>
   );
 };
