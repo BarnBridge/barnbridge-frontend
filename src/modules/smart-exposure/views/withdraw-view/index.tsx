@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
@@ -373,6 +373,10 @@ const MultipleTokensForm = ({
   );
 };
 
+const debounceOptions = {
+  // leading: true,
+};
+
 const SingleTokenForm = ({
   tranche,
   tokenAContract,
@@ -410,20 +414,30 @@ const SingleTokenForm = ({
     1 - (transactionDetails.slippage ?? 0) / 100,
   );
 
-  const tokenHandler = useDebounce((value: string) => {
-    const amount = BigNumber.from(value)?.multipliedBy(tranche.sFactorE);
-    if (!amount) {
-      return;
-    }
+  const tokenHandler = useCallback(
+    (value: string, _isTokenA: boolean) => {
+      const amount = BigNumber.from(value)?.multipliedBy(tranche.sFactorE);
+      if (!amount) {
+        return;
+      }
 
-    ePoolPeripheryContract?.[isTokenA ? 'getMaxOutputAmountAForEToken' : 'getMaxOutputAmountBForEToken'](
-      poolAddress,
-      trancheAddress,
-      amount,
-    ).then(val => {
-      setSelectedTokenValue(val);
-    });
-  }, 400);
+      ePoolPeripheryContract?.[_isTokenA ? 'getMaxOutputAmountAForEToken' : 'getMaxOutputAmountBForEToken'](
+        poolAddress,
+        trancheAddress,
+        amount,
+      ).then(val => {
+        setSelectedTokenValue(val);
+      });
+    },
+    [ePoolPeripheryContract, poolAddress, tranche.sFactorE, trancheAddress],
+  );
+
+  const debouncedTokenHandler = useDebounce(tokenHandler, 400, debounceOptions);
+
+  useEffect(() => {
+    setSelectedTokenValue(undefined);
+    debouncedTokenHandler(tokenEState, isTokenA);
+  }, [debouncedTokenHandler, tokenEState, isTokenA]);
 
   const submitHandler = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -484,10 +498,7 @@ const SingleTokenForm = ({
       <TokenAmount
         before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
         value={tokenEState}
-        onChange={val => {
-          setTokenEState(val);
-          tokenHandler(val);
-        }}
+        onChange={setTokenEState}
         max={tokenEMax.toString()}
         placeholder={`0 (Max ${tokenEMax ?? 0})`}
         className="mb-8"
