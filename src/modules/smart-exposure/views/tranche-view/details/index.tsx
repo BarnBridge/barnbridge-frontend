@@ -14,8 +14,7 @@ import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/wallet';
 
-import { calcTokensRatio } from 'modules/smart-exposure/utils';
-import { getRelativeTime, numberFormat } from 'utils';
+import { getRelativeTime } from 'utils';
 
 import s from './s.module.scss';
 
@@ -52,8 +51,6 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 
-  const [tokenARatio, tokenBRatio] = calcTokensRatio(tranche.targetRatio);
-
   return (
     <>
       <div className="flexbox-grid p-24">
@@ -62,10 +59,9 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Target ratio
           </Text>
           <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
-            <Icon name={tokenA?.icon!} width={16} height={16} />{' '}
-            {numberFormat(tokenARatio, { minimumFractionDigits: 2 })}% <span className="ph-4">:</span>{' '}
-            <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
-            {numberFormat(tokenBRatio, { minimumFractionDigits: 2 })}%
+            <Icon name={tokenA?.icon!} width={16} height={16} /> {formatPercent(Number(tranche.tokenARatio))}
+            <span className="ph-4">:</span> <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
+            {formatPercent(Number(tranche.tokenBRatio))}
           </Text>
         </div>
         <div className="flex flow-row">
@@ -74,9 +70,9 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           </Text>
           <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
             <Icon name={tokenA?.icon!} width={16} height={16} />{' '}
-            {numberFormat(Number(tranche.tokenARatio) * 100, { minimumFractionDigits: 2 })}%{' '}
-            <span className="ph-4">:</span> <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
-            {numberFormat(Number(tranche.tokenBRatio) * 100, { minimumFractionDigits: 2 })}%
+            {formatPercent(Number(tranche.state.tokenACurrentRatio))} <span className="ph-4">:</span>{' '}
+            <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
+            {formatPercent(Number(tranche.state.tokenBCurrentRatio))}
           </Text>
         </div>
       </div>

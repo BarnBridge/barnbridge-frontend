@@ -43,6 +43,10 @@ export type TranchesItemApiType = {
     eTokenPrice: string;
     tokenALiquidity: string;
     tokenBLiquidity: string;
+    currentRatio: string;
+    tokenACurrentRatio: string;
+    tokenBCurrentRatio: string;
+    lastRebalance: number;
   };
   targetRatio: string;
   tokenARatio: string;

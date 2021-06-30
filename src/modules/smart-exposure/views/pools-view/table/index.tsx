@@ -12,9 +12,6 @@ import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
 import { PoolApiType, TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
-import { calcTokensRatio } from 'modules/smart-exposure/utils';
-import { numberFormat } from 'utils';
-
 const tableColumns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: (
@@ -26,7 +23,6 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
     render: item => {
       const tokenA = getTokenBySymbol(item.tokenA.symbol);
       const tokenB = getTokenBySymbol(item.tokenB.symbol);
-      const [tokenARatio, tokenBRatio] = calcTokensRatio(item.targetRatio);
 
       return (
         <>
@@ -34,25 +30,21 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
             <div className="flex">
               <Icon name={tokenA?.icon!} className="mr-8" />
               <div>
-                <div className="text-p1 fw-semibold color-primary">
-                  {numberFormat(tokenARatio, { minimumFractionDigits: 2 })}%
-                </div>
-                <RatioLabel current={Number(item.tokenARatio) * 100} target={tokenARatio} />
+                <div className="text-p1 fw-semibold color-primary">{formatPercent(Number(item.tokenARatio))}</div>
+                <RatioLabel current={Number(item.state.tokenACurrentRatio)} target={Number(item.tokenARatio)} />
               </div>
             </div>
             <div>
               <div className="flex">
                 <Icon name={tokenB?.icon!} className="mr-8" />
                 <div>
-                  <div className="text-p1 fw-semibold color-primary">
-                    {numberFormat(tokenBRatio, { minimumFractionDigits: 2 })}%
-                  </div>
-                  <RatioLabel current={Number(item.tokenBRatio) * 100} target={tokenBRatio} />
+                  <div className="text-p1 fw-semibold color-primary">{formatPercent(Number(item.tokenBRatio))}</div>
+                  <RatioLabel current={Number(item.state.tokenBCurrentRatio)} target={Number(item.tokenBRatio)} />
                 </div>
               </div>
             </div>
           </div>
-          <TranchePercentageProgress target={Number(item.tokenARatio) * 100} value={tokenARatio} />
+          <TranchePercentageProgress target={Number(item.tokenARatio)} value={Number(item.state.tokenACurrentRatio)} />
         </>
       );
     },
@@ -164,14 +156,10 @@ type RatioLabelPropsType = {
 };
 
 const RatioLabel: React.FC<RatioLabelPropsType> = ({ current, target }) => {
-  const currentLabel = numberFormat(current, {
-    minimumFractionDigits: 2,
-  });
-
   if (current < target) {
     return (
       <div className="text-sm fw-semibold color-red flex">
-        {currentLabel}%
+        {formatPercent(current)}
         <Icon name="arrow-bottom-right-thin" className="mr-8" width={16} height={16} color="red" />
       </div>
     );
@@ -179,11 +167,11 @@ const RatioLabel: React.FC<RatioLabelPropsType> = ({ current, target }) => {
   if (current > target) {
     return (
       <div className="text-sm fw-semibold color-green flex">
-        {currentLabel}%
+        {formatPercent(current)}
         <Icon name="arrow-top-right-thin" className="mr-8" width={16} height={16} color="green" />
       </div>
     );
   }
 
-  return <div className="text-sm fw-semibold color-secondary flex">{currentLabel}%</div>;
+  return <div className="text-sm fw-semibold color-secondary flex">{formatPercent(current)}</div>;
 };
