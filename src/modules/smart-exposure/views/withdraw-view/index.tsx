@@ -442,7 +442,7 @@ const SingleTokenForm = ({
   const submitHandler = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const amount = BigNumber.from(tokenEState)?.scaleBy(selectedTokenDecimals) ?? BigNumber.ZERO;
+    const amount = BigNumber.from(tokenEState)?.multipliedBy(tranche.sFactorE) ?? BigNumber.ZERO;
 
     if (!amount || !selectedTokenValueMinusSlippage) {
       return;
