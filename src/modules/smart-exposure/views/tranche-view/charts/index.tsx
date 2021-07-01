@@ -121,7 +121,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
               </span>
             )}
             formatter={(value: number, _: any, { dataKey }: any) => (
-              <span className="text-p2 fw-semibold color-red">{formatPercent(value) ?? ''}</span>
+              <span className="text-p2 fw-semibold color-red">{`${Number(value) * 100}%` ?? ''}</span>
             )}
           />
           <ReCharts.Area
