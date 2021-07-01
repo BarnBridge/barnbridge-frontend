@@ -1,5 +1,4 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { format } from 'date-fns';
 import { formatPercent, formatUSD } from 'web3/utils';
@@ -13,6 +12,7 @@ import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
+import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 const PoolsView: React.FC = () => {
@@ -120,8 +120,7 @@ const PoolsView: React.FC = () => {
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                   Every {getRelativeTime(pool.state.rebalancingInterval) || '0 seconds'}
                   <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
-                  {formatPercent(BigNumber.from(pool.state.rebalancingCondition)?.unscaleBy(18) ?? 0)} deviation from
-                  target
+                  {formatPercent(calculateRebalancingCondition(pool.state.rebalancingCondition))} deviation from target
                 </Text>
               </div>
               <div>

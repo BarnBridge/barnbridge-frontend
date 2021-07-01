@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
+import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
@@ -17,7 +18,7 @@ import { Text } from 'components/custom/typography';
 import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
-import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
+import { useEPoolContract, useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/wallet';
 
 const tabs = [
@@ -182,7 +183,8 @@ const MultipleTokensForm = ({
   const [tokenEState, setTokenEState] = useState<string>('');
   const [tokenAState, setTokenAState] = useState<BigNumber | undefined>();
   const [tokenBState, setTokenBState] = useState<BigNumber | undefined>();
-  const { ePoolContract, ePoolHelperContract, ePoolPeripheryContract } = useSEPools();
+  const ePoolContract = useEPoolContract(poolAddress);
+  const { ePoolHelperContract, ePoolPeripheryContract } = useSEPools();
   const [loading, setLoading] = useState<boolean>(false);
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
@@ -369,6 +371,7 @@ const MultipleTokensForm = ({
           Withdraw
         </button>
       </div>
+      <ContractListener contract={ePoolContract} />
     </form>
   );
 };
@@ -394,7 +397,8 @@ const SingleTokenForm = ({
 
   const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState<KnownTokens>(tokens[0]);
-  const { ePoolContract, ePoolPeripheryContract } = useSEPools();
+  const ePoolContract = useEPoolContract(poolAddress);
+  const { ePoolPeripheryContract } = useSEPools();
 
   const [transactionDetails, setTransactionDetails] = useState<{ deadline?: number; slippage?: number }>({
     deadline: 20,
@@ -597,6 +601,7 @@ const SingleTokenForm = ({
           Withdraw
         </button>
       </div>
+      <ContractListener contract={ePoolContract} />
     </form>
   );
 };

@@ -203,8 +203,7 @@ export function fetchTransactions({
     page,
     limit,
     accountAddress,
-    // TODO: fix this filter
-    eTokenAddress: poolAddress,
+    poolAddress,
     transactionType,
   });
 

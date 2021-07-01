@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import AntdNotification from 'antd/lib/notification';
-import cn from 'classnames';
 import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
 import { formatUSD } from 'web3/utils';
@@ -10,8 +9,6 @@ import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { fetchEtokenPrice } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
-
-import s from './s.module.scss';
 
 type ETokenPriceType = {
   eTokenPrice: string;
@@ -42,9 +39,12 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
       .finally(() => setLoading(false));
   }, [trancheAddress, activeTab]);
 
+  const min = useMemo(() => priceList.reduce((acc, item) => Math.min(acc, Number(item.eTokenPrice)), 0), [priceList]);
+  const max = useMemo(() => priceList.reduce((acc, item) => Math.max(acc, Number(item.eTokenPrice)), 0), [priceList]);
+
   return (
     <section className="card">
-      <header className={cn('card-header flex align-center', s.header)}>
+      <header className="card-header flex align-center" style={{ padding: '16px 16px 16px 24px' }}>
         <div className="text-p1 fw-semibold color-primary mr-8">eToken price trend</div>
         <PeriodChartTabs activeKey={activeTab} onClick={setActiveTab} size="small" className="ml-auto" />
       </header>
@@ -66,6 +66,8 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
                 tickFormatter={value => formatTick(value, activeTab)}
               />
               <ReCharts.YAxis
+                type="number"
+                domain={[min < 0 ? min * 1.1 : 0, max * 1.1]}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={value =>
