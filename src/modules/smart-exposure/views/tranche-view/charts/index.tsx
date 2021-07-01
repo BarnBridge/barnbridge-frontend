@@ -108,7 +108,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
           />
           <ReCharts.YAxis
             type="number"
-            domain={[min * 1.1, max * 1.1]}
+            domain={[min < 0 ? min * 1.1 : 0, max * 1.1]}
             axisLine={false}
             tickLine={false}
             tickFormatter={value => formatPercent(value) ?? ''}
