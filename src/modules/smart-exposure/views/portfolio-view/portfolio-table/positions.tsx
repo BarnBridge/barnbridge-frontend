@@ -66,7 +66,7 @@ export const PositionsTable: React.FC<PositionsTablePropsType> = ({ poolAddress 
   const [tranches, setTranches] = useState<TranchesItemApiType[]>([]);
 
   useEffect(() => {
-    fetchTranches(poolAddress).then(setTranches);
+    fetchTranches(poolAddress).then(setTranches).catch(Error);
   }, [poolAddress]);
 
   return <Table<TranchesItemApiType> columns={columns} data={tranches} />;
