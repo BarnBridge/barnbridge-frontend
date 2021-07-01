@@ -61,57 +61,57 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
       </div>
     ),
   },
-  {
-    heading: (
-      <div className="flex align-center col-gap-4">
-        Performance since inception{' '}
-        <InfoTooltip>Overall performance of a hypothetical investment made at inception of the tranche</InfoTooltip>
-      </div>
-    ),
-    render: function PerformanceSinceInception(item) {
-      const { ePoolHelperContract } = useSEPools();
-      const [value, setValue] = useState<BigNumber | undefined>();
+  // {
+  //   heading: (
+  //     <div className="flex align-center col-gap-4">
+  //       Performance since inception{' '}
+  //       <InfoTooltip>Overall performance of a hypothetical investment made at inception of the tranche</InfoTooltip>
+  //     </div>
+  //   ),
+  //   render: function PerformanceSinceInception(item) {
+  //     const { ePoolHelperContract } = useSEPools();
+  //     const [value, setValue] = useState<BigNumber | undefined>();
 
-      useEffect(() => {
-        ePoolHelperContract
-          .getTokenATokenBForEToken(item.poolAddress, item.eTokenAddress, new BigNumber(item.sFactorE))
-          .then(({ amountA, amountB }) => {
-            const tokenBTransformedInTokenA = amountB
-              .dividedBy(10 ** item.tokenB.decimals)
-              .multipliedBy(item.tokenB.state.price)
-              .dividedBy(item.tokenA.state.price);
-            setValue(
-              amountA
-                .dividedBy(10 ** item.tokenA.decimals)
-                .plus(tokenBTransformedInTokenA)
-                .minus(1),
-            );
-          });
-      }, [
-        ePoolHelperContract,
-        item.eTokenAddress,
-        item.poolAddress,
-        item.sFactorE,
-        item.tokenA.decimals,
-        item.tokenA.state.price,
-        item.tokenB.decimals,
-        item.tokenB.state.price,
-      ]);
+  //     useEffect(() => {
+  //       ePoolHelperContract
+  //         .getTokenATokenBForEToken(item.poolAddress, item.eTokenAddress, new BigNumber(item.sFactorE))
+  //         .then(({ amountA, amountB }) => {
+  //           const tokenBTransformedInTokenA = amountB
+  //             .dividedBy(10 ** item.tokenB.decimals)
+  //             .multipliedBy(item.tokenB.state.price)
+  //             .dividedBy(item.tokenA.state.price);
+  //           setValue(
+  //             amountA
+  //               .dividedBy(10 ** item.tokenA.decimals)
+  //               .plus(tokenBTransformedInTokenA)
+  //               .minus(1),
+  //           );
+  //         });
+  //     }, [
+  //       ePoolHelperContract,
+  //       item.eTokenAddress,
+  //       item.poolAddress,
+  //       item.sFactorE,
+  //       item.tokenA.decimals,
+  //       item.tokenA.state.price,
+  //       item.tokenB.decimals,
+  //       item.tokenB.state.price,
+  //     ]);
 
-      let color: 'green' | 'red' | 'grey' = 'grey';
-      let sign = '';
-      if (value?.isGreaterThan(0)) {
-        color = 'green';
-        sign = '+';
-      }
-      if (value?.isLessThan(0)) {
-        color = 'red';
-        sign = '-';
-      }
+  //     let color: 'green' | 'red' | 'grey' = 'grey';
+  //     let sign = '';
+  //     if (value?.isGreaterThan(0)) {
+  //       color = 'green';
+  //       sign = '+';
+  //     }
+  //     if (value?.isLessThan(0)) {
+  //       color = 'red';
+  //       sign = '-';
+  //     }
 
-      return <Badge color={color}>{`${sign} ${formatPercent(value?.abs(), 2) ?? '-'}`}</Badge>;
-    },
-  },
+  //     return <Badge color={color}>{`${sign} ${formatPercent(value?.abs(), 2) ?? '-'}`}</Badge>;
+  //   },
+  // },
   {
     heading: (
       <div className="flex align-center col-gap-4">
