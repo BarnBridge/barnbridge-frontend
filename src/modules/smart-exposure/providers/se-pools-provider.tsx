@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect } from 'react';
+import React, { createContext, useContext, useEffect, useMemo } from 'react';
 import ContractListener from 'web3/components/contract-listener';
 
 import config from 'config';
@@ -9,17 +9,14 @@ import SeEPoolPeripheryContract from 'modules/smart-exposure/contracts/seEPoolPe
 import { useWallet } from 'wallets/wallet';
 
 type SEContextType = {
-  ePoolContract: SeEPoolContract;
   ePoolHelperContract: SeEPoolHelperContract;
   ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
 
-const ePoolContract = new SeEPoolContract(config.contracts.se.ePool);
 const ePoolHelperContract = new SeEPoolHelperContract(config.contracts.se.ePoolHelper);
 const ePoolPeripheryContract = new SeEPoolPeripheryContract(config.contracts.se.ePoolPeriphery);
 
 const Context = createContext<SEContextType>({
-  ePoolContract: ePoolContract,
   ePoolHelperContract: ePoolHelperContract,
   ePoolPeripheryContract: ePoolPeripheryContract,
 });
@@ -32,26 +29,18 @@ export const SEPoolsProvider: React.FC = props => {
   const { children } = props;
 
   const walletCtx = useWallet();
-  const [reload] = useReload();
 
   useEffect(() => {
-    ePoolContract.setProvider(walletCtx.provider);
     ePoolHelperContract.setProvider(walletCtx.provider);
     ePoolPeripheryContract.setProvider(walletCtx.provider);
   }, [walletCtx.provider]);
 
   useEffect(() => {
-    ePoolContract.setAccount(walletCtx.account);
     ePoolHelperContract.setAccount(walletCtx.account);
     ePoolPeripheryContract.setAccount(walletCtx.account);
   }, [walletCtx.account]);
 
-  useEffect(() => {
-    ePoolContract.loadCommon().then(reload).catch(Error);
-  }, [reload]);
-
   const value = {
-    ePoolContract,
     ePoolHelperContract,
     ePoolPeripheryContract,
   };
@@ -59,8 +48,32 @@ export const SEPoolsProvider: React.FC = props => {
   return (
     <Context.Provider value={value}>
       {children}
-      <ContractListener contract={ePoolContract} />
       <ContractListener contract={ePoolPeripheryContract} />
     </Context.Provider>
   );
+};
+
+export const useEPoolContract = (address: string): SeEPoolContract => {
+  const walletCtx = useWallet();
+  const [reload] = useReload();
+
+  const contract = useMemo(() => {
+    const ctr = new SeEPoolContract(address);
+
+    return ctr;
+  }, [address]);
+
+  useEffect(() => {
+    contract.setProvider(walletCtx.provider);
+  }, [contract, walletCtx.provider]);
+
+  useEffect(() => {
+    contract.setAccount(walletCtx.account);
+  }, [contract, walletCtx.account]);
+
+  useEffect(() => {
+    contract.loadCommon().then(reload).catch(Error);
+  }, [contract, reload]);
+
+  return contract;
 };

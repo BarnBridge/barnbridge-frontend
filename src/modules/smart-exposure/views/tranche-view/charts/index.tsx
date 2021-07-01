@@ -86,6 +86,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
 
+  const min = useMemo(() => dataList.reduce((acc, item) => Math.min(acc, Number(item.deviation)), 0), [dataList]);
   const max = useMemo(() => dataList.reduce((acc, item) => Math.max(acc, Number(item.deviation)), 0), [dataList]);
 
   return (
@@ -107,7 +108,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
           />
           <ReCharts.YAxis
             type="number"
-            domain={[0, max * 1.1]}
+            domain={[min < 0 ? min * 1.1 : 0, max * 1.1]}
             axisLine={false}
             tickLine={false}
             tickFormatter={value => formatPercent(value) ?? ''}

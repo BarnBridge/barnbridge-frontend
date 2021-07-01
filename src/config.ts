@@ -66,7 +66,6 @@ const config = {
       reward: toLowerCase(process.env.REACT_APP_CONTRACT_DAO_REWARD_ADDR),
     },
     se: {
-      ePool: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL),
       ePoolHelper: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL_HELPER),
       ePoolPeriphery: toLowerCase(process.env.REACT_APP_CONTRACT_SE_EPOOL_PERIPHERY),
     },
