@@ -10,8 +10,8 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { APIVoteEntity } from 'modules/governance/api';
-import { getEtherscanAddressUrl } from 'networks';
 
 import AbrogationVotersProvider, { useAbrogationVoters } from '../../providers/AbrogationVotersProvider';
 
@@ -22,16 +22,20 @@ const Columns: ColumnsType<APIVoteEntity> = [
     title: 'Address',
     dataIndex: 'address',
     width: '35%',
-    render: (address: string) => (
-      <Grid flow="col" gap={8} align="center">
-        <Identicon address={address} width={32} height={32} />
-        <ExternalLink href={getEtherscanAddressUrl(address)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(address)}
-          </Text>
-        </ExternalLink>
-      </Grid>
-    ),
+    render: function Render(address: string) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <Grid flow="col" gap={8} align="center">
+          <Identicon address={address} width={32} height={32} />
+          <ExternalLink href={getEtherscanAddressUrl(address)}>
+            <Text type="p1" weight="semibold" color="blue">
+              {shortenAddr(address)}
+            </Text>
+          </ExternalLink>
+        </Grid>
+      );
+    },
   },
   {
     title: 'Votes',

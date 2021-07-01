@@ -6,7 +6,7 @@ import { mergeState } from 'hooks/useMergeState';
 import { fetchSYPortfolioValues } from 'modules/smart-yield/api';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import HistoryTable from './history-table';
 

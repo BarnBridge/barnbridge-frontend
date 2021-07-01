@@ -14,9 +14,8 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
-import { useEthWeb3 } from 'components/providers/eth-web3-provider';
-import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { BondToken, ProjectToken } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
@@ -51,7 +50,7 @@ const InitialState: WalletDepositViewState = {
 };
 
 const WalletDepositView: React.FC = () => {
-  const ethWeb3 = useEthWeb3();
+  const config = useConfig();
   const daoCtx = useDAO();
   const [form] = AntdForm.useForm<DepositFormData>();
 
@@ -59,14 +58,14 @@ const WalletDepositView: React.FC = () => {
 
   const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
   const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
-  const barnAllowance = (BondToken.contract as Erc20Contract).getAllowanceOf(config.contracts.dao.barn);
+  const barnAllowance = (BondToken.contract as Erc20Contract).getAllowanceOf(config.contracts.dao?.barn!);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
 
   async function handleSwitchChange(checked: boolean) {
     setState({ enabling: true });
 
     try {
-      await (BondToken.contract as Erc20Contract).approve(config.contracts.dao.barn, checked);
+      await (BondToken.contract as Erc20Contract).approve(config.contracts.dao?.barn!, checked);
     } catch {}
 
     setState({ enabling: false });
@@ -148,7 +147,7 @@ const WalletDepositView: React.FC = () => {
             onChange={handleSwitchChange}
           />
         </Grid>
-        {ethWeb3.activeNetwork?.config.features.faucets && (
+        {config.features.faucets && (
           <Link to="/faucets" className="button-ghost ml-auto">
             Faucets
           </Link>

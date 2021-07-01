@@ -1,4 +1,4 @@
-import { KnownTokens } from 'components/providers/known-tokens-provider';
+import { KnownTokens } from 'components/providers/knownTokensProvider';
 import { config } from 'config';
 
 import { processResponse, queryfy } from 'utils/fetch';

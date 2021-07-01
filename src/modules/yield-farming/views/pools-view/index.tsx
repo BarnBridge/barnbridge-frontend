@@ -4,7 +4,7 @@ import { isMobile } from 'react-device-detect';
 import { Text } from 'components/custom/typography';
 import RewardPoolsProvider from 'modules/smart-yield/providers/reward-pools-provider';
 import AggregatedPoolCard from 'modules/smart-yield/views/pools-view/aggregated-pool-card';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import PoolCard from '../../components/pool-card';
 import PoolChart from '../../components/pool-chart';

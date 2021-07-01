@@ -10,12 +10,12 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { ProjectToken, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
-import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type TableEntity = APISYJuniorPastPosition & {
   pool?: PoolsSYPool;
@@ -25,40 +25,48 @@ type TableEntity = APISYJuniorPastPosition & {
 const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <div className="flex flow-col align-center">
-        <IconBubble
-          name={entity.pool?.meta?.icon}
-          bubbleName={ProjectToken.icon!}
-          secondBubbleName={entity.pool?.market?.icon}
-          className="mr-16"
-        />
-        <div className="flex flow-row">
-          <ExternalLink href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress)} className="flex flow-col mb-4">
-            <Text type="p1" weight="semibold" color="blue" className="mr-4">
-              {entity.pool?.underlyingSymbol}
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <div className="flex flow-col align-center">
+          <IconBubble
+            name={entity.pool?.meta?.icon}
+            bubbleName={ProjectToken.icon!}
+            secondBubbleName={entity.pool?.market?.icon}
+            className="mr-16"
+          />
+          <div className="flex flow-row">
+            <ExternalLink href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress)} className="flex flow-col mb-4">
+              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+                {entity.pool?.underlyingSymbol}
+              </Text>
+              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
+            </ExternalLink>
+            <Text type="small" weight="semibold">
+              {entity.pool?.market?.name}
             </Text>
-            <Icon name="arrow-top-right" width={8} height={8} color="blue" />
-          </ExternalLink>
-          <Text type="small" weight="semibold">
-            {entity.pool?.market?.name}
-          </Text>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   {
     title: 'Transaction hash/timestamp',
-    render: (_, entity) => (
-      <>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-          {shortenAddr(entity.transactionHash)}
-        </ExternalLink>
-        <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-        </Text>
-      </>
-    ),
+    render: function Render(_, entity) {
+      const { getEtherscanTxUrl } = useWeb3();
+
+      return (
+        <>
+          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+            {shortenAddr(entity.transactionHash)}
+          </ExternalLink>
+          <Text type="small" weight="semibold" color="secondary">
+            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+          </Text>
+        </>
+      );
+    },
   },
   {
     title: 'Tokens in',

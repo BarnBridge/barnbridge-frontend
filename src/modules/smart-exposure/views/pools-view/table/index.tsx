@@ -7,7 +7,7 @@ import { Badge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
 import { PoolApiType, TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 

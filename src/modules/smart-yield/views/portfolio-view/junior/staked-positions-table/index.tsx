@@ -11,19 +11,20 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, ProjectToken, StkAaveToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken, ProjectToken, StkAaveToken, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
-import { getEtherscanAddressUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 export type StakedPositionsTableEntity = SYRewardPoolEntity;
 
 const Columns: ColumnsType<StakedPositionsTableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
       const market = Markets.get(entity.meta.protocolId ?? '');
       const meta = Pools.get(entity.meta.underlyingSymbol ?? '');
 

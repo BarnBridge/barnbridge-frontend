@@ -2,11 +2,11 @@ import React, { FC, createContext, useCallback, useContext, useEffect, useState 
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
 import { fetchSYRewardPools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type RewardPoolsType = {
   loading: boolean;

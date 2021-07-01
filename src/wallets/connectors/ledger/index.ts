@@ -1,10 +1,10 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
-import { DefaultNetwork, getHttpRpcUrl } from 'networks';
 import LedgerLogoDark from 'resources/svg/wallets/ledger-logo-dark.svg';
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 
+import { Web3Network } from 'networks/types';
 import { BaseWalletConfig } from 'wallets/types';
 
 const LEDGER_BASE_DERIVATION_PATH = 'base_derivation_path';
@@ -17,7 +17,7 @@ const LedgerWalletConfig: BaseWalletConfig = {
   id: 'ledger',
   logo: [LedgerLogo, LedgerLogoDark],
   name: 'Ledger',
-  factory(chainId: number, args?: LedgerWalletArgs): AbstractConnector {
+  factory(network: Web3Network, args?: LedgerWalletArgs): AbstractConnector {
     let baseDerivationPath: string | undefined = args?.baseDerivationPath;
 
     if (!baseDerivationPath) {
@@ -25,9 +25,9 @@ const LedgerWalletConfig: BaseWalletConfig = {
     }
 
     return new LedgerConnector({
-      chainId,
-      url: getHttpRpcUrl(),
-      pollingInterval: DefaultNetwork.rpc.poolingInterval,
+      chainId: network.meta.chainId,
+      url: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+      pollingInterval: network.rpc.poolingInterval,
       baseDerivationPath,
     });
   },

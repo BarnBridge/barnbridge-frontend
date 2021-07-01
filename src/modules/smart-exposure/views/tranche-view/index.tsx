@@ -6,9 +6,9 @@ import classNames from 'classnames';
 // import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { Charts } from './charts';
 import { TrancheDetails } from './details';

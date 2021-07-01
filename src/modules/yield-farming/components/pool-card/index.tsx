@@ -16,9 +16,9 @@ import IconsSet from 'components/custom/icons-set';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, KnownTokens, ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { BondToken, KnownTokens, ProjectToken, convertTokenInUSD } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
 

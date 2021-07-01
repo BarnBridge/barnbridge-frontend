@@ -5,9 +5,9 @@ import cn from 'classnames';
 import Spin from 'components/antd/spin';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
-import { useEthWeb3 } from 'components/providers/eth-web3-provider';
+import { useConfig } from 'components/providers/configProvider';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import DepositHeader from '../deposit-view/deposit-header';
 import ApyTrend from './apy';
@@ -35,7 +35,7 @@ const tabs = [
 ];
 
 const StatsView: React.FC = () => {
-  const ethWeb3 = useEthWeb3();
+  const config = useConfig();
   const wallet = useWallet();
   const syPool = useSYPool();
 
@@ -64,7 +64,7 @@ const StatsView: React.FC = () => {
               {...{ disabled: !wallet.isActive }}>
               Deposit
             </Link>
-            {ethWeb3.activeNetwork?.config.features.faucets && (
+            {config.features.faucets && (
               <Link to="/faucets" className="button-ghost ml-auto">
                 Faucets
               </Link>

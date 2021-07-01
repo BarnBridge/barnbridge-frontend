@@ -1,10 +1,9 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletLinkConnector } from '@web3-react/walletlink-connector';
 
-import { config } from 'config';
-import { getHttpRpcUrl } from 'networks';
 import CoinbaseWalletLogo from 'resources/svg/wallets/coinbase-logo.svg';
 
+import { Web3Network } from 'networks/types';
 import { BaseWalletConfig } from 'wallets/types';
 
 export type CoinbaseWalletArgs = {
@@ -15,12 +14,12 @@ const CoinbaseWalletConfig: BaseWalletConfig = {
   id: 'coinbase',
   logo: CoinbaseWalletLogo,
   name: 'Coinbase Wallet',
-  factory(chainId: number, args?: CoinbaseWalletArgs): AbstractConnector {
+  factory(network: Web3Network, args?: CoinbaseWalletArgs): AbstractConnector {
     const darkMode = args?.darkMode ?? false;
 
     return new WalletLinkConnector({
-      url: getHttpRpcUrl(),
-      appName: config.wallets.coinbaseAppName,
+      url: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+      appName: network.config.wallets.coinbaseAppName,
       appLogoUrl: '',
       darkMode,
     });

@@ -10,9 +10,9 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, ProjectToken } from 'components/providers/known-tokens-provider';
+import { KnownTokens, ProjectToken } from 'components/providers/knownTokensProvider';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 

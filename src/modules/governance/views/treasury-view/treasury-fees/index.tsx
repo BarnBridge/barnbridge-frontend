@@ -16,12 +16,12 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, fetchSYPools } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
-import { getEtherscanAddressUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type SYPoolEntity = APISYPool & {
   provider: SYProviderContract;
@@ -129,7 +129,8 @@ const Columns: ColumnsType<SYPoolEntity> = [
   {
     title: 'Market / Originator',
     align: 'left',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
       const market = Markets.get(entity.protocolId);
       const meta = Pools.get(entity.underlyingSymbol);
 

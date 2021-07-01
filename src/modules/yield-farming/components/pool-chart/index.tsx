@@ -12,12 +12,12 @@ import Select from 'components/antd/select';
 import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import { fetchYFPoolChart } from '../../api';
-import { UnilpYfPool, YFPoolID, useYFPools } from '../../providers/pools-provider';
+import { YFPoolID, useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
@@ -37,7 +37,8 @@ const PoolChart: FC<Props> = props => {
   const yfPoolsCtx = useYFPools();
   const { yfPools } = yfPoolsCtx;
 
-  const [selectedYfPool, setSelectedYfPool] = useState<string>(UnilpYfPool.name);
+  const unilpYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.UNILP);
+  const [selectedYfPool, setSelectedYfPool] = useState<string>(unilpYfPool?.name!);
   const [selectedYfEpoch, setSelectedYfEpoch] = useState('all');
   const [selectedYfType, setSelectedYfType] = useState('all');
 

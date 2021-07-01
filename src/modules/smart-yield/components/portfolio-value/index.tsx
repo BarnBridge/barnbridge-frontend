@@ -13,7 +13,7 @@ import {
   fetchSYPortfolioValues,
   fetchSYSeniorPortfolioValues,
 } from 'modules/smart-yield/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 const DAYS_FILTER: SelectOption[] = [
   {

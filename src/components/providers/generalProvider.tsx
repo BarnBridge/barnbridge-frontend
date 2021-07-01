@@ -1,5 +1,6 @@
 import { Dispatch, FC, SetStateAction, createContext, useContext, useEffect, useState } from 'react';
 import { useLocalStorage } from 'react-use-storage';
+import useWindowEventListener from '@rooks/use-window-event-listener';
 
 export type GeneralContextType = {
   navOpen: boolean;
@@ -7,6 +8,10 @@ export type GeneralContextType = {
   theme: 'light' | 'dark';
   selectedTheme: 'light' | 'dark' | undefined;
   toggleTheme: () => void;
+  windowState: {
+    visibilityState: VisibilityState;
+    isVisible: boolean;
+  };
 };
 
 const Context = createContext<GeneralContextType>({} as any);
@@ -20,12 +25,17 @@ export function useGeneral(): GeneralContextType {
 
 const GeneralProvider: FC = props => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
+  const [visibilityState, setVisibilityState] = useState<VisibilityState>(window.document.visibilityState);
   const [osColorScheme, setOsColorScheme] = useState<'light' | 'dark'>(defaultTheme);
   const [selectedTheme, setSelectedTheme, removeSelectedTheme] = useLocalStorage<'light' | 'dark' | undefined>(
     'bb_theme',
   );
 
   const theme: 'light' | 'dark' = selectedTheme || osColorScheme;
+
+  useWindowEventListener('visibilitychange', () => {
+    setVisibilityState(window.document.visibilityState);
+  });
 
   useEffect(() => {
     setOsColorScheme(defaultTheme);
@@ -59,6 +69,10 @@ const GeneralProvider: FC = props => {
     theme,
     selectedTheme,
     toggleTheme,
+    windowState: {
+      visibilityState,
+      isVisible: visibilityState === 'visible',
+    },
   };
 
   return <Context.Provider value={value}>{props.children}</Context.Provider>;

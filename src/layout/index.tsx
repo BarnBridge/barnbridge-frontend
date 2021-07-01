@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import ErrorBoundary from 'components/custom/error-boundary';
-import { useEthWeb3 } from 'components/providers/eth-web3-provider';
+import { useConfig } from 'components/providers/configProvider';
 import WarningProvider from 'components/providers/warning-provider';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
@@ -19,13 +19,7 @@ const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
-  const { activeNetwork } = useEthWeb3();
-
-  if (!activeNetwork) {
-    return null;
-  }
-
-  const { features } = activeNetwork.config;
+  const { features } = useConfig();
 
   return (
     <div className={s.layout}>

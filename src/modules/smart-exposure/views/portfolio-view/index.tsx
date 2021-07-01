@@ -4,7 +4,7 @@ import cn from 'classnames';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
 import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
 
 import { PortfolioTable } from './portfolio-table';

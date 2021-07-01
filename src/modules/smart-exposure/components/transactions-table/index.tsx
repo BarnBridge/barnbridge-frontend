@@ -7,9 +7,9 @@ import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
-import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
-import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 
 export const TransactionsTable = ({
   transactionType,
@@ -153,28 +153,36 @@ export const TransactionsTable = ({
             {
               heading: 'Address',
               // @ts-ignore
-              render: item => (
-                <a
-                  href={getEtherscanAddressUrl(item.accountAddress)}
-                  className="link-blue"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  {shortenAddr(item.accountAddress, 6, 4)}
-                </a>
-              ),
+              render: function Render(item) {
+                const { getEtherscanAddressUrl } = useWeb3();
+
+                return (
+                  <a
+                    href={getEtherscanAddressUrl(item.accountAddress)}
+                    className="link-blue"
+                    target="_blank"
+                    rel="noreferrer noopener">
+                    {shortenAddr(item.accountAddress, 6, 4)}
+                  </a>
+                );
+              },
             } as ColumnType<TransactionApiType>,
           ]),
       {
         heading: 'Transaction Hash',
-        render: item => (
-          <a
-            href={getEtherscanTxUrl(item.transactionHash)}
-            className="link-blue"
-            target="_blank"
-            rel="noreferrer noopener">
-            {shortenAddr(item.transactionHash, 6, 4)}
-          </a>
-        ),
+        render: function Render(item) {
+          const { getEtherscanTxUrl } = useWeb3();
+
+          return (
+            <a
+              href={getEtherscanTxUrl(item.transactionHash)}
+              className="link-blue"
+              target="_blank"
+              rel="noreferrer noopener">
+              {shortenAddr(item.transactionHash, 6, 4)}
+            </a>
+          );
+        },
       },
       {
         heading: 'Date',

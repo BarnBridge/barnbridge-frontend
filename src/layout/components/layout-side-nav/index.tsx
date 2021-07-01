@@ -8,14 +8,14 @@ import cn from 'classnames';
 import Tooltip from 'components/antd/tooltip';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useEthWeb3 } from 'components/providers/eth-web3-provider';
-import { useGeneral } from 'components/providers/general-provider';
+import { useConfig } from 'components/providers/configProvider';
+import { useGeneral } from 'components/providers/generalProvider';
 
 import s from './s.module.scss';
 
 const LayoutSideNav: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
-  const { activeNetwork } = useEthWeb3();
+  const { features } = useConfig();
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
@@ -36,12 +36,6 @@ const LayoutSideNav: React.FC = () => {
   }
 
   const displayTooltip = !isMobile && !expanded;
-
-  if (!activeNetwork) {
-    return null;
-  }
-
-  const { features } = activeNetwork.config;
 
   return (
     <>

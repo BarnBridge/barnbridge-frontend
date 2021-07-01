@@ -1,49 +1,52 @@
 import 'styles/index.scss';
-import 'networks';
 import 'utils';
 import 'web3/utils';
 
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { FC } from 'react';
+import { render } from 'react-dom';
+import { createProviderTreeFromList } from 'react-provider-tree';
 import { BrowserRouter as Router } from 'react-router-dom';
+import ContractManagerProvider from 'web3/components/contractManagerProvider';
 
 import ErrorBoundary from 'components/custom/error-boundary';
-import EthWeb3Provider from 'components/providers/eth-web3-provider';
-import GeneralProvider from 'components/providers/general-provider';
-import KnownTokensProvider from 'components/providers/known-tokens-provider';
-import NotificationsProvider from 'components/providers/notifications-provider';
-import WindowStateProvider from 'components/providers/window-state';
+import ConfigProvider from 'components/providers/configProvider';
+import GeneralProvider from 'components/providers/generalProvider';
+import KnownTokensProvider from 'components/providers/knownTokensProvider';
+import NetworkProvider from 'components/providers/networkProvider';
+import NotificationsProvider from 'components/providers/notificationsProvider';
+import Web3Provider from 'components/providers/web3Provider';
 import LayoutView from 'layout';
 import { ReactComponent as StaticSprite } from 'resources/svg/static-sprite.svg';
-import Web3WalletProvider from 'wallets/wallet';
+import WalletProvider from 'wallets/walletProvider';
 
 import { checkFlexGapSupport } from './checkFlexGap';
 import * as sw from './serviceWorker';
 
-const App: React.FC = () => {
+const ProviderTree = createProviderTreeFromList(
+  [GeneralProvider, {}],
+  [NetworkProvider, {}],
+  [ConfigProvider, {}],
+  [WalletProvider, {}],
+  [Web3Provider, {}],
+  [ContractManagerProvider, {}],
+  [KnownTokensProvider, {}],
+  [NotificationsProvider, {}],
+);
+
+const App: FC = () => {
   return (
     <ErrorBoundary>
-      <StaticSprite />
-      <WindowStateProvider>
-        <EthWeb3Provider>
-          <GeneralProvider>
-            <Web3WalletProvider>
-              <KnownTokensProvider>
-                <Router>
-                  <NotificationsProvider>
-                    <LayoutView />
-                  </NotificationsProvider>
-                </Router>
-              </KnownTokensProvider>
-            </Web3WalletProvider>
-          </GeneralProvider>
-        </EthWeb3Provider>
-      </WindowStateProvider>
+      <Router>
+        <ProviderTree>
+          <StaticSprite />
+          <LayoutView />
+        </ProviderTree>
+      </Router>
     </ErrorBoundary>
   );
 };
 
-ReactDOM.render(<App />, document.getElementById('root'));
+render(<App />, document.getElementById('root'));
 
 sw.unregister();
 

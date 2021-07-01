@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 
-import { KnownTokens, convertTokenInUSD } from 'components/providers/known-tokens-provider';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { KnownTokens, convertTokenInUSD } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { YFPoolMeta, useYFPools } from '../../providers/pools-provider';
 
@@ -31,6 +31,7 @@ const YFPoolProvider: React.FC<Props> = props => {
   const { poolId, children } = props;
 
   const [reload] = useReload();
+  const config = useConfig();
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
 
@@ -55,7 +56,7 @@ const YFPoolProvider: React.FC<Props> = props => {
     if (walletCtx.account) {
       pool?.tokens.forEach(token => {
         (token.contract as Erc20Contract).loadBalance().then(reload).catch(Error);
-        (token.contract as Erc20Contract).loadAllowance(config.contracts.yf.staking).then(reload).catch(Error);
+        (token.contract as Erc20Contract).loadAllowance(config.contracts.yf?.staking!).then(reload).catch(Error);
       });
     }
   }, [pool, walletCtx.account]);

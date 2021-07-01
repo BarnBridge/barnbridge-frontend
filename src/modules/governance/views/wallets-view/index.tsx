@@ -8,7 +8,7 @@ import WalletDelegateView from 'modules/governance/views/wallet-delegate-view';
 import WalletDepositView from 'modules/governance/views/wallet-deposit-view';
 import WalletLockView from 'modules/governance/views/wallet-lock-view';
 import WalletWithdrawView from 'modules/governance/views/wallet-withdraw-view';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type WalletViewRouteParams = {
   action: string;

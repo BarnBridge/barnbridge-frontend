@@ -8,10 +8,10 @@ import Divider from 'components/antd/divider';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { calcTokensRatio } from 'modules/smart-exposure/utils';
 import { getRelativeTime, numberFormat } from 'utils';

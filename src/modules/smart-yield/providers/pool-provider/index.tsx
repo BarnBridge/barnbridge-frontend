@@ -4,7 +4,6 @@ import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
 import {
   BondToken,
   DaiToken,
@@ -15,7 +14,8 @@ import {
   UsdtToken,
   convertTokenIn,
   convertTokenInUSD,
-} from 'components/providers/known-tokens-provider';
+} from 'components/providers/knownTokensProvider';
+import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import {
@@ -33,8 +33,7 @@ import SYControllerContract from 'modules/smart-yield/contracts/syControllerCont
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
-import { getEtherscanTxUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 export type SYPool = APISYPool & {
   meta?: SYPoolMeta;
@@ -170,6 +169,7 @@ const PoolProvider: React.FC = props => {
   const history = useHistory();
   const location = useLocation();
   const wallet = useWallet();
+  const { getEtherscanTxUrl } = useWeb3();
   const [reload, version] = useReload();
   const [state, setState] = React.useState(InitialState);
 

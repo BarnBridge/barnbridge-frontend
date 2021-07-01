@@ -4,7 +4,7 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
-import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
 

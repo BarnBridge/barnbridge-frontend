@@ -10,10 +10,10 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { APISYSeniorBonds, fetchSYSeniorBonds } from 'modules/smart-yield/api';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 
 type TableEntity = APISYSeniorBonds & {
   poolEntity?: SYPool;
@@ -84,28 +84,36 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Address',
-    render: (_, entity) => (
-      <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
-        <Text type="p1" weight="semibold" color="blue">
-          {shortenAddr(entity.accountAddress)}
-        </Text>
-      </ExternalLink>
-    ),
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.accountAddress)}
+          </Text>
+        </ExternalLink>
+      );
+    },
   },
   {
     title: 'Tx Hash / Timestamp',
-    render: (_, entity) => (
-      <>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="mb-4">
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
+    render: function Render(_, entity) {
+      const { getEtherscanTxUrl } = useWeb3();
+
+      return (
+        <>
+          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="mb-4">
+            <Text type="p1" weight="semibold" color="blue">
+              {shortenAddr(entity.transactionHash)}
+            </Text>
+          </ExternalLink>
+          <Text type="small" weight="semibold" color="secondary">
+            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
           </Text>
-        </ExternalLink>
-        <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Maturity Date',

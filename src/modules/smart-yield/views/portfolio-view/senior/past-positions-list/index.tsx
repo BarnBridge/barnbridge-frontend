@@ -11,11 +11,11 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYSeniorRedeem, fetchSYSeniorRedeems } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
-import { getEtherscanTxUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -48,6 +48,7 @@ const PastPositionsList: React.FC<Props> = props => {
   const { originatorFilter = 'all', tokenFilter = 'all' } = props;
 
   const wallet = useWallet();
+  const { getEtherscanTxUrl } = useWeb3();
   const poolsCtx = usePools();
 
   const { pools } = poolsCtx;

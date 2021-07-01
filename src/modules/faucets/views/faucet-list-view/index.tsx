@@ -7,7 +7,7 @@ import Spin from 'components/antd/spin';
 import IconBubble from 'components/custom/icon-bubble';
 import { ColumnType, Table } from 'components/custom/table';
 import { FaucetType, useFauceteer } from 'modules/faucets/providers/fauceteerProvider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -93,15 +93,17 @@ const GetButton = ({ faucet }: { faucet: FaucetType }) => {
 
   if (!faucet.fauceteer || !faucet.token) return null;
 
+  async function getFaucets() {
+    setLoading(true);
+    await faucet.fauceteer?.drip(faucet.token!.address, faucet.decimals).finally(() => setLoading(false));
+    faucet.token!.loadBalance().catch(Error);
+  }
+
   return (
     <button
       type="button"
       className="button-primary ml-auto"
-      onClick={async () => {
-        setLoading(true);
-        await faucet.fauceteer?.drip(faucet.token!.address, faucet.decimals).finally(() => setLoading(false));
-        faucet.token!.loadBalance().catch(Error);
-      }}
+      onClick={getFaucets}
       disabled={!wallet.isActive || loading}
       style={{ width: '100%' }}>
       {loading && <Spin spinning style={{ marginRight: 8 }} />}

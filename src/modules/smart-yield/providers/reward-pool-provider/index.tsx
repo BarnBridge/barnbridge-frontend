@@ -1,13 +1,13 @@
 import React, { FC, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import ContractListener from 'web3/components/contract-listener';
 
-import { TokenMeta, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { TokenMeta, getTokenBySymbol } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
 import useRouteQuery from 'hooks/useRouteQuery';
 import { fetchSYRewardPools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type RewardPoolType = {
   market?: MarketMeta;

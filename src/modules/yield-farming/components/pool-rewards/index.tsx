@@ -6,8 +6,8 @@ import { formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
-import { useWallet } from 'wallets/wallet';
+import { BondToken } from 'components/providers/knownTokensProvider';
+import { useWallet } from 'wallets/walletProvider';
 
 import PoolHarvestModal from '../../components/pool-harvest-modal';
 import { useYFPools } from '../../providers/pools-provider';

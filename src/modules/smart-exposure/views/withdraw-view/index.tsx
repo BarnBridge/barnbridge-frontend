@@ -14,11 +14,11 @@ import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/
 import TransactionDetails from 'components/custom/transaction-details';
 import { TransactionSummary } from 'components/custom/transaction-summary';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 const tabs = [
   {

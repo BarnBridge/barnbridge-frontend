@@ -1,0 +1,586 @@
+import { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import BigNumber from 'bignumber.js';
+import { AbiItem } from 'web3-utils';
+import { useContractManager } from 'web3/components/contractManagerProvider';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatUSD } from 'web3/utils';
+import Web3Contract, { createAbiItem } from 'web3/web3Contract';
+
+import { TokenIconNames } from 'components/custom/icon';
+import { useConfig } from 'components/providers/configProvider';
+import { MainnetHttpsWeb3Provider } from 'components/providers/web3Provider';
+import { useReload } from 'hooks/useReload';
+import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
+
+export enum KnownTokens {
+  ETH = 'ETH',
+  BTC = 'BTC',
+  WETH = 'WETH',
+  WBTC = 'WBTC',
+  BOND = 'BOND',
+  USDC = 'USDC',
+  DAI = 'DAI',
+  SUSD = 'sUSD',
+  GUSD = 'GUSD',
+  UNIV2 = 'UNI-V2',
+  USDT = 'USDT',
+  STK_AAVE = 'stkAAVE',
+}
+
+/* eslint-disable @typescript-eslint/no-redeclare */
+export namespace KnownTokens {
+  // compound
+  export const bbcUSDC = process.env.REACT_APP_ENV === 'development' ? 'bbcUSDC' : 'bb_cUSDC';
+  export const bbcDAI = 'bb_cDAI';
+  // aave
+  export const bbaUSDC = 'bb_aUSDC';
+  export const bbaDAI = 'bb_aDAI';
+  export const bbaUSDT = 'bb_aUSDT';
+  export const bbaGUSD = 'bb_aGUSD';
+  // cream
+  export const bbcrUSDC = 'bb_crUSDC';
+  export const bbcrDAI = 'bb_crDAI';
+  export const bbcrUSDT = 'bb_crUSDT';
+}
+/* eslint-enable @typescript-eslint/no-redeclare */
+
+export type TokenMeta = {
+  address: string;
+  symbol: string;
+  name: string;
+  decimals: number;
+  icon?: TokenIconNames;
+  color?: string;
+  priceFeed?: string;
+  pricePath?: KnownTokens[];
+  price?: BigNumber;
+  contract?: Web3Contract;
+};
+
+type ContextType = {
+  tokens: TokenMeta[];
+  getTokenBySymbol(symbol: string): TokenMeta | undefined;
+  getTokenByAddress(address: string): TokenMeta | undefined;
+  getTokenPriceIn(source: string, target: string): BigNumber | undefined;
+  convertTokenIn(amount: BigNumber | undefined, source: string, target: string): BigNumber | undefined;
+  convertTokenInUSD(amount: BigNumber | undefined, source: string): BigNumber | undefined;
+};
+
+const Context = createContext<ContextType>(InvariantContext<ContextType>('KnownTokensProvider'));
+
+export function useKnownTokens(): ContextType {
+  return useContext<ContextType>(Context);
+}
+
+const PRICE_FEED_ABI: AbiItem[] = [
+  createAbiItem('decimals', [], ['int8']),
+  createAbiItem('latestAnswer', [], ['int256']),
+];
+
+const BOND_PRICE_FEED_ABI: AbiItem[] = [
+  createAbiItem('decimals', [], ['uint8']),
+  createAbiItem('totalSupply', [], ['uint256']),
+  createAbiItem('getReserves', [], ['uint112', 'uint112']),
+  createAbiItem('token0', [], ['address']),
+];
+
+const J_PRICE_FEED_ABI: AbiItem[] = [createAbiItem('price', [], ['uint256'])];
+
+function useTokenContract(address: string): Erc20Contract {
+  const contractManager = useContractManager();
+  return contractManager.getContract<Erc20Contract>(address);
+}
+
+const KnownTokensProvider: FC = props => {
+  const { children } = props;
+
+  const config = useConfig();
+  const wallet = useWallet();
+  const [reload] = useReload();
+
+  const wbtcContract = useTokenContract(config.tokens.wbtc);
+  const wethContract = useTokenContract(config.tokens.weth);
+  const usdcContract = useTokenContract(config.tokens.usdc);
+  const bondContract = useTokenContract(config.tokens.bond);
+  const usdtContract = useTokenContract(config.tokens.usdt);
+  const susdContract = useTokenContract(config.tokens.susd);
+  const gusdContract = useTokenContract(config.tokens.gusd);
+  const daiContract = useTokenContract(config.tokens.dai);
+  const univ2Contract = useTokenContract(config.tokens.univ2);
+  const stkaaveContract = useTokenContract(config.tokens.stkaave);
+
+  const tokens = useMemo<TokenMeta[]>(
+    () => [
+      {
+        symbol: KnownTokens.BTC,
+        name: 'BTC',
+        address: '0x',
+        decimals: 0,
+        icon: 'token-wbtc',
+        priceFeed: config.feeds.btc, // BTC -> $
+      },
+      {
+        symbol: KnownTokens.WBTC,
+        name: 'Wrapped BTC',
+        address: config.tokens.wbtc,
+        decimals: 8,
+        icon: 'token-wbtc',
+        pricePath: [KnownTokens.BTC],
+        contract: wbtcContract,
+      },
+      {
+        symbol: KnownTokens.ETH,
+        name: 'Ether',
+        address: '0x',
+        decimals: 18,
+        icon: 'token-eth',
+        priceFeed: config.feeds.eth, // ETH -> $
+      },
+      {
+        symbol: KnownTokens.WETH,
+        name: 'Wrapped Ether',
+        address: config.tokens.weth,
+        decimals: 18,
+        icon: 'token-weth',
+        pricePath: [KnownTokens.ETH],
+        contract: wethContract,
+      },
+      {
+        symbol: KnownTokens.USDC,
+        name: 'USD Coin',
+        address: config.tokens.usdc,
+        decimals: 6,
+        icon: 'token-usdc',
+        color: '#4f6ae5',
+        priceFeed: config.feeds.usdc, // USDC -> $
+        contract: usdcContract,
+      },
+      {
+        symbol: KnownTokens.BOND,
+        name: 'BarnBridge',
+        address: config.tokens.bond,
+        decimals: 18,
+        icon: 'static/token-bond',
+        priceFeed: config.feeds.bond, // BOND -> USDC
+        pricePath: [KnownTokens.USDC],
+        contract: bondContract,
+      },
+      {
+        symbol: KnownTokens.USDT,
+        name: 'Tether USD',
+        address: config.tokens.usdt,
+        decimals: 6,
+        icon: 'token-usdt',
+        priceFeed: config.feeds.usdt, // USDT -> $
+        contract: usdtContract,
+      },
+      {
+        symbol: KnownTokens.SUSD,
+        name: 'Synth sUSD',
+        address: config.tokens.susd,
+        decimals: 18,
+        icon: 'token-susd',
+        color: '#1e1a31',
+        priceFeed: config.feeds.susd, // sUSD -> ETH
+        pricePath: [KnownTokens.ETH],
+        contract: susdContract,
+      },
+      {
+        symbol: KnownTokens.GUSD,
+        name: 'Gemini dollar',
+        address: config.tokens.gusd,
+        decimals: 2,
+        icon: 'token-gusd',
+        price: new BigNumber(1),
+        priceFeed: undefined,
+        pricePath: undefined,
+        contract: gusdContract,
+      },
+      {
+        symbol: KnownTokens.DAI,
+        name: 'Dai Stablecoin',
+        address: config.tokens.dai,
+        decimals: 18,
+        icon: 'token-dai',
+        color: '#ffd160',
+        priceFeed: config.feeds.dai, // DAI -> $
+        contract: daiContract,
+      },
+      {
+        symbol: KnownTokens.UNIV2,
+        name: 'Uniswap V2',
+        address: config.tokens.univ2,
+        decimals: 18,
+        icon: 'static/token-uniswap',
+        priceFeed: config.feeds.univ2, // UNIV2 -> USDC
+        pricePath: [KnownTokens.USDC],
+        contract: univ2Contract,
+      },
+      {
+        symbol: KnownTokens.STK_AAVE,
+        name: 'Staked AAVE',
+        address: config.tokens.stkaave,
+        decimals: 18,
+        icon: 'static/token-staked-aave',
+        priceFeed: config.tokens.stkaave, // stkAAVE -> USDC
+        pricePath: [KnownTokens.USDC],
+        contract: stkaaveContract,
+      },
+      {
+        symbol: KnownTokens.bbcUSDC,
+        name: 'BarnBridge cUSDC',
+        address: config.tokens.bb_cusdc,
+        decimals: 6,
+        icon: 'token-usdc',
+        priceFeed: config.tokens.bb_cusdc, // bb_cUSDC -> USDC
+        pricePath: [KnownTokens.USDC],
+      },
+      {
+        symbol: KnownTokens.bbcDAI,
+        name: 'BarnBridge cDAI',
+        address: config.tokens.bb_cdai,
+        decimals: 18,
+        icon: 'token-dai',
+        priceFeed: config.tokens.bb_cdai, // bb_cDAI -> DAI
+        pricePath: [KnownTokens.DAI],
+      },
+      {
+        symbol: KnownTokens.bbaUSDC,
+        name: 'BarnBridge aUSDC',
+        address: config.tokens.bb_ausdc,
+        decimals: 6,
+        icon: 'token-usdc',
+        priceFeed: config.tokens.bb_ausdc, // bb_aUSDC -> USDC
+        pricePath: [KnownTokens.USDC],
+      },
+      {
+        symbol: KnownTokens.bbaDAI,
+        name: 'BarnBridge aDAI',
+        address: config.tokens.bb_adai,
+        decimals: 18,
+        icon: 'token-dai',
+        priceFeed: config.tokens.bb_adai, // bb_aDAI -> DAI
+        pricePath: [KnownTokens.DAI],
+      },
+      {
+        symbol: KnownTokens.bbaUSDT,
+        name: 'BarnBridge aUSDT',
+        address: config.tokens.bb_ausdt,
+        decimals: 6,
+        icon: 'token-usdt',
+        priceFeed: config.tokens.bb_ausdt, // bb_aUSDT -> USDT
+        pricePath: [KnownTokens.USDT],
+      },
+      {
+        symbol: KnownTokens.bbaGUSD,
+        name: 'BarnBridge aGUSD',
+        address: config.tokens.bb_agusd,
+        decimals: 2,
+        icon: 'token-gusd',
+        priceFeed: config.tokens.bb_agusd, // bb_aGUSD -> GUSD
+        pricePath: [KnownTokens.GUSD],
+      },
+      {
+        symbol: KnownTokens.bbcrUSDC,
+        name: 'BarnBridge crUSDC',
+        address: config.tokens.bb_crusdc,
+        decimals: 6,
+        icon: 'token-usdc',
+        priceFeed: config.tokens.bb_crusdc, // bb_crUSDC -> USDC
+        pricePath: [KnownTokens.USDC],
+      },
+      {
+        symbol: KnownTokens.bbcrDAI,
+        name: 'BarnBridge crDAI',
+        address: config.tokens.bb_crdai,
+        decimals: 18,
+        icon: 'token-dai',
+        priceFeed: config.tokens.bb_crdai, // bb_crDAI -> DAI
+        pricePath: [KnownTokens.DAI],
+      },
+      {
+        symbol: KnownTokens.bbcrUSDT,
+        name: 'BarnBridge crUSDT',
+        address: config.tokens.bb_crusdt,
+        decimals: 6,
+        icon: 'token-usdt',
+        priceFeed: config.tokens.bb_crusdt, // bb_crUSDT -> USDT
+        pricePath: [KnownTokens.USDT],
+      },
+    ],
+    [],
+  );
+
+  const getTokenBySymbol = useCallback(
+    (symbol: string): TokenMeta | undefined => {
+      return tokens.find(token => token.symbol === symbol);
+    },
+    [tokens],
+  );
+
+  const getTokenByAddress = useCallback(
+    (address: string): TokenMeta | undefined => {
+      return tokens.find(token => token.address.toLowerCase() === address.toLowerCase());
+    },
+    [tokens],
+  );
+
+  const getTokenIconBySymbol = useCallback(
+    (symbol: string): string => {
+      const foundToken = tokens.find(token => token.symbol === symbol);
+      return foundToken?.icon || 'token-unknown';
+    },
+    [tokens],
+  );
+
+  const getFeedPrice = useCallback(async (symbol: string): Promise<BigNumber> => {
+    const token = getTokenBySymbol(symbol);
+
+    if (!token || !token.priceFeed) {
+      return Promise.reject();
+    }
+
+    const priceFeedContract = new Erc20Contract(PRICE_FEED_ABI, token.priceFeed);
+    priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+
+    const [decimals, latestAnswer] = await priceFeedContract.batch([
+      { method: 'decimals', transform: Number },
+      { method: 'latestAnswer', transform: BigNumber.parse },
+    ]);
+
+    return latestAnswer.unscaleBy(decimals)!;
+  }, []);
+
+  const getBondPrice = useCallback(async (): Promise<BigNumber> => {
+    const usdcToken = getTokenBySymbol(KnownTokens.USDC);
+    const bondToken = getTokenBySymbol(KnownTokens.BOND);
+
+    if (!usdcToken || !bondToken || !bondToken.priceFeed) {
+      return Promise.reject();
+    }
+
+    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed);
+    const [decimals, [reserve0, reserve1], token0] = await priceFeedContract.batch([
+      { method: 'decimals', transform: Number },
+      {
+        method: 'getReserves',
+        transform: ({ 0: reserve0, 1: reserve1 }) => [BigNumber.parse(reserve0), BigNumber.parse(reserve1)],
+      },
+      { method: 'token0', transform: value => value.toLowerCase() },
+    ]);
+
+    const bond = token0 === bondToken.address.toLowerCase() ? reserve0 : reserve1;
+    const usdc = token0 === bondToken.address.toLowerCase() ? reserve1 : reserve0;
+
+    const bondReserve = bond.unscaleBy(decimals)!;
+    const usdcReserve = usdc.unscaleBy(usdcToken.decimals)!;
+
+    return usdcReserve.dividedBy(bondReserve);
+  }, [getTokenBySymbol]);
+
+  const getUniV2Price = useCallback(async (): Promise<BigNumber> => {
+    const usdcToken = getTokenBySymbol(KnownTokens.USDC);
+    const univ2Token = getTokenBySymbol(KnownTokens.UNIV2);
+
+    if (!usdcToken || !univ2Token || !univ2Token.priceFeed) {
+      return Promise.reject();
+    }
+
+    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, univ2Token.priceFeed);
+
+    const [decimals, totalSupply, [reserve0, reserve1], token0] = await priceFeedContract.batch([
+      { method: 'decimals', transform: Number },
+      { method: 'totalSupply', transform: BigNumber.parse },
+      {
+        method: 'getReserves',
+        transform: ({ 0: reserve0, 1: reserve1 }) => [BigNumber.parse(reserve0), BigNumber.parse(reserve1)],
+      },
+      { method: 'token0', transform: value => value.toLowerCase() },
+    ]);
+
+    const usdcAmount = token0 === usdcToken.address.toLowerCase() ? reserve0 : reserve1;
+    const usdcReserve = usdcAmount.unscaleBy(usdcToken.decimals)!;
+    const supply = totalSupply.unscaleBy(decimals)!;
+
+    return usdcReserve.dividedBy(supply).multipliedBy(2);
+  }, [getTokenBySymbol]);
+
+  const getJTokenPrice = useCallback(
+    async (symbol: string): Promise<BigNumber> => {
+      const token = getTokenBySymbol(symbol);
+
+      if (!token || !token.priceFeed) {
+        return Promise.reject();
+      }
+
+      const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
+
+      const price = await priceFeedContract.call('price');
+
+      return new BigNumber(price).dividedBy(1e18);
+    },
+    [getTokenBySymbol],
+  );
+
+  const getJATokenPrice = useCallback(
+    async (symbol: string): Promise<BigNumber> => {
+      const token = getTokenBySymbol(symbol);
+
+      if (!token || !token.priceFeed) {
+        return Promise.reject();
+      }
+
+      const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
+      priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+
+      const price = await priceFeedContract.call('price');
+
+      return new BigNumber(price).dividedBy(1e18);
+    },
+    [getTokenBySymbol],
+  );
+
+  const getTokenPrice = useCallback(
+    (symbol: string): BigNumber | undefined => {
+      return getTokenBySymbol(symbol)?.price;
+    },
+    [getTokenBySymbol],
+  );
+
+  const getTokenPriceIn = useCallback(
+    (source: string, target: string): BigNumber | undefined => {
+      const sourcePrice = getTokenPrice(source);
+      const targetPrice = getTokenPrice(target);
+
+      if (!sourcePrice || !targetPrice) {
+        return undefined;
+      }
+
+      return sourcePrice.dividedBy(targetPrice);
+    },
+    [getTokenPrice],
+  );
+
+  const convertTokenIn = useCallback(
+    (amount: BigNumber | number | undefined, source: string, target: string): BigNumber | undefined => {
+      if (amount === undefined || amount === null) {
+        return undefined;
+      }
+
+      if (amount === 0 || BigNumber.ZERO.eq(amount)) {
+        return BigNumber.ZERO;
+      }
+
+      const bnAmount = new BigNumber(amount);
+
+      if (bnAmount.isNaN()) {
+        return undefined;
+      }
+
+      if (source === target) {
+        return bnAmount;
+      }
+
+      const price = getTokenPriceIn(source, target);
+
+      if (!price) {
+        return undefined;
+      }
+
+      return bnAmount.multipliedBy(price);
+    },
+    [getTokenPriceIn],
+  );
+
+  const convertTokenInUSD = useCallback(
+    (amount: BigNumber | number | undefined, source: string): BigNumber | undefined => {
+      return convertTokenIn(amount, source, KnownTokens.USDC);
+    },
+    [convertTokenIn],
+  );
+
+  const projectToken = useMemo(() => {
+    return getTokenBySymbol(KnownTokens.BOND);
+  }, [getTokenBySymbol]);
+
+  useEffect(() => {
+    (async () => {
+      await Promise.allSettled(
+        tokens.map(async token => {
+          switch (token.symbol) {
+            case KnownTokens.BOND:
+              token.price = await getBondPrice();
+              break;
+            case KnownTokens.UNIV2:
+              token.price = await getUniV2Price();
+              break;
+            case KnownTokens.bbcUSDC:
+            case KnownTokens.bbcDAI:
+            case KnownTokens.bbcrDAI:
+            case KnownTokens.bbcrUSDC:
+            case KnownTokens.bbcrUSDT:
+              token.price = await getJTokenPrice(token.symbol);
+              break;
+            case KnownTokens.bbaDAI:
+            case KnownTokens.bbaUSDC:
+            case KnownTokens.bbaUSDT:
+            case KnownTokens.bbaGUSD:
+              token.price = await getJATokenPrice(token.symbol);
+              break;
+            default:
+              token.price = await getFeedPrice(token.symbol);
+              break;
+          }
+        }),
+      );
+
+      tokens.forEach(token => {
+        if (token.priceFeed && token.price === undefined) {
+          token.price = BigNumber.ZERO;
+        } else if (token.pricePath) {
+          for (let path of token.pricePath) {
+            const tk = getTokenBySymbol(path);
+
+            if (!tk || !tk.price) {
+              token.price = undefined;
+              break;
+            }
+
+            token.price = token.price?.multipliedBy(tk.price) ?? tk.price;
+          }
+        }
+
+        console.log(`[Token Price] ${token.symbol} = ${formatUSD(token.price)}`);
+      });
+      reload();
+    })();
+  }, [getBondPrice, getFeedPrice, getJATokenPrice, getJTokenPrice, getTokenBySymbol, getUniV2Price, reload, tokens]);
+
+  useEffect(() => {
+    if (projectToken) {
+      (projectToken.contract as Erc20Contract).loadCommon().catch(Error);
+    }
+  }, [projectToken]);
+
+  useEffect(() => {
+    if (projectToken && wallet.account) {
+      (projectToken.contract as Erc20Contract).loadBalance().then(reload);
+    }
+  }, [projectToken, reload, wallet.account]);
+
+  const value = {
+    tokens,
+    getTokenBySymbol,
+    getTokenByAddress,
+    getTokenIconBySymbol,
+    getTokenPriceIn,
+    convertTokenIn,
+    convertTokenInUSD,
+  };
+
+  return <Context.Provider value={value}>{children}</Context.Provider>;
+};
+
+export default KnownTokensProvider;

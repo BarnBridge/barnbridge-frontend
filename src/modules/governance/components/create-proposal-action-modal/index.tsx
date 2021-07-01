@@ -4,8 +4,6 @@ import AntdNotification from 'antd/lib/notification';
 import AntdSpin from 'antd/lib/spin';
 import AntdSwitch from 'antd/lib/switch';
 import { AbiFunctionFragment, AbiInterface } from 'web3/abiInterface';
-import { fetchContractABI } from 'web3/utils';
-import Web3Contract from 'web3/web3Contract';
 
 import Alert from 'components/antd/alert';
 import Form from 'components/antd/form';
@@ -16,7 +14,9 @@ import Textarea from 'components/antd/textarea';
 import YesNoSelector from 'components/antd/yes-no-selector';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import useMergeState from 'hooks/useMergeState';
 
 import AddZerosPopup from '../add-zeros-popup';
@@ -84,6 +84,9 @@ const InitialState: CreateProposalActionModalState = {
 const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = props => {
   const { edit = false, initialValues = InitialFormValues } = props;
 
+  const { activeNetwork } = useNetwork();
+  const config = useConfig();
+  const web3 = useWeb3();
   const [form] = AntdForm.useForm<CreateProposalActionForm>();
   const [state, setState] = useMergeState<CreateProposalActionModalState>(InitialState);
 
@@ -92,7 +95,17 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
       abiLoading: true,
     });
 
-    fetchContractABI(address)
+    const url = `${activeNetwork.explorer.apiUrl}/api?module=contract&action=getabi&address=${address}&apikey=${activeNetwork.explorer.key}`;
+
+    fetch(url)
+      .then(result => result.json())
+      .then(({ status, result }: { status: string; result: string }) => {
+        if (status === '1') {
+          return JSON.parse(result);
+        }
+
+        return Promise.reject(result);
+      })
       .then((abi: any[]) => {
         form.setFieldsValue({
           abiInterface: new AbiInterface(abi),
@@ -241,9 +254,9 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
         );
 
         try {
-          await Web3Contract.tryCall(
+          await web3.tryCall(
             values.targetAddress,
-            config.contracts.dao.governance,
+            config.contracts.dao?.governance!,
             encodedFunction!,
             values.actionValue,
           );

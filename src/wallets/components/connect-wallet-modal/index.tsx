@@ -4,10 +4,10 @@ import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import { useGeneral } from 'components/providers/general-provider';
+import { useGeneral } from 'components/providers/generalProvider';
 import useMergeState from 'hooks/useMergeState';
 import LedgerDerivationPathModal from 'wallets/components/ledger-deriviation-path-modal';
-import { WalletConnectors, useWallet } from 'wallets/wallet';
+import { WalletConnectors, useWallet } from 'wallets/walletProvider';
 
 import { BaseWalletConfig } from 'wallets/types';
 

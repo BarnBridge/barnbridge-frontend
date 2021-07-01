@@ -8,16 +8,14 @@ const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
 const RPC_HTTPS_URL = 'https://rpc-mainnet.maticvigil.com';
 const RPC_WSS_URL = 'wss://rpc-mainnet.maticvigil.com';
 
-const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
-const EXPLORER_URL = 'https://explorer-mainnet.maticvigil.com';
-const EXPLORER_API_URL = '';
+const EXPLORER_KEY = 'CPRM5D2KD52ZZD2T7HFXE99J3WDSJF4P78';
+const EXPLORER_URL = 'https://polygonscan.com';
+const EXPLORER_API_URL = 'https://api.polygonscan.com';
 
 export const POLYGON_CHAIN_ID = 137;
 
 export const PolygonConfig: NetworkConfig = {
   features: {
-    yieldFarming: true,
-    dao: true,
     smartYield: true,
     smartExposure: true,
   },
@@ -70,17 +68,6 @@ export const PolygonConfig: NetworkConfig = {
     dai: '',
   },
   contracts: {
-    yf: {
-      staking: '',
-      stable: '',
-      unilp: '',
-      bond: '',
-    },
-    dao: {
-      governance: '',
-      barn: '',
-      reward: '',
-    },
     se: {
       ePool: '',
       ePoolPeriphery: '',

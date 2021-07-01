@@ -1,10 +1,10 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { InjectedConnector } from '@web3-react/injected-connector';
 
-import { DefaultNetwork, KnownNetworks } from 'networks';
 import MetamaskLogoDark from 'resources/svg/wallets/metamask-logo-dark.svg';
 import MetamaskLogo from 'resources/svg/wallets/metamask-logo.svg';
 
+import { Web3Network } from 'networks/types';
 import { BaseWalletConfig } from 'wallets/types';
 
 type MetamaskError = Error & {
@@ -62,21 +62,9 @@ const MetamaskWalletConfig: BaseWalletConfig = {
   id: 'metamask',
   logo: [MetamaskLogo, MetamaskLogoDark],
   name: 'MetaMask',
-  factory(chainId: number): AbstractConnector {
+  factory(network: Web3Network): AbstractConnector {
     return new InjectedConnector({
-      supportedChainIds: [chainId],
-    });
-  },
-  onConnect(connector: AbstractConnector, args?: Record<string, any>) {
-    connector.getProvider().then(ethereum => {
-      ethereum.on('chainChanged', (chainId: number) => {
-        const network = KnownNetworks.find(kn => kn.meta.chainId === Number(chainId)) ?? DefaultNetwork;
-
-        if (network) {
-          localStorage.setItem('bb_last_network', `"${network.id}"`);
-          window.location.reload();
-        }
-      });
+      supportedChainIds: [network.meta.chainId],
     });
   },
   onError(error: MetamaskError): Error | undefined {

@@ -12,8 +12,8 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 
 import { useYFPool } from '../../providers/pool-provider';
@@ -22,6 +22,7 @@ import { useYFPools } from '../../providers/pools-provider';
 import s from './s.module.scss';
 
 const PoolStake: FC = () => {
+  const config = useConfig();
   const knownTokensCtx = useKnownTokens();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
@@ -40,7 +41,7 @@ const PoolStake: FC = () => {
   }
 
   const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken.address);
-  const allowance = activeContract.getAllowanceOf(config.contracts.yf.staking)?.unscaleBy(activeToken.decimals);
+  const allowance = activeContract.getAllowanceOf(config.contracts.yf?.staking!)?.unscaleBy(activeToken.decimals);
   const stakedBalance = selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken.decimals);
   const walletBalance = activeContract.balance?.unscaleBy(activeToken.decimals);
   const maxAmount = BigNumber.min(walletBalance ?? BigNumber.ZERO, allowance ?? BigNumber.ZERO);

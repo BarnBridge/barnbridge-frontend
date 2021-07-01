@@ -7,7 +7,7 @@ import { DropdownList } from 'components/custom/dropdown';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import { Slider } from 'components/custom/slider';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { KnownTokens, getTokenBySymbol } from 'components/providers/knownTokensProvider';
 
 import s from './s.module.scss';
 

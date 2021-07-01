@@ -5,7 +5,7 @@ import AntdSpin from 'antd/lib/spin';
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
 import { SEPoolsProvider } from 'modules/smart-exposure/providers/se-pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { PoolActionsView } from './views/pool-actions-view';
 

@@ -7,8 +7,8 @@ import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { ProjectToken } from 'components/providers/knownTokensProvider';
 
 import { useDAO } from '../../../../components/dao-provider';
 
@@ -17,6 +17,7 @@ export type ActivationThresholdProps = {
 };
 
 const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
+  const config = useConfig();
   const daoCtx = useDAO();
   const [activating, setActivating] = React.useState<boolean>(false);
 
@@ -36,7 +37,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         <Hint
           text={
             <Text type="p2">
-              For the DAO to be activated, a threshold of {formatToken(config.dao.activationThreshold)} $
+              For the DAO to be activated, a threshold of {formatToken(config.dao?.activationThreshold)} $
               {ProjectToken.symbol} tokens staked has to be met.
             </Text>
           }>
@@ -62,7 +63,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
             {formatToken(daoCtx.bondStaked)}
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            / {formatToken(config.dao.activationThreshold)} already staked.
+            / {formatToken(config.dao?.activationThreshold)} already staked.
           </Text>
         </Grid>
         {daoCtx.activationRate === 100 && !daoCtx.isActive && (

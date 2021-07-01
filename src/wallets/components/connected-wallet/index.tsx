@@ -12,12 +12,12 @@ import Icon from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { useEthWeb3 } from 'components/providers/eth-web3-provider';
-import { useNotifications } from 'components/providers/notifications-provider';
-import { getEtherscanAddressUrl } from 'networks';
+import { useNetwork } from 'components/providers/networkProvider';
+import { useNotifications } from 'components/providers/notificationsProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import Notifications from 'wallets/components/notifications';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -59,8 +59,9 @@ const NotificationSection: React.FC = () => {
 };
 
 const ConnectedWallet: React.FC = () => {
-  const ethWeb3 = useEthWeb3();
+  const { activeNetwork } = useNetwork();
   const wallet = useWallet();
+  const { getEtherscanAddressUrl } = useWeb3();
 
   if (wallet.connecting) {
     return (
@@ -156,7 +157,7 @@ const ConnectedWallet: React.FC = () => {
                 Network
               </Text>
               <Text type="p1" weight="semibold" color="primary">
-                {ethWeb3.activeNetwork?.meta.name}
+                {activeNetwork.meta.name}
               </Text>
             </Grid>
           </Grid>

@@ -5,7 +5,7 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken } from 'components/providers/knownTokensProvider';
 import { UNISWAP_MARKET_LINK } from 'config';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';

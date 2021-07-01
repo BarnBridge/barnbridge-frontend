@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken, TokenMeta, convertTokenInUSD, getTokenByAddress } from 'components/providers/known-tokens-provider';
+import { BondToken, TokenMeta, convertTokenInUSD, getTokenByAddress } from 'components/providers/knownTokensProvider';
 import ManagedEntity from 'models/managedEntity';
 import { APISYRewardPool } from 'modules/smart-yield/api';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';

@@ -6,7 +6,7 @@ import { useReload } from 'hooks/useReload';
 import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
 import SeEPoolHelperContract from 'modules/smart-exposure/contracts/seEPoolHelperContract';
 import SeEPoolPeripheryContract from 'modules/smart-exposure/contracts/seEPoolPeripheryContract';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type SEContextType = {
   ePoolContract: SeEPoolContract;

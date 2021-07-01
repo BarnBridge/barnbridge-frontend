@@ -22,7 +22,7 @@ export type NetworkConfig = {
   api: {
     baseUrl: string;
   };
-  dao: {
+  dao?: {
     activationThreshold: number;
   };
   tokens: Record<

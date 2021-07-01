@@ -4,7 +4,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
 // import { getTokenByAddress } from 'components/providers/known-tokens-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { useReload } from './useReload';
 

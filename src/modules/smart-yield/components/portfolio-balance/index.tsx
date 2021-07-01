@@ -5,7 +5,7 @@ import Divider from 'components/antd/divider';
 import Progress from 'components/antd/progress';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text, TextProps } from 'components/custom/typography';
-import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
+import { BondToken, StkAaveToken } from 'components/providers/knownTokensProvider';
 
 import s from './s.module.scss';
 

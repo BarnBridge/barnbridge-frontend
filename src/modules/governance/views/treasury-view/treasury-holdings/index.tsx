@@ -13,8 +13,9 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import {
   APITreasuryHistory,
@@ -22,7 +23,6 @@ import {
   fetchTreasuryHistory,
   fetchTreasuryTokens,
 } from 'modules/governance/api';
-import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
 
 type APITreasuryTokenEntity = APITreasuryToken & {
   token: Erc20Contract;
@@ -82,13 +82,17 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
   {
     title: 'Transaction Hash',
-    render: (_, entity) => (
-      <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
-        <Text type="p1" weight="semibold" color="blue">
-          {shortenAddr(entity.transactionHash)}
-        </Text>
-      </ExternalLink>
-    ),
+    render: function Render(_, entity) {
+      const { getEtherscanTxUrl } = useWeb3();
+
+      return (
+        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.transactionHash)}
+          </Text>
+        </ExternalLink>
+      );
+    },
   },
   {
     title: 'Date',
@@ -123,7 +127,9 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
   {
     title: 'From',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
       let address = '';
       let label = '';
 
@@ -146,7 +152,9 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
   {
     title: 'To',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
       let address = '';
       let label = '';
 
@@ -217,6 +225,7 @@ function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
 }
 
 const TreasuryHoldings: React.FC = () => {
+  const config = useConfig();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -261,7 +270,7 @@ const TreasuryHoldings: React.FC = () => {
           const tokenContract = new Erc20Contract([], item.tokenAddress);
           tokenContract.on(Web3Contract.UPDATE_DATA, reload);
           tokenContract.loadCommon();
-          tokenContract.loadBalance(config.contracts.dao.governance);
+          tokenContract.loadBalance(config.contracts.dao?.governance);
 
           return {
             ...item,
@@ -334,7 +343,7 @@ const TreasuryHoldings: React.FC = () => {
     }
 
     return state.tokens.items.reduce((a, item) => {
-      const amount = item.token.getBalanceOf(config.contracts.dao.governance)?.unscaleBy(item.tokenDecimals);
+      const amount = item.token.getBalanceOf(config.contracts.dao?.governance)?.unscaleBy(item.tokenDecimals);
       const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
       return a.plus(amountUSD ?? 0);
@@ -352,7 +361,7 @@ const TreasuryHoldings: React.FC = () => {
       <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
         {state.tokens.items.map(item => {
           const tokenMeta = getTokenBySymbol(item.tokenSymbol);
-          const amount = item.token.getBalanceOf(config.contracts.dao.governance)?.unscaleBy(item.tokenDecimals);
+          const amount = item.token.getBalanceOf(config.contracts.dao?.governance)?.unscaleBy(item.tokenDecimals);
           const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
 
           return (

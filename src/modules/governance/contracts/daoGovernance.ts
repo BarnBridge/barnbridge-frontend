@@ -7,7 +7,7 @@ import Web3Contract from 'web3/web3Contract';
 import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import DAO_GOVERNANCE_ABI from './daoGovernance.json';
 

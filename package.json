@@ -128,6 +128,7 @@
     "react-dom": "17.0.2",
     "react-hook-form": "7.5.2",
     "react-popper": "2.2.5",
+    "react-provider-tree": "^0.1.3",
     "react-router-dom": "5.2.0",
     "react-use-storage": "0.4.3",
     "recharts": "2.0.9",

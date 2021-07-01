@@ -3,13 +3,13 @@ import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 
-import { BondToken } from 'components/providers/known-tokens-provider';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { BondToken } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { DAOBarnContract, useDAOBarnContract } from 'modules/governance/contracts/daoBarn';
 import { DAOGovernanceContract, useDAOGovernanceContract } from 'modules/governance/contracts/daoGovernance';
 import { DAORewardContract, useDAORewardContract } from 'modules/governance/contracts/daoReward';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { APIProposalStateId } from '../../api';
 
@@ -59,6 +59,7 @@ export function useDAO(): DAOContextType {
 const DAOProvider: React.FC = props => {
   const { children } = props;
 
+  const config = useConfig();
   const walletCtx = useWallet();
 
   const daoBarn = useDAOBarnContract();
@@ -82,7 +83,7 @@ const DAOProvider: React.FC = props => {
     daoGovernance.contract.setAccount(walletCtx.account);
 
     if (walletCtx.account) {
-      bondContract.loadAllowance(config.contracts.dao.barn).catch(Error);
+      bondContract.loadAllowance(config.contracts.dao?.barn!).catch(Error);
     }
   }, [walletCtx.account]);
 
@@ -92,8 +93,8 @@ const DAOProvider: React.FC = props => {
 
     let activationRate: number | undefined;
 
-    if (bondStaked && config.dao.activationThreshold.gt(BigNumber.ZERO)) {
-      activationRate = bondStaked.multipliedBy(100).div(config.dao.activationThreshold).toNumber();
+    if (bondStaked && config.dao?.activationThreshold! > 0) {
+      activationRate = bondStaked.multipliedBy(100).div(config.dao?.activationThreshold).toNumber();
       activationRate = Math.min(activationRate!, 100);
     }
 

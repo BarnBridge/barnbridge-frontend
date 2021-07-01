@@ -7,7 +7,7 @@ import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import { APIProposalState } from 'modules/governance/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { useProposal } from '../../providers/ProposalProvider';
 import ProposalVoteModal, { VoteState } from '../proposal-vote-modal';

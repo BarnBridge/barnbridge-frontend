@@ -10,11 +10,11 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { ProjectToken, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
-import { getEtherscanAddressUrl } from 'networks';
 
 import { getFormattedDuration } from 'utils';
 
@@ -27,27 +27,31 @@ export type LockedPositionsTableEntity = {
 const Columns: ColumnsType<LockedPositionsTableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <div className="flex flow-col align-center">
-        <IconBubble
-          name={entity.pool.meta?.icon}
-          bubbleName={ProjectToken.icon!}
-          secondBubbleName={entity.pool.market?.icon}
-          className="mr-16"
-        />
-        <div className="flex flow-row">
-          <ExternalLink href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)} className="flex flow-col mb-4">
-            <Text type="p1" weight="semibold" color="blue" className="mr-4">
-              {entity.pool.underlyingSymbol}
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <div className="flex flow-col align-center">
+          <IconBubble
+            name={entity.pool.meta?.icon}
+            bubbleName={ProjectToken.icon!}
+            secondBubbleName={entity.pool.market?.icon}
+            className="mr-16"
+          />
+          <div className="flex flow-row">
+            <ExternalLink href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)} className="flex flow-col mb-4">
+              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+                {entity.pool.underlyingSymbol}
+              </Text>
+              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
+            </ExternalLink>
+            <Text type="small" weight="semibold">
+              {entity.pool.market?.name}
             </Text>
-            <Icon name="arrow-top-right" width={8} height={8} color="blue" />
-          </ExternalLink>
-          <Text type="small" weight="semibold">
-            {entity.pool.market?.name}
-          </Text>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   {
     title: (

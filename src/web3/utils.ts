@@ -1,7 +1,5 @@
 import BigNumber from 'bignumber.js';
 
-import { getEtherscanABIUrl, getEtherscanGasUrl } from 'networks';
-
 BigNumber.prototype.scaleBy = function (decimals?: number): BigNumber | undefined {
   if (decimals === undefined) {
     return undefined;
@@ -242,43 +240,4 @@ export function formatUSDValue(value?: BigNumber | number, decimals = 2, minDeci
 
 export function shortenAddr(addr: string | undefined, first = 6, last = 4): string | undefined {
   return addr ? [String(addr).slice(0, first), String(addr).slice(-last)].join('...') : undefined;
-}
-
-export function fetchContractABI(address: string): any {
-  const url = getEtherscanABIUrl(address);
-
-  if (!url) {
-    return Promise.reject();
-  }
-
-  return fetch(url)
-    .then(result => result.json())
-    .then(({ status, result }: { status: string; result: string }) => {
-      if (status === '1') {
-        return JSON.parse(result);
-      }
-
-      return Promise.reject(result);
-    });
-}
-
-type GasPriceResult = {
-  veryFast: number;
-  fast: number;
-  average: number;
-  safeLow: number;
-};
-
-export function fetchGasPrice(): Promise<GasPriceResult> {
-  return fetch(getEtherscanGasUrl())
-    .then(result => result.json())
-    .then(result => result.result)
-    .then(result => {
-      return {
-        veryFast: Number(result.FastGasPrice),
-        fast: Number(result.ProposeGasPrice),
-        average: Math.round((Number(result.ProposeGasPrice) + Number(result.SafeGasPrice)) / 2),
-        safeLow: Number(result.SafeGasPrice),
-      };
-    });
 }

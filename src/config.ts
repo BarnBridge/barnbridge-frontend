@@ -133,13 +133,7 @@ function getConfigFor(network: string): IConfig {
   };
 }
 
-export let config: IConfig = {
-  env: REACT_APP_VARS['REACT_APP_ENV'],
-} as any;
-
-export function setConfigFor(network: string): IConfig {
-  return (config = getConfigFor(network));
-}
+export let config: IConfig = getConfigFor('KOVAN');
 
 export const WEBSITE_LINK = 'http://www.barnbridge.com/';
 export const DISCORD_LINK = 'https://discord.com/invite/FfEhsVk';

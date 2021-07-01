@@ -8,7 +8,7 @@ import { useReload } from 'hooks/useReload';
 import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import { ProposalReceipt } from 'modules/governance/contracts/daoGovernance';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 export type ProposalProviderState = {
   proposal?: APIProposalEntity;

@@ -8,7 +8,7 @@ import { useReload } from 'hooks/useReload';
 import { APIAbrogationEntity, fetchAbrogation } from 'modules/governance/api';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import { AbrogationProposalReceipt } from 'modules/governance/contracts/daoGovernance';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { useProposal } from '../ProposalProvider';
 

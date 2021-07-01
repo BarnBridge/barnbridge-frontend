@@ -12,10 +12,10 @@ import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
-import { NotificationType, useNotifications } from 'components/providers/notifications-provider';
+import { BondToken } from 'components/providers/knownTokensProvider';
+import { NotificationType, useNotifications } from 'components/providers/notificationsProvider';
+import { Web3ContextType, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
-import { getEtherscanAddressUrl } from 'networks';
 
 import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';
@@ -46,7 +46,11 @@ function getStrongText(text: string = ''): React.ReactNode {
   );
 }
 
-function getData(n: NotificationType, reload: Function): [IconNames, [string, string], React.ReactNode] {
+function getData(
+  n: NotificationType,
+  activeWeb3: Web3ContextType,
+  reload: Function,
+): [IconNames, [string, string], React.ReactNode] {
   switch (n.notificationType) {
     case 'proposal-created':
       return [
@@ -77,7 +81,7 @@ function getData(n: NotificationType, reload: Function): [IconNames, [string, st
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been cancelled by{' '}
-          <ExternalLink href={getEtherscanAddressUrl(n.metadata.caller)} className="link-blue">
+          <ExternalLink href={activeWeb3.getEtherscanAddressUrl(n.metadata.caller)} className="link-blue">
             {shortenAddr(n.metadata.caller)}
           </ExternalLink>
         </Text>,
@@ -213,7 +217,7 @@ function getData(n: NotificationType, reload: Function): [IconNames, [string, st
             `${getHumanValue(new BigNumber(n.metadata.amount ?? 0), BondToken.decimals)?.toFixed()} vBOND`,
           )}{' '}
           has been delegated to you from{' '}
-          <ExternalLink href={getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
+          <ExternalLink href={activeWeb3.getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
             {shortenAddr(n.metadata.from)}
           </ExternalLink>
         </Text>,
@@ -292,8 +296,9 @@ type Props = {
 
 export const Notification: React.FC<Props> = ({ n }) => {
   const { notificationsReadUntil } = useNotifications();
+  const activeWeb3 = useWeb3();
   const [reload] = useReload();
-  const [iconName, colors, content] = getData(n, reload);
+  const [iconName, colors, content] = getData(n, activeWeb3, reload);
   const date = new Date(n.startsOn * 1000);
   const isUnread = notificationsReadUntil ? notificationsReadUntil < n.startsOn : false;
 
@@ -315,8 +320,9 @@ type ToastProps = {
 };
 
 export const Toast: React.FC<ToastProps> = ({ n, onClose, timeout }) => {
+  const activeWeb3 = useWeb3();
   const [reload] = useReload();
-  const [iconName, colors, content] = getData(n, reload);
+  const [iconName, colors, content] = getData(n, activeWeb3, reload);
   useEffect(() => {
     if (timeout && timeout !== Infinity) {
       setTimeout(onClose, timeout, n.id);

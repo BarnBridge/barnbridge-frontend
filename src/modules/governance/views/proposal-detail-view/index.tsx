@@ -7,7 +7,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import { APIProposalState } from 'modules/governance/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import ProposalAbrogationCard from './components/proposal-abrogation-card';
 import ProposalApprovalCard from './components/proposal-approval-card';

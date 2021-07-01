@@ -8,26 +8,30 @@ import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
-import { getEtherscanAddressUrl } from 'networks';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
     title: 'Address',
     dataIndex: 'address',
-    render: (value: string) => (
-      <div className="flex col-gap-16 align-center">
-        <Identicon address={value} width={32} height={32} />
-        <ExternalLink href={getEtherscanAddressUrl(value)} className="link-blue">
-          <Text type="p1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
-            {value}
-          </Text>
-          <Text type="p1" weight="semibold" wrap={false} className="hidden-desktop">
-            {shortenAddr(value)}
-          </Text>
-        </ExternalLink>
-      </div>
-    ),
+    render: function Render(value: string) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <div className="flex col-gap-16 align-center">
+          <Identicon address={value} width={32} height={32} />
+          <ExternalLink href={getEtherscanAddressUrl(value)} className="link-blue">
+            <Text type="p1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
+              {value}
+            </Text>
+            <Text type="p1" weight="semibold" wrap={false} className="hidden-desktop">
+              {shortenAddr(value)}
+            </Text>
+          </ExternalLink>
+        </div>
+      );
+    },
   },
   {
     title: 'Staked Balance',

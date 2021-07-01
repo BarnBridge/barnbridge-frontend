@@ -8,10 +8,10 @@ import Icon from 'components/custom/icon';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, TokenMeta, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { BondToken, TokenMeta, convertTokenInUSD, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { FCx } from 'components/types.tx';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 

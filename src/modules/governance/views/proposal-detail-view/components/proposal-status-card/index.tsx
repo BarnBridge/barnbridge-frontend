@@ -6,9 +6,9 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
-import { getEtherscanTxUrl } from 'networks';
 
 import { useProposal } from '../../providers/ProposalProvider';
 
@@ -75,6 +75,7 @@ function formatEventTime(name: string, start: number, end: number): string {
 }
 
 const ProposalStatusCard: React.FC = () => {
+  const { getEtherscanTxUrl } = useWeb3();
   const { proposal, reload } = useProposal();
 
   if (!proposal) {

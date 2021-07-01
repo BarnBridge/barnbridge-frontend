@@ -7,7 +7,7 @@ import { formatUSD } from 'web3/utils';
 
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { convertTokenInUSD } from 'components/providers/knownTokensProvider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYPoolLiquidity, fetchSYPoolLiquidity } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';

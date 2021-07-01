@@ -10,14 +10,14 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
+import { BondToken, StkAaveToken } from 'components/providers/knownTokensProvider';
 import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
-import { Wallet, useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type PoolEntity = PoolsSYPool;
 
-function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
+function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
   return [
     {
       title: 'Token Name',
@@ -187,7 +187,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         </>
       ),
     },
-    ...(wallet.isActive
+    ...(showWalletBalance
       ? ([
           {
             title: 'Wallet balance',
@@ -250,7 +250,7 @@ const PoolsTable: React.FC<Props> = props => {
   }, [pools, activeMarket]);
 
   const columns = React.useMemo<ColumnsType<PoolEntity>>(() => {
-    return getTableColumns(wallet);
+    return getTableColumns(wallet.isActive);
   }, [wallet]);
 
   return (

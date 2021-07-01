@@ -4,11 +4,11 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken } from 'components/providers/known-tokens-provider';
+import { BondToken } from 'components/providers/knownTokensProvider';
 import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import DAO_BARN_ABI from './daoBarn.json';
 

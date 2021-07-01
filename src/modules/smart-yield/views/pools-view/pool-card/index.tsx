@@ -17,10 +17,10 @@ import {
   ProjectToken,
   StkAaveToken,
   getTokenBySymbol,
-} from 'components/providers/known-tokens-provider';
+} from 'components/providers/knownTokensProvider';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 

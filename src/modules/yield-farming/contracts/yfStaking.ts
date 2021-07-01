@@ -2,8 +2,6 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import { config } from 'config';
-
 const ABI: AbiItem[] = [
   createAbiItem('epoch1Start', [], ['uint256']),
   createAbiItem('epochDuration', [], ['uint256']),
@@ -23,8 +21,8 @@ export type YfStakedToken = {
 };
 
 export class YfStakingContract extends Web3Contract {
-  constructor() {
-    super(ABI, config.contracts.yf.staking, 'STAKING');
+  constructor(address: string) {
+    super(ABI, address, 'YF STAKING');
 
     this.stakedTokens = new Map();
 
@@ -63,6 +61,7 @@ export class YfStakingContract extends Web3Contract {
       { method: 'epoch1Start' },
       { method: 'epochDuration' },
     ]);
+
     const cEpoch = (this.currentEpoch = Number(currentEpoch));
 
     this.epochStart = Number(epochStart);

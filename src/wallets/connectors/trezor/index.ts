@@ -1,26 +1,25 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { TrezorConnector } from '@web3-react/trezor-connector';
 
-import { config } from 'config';
-import { DefaultNetwork, getHttpRpcUrl } from 'networks';
 import TrezorLogoDark from 'resources/svg/wallets/trezor-logo-dark.svg';
 import TrezorLogo from 'resources/svg/wallets/trezor-logo.svg';
 
+import { Web3Network } from 'networks/types';
 import { BaseWalletConfig } from 'wallets/types';
 
 const TrezorWalletConfig: BaseWalletConfig = {
   id: 'trezor',
   logo: [TrezorLogo, TrezorLogoDark],
   name: 'Trezor',
-  factory(chainId: number): AbstractConnector {
+  factory(network: Web3Network): AbstractConnector {
     return new TrezorConnector({
-      chainId,
-      url: getHttpRpcUrl(),
-      pollingInterval: DefaultNetwork.rpc.poolingInterval,
-      manifestEmail: config.wallets.trezorEmail,
-      manifestAppUrl: config.wallets.trezorAppUrl,
+      chainId: network.meta.chainId,
+      url: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+      pollingInterval: network.rpc.poolingInterval,
+      manifestEmail: network.config.wallets.trezorEmail,
+      manifestAppUrl: network.config.wallets.trezorAppUrl,
       config: {
-        networkId: chainId,
+        networkId: network.meta.chainId,
       },
     });
   },

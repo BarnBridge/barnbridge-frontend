@@ -8,7 +8,7 @@ import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { PortfolioValueApiType, fetchPortfolioValue } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { numberFormat } from 'utils';
 import { formatTick, generateTicks } from 'utils/chart';

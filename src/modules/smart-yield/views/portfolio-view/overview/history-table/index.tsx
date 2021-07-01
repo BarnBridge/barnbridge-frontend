@@ -11,7 +11,8 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
 import {
   APISYTxHistoryType,
@@ -25,8 +26,7 @@ import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
 } from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
-import { getEtherscanTxUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type TableEntity = APISYUserTxHistory & {
   poolEntity?: SYPool;
@@ -106,15 +106,19 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Transaction Hash',
-    render: (_, entity) => (
-      <Grid flow="row" gap={4}>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
-          </Text>
-        </ExternalLink>
-      </Grid>
-    ),
+    render: function Render(_, entity) {
+      const { getEtherscanTxUrl } = useWeb3();
+
+      return (
+        <Grid flow="row" gap={4}>
+          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+            <Text type="p1" weight="semibold" color="blue">
+              {shortenAddr(entity.transactionHash)}
+            </Text>
+          </ExternalLink>
+        </Grid>
+      );
+    },
   },
   {
     title: 'Date',

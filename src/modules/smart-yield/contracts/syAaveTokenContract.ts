@@ -2,7 +2,7 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import { EthToken } from 'components/providers/known-tokens-provider';
+import { EthToken } from 'components/providers/knownTokensProvider';
 
 const AaveIncentivesABI: AbiItem[] = [createAbiItem('getAssetData', ['address'], ['uint256', 'uint256', 'uint256'])];
 

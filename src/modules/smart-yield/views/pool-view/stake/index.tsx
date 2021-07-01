@@ -13,10 +13,10 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { ProjectToken, convertTokenInUSD } from 'components/providers/knownTokensProvider';
 import { FCx } from 'components/types.tx';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 

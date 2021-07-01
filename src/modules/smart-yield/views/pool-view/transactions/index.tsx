@@ -11,7 +11,8 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { ProjectToken, convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import {
   APISYRewardPoolTransaction,
@@ -20,8 +21,7 @@ import {
   fetchSYRewardPoolTransactions,
 } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
-import { getEtherscanAddressUrl, getEtherscanTxUrl } from 'networks';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -116,30 +116,38 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           title: 'Address',
           dataIndex: 'from',
           width: '25%',
-          render: (_, entity) => (
-            <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
-              <Text type="p1" weight="semibold">
-                {shortenAddr(entity.userAddress)}
-              </Text>
-            </ExternalLink>
-          ),
+          render: function Render(_, entity) {
+            const { getEtherscanAddressUrl } = useWeb3();
+
+            return (
+              <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
+                <Text type="p1" weight="semibold">
+                  {shortenAddr(entity.userAddress)}
+                </Text>
+              </ExternalLink>
+            );
+          },
         }
       : {},
     {
       title: 'Transaction hash/timestamp',
       width: '25%',
-      render: (_, entity) => (
-        <>
-          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-            <Text type="p1" weight="semibold">
-              {shortenAddr(entity.transactionHash)}
+      render: function Render(_, entity) {
+        const { getEtherscanTxUrl } = useWeb3();
+
+        return (
+          <>
+            <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+              <Text type="p1" weight="semibold">
+                {shortenAddr(entity.transactionHash)}
+              </Text>
+            </ExternalLink>
+            <Text type="small" weight="semibold" color="secondary">
+              {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
             </Text>
-          </ExternalLink>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-          </Text>
-        </>
-      ),
+          </>
+        );
+      },
     },
   ];
 }

@@ -8,7 +8,7 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue } from 'web3/utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { DefaultWeb3, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
+import { WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
 
 export function createAbiItem(
   name: string,
@@ -107,50 +107,14 @@ class BatchRequestManager {
   }, 250);
 }
 
-class ContractsManager {
-  static contracts: Set<Web3Contract> = new Set();
-
-  static addContract(contract: Web3Contract) {
-    ContractsManager.contracts.add(contract);
-  }
-
-  static removeContract(contract: Web3Contract) {
-    ContractsManager.contracts.delete(contract);
-  }
-
-  static updateProvider(provider: any) {
-    if (provider) {
-      ContractsManager.contracts.forEach(contract => {
-        contract.setProvider(provider);
-      });
-    }
-  }
-
-  static updateAccount(account: string) {
-    ContractsManager.contracts.forEach(contract => {
-      contract.setAccount(account);
-    });
-  }
-}
-
-class Web3Contract<T extends object = Record<string, any>> {
+class Web3Contract {
   static UPDATE_ACCOUNT = 'update:account';
   static UPDATE_DATA = 'update:data';
-
-  static tryCall(to: string, from: string, data: string, value: string): any {
-    return DefaultWeb3.eth.call({
-      to,
-      from,
-      data,
-      value,
-    });
-  }
 
   private readonly _events: EventEmitter;
   private readonly _abi: AbiItem[];
   private readonly _callContract: EthContract;
   private readonly _sendContract: EthContract;
-  private readonly _proxy: T;
   readonly address: string;
   name: string;
   account?: string;
@@ -168,24 +132,6 @@ class Web3Contract<T extends object = Record<string, any>> {
     const web3 = new Web3();
     this._callContract = new web3.eth.Contract(abi, address) as EthContract;
     this._sendContract = new web3.eth.Contract(abi, address) as EthContract;
-
-    this._proxy = new Proxy(
-      {},
-      {
-        get: (target: {}, p: string): any => {
-          return this.call(p, [], {});
-        },
-        set(): boolean {
-          return false;
-        },
-      },
-    ) as any;
-
-    ContractsManager.addContract(this);
-  }
-
-  destroy() {
-    ContractsManager.removeContract(this);
   }
 
   /// GETTERS
@@ -321,10 +267,6 @@ class Web3Contract<T extends object = Record<string, any>> {
         });
         return Promise.reject(error);
       });
-  }
-
-  get proxy(): T {
-    return this._proxy;
   }
 
   /// EVENT METHODS

@@ -11,7 +11,7 @@ import { SquareBadge } from 'components/custom/badge';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
@@ -22,7 +22,7 @@ import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldCont
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import RewardPoolsProvider, { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import StakedPositionsTable from 'modules/smart-yield/views/portfolio-view/junior/staked-positions-table';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';

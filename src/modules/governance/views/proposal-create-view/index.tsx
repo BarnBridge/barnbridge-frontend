@@ -13,7 +13,7 @@ import Textarea from 'components/antd/textarea';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { fetchProposal } from '../../api';
 import CreateProposalActionModal, { CreateProposalActionForm } from '../../components/create-proposal-action-modal';
