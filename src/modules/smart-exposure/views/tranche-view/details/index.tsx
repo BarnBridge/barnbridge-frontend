@@ -14,6 +14,7 @@ import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/wallet';
 
+import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 import s from './s.module.scss';
@@ -88,8 +89,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
             Every {getRelativeTime(tranche.rebalancingInterval) || '0 seconds'}
             <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
-            {formatPercent(BigNumber.from(tranche.rebalancingCondition)?.dividedBy(tranche.sFactorE) ?? 0)} deviation
-            from target
+            {formatPercent(calculateRebalancingCondition(tranche.rebalancingCondition))} deviation from target
           </Text>
         </div>
       </div>
