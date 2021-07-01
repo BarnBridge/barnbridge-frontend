@@ -18,7 +18,7 @@ import { Text } from 'components/custom/typography';
 import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
-import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
+import { useEPoolContract, useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
 const tabs = [
   {
@@ -181,7 +181,8 @@ const MultipleTokensForm = ({
   const [tokenAState, setTokenAState] = useState<string>('');
   const [tokenBState, setTokenBState] = useState<string>('');
   const [tokenEState, setTokenEState] = useState<BigNumber | undefined>();
-  const { ePoolContract, ePoolHelperContract } = useSEPools();
+  const ePoolContract = useEPoolContract(poolAddress);
+  const { ePoolHelperContract } = useSEPools();
   const [loading, setLoading] = useState<boolean>(false);
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
@@ -382,6 +383,7 @@ const MultipleTokensForm = ({
           Deposit
         </button>
       </div>
+      <ContractListener contract={ePoolContract} />
     </form>
   );
 };
