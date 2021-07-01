@@ -38,7 +38,7 @@ const SmartExposureView: React.FC = () => {
       disabled: !wallet.account,
     },
   ];
-  
+
   return (
     <>
       <NavTabs tabs={tabs} className={s.tabs} />

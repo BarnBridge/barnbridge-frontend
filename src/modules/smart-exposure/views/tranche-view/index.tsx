@@ -12,7 +12,7 @@ import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/wallet';
 
 import { Charts } from './charts';
-import { TrancheDetails } from './details';
+import { Details } from './details';
 import { TransactionsView } from './transactions';
 import { PriceTrend } from './trend';
 
@@ -93,7 +93,7 @@ const TrancheView: React.FC = () => {
       </div>
       <div className={cn(s.trendDetailsRow, 'mb-32')}>
         <PriceTrend poolAddress={poolAddress} trancheAddress={trancheAddress} />
-        <TrancheDetails tranche={tranche} />
+        <Details tranche={tranche} />
       </div>
       <Charts tranche={tranche} className="mb-32" />
       <TransactionsView tranche={tranche} />

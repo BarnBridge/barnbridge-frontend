@@ -34,7 +34,7 @@ type Props = {
   tranche: TrancheApiType;
 };
 
-export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
+export const Details: React.FC<Props> = ({ tranche }) => {
   const [activeTab, setActiveTab] = useState('rebalancing');
 
   return (
@@ -43,7 +43,7 @@ export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
         <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" />
       </header>
       {activeTab === 'rebalancing' && <RebalancingDetails tranche={tranche} />}
-      {activeTab === 'tranche' && <PoolDetails tranche={tranche} />}
+      {activeTab === 'tranche' && <TrancheDetails tranche={tranche} />}
     </section>
   );
 };
@@ -130,7 +130,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   );
 };
 
-const PoolDetails = ({ tranche }: { tranche: TrancheApiType }) => {
+const TrancheDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   const wallet = useWallet();
 
   const tokenAContract = useContract(tranche.tokenA.address, { loadBalance: true });
@@ -196,22 +196,22 @@ const PoolDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Pool {tranche.tokenA.symbol} balance
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(BigNumber.from(tranche.state.tokenALiquidity))}
+            {formatUSD(BigNumber.from(tranche.state.tokenALiquidity))}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          {/* <Text type="small" weight="semibold" color="secondary">
             {formatUSD(BigNumber.from(tranche.state.tokenALiquidity)?.multipliedBy(tranche.tokenA.state.price) ?? 0)}
-          </Text>
+          </Text> */}
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Pool {tranche.tokenB.symbol} balance
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(BigNumber.from(tranche.state.tokenBLiquidity))}
+            {formatUSD(BigNumber.from(tranche.state.tokenBLiquidity))}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          {/* <Text type="small" weight="semibold" color="secondary">
             {formatUSD(BigNumber.from(tranche.state.tokenBLiquidity)?.multipliedBy(tranche.tokenB.state.price) ?? 0)}
-          </Text>
+          </Text> */}
         </div>
       </div>
     </>
