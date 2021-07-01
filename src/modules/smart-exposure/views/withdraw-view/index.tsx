@@ -554,7 +554,7 @@ const SingleTokenForm = ({
         showDeadline
         deadline={transactionDetails.deadline}
         onChange={setTransactionDetails}>
-        SushiSwap transaction details
+        Swap transaction details
       </TransactionDetails>
 
       <TransactionSummary
