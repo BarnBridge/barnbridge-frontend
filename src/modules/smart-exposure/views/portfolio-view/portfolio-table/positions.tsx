@@ -69,5 +69,5 @@ export const PositionsTable: React.FC<PositionsTablePropsType> = ({ poolAddress 
     fetchTranches(poolAddress).then(setTranches).catch(Error);
   }, [poolAddress]);
 
-  return <Table<TranchesItemApiType> columns={columns} data={tranches} />;
+  return <Table<TranchesItemApiType> columns={columns} data={tranches} rowKey={item => item.eTokenAddress} />;
 };

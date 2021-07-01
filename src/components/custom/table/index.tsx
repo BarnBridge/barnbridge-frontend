@@ -8,16 +8,17 @@ import s from './s.module.scss';
 
 export type ColumnType<T> = {
   heading: React.ReactNode;
-  render: (item: T) => React.ReactNode;
+  render: (item: T) => React.ReactElement;
 };
 
 type Props<T> = {
   columns: ColumnType<T>[];
   data: T[];
   loading?: boolean;
+  rowKey?: (item: T) => string;
 };
 
-export const Table = <T extends Record<string, any>>({ columns, data, loading }: Props<T>) => {
+export const Table = <T extends Record<string, any>>({ columns, data, loading, rowKey }: Props<T>) => {
   return (
     <div
       className={classNames('table-container', s.tableContainer, {
@@ -36,9 +37,11 @@ export const Table = <T extends Record<string, any>>({ columns, data, loading }:
         </thead>
         <tbody>
           {data.map((item, itemIdx) => (
-            <tr key={itemIdx}>
-              {columns.map((col, dataIdx) => (
-                <td key={dataIdx}>{col.render(item)}</td>
+            <tr key={rowKey?.(item) ?? itemIdx}>
+              {columns.map(({ render: Render }, dataIdx) => (
+                <td key={dataIdx}>
+                  <Render {...item} />
+                </td>
               ))}
             </tr>
           ))}

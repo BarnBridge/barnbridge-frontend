@@ -39,7 +39,7 @@ export const useContract = (
     contract.on(Web3Contract.UPDATE_DATA, reload);
 
     return contract;
-  }, [reload, address, provider]);
+  }, [address, provider, reload]);
 
   useEffect(() => {
     if (contract && loadBalance) {
