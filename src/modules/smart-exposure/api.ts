@@ -110,12 +110,17 @@ export function fetchTranche(trancheAddress: string): Promise<TrancheApiType> {
     .then(result => result.data);
 }
 
-type EtokenPriceApiType = {
+export type ETokenPriceApiType = {
   point: string;
   eTokenPrice: string;
 };
 
-export function fetchEtokenPrice(trancheAddress: string, windowFilter?: string): Promise<EtokenPriceApiType[]> {
+export type ETokenPriceType = {
+  point: string;
+  eTokenPrice: number;
+};
+
+export function fetchEtokenPrice(trancheAddress: string, windowFilter?: string): Promise<ETokenPriceType[]> {
   const query = queryfy({
     window: windowFilter,
   });
@@ -124,7 +129,12 @@ export function fetchEtokenPrice(trancheAddress: string, windowFilter?: string):
 
   return fetch(url.toString())
     .then(processResponse)
-    .then(result => result.data);
+    .then(result =>
+      result.data.map((item: ETokenPriceApiType) => ({
+        ...item,
+        eTokenPrice: Number(item.eTokenPrice),
+      })),
+    );
 }
 
 export type RatioDeviationApiType = {
@@ -132,7 +142,12 @@ export type RatioDeviationApiType = {
   deviation: string;
 };
 
-export function fetchRatioDeviation(trancheAddress: string, windowFilter?: string): Promise<RatioDeviationApiType[]> {
+export type RatioDeviationType = {
+  point: string;
+  deviation: string;
+};
+
+export function fetchRatioDeviation(trancheAddress: string, windowFilter?: string): Promise<RatioDeviationType[]> {
   const query = queryfy({
     window: windowFilter,
   });
@@ -141,7 +156,12 @@ export function fetchRatioDeviation(trancheAddress: string, windowFilter?: strin
 
   return fetch(url.toString())
     .then(processResponse)
-    .then(result => result.data);
+    .then(result =>
+      result.data.map((item: RatioDeviationApiType) => ({
+        ...item,
+        deviation: Number(item.deviation),
+      })),
+    );
 }
 
 export type TrancheLiquidityApiType = {
@@ -150,10 +170,13 @@ export type TrancheLiquidityApiType = {
   tokenBLiquidity: string;
 };
 
-export function fetchTrancheLiquidity(
-  trancheAddress: string,
-  windowFilter?: string,
-): Promise<TrancheLiquidityApiType[]> {
+export type TrancheLiquidityType = {
+  point: string;
+  tokenALiquidity: number;
+  tokenBLiquidity: number;
+};
+
+export function fetchTrancheLiquidity(trancheAddress: string, windowFilter?: string): Promise<TrancheLiquidityType[]> {
   const query = queryfy({
     window: windowFilter,
   });
@@ -162,7 +185,13 @@ export function fetchTrancheLiquidity(
 
   return fetch(url.toString())
     .then(processResponse)
-    .then(result => result.data);
+    .then(result =>
+      result.data.map((item: TrancheLiquidityApiType) => ({
+        ...item,
+        tokenALiquidity: Number(item.tokenALiquidity),
+        tokenBLiquidity: Number(item.tokenBLiquidity),
+      })),
+    );
 }
 
 export type TransactionApiType = {
@@ -217,6 +246,11 @@ export type PortfolioValueApiType = {
   portfolioValueSE: string;
 };
 
+export type PortfolioValueType = {
+  point: string;
+  portfolioValueSE: number;
+};
+
 export function fetchPortfolioValue({
   accountAddress,
   window,
@@ -226,7 +260,7 @@ export function fetchPortfolioValue({
   window?: string;
   poolAddress?: string;
 }): Promise<{
-  data: PortfolioValueApiType[];
+  data: PortfolioValueType[];
   meta: { count: number; block: number };
 }> {
   const query = queryfy({
@@ -236,5 +270,13 @@ export function fetchPortfolioValue({
 
   const url = new URL(`/api/smartexposure/users/${accountAddress}/portfolio-value?${query}`, config.api.baseUrl);
 
-  return fetch(url.toString()).then(processResponse);
+  return fetch(url.toString())
+    .then(processResponse)
+    .then(response => ({
+      ...response,
+      data: response.data.map((item: PortfolioValueApiType) => ({
+        ...item,
+        portfolioValueSE: Number(item.portfolioValueSE),
+      })),
+    }));
 }
