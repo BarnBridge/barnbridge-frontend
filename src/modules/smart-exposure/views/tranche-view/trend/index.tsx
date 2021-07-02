@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import AntdNotification from 'antd/lib/notification';
 import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
@@ -6,14 +6,9 @@ import { formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
-import { fetchEtokenPrice } from 'modules/smart-exposure/api';
+import { ETokenPriceType, fetchEtokenPrice } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
-
-type ETokenPriceType = {
-  eTokenPrice: string;
-  point: string;
-};
 
 type PropsType = {
   poolAddress: string;
@@ -39,9 +34,6 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
       .finally(() => setLoading(false));
   }, [trancheAddress, activeTab]);
 
-  const min = useMemo(() => priceList.reduce((acc, item) => Math.min(acc, Number(item.eTokenPrice)), 0), [priceList]);
-  const max = useMemo(() => priceList.reduce((acc, item) => Math.max(acc, Number(item.eTokenPrice)), 0), [priceList]);
-
   return (
     <section className="card">
       <header className="card-header flex align-center" style={{ padding: '16px 16px 16px 24px' }}>
@@ -66,8 +58,6 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
                 tickFormatter={value => formatTick(value, activeTab)}
               />
               <ReCharts.YAxis
-                type="number"
-                domain={[min < 0 ? min * 1.1 : 0, max * 1.1]}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={value =>
