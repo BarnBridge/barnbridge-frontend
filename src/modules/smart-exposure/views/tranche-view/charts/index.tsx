@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AntdNotification from 'antd/lib/notification';
 import classNames from 'classnames';
@@ -10,9 +10,9 @@ import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import {
-  RatioDeviationApiType,
+  RatioDeviationType,
   TrancheApiType,
-  TrancheLiquidityApiType,
+  TrancheLiquidityType,
   fetchRatioDeviation,
   fetchTrancheLiquidity,
 } from 'modules/smart-exposure/api';
@@ -69,7 +69,7 @@ export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
 };
 
 const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: string; periodFilter: PeriodTabsKey }) => {
-  const [dataList, setDataList] = useState<RatioDeviationApiType[]>([]);
+  const [dataList, setDataList] = useState<RatioDeviationType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -85,9 +85,6 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
       })
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
-
-  const min = useMemo(() => dataList.reduce((acc, item) => Math.min(acc, Number(item.deviation)), 0), [dataList]);
-  const max = useMemo(() => dataList.reduce((acc, item) => Math.max(acc, Number(item.deviation)), 0), [dataList]);
 
   return (
     <Spin spinning={loading}>
@@ -106,13 +103,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
             tickLine={false}
             tickFormatter={value => formatTick(value, periodFilter)}
           />
-          <ReCharts.YAxis
-            type="number"
-            domain={[min < 0 ? min * 1.1 : 0, max * 1.1]}
-            axisLine={false}
-            tickLine={false}
-            tickFormatter={value => formatPercent(value) ?? ''}
-          />
+          <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value) ?? ''} />
           <ReCharts.Tooltip
             separator=""
             labelFormatter={value => (
@@ -147,7 +138,7 @@ const TrancheLiquidity = ({
   trancheAddress: string;
   periodFilter: PeriodTabsKey;
 }) => {
-  const [dataList, setDataList] = useState<TrancheLiquidityApiType[]>([]);
+  const [dataList, setDataList] = useState<TrancheLiquidityType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
@@ -163,11 +154,6 @@ const TrancheLiquidity = ({
       })
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
-
-  const max = useMemo(
-    () => dataList.reduce((acc, item) => Math.max(acc, Number(item.tokenALiquidity), Number(item.tokenBLiquidity)), 0),
-    [dataList],
-  );
 
   return (
     <>
@@ -192,8 +178,6 @@ const TrancheLiquidity = ({
               tickFormatter={value => formatTick(value, periodFilter)}
             />
             <ReCharts.YAxis
-              type="number"
-              domain={[0, max * 1.1]}
               axisLine={false}
               tickLine={false}
               tickFormatter={value =>

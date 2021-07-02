@@ -7,7 +7,7 @@ import * as ReCharts from 'recharts';
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { PortfolioValueApiType, fetchPortfolioValue } from 'modules/smart-exposure/api';
+import { PortfolioValueType, fetchPortfolioValue } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/wallet';
 
 import { numberFormat } from 'utils';
@@ -22,7 +22,7 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
   const { account } = useWallet();
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const [loading, setLoading] = useState<boolean>(false);
-  const [dataList, setDataList] = useState<PortfolioValueApiType[]>([]);
+  const [dataList, setDataList] = useState<PortfolioValueType[]>([]);
 
   useEffect(() => {
     if (!account) {
