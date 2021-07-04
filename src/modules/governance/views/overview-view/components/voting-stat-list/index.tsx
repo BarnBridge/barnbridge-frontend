@@ -6,7 +6,7 @@ import { formatToken, formatUSD } from 'web3/utils';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIOverviewData, fetchOverviewData } from 'modules/governance/api';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -23,6 +23,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
   const { className } = props;
 
   const daoCtx = useDAO();
+  const { projectToken, convertTokenInUSD } = useKnownTokens();
   const [overview, setOverview] = React.useState<APIOverviewData | undefined>();
 
   React.useEffect(() => {
@@ -49,11 +50,11 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 {formatToken(daoCtx.daoBarn.bondStaked)}
               </Text>
               <Text type="p1" color="secondary">
-                BOND
+                {projectToken.symbol}
               </Text>
             </Grid>
             <Text type="p1" color="secondary">
-              {formatUSD(convertTokenInUSD(daoCtx.daoBarn.bondStaked, BondToken.symbol))}
+              {formatUSD(convertTokenInUSD(daoCtx.daoBarn.bondStaked, projectToken.symbol))}
             </Text>
           </Grid>
         </Grid>
@@ -172,7 +173,8 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               {formatToken(overview?.totalDelegatedPower)}
             </Text>
             <Text type="p1" color="secondary">
-              out of {formatToken((BondToken.contract as Erc20Contract).totalSupply?.unscaleBy(BondToken.decimals))}
+              out of{' '}
+              {formatToken((projectToken.contract as Erc20Contract).totalSupply?.unscaleBy(projectToken.decimals))}
             </Text>
           </Grid>
         </Grid>

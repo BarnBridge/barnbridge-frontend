@@ -1,7 +1,7 @@
 import { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import { useContractManager } from 'web3/components/contractManagerProvider';
+import { useErc20Contract } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatUSD } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
@@ -61,6 +61,7 @@ export type TokenMeta = {
 
 type ContextType = {
   tokens: TokenMeta[];
+  projectToken: TokenMeta;
   getTokenBySymbol(symbol: string): TokenMeta | undefined;
   getTokenByAddress(address: string): TokenMeta | undefined;
   getTokenPriceIn(source: string, target: string): BigNumber | undefined;
@@ -88,11 +89,6 @@ const BOND_PRICE_FEED_ABI: AbiItem[] = [
 
 const J_PRICE_FEED_ABI: AbiItem[] = [createAbiItem('price', [], ['uint256'])];
 
-function useTokenContract(address: string): Erc20Contract {
-  const contractManager = useContractManager();
-  return contractManager.getContract<Erc20Contract>(address);
-}
-
 const KnownTokensProvider: FC = props => {
   const { children } = props;
 
@@ -100,16 +96,16 @@ const KnownTokensProvider: FC = props => {
   const wallet = useWallet();
   const [reload] = useReload();
 
-  const wbtcContract = useTokenContract(config.tokens.wbtc);
-  const wethContract = useTokenContract(config.tokens.weth);
-  const usdcContract = useTokenContract(config.tokens.usdc);
-  const bondContract = useTokenContract(config.tokens.bond);
-  const usdtContract = useTokenContract(config.tokens.usdt);
-  const susdContract = useTokenContract(config.tokens.susd);
-  const gusdContract = useTokenContract(config.tokens.gusd);
-  const daiContract = useTokenContract(config.tokens.dai);
-  const univ2Contract = useTokenContract(config.tokens.univ2);
-  const stkaaveContract = useTokenContract(config.tokens.stkaave);
+  const wbtcContract = useErc20Contract(config.tokens.wbtc);
+  const wethContract = useErc20Contract(config.tokens.weth);
+  const usdcContract = useErc20Contract(config.tokens.usdc);
+  const bondContract = useErc20Contract(config.tokens.bond);
+  const usdtContract = useErc20Contract(config.tokens.usdt);
+  const susdContract = useErc20Contract(config.tokens.susd);
+  const gusdContract = useErc20Contract(config.tokens.gusd);
+  const daiContract = useErc20Contract(config.tokens.dai);
+  const univ2Contract = useErc20Contract(config.tokens.univ2);
+  const stkaaveContract = useErc20Contract(config.tokens.stkaave);
 
   const tokens = useMemo<TokenMeta[]>(
     () => [
@@ -501,8 +497,8 @@ const KnownTokensProvider: FC = props => {
     [convertTokenIn],
   );
 
-  const projectToken = useMemo(() => {
-    return getTokenBySymbol(KnownTokens.BOND);
+  const projectToken = useMemo<TokenMeta>(() => {
+    return getTokenBySymbol(KnownTokens.BOND)!;
   }, [getTokenBySymbol]);
 
   useEffect(() => {
@@ -572,6 +568,7 @@ const KnownTokensProvider: FC = props => {
 
   const value = {
     tokens,
+    projectToken,
     getTokenBySymbol,
     getTokenByAddress,
     getTokenIconBySymbol,

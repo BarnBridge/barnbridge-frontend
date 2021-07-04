@@ -4,7 +4,6 @@ import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 
 import { useConfig } from 'components/providers/configProvider';
-import { BondToken } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { DAOBarnContract, useDAOBarnContract } from 'modules/governance/contracts/daoBarn';
 import { DAOGovernanceContract, useDAOGovernanceContract } from 'modules/governance/contracts/daoGovernance';
@@ -12,6 +11,7 @@ import { DAORewardContract, useDAORewardContract } from 'modules/governance/cont
 import { useWallet } from 'wallets/walletProvider';
 
 import { APIProposalStateId } from '../../api';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 export type DAOProviderState = {
   minThreshold: number;
@@ -65,6 +65,7 @@ const DAOProvider: React.FC = props => {
   const daoBarn = useDAOBarnContract();
   const daoReward = useDAORewardContract();
   const daoGovernance = useDAOGovernanceContract();
+  const { projectToken } = useKnownTokens();
 
   const [state, setState] = useMergeState<DAOProviderState>(InitialState);
 
@@ -75,7 +76,7 @@ const DAOProvider: React.FC = props => {
   }, [walletCtx.provider]);
 
   React.useEffect(() => {
-    const bondContract = BondToken.contract as Erc20Contract;
+    const bondContract = projectToken.contract as Erc20Contract;
 
     bondContract.setAccount(walletCtx.account); // ?
     daoBarn.contract.setAccount(walletCtx.account);

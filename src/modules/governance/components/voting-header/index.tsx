@@ -13,7 +13,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -36,11 +36,11 @@ const InitialState: VotingHeaderState = {
 
 const VotingHeader: React.FC = () => {
   const daoCtx = useDAO();
-
+  const { projectToken } = useKnownTokens();
   const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
 
   const { claimValue } = daoCtx.daoReward;
-  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
+  const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
   const { votingPower, userLockedUntil, multiplier = 1 } = daoCtx.daoBarn;
 
   const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
@@ -57,7 +57,7 @@ const VotingHeader: React.FC = () => {
       .catch(Error)
       .then(() => {
         daoCtx.daoReward.reload();
-        (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+        (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
         setState({ claiming: false });
       });
   }
@@ -75,7 +75,7 @@ const VotingHeader: React.FC = () => {
           <Grid flow="col" gap={16} align="center">
             <Tooltip
               title={formatToken(claimValue, {
-                decimals: ProjectToken.decimals,
+                decimals: projectToken.decimals,
               })}>
               <Text type="h3" weight="bold" color="primary">
                 {formatToken(claimValue, {
@@ -83,7 +83,7 @@ const VotingHeader: React.FC = () => {
                 })}
               </Text>
             </Tooltip>
-            <Icon name={ProjectToken.icon!} />
+            <Icon name={projectToken.icon!} />
             <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -100,7 +100,7 @@ const VotingHeader: React.FC = () => {
                 {formatToken(bondBalance)}
               </Text>
             </Skeleton>
-            <Icon name={ProjectToken.icon!} />
+            <Icon name={projectToken.icon!} />
           </Grid>
         </Grid>
         <Divider type="vertical" />

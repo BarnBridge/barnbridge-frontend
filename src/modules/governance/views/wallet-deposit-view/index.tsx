@@ -15,7 +15,7 @@ import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
-import { BondToken, ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
@@ -52,20 +52,21 @@ const InitialState: WalletDepositViewState = {
 const WalletDepositView: React.FC = () => {
   const config = useConfig();
   const daoCtx = useDAO();
+  const { projectToken } = useKnownTokens();
   const [form] = AntdForm.useForm<DepositFormData>();
 
   const [state, setState] = useMergeState<WalletDepositViewState>(InitialState);
 
   const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
-  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
-  const barnAllowance = (BondToken.contract as Erc20Contract).getAllowanceOf(config.contracts.dao?.barn!);
+  const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
+  const barnAllowance = (projectToken.contract as Erc20Contract).getAllowanceOf(config.contracts.dao?.barn!);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
 
   async function handleSwitchChange(checked: boolean) {
     setState({ enabling: true });
 
     try {
-      await (BondToken.contract as Erc20Contract).approve(config.contracts.dao?.barn!, checked);
+      await (projectToken.contract as Erc20Contract).approve(config.contracts.dao?.barn!, checked);
     } catch {}
 
     setState({ enabling: false });
@@ -84,7 +85,7 @@ const WalletDepositView: React.FC = () => {
       await daoCtx.daoBarn.actions.deposit(amount, gasPrice.value);
       form.setFieldsValue(InitialFormValues);
       daoCtx.daoBarn.reload();
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch {}
 
     setState({ saving: false });
@@ -112,7 +113,7 @@ const WalletDepositView: React.FC = () => {
     <div className="card">
       <div className="card-header flex wrap col-gap-64">
         <Grid flow="col" gap={12}>
-          <Icon name={ProjectToken.icon!} width={40} height={40} />
+          <Icon name={projectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
             BOND
           </Text>
@@ -165,9 +166,9 @@ const WalletDepositView: React.FC = () => {
             <Grid flow="row" gap={32}>
               <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
-                  tokenIcon={ProjectToken.icon!}
+                  tokenIcon={projectToken.icon!}
                   max={bondBalance}
-                  maximumFractionDigits={BondToken.decimals}
+                  maximumFractionDigits={projectToken.decimals}
                   displayDecimals={4}
                   disabled={state.saving}
                   slider

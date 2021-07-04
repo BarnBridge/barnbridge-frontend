@@ -1,15 +1,14 @@
 import { FC, createContext, useContext, useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
-import { useContractManager } from 'web3/components/contractManagerProvider';
+import { useContractManager, useErc20Contract } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { useConfig } from 'components/providers/configProvider';
-import { useReload } from 'hooks/useReload';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 interface IFauceteer {
   drip(address: string, decimals?: number): Promise<void>;
@@ -85,133 +84,150 @@ export function useFauceteer(): FauceteerContextType {
 
 export const FauceteerProvider: FC = props => {
   const { children } = props;
-  const [reload] = useReload();
   const config = useConfig();
   const walletCtx = useWallet();
   const knownTokens = useKnownTokens();
 
   const compFauceteerContract = useCompFauceteerContract();
   const aaveFauceteerContract = useAaveFauceteerContract();
+  const compUsdcFaucet = useErc20Contract(config.contracts.faucets?.compUsdc!);
+  const compDaiFaucet = useErc20Contract(config.contracts.faucets?.compDai!);
+  const aaveUsdcFaucet = useErc20Contract(config.contracts.faucets?.aaveUsdc!);
+  const aaveUsdtFaucet = useErc20Contract(config.contracts.faucets?.aaveUsdt!);
+  const aaveDaiFaucet = useErc20Contract(config.contracts.faucets?.aaveDai!);
 
-  const faucets = useMemo<FaucetType[]>(
-    () => {
-      return [
-        {
-          name: 'kETH',
-          icon: EthToken.icon!,
-          decimals: EthToken.decimals,
-          label: 'Kovan Ether',
-          link: { url: 'https://github.com/kovan-testnet/faucet', label: 'Faucets' },
-        },
-        {
-          name: BondToken.symbol,
-          icon: BondToken.icon!,
-          decimals: BondToken.decimals,
-          link: {
-            url: `https://app.uniswap.org/#/swap?use=V2&outputCurrency=${config.tokens.bond}`,
-            label: 'Swap',
-          },
-          token: new Erc20Contract([], config.tokens.bond),
-        },
-        {
-          name: UsdcToken.symbol,
-          icon: UsdcToken.icon!,
-          decimals: UsdcToken.decimals,
-          markets: [
+  const faucets = useMemo<FaucetType[]>(() => {
+    const ethToken = knownTokens.getTokenBySymbol(KnownTokens.ETH);
+    const bondToken = knownTokens.getTokenBySymbol(KnownTokens.BOND);
+    const usdcToken = knownTokens.getTokenBySymbol(KnownTokens.USDC);
+    const usdtToken = knownTokens.getTokenBySymbol(KnownTokens.USDT);
+    const daiToken = knownTokens.getTokenBySymbol(KnownTokens.DAI);
+
+    return [
+      {
+        name: 'kETH',
+        icon: ethToken?.icon,
+        decimals: ethToken?.decimals,
+        label: 'Kovan Ether',
+        link: { url: 'https://github.com/kovan-testnet/faucet', label: 'Faucets' },
+      },
+      ...(bondToken
+        ? [
             {
-              name: 'Compound',
-              icon: 'compound',
+              name: bondToken.symbol,
+              icon: bondToken.icon,
+              decimals: bondToken.decimals,
+              link: {
+                url: `https://app.uniswap.org/#/swap?use=V2&outputCurrency=${bondToken.address}`,
+                label: 'Swap',
+              },
+              token: bondToken.contract,
             },
+          ]
+        : []),
+      ...(usdcToken
+        ? [
             {
-              name: 'C.R.E.A.M.',
-              icon: 'cream_finance',
+              name: usdcToken.symbol,
+              icon: usdcToken.icon,
+              decimals: usdcToken.decimals,
+              markets: [
+                {
+                  name: 'Compound',
+                  icon: 'compound',
+                },
+                {
+                  name: 'C.R.E.A.M.',
+                  icon: 'cream_finance',
+                },
+              ],
+              fauceteer: compFauceteerContract,
+              token: compUsdcFaucet,
             },
-          ],
-          fauceteer: compFauceteerContract,
-          token: new Erc20Contract([], config.contracts.faucets?.compUsdc!),
-        },
-        {
-          name: DaiToken.symbol,
-          icon: DaiToken.icon!,
-          decimals: DaiToken.decimals,
-          markets: [
+          ]
+        : []),
+      ...(daiToken
+        ? [
             {
-              name: 'Compound',
-              icon: 'compound',
+              name: daiToken.symbol,
+              icon: daiToken.icon,
+              decimals: daiToken.decimals,
+              markets: [
+                {
+                  name: 'Compound',
+                  icon: 'compound',
+                },
+                {
+                  name: 'C.R.E.A.M.',
+                  icon: 'cream_finance',
+                },
+              ],
+              fauceteer: compFauceteerContract,
+              token: compDaiFaucet,
             },
+          ]
+        : []),
+      ...(usdcToken
+        ? [
             {
-              name: 'C.R.E.A.M.',
-              icon: 'cream_finance',
+              name: usdcToken.symbol,
+              icon: usdcToken.icon,
+              decimals: usdcToken.decimals,
+              markets: [
+                {
+                  name: 'AAVE',
+                  icon: 'static/aave',
+                },
+              ],
+              fauceteer: aaveFauceteerContract,
+              token: aaveUsdcFaucet,
             },
-          ],
-          fauceteer: compFauceteerContract,
-          token: new Erc20Contract([], config.contracts.faucets?.compDai!),
-        },
-        {
-          name: UsdcToken.symbol,
-          icon: UsdcToken.icon!,
-          decimals: UsdcToken.decimals,
-          markets: [
+          ]
+        : []),
+      ...(usdtToken
+        ? [
             {
-              name: 'AAVE',
-              icon: 'static/aave',
+              name: usdtToken.symbol,
+              icon: usdtToken.icon,
+              decimals: usdtToken.decimals,
+              markets: [
+                {
+                  name: 'AAVE',
+                  icon: 'static/aave',
+                },
+              ],
+              fauceteer: aaveFauceteerContract,
+              token: aaveUsdtFaucet,
             },
-          ],
-          fauceteer: aaveFauceteerContract,
-          token: new Erc20Contract([], config.contracts.faucets?.aaveUsdc!),
-        },
-        {
-          name: UsdtToken.symbol,
-          icon: UsdtToken.icon!,
-          decimals: UsdtToken.decimals,
-          markets: [
+          ]
+        : []),
+      ...(daiToken
+        ? [
             {
-              name: 'AAVE',
-              icon: 'static/aave',
+              name: daiToken.symbol,
+              icon: daiToken.icon,
+              decimals: daiToken.decimals,
+              markets: [
+                {
+                  name: 'AAVE',
+                  icon: 'static/aave',
+                },
+              ],
+              fauceteer: aaveFauceteerContract,
+              token: aaveDaiFaucet,
             },
-          ],
-          fauceteer: aaveFauceteerContract,
-          token: new Erc20Contract([], config.contracts.faucets?.aaveUsdt!),
-        },
-        {
-          name: DaiToken.symbol,
-          icon: DaiToken.icon!,
-          decimals: DaiToken.decimals,
-          markets: [
-            {
-              name: 'AAVE',
-              icon: 'static/aave',
-            },
-          ],
-          fauceteer: aaveFauceteerContract,
-          token: new Erc20Contract([], config.contracts.faucets?.aaveDai!),
-        },
-      ];
-    },
-    [],
-  );
+          ]
+        : []),
+    ] as FaucetType[];
+  }, []);
 
   useEffect(() => {
     faucets.forEach(faucet => {
-      faucet.token?.on(Web3Contract.UPDATE_DATA, reload);
-    });
-  }, [faucets, reload]);
-
-  useEffect(() => {
-    faucets.forEach(faucet => {
-      faucet.token?.setProvider(walletCtx.provider);
-    });
-  }, [faucets, walletCtx.provider]);
-
-  useEffect(() => {
-    faucets.forEach(faucet => {
-      faucet.token?.setAccount(walletCtx.account);
-
       if (walletCtx.isActive) {
         faucet.token?.loadBalance().catch(Error);
       }
     });
-  }, [faucets, walletCtx.isActive, walletCtx.account]);
+  }, [faucets, walletCtx.isActive]);
 
   const value = {
     compFauceteerContract,

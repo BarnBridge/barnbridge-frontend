@@ -1,5 +1,6 @@
 import React, { FC, createContext, useContext, useEffect, useRef } from 'react';
 import ContractListener from 'web3/components/contract-listener';
+import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
 import { useWeb3 } from 'components/providers/web3Provider';
@@ -22,6 +23,14 @@ export function useContract<T extends Web3Contract>(address: string, factory?: (
   const [reload] = useReload();
   const manager = useContractManager();
   const contract = manager.getContract<T>(address, factory);
+  contract.on(Web3Contract.UPDATE_DATA, reload);
+  return contract;
+}
+
+export function useErc20Contract(address: string): Erc20Contract {
+  const [reload] = useReload();
+  const manager = useContractManager();
+  const contract = manager.getContract<Erc20Contract>(address, () => new Erc20Contract([], address));
   contract.on(Web3Contract.UPDATE_DATA, reload);
   return contract;
 }

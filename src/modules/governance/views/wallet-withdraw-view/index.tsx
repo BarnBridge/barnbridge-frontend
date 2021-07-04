@@ -12,7 +12,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import { Text } from 'components/custom/typography';
-import { BondToken, ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
@@ -38,12 +38,13 @@ const InitialState: WalletWithdrawViewState = {
 
 const WalletWithdrawView: React.FC = () => {
   const daoCtx = useDAO();
+  const { projectToken } = useKnownTokens();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
 
   const [state, setState] = useMergeState<WalletWithdrawViewState>(InitialState);
 
   const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
-  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
+  const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
   const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
   const formDisabled = !hasStakedBalance || isLocked;
@@ -61,7 +62,7 @@ const WalletWithdrawView: React.FC = () => {
       await daoCtx.daoBarn.actions.withdraw(amount, gasPrice.value);
       form.setFieldsValue(InitialFormValues);
       daoCtx.daoBarn.reload();
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch {}
 
     setState({ saving: false });
@@ -71,9 +72,9 @@ const WalletWithdrawView: React.FC = () => {
     <div className="card">
       <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
         <Grid flow="col" gap={12}>
-          <Icon name={ProjectToken.icon!} width={40} height={40} />
+          <Icon name={projectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
-            {ProjectToken.symbol}
+            {projectToken.symbol}
           </Text>
         </Grid>
 
@@ -108,9 +109,9 @@ const WalletWithdrawView: React.FC = () => {
             <Grid flow="row" gap={32}>
               <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
                 <TokenAmount
-                  tokenIcon={ProjectToken.icon!}
+                  tokenIcon={projectToken.icon!}
                   max={stakedBalance}
-                  maximumFractionDigits={ProjectToken.decimals}
+                  maximumFractionDigits={projectToken.decimals}
                   displayDecimals={4}
                   disabled={formDisabled || state.saving}
                   slider

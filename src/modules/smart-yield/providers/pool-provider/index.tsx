@@ -4,19 +4,8 @@ import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import {
-  BondToken,
-  DaiToken,
-  EthToken,
-  GusdToken,
-  StkAaveToken,
-  UsdcToken,
-  UsdtToken,
-  convertTokenIn,
-  convertTokenInUSD,
-} from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
-import { config } from 'config';
 import { useReload } from 'hooks/useReload';
 import {
   APISYPool,
@@ -34,6 +23,7 @@ import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolCont
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/walletProvider';
+import { useConfig } from 'components/providers/configProvider';
 
 export type SYPool = APISYPool & {
   meta?: SYPoolMeta;
@@ -121,55 +111,15 @@ export function useSYPool(): ContextType {
   return React.useContext(Context);
 }
 
-async function getAaveIncentivesAPY(
-  cTokenAddress: string,
-  uDecimals: number,
-  uSymbol: string,
-): Promise<BigNumber | undefined> {
-  let aTokenAddress = '';
-  let aTokenDecimals = 0;
-
-  if (config.env === 'production') {
-    aTokenAddress = cTokenAddress;
-    aTokenDecimals = uDecimals;
-  } else {
-    switch (uSymbol) {
-      case UsdcToken.symbol:
-        aTokenAddress = config.tokens.aUsdc;
-        aTokenDecimals = UsdcToken.decimals;
-        break;
-      case DaiToken.symbol:
-        aTokenAddress = config.tokens.aDai;
-        aTokenDecimals = DaiToken.decimals;
-        break;
-      case UsdtToken.symbol:
-        aTokenAddress = config.tokens.aUsdt;
-        aTokenDecimals = UsdtToken.decimals;
-        break;
-      case GusdToken.symbol:
-        aTokenAddress = config.tokens.aGusd;
-        aTokenDecimals = GusdToken.decimals;
-        break;
-    }
-  }
-
-  const aToken = new SYAaveTokenContract(aTokenAddress);
-  aToken.setCallProvider(MainnetHttpsWeb3Provider);
-  await aToken.loadCommon();
-
-  const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), StkAaveToken.symbol, EthToken.symbol);
-  const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, EthToken.symbol);
-
-  return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
-}
-
 const PoolProvider: React.FC = props => {
   const { children } = props;
 
   const history = useHistory();
   const location = useLocation();
   const wallet = useWallet();
+  const config = useConfig();
   const { getEtherscanTxUrl } = useWeb3();
+  const { projectToken, convertTokenIn, getTokenBySymbol } = useKnownTokens();
   const [reload, version] = useReload();
   const [state, setState] = React.useState(InitialState);
 
@@ -194,6 +144,54 @@ const PoolProvider: React.FC = props => {
 
     return [marketStr, tokenStr];
   }, [location.search]);
+
+  async function getAaveIncentivesAPY(
+    cTokenAddress: string,
+    uDecimals: number,
+    uSymbol: string,
+  ): Promise<BigNumber | undefined> {
+    let aTokenAddress = '';
+    let aTokenDecimals = 0;
+
+    if (process.env.REACT_APP_ENV === 'production') {
+      aTokenAddress = cTokenAddress;
+      aTokenDecimals = uDecimals;
+    } else {
+      const uToken = getTokenBySymbol(uSymbol);
+
+      if (uToken) {
+        aTokenAddress = uToken.address;
+        aTokenDecimals = uToken.decimals;
+      }
+      switch (uSymbol) {
+        case KnownTokens.USDC:
+          aTokenAddress = config.tokens.ausdc;
+          aTokenDecimals = uToken.decimals;
+          break;
+        case KnownTokens.DAI:
+          aTokenAddress = config.tokens.adai;
+          aTokenDecimals = DaiToken.decimals;
+          break;
+        case KnownTokens.USDT:
+          aTokenAddress = config.tokens.ausdt;
+          aTokenDecimals = UsdtToken.decimals;
+          break;
+        case KnownTokens.GUSD:
+          aTokenAddress = config.tokens.agusd;
+          aTokenDecimals = GusdToken.decimals;
+          break;
+      }
+    }
+
+    const aToken = new SYAaveTokenContract(aTokenAddress);
+    aToken.setCallProvider(MainnetHttpsWeb3Provider);
+    await aToken.loadCommon();
+
+    const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), StkAaveToken.symbol, EthToken.symbol);
+    const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, EthToken.symbol);
+
+    return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
+  }
 
   React.useEffect(() => {
     if (!market || !token) {
@@ -262,14 +260,14 @@ const PoolProvider: React.FC = props => {
           rewardPool
             .loadCommon()
             .then(() => {
-              return rewardPool?.loadRewardRateFor(BondToken.address) as any;
+              return rewardPool?.loadRewardRateFor(projectToken.address) as any;
             })
             .then(() => {
               const { poolSize } = rewardPool!;
 
               if (poolSize) {
-                const r = rewardPool?.getDailyRewardFor(BondToken.address)?.unscaleBy(BondToken.decimals);
-                const yearlyReward = convertTokenInUSD(r, BondToken.symbol!)?.multipliedBy(365);
+                const r = rewardPool?.getDailyRewardFor(projectToken.address)?.unscaleBy(projectToken.decimals);
+                const yearlyReward = convertTokenInUSD(r, projectToken.symbol!)?.multipliedBy(365);
 
                 const p = poolSize?.dividedBy(10 ** (smartYield.decimals ?? 0));
                 const poolBalance = convertTokenInUSD(p, smartYield.symbol!);
