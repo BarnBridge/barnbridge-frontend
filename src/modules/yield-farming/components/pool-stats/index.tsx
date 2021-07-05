@@ -5,8 +5,8 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
+import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { UNISWAP_MARKET_LINK } from 'config';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
@@ -21,6 +21,7 @@ type Props = {
 };
 
 const PoolStats: React.FC<Props> = ({ className }) => {
+  const { links } = useConfig();
   const yfPoolsCtx = useYFPools();
   const rewardPoolsCtx = useRewardPools();
   const { projectToken } = useKnownTokens();
@@ -111,7 +112,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             <Text type="h2" weight="bold" color="primary" className="mb-4">
               {formatUSD(projectToken.price) ?? '-'}
             </Text>
-            <ExternalLink href={UNISWAP_MARKET_LINK}>
+            <ExternalLink href={links.uniswapSwap}>
               <Text type="p1" weight="semibold" color="blue">
                 Uniswap market
               </Text>

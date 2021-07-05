@@ -12,7 +12,7 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
-import { APISYSeniorBonds, fetchSYSeniorBonds } from 'modules/smart-yield/api';
+import { APISYSeniorBonds, useSyAPI } from 'modules/smart-yield/api';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 type TableEntity = APISYSeniorBonds & {
@@ -244,7 +244,7 @@ type Props = {
 const SeniorBondsTable: React.FC<Props> = ({ tabs }) => {
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
-
+  const syAPI = useSyAPI();
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
@@ -259,7 +259,7 @@ const SeniorBondsTable: React.FC<Props> = ({ tabs }) => {
       }));
 
       try {
-        const history = await fetchSYSeniorBonds(
+        const history = await syAPI.fetchSYSeniorBonds(
           pool.smartYieldAddress,
           state.page,
           state.pageSize,

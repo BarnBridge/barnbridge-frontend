@@ -82,9 +82,9 @@ const WalletDepositView: React.FC = () => {
     setState({ saving: true });
 
     try {
-      await daoCtx.daoBarn.actions.deposit(amount, gasPrice.value);
+      await daoCtx.daoBarn.deposit(amount, gasPrice.value);
       form.setFieldsValue(InitialFormValues);
-      daoCtx.daoBarn.reload();
+      // daoCtx.daoBarn.reload(); /// TODO: check
       (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch {}
 

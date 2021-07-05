@@ -76,7 +76,7 @@ type FauceteerContextType = {
   faucets: FaucetType[];
 };
 
-const Context = createContext<FauceteerContextType>(InvariantContext<FauceteerContextType>('FauceteerProvider'));
+const Context = createContext<FauceteerContextType>(InvariantContext('FauceteerProvider'));
 
 export function useFauceteer(): FauceteerContextType {
   return useContext(Context);

@@ -8,11 +8,7 @@ import { formatUSDValue } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import { Text } from 'components/custom/typography';
-import {
-  fetchSYJuniorPortfolioValues,
-  fetchSYPortfolioValues,
-  fetchSYSeniorPortfolioValues,
-} from 'modules/smart-yield/api';
+import { useSyAPI } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/walletProvider';
 
 const DAYS_FILTER: SelectOption[] = [
@@ -53,6 +49,7 @@ const PortfolioValue: React.FC<Props> = props => {
   const { type } = props;
 
   const wallet = useWallet();
+  const syAPI = useSyAPI();
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -86,17 +83,17 @@ const PortfolioValue: React.FC<Props> = props => {
         let values: any[] = [];
 
         if (type === 'general') {
-          values = (await fetchSYPortfolioValues(wallet.account)).map(item => ({
+          values = (await syAPI.fetchSYPortfolioValues(wallet.account)).map(item => ({
             timestamp: item.timestamp,
             value: item.seniorValue + item.juniorValue,
           }));
         } else if (type === 'senior') {
-          values = (await fetchSYSeniorPortfolioValues(wallet.account)).map(item => ({
+          values = (await syAPI.fetchSYSeniorPortfolioValues(wallet.account)).map(item => ({
             timestamp: item.timestamp,
             value: item.seniorValue,
           }));
         } else if (type === 'junior') {
-          values = (await fetchSYJuniorPortfolioValues(wallet.account)).map(item => ({
+          values = (await syAPI.fetchSYJuniorPortfolioValues(wallet.account)).map(item => ({
             timestamp: item.timestamp,
             value: item.juniorValue,
           }));

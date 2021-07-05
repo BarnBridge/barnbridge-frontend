@@ -5,7 +5,7 @@ import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
+import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { PortfolioTable } from './portfolio-table';
 import { PortfolioValue } from './portfolio-value';
@@ -14,9 +14,10 @@ const PortfolioView: React.FC = () => {
   const [pools, setPools] = useState<PoolApiType[]>([]);
   const [activePool, setActivePool] = useState<PoolApiType | null>(null);
   const { getTokenBySymbol } = useKnownTokens();
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchPools().then(result => {
+    seAPI.fetchPools().then(result => {
       setPools(result);
     });
   }, []);

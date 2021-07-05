@@ -6,7 +6,7 @@ import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
-import { TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
+import { TranchesItemApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 const columns: ColumnType<TranchesItemApiType>[] = [
   {
@@ -68,9 +68,10 @@ type PositionsTablePropsType = {
 
 export const PositionsTable: React.FC<PositionsTablePropsType> = ({ poolAddress }) => {
   const [tranches, setTranches] = useState<TranchesItemApiType[]>([]);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranches(poolAddress).then(setTranches);
+    seAPI.fetchTranches(poolAddress).then(setTranches);
   }, [poolAddress]);
 
   return <Table<TranchesItemApiType> columns={columns} data={tranches} />;

@@ -3,13 +3,15 @@ import { FC, createContext, useCallback, useContext, useMemo, useState } from 'r
 import Icon, { IconNames } from 'components/custom/icon';
 import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
-import { isDevelopmentMode, isProductionMode } from 'config';
+import { isDevelopmentMode, isProductionMode } from 'components/providers/configProvider';
 import { GoerliNetwork } from 'networks/goerli';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
+
+import { InvariantContext } from 'utils/context';
 
 import { Web3Network } from 'networks/types';
 
@@ -21,22 +23,10 @@ export type NetworkType = {
   showNetworkSelect: () => void;
 };
 
-const NetworkContext = createContext<NetworkType>({
-  get networks(): Web3Network[] {
-    throw new Error('No NetworkProvider found!');
-  },
-  get defaultNetwork(): Web3Network {
-    throw new Error('No NetworkProvider found!');
-  },
-  get activeNetwork(): Web3Network {
-    throw new Error('No NetworkProvider found!');
-  },
-  changeNetwork: () => undefined,
-  showNetworkSelect: () => undefined,
-});
+const Context = createContext<NetworkType>(InvariantContext('NetworkProvider'));
 
 export function useNetwork(): NetworkType {
-  return useContext(NetworkContext);
+  return useContext(Context);
 }
 
 const networks: Web3Network[] = (() => {
@@ -126,7 +116,7 @@ const NetworkProvider: FC = props => {
   };
 
   return (
-    <NetworkContext.Provider value={value}>
+    <Context.Provider value={value}>
       {children}
       {networkSelectVisible && (
         <Modal heading="Select network" closeHandler={showNetworkSelect}>
@@ -155,7 +145,7 @@ const NetworkProvider: FC = props => {
           </div>
         </Modal>
       )}
-    </NetworkContext.Provider>
+    </Context.Provider>
   );
 };
 

@@ -13,7 +13,7 @@ import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
+import { APISYJuniorPastPosition, JuniorPastPositionTypes, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -168,6 +168,7 @@ const PastPositionsTable: React.FC<Props> = props => {
 
   const wallet = useWallet();
   const poolsCtx = usePools();
+  const syAPI = useSyAPI();
 
   const { pools } = poolsCtx;
 
@@ -186,7 +187,7 @@ const PastPositionsTable: React.FC<Props> = props => {
       );
 
       try {
-        const pastPositions = await fetchSYJuniorPastPositions(
+        const pastPositions = await syAPI.fetchSYJuniorPastPositions(
           wallet.account,
           state.page,
           state.pageSize,

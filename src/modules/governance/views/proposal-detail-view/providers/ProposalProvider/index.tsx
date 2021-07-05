@@ -5,10 +5,12 @@ import BigNumber from 'bignumber.js';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { APIProposalEntity, fetchProposal } from 'modules/governance/api';
+import { APIProposalEntity, useDaoAPI } from 'modules/governance/api';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import { ProposalReceipt } from 'modules/governance/contracts/daoGovernance';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type ProposalProviderState = {
   proposal?: APIProposalEntity;
@@ -36,19 +38,10 @@ export type ProposalContextType = ProposalProviderState & {
   startAbrogationProposal(description: string, gasPrice: number): Promise<void>;
 };
 
-const ProposalContext = React.createContext<ProposalContextType>({
-  ...InitialState,
-  reload: () => undefined,
-  cancelProposal: () => Promise.reject(),
-  queueProposalForExecution: () => Promise.reject(),
-  executeProposal: () => Promise.reject(),
-  proposalCastVote: () => Promise.reject(),
-  proposalCancelVote: () => Promise.reject(),
-  startAbrogationProposal: () => Promise.reject(),
-});
+const Context = React.createContext<ProposalContextType>(InvariantContext('ProposalProvider'));
 
 export function useProposal(): ProposalContextType {
-  return React.useContext(ProposalContext);
+  return React.useContext(Context);
 }
 
 export type ProposalProviderProps = {
@@ -60,6 +53,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
   const history = useHistory();
   const wallet = useWallet();
+  const daoAPI = useDaoAPI();
   const daoCtx = useDAO();
   const [reload, version] = useReload();
 
@@ -71,7 +65,8 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       return;
     }
 
-    fetchProposal(proposalId)
+    daoAPI
+      .fetchProposal(proposalId)
       .then(proposal => {
         setState({ proposal });
       })
@@ -118,7 +113,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       againstRate,
     });
 
-    daoCtx.daoBarn.actions.bondStakedAtTs(createTime + warmUpDuration).then(bondStakedAt => {
+    daoCtx.daoBarn.getBondStakedAtTs(createTime + warmUpDuration).then(bondStakedAt => {
       let quorum: number | undefined;
 
       if (bondStakedAt?.gt(BigNumber.ZERO)) {
@@ -128,7 +123,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
       setState({ quorum });
     });
 
-    daoCtx.daoGovernance.actions.abrogationProposal(state.proposal.proposalId).then(result => {
+    daoCtx.daoGovernance.getAbrogationProposals(state.proposal.proposalId).then(result => {
       if (result) {
         setState({ isCanceled: result.createTime > 0 });
       }
@@ -148,7 +143,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
     const { proposer } = state.proposal;
 
-    daoCtx.daoBarn.actions.votingPower(proposer).then(votingPower => {
+    daoCtx.daoBarn.votingPower(proposer).then(votingPower => {
       if (votingPower) {
         setState({
           thresholdRate: votingPower.div(bondStaked).multipliedBy(100).toNumber(),
@@ -169,51 +164,45 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
     const { createTime, warmUpDuration } = state.proposal;
 
-    daoCtx.daoGovernance.actions.getProposalReceipt(state.proposal.proposalId).then(receipt => {
+    daoCtx.daoGovernance.getReceipt(state.proposal.proposalId, wallet.account!).then(receipt => {
       setState({ receipt });
     });
 
-    daoCtx.daoBarn.actions.votingPowerAtTs(createTime + warmUpDuration).then(votingPower => {
+    daoCtx.daoBarn.getVotingPowerAtTs(wallet.account!, createTime + warmUpDuration).then(votingPower => {
       setState({ votingPower });
     });
   }, [state.proposal, wallet.account]);
 
   function cancelProposal(): Promise<void> {
-    return proposalId ? daoCtx.daoGovernance.actions.cancelProposal(proposalId).then(() => reload()) : Promise.reject();
+    return proposalId ? daoCtx.daoGovernance.cancelProposal(proposalId).then(() => reload()) : Promise.reject();
   }
 
   function queueProposalForExecution(gasPrice: number): Promise<void> {
-    return proposalId
-      ? daoCtx.daoGovernance.actions.queueProposalForExecution(proposalId, gasPrice).then(() => reload())
-      : Promise.reject();
+    return proposalId ? daoCtx.daoGovernance.queue(proposalId, gasPrice).then(() => reload()) : Promise.reject();
   }
 
   function executeProposal(): Promise<void> {
-    return proposalId
-      ? daoCtx.daoGovernance.actions.executeProposal(proposalId).then(() => reload())
-      : Promise.reject();
+    return proposalId ? daoCtx.daoGovernance.execute(proposalId).then(() => reload()) : Promise.reject();
   }
 
   function proposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposalId
-      ? daoCtx.daoGovernance.actions.proposalCastVote(proposalId, support, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.castVote(proposalId, support, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   function proposalCancelVote(gasPrice: number): Promise<void> {
-    return proposalId
-      ? daoCtx.daoGovernance.actions.proposalCancelVote(proposalId, gasPrice).then(() => reload())
-      : Promise.reject();
+    return proposalId ? daoCtx.daoGovernance.cancelVote(proposalId, gasPrice).then(() => reload()) : Promise.reject();
   }
 
   function startAbrogationProposal(description: string, gasPrice: number): Promise<void> {
     return proposalId
-      ? daoCtx.daoGovernance.actions.startAbrogationProposal(proposalId, description, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.startAbrogationProposal(proposalId, description, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   return (
-    <ProposalContext.Provider
+    <Context.Provider
       value={{
         ...state,
         reload,
@@ -225,7 +214,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
         startAbrogationProposal,
       }}>
       {children}
-    </ProposalContext.Provider>
+    </Context.Provider>
   );
 };
 

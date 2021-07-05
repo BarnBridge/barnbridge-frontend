@@ -16,7 +16,7 @@ import { useConfig } from 'components/providers/configProvider';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
@@ -25,7 +25,7 @@ const PoolStake: FC = () => {
   const config = useConfig();
   const { getTokenBySymbol, convertTokenInUSD } = useKnownTokens();
   const yfPoolsCtx = useYFPools();
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const [activeToken, setActiveToken] = useState(yfPoolCtx.poolMeta?.tokens[0]);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);

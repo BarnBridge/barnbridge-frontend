@@ -20,8 +20,8 @@ import {
   APISYTxHistoryType,
   HistoryShortTypes,
   HistoryTypes,
-  fetchSYPoolTransactions,
   isPositiveHistoryType,
+  useSyAPI,
 } from 'modules/smart-yield/api';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
@@ -205,7 +205,7 @@ type Props = {
 const PoolTxTable: React.FC<Props> = ({ tabs }) => {
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
-
+  const syAPI = useSyAPI();
   const [state, setState] = React.useState<State>(InitialState);
 
   React.useEffect(() => {
@@ -220,7 +220,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
       }));
 
       try {
-        const transactions = await fetchSYPoolTransactions(
+        const transactions = await syAPI.fetchSYPoolTransactions(
           pool.smartYieldAddress,
           state.page,
           state.pageSize,

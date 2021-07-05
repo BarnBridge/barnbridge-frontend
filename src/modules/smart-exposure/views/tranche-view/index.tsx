@@ -7,7 +7,7 @@ import classNames from 'classnames';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
+import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import { Charts } from './charts';
@@ -25,9 +25,10 @@ const TrancheView: React.FC = () => {
   const wallet = useWallet();
   const [tranche, setTranche] = useState<TrancheApiType>();
   const { getTokenBySymbol } = useKnownTokens();
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranche(trancheAddress).then(result => {
+    seAPI.fetchTranche(trancheAddress).then(result => {
       setTranche(result);
     });
   }, [trancheAddress]);

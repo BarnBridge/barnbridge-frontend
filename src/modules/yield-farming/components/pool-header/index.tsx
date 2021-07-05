@@ -8,7 +8,7 @@ import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
@@ -16,7 +16,7 @@ import s from './s.module.scss';
 const PoolHeader: FC = () => {
   const { projectToken, convertTokenInUSD } = useKnownTokens();
   const yfPoolsCtx = useYFPools();
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const { poolMeta, poolBalance, effectivePoolBalance, apy } = yfPoolCtx;
 

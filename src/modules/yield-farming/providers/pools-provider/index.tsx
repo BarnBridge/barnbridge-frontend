@@ -17,16 +17,16 @@ export enum YFPoolID {
   BOND = 'bond',
 }
 
-export type YFPoolMeta = {
+export type YfPoolMeta = {
   name: YFPoolID;
   label: string;
   tokens: TokenMeta[];
   contract: YfPoolContract;
 };
 
-export type YFPoolsType = {
-  yfPools: YFPoolMeta[];
-  getYFKnownPoolByName: (name: string) => YFPoolMeta | undefined;
+export type YfPoolsType = {
+  yfPools: YfPoolMeta[];
+  getYFKnownPoolByName: (name: string) => YfPoolMeta | undefined;
   stakingContract?: YfStakingContract;
   getPoolBalanceInUSD: (name: string) => BigNumber | undefined;
   getPoolEffectiveBalanceInUSD: (name: string) => BigNumber | undefined;
@@ -38,10 +38,10 @@ export type YFPoolsType = {
   getYFTotalSupply: () => BigNumber | undefined;
 };
 
-const YFPoolsContext = createContext<YFPoolsType>(InvariantContext<YFPoolsType>('YFPoolsProvider'));
+const Context = createContext<YfPoolsType>(InvariantContext('YfPoolsProvider'));
 
-export function useYFPools(): YFPoolsType {
-  return useContext(YFPoolsContext);
+export function useYFPools(): YfPoolsType {
+  return useContext(Context);
 }
 
 function useYfStakingContract(address: string): YfStakingContract {
@@ -56,7 +56,7 @@ function useYfContract(address: string): YfPoolContract {
   });
 }
 
-const YFPoolsProvider: FC = props => {
+const YfPoolsProvider: FC = props => {
   const { children } = props;
 
   const config = useConfig();
@@ -69,7 +69,7 @@ const YFPoolsProvider: FC = props => {
   const yfUnilpContract = useYfContract(config.contracts.yf?.unilp!);
   const yfBondContract = useYfContract(config.contracts.yf?.bond!);
 
-  const yfPools = useMemo<YFPoolMeta[]>(
+  const yfPools = useMemo<YfPoolMeta[]>(
     () => [
       {
         name: YFPoolID.STABLE,
@@ -115,7 +115,7 @@ const YFPoolsProvider: FC = props => {
   }, [walletCtx.account, yfPools, stakingContract]);
 
   const getYFKnownPoolByName = useCallback(
-    (poolId: string): YFPoolMeta | undefined => {
+    (poolId: string): YfPoolMeta | undefined => {
       return yfPools.find(pool => pool.name === poolId);
     },
     [yfPools],
@@ -241,7 +241,7 @@ const YFPoolsProvider: FC = props => {
     });
   }, [yfPools]);
 
-  const value: YFPoolsType = {
+  const value: YfPoolsType = {
     yfPools,
     getYFKnownPoolByName,
     stakingContract,
@@ -255,7 +255,7 @@ const YFPoolsProvider: FC = props => {
     getYFTotalSupply,
   };
 
-  return <YFPoolsContext.Provider value={value}>{children}</YFPoolsContext.Provider>;
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
-export default YFPoolsProvider;
+export default YfPoolsProvider;

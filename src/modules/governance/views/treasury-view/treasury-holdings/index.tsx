@@ -18,12 +18,7 @@ import { useConfig } from 'components/providers/configProvider';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
-import {
-  APITreasuryHistory,
-  APITreasuryToken,
-  fetchTreasuryHistory,
-  fetchTreasuryTokens,
-} from 'modules/governance/api';
+import { APITreasuryHistory, APITreasuryToken, useDaoAPI } from 'modules/governance/api';
 
 type APITreasuryTokenEntity = APITreasuryToken & {
   token: Erc20Contract;
@@ -233,6 +228,7 @@ function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
 const TreasuryHoldings: React.FC = () => {
   const config = useConfig();
   const { getContract } = useContractManager();
+  const daoAPI = useDaoAPI();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
   const { getTokenBySymbol, convertTokenInUSD } = useKnownTokens();
@@ -270,7 +266,8 @@ const TreasuryHoldings: React.FC = () => {
       },
     }));
 
-    fetchTreasuryTokens()
+    daoAPI
+      .fetchTreasuryTokens()
       .then(data => {
         const items = data.filter(item => Boolean(getTokenBySymbol(item.tokenSymbol as KnownTokens)));
 
@@ -322,7 +319,8 @@ const TreasuryHoldings: React.FC = () => {
       },
     }));
 
-    fetchTreasuryHistory(page, pageSize, filters.token, filters.direction)
+    daoAPI
+      .fetchTreasuryHistory(page, pageSize, filters.token, filters.direction)
       .then(data => {
         setState(prevState => ({
           ...prevState,

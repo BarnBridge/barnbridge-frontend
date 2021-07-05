@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
-import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
@@ -16,7 +15,7 @@ import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
-import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
+import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
 const tabs = [
@@ -36,6 +35,7 @@ const DepositView: React.FC = () => {
   const [tranche, setTranche] = useState<TrancheApiType>();
   const [activeTab, setActiveTab] = useState<string>('multiple');
   const { ePoolPeripheryContract } = useSEPools();
+  const seAPI = useSeAPI();
   const tokenAContract = useContract(tranche?.tokenA.address, {
     loadAllowance: [poolAddress, ePoolPeripheryContract.address],
     loadCommon: true,
@@ -52,7 +52,7 @@ const DepositView: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchTranche(trancheAddress).then(result => {
+    seAPI.fetchTranche(trancheAddress).then(result => {
       setTranche(result);
     });
   }, [trancheAddress]);
@@ -150,9 +150,6 @@ const DepositView: React.FC = () => {
           />
         )}
       </div>
-      <ContractListener contract={tokenAContract} />
-      <ContractListener contract={tokenBContract} />
-      <ContractListener contract={tokenEContract} />
     </>
   );
 };

@@ -3,8 +3,10 @@ import { createPortal } from 'react-dom';
 import { useLocalStorage } from 'react-use-storage';
 
 import { Toast } from 'components/custom/notification';
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type NotificationsContextType = {
   notifications: NotificationType[];
@@ -194,32 +196,12 @@ export type NotificationType =
   | DelegateStartType
   | SmartYieldTokenBoughtType;
 
-const NotificationsContext = createContext<NotificationsContextType>({} as any);
-
-export function fetchNotifications({
-  target,
-  timestamp,
-}: {
-  target?: string;
-  timestamp?: number | null;
-}): Promise<NotificationType[]> {
-  const url = new URL('/api/notifications/list', config.api.baseUrl);
-  if (target) {
-    url.searchParams.set('target', target);
-  }
-
-  if (timestamp) {
-    url.searchParams.set('timestamp', String(timestamp));
-  }
-
-  return fetch(url.toString())
-    .then(result => result.json())
-    .then(result => result.data ?? []);
-}
+const Context = createContext<NotificationsContextType>(InvariantContext('NotificationsProvider'));
 
 const notificationsNode = document.querySelector('#notifications-root');
 
 const NotificationsProvider: FC = ({ children }) => {
+  const config = useConfig();
   const wallet = useWallet();
 
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
@@ -242,6 +224,27 @@ const NotificationsProvider: FC = ({ children }) => {
       setNotificationsReadUntil(Number(storedReadUntil));
     }
   }, []);
+
+  function fetchNotifications({
+    target,
+    timestamp,
+  }: {
+    target?: string;
+    timestamp?: number | null;
+  }): Promise<NotificationType[]> {
+    const url = new URL('/api/notifications/list', config.api.baseUrl);
+    if (target) {
+      url.searchParams.set('target', target);
+    }
+
+    if (timestamp) {
+      url.searchParams.set('timestamp', String(timestamp));
+    }
+
+    return fetch(url.toString())
+      .then(result => result.json())
+      .then(result => result.data ?? []);
+  }
 
   const setNotificationsReadUntilHandler = useCallback((value: number) => {
     if (value) {
@@ -284,7 +287,7 @@ const NotificationsProvider: FC = ({ children }) => {
   }, [wallet.initialized, wallet.account, addToast]);
 
   return (
-    <NotificationsContext.Provider
+    <Context.Provider
       value={{
         notifications,
         notificationsReadUntil,
@@ -300,12 +303,12 @@ const NotificationsProvider: FC = ({ children }) => {
           </>,
           notificationsNode,
         )}
-    </NotificationsContext.Provider>
+    </Context.Provider>
   );
 };
 
 export default NotificationsProvider;
 
 export function useNotifications(): NotificationsContextType {
-  return useContext<NotificationsContextType>(NotificationsContext);
+  return useContext<NotificationsContextType>(Context);
 }

@@ -1,13 +1,14 @@
 import React, { FC, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import ContractListener from 'web3/components/contract-listener';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
-import { fetchSYRewardPools } from 'modules/smart-yield/api';
+import { useSyAPI } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 type RewardPoolsType = {
   loading: boolean;
@@ -16,12 +17,7 @@ type RewardPoolsType = {
   getSYTotalStakedInUSD: () => BigNumber;
 };
 
-const Context = createContext<RewardPoolsType>({
-  loading: false,
-  pools: [],
-  getMarketTVL: () => BigNumber.ZERO,
-  getSYTotalStakedInUSD: () => BigNumber.ZERO,
-});
+const Context = createContext<RewardPoolsType>(InvariantContext('RewardPoolsProvider'));
 
 export function useRewardPools(): RewardPoolsType {
   return useContext(Context);
@@ -34,6 +30,7 @@ const RewardPoolsProvider: FC = props => {
   const contractManagerCtx = useContractManager();
   const walletCtx = useWallet();
   const [reload] = useReload();
+  const syAPI = useSyAPI();
 
   const [loading, setLoading] = useState(false);
   const [pools, setPools] = useState<SYRewardPoolEntity[]>([]);
@@ -86,7 +83,7 @@ const RewardPoolsProvider: FC = props => {
       setLoading(true);
 
       try {
-        const result = await fetchSYRewardPools();
+        const result = await syAPI.fetchSYRewardPools();
         const rewardPools = result.map(item => {
           const entity = new SYRewardPoolEntity(item, knownTokensCtx, contractManagerCtx);
           entity.updateProvider(walletCtx.provider);
@@ -124,14 +121,7 @@ const RewardPoolsProvider: FC = props => {
     getSYTotalStakedInUSD,
   };
 
-  return (
-    <Context.Provider value={value}>
-      {children}
-      {pools.map(pool => (
-        <ContractListener key={pool.smartYield.address} contract={pool.smartYield} />
-      ))}
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default RewardPoolsProvider;

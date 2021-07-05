@@ -13,10 +13,10 @@ import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
+import { APIYFPoolActionType, APIYFPoolTransaction, useYfAPI } from 'modules/yield-farming/api';
 import { useWallet } from 'wallets/walletProvider';
 
-import { APIYFPoolActionType, APIYFPoolTransaction, fetchYFPoolTransactions } from '../../api';
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 type TableEntity = APIYFPoolTransaction;
@@ -163,7 +163,8 @@ const TX_OPTS: SelectOption[] = [
 const PoolTransactions: FC = () => {
   const walletCtx = useWallet();
   const poolsCtx = useYFPools();
-  const poolCtx = useYFPool();
+  const poolCtx = useYfPool();
+  const yfAPI = useYfAPI();
 
   const hasOwnTab = !!poolCtx.poolMeta && walletCtx.isActive;
   const [reload, version] = useReload();
@@ -225,11 +226,11 @@ const PoolTransactions: FC = () => {
         const {
           data: transactions,
           meta: { count },
-        } = await fetchYFPoolTransactions(
+        } = await yfAPI.fetchYFPoolTransactions(
           state.page,
           state.pageSize,
           state.filters.tokenAddress,
-          activeTab === 'own' ? walletCtx.account : 'all',
+          activeTab === 'own' ? walletCtx.account ?? 'all' : 'all',
           state.filters.actionType,
         );
 

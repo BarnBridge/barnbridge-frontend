@@ -9,7 +9,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { useWeb3 } from 'components/providers/web3Provider';
-import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
+import { APIVoterEntity, useDaoAPI } from 'modules/governance/api';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
@@ -86,6 +86,7 @@ export type VotersTableProps = {
 const VotersTable: React.FC<VotersTableProps> = props => {
   const { className } = props;
 
+  const daoAPI = useDaoAPI();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [voters, setVoters] = React.useState<APIVoterEntity[]>([]);
   const [totalVoters, setTotal] = React.useState<number>(0);
@@ -95,7 +96,8 @@ const VotersTable: React.FC<VotersTableProps> = props => {
   React.useEffect(() => {
     setLoading(true);
 
-    fetchVoters(page, pageSize)
+    daoAPI
+      .fetchVoters(page, pageSize)
       .then(data => {
         setVoters(data.data);
         setTotal(data.meta.count);

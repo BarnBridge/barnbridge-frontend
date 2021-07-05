@@ -4,6 +4,7 @@ import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
+import SeAPIProvider from 'modules/smart-exposure/api';
 import { SEPoolsProvider } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -43,25 +44,27 @@ const SmartExposureView: React.FC = () => {
     <>
       <NavTabs tabs={tabs} className={s.tabs} />
       <div className="content-container-fix content-container">
-        <SEPoolsProvider>
-          <Suspense fallback={<AntdSpin />}>
-            <Switch>
-              <Route path="/smart-exposure/pools" exact>
-                <PoolsView />
-              </Route>
-              <Route path="/smart-exposure/pools/:pool/:tranche" exact>
-                <TrancheView />
-              </Route>
-              <Route path="/smart-exposure/pools/:pool/:tranche/:path(deposit|withdraw|change-tranche)" exact>
-                <PoolActionsView />
-              </Route>
-              <Route path="/smart-exposure/portfolio" exact>
-                <PortfolioView />
-              </Route>
-              <Redirect to="/smart-exposure/pools" />
-            </Switch>
-          </Suspense>
-        </SEPoolsProvider>
+        <SeAPIProvider>
+          <SEPoolsProvider>
+            <Suspense fallback={<AntdSpin />}>
+              <Switch>
+                <Route path="/smart-exposure/pools" exact>
+                  <PoolsView />
+                </Route>
+                <Route path="/smart-exposure/pools/:pool/:tranche" exact>
+                  <TrancheView />
+                </Route>
+                <Route path="/smart-exposure/pools/:pool/:tranche/:path(deposit|withdraw|change-tranche)" exact>
+                  <PoolActionsView />
+                </Route>
+                <Route path="/smart-exposure/portfolio" exact>
+                  <PortfolioView />
+                </Route>
+                <Redirect to="/smart-exposure/pools" />
+              </Switch>
+            </Suspense>
+          </SEPoolsProvider>
+        </SeAPIProvider>
       </div>
     </>
   );

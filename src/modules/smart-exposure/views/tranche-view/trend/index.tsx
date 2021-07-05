@@ -7,7 +7,7 @@ import { formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
-import { fetchEtokenPrice } from 'modules/smart-exposure/api';
+import { useSeAPI } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
 
@@ -27,10 +27,12 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
   const [activeTab, setActiveTab] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const [priceList, setDataList] = useState<ETokenPriceType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
     setLoading(true);
-    fetchEtokenPrice(trancheAddress, activeTab)
+    seAPI
+      .fetchETokenPrice(trancheAddress, activeTab)
       .then(setDataList)
       .catch(err => {
         setDataList([]);

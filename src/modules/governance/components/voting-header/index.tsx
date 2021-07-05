@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
@@ -17,10 +17,11 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
+import { useWallet } from 'wallets/walletProvider';
 
 import VotingDetailedModal from '../voting-detailed-modal';
 
-import { getFormattedDuration, inRange } from 'utils';
+import { getFormattedDuration, getNowTs, inRange } from 'utils';
 
 import s from './s.module.scss';
 
@@ -36,27 +37,35 @@ const InitialState: VotingHeaderState = {
 
 const VotingHeader: React.FC = () => {
   const daoCtx = useDAO();
+  const walletCtx = useWallet();
   const { projectToken } = useKnownTokens();
   const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
 
-  const { claimValue } = daoCtx.daoReward;
+  const { toClaim } = daoCtx.daoReward;
   const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
-  const { votingPower, userLockedUntil, multiplier = 1 } = daoCtx.daoBarn;
+  const { votingPower, userLockedUntil } = daoCtx.daoBarn;
+  const [multiplier, setMultiplier] = useState<BigNumber>(BigNumber.from(1));
+
+  useEffect(() => {
+    if (walletCtx.account) {
+      daoCtx.daoBarn.getMultiplierAtTs(walletCtx.account, getNowTs()).then(value => setMultiplier(value));
+    }
+  }, [walletCtx.account]);
 
   const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
 
   function handleLeftTimeEnd() {
-    daoCtx.daoBarn.reload();
+    // daoCtx.daoBarn.reload(); /// TODO: check
   }
 
   function handleClaim() {
     setState({ claiming: true });
 
-    daoCtx.daoReward.actions
+    daoCtx.daoReward
       .claim()
       .catch(Error)
       .then(() => {
-        daoCtx.daoReward.reload();
+        // daoCtx.daoReward.reload(); /// TODO: check
         (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
         setState({ claiming: false });
       });
@@ -74,17 +83,17 @@ const VotingHeader: React.FC = () => {
           </Text>
           <Grid flow="col" gap={16} align="center">
             <Tooltip
-              title={formatToken(claimValue, {
+              title={formatToken(toClaim, {
                 decimals: projectToken.decimals,
               })}>
               <Text type="h3" weight="bold" color="primary">
-                {formatToken(claimValue, {
+                {formatToken(toClaim, {
                   hasLess: true,
                 })}
               </Text>
             </Tooltip>
             <Icon name={projectToken.icon!} />
-            <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
+            <Button type="light" disabled={toClaim?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
           </Grid>

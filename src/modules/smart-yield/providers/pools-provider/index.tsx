@@ -5,11 +5,11 @@ import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
+import { isProductionMode } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
-import { isProductionMode } from 'config';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, useSyAPI } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
@@ -17,6 +17,8 @@ import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondCont
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type PoolsSYPool = APISYPool & {
   meta?: SYPoolMeta;
@@ -47,13 +49,7 @@ type ContextType = State & {
   transferFrom: (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => Promise<void>;
 };
 
-const Context = React.createContext<ContextType>({
-  ...InitialState,
-  getMarketTVL: () => BigNumber.ZERO,
-  redeemBond: () => Promise.reject(),
-  redeemJuniorBond: () => Promise.reject(),
-  transferFrom: () => Promise.reject(),
-});
+const Context = React.createContext<ContextType>(InvariantContext('PoolsProvider'));
 
 type StatusModal = {
   visible: boolean;
@@ -76,6 +72,7 @@ const PoolsProvider: React.FC = props => {
   const { getTokenBySymbol, convertTokenIn, convertTokenInUSD, stkAaveToken, ethToken, bondToken } = useKnownTokens();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
+  const syAPI = useSyAPI();
 
   const [statusModal, setStatusModal] = React.useState<StatusModal>({
     visible: false,
@@ -124,7 +121,7 @@ const PoolsProvider: React.FC = props => {
 
     (async () => {
       try {
-        const pools = await fetchSYPools();
+        const pools = await syAPI.fetchSYPools();
 
         setState(prevState => ({
           ...prevState,

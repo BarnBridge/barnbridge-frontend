@@ -5,19 +5,11 @@ import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
+import { isProductionMode } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
-import { isProductionMode } from 'config';
 import { useReload } from 'hooks/useReload';
-import {
-  APISYPool,
-  Markets,
-  Pools,
-  SYMarketMeta,
-  SYPoolMeta,
-  fetchSYPool,
-  fetchSYRewardPools,
-} from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, useSyAPI } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
@@ -25,6 +17,8 @@ import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolCont
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type SYPool = APISYPool & {
   meta?: SYPoolMeta;
@@ -96,17 +90,7 @@ type ContextType = State & {
   actions: Actions;
 };
 
-const Context = React.createContext<ContextType>({
-  ...InitialState,
-  actions: {
-    getForfeitsFor: () => Promise.reject(),
-    approveUnderlying: () => Promise.reject(),
-    seniorDeposit: () => Promise.reject(),
-    juniorDeposit: () => Promise.reject(),
-    twoStepWithdraw: () => Promise.reject(),
-    instantWithdraw: () => Promise.reject(),
-  },
-});
+const Context = React.createContext<ContextType>(InvariantContext('PoolProvider'));
 
 export function useSYPool(): ContextType {
   return React.useContext(Context);
@@ -128,6 +112,7 @@ const PoolProvider: React.FC = props => {
     convertTokenInUSD,
     getTokenBySymbol,
   } = useKnownTokens();
+  const syAPI = useSyAPI();
   const [reload, version] = useReload();
   const [state, setState] = React.useState(InitialState);
 
@@ -200,7 +185,7 @@ const PoolProvider: React.FC = props => {
 
     (async () => {
       try {
-        const pool = await fetchSYPool(market, token);
+        const pool = await syAPI.fetchSYPool(market, token);
 
         if (!pool) {
           return await Promise.reject();
@@ -245,7 +230,7 @@ const PoolProvider: React.FC = props => {
           apy,
         };
 
-        const rewardPools = await fetchSYRewardPools(pool.protocolId, pool.underlyingSymbol);
+        const rewardPools = await syAPI.fetchSYRewardPools(pool.protocolId, pool.underlyingSymbol);
 
         if (rewardPools.length > 0) {
           rewardPool = getContract<SYRewardPoolContract>(pool.rewardPoolAddress, () => {

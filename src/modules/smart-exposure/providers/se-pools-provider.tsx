@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import ContractListener from 'web3/components/contract-listener';
 import { useContract } from 'web3/components/contractManagerProvider';
 
 import { useConfig } from 'components/providers/configProvider';
@@ -17,7 +16,7 @@ type SEContextType = {
   ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
 
-const Context = createContext<SEContextType>(InvariantContext<SEContextType>('SEPoolsProvider'));
+const Context = createContext<SEContextType>(InvariantContext('SEPoolsProvider'));
 
 export function useSEPools(): SEContextType {
   return useContext(Context);
@@ -62,11 +61,5 @@ export const SEPoolsProvider: React.FC = props => {
     ePoolPeripheryContract,
   };
 
-  return (
-    <Context.Provider value={value}>
-      {children}
-      <ContractListener contract={ePoolContract} />
-      <ContractListener contract={ePoolPeripheryContract} />
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };

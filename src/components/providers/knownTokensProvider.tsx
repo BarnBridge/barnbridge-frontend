@@ -7,9 +7,8 @@ import { formatUSD } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { TokenIconNames } from 'components/custom/icon';
-import { useConfig } from 'components/providers/configProvider';
+import { isDevelopmentMode, useConfig } from 'components/providers/configProvider';
 import { MainnetHttpsWeb3Provider } from 'components/providers/web3Provider';
-import { isDevelopmentMode } from 'config';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -80,7 +79,7 @@ export type KnownTokensContextType = {
   convertTokenInUSD(amount: BigNumber | undefined, source: string): BigNumber | undefined;
 };
 
-const Context = createContext<KnownTokensContextType>(InvariantContext<KnownTokensContextType>('KnownTokensProvider'));
+const Context = createContext<KnownTokensContextType>(InvariantContext('KnownTokensProvider'));
 
 export function useKnownTokens(): KnownTokensContextType {
   return useContext<KnownTokensContextType>(Context);

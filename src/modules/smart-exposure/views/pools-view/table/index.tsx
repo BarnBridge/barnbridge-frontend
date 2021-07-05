@@ -8,7 +8,7 @@ import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { PoolApiType, TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
+import { PoolApiType, TranchesItemApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
 import { calcTokensRatio } from 'modules/smart-exposure/utils';
@@ -131,9 +131,10 @@ type Props = {
 
 export const PairsTable: React.FC<Props> = ({ pool }) => {
   const [tranches, setTranches] = useState<TranchesItemApiType[]>([]);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranches(pool.poolAddress).then(setTranches);
+    seAPI.fetchTranches(pool.poolAddress).then(setTranches);
   }, [pool.poolAddress]);
 
   return <Table<TranchesItemApiType> columns={tableColumns} data={tranches} />;

@@ -1,14 +1,15 @@
 import React, { FC, createContext, useContext, useEffect, useMemo, useState } from 'react';
-import ContractListener from 'web3/components/contract-listener';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 
 import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
 import useRouteQuery from 'hooks/useRouteQuery';
-import { fetchSYRewardPools } from 'modules/smart-yield/api';
+import { useSyAPI } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 type RewardPoolType = {
   market?: MarketMeta;
@@ -17,12 +18,7 @@ type RewardPoolType = {
   pool?: SYRewardPoolEntity;
 };
 
-const Context = createContext<RewardPoolType>({
-  market: undefined,
-  uToken: undefined,
-  loading: false,
-  pool: undefined,
-});
+const Context = createContext<RewardPoolType>(InvariantContext('RewardPoolProvider'));
 
 export function useRewardPool(): RewardPoolType {
   return useContext(Context);
@@ -37,6 +33,7 @@ const RewardPoolProvider: FC = props => {
   const knownTokensCtx = useKnownTokens();
   const contractManagerCtx = useContractManager();
   const { getTokenBySymbol } = knownTokensCtx;
+  const syAPI = useSyAPI();
 
   const market = useMemo(() => {
     const marketId = rqCtx.get('m');
@@ -60,7 +57,7 @@ const RewardPoolProvider: FC = props => {
       setLoading(true);
 
       try {
-        const pools = await fetchSYRewardPools(market.id, uToken.symbol);
+        const pools = await syAPI.fetchSYRewardPools(market.id, uToken.symbol);
 
         if (pools.length === 0) {
           return;
@@ -97,12 +94,7 @@ const RewardPoolProvider: FC = props => {
     pool,
   };
 
-  return (
-    <Context.Provider value={value}>
-      {children}
-      <ContractListener contract={pool?.rewardPool} />
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default RewardPoolProvider;

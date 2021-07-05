@@ -126,9 +126,9 @@ const WalletLockView: React.FC = () => {
     setState({ saving: true });
 
     try {
-      await daoCtx.daoBarn.actions.lock(getUnixTime(lockEndDate), gasPrice.value);
+      await daoCtx.daoBarn.lock(getUnixTime(lockEndDate), gasPrice.value);
       form.setFieldsValue(InitialFormValues);
-      daoCtx.daoBarn.reload();
+      // daoCtx.daoBarn.reload(); /// TODO: check
     } catch {}
 
     setState({ saving: false });

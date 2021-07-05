@@ -13,7 +13,7 @@ import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYSeniorRedeem, fetchSYSeniorRedeems } from 'modules/smart-yield/api';
+import { APISYSeniorRedeem, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -50,7 +50,7 @@ const PastPositionsList: React.FC<Props> = props => {
   const wallet = useWallet();
   const { getEtherscanTxUrl } = useWeb3();
   const poolsCtx = usePools();
-
+  const syAPI = useSyAPI();
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
@@ -72,7 +72,7 @@ const PastPositionsList: React.FC<Props> = props => {
       );
 
       try {
-        const redeems = await fetchSYSeniorRedeems(
+        const redeems = await syAPI.fetchSYSeniorRedeems(
           wallet.account,
           state.page,
           state.pageSize,

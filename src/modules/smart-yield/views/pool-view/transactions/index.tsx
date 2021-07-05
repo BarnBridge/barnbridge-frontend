@@ -18,7 +18,7 @@ import {
   APISYRewardPoolTransaction,
   APISYRewardTxHistoryType,
   RewardHistoryShortTypes,
-  fetchSYRewardPoolTransactions,
+  useSyAPI,
 } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -157,6 +157,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 const Transactions: FC = () => {
   const wallet = useWallet();
   const rewardPool = useRewardPool();
+  const syAPI = useSyAPI();
 
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
@@ -215,7 +216,7 @@ const Transactions: FC = () => {
         const {
           data: transactions,
           meta: { count },
-        } = await fetchSYRewardPoolTransactions(
+        } = await syAPI.fetchSYRewardPoolTransactions(
           meta.poolAddress,
           state.page,
           state.pageSize,

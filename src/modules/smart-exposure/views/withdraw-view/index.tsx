@@ -16,7 +16,7 @@ import { TransactionSummary } from 'components/custom/transaction-summary';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
-import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
+import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -38,9 +38,10 @@ const WithdrawView: React.FC = () => {
   const [tranche, setTranche] = useState<TrancheApiType>();
   const [activeTab, setActiveTab] = useState<string>('multiple');
   const { ePoolPeripheryContract } = useSEPools();
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranche(trancheAddress).then(result => {
+    seAPI.fetchTranche(trancheAddress).then(result => {
       setTranche(result);
     });
   }, [trancheAddress]);

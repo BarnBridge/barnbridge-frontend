@@ -9,7 +9,7 @@ import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
-import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
+import { TransactionApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 export const TransactionsTable = ({
   transactionType,
@@ -21,6 +21,7 @@ export const TransactionsTable = ({
   poolAddress?: string;
 }) => {
   const { getTokenIconBySymbol } = useKnownTokens();
+  const seAPI = useSeAPI();
   const [dataList, setDataList] = useState<TransactionApiType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState<{
@@ -52,13 +53,14 @@ export const TransactionsTable = ({
   useEffect(() => {
     setLoading(true);
 
-    fetchTransactions({
-      page: filters.page,
-      limit: filters.pageSize,
-      accountAddress: filters.accountAddress,
-      poolAddress: filters.poolAddress,
-      transactionType: filters.transactionType,
-    })
+    seAPI
+      .fetchTransactions({
+        page: filters.page,
+        limit: filters.pageSize,
+        accountAddress: filters.accountAddress,
+        poolAddress: filters.poolAddress,
+        transactionType: filters.transactionType,
+      })
       .then(result => {
         if (Array.isArray(result.data)) {
           setDataList(result.data);

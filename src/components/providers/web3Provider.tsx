@@ -24,7 +24,7 @@ export type Web3ContextType = {
   event: EventEmitter;
 };
 
-const Context = createContext<Web3ContextType>(InvariantContext<Web3ContextType>('Web3Provider'));
+const Context = createContext<Web3ContextType>(InvariantContext('Web3Provider'));
 
 export function useWeb3(): Web3ContextType {
   return useContext(Context);

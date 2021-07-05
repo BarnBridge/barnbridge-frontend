@@ -59,7 +59,7 @@ type WalletContextType = {
   event: EventEmitter;
 };
 
-const Context = createContext<WalletContextType>(InvariantContext<WalletContextType>('Web3WalletProvider'));
+const Context = createContext<WalletContextType>(InvariantContext('Web3WalletProvider'));
 
 export function useWallet(): WalletContextType {
   return useContext(Context);

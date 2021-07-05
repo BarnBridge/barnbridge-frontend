@@ -7,16 +7,16 @@ import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
+import { InvariantContext } from 'utils/context';
+
 export type ContractManagerType = {
   getContract<T extends Web3Contract>(address: string, factory?: () => T): T;
 };
 
-const ContractManagerContext = createContext<ContractManagerType>({
-  getContract: () => null as any,
-});
+const Context = createContext<ContractManagerType>(InvariantContext('ContractManagerProvider'));
 
 export function useContractManager(): ContractManagerType {
-  return useContext(ContractManagerContext);
+  return useContext(Context);
 }
 
 export function useContract<T extends Web3Contract>(address: string, factory?: () => T): T {
@@ -97,12 +97,12 @@ const ContractManagerProvider: FC = props => {
   };
 
   return (
-    <ContractManagerContext.Provider value={value}>
+    <Context.Provider value={value}>
       {children}
       {Array.from(contractsRef.current).map(([address, contract]) => (
         <ContractListener key={address} contract={contract} />
       ))}
-    </ContractManagerContext.Provider>
+    </Context.Provider>
   );
 };
 

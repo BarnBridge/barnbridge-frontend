@@ -18,8 +18,8 @@ import {
   APISYTxHistoryType,
   APISYUserTxHistory,
   HistoryShortTypes,
-  fetchSYUserTxHistory,
   isPositiveHistoryType,
+  useSyAPI,
 } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -165,7 +165,7 @@ const InitialFilters: HistoryTableFilterValues = {
 const HistoryTable: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
-
+  const syAPI = useSyAPI();
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
@@ -184,7 +184,7 @@ const HistoryTable: React.FC = () => {
       );
 
       try {
-        const history = await fetchSYUserTxHistory(
+        const history = await syAPI.fetchSYUserTxHistory(
           wallet.account,
           state.page,
           state.pageSize,

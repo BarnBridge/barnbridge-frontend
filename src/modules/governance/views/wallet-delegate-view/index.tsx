@@ -66,13 +66,13 @@ const WalletDelegateView: React.FC = () => {
 
     try {
       if (delegateAddress !== userDelegatedTo) {
-        await daoCtx.daoBarn.actions.delegate(delegateAddress, gasPrice.value);
+        await daoCtx.daoBarn.delegate(delegateAddress, gasPrice.value);
       } else {
-        await daoCtx.daoBarn.actions.stopDelegate(gasPrice.value);
+        await daoCtx.daoBarn.stopDelegate(gasPrice.value);
       }
 
       form.setFieldsValue(InitialFormValues);
-      daoCtx.daoBarn.reload();
+      // daoCtx.daoBarn.reload(); /// TODO: check
     } catch {}
 
     setState({ saving: false });

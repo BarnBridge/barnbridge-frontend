@@ -14,7 +14,7 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/walletProvider';
 
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
@@ -23,7 +23,7 @@ const PoolStatistics: FC = () => {
   const { projectToken, convertTokenInUSD, getTokenBySymbol } = useKnownTokens();
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const { poolMeta } = yfPoolCtx;
 

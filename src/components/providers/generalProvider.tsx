@@ -2,6 +2,8 @@ import { Dispatch, FC, SetStateAction, createContext, useContext, useEffect, use
 import { useLocalStorage } from 'react-use-storage';
 import useWindowEventListener from '@rooks/use-window-event-listener';
 
+import { InvariantContext } from 'utils/context';
+
 export type GeneralContextType = {
   navOpen: boolean;
   setNavOpen: Dispatch<SetStateAction<boolean>>;
@@ -14,7 +16,7 @@ export type GeneralContextType = {
   };
 };
 
-const Context = createContext<GeneralContextType>({} as any);
+const Context = createContext<GeneralContextType>(InvariantContext('GeneralProvider'));
 
 const mqlDark = window.matchMedia('(prefers-color-scheme: dark)');
 const defaultTheme = mqlDark.matches ? 'dark' : 'light';
