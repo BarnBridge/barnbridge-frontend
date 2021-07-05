@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, fetchSYJuniorPastPositions } from 'modules/smart-yield/api';
@@ -27,12 +27,13 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Token Name',
     render: function Render(_, entity) {
       const { getEtherscanAddressUrl } = useWeb3();
+      const { projectToken } = useKnownTokens();
 
       return (
         <div className="flex flow-col align-center">
           <IconBubble
             name={entity.pool?.meta?.icon}
-            bubbleName={ProjectToken.icon!}
+            bubbleName={projectToken.icon!}
             secondBubbleName={entity.pool?.market?.icon}
             className="mr-16"
           />

@@ -1,12 +1,15 @@
 import React, { createContext, useContext, useEffect } from 'react';
 import ContractListener from 'web3/components/contract-listener';
+import { useContract } from 'web3/components/contractManagerProvider';
 
-import { config } from 'config';
+import { useConfig } from 'components/providers/configProvider';
 import { useReload } from 'hooks/useReload';
 import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
 import SeEPoolHelperContract from 'modules/smart-exposure/contracts/seEPoolHelperContract';
 import SeEPoolPeripheryContract from 'modules/smart-exposure/contracts/seEPoolPeripheryContract';
 import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 type SEContextType = {
   ePoolContract: SeEPoolContract;
@@ -14,15 +17,7 @@ type SEContextType = {
   ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
 
-const ePoolContract = new SeEPoolContract(config.contracts.se.ePool);
-const ePoolHelperContract = new SeEPoolHelperContract(config.contracts.se.ePoolHelper);
-const ePoolPeripheryContract = new SeEPoolPeripheryContract(config.contracts.se.ePoolPeriphery);
-
-const Context = createContext<SEContextType>({
-  ePoolContract: ePoolContract,
-  ePoolHelperContract: ePoolHelperContract,
-  ePoolPeripheryContract: ePoolPeripheryContract,
-});
+const Context = createContext<SEContextType>(InvariantContext<SEContextType>('SEPoolsProvider'));
 
 export function useSEPools(): SEContextType {
   return useContext(Context);
@@ -32,7 +27,18 @@ export const SEPoolsProvider: React.FC = props => {
   const { children } = props;
 
   const walletCtx = useWallet();
+  const config = useConfig();
   const [reload] = useReload();
+
+  const ePoolContract = useContract<SeEPoolContract>(config.contracts.se?.ePool!, () => {
+    return new SeEPoolContract(config.contracts.se?.ePool!);
+  });
+  const ePoolPeripheryContract = useContract<SeEPoolPeripheryContract>(config.contracts.se?.ePoolPeriphery!, () => {
+    return new SeEPoolPeripheryContract(config.contracts.se?.ePoolPeriphery!);
+  });
+  const ePoolHelperContract = useContract<SeEPoolHelperContract>(config.contracts.se?.ePoolHelper!, () => {
+    return new SeEPoolHelperContract(config.contracts.se?.ePoolHelper!);
+  });
 
   useEffect(() => {
     ePoolContract.setProvider(walletCtx.provider);

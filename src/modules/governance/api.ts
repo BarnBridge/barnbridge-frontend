@@ -2,7 +2,6 @@ import BigNumber from 'bignumber.js';
 import QueryString from 'query-string';
 import { getHumanValue } from 'web3/utils';
 
-import { BondToken } from 'components/providers/knownTokensProvider';
 import { config } from 'config';
 
 import { PaginatedResult } from 'utils/fetch';
@@ -24,8 +23,8 @@ export function fetchOverviewData(): Promise<APIOverviewData> {
     .then(result => result.json())
     .then(result => ({
       ...result.data,
-      totalDelegatedPower: getHumanValue(new BigNumber(result.data.totalDelegatedPower), 18),
-      totalVbond: getHumanValue(new BigNumber(result.data.totalVbond), 18),
+      totalDelegatedPower: getHumanValue(BigNumber.from(result.data.totalDelegatedPower), 18),
+      totalVbond: getHumanValue(BigNumber.from(result.data.totalVbond), 18),
     }));
 }
 
@@ -49,9 +48,9 @@ export function fetchVoters(page = 1, limit = 10): Promise<PaginatedResult<APIVo
       ...result,
       data: (result.data ?? []).map((item: APIVoterEntity) => ({
         ...item,
-        bondStaked: getHumanValue(new BigNumber(item.bondStaked), BondToken.decimals)!,
-        delegatedPower: getHumanValue(new BigNumber(item.delegatedPower), 18)!,
-        votingPower: getHumanValue(new BigNumber(item.votingPower), 18)!,
+        bondStaked: getHumanValue(BigNumber.from(item.bondStaked), 18), // bond decimals
+        delegatedPower: getHumanValue(BigNumber.from(item.delegatedPower), 18)!,
+        votingPower: getHumanValue(BigNumber.from(item.votingPower), 18)!,
       })),
     }));
 }
@@ -144,8 +143,8 @@ export function fetchProposals(
       ...result,
       data: (result.data ?? []).map(proposal => ({
         ...proposal,
-        forVotes: getHumanValue(new BigNumber(proposal.forVotes), 18)!,
-        againstVotes: getHumanValue(new BigNumber(proposal.againstVotes), 18)!,
+        forVotes: getHumanValue(BigNumber.from(proposal.forVotes), 18)!,
+        againstVotes: getHumanValue(BigNumber.from(proposal.againstVotes), 18)!,
       })),
     }));
 }
@@ -186,8 +185,8 @@ export function fetchProposal(proposalId: number): Promise<APIProposalEntity> {
     })
     .then((data: APIProposalEntity) => ({
       ...data,
-      forVotes: getHumanValue(new BigNumber(data.forVotes), 18)!,
-      againstVotes: getHumanValue(new BigNumber(data.againstVotes), 18)!,
+      forVotes: getHumanValue(BigNumber.from(data.forVotes), 18)!,
+      againstVotes: getHumanValue(BigNumber.from(data.againstVotes), 18)!,
     }));
 }
 
@@ -232,7 +231,7 @@ export function fetchProposalVoters(
       ...result,
       data: (result.data ?? []).map(vote => ({
         ...vote,
-        power: getHumanValue(new BigNumber(vote.power), 18)!,
+        power: getHumanValue(BigNumber.from(vote.power), 18)!,
       })),
     }));
 }
@@ -260,8 +259,8 @@ export function fetchAbrogation(proposalId: number): Promise<APIAbrogationEntity
     })
     .then((data: APIAbrogationEntity) => ({
       ...data,
-      forVotes: getHumanValue(new BigNumber(data.forVotes), 18)!,
-      againstVotes: getHumanValue(new BigNumber(data.againstVotes), 18)!,
+      forVotes: getHumanValue(BigNumber.from(data.forVotes), 18)!,
+      againstVotes: getHumanValue(BigNumber.from(data.againstVotes), 18)!,
     }));
 }
 
@@ -306,7 +305,7 @@ export function fetchAbrogationVoters(
       ...result,
       data: (result.data ?? []).map(vote => ({
         ...vote,
-        power: getHumanValue(new BigNumber(vote.power), 18)!,
+        power: getHumanValue(BigNumber.from(vote.power), 18)!,
       })),
     }));
 }

@@ -24,7 +24,7 @@ import { formatBigValue, formatToken } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
 import { inRange } from 'utils';
@@ -149,6 +149,7 @@ export type WalletLockChartProps = {
 const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   const { lockEndDate } = props;
 
+  const { projectToken } = useKnownTokens();
   const daoCtx = useDAO();
   const { balance: stakedBalance } = daoCtx.daoBarn;
 
@@ -175,15 +176,15 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           text={
             <>
               <Text type="p2">
-                The multiplier mechanic allows users to lock ${ProjectToken.symbol} for a period up to 1 year and get a
-                bonus of up to 2x v{ProjectToken.symbol}. The bonus is linear, as per the following example:
+                The multiplier mechanic allows users to lock ${projectToken.symbol} for a period up to 1 year and get a
+                bonus of up to 2x v{projectToken.symbol}. The bonus is linear, as per the following example:
               </Text>
               <ul>
                 <li>
-                  <Text type="p2">lock 1000 ${ProjectToken.symbol} for 1 year → get back 2000 vBOND</Text>
+                  <Text type="p2">lock 1000 ${projectToken.symbol} for 1 year → get back 2000 vBOND</Text>
                 </li>
                 <li>
-                  <Text type="p2">lock 1000 ${ProjectToken.symbol} for 6 months → get back 1500 vBOND</Text>
+                  <Text type="p2">lock 1000 ${projectToken.symbol} for 6 months → get back 1500 vBOND</Text>
                 </li>
               </ul>
               <ExternalLink href="#">Learn more</ExternalLink>
@@ -191,7 +192,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
           }>
           <Text type="small" weight="semibold">
             {formatToken(myBonus)}
-            <span> v{ProjectToken.symbol} bonus - </span>
+            <span> v{projectToken.symbol} bonus - </span>
             {inRange(multiplier, 1, 1.01) ? '>' : ''}
             {formatBigValue(multiplier, 2)}x<span> for </span>
             {formatDistanceToNow(lockEndDate)}
@@ -258,7 +259,7 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
                   return format(value, 'yyyy-MM-dd HH:mm');
               }
             }}
-            formatter={(value: any) => `${formatBigValue(new BigNumber(value), 6, '-')}x`}
+            formatter={(value: any) => `${formatBigValue(BigNumber.from(value), 6, '-')}x`}
           />
           <ReCharts.Area dataKey="bonus" name="Bonus" fill="url(#chart-gradient)" strokeWidth={2} stroke="#ff4339" />
         </ReCharts.AreaChart>

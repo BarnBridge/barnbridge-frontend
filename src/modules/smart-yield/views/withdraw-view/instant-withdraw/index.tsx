@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -15,11 +16,10 @@ import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { useWallet } from 'wallets/walletProvider';
 
 type FormData = {
   from?: BigNumber;
@@ -37,8 +37,9 @@ const InitialFormValues: FormData = {
 
 const InstantWithdraw: React.FC = () => {
   const history = useHistory();
-  const wallet = useWallet();
   const poolCtx = useSYPool();
+  const { projectToken } = useKnownTokens();
+  const { getContract } = useContractManager();
   const [form] = Antd.Form.useForm<FormData>();
 
   const [withdrawModalVisible, showWithdrawModal] = React.useState<boolean>();
@@ -96,9 +97,9 @@ const InstantWithdraw: React.FC = () => {
 
     showWithdrawModal(false);
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
+    const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+      return new SYSmartYieldContract(pool.smartYieldAddress);
+    });
 
     try {
       // uint256 debtShare = tokenAmount_ * 1e18 / SY.totalSupply();
@@ -107,14 +108,14 @@ const InstantWithdraw: React.FC = () => {
       // minUnderlying => toPay - slippage
 
       const decimals = pool.underlyingDecimals;
-      const tokenAmount = getNonHumanValue(new BigNumber(from), decimals);
+      const tokenAmount = getNonHumanValue(BigNumber.from(from), decimals);
       const forfeitsValue = await poolCtx.actions.getForfeitsFor(tokenAmount);
       const price = await smartYieldContract.getPrice();
       const toPay = tokenAmount
         .multipliedBy(price)
         .div(1e18)
         .minus(forfeitsValue ?? BigNumber.ZERO);
-      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
+      const minUnderlying = BigNumber.from(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);
@@ -160,7 +161,7 @@ const InstantWithdraw: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={pool.meta?.icon}
-                bubbleName={ProjectToken.icon!}
+                bubbleName={projectToken.icon!}
                 secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}
@@ -199,7 +200,7 @@ const InstantWithdraw: React.FC = () => {
             const { from } = form.getFieldsValue();
             const to =
               from && pool
-                ? new BigNumber(from.multipliedBy(pool.state.jTokenPrice).toFixed(pool.underlyingDecimals))
+                ? BigNumber.from(from.multipliedBy(pool.state.jTokenPrice).toFixed(pool.underlyingDecimals))
                 : undefined;
 
             return (

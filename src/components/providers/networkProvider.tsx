@@ -3,6 +3,7 @@ import { FC, createContext, useCallback, useContext, useMemo, useState } from 'r
 import Icon, { IconNames } from 'components/custom/icon';
 import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
+import { isDevelopmentMode, isProductionMode } from 'config';
 import { GoerliNetwork } from 'networks/goerli';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
@@ -39,14 +40,15 @@ export function useNetwork(): NetworkType {
 }
 
 const networks: Web3Network[] = (() => {
-  switch (process.env.REACT_APP_ENV) {
-    case 'development':
-      return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, PolygonNetwork, TestnetNetwork];
-    case 'production':
-      return [MainnetNetwork, PolygonNetwork, TestnetNetwork];
-    default:
-      return [];
+  if (isDevelopmentMode) {
+    return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, PolygonNetwork, TestnetNetwork];
   }
+
+  if (isProductionMode) {
+    return [MainnetNetwork, PolygonNetwork, TestnetNetwork];
+  }
+
+  return [];
 })();
 
 const NetworkProvider: FC = props => {

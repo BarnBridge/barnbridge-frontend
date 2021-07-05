@@ -56,7 +56,10 @@ export type NetworkConfig = {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
     dao?: Record<'governance' | 'barn' | 'reward', string>;
     se?: Record<'ePool' | 'ePoolPeriphery' | 'ePoolHelper', string>;
-    faucets?: Record<'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai', string>;
+    faucets?: Record<
+      'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai',
+      string
+    >;
   };
 };
 

@@ -13,7 +13,7 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import {
   APISYPoolTransaction,
@@ -34,32 +34,36 @@ type TableEntity = APISYPoolTransaction & {
 const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <div className="flex">
-        {entity.isTokenAmount ? (
-          <IconBubble
-            name={entity.poolEntity?.meta?.icon}
-            bubbleName={ProjectToken.icon!}
-            secondBubbleName={entity.poolEntity?.market?.icon}
-            className="mr-16"
-          />
-        ) : (
-          <IconBubble
-            name={entity.poolEntity?.meta?.icon}
-            bubbleName={entity.poolEntity?.market?.icon}
-            className="mr-16"
-          />
-        )}
-        <div className="flex flow-row">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.symbol : entity.underlyingTokenSymbol}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {entity.poolEntity?.market?.name}
-          </Text>
+    render: function Render(_, entity) {
+      const { projectToken } = useKnownTokens();
+
+      return (
+        <div className="flex">
+          {entity.isTokenAmount ? (
+            <IconBubble
+              name={entity.poolEntity?.meta?.icon}
+              bubbleName={projectToken.icon!}
+              secondBubbleName={entity.poolEntity?.market?.icon}
+              className="mr-16"
+            />
+          ) : (
+            <IconBubble
+              name={entity.poolEntity?.meta?.icon}
+              bubbleName={entity.poolEntity?.market?.icon}
+              className="mr-16"
+            />
+          )}
+          <div className="flex flow-row">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.symbol : entity.underlyingTokenSymbol}
+            </Text>
+            <Text type="small" weight="semibold" color="secondary">
+              {entity.poolEntity?.market?.name}
+            </Text>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   {
     title: 'Tranche / Transaction',
@@ -258,7 +262,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = false;
-            computedAmount = new BigNumber(item.amount);
+            computedAmount = BigNumber.from(item.amount);
           }
 
           if (
@@ -274,7 +278,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = true;
-            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
+            computedAmount = BigNumber.from(item.amount).multipliedBy(pool.state.jTokenPrice);
           }
         }
 

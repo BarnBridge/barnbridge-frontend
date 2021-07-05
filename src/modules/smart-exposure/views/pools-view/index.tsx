@@ -7,7 +7,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
@@ -17,6 +17,7 @@ import { getRelativeTime } from 'utils';
 const PoolsView: React.FC = () => {
   const [pools, setPools] = useState<PoolApiType[]>([]);
   const [selectedPools, setSelectedPools] = useState<PoolApiType[]>([]);
+  const { getTokenBySymbol } = useKnownTokens();
 
   useEffect(() => {
     fetchPools().then(result => {

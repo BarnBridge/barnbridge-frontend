@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -77,6 +78,7 @@ const JuniorPortfolioInner: React.FC = () => {
   const walletCtx = useWallet();
   const poolsCtx = usePools();
   const rewardPoolsCtx = useRewardPools();
+  const { getContract } = useContractManager();
 
   const { pools } = poolsCtx;
 
@@ -98,9 +100,9 @@ const JuniorPortfolioInner: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-        smartYieldContract.setProvider(walletCtx.provider);
-        smartYieldContract.setAccount(walletCtx.account);
+        const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+          return new SYSmartYieldContract(pool.smartYieldAddress);
+        });
 
         return new Promise<any>(resolve => {
           (async () => {
@@ -145,9 +147,9 @@ const JuniorPortfolioInner: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        const juniorBondContract = new SYJuniorBondContract(pool.juniorBondAddress);
-        juniorBondContract.setProvider(walletCtx.provider);
-        juniorBondContract.setAccount(walletCtx.account);
+        const juniorBondContract = getContract<SYJuniorBondContract>(pool.juniorBondAddress, () => {
+          return new SYJuniorBondContract(pool.juniorBondAddress);
+        });
 
         return new Promise<any>(resolve => {
           (async () => {
@@ -157,8 +159,9 @@ const JuniorPortfolioInner: React.FC = () => {
               return resolve(undefined);
             }
 
-            const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-            smartYieldContract.setProvider(walletCtx.provider);
+            const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+              return new SYSmartYieldContract(pool.smartYieldAddress);
+            });
 
             const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
 

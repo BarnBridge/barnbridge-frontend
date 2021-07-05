@@ -1,6 +1,7 @@
 import React, { FC, createContext, useCallback, useContext, useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import ContractListener from 'web3/components/contract-listener';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
@@ -30,6 +31,7 @@ const RewardPoolsProvider: FC = props => {
   const { children } = props;
 
   const knownTokensCtx = useKnownTokens();
+  const contractManagerCtx = useContractManager();
   const walletCtx = useWallet();
   const [reload] = useReload();
 
@@ -86,7 +88,7 @@ const RewardPoolsProvider: FC = props => {
       try {
         const result = await fetchSYRewardPools();
         const rewardPools = result.map(item => {
-          const entity = new SYRewardPoolEntity(item);
+          const entity = new SYRewardPoolEntity(item, knownTokensCtx, contractManagerCtx);
           entity.updateProvider(walletCtx.provider);
           entity.onDataUpdate(reload);
           entity.loadCommonData();

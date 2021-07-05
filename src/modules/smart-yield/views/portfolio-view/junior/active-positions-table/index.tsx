@@ -12,7 +12,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -30,12 +30,13 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     title: 'Token Name',
     render: function Render(_, entity) {
       const { getEtherscanAddressUrl } = useWeb3();
+      const { projectToken } = useKnownTokens();
 
       return (
         <div className="flex flow-col align-center">
           <IconBubble
             name={entity.meta?.icon}
-            bubbleName={ProjectToken.icon!}
+            bubbleName={projectToken.icon!}
             secondBubbleName={entity.market?.icon}
             className="mr-16"
           />

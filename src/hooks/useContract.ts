@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef } from 'react';
 import isEqual from 'lodash/isEqual';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
@@ -28,13 +29,16 @@ export const useContract = (
 ): Erc20Contract | null => {
   const wallet = useWallet();
   const [reload] = useReload();
+  const { getContract } = useContractManager();
 
   const contract = useMemo(() => {
     if (!address) {
       return null;
     }
 
-    const contract: Erc20Contract = new Erc20Contract([], address); // (getTokenByAddress(address)?.contract as Erc20Contract) ?? new Erc20Contract([], address);
+    const contract: Erc20Contract = getContract<Erc20Contract>(address, () => {
+      return new Erc20Contract([], address);
+    }); // (getTokenByAddress(address)?.contract as Erc20Contract) ?? new Erc20Contract([], address);
     contract.setProvider(wallet.provider);
     contract.on(Web3Contract.UPDATE_DATA, reload);
 

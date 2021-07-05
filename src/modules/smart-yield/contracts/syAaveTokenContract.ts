@@ -2,8 +2,6 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import { EthToken } from 'components/providers/knownTokensProvider';
-
 const AaveIncentivesABI: AbiItem[] = [createAbiItem('getAssetData', ['address'], ['uint256', 'uint256', 'uint256'])];
 
 class SYAaveIncentivesContract extends Web3Contract {
@@ -15,7 +13,7 @@ class SYAaveIncentivesContract extends Web3Contract {
 
   async loadAssetData(aTokenAddress: string): Promise<void> {
     const { 1: emissionPerSecond } = await this.call('getAssetData', [aTokenAddress]);
-    this.emissionPerSecond = new BigNumber(emissionPerSecond);
+    this.emissionPerSecond = BigNumber.from(emissionPerSecond);
     this.emit(Web3Contract.UPDATE_DATA);
   }
 }
@@ -45,7 +43,7 @@ class SYAaveTokenContract extends Web3Contract {
     const { emissionPerSecond } = this.incentivesController;
 
     const emissionPerYear = BigNumber.from(emissionPerSecond)
-      ?.unscaleBy(EthToken.decimals)
+      ?.unscaleBy(18) // TODO: ETH decimals
       ?.multipliedBy(aTokenPriceInEth)
       .multipliedBy(365 * 24 * 60 * 60);
 

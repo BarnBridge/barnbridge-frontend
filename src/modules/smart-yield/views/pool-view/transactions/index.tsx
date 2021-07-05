@@ -11,7 +11,7 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import {
@@ -55,6 +55,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Transaction',
       width: '25%',
       render: function TransactionRender(_, entity) {
+        const { projectToken } = useKnownTokens();
         const rpCtx = useRewardPool();
         const { market: poolMarket, uToken, pool } = rpCtx;
         const { smartYield } = pool!;
@@ -63,7 +64,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           <div className="flex flow-col col-gap-16 align-center">
             <IconBubble
               name={uToken?.icon}
-              bubbleName={ProjectToken.icon!}
+              bubbleName={projectToken.icon!}
               secondBubbleName={poolMarket?.icon.active}
             />
             <div>
@@ -82,6 +83,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Amount',
       width: '25%',
       render: function TransactionRender(_, entity) {
+        const { convertTokenInUSD } = useKnownTokens();
         const rpCtx = useRewardPool();
         const { pool } = rpCtx;
         const { smartYield } = pool!;

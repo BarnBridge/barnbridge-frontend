@@ -43,7 +43,7 @@ class AaveFauceteerContract extends Web3Contract implements IFauceteer {
   }
 
   drip(faucetAddress: string, decimals: number = 18) {
-    return this.send('mint', [faucetAddress, new BigNumber(10_000).scaleBy(decimals)]);
+    return this.send('mint', [faucetAddress, BigNumber.from(10_000).scaleBy(decimals)]);
   }
 }
 

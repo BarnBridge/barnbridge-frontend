@@ -6,7 +6,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { EnableTokenButton } from 'components/custom/enable-token';
-import Icon from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Spinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
@@ -14,7 +14,7 @@ import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/
 import TransactionDetails from 'components/custom/transaction-details';
 import { TransactionSummary } from 'components/custom/transaction-summary';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
@@ -33,6 +33,7 @@ const tabs = [
 
 const WithdrawView: React.FC = () => {
   const wallet = useWallet();
+  const { getTokenBySymbol, getTokenIconBySymbol } = useKnownTokens();
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tranche, setTranche] = useState<TrancheApiType>();
   const [activeTab, setActiveTab] = useState<string>('multiple');
@@ -171,6 +172,7 @@ const MultipleTokensForm = ({
   tokenBContract: Erc20Contract;
   tokenEContract: Erc20Contract;
 }) => {
+  const { getTokenIconBySymbol } = useKnownTokens();
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenEState, setTokenEState] = useState<string>('');
   const [tokenAState, setTokenAState] = useState<BigNumber | undefined>();
@@ -223,7 +225,7 @@ const MultipleTokensForm = ({
     }
   };
 
-  const feeRate = new BigNumber(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
+  const feeRate = BigNumber.from(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
   const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract?.decimals) ?? BigNumber.ZERO;
 
   const tokenEErrors = useMemo(() => {
@@ -276,7 +278,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmountPreview
-        before={<Icon name={tokenAIcon} width={24} height={24} />}
+        before={<Icon name={tokenAIcon as IconNames} width={24} height={24} />}
         value={tokenAState?.unscaleBy(tranche.tokenA.decimals)?.toString() || '0'}
         secondary={formatUSD(
           tokenAState?.unscaleBy(tranche.tokenA.decimals)?.multipliedBy(tranche.tokenA.state.price) ?? 0,
@@ -299,7 +301,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmountPreview
-        before={<Icon name={tokenBIcon} width={24} height={24} />}
+        before={<Icon name={tokenBIcon as IconNames} width={24} height={24} />}
         value={tokenBState?.unscaleBy(tranche.tokenB.decimals)?.toString() || '0'}
         secondary={formatUSD(
           tokenBState?.unscaleBy(tranche.tokenB.decimals)?.multipliedBy(tranche.tokenB.state.price) ?? 0,
@@ -377,6 +379,7 @@ const SingleTokenForm = ({
   tokenBContract: Erc20Contract;
   tokenEContract: Erc20Contract;
 }) => {
+  const { getTokenBySymbol, getTokenIconBySymbol } = useKnownTokens();
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tokenEState, setTokenEState] = useState<string>('');
   const [selectedTokenValue, setSelectedTokenValue] = useState<BigNumber | undefined>();
@@ -449,7 +452,7 @@ const SingleTokenForm = ({
     }
   };
 
-  const feeRate = new BigNumber(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
+  const feeRate = BigNumber.from(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
   const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract.decimals) ?? BigNumber.ZERO;
 
   const tokenEErrors = useMemo(() => {

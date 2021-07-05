@@ -4,7 +4,6 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken } from 'components/providers/knownTokensProvider';
 import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
@@ -20,7 +19,7 @@ function loadCommonData(): Promise<any> {
   return Contract.batch([
     {
       method: 'bondStaked',
-      transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals),
+      transform: (value: string) => getHumanValue(BigNumber.from(value), 18), // bond decimals
     },
   ]).then(([bondStaked]) => {
     return {
@@ -38,17 +37,17 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'balanceOf',
       methodArgs: [userAddress],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals),
+      transform: (value: string) => getHumanValue(BigNumber.from(value), 18), // bond decimals
     },
     {
       method: 'votingPower',
       methodArgs: [userAddress],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals),
+      transform: (value: string) => getHumanValue(BigNumber.from(value), 18), // bond decimals
     },
     {
       method: 'multiplierAtTs',
       methodArgs: [userAddress, getNowTs()],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals)?.toNumber(),
+      transform: (value: string) => getHumanValue(BigNumber.from(value), 18)?.toNumber(), // bond decimals
     },
     {
       method: 'userLockedUntil',
@@ -58,7 +57,7 @@ function loadUserData(userAddress?: string): Promise<any> {
     {
       method: 'delegatedPower',
       methodArgs: [userAddress],
-      transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals),
+      transform: (value: string) => getHumanValue(BigNumber.from(value), 18), // bond decimals
     },
     {
       method: 'userDelegatedTo',
@@ -75,18 +74,18 @@ function loadUserData(userAddress?: string): Promise<any> {
 }
 
 function bondStakedAtTsCall(timestamp: number): Promise<BigNumber | undefined> {
-  return Contract.call('bondStakedAtTs', [timestamp], {}).then((value: string) =>
-    getHumanValue(new BigNumber(value), BondToken.decimals),
+  return Contract.call('bondStakedAtTs', [timestamp], {}).then(
+    (value: string) => getHumanValue(BigNumber.from(value), 18), // bond decimals
   );
 }
 
 function votingPowerCall(address: string): Promise<BigNumber | undefined> {
-  return Contract.call('votingPower', [address], {}).then((value: string) => getHumanValue(new BigNumber(value), 18));
+  return Contract.call('votingPower', [address], {}).then((value: string) => getHumanValue(BigNumber.from(value), 18));
 }
 
 function votingPowerAtTsCall(address: string, timestamp: number): Promise<BigNumber | undefined> {
   return Contract.call('votingPowerAtTs', [address, timestamp], {}).then((value: string) =>
-    getHumanValue(new BigNumber(value), 18),
+    getHumanValue(BigNumber.from(value), 18),
   );
 }
 

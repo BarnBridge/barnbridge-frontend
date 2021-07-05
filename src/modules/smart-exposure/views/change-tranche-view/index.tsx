@@ -7,7 +7,7 @@ import IconsPair from 'components/custom/icons-pair';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 
 type ETokenType = '75:25_WBTC_ETH' | '50:50_WBTC_ETH' | '25:75_WBTC_ETH';
@@ -20,6 +20,8 @@ type ETokenOptionType = {
 const ChangeTrancheView: React.FC = () => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const [tranche, setTranche] = useState<TrancheApiType>();
+
+  const { getTokenBySymbol } = useKnownTokens();
 
   useEffect(() => {
     fetchTranche(trancheAddress).then(result => {

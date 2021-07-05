@@ -5,7 +5,7 @@ import Button from 'components/antd/button';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/generalProvider';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import ConnectedWallet from 'wallets/components/connected-wallet';
@@ -19,15 +19,16 @@ const LayoutHeader: React.FC = () => {
   const network = useNetwork();
   const ethWeb3 = useWeb3();
   const wallet = useWallet();
+  const { projectToken } = useKnownTokens();
 
   async function handleMetamaskAddToken() {
     try {
       await metamask_AddToken(ethWeb3.activeProvider, {
         type: 'ERC20',
         options: {
-          address: ProjectToken.address,
-          symbol: ProjectToken.symbol,
-          decimals: ProjectToken.decimals,
+          address: projectToken.address,
+          symbol: projectToken.symbol,
+          decimals: projectToken.decimals,
           image: `${window.location.origin}/android-chrome-192x192.png`,
         },
       });

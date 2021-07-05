@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, formatPercent, formatToken } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -13,7 +14,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { mergeState } from 'hooks/useMergeState';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
@@ -47,6 +48,8 @@ const JuniorTranche: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const poolCtx = useSYPool();
+  const { getContract } = useContractManager();
+  const { projectToken } = useKnownTokens();
   const [form] = Antd.Form.useForm<FormData>();
 
   const { pool, marketId, tokenId } = poolCtx;
@@ -61,7 +64,7 @@ const JuniorTranche: React.FC = () => {
   const formDisabled = !uAllowed;
   const [isApproving, setApproving] = React.useState<boolean>(false);
   const [amount, setAmount] = React.useState('');
-  const bnAmount = amount ? new BigNumber(amount) : undefined;
+  const bnAmount = amount ? BigNumber.from(amount) : undefined;
 
   function handlePriceReverse() {
     setPriceReversible(prevState => !prevState);
@@ -82,7 +85,9 @@ const JuniorTranche: React.FC = () => {
       return;
     }
 
-    const controllerContract = new SYControllerContract(pool.controllerAddress);
+    const controllerContract = getContract<SYControllerContract>(pool.controllerAddress, () => {
+      return new SYControllerContract(pool.controllerAddress);
+    });
     controllerContract.setProvider(wallet.provider);
     controllerContract.getJuniorBuyFee().then(setJuniorFee);
   }, [pool?.controllerAddress]);
@@ -92,9 +97,9 @@ const JuniorTranche: React.FC = () => {
       return;
     }
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
+    const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+      return new SYSmartYieldContract(pool.smartYieldAddress);
+    });
 
     smartYieldContract.getPrice().then(setPrice);
   }, [pool?.smartYieldAddress]);
@@ -128,7 +133,7 @@ const JuniorTranche: React.FC = () => {
     }
 
     /// minTo = (from - fee) * price - slippage
-    const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
+    const minAmount = from.multipliedBy(BigNumber.from(1).minus(juniorFee.dividedBy(1e18)));
 
     return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippage ?? 0) / 100);
   }
@@ -194,13 +199,9 @@ const JuniorTranche: React.FC = () => {
       }),
     );
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
-
     const decimals = pool.underlyingDecimals;
     const amount = from.multipliedBy(10 ** decimals);
-    const minTokens = new BigNumber((getMinAmount() ?? BigNumber.ZERO).multipliedBy(10 ** decimals).toFixed(0));
+    const minTokens = BigNumber.from((getMinAmount() ?? BigNumber.ZERO).multipliedBy(10 ** decimals).toFixed(0));
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
     try {
@@ -275,7 +276,7 @@ const JuniorTranche: React.FC = () => {
                 before={
                   <IconBubble
                     name={pool?.meta?.icon}
-                    bubbleName={ProjectToken.icon!}
+                    bubbleName={projectToken.icon!}
                     secondBubbleName={pool?.market?.icon}
                     width={24}
                     height={24}

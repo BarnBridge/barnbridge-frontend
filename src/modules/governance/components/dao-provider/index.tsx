@@ -4,6 +4,7 @@ import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 
 import { useConfig } from 'components/providers/configProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { DAOBarnContract, useDAOBarnContract } from 'modules/governance/contracts/daoBarn';
 import { DAOGovernanceContract, useDAOGovernanceContract } from 'modules/governance/contracts/daoGovernance';
@@ -11,7 +12,6 @@ import { DAORewardContract, useDAORewardContract } from 'modules/governance/cont
 import { useWallet } from 'wallets/walletProvider';
 
 import { APIProposalStateId } from '../../api';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 export type DAOProviderState = {
   minThreshold: number;

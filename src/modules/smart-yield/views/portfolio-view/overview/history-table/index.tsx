@@ -11,7 +11,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
 import {
@@ -37,27 +37,31 @@ type TableEntity = APISYUserTxHistory & {
 const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        {entity.isTokenAmount ? (
-          <IconBubble
-            name={entity.poolEntity?.meta?.icon}
-            bubbleName={ProjectToken.icon!}
-            secondBubbleName={entity.poolEntity?.market?.icon}
-          />
-        ) : (
-          <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
-        )}
-        <Grid flow="row" gap={4} className="ml-auto">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {entity.underlyingTokenSymbol}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {entity.poolEntity?.market?.name}
-          </Text>
+    render: function Render(_, entity) {
+      const { projectToken } = useKnownTokens();
+
+      return (
+        <Grid flow="col" gap={16} align="center">
+          {entity.isTokenAmount ? (
+            <IconBubble
+              name={entity.poolEntity?.meta?.icon}
+              bubbleName={projectToken.icon!}
+              secondBubbleName={entity.poolEntity?.market?.icon}
+            />
+          ) : (
+            <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
+          )}
+          <Grid flow="row" gap={4} className="ml-auto">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {entity.underlyingTokenSymbol}
+            </Text>
+            <Text type="small" weight="semibold" color="secondary">
+              {entity.poolEntity?.market?.name}
+            </Text>
+          </Grid>
         </Grid>
-      </Grid>
-    ),
+      );
+    },
   },
   {
     title: 'Tranche / Transaction',
@@ -228,7 +232,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = false;
-            computedAmount = new BigNumber(item.amount);
+            computedAmount = BigNumber.from(item.amount);
           }
 
           if (
@@ -244,7 +248,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = true;
-            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
+            computedAmount = BigNumber.from(item.amount).multipliedBy(pool.state.jTokenPrice);
           }
         }
 

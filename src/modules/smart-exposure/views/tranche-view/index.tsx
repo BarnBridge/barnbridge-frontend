@@ -6,7 +6,7 @@ import classNames from 'classnames';
 // import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
-import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -24,6 +24,7 @@ const TrancheView: React.FC = () => {
   const location = useLocation();
   const wallet = useWallet();
   const [tranche, setTranche] = useState<TrancheApiType>();
+  const { getTokenBySymbol } = useKnownTokens();
 
   useEffect(() => {
     fetchTranche(trancheAddress).then(result => {

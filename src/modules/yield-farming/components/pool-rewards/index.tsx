@@ -6,7 +6,7 @@ import { formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
 import PoolHarvestModal from '../../components/pool-harvest-modal';
@@ -17,10 +17,11 @@ import s from './s.module.scss';
 const PoolRewards: FC = () => {
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
+  const { projectToken } = useKnownTokens();
 
   const [harvestModalVisible, showHarvestModal] = useState(false);
 
-  const bondContract = BondToken.contract as Erc20Contract;
+  const bondContract = projectToken.contract as Erc20Contract;
 
   const totalToClaim = yfPoolsCtx.yfPools.reduce((sum: BigNumber | undefined, { contract }) => {
     return (sum ?? BigNumber.ZERO).plus(contract.toClaim ?? BigNumber.ZERO);
@@ -47,9 +48,9 @@ const PoolRewards: FC = () => {
           </Text>
           <div className="flex col-gap-16 align-center">
             <Text type="h3" weight="bold" color="primary">
-              {formatToken(totalToClaim?.unscaleBy(BondToken.decimals))}
+              {formatToken(totalToClaim?.unscaleBy(projectToken.decimals))}
             </Text>
-            <Icon name={BondToken.icon!} />
+            <Icon name={projectToken.icon!} />
             {walletCtx.isActive && (
               <button
                 type="button"
@@ -69,9 +70,9 @@ const PoolRewards: FC = () => {
           </Text>
           <div className="flex col-gap-16 align-center">
             <Text type="h3" weight="bold" color="primary">
-              {formatToken(bondContract.balance?.unscaleBy(BondToken.decimals)) ?? '-'}
+              {formatToken(bondContract.balance?.unscaleBy(projectToken.decimals)) ?? '-'}
             </Text>
-            <Icon name={BondToken.icon!} />
+            <Icon name={projectToken.icon!} />
           </div>
         </div>
         <div className="v-divider" />
@@ -85,7 +86,7 @@ const PoolRewards: FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatToken(totalPotentialReward) ?? '-'}
             </Text>
-            <Icon name={BondToken.icon!} />
+            <Icon name={projectToken.icon!} />
           </div>
         </div>
       </div>

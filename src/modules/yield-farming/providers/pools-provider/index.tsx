@@ -1,20 +1,10 @@
 import React, { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { useContract } from 'web3/components/contractManagerProvider';
-import Web3Contract from 'web3/web3Contract';
 
 import { useConfig } from 'components/providers/configProvider';
-import {
-  BondToken,
-  DaiToken,
-  SusdToken,
-  TokenMeta,
-  UniV2Token,
-  UsdcToken,
-  convertTokenInUSD,
-} from 'components/providers/knownTokensProvider';
+import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
-import { useReload } from 'hooks/useReload';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { YfStakingContract } from 'modules/yield-farming/contracts/yfStaking';
 import { useWallet } from 'wallets/walletProvider';
@@ -72,6 +62,7 @@ const YFPoolsProvider: FC = props => {
   const config = useConfig();
   const walletCtx = useWallet();
   const web3Ctx = useWeb3();
+  const { usdcToken, daiToken, susdToken, univ2Token, bondToken, convertTokenInUSD } = useKnownTokens();
 
   const stakingContract = useYfStakingContract(config.contracts.yf?.staking!);
   const yfStableContract = useYfContract(config.contracts.yf?.stable!);
@@ -83,19 +74,19 @@ const YFPoolsProvider: FC = props => {
       {
         name: YFPoolID.STABLE,
         label: 'USDC/DAI/sUSD',
-        tokens: [UsdcToken, DaiToken, SusdToken],
+        tokens: [usdcToken, daiToken, susdToken],
         contract: yfStableContract,
       },
       {
         name: YFPoolID.UNILP,
         label: 'USDC_BOND_UNI_LP',
-        tokens: [UniV2Token],
+        tokens: [univ2Token],
         contract: yfUnilpContract,
       },
       {
         name: YFPoolID.BOND,
         label: 'BOND',
-        tokens: [BondToken],
+        tokens: [bondToken],
         contract: yfBondContract,
       },
     ],
@@ -234,7 +225,7 @@ const YFPoolsProvider: FC = props => {
         return undefined;
       }
 
-      return new BigNumber(distributedReward);
+      return BigNumber.from(distributedReward);
     });
   }, [yfPools]);
 
@@ -246,7 +237,7 @@ const YFPoolsProvider: FC = props => {
         return undefined;
       }
 
-      return new BigNumber(totalSupply);
+      return BigNumber.from(totalSupply);
     });
   }, [yfPools]);
 

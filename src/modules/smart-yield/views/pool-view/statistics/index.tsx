@@ -10,7 +10,7 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, ProjectToken } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -24,6 +24,7 @@ const Statistics: FC<Props> = props => {
   const { className } = props;
   const walletCtx = useWallet();
   const rewardPoolCtx = useRewardPool();
+  const { projectToken } = useKnownTokens();
   const pool = rewardPoolCtx.pool!;
 
   const { market: poolMarket, uToken } = rewardPoolCtx;
@@ -77,7 +78,7 @@ const Statistics: FC<Props> = props => {
             <dd>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName={ProjectToken.icon!}
+                bubbleName={projectToken.icon!}
                 secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}
@@ -93,7 +94,7 @@ const Statistics: FC<Props> = props => {
             <dd>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName={ProjectToken.icon!}
+                bubbleName={projectToken.icon!}
                 secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}

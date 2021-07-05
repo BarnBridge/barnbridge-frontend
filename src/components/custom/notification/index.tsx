@@ -6,15 +6,16 @@ import * as dateFns from 'date-fns';
 import format from 'date-fns/format';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { NotificationType, useNotifications } from 'components/providers/notificationsProvider';
-import { Web3ContextType, useWeb3 } from 'components/providers/web3Provider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 
 import ExternalLink from '../externalLink';
@@ -46,11 +47,12 @@ function getStrongText(text: string = ''): React.ReactNode {
   );
 }
 
-function getData(
-  n: NotificationType,
-  activeWeb3: Web3ContextType,
-  reload: Function,
-): [IconNames, [string, string], React.ReactNode] {
+function useGetData(n: NotificationType): [IconNames, [string, string], React.ReactNode] {
+  const [reload] = useReload();
+  const activeWeb3 = useWeb3();
+  const knownTokens = useKnownTokens();
+  const { getContract } = useContractManager();
+
   switch (n.notificationType) {
     case 'proposal-created':
       return [
@@ -214,7 +216,9 @@ function getData(
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
           {getStrongText(
-            `${getHumanValue(new BigNumber(n.metadata.amount ?? 0), BondToken.decimals)?.toFixed()} vBOND`,
+            `${getHumanValue(new BigNumber(n.metadata.amount ?? 0), knownTokens.projectToken.decimals)?.toFixed()} v${
+              knownTokens.projectToken.symbol
+            }`,
           )}{' '}
           has been delegated to you from{' '}
           <ExternalLink href={activeWeb3.getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
@@ -226,7 +230,9 @@ function getData(
       let erc20Contract = SYContractsMap.get(n.metadata.syPoolAddress);
 
       if (!erc20Contract) {
-        erc20Contract = new Erc20Contract([], n.metadata.syPoolAddress);
+        erc20Contract = getContract<Erc20Contract>(n.metadata.syPoolAddress, () => {
+          return new Erc20Contract([], n.metadata.syPoolAddress);
+        });
         SYContractsMap.set(n.metadata.syPoolAddress, erc20Contract);
         erc20Contract
           .loadCommon()
@@ -296,9 +302,7 @@ type Props = {
 
 export const Notification: React.FC<Props> = ({ n }) => {
   const { notificationsReadUntil } = useNotifications();
-  const activeWeb3 = useWeb3();
-  const [reload] = useReload();
-  const [iconName, colors, content] = getData(n, activeWeb3, reload);
+  const [iconName, colors, content] = useGetData(n);
   const date = new Date(n.startsOn * 1000);
   const isUnread = notificationsReadUntil ? notificationsReadUntil < n.startsOn : false;
 
@@ -320,9 +324,8 @@ type ToastProps = {
 };
 
 export const Toast: React.FC<ToastProps> = ({ n, onClose, timeout }) => {
-  const activeWeb3 = useWeb3();
-  const [reload] = useReload();
-  const [iconName, colors, content] = getData(n, activeWeb3, reload);
+  const [iconName, colors, content] = useGetData(n);
+
   useEffect(() => {
     if (timeout && timeout !== Infinity) {
       setTimeout(onClose, timeout, n.id);

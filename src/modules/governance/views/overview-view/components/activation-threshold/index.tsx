@@ -8,7 +8,7 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 import { useDAO } from '../../../../components/dao-provider';
 
@@ -17,6 +17,7 @@ export type ActivationThresholdProps = {
 };
 
 const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
+  const { projectToken } = useKnownTokens();
   const config = useConfig();
   const daoCtx = useDAO();
   const [activating, setActivating] = React.useState<boolean>(false);
@@ -38,7 +39,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           text={
             <Text type="p2">
               For the DAO to be activated, a threshold of {formatToken(config.dao?.activationThreshold)} $
-              {ProjectToken.symbol} tokens staked has to be met.
+              {projectToken.symbol} tokens staked has to be met.
             </Text>
           }>
           <Text type="p1" weight="semibold" color="primary">
@@ -58,7 +59,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icon name={ProjectToken.icon!} />
+          <Icon name={projectToken.icon!} />
           <Text type="p1" weight="bold" color="primary">
             {formatToken(daoCtx.bondStaked)}
           </Text>

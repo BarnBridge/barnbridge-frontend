@@ -13,7 +13,7 @@ import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
-import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 
 import { useYFPool } from '../../providers/pool-provider';
@@ -23,7 +23,7 @@ import s from './s.module.scss';
 
 const PoolStake: FC = () => {
   const config = useConfig();
-  const knownTokensCtx = useKnownTokens();
+  const { getTokenBySymbol, convertTokenInUSD } = useKnownTokens();
   const yfPoolsCtx = useYFPools();
   const yfPoolCtx = useYFPool();
 
@@ -45,10 +45,10 @@ const PoolStake: FC = () => {
   const stakedBalance = selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken.decimals);
   const walletBalance = activeContract.balance?.unscaleBy(activeToken.decimals);
   const maxAmount = BigNumber.min(walletBalance ?? BigNumber.ZERO, allowance ?? BigNumber.ZERO);
-  const bnAmount = new BigNumber(amount);
+  const bnAmount = BigNumber.from(amount);
 
   function handleTokenSelect(tokenSymbol: string) {
-    const tokenMeta = knownTokensCtx.getTokenBySymbol(tokenSymbol);
+    const tokenMeta = getTokenBySymbol(tokenSymbol);
     setActiveToken(tokenMeta);
   }
 
@@ -73,7 +73,7 @@ const PoolStake: FC = () => {
   async function handleStakeConfirm({ gasPrice }: any) {
     setConfirmModalVisible(false);
 
-    let value = new BigNumber(amount);
+    let value = BigNumber.from(amount);
 
     if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();

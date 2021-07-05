@@ -124,7 +124,7 @@ const VotingHeader: React.FC = () => {
 
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {leftTime => {
-            const leftMultiplier = new BigNumber(multiplier - 1)
+            const leftMultiplier = BigNumber.from(multiplier - 1)
               .multipliedBy(leftTime)
               .div(loadedUserLockedUntil)
               .plus(1);

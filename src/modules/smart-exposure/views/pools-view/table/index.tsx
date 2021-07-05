@@ -7,7 +7,7 @@ import { Badge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
-import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { PoolApiType, TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
@@ -17,7 +17,8 @@ import { numberFormat } from 'utils';
 const tableColumns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: 'Target / current ratio',
-    render: item => {
+    render: function Render(item) {
+      const { getTokenBySymbol } = useKnownTokens();
       const tokenA = getTokenBySymbol(item.tokenA.symbol);
       const tokenB = getTokenBySymbol(item.tokenB.symbol);
       const [tokenARatio, tokenBRatio] = calcTokensRatio(item.targetRatio);
@@ -67,7 +68,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
 
       useEffect(() => {
         ePoolHelperContract
-          .getTokenATokenBForEToken(item.poolAddress, item.eTokenAddress, new BigNumber(item.sFactorE))
+          .getTokenATokenBForEToken(item.poolAddress, item.eTokenAddress, BigNumber.from(item.sFactorE))
           .then(({ amountA, amountB }) => {
             const tokenBTransformedInTokenA = amountB
               .dividedBy(10 ** item.tokenB.decimals)

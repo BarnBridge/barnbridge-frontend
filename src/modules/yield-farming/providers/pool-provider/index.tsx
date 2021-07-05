@@ -4,7 +4,7 @@ import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 
 import { useConfig } from 'components/providers/configProvider';
-import { KnownTokens, convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -34,6 +34,7 @@ const YFPoolProvider: React.FC<Props> = props => {
   const config = useConfig();
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
+  const { convertTokenInUSD } = useKnownTokens();
 
   const pool = React.useMemo(() => yfPoolsCtx.getYFKnownPoolByName(poolId), [poolId]);
 

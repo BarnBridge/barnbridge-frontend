@@ -7,7 +7,7 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Text } from 'components/custom/typography';
-import { BondToken, KnownTokens, ProjectToken, StkAaveToken } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
 import Statistics from 'modules/smart-yield/views/pool-view/statistics';
@@ -19,6 +19,7 @@ import s from './s.module.scss';
 const PoolView: FC = () => {
   const walletCtx = useWallet();
   const rewardPoolCtx = useRewardPool();
+  const { projectToken, bondToken, stkAaveToken } = useKnownTokens();
 
   const { market: poolMarket, uToken, pool } = rewardPoolCtx;
   const rewardTokens = pool ? Array.from(pool.rewardTokens.values()) : [];
@@ -40,7 +41,7 @@ const PoolView: FC = () => {
       <div className="flex align-center mb-32">
         <IconBubble
           name={uToken?.icon}
-          bubbleName={ProjectToken.icon!}
+          bubbleName={projectToken.icon!}
           secondBubbleName={poolMarket?.icon.active}
           width={36}
           height={36}
@@ -57,7 +58,7 @@ const PoolView: FC = () => {
             <dd>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName={ProjectToken.icon!}
+                bubbleName={projectToken.icon!}
                 secondBubbleName={poolMarket?.icon.active}
                 width={16}
                 height={16}
@@ -72,7 +73,7 @@ const PoolView: FC = () => {
             <dt>APR</dt>
             <dd>
               <AprLabel
-                icons={pool.meta.poolType === 'MULTI' ? [BondToken.icon!, StkAaveToken.icon!] : ['static/token-bond']}
+                icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
                 size="large">
                 {formatPercent(apr)}
               </AprLabel>

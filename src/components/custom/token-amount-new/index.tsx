@@ -7,7 +7,7 @@ import { DropdownList } from 'components/custom/dropdown';
 import Icon, { TokenIconNames } from 'components/custom/icon';
 import { Slider } from 'components/custom/slider';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 
 import s from './s.module.scss';
 
@@ -123,6 +123,7 @@ type TokenSelectType = {
 };
 
 export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, className, style }) => {
+  const { getTokenBySymbol } = useKnownTokens();
   const foundToken = getTokenBySymbol(value);
 
   return (

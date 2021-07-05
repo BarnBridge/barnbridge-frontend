@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD, getTokenByAddress } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
@@ -51,6 +51,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Transaction',
       width: '25%',
       render: function TransactionColumn(_, entity) {
+        const { getTokenByAddress } = useKnownTokens();
         const knownToken = getTokenByAddress(entity.tokenAddress);
 
         if (!knownToken) {
@@ -77,6 +78,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Amount',
       width: '25%',
       render: function AmountColumn(_, entity) {
+        const { getTokenByAddress, convertTokenInUSD } = useKnownTokens();
         const isStake = entity.actionType === APIYFPoolActionType.DEPOSIT;
         const knownToken = getTokenByAddress(entity.tokenAddress);
 

@@ -56,15 +56,15 @@ class SYControllerContract extends Web3Contract {
   }
 
   getJuniorBuyFee(): Promise<BigNumber> {
-    return this.call('FEE_BUY_JUNIOR_TOKEN').then(value => new BigNumber(value));
+    return this.call('FEE_BUY_JUNIOR_TOKEN').then(value => BigNumber.from(value));
   }
 
   getSeniorRedeemFee(): Promise<BigNumber> {
-    return this.call('FEE_REDEEM_SENIOR_BOND').then(value => new BigNumber(value));
+    return this.call('FEE_REDEEM_SENIOR_BOND').then(value => BigNumber.from(value));
   }
 
   getHarvestAmount(): Promise<BigNumber> {
-    return this.call('harvest').then(value => new BigNumber(value));
+    return this.call('harvest').then(value => BigNumber.from(value));
   }
 
   harvest(gasPrice: number): Promise<void> {

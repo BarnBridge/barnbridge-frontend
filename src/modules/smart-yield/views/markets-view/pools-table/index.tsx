@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, StkAaveToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -137,20 +137,24 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
         </Hint>
       ),
       sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
-      render: (_, entity) => (
-        <div>
-          <Text type="p1" weight="semibold" color="purple">
-            {formatPercent(entity.state.juniorApy)}
-          </Text>
-          {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-            <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}>
-              +{formatPercent(entity.apr?.plus(entity.apy ?? 0))} APR
-            </AprLabel>
-          ) : entity.apr ? (
-            <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
-          ) : null}
-        </div>
-      ),
+      render: function Render(_, entity) {
+        const { bondToken, stkAaveToken } = useKnownTokens();
+
+        return (
+          <div>
+            <Text type="p1" weight="semibold" color="purple">
+              {formatPercent(entity.state.juniorApy)}
+            </Text>
+            {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
+              <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
+                +{formatPercent(entity.apr?.plus(entity.apy ?? 0))} APR
+              </AprLabel>
+            ) : entity.apr ? (
+              <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
+            ) : null}
+          </div>
+        );
+      },
     },
     {
       title: (

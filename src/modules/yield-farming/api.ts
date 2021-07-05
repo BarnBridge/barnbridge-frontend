@@ -49,7 +49,7 @@ export function fetchYFPoolTransactions(
         ...result,
         data: (result.data ?? []).map((item: APIYFPoolTransaction) => ({
           ...item,
-          amount: new BigNumber(item.amount),
+          amount: BigNumber.from(item.amount),
         })),
       };
     });

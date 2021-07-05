@@ -4,7 +4,6 @@ import { AbiItem } from 'web3-utils';
 import { getHumanValue } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken } from 'components/providers/knownTokensProvider';
 import { config } from 'config';
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
@@ -28,7 +27,7 @@ function loadCommonData(): Promise<any> {
       method: 'pullFeature',
       transform: (value: DaoRewardPullFeature) => ({
         ...value,
-        totalAmount: getHumanValue(new BigNumber(value.totalAmount), BondToken.decimals),
+        totalAmount: getHumanValue(BigNumber.from(value.totalAmount), 18), // bond decimals
       }),
     },
   ]).then(([poolFeature]) => {
@@ -49,7 +48,7 @@ function loadUserData(userAddress?: string): Promise<any> {
       callArgs: {
         from: userAddress,
       },
-      transform: (value: string) => getHumanValue(new BigNumber(value), BondToken.decimals),
+      transform: (value: string) => getHumanValue(BigNumber.from(value), 18), // bond decimals
       onError: () => BigNumber.ZERO,
     },
   ]).then(([claimValue]) => {

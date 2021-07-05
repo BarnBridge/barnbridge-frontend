@@ -1,8 +1,9 @@
 import BigNumber from 'bignumber.js';
+import { ContractManagerType } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import { BondToken, TokenMeta, convertTokenInUSD, getTokenByAddress } from 'components/providers/knownTokensProvider';
+import { KnownTokensContextType, TokenMeta } from 'components/providers/knownTokensProvider';
 import ManagedEntity from 'models/managedEntity';
 import { APISYRewardPool } from 'modules/smart-yield/api';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
@@ -13,25 +14,36 @@ export class SYRewardPoolEntity extends ManagedEntity {
   smartYield: SYSmartYieldContract;
   rewardPool: SYRewardPoolContract;
   rewardTokens: Map<string, TokenMeta>;
+  knownTokensCtx: KnownTokensContextType;
+  contractManagerCtx: ContractManagerType;
 
-  constructor(meta: APISYRewardPool) {
+  constructor(meta: APISYRewardPool, knownTokensCtx: KnownTokensContextType, contractManagerCtx: ContractManagerType) {
+    // TODO: Refactor
     super();
     this.meta = meta;
-    this.smartYield = new SYSmartYieldContract(meta.poolTokenAddress);
+    this.knownTokensCtx = knownTokensCtx;
+    this.contractManagerCtx = contractManagerCtx;
+    this.smartYield = this.contractManagerCtx.getContract<SYSmartYieldContract>(meta.poolTokenAddress, () => {
+      return new SYSmartYieldContract(meta.poolTokenAddress);
+    });
     this.smartYield.on(Web3Contract.UPDATE_DATA, this.emitDataUpdate);
-    this.rewardPool = new SYRewardPoolContract(meta.poolAddress, meta.poolType === 'MULTI');
+    this.rewardPool = this.contractManagerCtx.getContract<SYRewardPoolContract>(meta.poolAddress, () => {
+      return new SYRewardPoolContract(meta.poolAddress, meta.poolType === 'MULTI');
+    });
     this.rewardPool.on(Web3Contract.UPDATE_DATA, this.emitDataUpdate);
     this.rewardTokens = new Map();
 
     meta.rewardTokens.forEach(rewardTkn => {
       const rewardToken =
-        getTokenByAddress(rewardTkn.address) ??
+        knownTokensCtx.getTokenByAddress(rewardTkn.address) ??
         ({
           address: rewardTkn.address,
           symbol: rewardTkn.symbol,
           name: rewardTkn.symbol,
           decimals: rewardTkn.decimals,
-          contract: new Erc20Contract([], rewardTkn.address),
+          contract: this.contractManagerCtx.getContract<Erc20Contract>(rewardTkn.address, () => {
+            return new Erc20Contract([], rewardTkn.address);
+          }),
         } as TokenMeta);
       rewardToken.contract?.on(Web3Contract.UPDATE_DATA, this.emitDataUpdate);
       this.rewardTokens.set(rewardTkn.address, rewardToken);
@@ -46,8 +58,9 @@ export class SYRewardPoolEntity extends ManagedEntity {
       return undefined;
     }
 
-    const r = rewardPool.getDailyRewardFor(BondToken.address)?.unscaleBy(BondToken.decimals);
-    const yearlyReward = convertTokenInUSD(r, BondToken.symbol!)?.multipliedBy(365);
+    const { bondToken, convertTokenInUSD } = this.knownTokensCtx;
+    const r = rewardPool.getDailyRewardFor(bondToken.address)?.unscaleBy(bondToken.decimals);
+    const yearlyReward = convertTokenInUSD(r, bondToken.symbol!)?.multipliedBy(365);
 
     const p = poolSize.dividedBy(10 ** (smartYield.decimals ?? 0));
     const poolBalance = convertTokenInUSD(p, smartYield.symbol!);

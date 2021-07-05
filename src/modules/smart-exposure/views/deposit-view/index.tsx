@@ -7,14 +7,14 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { EnableTokenButton, EnableTokens } from 'components/custom/enable-token';
-import Icon from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Spinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
 import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
@@ -32,6 +32,7 @@ const tabs = [
 
 const DepositView: React.FC = () => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
+  const { getTokenBySymbol, getTokenIconBySymbol } = useKnownTokens();
   const [tranche, setTranche] = useState<TrancheApiType>();
   const [activeTab, setActiveTab] = useState<string>('multiple');
   const { ePoolPeripheryContract } = useSEPools();
@@ -175,6 +176,7 @@ const MultipleTokensForm = ({
   const [tokenEState, setTokenEState] = useState<BigNumber | undefined>();
   const { ePoolContract, ePoolHelperContract } = useSEPools();
   const [loading, setLoading] = useState<boolean>(false);
+  const { getTokenIconBySymbol } = useKnownTokens();
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
@@ -300,7 +302,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmount
-        before={<Icon name={tokenAIcon} width={24} height={24} />}
+        before={<Icon name={tokenAIcon as IconNames} width={24} height={24} />}
         value={tokenAState}
         secondary={formatUSD(BigNumber.from(tokenAState)?.multipliedBy(tranche.tokenA.state.price) ?? 0)}
         onChange={value => {
@@ -328,7 +330,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmount
-        before={<Icon name={tokenBIcon} width={24} height={24} />}
+        before={<Icon name={tokenBIcon as IconNames} width={24} height={24} />}
         value={tokenBState}
         secondary={formatUSD(BigNumber.from(tokenBState)?.multipliedBy(tranche.tokenB.state.price) ?? 0)}
         onChange={value => {
@@ -390,6 +392,7 @@ const SingleTokenForm = ({
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
 
+  const { getTokenIconBySymbol } = useKnownTokens();
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState<KnownTokens>(tokens[0]);
   const [tokenState, setTokenState] = useState<BigNumber | undefined>();
   const [tokenEState, setTokenEState] = useState<string>('');

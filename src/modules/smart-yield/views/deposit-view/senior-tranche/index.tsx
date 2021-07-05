@@ -9,6 +9,7 @@ import differenceInDays from 'date-fns/differenceInDays';
 import isAfter from 'date-fns/isAfter';
 import isBefore from 'date-fns/isBefore';
 import startOfDay from 'date-fns/startOfDay';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, formatPercent, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import DatePicker from 'components/antd/datepicker';
@@ -57,6 +58,7 @@ const SeniorTranche: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const poolCtx = useSYPool();
+  const { getContract } = useContractManager();
   const [form] = Antd.Form.useForm<FormData>();
 
   const { pool, marketId, tokenId } = poolCtx;
@@ -76,15 +78,16 @@ const SeniorTranche: React.FC = () => {
   const uAllowance = uToken?.getAllowanceOf(pool?.providerAddress!);
   const maxAmount = BigNumber.min(uAllowance ?? 0, uBalance ?? 0).unscaleBy(pool?.underlyingDecimals);
   const formDisabled = !uAllowed;
-  const bnAmount = amount ? new BigNumber(amount) : undefined;
+  const bnAmount = amount ? BigNumber.from(amount) : undefined;
 
   React.useEffect(() => {
     if (!pool) {
       return;
     }
 
-    const controllerContract = new SYControllerContract(pool.controllerAddress);
-    controllerContract.setProvider(wallet.provider);
+    const controllerContract = getContract<SYControllerContract>(pool.controllerAddress, () => {
+      return new SYControllerContract(pool.controllerAddress);
+    });
     controllerContract.getBondLifeMax().then(setBondMaxLife);
     controllerContract.getSeniorRedeemFee().then(setSeniorRedeemFee);
   }, [pool?.controllerAddress]);
@@ -147,9 +150,9 @@ const SeniorTranche: React.FC = () => {
       }),
     );
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
+    const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+      return new SYSmartYieldContract(pool.smartYieldAddress);
+    });
 
     try {
       const decimals = pool.underlyingDecimals;
@@ -159,7 +162,7 @@ const SeniorTranche: React.FC = () => {
 
       const minGain = await smartYieldContract.getBondGain(amountScaled, lockDays);
       const minGainMFee = minGain.multipliedBy(1 - (slippage ?? 0) / 100);
-      const gain = new BigNumber(Math.round(minGainMFee.toNumber()));
+      const gain = BigNumber.from(Math.round(minGainMFee.toNumber()));
 
       await poolCtx.actions.seniorDeposit(amountScaled, gain, deadlineTs, lockDays ?? 0, gasPrice);
       form.resetFields();

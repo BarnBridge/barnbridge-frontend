@@ -2,6 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
@@ -14,7 +15,7 @@ import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
-import { KnownTokens, convertTokenInUSD, getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import {
@@ -67,7 +68,8 @@ const InitialState: State = {
 const Columns: ColumnsType<APITreasuryHistory> = [
   {
     title: 'Token Name',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getTokenBySymbol } = useKnownTokens();
       const tokenMeta = getTokenBySymbol(entity.tokenSymbol);
 
       return (
@@ -109,21 +111,25 @@ const Columns: ColumnsType<APITreasuryHistory> = [
   },
   {
     title: 'Amount',
-    render: (_, entity) => (
-      <Tooltip
-        placement="bottomRight"
-        title={formatToken(entity.amount, {
-          decimals: entity.tokenDecimals,
-          tokenName: entity.tokenSymbol,
-        })}>
-        <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
-          {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
-        </Text>
-        <Text type="small" weight="semibold">
-          {formatUSD(convertTokenInUSD(entity.amount, entity.tokenSymbol))}
-        </Text>
-      </Tooltip>
-    ),
+    render: function Render(_, entity) {
+      const { convertTokenInUSD } = useKnownTokens();
+
+      return (
+        <Tooltip
+          placement="bottomRight"
+          title={formatToken(entity.amount, {
+            decimals: entity.tokenDecimals,
+            tokenName: entity.tokenSymbol,
+          })}>
+          <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
+            {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
+          </Text>
+          <Text type="small" weight="semibold">
+            {formatUSD(convertTokenInUSD(entity.amount, entity.tokenSymbol))}
+          </Text>
+        </Tooltip>
+      );
+    },
   },
   {
     title: 'From',
@@ -226,8 +232,10 @@ function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
 
 const TreasuryHoldings: React.FC = () => {
   const config = useConfig();
+  const { getContract } = useContractManager();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
+  const { getTokenBySymbol, convertTokenInUSD } = useKnownTokens();
 
   function handlePaginationChange(page: number) {
     setState(prevState => ({
@@ -267,7 +275,9 @@ const TreasuryHoldings: React.FC = () => {
         const items = data.filter(item => Boolean(getTokenBySymbol(item.tokenSymbol as KnownTokens)));
 
         const mappedItems = items.map(item => {
-          const tokenContract = new Erc20Contract([], item.tokenAddress);
+          const tokenContract = getContract<Erc20Contract>(item.tokenAddress, () => {
+            return new Erc20Contract([], item.tokenAddress);
+          });
           tokenContract.on(Web3Contract.UPDATE_DATA, reload);
           tokenContract.loadCommon();
           tokenContract.loadBalance(config.contracts.dao?.governance);

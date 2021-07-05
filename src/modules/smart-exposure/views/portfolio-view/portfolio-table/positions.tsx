@@ -4,25 +4,29 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
-import { getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
 
 const columns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: 'Tranche / Transaction',
-    render: item => (
-      <div className="flex align-center">
-        <IconsPair
-          icon1={getTokenIconBySymbol(item.tokenA.symbol)}
-          icon2={getTokenIconBySymbol(item.tokenB.symbol)}
-          size={40}
-          className="mr-16"
-          style={{ flexShrink: 0 }}
-        />
-        <div className="text-p1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
-      </div>
-    ),
+    render: function Render(item) {
+      const { getTokenIconBySymbol } = useKnownTokens();
+
+      return (
+        <div className="flex align-center">
+          <IconsPair
+            icon1={getTokenIconBySymbol(item.tokenA.symbol)}
+            icon2={getTokenIconBySymbol(item.tokenB.symbol)}
+            size={40}
+            className="mr-16"
+            style={{ flexShrink: 0 }}
+          />
+          <div className="text-p1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
+        </div>
+      );
+    },
   },
   {
     heading: 'Pool token amount',

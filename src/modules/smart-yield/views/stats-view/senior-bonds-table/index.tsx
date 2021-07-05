@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { APISYSeniorBonds, fetchSYSeniorBonds } from 'modules/smart-yield/api';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -45,42 +45,50 @@ const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Deposited',
     align: 'right',
-    render: (_, entity) => (
-      <>
-        <Tooltip
-          title={formatToken(entity.depositedAmount, {
-            decimals: entity.underlyingTokenDecimals,
-            tokenName: entity.underlyingTokenSymbol,
-          })}>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.depositedAmount) ?? '-'}
+    render: function Render(_, entity) {
+      const { convertTokenInUSD } = useKnownTokens();
+
+      return (
+        <>
+          <Tooltip
+            title={formatToken(entity.depositedAmount, {
+              decimals: entity.underlyingTokenDecimals,
+              tokenName: entity.underlyingTokenSymbol,
+            })}>
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {formatToken(entity.depositedAmount) ?? '-'}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(convertTokenInUSD(entity.depositedAmount, entity.underlyingTokenSymbol)) ?? '-'}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSD(convertTokenInUSD(entity.depositedAmount, entity.underlyingTokenSymbol)) ?? '-'}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Redeemable',
     align: 'right',
-    render: (_, entity) => (
-      <>
-        <Tooltip
-          title={formatToken(entity.redeemableAmount, {
-            decimals: entity.underlyingTokenDecimals,
-            tokenName: entity.underlyingTokenSymbol,
-          })}>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.redeemableAmount) ?? '-'}
+    render: function Render(_, entity) {
+      const { convertTokenInUSD } = useKnownTokens();
+
+      return (
+        <>
+          <Tooltip
+            title={formatToken(entity.redeemableAmount, {
+              decimals: entity.underlyingTokenDecimals,
+              tokenName: entity.underlyingTokenSymbol,
+            })}>
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {formatToken(entity.redeemableAmount) ?? '-'}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSD(convertTokenInUSD(entity.redeemableAmount, entity.underlyingTokenSymbol)) ?? '-'}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSD(convertTokenInUSD(entity.redeemableAmount, entity.underlyingTokenSymbol)) ?? '-'}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Address',

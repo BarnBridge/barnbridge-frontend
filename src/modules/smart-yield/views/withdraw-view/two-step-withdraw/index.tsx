@@ -2,6 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, getHumanValue, getNonHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
@@ -15,13 +16,12 @@ import IconBubble from 'components/custom/icon-bubble';
 import TokenAmount from 'components/custom/token-amount';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { useWallet } from 'wallets/walletProvider';
 
 import { getFormattedDuration } from 'utils';
 
@@ -37,8 +37,9 @@ const InitialFormValues: FormData = {
 
 const TwoStepWithdraw: React.FC = () => {
   const history = useHistory();
-  const wallet = useWallet();
   const poolCtx = useSYPool();
+  const { projectToken } = useKnownTokens();
+  const { getContract } = useContractManager();
   const [reload] = useReload();
   const [form] = Antd.Form.useForm<FormData>();
 
@@ -75,14 +76,14 @@ const TwoStepWithdraw: React.FC = () => {
 
     showWithdrawModal(false);
 
-    const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
+    const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+      return new SYSmartYieldContract(pool.smartYieldAddress);
+    });
 
     try {
       const abond = await smartYieldContract.getAbond();
       const decimals = pool.underlyingDecimals;
-      const tokenAmount = getNonHumanValue(new BigNumber(to), decimals);
+      const tokenAmount = getNonHumanValue(BigNumber.from(to), decimals);
       const maxMaturesAt = 1 + abond.maturesAt;
       const deadlineMs = Math.round(Date.now() / 1_000) + deadline * 60;
 
@@ -114,7 +115,7 @@ const TwoStepWithdraw: React.FC = () => {
             tokenIcon={
               <IconBubble
                 name={pool.meta?.icon}
-                bubbleName={ProjectToken.icon!}
+                bubbleName={projectToken.icon!}
                 secondBubbleName={pool.market?.icon}
                 width={36}
                 height={36}

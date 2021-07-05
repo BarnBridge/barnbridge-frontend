@@ -10,7 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { APISYJuniorBonds, fetchSYJuniorBonds } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -19,12 +19,13 @@ type TableEntity = APISYJuniorBonds;
 
 const TokenNameColumn: React.FC = () => {
   const { pool } = useSYPool();
+  const { projectToken } = useKnownTokens();
 
   return (
     <div className="flex">
       <IconBubble
         name={pool?.meta?.icon}
-        bubbleName={ProjectToken.icon!}
+        bubbleName={projectToken.icon!}
         secondBubbleName={pool?.market?.icon}
         className="mr-16"
       />
@@ -42,6 +43,7 @@ const TokenNameColumn: React.FC = () => {
 
 const DepositedColumn: React.FC<{ entity: TableEntity }> = ({ entity }) => {
   const { pool } = useSYPool();
+  const { convertTokenInUSD } = useKnownTokens();
 
   return (
     <>

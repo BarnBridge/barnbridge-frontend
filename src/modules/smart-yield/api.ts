@@ -212,7 +212,7 @@ export function fetchSYPoolTransactions(
       ...result,
       data: (result.data ?? []).map((item: APISYPoolTransaction) => ({
         ...item,
-        amount: new BigNumber(item.amount),
+        amount: BigNumber.from(item.amount),
       })),
     }));
 }
@@ -255,8 +255,8 @@ export function fetchSYSeniorBonds(
       ...result,
       data: (result.data ?? []).map((item: APISYSeniorBonds) => ({
         ...item,
-        depositedAmount: new BigNumber(item.depositedAmount),
-        redeemableAmount: new BigNumber(item.redeemableAmount),
+        depositedAmount: BigNumber.from(item.depositedAmount),
+        redeemableAmount: BigNumber.from(item.redeemableAmount),
       })),
     }));
 }
@@ -298,7 +298,7 @@ export function fetchSYJuniorBonds(
       ...result,
       data: (result.data ?? []).map((item: APISYJuniorBonds) => ({
         ...item,
-        depositedAmount: new BigNumber(item.depositedAmount),
+        depositedAmount: BigNumber.from(item.depositedAmount),
       })),
     }));
 }
@@ -493,9 +493,9 @@ export function fetchSYJuniorPastPositions(
       ...result,
       data: (result.data ?? []).map((item: APISYJuniorPastPosition) => ({
         ...item,
-        tokensIn: new BigNumber(item.tokensIn),
-        underlyingOut: new BigNumber(item.underlyingOut),
-        forfeits: new BigNumber(item.forfeits),
+        tokensIn: BigNumber.from(item.tokensIn),
+        underlyingOut: BigNumber.from(item.underlyingOut),
+        forfeits: BigNumber.from(item.forfeits),
       })),
     }));
 }
@@ -625,7 +625,7 @@ export function fetchSYRewardPoolTransactions(
       ...result,
       data: (result.data ?? []).map((item: APISYRewardPoolTransaction) => ({
         ...item,
-        amount: new BigNumber(item.amount),
+        amount: BigNumber.from(item.amount),
       })),
     }));
 }

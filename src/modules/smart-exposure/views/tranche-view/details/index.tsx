@@ -8,7 +8,7 @@ import Divider from 'components/antd/divider';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
@@ -48,6 +48,7 @@ export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
 };
 
 const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
+  const { getTokenBySymbol } = useKnownTokens();
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 

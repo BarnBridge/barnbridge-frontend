@@ -18,7 +18,7 @@ import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -86,6 +86,7 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
 const WalletLockView: React.FC = () => {
   const [form] = Antd.Form.useForm<LockFormData>();
 
+  const { projectToken } = useKnownTokens();
   const daoCtx = useDAO();
   const [state, setState] = useMergeState<WalletLockViewState>(InitialState);
 
@@ -143,9 +144,9 @@ const WalletLockView: React.FC = () => {
     <div className="card">
       <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
         <Grid flow="col" gap={12}>
-          <Icon name={ProjectToken.icon!} width={40} height={40} />
+          <Icon name={projectToken.icon!} width={40} height={40} />
           <Text type="p1" weight="semibold" color="primary">
-            BOND
+            {projectToken.symbol}
           </Text>
         </Grid>
 

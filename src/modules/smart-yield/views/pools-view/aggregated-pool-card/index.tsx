@@ -8,7 +8,7 @@ import Icon from 'components/custom/icon';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, TokenMeta, convertTokenInUSD, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { FCx } from 'components/types.tx';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -16,7 +16,7 @@ import { useWallet } from 'wallets/walletProvider';
 import s from './s.module.scss';
 
 const AggregatedPoolCard: FCx = props => {
-  const knownTokensCtx = useKnownTokens();
+  const { getTokenByAddress, convertTokenInUSD, bondToken } = useKnownTokens();
   const walletCtx = useWallet();
   const rewardPoolsCtx = useRewardPools();
 
@@ -43,7 +43,7 @@ const AggregatedPoolCard: FCx = props => {
   }, new Map<string, BigNumber>());
 
   const totalPoolSizeInUSD = BigNumber.sumEach(rewardPools, ({ rewardPool, smartYield }) => {
-    const tokenMeta = knownTokensCtx.getTokenByAddress(smartYield.address);
+    const tokenMeta = getTokenByAddress(smartYield.address);
     return tokenMeta
       ? convertTokenInUSD(rewardPool.poolSize?.unscaleBy(tokenMeta.decimals), tokenMeta.symbol)
       : undefined;
@@ -62,7 +62,7 @@ const AggregatedPoolCard: FCx = props => {
 
   const totalStakedInUSD = BigNumber.sumEach(rewardPools, ({ rewardPool, smartYield }) => {
     const value = rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(smartYield.decimals);
-    return knownTokensCtx.convertTokenInUSD(value, smartYield.symbol!);
+    return convertTokenInUSD(value, smartYield.symbol!);
   });
 
   return (
@@ -98,16 +98,16 @@ const AggregatedPoolCard: FCx = props => {
 
         {activeTab === 'pool' && (
           <div className="flex flow-row">
-            <div key={BondToken.symbol} className="flex align-center justify-space-between mb-24">
-              <Hint text={`This number shows the $${BondToken.symbol} token rewards distributed per day.`}>
+            <div key={bondToken.symbol} className="flex align-center justify-space-between mb-24">
+              <Hint text={`This number shows the $${bondToken.symbol} token rewards distributed per day.`}>
                 <Text type="small" weight="semibold" color="secondary">
-                  {BondToken.symbol} daily reward
+                  {bondToken.symbol} daily reward
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name={BondToken.icon!} width={16} height={16} className="mr-8" />
+                <Icon name={bondToken.icon!} width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
-                  {formatToken(totalDailyRewards.get(BondToken.address)) ?? '-'}
+                  {formatToken(totalDailyRewards.get(bondToken.address)) ?? '-'}
                 </Text>
               </div>
             </div>

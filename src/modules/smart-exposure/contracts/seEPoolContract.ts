@@ -38,16 +38,16 @@ class SeEPoolContract extends Web3Contract {
           { method: 'rebalanceMinDeltaA', transform: value => Number(value) },
           { method: 'rebalanceInterval', transform: value => Number(value) },
           { method: 'lastRebalance', transform: value => Number(value) },
-          { method: 'getRate', transform: value => new BigNumber(value) },
+          { method: 'getRate', transform: value => BigNumber.from(value) },
           {
             method: 'getTranches',
             transform: value =>
               value.map(([eToken, sFactorE, reserveA, reserveB, targetRatio]: any) => ({
                 eToken,
-                sFactorE: new BigNumber(sFactorE),
-                reserveA: new BigNumber(reserveA),
-                reserveB: new BigNumber(reserveB),
-                targetRatio: new BigNumber(targetRatio),
+                sFactorE: BigNumber.from(sFactorE),
+                reserveA: BigNumber.from(reserveA),
+                reserveB: BigNumber.from(reserveB),
+                targetRatio: BigNumber.from(targetRatio),
               })),
           },
         ],
@@ -67,10 +67,10 @@ class SeEPoolContract extends Web3Contract {
   getTranche(eTokenAddress: string): Promise<any> {
     return this.call('getTranche', [eTokenAddress]).then(value => ({
       eToken: value[0],
-      sFactorE: new BigNumber(value[1]),
-      reserveA: new BigNumber(value[2]),
-      reserveB: new BigNumber(value[3]),
-      targetRatio: new BigNumber(value[4]),
+      sFactorE: BigNumber.from(value[1]),
+      reserveA: BigNumber.from(value[2]),
+      reserveB: BigNumber.from(value[3]),
+      targetRatio: BigNumber.from(value[4]),
     }));
   }
 

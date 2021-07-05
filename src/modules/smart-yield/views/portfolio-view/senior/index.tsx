@@ -1,6 +1,7 @@
 import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
@@ -52,7 +53,7 @@ const SeniorPortfolio: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
   const [reload, version] = useReload();
-
+  const { getContract } = useContractManager();
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
@@ -72,9 +73,9 @@ const SeniorPortfolio: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        const seniorBondContract = new SYSeniorBondContract(pool.seniorBondAddress);
-        seniorBondContract.setProvider(wallet.provider);
-        seniorBondContract.setAccount(wallet.account);
+        const seniorBondContract = getContract<SYSeniorBondContract>(pool.seniorBondAddress, () => {
+          return new SYSeniorBondContract(pool.seniorBondAddress);
+        });
 
         return new Promise<any>(resolve => {
           (async () => {
@@ -84,8 +85,9 @@ const SeniorPortfolio: React.FC = () => {
               return resolve(undefined);
             }
 
-            const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-            smartYieldContract.setProvider(wallet.provider);
+            const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+              return new SYSmartYieldContract(pool.smartYieldAddress);
+            });
 
             const sBonds = await smartYieldContract.getSeniorBonds(sBondIds);
 

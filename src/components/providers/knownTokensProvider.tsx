@@ -1,7 +1,7 @@
 import { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
-import { useErc20Contract } from 'web3/components/contractManagerProvider';
+import { useContractManager, useErc20Contract } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatUSD } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
@@ -9,6 +9,7 @@ import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 import { TokenIconNames } from 'components/custom/icon';
 import { useConfig } from 'components/providers/configProvider';
 import { MainnetHttpsWeb3Provider } from 'components/providers/web3Provider';
+import { isDevelopmentMode } from 'config';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -32,7 +33,7 @@ export enum KnownTokens {
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
   // compound
-  export const bbcUSDC = process.env.REACT_APP_ENV === 'development' ? 'bbcUSDC' : 'bb_cUSDC';
+  export const bbcUSDC = isDevelopmentMode ? 'bbcUSDC' : 'bb_cUSDC';
   export const bbcDAI = 'bb_cDAI';
   // aave
   export const bbaUSDC = 'bb_aUSDC';
@@ -47,9 +48,9 @@ export namespace KnownTokens {
 /* eslint-enable @typescript-eslint/no-redeclare */
 
 export type TokenMeta = {
-  address: string;
   symbol: string;
   name: string;
+  address: string;
   decimals: number;
   icon?: TokenIconNames;
   color?: string;
@@ -59,20 +60,30 @@ export type TokenMeta = {
   contract?: Web3Contract;
 };
 
-type ContextType = {
+export type KnownTokensContextType = {
   tokens: TokenMeta[];
   projectToken: TokenMeta;
+  bondToken: TokenMeta;
+  ethToken: TokenMeta;
+  stkAaveToken: TokenMeta;
+  daiToken: TokenMeta;
+  gusdToken: TokenMeta;
+  susdToken: TokenMeta;
+  univ2Token: TokenMeta;
+  usdcToken: TokenMeta;
+  usdtToken: TokenMeta;
   getTokenBySymbol(symbol: string): TokenMeta | undefined;
   getTokenByAddress(address: string): TokenMeta | undefined;
+  getTokenIconBySymbol(address: string): string;
   getTokenPriceIn(source: string, target: string): BigNumber | undefined;
   convertTokenIn(amount: BigNumber | undefined, source: string, target: string): BigNumber | undefined;
   convertTokenInUSD(amount: BigNumber | undefined, source: string): BigNumber | undefined;
 };
 
-const Context = createContext<ContextType>(InvariantContext<ContextType>('KnownTokensProvider'));
+const Context = createContext<KnownTokensContextType>(InvariantContext<KnownTokensContextType>('KnownTokensProvider'));
 
-export function useKnownTokens(): ContextType {
-  return useContext<ContextType>(Context);
+export function useKnownTokens(): KnownTokensContextType {
+  return useContext<KnownTokensContextType>(Context);
 }
 
 const PRICE_FEED_ABI: AbiItem[] = [
@@ -94,6 +105,7 @@ const KnownTokensProvider: FC = props => {
 
   const config = useConfig();
   const wallet = useWallet();
+  const { getContract } = useContractManager();
   const [reload] = useReload();
 
   const wbtcContract = useErc20Contract(config.tokens.wbtc);
@@ -338,8 +350,10 @@ const KnownTokensProvider: FC = props => {
       return Promise.reject();
     }
 
-    const priceFeedContract = new Erc20Contract(PRICE_FEED_ABI, token.priceFeed);
-    priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+    const priceFeedContract = getContract<Erc20Contract>(token.priceFeed, () => {
+      return new Erc20Contract(PRICE_FEED_ABI, token.priceFeed!);
+    });
+    priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
 
     const [decimals, latestAnswer] = await priceFeedContract.batch([
       { method: 'decimals', transform: Number },
@@ -357,7 +371,9 @@ const KnownTokensProvider: FC = props => {
       return Promise.reject();
     }
 
-    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed);
+    const priceFeedContract = getContract<Erc20Contract>(bondToken.priceFeed, () => {
+      return new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed!);
+    });
     const [decimals, [reserve0, reserve1], token0] = await priceFeedContract.batch([
       { method: 'decimals', transform: Number },
       {
@@ -384,7 +400,9 @@ const KnownTokensProvider: FC = props => {
       return Promise.reject();
     }
 
-    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, univ2Token.priceFeed);
+    const priceFeedContract = getContract<Erc20Contract>(univ2Token.priceFeed, () => {
+      return new Erc20Contract(BOND_PRICE_FEED_ABI, univ2Token.priceFeed!);
+    });
 
     const [decimals, totalSupply, [reserve0, reserve1], token0] = await priceFeedContract.batch([
       { method: 'decimals', transform: Number },
@@ -411,7 +429,9 @@ const KnownTokensProvider: FC = props => {
         return Promise.reject();
       }
 
-      const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
+      const priceFeedContract = getContract<Erc20Contract>(token.priceFeed, () => {
+        return new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed!);
+      });
 
       const price = await priceFeedContract.call('price');
 
@@ -428,8 +448,10 @@ const KnownTokensProvider: FC = props => {
         return Promise.reject();
       }
 
-      const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed);
-      priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider);
+      const priceFeedContract = getContract<Erc20Contract>(token.priceFeed, () => {
+        return new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed!);
+      });
+      priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
 
       const price = await priceFeedContract.call('price');
 
@@ -497,8 +519,30 @@ const KnownTokensProvider: FC = props => {
     [convertTokenIn],
   );
 
-  const projectToken = useMemo<TokenMeta>(() => {
-    return getTokenBySymbol(KnownTokens.BOND)!;
+  const [
+    projectToken,
+    bondToken,
+    ethToken,
+    stkAaveToken,
+    daiToken,
+    gusdToken,
+    susdToken,
+    univ2Token,
+    usdcToken,
+    usdtToken,
+  ] = useMemo<TokenMeta[]>(() => {
+    return [
+      getTokenBySymbol(KnownTokens.BOND)!,
+      getTokenBySymbol(KnownTokens.BOND)!,
+      getTokenBySymbol(KnownTokens.ETH)!,
+      getTokenBySymbol(KnownTokens.STK_AAVE)!,
+      getTokenBySymbol(KnownTokens.DAI)!,
+      getTokenBySymbol(KnownTokens.GUSD)!,
+      getTokenBySymbol(KnownTokens.SUSD)!,
+      getTokenBySymbol(KnownTokens.UNIV2)!,
+      getTokenBySymbol(KnownTokens.USDC)!,
+      getTokenBySymbol(KnownTokens.USDT)!,
+    ];
   }, [getTokenBySymbol]);
 
   useEffect(() => {
@@ -566,9 +610,18 @@ const KnownTokensProvider: FC = props => {
     }
   }, [projectToken, reload, wallet.account]);
 
-  const value = {
+  const value: KnownTokensContextType = {
     tokens,
     projectToken,
+    bondToken,
+    ethToken,
+    stkAaveToken,
+    daiToken,
+    gusdToken,
+    susdToken,
+    univ2Token,
+    usdcToken,
+    usdtToken,
     getTokenBySymbol,
     getTokenByAddress,
     getTokenIconBySymbol,

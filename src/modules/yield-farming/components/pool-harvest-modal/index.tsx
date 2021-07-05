@@ -9,7 +9,7 @@ import Grid from 'components/custom/grid';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { BondToken, ProjectToken } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YFPoolID, useYFPools } from 'modules/yield-farming/providers/pools-provider';
 
 type PoolHarvestButtonProps = {
@@ -22,6 +22,7 @@ type PoolHarvestButtonProps = {
 
 const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
   const { icons, label, reward, loading, onClick } = props;
+  const { projectToken } = useKnownTokens();
 
   return (
     <Spin spinning={loading}>
@@ -49,7 +50,7 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
             </Text>
             <Text type="p1" weight="semibold" color="primary" className="mr-4">
               {formatToken(reward, {
-                tokenName: ProjectToken.symbol,
+                tokenName: projectToken.symbol,
               })}
             </Text>
           </div>
@@ -62,6 +63,7 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
 const PoolHarvestModal: FC<ModalProps> = props => {
   const { ...modalProps } = props;
 
+  const { projectToken } = useKnownTokens();
   const yfPoolsCtx = useYFPools();
   const stableYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.STABLE);
   const unilpYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.UNILP);
@@ -77,7 +79,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
     try {
       await stableYfPool?.contract.claim();
       stableYfPool?.contract.loadUserData().catch(Error);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setStableHarvesting(false);
@@ -89,7 +91,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
     try {
       await unilpYfPool?.contract.claim();
       unilpYfPool?.contract.loadUserData().catch(Error);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setUnilpHarvesting(false);
@@ -101,7 +103,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
     try {
       await bondYfPool?.contract.claim();
       bondYfPool?.contract.loadUserData().catch(Error);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setBondHarvesting(false);
@@ -123,7 +125,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
             <PoolHarvestButton
               icons={stableYfPool.tokens.map(token => token.icon!)}
               label={stableYfPool.label}
-              reward={stableYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
+              reward={stableYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
               loading={stableHarvesting}
               onClick={handleStableHarvest}
             />
@@ -132,7 +134,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
             <PoolHarvestButton
               icons={unilpYfPool.tokens.map(token => token.icon!)}
               label={unilpYfPool.label}
-              reward={unilpYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
+              reward={unilpYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
               loading={unilpHarvesting}
               onClick={handleUnilpHarvest}
             />
@@ -141,7 +143,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
             <PoolHarvestButton
               icons={bondYfPool.tokens.map(token => token.icon!)}
               label={bondYfPool.label}
-              reward={bondYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
+              reward={bondYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
               loading={bondHarvesting}
               onClick={handleBondHarvest}
             />

@@ -3,11 +3,11 @@ import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
-import Icon from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
-import { getTokenIconBySymbol } from 'components/providers/knownTokensProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
 
@@ -20,6 +20,7 @@ export const TransactionsTable = ({
   accountAddress?: string;
   poolAddress?: string;
 }) => {
+  const { getTokenIconBySymbol } = useKnownTokens();
   const [dataList, setDataList] = useState<TransactionApiType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState<{
@@ -108,7 +109,12 @@ export const TransactionsTable = ({
         render: item => (
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
-              <Icon name={getTokenIconBySymbol(item.tokenA.symbol)} width={16} height={16} className="mr-4" />
+              <Icon
+                name={getTokenIconBySymbol(item.tokenA.symbol) as IconNames}
+                width={16}
+                height={16}
+                className="mr-4"
+              />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
                 {formatToken(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
@@ -126,7 +132,12 @@ export const TransactionsTable = ({
         render: item => (
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
-              <Icon name={getTokenIconBySymbol(item.tokenB.symbol)} width={16} height={16} className="mr-4" />
+              <Icon
+                name={getTokenIconBySymbol(item.tokenB.symbol) as IconNames}
+                width={16}
+                height={16}
+                className="mr-4"
+              />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
                 {formatToken(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}

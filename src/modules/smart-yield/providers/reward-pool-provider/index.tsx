@@ -1,7 +1,8 @@
 import React, { FC, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import ContractListener from 'web3/components/contract-listener';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 
-import { TokenMeta, getTokenBySymbol } from 'components/providers/knownTokensProvider';
+import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
 import useRouteQuery from 'hooks/useRouteQuery';
 import { fetchSYRewardPools } from 'modules/smart-yield/api';
@@ -33,6 +34,9 @@ const RewardPoolProvider: FC = props => {
   const walletCtx = useWallet();
   const [reload] = useReload();
   const rqCtx = useRouteQuery();
+  const knownTokensCtx = useKnownTokens();
+  const contractManagerCtx = useContractManager();
+  const { getTokenBySymbol } = knownTokensCtx;
 
   const market = useMemo(() => {
     const marketId = rqCtx.get('m');
@@ -62,7 +66,7 @@ const RewardPoolProvider: FC = props => {
           return;
         }
 
-        const entity = new SYRewardPoolEntity(pools[0]);
+        const entity = new SYRewardPoolEntity(pools[0], knownTokensCtx, contractManagerCtx);
         entity.updateProvider(walletCtx.provider);
         entity.onDataUpdate(reload);
         entity.loadCommonData();
