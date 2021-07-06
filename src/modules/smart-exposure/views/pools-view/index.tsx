@@ -1,17 +1,18 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { format } from 'date-fns';
 import { formatPercent, formatUSD } from 'web3/utils';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
+import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 const PoolsView: React.FC = () => {
@@ -112,14 +113,16 @@ const PoolsView: React.FC = () => {
                 </div>
               </div>
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                  Rebalancing strategies
+                <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
+                  Rebalancing Strategy
+                  <InfoTooltip>
+                    Rebalancing of the tranche is triggered when both the time and deviation conditions are met
+                  </InfoTooltip>
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                   Every {getRelativeTime(pool.state.rebalancingInterval) || '0 seconds'}
                   <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
-                  {formatPercent(BigNumber.from(pool.state.rebalancingCondition)?.unscaleBy(18) ?? 0)} deviation from
-                  target
+                  {formatPercent(calculateRebalancingCondition(pool.state.rebalancingCondition))} deviation from target
                 </Text>
               </div>
               <div>
@@ -127,7 +130,9 @@ const PoolsView: React.FC = () => {
                   Last rebalance
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                  {format(new Date(pool.state.lastRebalance * 1000), 'dd.MM.yyyy HH:mm')}
+                  {pool.state.lastRebalance
+                    ? format(new Date(pool.state.lastRebalance * 1000), 'dd.MM.yyyy HH:mm')
+                    : 'Always'}
                 </Text>
               </div>
             </div>

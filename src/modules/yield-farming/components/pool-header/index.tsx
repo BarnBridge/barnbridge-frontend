@@ -73,7 +73,7 @@ const PoolHeader: FC = () => {
         </div>
         <div>
           <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            APY
+            APR
           </Text>
           <Text type="p1" weight="semibold" color="primary">
             {!isEnded ? formatPercent(apy) ?? '-' : 0}
@@ -110,7 +110,12 @@ const PoolHeader: FC = () => {
                     tokenName: token.symbol,
                     decimals: token.decimals,
                   })}>
-                  <div style={{ background: token.color || 'var(--theme-red-color)', width: `${rate}%` }} />
+                  <div
+                    style={{
+                      background: token.color || 'var(--theme-red-color)',
+                      width: `${rate}%`,
+                    }}
+                  />
                 </Tooltip>
               );
             })}

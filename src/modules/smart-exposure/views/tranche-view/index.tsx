@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import cn from 'classnames';
 import classNames from 'classnames';
+import { formatPercent } from 'web3/utils';
 
 // import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
@@ -11,11 +12,9 @@ import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import { Charts } from './charts';
-import { TrancheDetails } from './details';
+import { Details } from './details';
 import { TransactionsView } from './transactions';
 import { PriceTrend } from './trend';
-
-import { calcTokensRatio } from 'modules/smart-exposure/utils';
 
 import s from './s.module.scss';
 
@@ -40,8 +39,6 @@ const TrancheView: React.FC = () => {
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 
-  const [tokenARation, tokenBRation] = calcTokensRatio(tranche.targetRatio);
-
   return (
     <>
       <div className="flex mb-16">
@@ -55,7 +52,9 @@ const TrancheView: React.FC = () => {
           <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">
-              {`${tokenARation}% ${tokenA?.symbol} / ${tokenBRation}% ${tokenB?.symbol}`}
+              {`${formatPercent(Number(tranche.tokenARatio))} ${tokenA?.symbol} / ${formatPercent(
+                Number(tranche.tokenBRatio),
+              )} ${tokenB?.symbol}`}
             </div>
             <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
@@ -96,7 +95,7 @@ const TrancheView: React.FC = () => {
       </div>
       <div className={cn(s.trendDetailsRow, 'mb-32')}>
         <PriceTrend poolAddress={poolAddress} trancheAddress={trancheAddress} />
-        <TrancheDetails tranche={tranche} />
+        <Details tranche={tranche} />
       </div>
       <Charts tranche={tranche} className="mb-32" />
       <TransactionsView tranche={tranche} />

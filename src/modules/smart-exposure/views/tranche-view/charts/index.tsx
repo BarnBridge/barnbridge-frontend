@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AntdNotification from 'antd/lib/notification';
 import classNames from 'classnames';
@@ -9,7 +9,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { RatioDeviationApiType, TrancheApiType, TrancheLiquidityApiType, useSeAPI } from 'modules/smart-exposure/api';
+import { RatioDeviationType, TrancheApiType, TrancheLiquidityType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
 
@@ -63,7 +63,7 @@ export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
 };
 
 const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: string; periodFilter: PeriodTabsKey }) => {
-  const [dataList, setDataList] = useState<RatioDeviationApiType[]>([]);
+  const [dataList, setDataList] = useState<RatioDeviationType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const seAPI = useSeAPI();
 
@@ -98,11 +98,6 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
             axisLine={false}
             tickLine={false}
             tickFormatter={value => formatTick(value, periodFilter)}
-            // dataKey="point"
-            // // ticks={ticks}
-            // tickMargin={12}
-            // minTickGap={0}
-            // // tickFormatter={value => formatTick(value)}
           />
           <ReCharts.YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value) ?? ''} />
           <ReCharts.Tooltip
@@ -113,7 +108,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
               </span>
             )}
             formatter={(value: number, _: any, { dataKey }: any) => (
-              <span className="text-p2 fw-semibold color-red">{formatPercent(value) ?? ''}</span>
+              <span className="text-p2 fw-semibold color-red">{`${Number(value) * 100}%` ?? ''}</span>
             )}
           />
           <ReCharts.Area
@@ -139,7 +134,7 @@ const TrancheLiquidity = ({
   trancheAddress: string;
   periodFilter: PeriodTabsKey;
 }) => {
-  const [dataList, setDataList] = useState<TrancheLiquidityApiType[]>([]);
+  const [dataList, setDataList] = useState<TrancheLiquidityType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const seAPI = useSeAPI();
 
@@ -157,11 +152,6 @@ const TrancheLiquidity = ({
       })
       .finally(() => setLoading(false));
   }, [trancheAddress, periodFilter]);
-
-  const max = useMemo(
-    () => dataList.reduce((acc, item) => Math.max(acc, item.tokenALiquidity, item.tokenBLiquidity), 0),
-    [dataList],
-  );
 
   return (
     <>
@@ -186,8 +176,6 @@ const TrancheLiquidity = ({
               tickFormatter={value => formatTick(value, periodFilter)}
             />
             <ReCharts.YAxis
-              type="number"
-              domain={[0, max * 1.1]}
               axisLine={false}
               tickLine={false}
               tickFormatter={value =>

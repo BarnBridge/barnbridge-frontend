@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { useContract } from 'web3/components/contractManagerProvider';
+import { useContract, useContractManager } from 'web3/components/contractManagerProvider';
 
 import { useConfig } from 'components/providers/configProvider';
 import { useReload } from 'hooks/useReload';
@@ -11,7 +11,6 @@ import { useWallet } from 'wallets/walletProvider';
 import { InvariantContext } from 'utils/context';
 
 type SEContextType = {
-  ePoolContract: SeEPoolContract;
   ePoolHelperContract: SeEPoolHelperContract;
   ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
@@ -40,26 +39,34 @@ export const SEPoolsProvider: React.FC = props => {
   });
 
   useEffect(() => {
-    ePoolContract.setProvider(walletCtx.provider);
     ePoolHelperContract.setProvider(walletCtx.provider);
     ePoolPeripheryContract.setProvider(walletCtx.provider);
   }, [walletCtx.provider]);
 
   useEffect(() => {
-    ePoolContract.setAccount(walletCtx.account);
     ePoolHelperContract.setAccount(walletCtx.account);
     ePoolPeripheryContract.setAccount(walletCtx.account);
   }, [walletCtx.account]);
 
-  useEffect(() => {
-    ePoolContract.loadCommon().then(reload).catch(Error);
-  }, [reload]);
-
   const value = {
-    ePoolContract,
     ePoolHelperContract,
     ePoolPeripheryContract,
   };
 
   return <Context.Provider value={value}>{children}</Context.Provider>;
+};
+
+export const useEPoolContract = (address: string): SeEPoolContract => {
+  const [reload] = useReload();
+  const {} = useContractManager();
+
+  const contract = useContract<SeEPoolContract>(address, () => {
+    return new SeEPoolContract(address);
+  });
+
+  useEffect(() => {
+    contract.loadCommon().then(reload).catch(Error);
+  }, [contract, reload]);
+
+  return contract;
 };

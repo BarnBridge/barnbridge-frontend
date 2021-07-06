@@ -27,7 +27,7 @@ export const useContract = (
     loadAllowance,
   }: { loadBalance?: boolean; loadCommon?: boolean; loadAllowance?: string[] } = {},
 ): Erc20Contract | null => {
-  const wallet = useWallet();
+  const { provider, account } = useWallet();
   const [reload] = useReload();
   const { getContract } = useContractManager();
 
@@ -39,18 +39,17 @@ export const useContract = (
     const contract: Erc20Contract = getContract<Erc20Contract>(address, () => {
       return new Erc20Contract([], address);
     }); // (getTokenByAddress(address)?.contract as Erc20Contract) ?? new Erc20Contract([], address);
-    contract.setProvider(wallet.provider);
     contract.on(Web3Contract.UPDATE_DATA, reload);
 
     return contract;
-  }, [reload, address, wallet.provider]);
+  }, [address, provider, reload]);
 
   useEffect(() => {
     if (contract && loadBalance) {
-      contract.setAccount(wallet.account);
+      contract.setAccount(account);
       contract.loadBalance();
     }
-  }, [contract, loadBalance, wallet.account]);
+  }, [contract, loadBalance, account]);
 
   useEffect(() => {
     if (contract && loadCommon) {

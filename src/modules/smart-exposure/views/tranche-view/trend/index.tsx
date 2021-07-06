@@ -1,22 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import AntdNotification from 'antd/lib/notification';
-import cn from 'classnames';
 import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
 import { formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
-import { useSeAPI } from 'modules/smart-exposure/api';
+import { ETokenPriceType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
-
-import s from './s.module.scss';
-
-type ETokenPriceType = {
-  eTokenPrice: string;
-  point: string;
-};
 
 type PropsType = {
   poolAddress: string;
@@ -46,7 +38,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
 
   return (
     <section className="card">
-      <header className={cn('card-header flex align-center', s.header)}>
+      <header className="card-header flex align-center" style={{ padding: '16px 16px 16px 24px' }}>
         <div className="text-p1 fw-semibold color-primary mr-8">eToken price trend</div>
         <PeriodChartTabs activeKey={activeTab} onClick={setActiveTab} size="small" className="ml-auto" />
       </header>

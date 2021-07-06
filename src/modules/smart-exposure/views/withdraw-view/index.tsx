@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
+import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
@@ -17,7 +18,7 @@ import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
-import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
+import { useEPoolContract, useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
 const tabs = [
@@ -74,6 +75,12 @@ const WithdrawView: React.FC = () => {
 
   return (
     <>
+      <div className="flex mb-16">
+        <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-text">
+          <Icon name="arrow-back" color="inherit" className="mr-8" />
+          Tranche details
+        </Link>
+      </div>
       <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
         <div className="flex">
           <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
@@ -129,8 +136,9 @@ const WithdrawView: React.FC = () => {
           Withdraw
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur odio nunc, a sodales ligula
-          varius nec
+          {activeTab === 'multiple'
+            ? 'Withdraw from your position by burning eTokens of this tranche for the underlying tranche tokens according to the current tranche ratio.'
+            : 'Withdraw from your position by burning eTokens of this tranche for one of the underlying tranche tokens. The second underlying token will be swapped for the token you want to receive, which is where the slippage and deadline parameters will be used.'}
         </Text>
         <Tabs
           tabs={tabs}
@@ -178,7 +186,8 @@ const MultipleTokensForm = ({
   const [tokenEState, setTokenEState] = useState<string>('');
   const [tokenAState, setTokenAState] = useState<BigNumber | undefined>();
   const [tokenBState, setTokenBState] = useState<BigNumber | undefined>();
-  const { ePoolContract, ePoolHelperContract, ePoolPeripheryContract } = useSEPools();
+  const ePoolContract = useEPoolContract(poolAddress);
+  const { ePoolHelperContract, ePoolPeripheryContract } = useSEPools();
   const [loading, setLoading] = useState<boolean>(false);
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
@@ -365,8 +374,13 @@ const MultipleTokensForm = ({
           Withdraw
         </button>
       </div>
+      <ContractListener contract={ePoolContract} />
     </form>
   );
+};
+
+const debounceOptions = {
+  // leading: true,
 };
 
 const SingleTokenForm = ({
@@ -387,7 +401,8 @@ const SingleTokenForm = ({
 
   const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState<KnownTokens>(tokens[0]);
-  const { ePoolContract, ePoolPeripheryContract } = useSEPools();
+  const ePoolContract = useEPoolContract(poolAddress);
+  const { ePoolPeripheryContract } = useSEPools();
 
   const [transactionDetails, setTransactionDetails] = useState<{ deadline?: number; slippage?: number }>({
     deadline: 20,
@@ -407,25 +422,35 @@ const SingleTokenForm = ({
     1 - (transactionDetails.slippage ?? 0) / 100,
   );
 
-  const tokenHandler = useDebounce((value: string) => {
-    const amount = BigNumber.from(value)?.multipliedBy(tranche.sFactorE);
-    if (!amount) {
-      return;
-    }
+  const tokenHandler = useCallback(
+    (value: string, _isTokenA: boolean) => {
+      const amount = BigNumber.from(value)?.multipliedBy(tranche.sFactorE);
+      if (!amount) {
+        return;
+      }
 
-    ePoolPeripheryContract?.[isTokenA ? 'getMaxOutputAmountAForEToken' : 'getMaxOutputAmountBForEToken'](
-      poolAddress,
-      trancheAddress,
-      amount,
-    ).then(val => {
-      setSelectedTokenValue(val);
-    });
-  }, 400);
+      ePoolPeripheryContract?.[_isTokenA ? 'getMaxOutputAmountAForEToken' : 'getMaxOutputAmountBForEToken'](
+        poolAddress,
+        trancheAddress,
+        amount,
+      ).then(val => {
+        setSelectedTokenValue(val);
+      });
+    },
+    [ePoolPeripheryContract, poolAddress, tranche.sFactorE, trancheAddress],
+  );
+
+  const debouncedTokenHandler = useDebounce(tokenHandler, 400, debounceOptions);
+
+  useEffect(() => {
+    setSelectedTokenValue(undefined);
+    debouncedTokenHandler(tokenEState, isTokenA);
+  }, [debouncedTokenHandler, tokenEState, isTokenA]);
 
   const submitHandler = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const amount = BigNumber.from(tokenEState)?.scaleBy(selectedTokenDecimals) ?? BigNumber.ZERO;
+    const amount = BigNumber.from(tokenEState)?.multipliedBy(tranche.sFactorE) ?? BigNumber.ZERO;
 
     if (!amount || !selectedTokenValueMinusSlippage) {
       return;
@@ -481,10 +506,7 @@ const SingleTokenForm = ({
       <TokenAmount
         before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
         value={tokenEState}
-        onChange={val => {
-          setTokenEState(val);
-          tokenHandler(val);
-        }}
+        onChange={setTokenEState}
         max={tokenEMax.toString()}
         placeholder={`0 (Max ${tokenEMax ?? 0})`}
         className="mb-8"
@@ -536,7 +558,7 @@ const SingleTokenForm = ({
         showDeadline
         deadline={transactionDetails.deadline}
         onChange={setTransactionDetails}>
-        Uniswap transaction details
+        Swap transaction details
       </TransactionDetails>
 
       <TransactionSummary
@@ -583,6 +605,7 @@ const SingleTokenForm = ({
           Withdraw
         </button>
       </div>
+      <ContractListener contract={ePoolContract} />
     </form>
   );
 };

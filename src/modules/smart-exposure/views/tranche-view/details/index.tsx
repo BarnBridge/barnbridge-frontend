@@ -7,14 +7,15 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Divider from 'components/antd/divider';
 import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
-import { calcTokensRatio } from 'modules/smart-exposure/utils';
-import { getRelativeTime, numberFormat } from 'utils';
+import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
+import { getRelativeTime } from 'utils';
 
 import s from './s.module.scss';
 
@@ -24,8 +25,8 @@ const tabs = [
     children: 'Rebalancing details',
   },
   {
-    id: 'pool',
-    children: 'Pool details',
+    id: 'tranche',
+    children: 'Tranche details',
   },
 ];
 
@@ -33,7 +34,7 @@ type Props = {
   tranche: TrancheApiType;
 };
 
-export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
+export const Details: React.FC<Props> = ({ tranche }) => {
   const [activeTab, setActiveTab] = useState('rebalancing');
 
   return (
@@ -42,7 +43,7 @@ export const TrancheDetails: React.FC<Props> = ({ tranche }) => {
         <Tabs tabs={tabs} activeKey={activeTab} onClick={setActiveTab} variation="normal" />
       </header>
       {activeTab === 'rebalancing' && <RebalancingDetails tranche={tranche} />}
-      {activeTab === 'pool' && <PoolDetails tranche={tranche} />}
+      {activeTab === 'tranche' && <TrancheDetails tranche={tranche} />}
     </section>
   );
 };
@@ -52,8 +53,6 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 
-  const [tokenARatio, tokenBRatio] = calcTokensRatio(tranche.targetRatio);
-
   return (
     <>
       <div className="flexbox-grid p-24">
@@ -62,10 +61,9 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Target ratio
           </Text>
           <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
-            <Icon name={tokenA?.icon!} width={16} height={16} />{' '}
-            {numberFormat(tokenARatio, { minimumFractionDigits: 2 })}% <span className="ph-4">:</span>{' '}
-            <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
-            {numberFormat(tokenBRatio, { minimumFractionDigits: 2 })}%
+            <Icon name={tokenA?.icon!} width={16} height={16} /> {formatPercent(Number(tranche.tokenARatio))}
+            <span className="ph-4">:</span> <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
+            {formatPercent(Number(tranche.tokenBRatio))}
           </Text>
         </div>
         <div className="flex flow-row">
@@ -74,23 +72,25 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           </Text>
           <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
             <Icon name={tokenA?.icon!} width={16} height={16} />{' '}
-            {numberFormat(Number(tranche.tokenARatio) * 100, { minimumFractionDigits: 2 })}%{' '}
-            <span className="ph-4">:</span> <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
-            {numberFormat(Number(tranche.tokenBRatio) * 100, { minimumFractionDigits: 2 })}%
+            {formatPercent(Number(tranche.state.tokenACurrentRatio))} <span className="ph-4">:</span>{' '}
+            <Icon name={tokenB?.icon!} width={16} height={16} />{' '}
+            {formatPercent(Number(tranche.state.tokenBCurrentRatio))}
           </Text>
         </div>
       </div>
       <Divider />
       <div className="flexbox-grid p-24">
         <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            Rebalancing strategies
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
+            Rebalancing Strategy
+            <InfoTooltip>
+              Rebalancing of the tranche is triggered when both the time and deviation conditions are met
+            </InfoTooltip>
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
             Every {getRelativeTime(tranche.rebalancingInterval) || '0 seconds'}
             <span className="middle-dot ph-16 color-border" /> {'>'}{' '}
-            {formatPercent(BigNumber.from(tranche.rebalancingCondition)?.dividedBy(tranche.sFactorE) ?? 0)} deviation
-            from target
+            {formatPercent(calculateRebalancingCondition(tranche.rebalancingCondition))} deviation from target
           </Text>
         </div>
       </div>
@@ -100,12 +100,20 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Last rebalance
           </Text>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
-          </Text>
+          {tranche.state.lastRebalance ? (
+            <>
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
+              </Text>
+            </>
+          ) : (
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              Always
+            </Text>
+          )}
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
@@ -123,7 +131,7 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   );
 };
 
-const PoolDetails = ({ tranche }: { tranche: TrancheApiType }) => {
+const TrancheDetails = ({ tranche }: { tranche: TrancheApiType }) => {
   const wallet = useWallet();
 
   const tokenAContract = useContract(tranche.tokenA.address, { loadBalance: true });
@@ -189,22 +197,22 @@ const PoolDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Pool {tranche.tokenA.symbol} balance
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(BigNumber.from(tranche.state.tokenALiquidity))}
+            {formatUSD(BigNumber.from(tranche.state.tokenALiquidity))}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          {/* <Text type="small" weight="semibold" color="secondary">
             {formatUSD(BigNumber.from(tranche.state.tokenALiquidity)?.multipliedBy(tranche.tokenA.state.price) ?? 0)}
-          </Text>
+          </Text> */}
         </div>
         <div className="flex flow-row">
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Pool {tranche.tokenB.symbol} balance
           </Text>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(BigNumber.from(tranche.state.tokenBLiquidity))}
+            {formatUSD(BigNumber.from(tranche.state.tokenBLiquidity))}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          {/* <Text type="small" weight="semibold" color="secondary">
             {formatUSD(BigNumber.from(tranche.state.tokenBLiquidity)?.multipliedBy(tranche.tokenB.state.price) ?? 0)}
-          </Text>
+          </Text> */}
         </div>
       </div>
     </>

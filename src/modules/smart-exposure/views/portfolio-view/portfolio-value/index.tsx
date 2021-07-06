@@ -7,7 +7,7 @@ import * as ReCharts from 'recharts';
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { PortfolioValueApiType, useSeAPI } from 'modules/smart-exposure/api';
+import { PortfolioValueType, useSeAPI } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import { numberFormat } from 'utils';
@@ -22,7 +22,7 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
   const { account } = useWallet();
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const [loading, setLoading] = useState<boolean>(false);
-  const [dataList, setDataList] = useState<PortfolioValueApiType[]>([]);
+  const [dataList, setDataList] = useState<PortfolioValueType[]>([]);
   const seAPI = useSeAPI();
 
   useEffect(() => {
@@ -127,14 +127,6 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
             </ReCharts.AreaChart>
           </ReCharts.ResponsiveContainer>
         </Spin>
-        <footer className="flex flow-col justify-center col-gap-24 row-gap-16" style={{ marginTop: 16 }}>
-          <div className="chart-label" style={{ '--dot-color': 'var(--theme-red-color)' } as React.CSSProperties}>
-            Portfolio with strategy
-          </div>
-          {/* <div className="chart-label" style={{ '--dot-color': 'var(--theme-icon-color)' } as React.CSSProperties}>
-            Holding
-          </div> */}
-        </footer>
       </div>
     </section>
   );
