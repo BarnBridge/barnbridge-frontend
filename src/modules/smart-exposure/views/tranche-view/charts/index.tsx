@@ -9,13 +9,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import {
-  RatioDeviationType,
-  TrancheApiType,
-  TrancheLiquidityType,
-  fetchRatioDeviation,
-  fetchTrancheLiquidity,
-} from 'modules/smart-exposure/api';
+import { RatioDeviationType, TrancheApiType, TrancheLiquidityType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
 
@@ -71,10 +65,12 @@ export const Charts: React.FC<PropsType> = ({ tranche, className }) => {
 const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: string; periodFilter: PeriodTabsKey }) => {
   const [dataList, setDataList] = useState<RatioDeviationType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
     setLoading(true);
-    fetchRatioDeviation(trancheAddress, periodFilter)
+    seAPI
+      .fetchRatioDeviation(trancheAddress, periodFilter)
       .then(result => setDataList(result))
       .catch(err => {
         setDataList([]);
@@ -140,10 +136,12 @@ const TrancheLiquidity = ({
 }) => {
   const [dataList, setDataList] = useState<TrancheLiquidityType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
     setLoading(true);
-    fetchTrancheLiquidity(trancheAddress, periodFilter)
+    seAPI
+      .fetchTrancheLiquidity(trancheAddress, periodFilter)
       .then(result => setDataList(result))
       .catch(err => {
         setDataList([]);

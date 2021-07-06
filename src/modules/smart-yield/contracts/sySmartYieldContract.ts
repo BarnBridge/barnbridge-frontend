@@ -241,19 +241,19 @@ class SYSmartYieldContract extends Erc20Contract {
     return this.batch([
       {
         method: 'price',
-        transform: value => new BigNumber(value),
+        transform: value => BigNumber.from(value),
       },
       {
         method: 'abondDebt',
-        transform: value => new BigNumber(value),
+        transform: value => BigNumber.from(value),
       },
       {
         method: 'abond',
         transform: (value: SYAbond) => ({
-          principal: new BigNumber(value.principal),
-          gain: new BigNumber(value.gain),
-          issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
-          maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+          principal: BigNumber.from(value.principal),
+          gain: BigNumber.from(value.gain),
+          issuedAt: Math.floor(BigNumber.from(value.issuedAt).dividedBy(1e18).toNumber()),
+          maturesAt: Math.floor(BigNumber.from(value.maturesAt).dividedBy(1e18).toNumber()),
           liquidated: value.liquidated,
         }),
       },
@@ -266,25 +266,25 @@ class SYSmartYieldContract extends Erc20Contract {
   }
 
   async getPrice(): Promise<BigNumber> {
-    return this.call('price').then(value => new BigNumber(value));
+    return this.call('price').then(value => BigNumber.from(value));
   }
 
   async getAbondDebt(): Promise<BigNumber> {
-    return this.call('abondDebt').then(value => new BigNumber(value));
+    return this.call('abondDebt').then(value => BigNumber.from(value));
   }
 
   async getAbond(): Promise<SYAbond> {
     return this.call('abond').then(value => ({
-      principal: new BigNumber(value.principal),
-      gain: new BigNumber(value.gain),
-      issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
-      maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
+      principal: BigNumber.from(value.principal),
+      gain: BigNumber.from(value.gain),
+      issuedAt: Math.floor(BigNumber.from(value.issuedAt).dividedBy(1e18).toNumber()),
+      maturesAt: Math.floor(BigNumber.from(value.maturesAt).dividedBy(1e18).toNumber()),
       liquidated: value.liquidated,
     }));
   }
 
   async getBondGain(principalAmount: BigNumber, forDays: number): Promise<BigNumber> {
-    return this.call('bondGain', [principalAmount, forDays]).then(value => new BigNumber(value));
+    return this.call('bondGain', [principalAmount, forDays]).then(value => BigNumber.from(value));
   }
 
   async getJuniorBonds(jBondIds: number[]): Promise<SYJuniorBondToken[]> {
@@ -297,7 +297,7 @@ class SYSmartYieldContract extends Erc20Contract {
       methodArgs: [jBondId],
       transform: value => ({
         jBondId,
-        tokens: new BigNumber(value.tokens),
+        tokens: BigNumber.from(value.tokens),
         maturesAt: Number(value.maturesAt),
       }),
     }));
@@ -315,8 +315,8 @@ class SYSmartYieldContract extends Erc20Contract {
       methodArgs: [sBondId],
       transform: value => ({
         sBondId,
-        principal: new BigNumber(value.principal),
-        gain: new BigNumber(value.gain),
+        principal: BigNumber.from(value.principal),
+        gain: BigNumber.from(value.gain),
         issuedAt: Number(value.issuedAt),
         maturesAt: Number(value.maturesAt),
       }),

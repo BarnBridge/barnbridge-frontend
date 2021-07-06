@@ -1,25 +1,73 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { InjectedConnector } from '@web3-react/injected-connector';
 
-import MetaMaskLogoDark from 'resources/svg/wallets/metamask-logo-dark.svg';
-import MetaMaskLogo from 'resources/svg/wallets/metamask-logo.svg';
+import MetamaskLogoDark from 'resources/svg/wallets/metamask-logo-dark.svg';
+import MetamaskLogo from 'resources/svg/wallets/metamask-logo.svg';
 
-import { WalletConnector } from 'wallets/types';
+import { Web3Network } from 'networks/types';
+import { BaseWalletConfig } from 'wallets/types';
 
-type MetaMaskError = Error & {
+type MetamaskError = Error & {
   code: number;
 };
 
-const MetaMaskWalletConfig: WalletConnector = {
+export type MetamaskAddEthereumChain = {
+  chainId: string;
+  chainName: string;
+  nativeCurrency: {
+    name: string;
+    symbol: string;
+    decimals: number;
+  };
+  rpcUrls: string[];
+  blockExplorerUrls: string[];
+};
+
+export type MetamaskSwitchEthereumChain = {
+  chainId: string;
+};
+
+export type MetamaskWatchAsset = {
+  type: string;
+  options: {
+    address: string;
+    symbol: string;
+    decimals: number;
+    image: string;
+  };
+};
+
+export function metamask_AddEthereumChain(provider: any, ...infos: MetamaskAddEthereumChain[]): Promise<Error | null> {
+  return provider.request({
+    method: 'wallet_addEthereumChain',
+    params: infos,
+  });
+}
+
+export function metamask_SwitchEthereumChain(provider: any, info: MetamaskSwitchEthereumChain): Promise<Error | null> {
+  return provider.request({
+    method: 'wallet_switchEthereumChain',
+    params: [info],
+  });
+}
+
+export function metamask_AddToken(provider: any, info: MetamaskWatchAsset): Promise<boolean> {
+  return provider.request({
+    method: 'wallet_watchAsset',
+    params: info,
+  });
+}
+
+const MetamaskWalletConfig: BaseWalletConfig = {
   id: 'metamask',
-  logo: [MetaMaskLogo, MetaMaskLogoDark],
+  logo: [MetamaskLogo, MetamaskLogoDark],
   name: 'MetaMask',
-  factory(chainId: number): AbstractConnector {
+  factory(network: Web3Network): AbstractConnector {
     return new InjectedConnector({
-      supportedChainIds: [chainId],
+      supportedChainIds: [network.meta.chainId],
     });
   },
-  onError(error: MetaMaskError): Error | undefined {
+  onError(error: MetamaskError): Error | undefined {
     if (error.code === -32002) {
       return new Error('MetaMask is already processing. Please verify MetaMask extension.');
     }
@@ -28,4 +76,4 @@ const MetaMaskWalletConfig: WalletConnector = {
   },
 };
 
-export default MetaMaskWalletConfig;
+export default MetamaskWalletConfig;

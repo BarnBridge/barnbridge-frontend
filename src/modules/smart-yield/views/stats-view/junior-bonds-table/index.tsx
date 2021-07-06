@@ -1,7 +1,7 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -10,20 +10,22 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
-import { APISYJuniorBonds, fetchSYJuniorBonds } from 'modules/smart-yield/api';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
+import { APISYJuniorBonds, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 type TableEntity = APISYJuniorBonds;
 
 const TokenNameColumn: React.FC = () => {
   const { pool } = useSYPool();
+  const { projectToken } = useKnownTokens();
 
   return (
     <div className="flex">
       <IconBubble
         name={pool?.meta?.icon}
-        bubbleName={ProjectToken.icon!}
+        bubbleName={projectToken.icon!}
         secondBubbleName={pool?.market?.icon}
         className="mr-16"
       />
@@ -41,6 +43,7 @@ const TokenNameColumn: React.FC = () => {
 
 const DepositedColumn: React.FC<{ entity: TableEntity }> = ({ entity }) => {
   const { pool } = useSYPool();
+  const { convertTokenInUSD } = useKnownTokens();
 
   return (
     <>
@@ -72,28 +75,36 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Address',
-    render: (_, entity) => (
-      <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
-        <Text type="p1" weight="semibold" color="blue">
-          {shortenAddr(entity.accountAddress)}
-        </Text>
-      </ExternalLink>
-    ),
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.accountAddress)}
+          </Text>
+        </ExternalLink>
+      );
+    },
   },
   {
     title: 'Tx Hash / Timestamp',
-    render: (_, entity) => (
-      <>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="mb-4">
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
+    render: function Render(_, entity) {
+      const { getEtherscanTxUrl } = useWeb3();
+
+      return (
+        <>
+          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="mb-4">
+            <Text type="p1" weight="semibold" color="blue">
+              {shortenAddr(entity.transactionHash)}
+            </Text>
+          </ExternalLink>
+          <Text type="small" weight="semibold" color="secondary">
+            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
           </Text>
-        </ExternalLink>
-        <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Maturity Date',
@@ -212,6 +223,7 @@ type Props = {
 const JuniorBondsTable: React.FC<Props> = ({ tabs }) => {
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
+  const syAPI = useSyAPI();
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -227,7 +239,7 @@ const JuniorBondsTable: React.FC<Props> = ({ tabs }) => {
       }));
 
       try {
-        const history = await fetchSYJuniorBonds(
+        const history = await syAPI.fetchSYJuniorBonds(
           pool.smartYieldAddress,
           state.page,
           state.pageSize,

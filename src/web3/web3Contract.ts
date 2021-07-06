@@ -1,4 +1,5 @@
 import debounce from 'lodash/debounce';
+import uniqueId from 'lodash/uniqueId';
 import Web3 from 'web3';
 import { Method } from 'web3-core-method';
 import { Eth } from 'web3-eth';
@@ -7,9 +8,7 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue } from 'web3/utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { DEFAULT_WEB3, DEFAULT_WEB3_PROVIDER, WEB3_ERROR_VALUE } from 'components/providers/eth-web3-provider';
-
-export type Web3ContractAbiItem = AbiItem;
+import { WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
 
 export function createAbiItem(
   name: string,
@@ -22,14 +21,22 @@ export function createAbiItem(
     stateMutability: 'view',
     inputs: inputs.map(type => {
       if (Array.isArray(type)) {
-        return { name: '', type: 'tuple[]', components: type.map(t => ({ name: '', type: t })) };
+        return {
+          name: '',
+          type: 'tuple[]',
+          components: type.map(t => ({ name: '', type: t })),
+        };
       }
 
       return { name: '', type };
     }),
     outputs: outputs.map(type => {
       if (Array.isArray(type)) {
-        return { name: '', type: 'tuple[]', components: type.map(t => ({ name: '', type: t })) };
+        return {
+          name: '',
+          type: 'tuple[]',
+          components: type.map(t => ({ name: '', type: t })),
+        };
       }
 
       return { name: '', type };
@@ -61,66 +68,73 @@ export type Web3SendMeta = {
 
 type EthContract = Contract & Eth;
 
-class Web3Contract extends EventEmitter {
-  static UPDATE_ACCOUNT = 'update:account';
-  static UPDATE_DATA = 'update:data';
+class BatchRequestManager {
+  static requests: Map<any, Method[]> = new Map();
 
-  static sendIncNumber: number = 0;
-  static requestsPool: Map<any, Method[]> = new Map();
+  static addRequest(source: EthContract, request: Method) {
+    const { currentProvider } = source;
 
-  static addRequest(source: Web3Contract, request: Method) {
-    const provider = source._callContract.currentProvider;
-    const collected = this.requestsPool.get(provider) ?? [];
+    if (!currentProvider) {
+      return;
+    }
 
-    this.requestsPool.set(provider, [...collected, request]);
+    const { requests } = BatchRequestManager;
+
+    let collected = requests.get(currentProvider);
+
+    if (!collected) {
+      collected = [];
+      requests.set(currentProvider, collected);
+    }
+
+    collected.push(request);
+
     this.run();
   }
 
   static run = debounce(() => {
-    Web3Contract.requestsPool.forEach((requests, provider) => {
+    const { requests } = BatchRequestManager;
+
+    requests.forEach((methods, provider) => {
       const web3 = new Web3(provider);
       const batch = new web3.BatchRequest();
 
-      requests.forEach(request => batch.add(request));
+      methods.forEach(method => batch.add(method));
       batch.execute();
 
-      Web3Contract.requestsPool.delete(provider);
+      requests.delete(provider);
     });
   }, 250);
+}
 
-  static tryCall(to: string, from: string, data: string, value: string): any {
-    return DEFAULT_WEB3.eth.call({
-      to,
-      from,
-      data,
-      value,
-    });
-  }
+class Web3Contract {
+  static UPDATE_ACCOUNT = 'update:account';
+  static UPDATE_DATA = 'update:data';
 
+  private readonly _events: EventEmitter;
+  private readonly _abi: AbiItem[];
+  private readonly _callContract: EthContract;
+  private readonly _sendContract: EthContract;
   readonly address: string;
-
-  readonly _abi: AbiItem[];
-  readonly _callContract: EthContract;
-  readonly _sendContract: EthContract;
-
   name: string;
   account?: string;
 
   constructor(abi: AbiItem[], address: string, name: string) {
-    super();
-
     if (!address) {
       throw new Error(`Invalid contract address (${name})`);
     }
 
+    this._events = new EventEmitter();
     this._abi = abi;
     this.address = address;
     this.name = name;
 
-    this._callContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
-    this._sendContract = new DEFAULT_WEB3.eth.Contract(abi, address) as EthContract;
+    const web3 = new Web3();
+    this._callContract = new web3.eth.Contract(abi, address) as EthContract;
+    this._sendContract = new web3.eth.Contract(abi, address) as EthContract;
   }
 
+  /// GETTERS
   get writeFunctions(): AbiItem[] {
     return this._abi.filter(r => r.type === 'function' && !r.constant);
   }
@@ -133,14 +147,15 @@ class Web3Contract extends EventEmitter {
     return this._sendContract.currentProvider;
   }
 
-  setCallProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
-    if (this._callContract !== provider) {
+  /// SETTERS
+  setCallProvider(provider: any): void {
+    if (this._callContract.currentProvider !== provider) {
       this._callContract.setProvider(provider);
     }
   }
 
-  setProvider(provider: any = DEFAULT_WEB3_PROVIDER): void {
-    if (this._sendContract !== provider) {
+  setProvider(provider: any): void {
+    if (this._sendContract.currentProvider !== provider) {
       this._sendContract.setProvider(provider);
     }
   }
@@ -152,12 +167,14 @@ class Web3Contract extends EventEmitter {
     }
   }
 
+  /// ASSERTION METHODS
   assertAccount() {
     if (!this.account) {
       throw new Error('This operation requires wallet to be connected!');
     }
   }
 
+  /// REQUEST METHODS
   batch(methods: BatchContractMethod[]): Promise<any[]> {
     if (methods.length === 0) {
       return Promise.reject(new Error(`Empty list of methods for batch.`));
@@ -184,6 +201,7 @@ class Web3Contract extends EventEmitter {
     return new Promise((resolve, reject) => {
       const req = contractMethod(...methodArgs).call.request(callArgs, (err: Error, value: string) => {
         if (err) {
+          // console.error(err);
           return reject(err);
         }
 
@@ -194,7 +212,7 @@ class Web3Contract extends EventEmitter {
         resolve(value);
       });
 
-      Web3Contract.addRequest(this, req);
+      BatchRequestManager.addRequest(this._callContract, req);
     });
   }
 
@@ -207,8 +225,6 @@ class Web3Contract extends EventEmitter {
       return Promise.reject(new Error(`Unknown method "${method}" in contract.`));
     }
 
-    Web3Contract.sendIncNumber += 1;
-
     const _sendArgs = {
       from: this.account,
       gasPrice: gasPrice !== undefined ? getGasValue(gasPrice) : undefined,
@@ -216,7 +232,7 @@ class Web3Contract extends EventEmitter {
     };
 
     const meta: Web3SendMeta = {
-      id: `${method}:${Web3Contract.sendIncNumber}`,
+      id: uniqueId(`${method}:`),
       sender: this,
       method,
       methodArgs,
@@ -251,6 +267,31 @@ class Web3Contract extends EventEmitter {
         });
         return Promise.reject(error);
       });
+  }
+
+  /// EVENT METHODS
+  on(event: string, listener: Function): EventEmitter {
+    return this._events.on(event, listener);
+  }
+
+  once(event: string, listener: Function): EventEmitter {
+    return this._events.once(event, listener);
+  }
+
+  off(event: string, listener: Function): EventEmitter {
+    return this._events.off(event, listener);
+  }
+
+  emit(event: string, ...args: any[]): EventEmitter {
+    return this._events.emit(event, ...args);
+  }
+
+  onUpdateAccount(listener: Function): EventEmitter {
+    return this.on('update:account', listener);
+  }
+
+  onUpdateData(listener: Function): EventEmitter {
+    return this.on('update:data', listener);
   }
 }
 

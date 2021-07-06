@@ -7,18 +7,18 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
+import { InvariantContext } from 'utils/context';
+
 import s from './s.module.scss';
 
 export type WarningContextType = {
   addWarn: (opts: WarnType) => () => void;
 };
 
-const WarningContext = React.createContext<WarningContextType>({
-  addWarn: () => () => undefined,
-});
+const Context = React.createContext<WarningContextType>(InvariantContext('WarningProvider'));
 
 export function useWarning(): WarningContextType {
-  return React.useContext<WarningContextType>(WarningContext);
+  return React.useContext<WarningContextType>(Context);
 }
 
 export type WarnType = {
@@ -85,7 +85,7 @@ const WarningProvider: React.FC = props => {
   }
 
   return (
-    <WarningContext.Provider
+    <Context.Provider
       value={{
         addWarn,
       }}>
@@ -95,7 +95,7 @@ const WarningProvider: React.FC = props => {
         ))}
       </Grid>
       {props.children}
-    </WarningContext.Provider>
+    </Context.Provider>
   );
 };
 

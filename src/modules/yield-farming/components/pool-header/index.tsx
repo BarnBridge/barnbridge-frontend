@@ -6,17 +6,17 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
 const PoolHeader: FC = () => {
-  const knownTokensCtx = useKnownTokens();
+  const { projectToken, convertTokenInUSD } = useKnownTokens();
   const yfPoolsCtx = useYFPools();
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const { poolMeta, poolBalance, effectivePoolBalance, apy } = yfPoolCtx;
 
@@ -84,7 +84,7 @@ const PoolHeader: FC = () => {
             Weekly rewards
           </Text>
           <div className="flex align-center">
-            <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
+            <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
             <Text type="p1" weight="semibold" color="primary">
               {!isEnded ? formatNumber(poolMeta.contract.epochReward) ?? '-' : 0}
             </Text>
@@ -98,8 +98,7 @@ const PoolHeader: FC = () => {
             {poolMeta.tokens.map((token, index) => {
               const stakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(token.address);
               const rate =
-                knownTokensCtx
-                  .convertTokenInUSD(stakedToken?.nextEpochPoolSize, token.symbol)
+                convertTokenInUSD(stakedToken?.nextEpochPoolSize, token.symbol)
                   ?.unscaleBy(token.decimals)
                   ?.dividedBy(poolBalance ?? 0)
                   .multipliedBy(100) ?? 0;

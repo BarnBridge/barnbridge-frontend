@@ -13,10 +13,10 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { FCx } from 'components/types.tx';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -27,6 +27,7 @@ type StakeFormValues = {
 const StakeForm: FC = () => {
   const walletCtx = useWallet();
   const rewardPoolCtx = useRewardPool();
+  const { projectToken } = useKnownTokens();
 
   const [enabling, setEnabled] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
@@ -128,7 +129,7 @@ const StakeForm: FC = () => {
                 before={
                   <IconBubble
                     name={uToken?.icon}
-                    bubbleName={ProjectToken.icon}
+                    bubbleName={projectToken.icon}
                     secondBubbleName={poolMarket?.icon.active}
                     width={32}
                     height={32}
@@ -173,7 +174,7 @@ const StakeForm: FC = () => {
               </Text>
               <IconBubble
                 name={uToken?.icon}
-                bubbleName={ProjectToken.icon}
+                bubbleName={projectToken.icon}
                 secondBubbleName={poolMarket?.icon.active}
                 width={32}
                 height={32}
@@ -197,6 +198,7 @@ type UnstakeFormValues = {
 const UnstakeForm: FC = () => {
   const walletCtx = useWallet();
   const rewardPoolCtx = useRewardPool();
+  const { projectToken } = useKnownTokens();
 
   const [isClaimUnstake, setClaimUnstake] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
@@ -290,7 +292,7 @@ const UnstakeForm: FC = () => {
                 before={
                   <IconBubble
                     name={uToken?.icon}
-                    bubbleName={ProjectToken.icon}
+                    bubbleName={projectToken.icon}
                     secondBubbleName={poolMarket?.icon.active}
                     width={32}
                     height={32}
@@ -351,7 +353,7 @@ const UnstakeForm: FC = () => {
                   </Text>
                   <IconBubble
                     name={uToken?.icon}
-                    bubbleName={ProjectToken.icon!}
+                    bubbleName={projectToken.icon!}
                     secondBubbleName={poolMarket?.icon.active}
                     width={32}
                     height={32}
@@ -397,6 +399,7 @@ const Stake: FCx = props => {
 
   const walletCtx = useWallet();
   const [activeTab, setActiveTab] = useState('stake');
+  const { convertTokenInUSD } = useKnownTokens();
 
   const rewardPoolCtx = useRewardPool();
   const { pool } = rewardPoolCtx;

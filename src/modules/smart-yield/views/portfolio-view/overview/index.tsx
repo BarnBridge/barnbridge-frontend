@@ -3,10 +3,10 @@ import AntdSpin from 'antd/lib/spin';
 import last from 'lodash/last';
 
 import { mergeState } from 'hooks/useMergeState';
-import { fetchSYPortfolioValues } from 'modules/smart-yield/api';
+import { useSyAPI } from 'modules/smart-yield/api';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import HistoryTable from './history-table';
 
@@ -31,6 +31,7 @@ const InitialState: State = {
 
 const PortfolioOverview: React.FC = () => {
   const wallet = useWallet();
+  const syAPI = useSyAPI();
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -47,7 +48,7 @@ const PortfolioOverview: React.FC = () => {
       );
 
       try {
-        const portfolioValues = await fetchSYPortfolioValues(wallet.account);
+        const portfolioValues = await syAPI.fetchSYPortfolioValues(wallet.account);
 
         setState(
           mergeState<State>({

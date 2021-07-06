@@ -7,7 +7,8 @@ import Progress from 'components/antd/progress';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { useConfig } from 'components/providers/configProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 import { useDAO } from '../../../../components/dao-provider';
 
@@ -16,6 +17,8 @@ export type ActivationThresholdProps = {
 };
 
 const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
+  const { projectToken } = useKnownTokens();
+  const config = useConfig();
   const daoCtx = useDAO();
   const [activating, setActivating] = React.useState<boolean>(false);
 
@@ -35,8 +38,8 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         <Hint
           text={
             <Text type="p2">
-              For the DAO to be activated, a threshold of {formatToken(daoCtx.activationThreshold)} $
-              {ProjectToken.symbol} tokens staked has to be met.
+              For the DAO to be activated, a threshold of {formatToken(config.dao?.activationThreshold)} $
+              {projectToken.symbol} tokens staked has to be met.
             </Text>
           }>
           <Text type="p1" weight="semibold" color="primary">
@@ -56,12 +59,12 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <Icon name={ProjectToken.icon!} />
+          <Icon name={projectToken.icon!} />
           <Text type="p1" weight="bold" color="primary">
             {formatToken(daoCtx.bondStaked)}
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            / {formatToken(daoCtx.activationThreshold)} already staked.
+            / {formatToken(config.dao?.activationThreshold)} already staked.
           </Text>
         </Grid>
         {daoCtx.activationRate === 100 && !daoCtx.isActive && (

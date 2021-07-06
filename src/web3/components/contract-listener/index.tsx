@@ -1,12 +1,12 @@
-import React from 'react';
+import { FC, ReactNode, useCallback, useEffect, useState } from 'react';
 import TxStatusModal from 'web3/components/tx-status-modal';
 import UserRejectedModal from 'web3/components/user-rejected-modal';
 import Web3Contract, { Web3SendMeta, Web3SendState } from 'web3/web3Contract';
 
 type Props = {
   contract?: Web3Contract;
-  renderProgress?: (meta?: Web3SendMeta) => React.ReactNode;
-  renderSuccess?: (meta?: Web3SendMeta) => React.ReactNode;
+  renderProgress?: (meta?: Web3SendMeta) => ReactNode;
+  renderSuccess?: (meta?: Web3SendMeta) => ReactNode;
 };
 
 type TxStatus = {
@@ -15,18 +15,18 @@ type TxStatus = {
   meta?: Web3SendMeta;
 };
 
-const ContractListener: React.FC<Props> = props => {
+const ContractListener: FC<Props> = props => {
   const { contract, renderProgress, renderSuccess } = props;
 
-  const [userRejectedVisible, setUserRejected] = React.useState(false);
+  const [userRejectedVisible, setUserRejected] = useState(false);
 
-  const [txStatus, setTxStatus] = React.useState<TxStatus>({
+  const [txStatus, setTxStatus] = useState<TxStatus>({
     visible: false,
     state: undefined,
     meta: undefined,
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!contract) {
       return;
     }
@@ -77,11 +77,11 @@ const ContractListener: React.FC<Props> = props => {
     };
   }, [contract]);
 
-  const handleUserRejectedCancel = React.useCallback(() => {
+  const handleUserRejectedCancel = useCallback(() => {
     setUserRejected(false);
   }, []);
 
-  const handleStatusModalCancel = React.useCallback(() => {
+  const handleStatusModalCancel = useCallback(() => {
     setTxStatus(prevState => ({
       ...prevState,
       visible: false,
@@ -90,20 +90,23 @@ const ContractListener: React.FC<Props> = props => {
     }));
   }, []);
 
-  return (
-    <>
-      {userRejectedVisible && <UserRejectedModal onCancel={handleUserRejectedCancel} />}
-      {txStatus.visible && (
-        <TxStatusModal
-          state={txStatus.state}
-          txHash={txStatus.meta?.txHash}
-          renderProgress={() => renderProgress?.(txStatus.meta)}
-          renderSuccess={() => renderSuccess?.(txStatus.meta)}
-          onCancel={handleStatusModalCancel}
-        />
-      )}
-    </>
-  );
+  if (userRejectedVisible) {
+    return <UserRejectedModal onCancel={handleUserRejectedCancel} />;
+  }
+
+  if (txStatus.visible) {
+    return (
+      <TxStatusModal
+        state={txStatus.state}
+        txHash={txStatus.meta?.txHash}
+        renderProgress={() => renderProgress?.(txStatus.meta)}
+        renderSuccess={() => renderSuccess?.(txStatus.meta)}
+        onCancel={handleStatusModalCancel}
+      />
+    );
+  }
+
+  return null;
 };
 
 export default ContractListener;

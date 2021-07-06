@@ -7,9 +7,9 @@ import { formatUSD } from 'web3/utils';
 
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYPoolLiquidity, fetchSYPoolLiquidity } from 'modules/smart-yield/api';
+import { APISYPoolLiquidity, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';
@@ -48,8 +48,10 @@ const InitialState: State = {
 };
 
 const Liquidity: React.FC<Props> = ({ className }) => {
+  const { convertTokenInUSD } = useKnownTokens();
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
+  const syAPI = useSyAPI();
 
   const [activeTab, setActiveTab] = React.useState('24h');
   const [state, setState] = React.useState<State>(InitialState);
@@ -72,7 +74,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
       );
 
       try {
-        const poolLiquidity = await fetchSYPoolLiquidity(pool.smartYieldAddress, activeTab);
+        const poolLiquidity = await syAPI.fetchSYPoolLiquidity(pool.smartYieldAddress, activeTab);
 
         setState(
           mergeState<State>({

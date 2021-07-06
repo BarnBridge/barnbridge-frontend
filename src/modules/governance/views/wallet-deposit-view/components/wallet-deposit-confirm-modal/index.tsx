@@ -7,7 +7,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 import { getFormattedDuration } from 'utils';
 
@@ -18,6 +18,8 @@ export type WalletDepositConfirmModalProps = ModalProps & {
 
 const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = props => {
   const { deposit, lockDuration, ...modalProps } = props;
+
+  const { projectToken } = useKnownTokens();
 
   return (
     <Modal width={560} {...modalProps}>
@@ -30,7 +32,7 @@ const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = prop
             </Text>
 
             <Text type="p2" weight="semibold" color="secondary">
-              You are about to deposit {formatToken(deposit)} ${ProjectToken.symbol}.
+              You are about to deposit {formatToken(deposit)} ${projectToken.symbol}.
               <br />
               You have an active lock for {getFormattedDuration(0, lockDuration)}.
             </Text>

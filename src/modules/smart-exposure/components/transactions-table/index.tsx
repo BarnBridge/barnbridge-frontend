@@ -1,14 +1,15 @@
 import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
-import Icon from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
-import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
-import { TransactionApiType, fetchTransactions } from 'modules/smart-exposure/api';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
+import { TransactionApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 export const TransactionsTable = ({
   transactionType,
@@ -19,6 +20,8 @@ export const TransactionsTable = ({
   accountAddress?: string;
   poolAddress?: string;
 }) => {
+  const { getTokenIconBySymbol } = useKnownTokens();
+  const seAPI = useSeAPI();
   const [dataList, setDataList] = useState<TransactionApiType[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [filters, setFilters] = useState<{
@@ -50,13 +53,14 @@ export const TransactionsTable = ({
   useEffect(() => {
     setLoading(true);
 
-    fetchTransactions({
-      page: filters.page,
-      limit: filters.pageSize,
-      accountAddress: filters.accountAddress,
-      poolAddress: filters.poolAddress,
-      transactionType: filters.transactionType,
-    })
+    seAPI
+      .fetchTransactions({
+        page: filters.page,
+        limit: filters.pageSize,
+        accountAddress: filters.accountAddress,
+        poolAddress: filters.poolAddress,
+        transactionType: filters.transactionType,
+      })
       .then(result => {
         if (Array.isArray(result.data)) {
           setDataList(result.data);
@@ -107,7 +111,12 @@ export const TransactionsTable = ({
         render: item => (
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
-              <Icon name={getTokenIconBySymbol(item.tokenA.symbol)} width={16} height={16} className="mr-4" />
+              <Icon
+                name={getTokenIconBySymbol(item.tokenA.symbol) as IconNames}
+                width={16}
+                height={16}
+                className="mr-4"
+              />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
                 {formatToken(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
@@ -125,7 +134,12 @@ export const TransactionsTable = ({
         render: item => (
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
-              <Icon name={getTokenIconBySymbol(item.tokenB.symbol)} width={16} height={16} className="mr-4" />
+              <Icon
+                name={getTokenIconBySymbol(item.tokenB.symbol) as IconNames}
+                width={16}
+                height={16}
+                className="mr-4"
+              />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
                 {formatToken(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}
@@ -152,28 +166,36 @@ export const TransactionsTable = ({
             {
               heading: 'Address',
               // @ts-ignore
-              render: item => (
-                <a
-                  href={getEtherscanAddressUrl(item.accountAddress)}
-                  className="link-blue"
-                  target="_blank"
-                  rel="noreferrer noopener">
-                  {shortenAddr(item.accountAddress, 6, 4)}
-                </a>
-              ),
+              render: function Render(item) {
+                const { getEtherscanAddressUrl } = useWeb3();
+
+                return (
+                  <a
+                    href={getEtherscanAddressUrl(item.accountAddress)}
+                    className="link-blue"
+                    target="_blank"
+                    rel="noreferrer noopener">
+                    {shortenAddr(item.accountAddress, 6, 4)}
+                  </a>
+                );
+              },
             } as ColumnType<TransactionApiType>,
           ]),
       {
         heading: 'Transaction Hash',
-        render: item => (
-          <a
-            href={getEtherscanTxUrl(item.transactionHash)}
-            className="link-blue"
-            target="_blank"
-            rel="noreferrer noopener">
-            {shortenAddr(item.transactionHash, 6, 4)}
-          </a>
-        ),
+        render: function Render(item) {
+          const { getEtherscanTxUrl } = useWeb3();
+
+          return (
+            <a
+              href={getEtherscanTxUrl(item.transactionHash)}
+              className="link-blue"
+              target="_blank"
+              rel="noreferrer noopener">
+              {shortenAddr(item.transactionHash, 6, 4)}
+            </a>
+          );
+        },
       },
       {
         heading: 'Date',

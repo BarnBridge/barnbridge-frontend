@@ -7,9 +7,9 @@ import { formatPercent } from 'web3/utils';
 // import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
+import { useWallet } from 'wallets/walletProvider';
 
 import { Charts } from './charts';
 import { Details } from './details';
@@ -23,9 +23,11 @@ const TrancheView: React.FC = () => {
   const location = useLocation();
   const wallet = useWallet();
   const [tranche, setTranche] = useState<TrancheApiType>();
+  const { getTokenBySymbol } = useKnownTokens();
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranche(trancheAddress).then(result => {
+    seAPI.fetchTranche(trancheAddress).then(result => {
       setTranche(result);
     });
   }, [trancheAddress]);

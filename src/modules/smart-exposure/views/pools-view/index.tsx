@@ -7,8 +7,8 @@ import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import { PoolApiType, fetchPools } from 'modules/smart-exposure/api';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
@@ -18,9 +18,11 @@ import { getRelativeTime } from 'utils';
 const PoolsView: React.FC = () => {
   const [pools, setPools] = useState<PoolApiType[]>([]);
   const [selectedPools, setSelectedPools] = useState<PoolApiType[]>([]);
+  const { getTokenBySymbol } = useKnownTokens();
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchPools().then(result => {
+    seAPI.fetchPools().then(result => {
       setPools(result);
     });
   }, []);

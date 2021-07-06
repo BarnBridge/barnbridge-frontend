@@ -4,25 +4,29 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
-import { getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
-import { TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
+import { TranchesItemApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 const columns: ColumnType<TranchesItemApiType>[] = [
   {
     heading: 'Tranche / Transaction',
-    render: item => (
-      <div className="flex align-center">
-        <IconsPair
-          icon1={getTokenIconBySymbol(item.tokenA.symbol)}
-          icon2={getTokenIconBySymbol(item.tokenB.symbol)}
-          size={40}
-          className="mr-16"
-          style={{ flexShrink: 0 }}
-        />
-        <div className="text-p1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
-      </div>
-    ),
+    render: function Render(item) {
+      const { getTokenIconBySymbol } = useKnownTokens();
+
+      return (
+        <div className="flex align-center">
+          <IconsPair
+            icon1={getTokenIconBySymbol(item.tokenA.symbol)}
+            icon2={getTokenIconBySymbol(item.tokenB.symbol)}
+            size={40}
+            className="mr-16"
+            style={{ flexShrink: 0 }}
+          />
+          <div className="text-p1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
+        </div>
+      );
+    },
   },
   {
     heading: 'Pool token amount',
@@ -64,9 +68,10 @@ type PositionsTablePropsType = {
 
 export const PositionsTable: React.FC<PositionsTablePropsType> = ({ poolAddress }) => {
   const [tranches, setTranches] = useState<TranchesItemApiType[]>([]);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranches(poolAddress).then(setTranches).catch(Error);
+    seAPI.fetchTranches(poolAddress).then(setTranches);
   }, [poolAddress]);
 
   return <Table<TranchesItemApiType> columns={columns} data={tranches} rowKey={item => item.eTokenAddress} />;

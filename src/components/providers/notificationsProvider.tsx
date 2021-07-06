@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
+import { FC, createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useLocalStorage } from 'react-use-storage';
 
 import { Toast } from 'components/custom/notification';
-import config from 'config';
-import { useWallet } from 'wallets/wallet';
+import { useConfig } from 'components/providers/configProvider';
+import { useWallet } from 'wallets/walletProvider';
 
-import { useEthWeb3 } from '../eth-web3-provider';
+import { InvariantContext } from 'utils/context';
 
 export type NotificationsContextType = {
   notifications: NotificationType[];
@@ -196,56 +196,57 @@ export type NotificationType =
   | DelegateStartType
   | SmartYieldTokenBoughtType;
 
-const NotificationsContext = React.createContext<NotificationsContextType>({} as any);
-
-export function fetchNotifications({
-  target,
-  timestamp,
-}: {
-  target?: string;
-  timestamp?: number | null;
-}): Promise<NotificationType[]> {
-  const url = new URL('/api/notifications/list', config.api.baseUrl);
-  if (target) {
-    url.searchParams.set('target', target);
-  }
-
-  if (timestamp) {
-    url.searchParams.set('timestamp', String(timestamp));
-  }
-
-  return fetch(url.toString())
-    .then(result => result.json())
-    .then(result => result.data ?? []);
-}
+const Context = createContext<NotificationsContextType>(InvariantContext('NotificationsProvider'));
 
 const notificationsNode = document.querySelector('#notifications-root');
 
-const NotificationsProvider: React.FC = ({ children }) => {
+const NotificationsProvider: FC = ({ children }) => {
+  const config = useConfig();
   const wallet = useWallet();
 
-  const [notifications, setNotifications] = React.useState<NotificationType[]>([]);
-  const [toasts, setToasts] = React.useState<NotificationType[]>([]);
-  const [notificationsReadUntil, setNotificationsReadUntil] = React.useState<
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
+  const [toasts, setToasts] = useState<NotificationType[]>([]);
+  const [notificationsReadUntil, setNotificationsReadUntil] = useState<
     NotificationsContextType['notificationsReadUntil']
   >(1);
   const [storedReadUntil, setStoredReadUntil, removeStoredReadUntil] = useLocalStorage('bb_notifications_read_until');
 
-  const addToast = React.useCallback((notification: NotificationType) => {
+  const addToast = useCallback((notification: NotificationType) => {
     setToasts(ns => [...ns, notification]);
   }, []);
 
-  const removeToast = React.useCallback((id: NotificationType['id']) => {
+  const removeToast = useCallback((id: NotificationType['id']) => {
     setToasts(prevNotifications => prevNotifications.filter(n => n.id !== id));
   }, []);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (storedReadUntil) {
       setNotificationsReadUntil(Number(storedReadUntil));
     }
   }, []);
 
-  const setNotificationsReadUntilHandler = React.useCallback((value: number) => {
+  function fetchNotifications({
+    target,
+    timestamp,
+  }: {
+    target?: string;
+    timestamp?: number | null;
+  }): Promise<NotificationType[]> {
+    const url = new URL('/api/notifications/list', config.api.baseUrl);
+    if (target) {
+      url.searchParams.set('target', target);
+    }
+
+    if (timestamp) {
+      url.searchParams.set('timestamp', String(timestamp));
+    }
+
+    return fetch(url.toString())
+      .then(result => result.json())
+      .then(result => result.data ?? []);
+  }
+
+  const setNotificationsReadUntilHandler = useCallback((value: number) => {
     if (value) {
       setStoredReadUntil(value);
       setNotificationsReadUntil(value);
@@ -259,10 +260,10 @@ const NotificationsProvider: React.FC = ({ children }) => {
     ? Math.max(...notifications.map(n => n.startsOn))
     : null;
 
-  const timestampRef = React.useRef(lastNotificationTimestamp);
+  const timestampRef = useRef(lastNotificationTimestamp);
   timestampRef.current = lastNotificationTimestamp;
 
-  React.useEffect(() => {
+  useEffect(() => {
     let intervalId: NodeJS.Timeout;
 
     if (wallet.initialized) {
@@ -286,7 +287,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
   }, [wallet.initialized, wallet.account, addToast]);
 
   return (
-    <NotificationsContext.Provider
+    <Context.Provider
       value={{
         notifications,
         notificationsReadUntil,
@@ -294,7 +295,7 @@ const NotificationsProvider: React.FC = ({ children }) => {
       }}>
       {children}
       {notificationsNode &&
-        ReactDOM.createPortal(
+        createPortal(
           <>
             {toasts.map(n => (
               <Toast key={n.id} n={n} onClose={removeToast} timeout={10_000} />
@@ -302,12 +303,12 @@ const NotificationsProvider: React.FC = ({ children }) => {
           </>,
           notificationsNode,
         )}
-    </NotificationsContext.Provider>
+    </Context.Provider>
   );
 };
 
 export default NotificationsProvider;
 
 export function useNotifications(): NotificationsContextType {
-  return React.useContext<NotificationsContextType>(NotificationsContext);
+  return useContext<NotificationsContextType>(Context);
 }

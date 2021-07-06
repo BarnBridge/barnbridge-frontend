@@ -8,7 +8,7 @@ import { formatPercent } from 'web3/utils';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYPoolAPY, fetchSYPoolAPY } from 'modules/smart-yield/api';
+import { APISYPoolAPY, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';
@@ -45,6 +45,7 @@ const InitialState: State = {
 const ApyTrend: React.FC = () => {
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
+  const syAPI = useSyAPI();
 
   const [activeTab, setActiveTab] = React.useState('24h');
   const [state, setState] = React.useState<State>(InitialState);
@@ -67,7 +68,7 @@ const ApyTrend: React.FC = () => {
       );
 
       try {
-        const poolAPYs = await fetchSYPoolAPY(pool.smartYieldAddress, activeTab);
+        const poolAPYs = await syAPI.fetchSYPoolAPY(pool.smartYieldAddress, activeTab);
 
         setState(
           mergeState<State>({

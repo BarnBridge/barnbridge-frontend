@@ -6,7 +6,8 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useWallet } from 'wallets/wallet';
+import DaoAPIProvider from 'modules/governance/api';
+import { useWallet } from 'wallets/walletProvider';
 
 import DAOProvider from './components/dao-provider';
 import VotingHeader from './components/voting-header';
@@ -132,9 +133,11 @@ const GovernanceViewInternal: React.FC = () => {
 
 const GovernanceView: React.FC = props => {
   return (
-    <DAOProvider>
-      <GovernanceViewInternal>{props.children}</GovernanceViewInternal>
-    </DAOProvider>
+    <DaoAPIProvider>
+      <DAOProvider>
+        <GovernanceViewInternal>{props.children}</GovernanceViewInternal>
+      </DAOProvider>
+    </DaoAPIProvider>
   );
 };
 

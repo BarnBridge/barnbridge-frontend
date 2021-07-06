@@ -8,7 +8,7 @@ import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type Props = {
   className?: string;

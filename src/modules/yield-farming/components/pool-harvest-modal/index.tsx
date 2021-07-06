@@ -9,9 +9,8 @@ import Grid from 'components/custom/grid';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
-
-import { BondYfPool, StableYfPool, UnilpYfPool } from '../../providers/pools-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { YFPoolID, useYFPools } from 'modules/yield-farming/providers/pools-provider';
 
 type PoolHarvestButtonProps = {
   icons: string[];
@@ -23,6 +22,7 @@ type PoolHarvestButtonProps = {
 
 const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
   const { icons, label, reward, loading, onClick } = props;
+  const { projectToken } = useKnownTokens();
 
   return (
     <Spin spinning={loading}>
@@ -50,7 +50,7 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
             </Text>
             <Text type="p1" weight="semibold" color="primary" className="mr-4">
               {formatToken(reward, {
-                tokenName: ProjectToken.symbol,
+                tokenName: projectToken.symbol,
               })}
             </Text>
           </div>
@@ -63,6 +63,12 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
 const PoolHarvestModal: FC<ModalProps> = props => {
   const { ...modalProps } = props;
 
+  const { projectToken } = useKnownTokens();
+  const yfPoolsCtx = useYFPools();
+  const stableYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.STABLE);
+  const unilpYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.UNILP);
+  const bondYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.BOND);
+
   const [stableHarvesting, setStableHarvesting] = useState(false);
   const [unilpHarvesting, setUnilpHarvesting] = useState(false);
   const [bondHarvesting, setBondHarvesting] = useState(false);
@@ -71,9 +77,9 @@ const PoolHarvestModal: FC<ModalProps> = props => {
     setStableHarvesting(true);
 
     try {
-      await StableYfPool.contract.claim();
-      StableYfPool.contract.loadUserData().catch(Error);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      await stableYfPool?.contract.claim();
+      stableYfPool?.contract.loadUserData().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setStableHarvesting(false);
@@ -83,9 +89,9 @@ const PoolHarvestModal: FC<ModalProps> = props => {
     setUnilpHarvesting(true);
 
     try {
-      await UnilpYfPool.contract.claim();
-      UnilpYfPool.contract.loadUserData().catch(Error);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      await unilpYfPool?.contract.claim();
+      unilpYfPool?.contract.loadUserData().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setUnilpHarvesting(false);
@@ -95,9 +101,9 @@ const PoolHarvestModal: FC<ModalProps> = props => {
     setBondHarvesting(true);
 
     try {
-      await BondYfPool.contract.claim();
-      BondYfPool.contract.loadUserData().catch(Error);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      await bondYfPool?.contract.claim();
+      bondYfPool?.contract.loadUserData().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
     } catch (e) {}
 
     setBondHarvesting(false);
@@ -115,27 +121,33 @@ const PoolHarvestModal: FC<ModalProps> = props => {
           </Text>
         </div>
         <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, 240px)">
-          <PoolHarvestButton
-            icons={StableYfPool.tokens.map(token => token.icon!)}
-            label={StableYfPool.label}
-            reward={StableYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
-            loading={stableHarvesting}
-            onClick={handleStableHarvest}
-          />
-          <PoolHarvestButton
-            icons={UnilpYfPool.tokens.map(token => token.icon!)}
-            label={UnilpYfPool.label}
-            reward={UnilpYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
-            loading={unilpHarvesting}
-            onClick={handleUnilpHarvest}
-          />
-          <PoolHarvestButton
-            icons={BondYfPool.tokens.map(token => token.icon!)}
-            label={BondYfPool.label}
-            reward={BondYfPool.contract.toClaim?.unscaleBy(BondToken.decimals)}
-            loading={bondHarvesting}
-            onClick={handleBondHarvest}
-          />
+          {stableYfPool && (
+            <PoolHarvestButton
+              icons={stableYfPool.tokens.map(token => token.icon!)}
+              label={stableYfPool.label}
+              reward={stableYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
+              loading={stableHarvesting}
+              onClick={handleStableHarvest}
+            />
+          )}
+          {unilpYfPool && (
+            <PoolHarvestButton
+              icons={unilpYfPool.tokens.map(token => token.icon!)}
+              label={unilpYfPool.label}
+              reward={unilpYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
+              loading={unilpHarvesting}
+              onClick={handleUnilpHarvest}
+            />
+          )}
+          {bondYfPool && (
+            <PoolHarvestButton
+              icons={bondYfPool.tokens.map(token => token.icon!)}
+              label={bondYfPool.label}
+              reward={bondYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
+              loading={bondHarvesting}
+              onClick={handleBondHarvest}
+            />
+          )}
         </Grid>
       </div>
     </Modal>

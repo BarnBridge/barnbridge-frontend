@@ -5,8 +5,8 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import ExternalLink from 'components/custom/externalLink';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken } from 'components/providers/known-tokens-provider';
-import { UNISWAP_MARKET_LINK } from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
@@ -21,8 +21,10 @@ type Props = {
 };
 
 const PoolStats: React.FC<Props> = ({ className }) => {
+  const { links } = useConfig();
   const yfPoolsCtx = useYFPools();
   const rewardPoolsCtx = useRewardPools();
+  const { projectToken } = useKnownTokens();
 
   const yfTotalStakedInUSD = yfPoolsCtx.getYFTotalStakedInUSD();
   const yfTotalEffectiveStakedInUSD = yfPoolsCtx.getYFTotalEffectiveStakedInUSD();
@@ -108,9 +110,9 @@ const PoolStats: React.FC<Props> = ({ className }) => {
           </div>
           <div className="flex flow-row">
             <Text type="h2" weight="bold" color="primary" className="mb-4">
-              {formatUSD(BondToken.price) ?? '-'}
+              {formatUSD(projectToken.price) ?? '-'}
             </Text>
-            <ExternalLink href={UNISWAP_MARKET_LINK}>
+            <ExternalLink href={links.uniswapSwap}>
               <Text type="p1" weight="semibold" color="blue">
                 Uniswap market
               </Text>

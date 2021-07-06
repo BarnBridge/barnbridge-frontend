@@ -7,18 +7,17 @@ import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
-import { Wallet, useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type PoolEntity = PoolsSYPool;
 
-function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
+function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
   return [
     {
       title: 'Token Name',
@@ -138,20 +137,24 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         </Hint>
       ),
       sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
-      render: (_, entity) => (
-        <div>
-          <Text type="p1" weight="semibold" color="purple">
-            {formatPercent(entity.state.juniorApy)}
-          </Text>
-          {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-            <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}>
-              +{formatPercent(entity.apr?.plus(entity.apy ?? 0))} APR
-            </AprLabel>
-          ) : entity.apr ? (
-            <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
-          ) : null}
-        </div>
-      ),
+      render: function Render(_, entity) {
+        const { bondToken, stkAaveToken } = useKnownTokens();
+
+        return (
+          <div>
+            <Text type="p1" weight="semibold" color="purple">
+              {formatPercent(entity.state.juniorApy)}
+            </Text>
+            {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
+              <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
+                +{formatPercent(entity.apr?.plus(entity.apy ?? 0))} APR
+              </AprLabel>
+            ) : entity.apr ? (
+              <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
+            ) : null}
+          </div>
+        );
+      },
     },
     {
       title: (
@@ -188,7 +191,7 @@ function getTableColumns(wallet: Wallet): ColumnsType<PoolEntity> {
         </>
       ),
     },
-    ...(wallet.isActive
+    ...(showWalletBalance
       ? ([
           {
             title: 'Wallet balance',
@@ -251,7 +254,7 @@ const PoolsTable: React.FC<Props> = props => {
   }, [pools, activeMarket]);
 
   const columns = React.useMemo<ColumnsType<PoolEntity>>(() => {
-    return getTableColumns(wallet);
+    return getTableColumns(wallet.isActive);
   }, [wallet]);
 
   return (

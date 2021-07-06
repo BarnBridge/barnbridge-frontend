@@ -67,31 +67,33 @@ export default class Erc20Contract extends Web3Contract {
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  async loadBalance(address?: string): Promise<void> {
-    const addr = address ?? this.account;
+  async loadBalance(address = this.account): Promise<void> {
+    if (!address) {
+      return Promise.reject(new Error('Invalid owner address!'));
+    }
 
-    if (addr) {
-      const balance = await this.call('balanceOf', [addr]);
-      const value = BigNumber.from(balance);
+    const balance = await this.call('balanceOf', [address]);
+    const value = BigNumber.from(balance);
 
-      if (value) {
-        this.balances.set(addr, value);
-        this.emit(Web3Contract.UPDATE_DATA);
-      }
+    if (value) {
+      this.balances.set(address, value);
+      this.emit(Web3Contract.UPDATE_DATA);
     }
   }
 
   async loadAllowance(spenderAddress: string): Promise<void> {
-    const addr = this.account;
+    const address = this.account;
 
-    if (addr) {
-      const allowance = await this.call('allowance', [addr, spenderAddress]);
-      const value = BigNumber.from(allowance);
+    if (!address) {
+      return Promise.reject(new Error('Invalid owner address!'));
+    }
 
-      if (value) {
-        this.allowances.set(spenderAddress, value);
-        this.emit(Web3Contract.UPDATE_DATA);
-      }
+    const allowance = await this.call('allowance', [address, spenderAddress]);
+    const value = BigNumber.from(allowance);
+
+    if (value) {
+      this.allowances.set(spenderAddress, value);
+      this.emit(Web3Contract.UPDATE_DATA);
     }
   }
 

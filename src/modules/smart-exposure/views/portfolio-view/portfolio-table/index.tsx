@@ -6,7 +6,7 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Tabs } from 'components/custom/tabs';
 import { TransactionApiType } from 'modules/smart-exposure/api';
 import { TransactionsTable } from 'modules/smart-exposure/components/transactions-table';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { PositionsTable } from './positions';
 

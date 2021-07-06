@@ -2,22 +2,20 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
-import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { EnableTokenButton, EnableTokens } from 'components/custom/enable-token';
-import Icon from 'components/custom/icon';
+import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { Spinner } from 'components/custom/spinner';
-import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
 import { InfoTooltip } from 'components/custom/tooltip';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, getTokenBySymbol, getTokenIconBySymbol } from 'components/providers/known-tokens-provider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
-import { TrancheApiType, fetchTranche } from 'modules/smart-exposure/api';
+import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useEPoolContract, useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
 
 const tabs = [
@@ -33,9 +31,11 @@ const tabs = [
 
 const DepositView: React.FC = () => {
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
+  const { getTokenBySymbol, getTokenIconBySymbol } = useKnownTokens();
   const [tranche, setTranche] = useState<TrancheApiType>();
   const [activeTab, setActiveTab] = useState<string>('multiple');
   const { ePoolPeripheryContract } = useSEPools();
+  const seAPI = useSeAPI();
   const tokenAContract = useContract(tranche?.tokenA.address, {
     loadAllowance: [poolAddress, ePoolPeripheryContract.address],
     loadCommon: true,
@@ -52,7 +52,7 @@ const DepositView: React.FC = () => {
   });
 
   useEffect(() => {
-    fetchTranche(trancheAddress).then(result => {
+    seAPI.fetchTranche(trancheAddress).then(result => {
       setTranche(result);
     });
   }, [trancheAddress]);
@@ -157,9 +157,6 @@ const DepositView: React.FC = () => {
           />
         )}
       </div>
-      <ContractListener contract={tokenAContract} />
-      <ContractListener contract={tokenBContract} />
-      <ContractListener contract={tokenEContract} />
     </>
   );
 };
@@ -184,6 +181,7 @@ const MultipleTokensForm = ({
   const ePoolContract = useEPoolContract(poolAddress);
   const { ePoolHelperContract } = useSEPools();
   const [loading, setLoading] = useState<boolean>(false);
+  const { getTokenIconBySymbol } = useKnownTokens();
 
   const tokenAIcon = getTokenIconBySymbol(tranche.tokenA.symbol);
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
@@ -261,7 +259,7 @@ const MultipleTokensForm = ({
   };
 
   const tokenAErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenAState && !tokenAState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');
@@ -275,7 +273,7 @@ const MultipleTokensForm = ({
   }, [tokenAMax, tokenAState]);
 
   const tokenBErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenBState && !tokenBState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');
@@ -309,7 +307,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmount
-        before={<Icon name={tokenAIcon} width={24} height={24} />}
+        before={<Icon name={tokenAIcon as IconNames} width={24} height={24} />}
         value={tokenAState}
         secondary={formatUSD(BigNumber.from(tokenAState)?.multipliedBy(tranche.tokenA.state.price) ?? 0)}
         onChange={value => {
@@ -337,7 +335,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmount
-        before={<Icon name={tokenBIcon} width={24} height={24} />}
+        before={<Icon name={tokenBIcon as IconNames} width={24} height={24} />}
         value={tokenBState}
         secondary={formatUSD(BigNumber.from(tokenBState)?.multipliedBy(tranche.tokenB.state.price) ?? 0)}
         onChange={value => {
@@ -383,7 +381,6 @@ const MultipleTokensForm = ({
           Deposit
         </button>
       </div>
-      <ContractListener contract={ePoolContract} />
     </form>
   );
 };
@@ -402,6 +399,7 @@ const SingleTokenForm = ({
   const { pool: poolAddress, tranche: trancheAddress } = useParams<{ pool: string; tranche: string }>();
   const tokens: [KnownTokens, KnownTokens] = [tranche.tokenA.symbol, tranche.tokenB.symbol];
 
+  const { getTokenIconBySymbol } = useKnownTokens();
   const [selectedTokenSymbol, setSelectedTokenSymbol] = useState<KnownTokens>(tokens[0]);
   const [tokenState, setTokenState] = useState<BigNumber | undefined>();
   const [tokenEState, setTokenEState] = useState<string>('');
@@ -490,7 +488,7 @@ const SingleTokenForm = ({
   };
 
   const tokenEErrors = useMemo(() => {
-    const errors = [];
+    const errors: string[] = [];
 
     if (tokenEState && !tokenEState.match(/^(\d+\.?\d*|\.\d+)$/)) {
       errors.push('Wrong number format');

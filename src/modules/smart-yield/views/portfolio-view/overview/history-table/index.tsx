@@ -3,7 +3,7 @@ import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
-import { formatToken, formatUSD, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -11,21 +11,22 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
 import {
   APISYTxHistoryType,
   APISYUserTxHistory,
   HistoryShortTypes,
-  fetchSYUserTxHistory,
   isPositiveHistoryType,
+  useSyAPI,
 } from 'modules/smart-yield/api';
 import { SYPool } from 'modules/smart-yield/providers/pool-provider';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import HistoryTableFilter, {
   HistoryTableFilterValues,
 } from 'modules/smart-yield/views/portfolio-view/overview/history-table-filter';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type TableEntity = APISYUserTxHistory & {
   poolEntity?: SYPool;
@@ -36,27 +37,31 @@ type TableEntity = APISYUserTxHistory & {
 const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <Grid flow="col" gap={16} align="center">
-        {entity.isTokenAmount ? (
-          <IconBubble
-            name={entity.poolEntity?.meta?.icon}
-            bubbleName={ProjectToken.icon!}
-            secondBubbleName={entity.poolEntity?.market?.icon}
-          />
-        ) : (
-          <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
-        )}
-        <Grid flow="row" gap={4} className="ml-auto">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {entity.underlyingTokenSymbol}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {entity.poolEntity?.market?.name}
-          </Text>
+    render: function Render(_, entity) {
+      const { projectToken } = useKnownTokens();
+
+      return (
+        <Grid flow="col" gap={16} align="center">
+          {entity.isTokenAmount ? (
+            <IconBubble
+              name={entity.poolEntity?.meta?.icon}
+              bubbleName={projectToken.icon!}
+              secondBubbleName={entity.poolEntity?.market?.icon}
+            />
+          ) : (
+            <IconBubble name={entity.poolEntity?.meta?.icon} bubbleName={entity.poolEntity?.market?.icon} />
+          )}
+          <Grid flow="row" gap={4} className="ml-auto">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              {entity.underlyingTokenSymbol}
+            </Text>
+            <Text type="small" weight="semibold" color="secondary">
+              {entity.poolEntity?.market?.name}
+            </Text>
+          </Grid>
         </Grid>
-      </Grid>
-    ),
+      );
+    },
   },
   {
     title: 'Tranche / Transaction',
@@ -105,15 +110,19 @@ const Columns: ColumnsType<TableEntity> = [
   },
   {
     title: 'Transaction Hash',
-    render: (_, entity) => (
-      <Grid flow="row" gap={4}>
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
-          </Text>
-        </ExternalLink>
-      </Grid>
-    ),
+    render: function Render(_, entity) {
+      const { getEtherscanTxUrl } = useWeb3();
+
+      return (
+        <Grid flow="row" gap={4}>
+          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
+            <Text type="p1" weight="semibold" color="blue">
+              {shortenAddr(entity.transactionHash)}
+            </Text>
+          </ExternalLink>
+        </Grid>
+      );
+    },
   },
   {
     title: 'Date',
@@ -156,7 +165,7 @@ const InitialFilters: HistoryTableFilterValues = {
 const HistoryTable: React.FC = () => {
   const wallet = useWallet();
   const poolsCtx = usePools();
-
+  const syAPI = useSyAPI();
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
@@ -175,7 +184,7 @@ const HistoryTable: React.FC = () => {
       );
 
       try {
-        const history = await fetchSYUserTxHistory(
+        const history = await syAPI.fetchSYUserTxHistory(
           wallet.account,
           state.page,
           state.pageSize,
@@ -223,7 +232,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = false;
-            computedAmount = new BigNumber(item.amount);
+            computedAmount = BigNumber.from(item.amount);
           }
 
           if (
@@ -239,7 +248,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = true;
-            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
+            computedAmount = BigNumber.from(item.amount).multipliedBy(pool.state.jTokenPrice);
           }
         }
 

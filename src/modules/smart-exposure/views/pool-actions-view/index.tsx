@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 import { Redirect, Route, Switch, useParams } from 'react-router-dom';
 
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 const DepositView = lazy(() => import('../deposit-view'));
 const WithdrawView = lazy(() => import('../withdraw-view'));

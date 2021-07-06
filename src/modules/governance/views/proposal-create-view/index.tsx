@@ -13,9 +13,9 @@ import Textarea from 'components/antd/textarea';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
-import { useWallet } from 'wallets/wallet';
+import { useDaoAPI } from 'modules/governance/api';
+import { useWallet } from 'wallets/walletProvider';
 
-import { fetchProposal } from '../../api';
 import CreateProposalActionModal, { CreateProposalActionForm } from '../../components/create-proposal-action-modal';
 import { useDAO } from '../../components/dao-provider';
 import DeleteProposalActionModal from '../../components/delete-proposal-action-modal';
@@ -47,6 +47,7 @@ const InitialState: ProposalCreateViewState = {
 
 const ProposalCreateView: React.FC = () => {
   const history = useHistory();
+  const daoAPI = useDaoAPI();
   const daoCtx = useDAO();
   const wallet = useWallet();
 
@@ -128,10 +129,17 @@ const ProposalCreateView: React.FC = () => {
         ),
       };
 
-      const proposal = await daoCtx.daoGovernance.actions.createProposal(payload);
-      const { proposalId } = proposal.returnValues;
+      const proposalId = await daoCtx.daoGovernance.propose(
+        payload.title,
+        payload.description,
+        payload.targets,
+        payload.values,
+        payload.signatures,
+        payload.calldatas,
+        1,
+      ); /// TODO: GAS PRICE
 
-      await waitUntil(() => fetchProposal(proposalId), { intervalBetweenAttempts: 3_000, timeout: Infinity });
+      await waitUntil(() => daoAPI.fetchProposal(proposalId), { intervalBetweenAttempts: 3_000, timeout: Infinity });
 
       form.resetFields();
       history.push(`/governance/proposals/${proposalId}`);

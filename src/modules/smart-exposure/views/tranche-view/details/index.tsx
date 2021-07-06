@@ -9,10 +9,10 @@ import Icon from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
@@ -49,6 +49,7 @@ export const Details: React.FC<Props> = ({ tranche }) => {
 };
 
 const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
+  const { getTokenBySymbol } = useKnownTokens();
   const tokenA = getTokenBySymbol(tranche.tokenA.symbol);
   const tokenB = getTokenBySymbol(tranche.tokenB.symbol);
 

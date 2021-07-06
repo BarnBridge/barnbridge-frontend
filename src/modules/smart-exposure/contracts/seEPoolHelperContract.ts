@@ -23,11 +23,11 @@ class SeEPoolHelperContract extends Web3Contract {
   }
 
   getTokenBForTokenA(ePoolAddress: string, eTokenAddress: string, amountA: BigNumber): Promise<BigNumber> {
-    return this.call('tokenBForTokenA', [ePoolAddress, eTokenAddress, amountA]).then(value => new BigNumber(value));
+    return this.call('tokenBForTokenA', [ePoolAddress, eTokenAddress, amountA]).then(value => BigNumber.from(value));
   }
 
   getTokenAForTokenB(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-    return this.call('tokenAForTokenB', [ePoolAddress, eTokenAddress, amountB]).then(value => new BigNumber(value));
+    return this.call('tokenAForTokenB', [ePoolAddress, eTokenAddress, amountB]).then(value => BigNumber.from(value));
   }
 
   getETokenForTokenATokenB(
@@ -36,8 +36,8 @@ class SeEPoolHelperContract extends Web3Contract {
     amountA: BigNumber,
     amountB: BigNumber,
   ): Promise<BigNumber> {
-    return this.call('eTokenForTokenATokenB', [ePoolAddress, eTokenAddress, amountA, amountB]).then(
-      value => new BigNumber(value),
+    return this.call('eTokenForTokenATokenB', [ePoolAddress, eTokenAddress, amountA, amountB]).then(value =>
+      BigNumber.from(value),
     );
   }
 
@@ -47,8 +47,8 @@ class SeEPoolHelperContract extends Web3Contract {
     amount: BigNumber,
   ): Promise<TokenATokenBForETokenResult> {
     return this.call('tokenATokenBForEToken', [ePoolAddress, eTokenAddress, amount]).then(value => ({
-      amountA: new BigNumber(value[0]),
-      amountB: new BigNumber(value[1]),
+      amountA: BigNumber.from(value[0]),
+      amountB: BigNumber.from(value[1]),
     }));
   }
 }

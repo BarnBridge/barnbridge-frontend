@@ -8,10 +8,10 @@ type VFormType<V = VType> = {
   instance: UseFormReturn<V>;
 };
 
-const VFormContext = createContext<VFormType>(undefined as any);
+const Context = createContext<VFormType>(undefined as any);
 
 export function useVForm(): VFormType {
-  return useContext(VFormContext);
+  return useContext(Context);
 }
 
 type VFormScheme = {
@@ -71,9 +71,9 @@ export const VForm: FC<VFormProps> = props => {
   };
 
   return (
-    <VFormContext.Provider value={value}>
+    <Context.Provider value={value}>
       <form onSubmit={handleSubmit}>{children}</form>
-    </VFormContext.Provider>
+    </Context.Provider>
   );
 };
 

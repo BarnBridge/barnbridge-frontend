@@ -122,7 +122,7 @@ export const DropdownList: React.FC<DropdownListProps> = ({ items, children, opt
               return (
                 <li key={idx}>
                   {/**
-                     @ts-ignore */}
+                   @ts-ignore */}
                   <a
                     href={rest.href}
                     {...rest}
@@ -142,7 +142,7 @@ export const DropdownList: React.FC<DropdownListProps> = ({ items, children, opt
               return (
                 <li key={idx}>
                   {/**
-                     @ts-ignore */}
+                   @ts-ignore */}
                   <Link
                     {...rest}
                     className={s.tokenSelectListButton}
@@ -158,7 +158,7 @@ export const DropdownList: React.FC<DropdownListProps> = ({ items, children, opt
             return (
               <li key={idx}>
                 {/**
-                     @ts-ignore */}
+                 @ts-ignore */}
                 <button
                   {...rest}
                   className={s.tokenSelectListButton}

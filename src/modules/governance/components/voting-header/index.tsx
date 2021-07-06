@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
@@ -13,14 +13,15 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, ProjectToken } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
+import { useWallet } from 'wallets/walletProvider';
 
 import VotingDetailedModal from '../voting-detailed-modal';
 
-import { getFormattedDuration, inRange } from 'utils';
+import { getFormattedDuration, getNowTs, inRange } from 'utils';
 
 import s from './s.module.scss';
 
@@ -36,28 +37,36 @@ const InitialState: VotingHeaderState = {
 
 const VotingHeader: React.FC = () => {
   const daoCtx = useDAO();
-
+  const walletCtx = useWallet();
+  const { projectToken } = useKnownTokens();
   const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
 
-  const { claimValue } = daoCtx.daoReward;
-  const bondBalance = (BondToken.contract as Erc20Contract).balance?.unscaleBy(BondToken.decimals);
-  const { votingPower, userLockedUntil, multiplier = 1 } = daoCtx.daoBarn;
+  const { toClaim } = daoCtx.daoReward;
+  const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
+  const { votingPower, userLockedUntil } = daoCtx.daoBarn;
+  const [multiplier, setMultiplier] = useState<BigNumber>(BigNumber.from(1));
+
+  useEffect(() => {
+    if (walletCtx.account) {
+      daoCtx.daoBarn.getMultiplierAtTs(walletCtx.account, getNowTs()).then(value => setMultiplier(value));
+    }
+  }, [walletCtx.account]);
 
   const loadedUserLockedUntil = (userLockedUntil ?? Date.now()) - Date.now();
 
   function handleLeftTimeEnd() {
-    daoCtx.daoBarn.reload();
+    // daoCtx.daoBarn.reload(); /// TODO: check
   }
 
   function handleClaim() {
     setState({ claiming: true });
 
-    daoCtx.daoReward.actions
+    daoCtx.daoReward
       .claim()
       .catch(Error)
       .then(() => {
-        daoCtx.daoReward.reload();
-        (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+        // daoCtx.daoReward.reload(); /// TODO: check
+        (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
         setState({ claiming: false });
       });
   }
@@ -74,17 +83,17 @@ const VotingHeader: React.FC = () => {
           </Text>
           <Grid flow="col" gap={16} align="center">
             <Tooltip
-              title={formatToken(claimValue, {
-                decimals: ProjectToken.decimals,
+              title={formatToken(toClaim, {
+                decimals: projectToken.decimals,
               })}>
               <Text type="h3" weight="bold" color="primary">
-                {formatToken(claimValue, {
+                {formatToken(toClaim, {
                   hasLess: true,
                 })}
               </Text>
             </Tooltip>
-            <Icon name={ProjectToken.icon!} />
-            <Button type="light" disabled={claimValue?.isZero()} onClick={handleClaim}>
+            <Icon name={projectToken.icon!} />
+            <Button type="light" disabled={toClaim?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
           </Grid>
@@ -100,7 +109,7 @@ const VotingHeader: React.FC = () => {
                 {formatToken(bondBalance)}
               </Text>
             </Skeleton>
-            <Icon name={ProjectToken.icon!} />
+            <Icon name={projectToken.icon!} />
           </Grid>
         </Grid>
         <Divider type="vertical" />
@@ -124,7 +133,7 @@ const VotingHeader: React.FC = () => {
 
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {leftTime => {
-            const leftMultiplier = new BigNumber(multiplier - 1)
+            const leftMultiplier = BigNumber.from(multiplier - 1)
               .multipliedBy(leftTime)
               .div(loadedUserLockedUntil)
               .plus(1);
