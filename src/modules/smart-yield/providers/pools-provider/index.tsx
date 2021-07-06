@@ -98,9 +98,7 @@ const PoolsProvider: React.FC = props => {
         }
       }
 
-      const aToken = getContract<SYAaveTokenContract>(aTokenAddress, () => {
-        return new SYAaveTokenContract(aTokenAddress);
-      });
+      const aToken = new SYAaveTokenContract(aTokenAddress); // TODO: re-think
       aToken.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
       await aToken.loadCommon();
 
@@ -126,7 +124,7 @@ const PoolsProvider: React.FC = props => {
         setState(prevState => ({
           ...prevState,
           loading: false,
-          pools: pools.map(pool => {
+          pools: (pools ?? []).map(pool => {
             const smartYield = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
               return new SYSmartYieldContract(pool.smartYieldAddress);
             });

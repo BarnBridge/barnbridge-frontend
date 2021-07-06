@@ -46,7 +46,7 @@ export const KovanConfig: NetworkConfig = {
     susd: '0xED159a31184ADADC5c28CE5D9e4822ea2b0B6ef9',
     gusd: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
     dai: '0xEa8BE82DF1519D4a25E2539bcA0342a1203CD591',
-    stkaave: '0xf2fbf9a6710afda1c4aab2e922de9d69e0c97fd2',
+    stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
     ausdc: '0xe12AFeC5aa12Cf614678f9bFeeB98cA9Bb95b5B0',
     ausdt: '0xFF3c8bc103682FA918c954E84F5056aB4DD5189d',
     agusd: '0xD37EE7e4f452C6638c96536e68090De8cBcdb583',

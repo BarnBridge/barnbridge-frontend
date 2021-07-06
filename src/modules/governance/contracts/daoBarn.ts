@@ -52,7 +52,7 @@ class DaoBarnContract extends Web3Contract {
   async loadCommonData(): Promise<void> {
     const [bondStaked] = await this.batch([{ method: 'bondStaked' }]);
 
-    this.bondStaked = new BigNumber(bondStaked);
+    this.bondStaked = new BigNumber(bondStaked).unscaleBy(18); /// TODO: re-check
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
@@ -68,24 +68,24 @@ class DaoBarnContract extends Web3Contract {
       { method: 'userDelegatedTo', methodArgs: [account] },
     ]);
 
-    this.balance = new BigNumber(balance);
-    this.votingPower = new BigNumber(votingPower);
+    this.balance = new BigNumber(balance).unscaleBy(18); /// TODO: re-check
+    this.votingPower = new BigNumber(votingPower).unscaleBy(18); /// TODO: re-check
     this.userLockedUntil = Number(userLockedUntil);
-    this.delegatedPower = new BigNumber(delegatedPower);
+    this.delegatedPower = new BigNumber(delegatedPower).unscaleBy(18); /// TODO: re-check
     this.userDelegatedTo = userDelegatedTo;
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
   getBondStakedAtTs(timestamp: number): Promise<BigNumber> {
-    return this.call('bondStakedAtTs', [timestamp]).then(value => new BigNumber(value));
+    return this.call('bondStakedAtTs', [timestamp]).then(value => new BigNumber(value).unscaleBy(18)); /// TODO: re-check
   }
 
   getVotingPowerAtTs(address: string, timestamp: number): Promise<BigNumber> {
-    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value));
+    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)); /// TODO: re-check
   }
 
   getMultiplierAtTs(address: string, timestamp: number): Promise<BigNumber> {
-    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value));
+    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)); /// TODO: re-check
   }
 
   deposit(amount: BigNumber, gasPrice?: number): Promise<void> {

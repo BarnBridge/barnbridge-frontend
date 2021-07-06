@@ -71,38 +71,46 @@ const LayoutSideNav: React.FC = () => {
               </NavLink>
             </Tooltip>
           )}
-          <Tooltip title={displayTooltip && 'Governance'} placement="right">
-            <NavLink to="/governance" className={s.button} activeClassName={s.active}>
-              <Icon name="bank-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                Governance
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
-            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-              <Icon name="paper-bill-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Yield
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
-            <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-              <Icon name="balance" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Exposure
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
-            <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
-              <Icon name="paper-alpha-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Alpha
-              </Text>
-            </NavLink>
-          </Tooltip>
+          {features.dao && (
+            <Tooltip title={displayTooltip && 'Governance'} placement="right">
+              <NavLink to="/governance" className={s.button} activeClassName={s.active}>
+                <Icon name="bank-outlined" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  Governance
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
+          {features.smartYield && (
+            <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
+              <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+                <Icon name="paper-bill-outlined" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  SMART Yield
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
+          {features.smartExposure && (
+            <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
+              <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
+                <Icon name="balance" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  SMART Exposure
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
+          {features.smartAlpha && (
+            <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
+              <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
+                <Icon name="paper-alpha-outlined" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  SMART Alpha
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
         </nav>
         <div className={s.bottom}>
           <Tooltip title={displayTooltip && 'Docs'} placement="right">

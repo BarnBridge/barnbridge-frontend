@@ -67,11 +67,20 @@ const DAOProvider: React.FC = props => {
   const [state, setState] = useMergeState<DAOProviderState>(InitialState);
 
   React.useEffect(() => {
+    daoGovernance.loadCommonData();
+    daoReward.loadCommonData();
+    daoBarn.loadCommonData();
+  }, []);
+
+  React.useEffect(() => {
     const bondContract = projectToken.contract as Erc20Contract;
 
     bondContract.setAccount(walletCtx.account); // ?
 
     if (walletCtx.account) {
+      daoGovernance.loadUserData();
+      daoReward.loadUserData();
+      daoBarn.loadUserData();
       bondContract.loadAllowance(config.contracts.dao?.barn!).catch(Error);
     }
   }, [walletCtx.account]);

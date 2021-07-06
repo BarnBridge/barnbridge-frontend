@@ -17,7 +17,6 @@ export const POLYGON_CHAIN_ID = 137;
 export const PolygonConfig: NetworkConfig = {
   features: {
     smartYield: true,
-    smartExposure: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -67,13 +66,7 @@ export const PolygonConfig: NetworkConfig = {
     susd: '',
     dai: '',
   },
-  contracts: {
-    se: {
-      ePool: '',
-      ePoolPeriphery: '',
-      ePoolHelper: '',
-    },
-  },
+  contracts: {},
 };
 
 export const PolygonMetamaskChain: MetamaskAddEthereumChain = {

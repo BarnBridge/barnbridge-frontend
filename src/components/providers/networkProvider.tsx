@@ -1,4 +1,5 @@
 import { FC, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { useSessionStorage } from 'react-use-storage';
 
 import Icon, { IconNames } from 'components/custom/icon';
 import { Modal } from 'components/custom/modal';
@@ -8,7 +9,6 @@ import { GoerliNetwork } from 'networks/goerli';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { MumbaiNetwork } from 'networks/mumbai';
-import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
 import { InvariantContext } from 'utils/context';
@@ -31,11 +31,11 @@ export function useNetwork(): NetworkType {
 
 const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
-    return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, PolygonNetwork, TestnetNetwork];
+    return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, TestnetNetwork];
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, PolygonNetwork, TestnetNetwork];
+    return [MainnetNetwork, TestnetNetwork];
   }
 
   return [];
@@ -44,11 +44,14 @@ const networks: Web3Network[] = (() => {
 const NetworkProvider: FC = props => {
   const { children } = props;
 
+  const [lastNetwork, setLastNetwork] = useSessionStorage<string | undefined>('bb_last_network');
+
   const initialNetwork = useMemo<Web3Network>(() => {
     let network: Web3Network | undefined;
 
     try {
-      const lsLastNetwork = localStorage.getItem('bb_last_network');
+      // const lsLastNetwork = localStorage.getItem('bb_last_network');
+      const lsLastNetwork = lastNetwork;
 
       if (lsLastNetwork) {
         const lastNetwork = lsLastNetwork.toLowerCase();
@@ -97,7 +100,9 @@ const NetworkProvider: FC = props => {
       // }
 
       setActiveNetwork(network);
-      localStorage.setItem('bb_last_network', network.id);
+      setLastNetwork(network.id);
+      // localStorage.setItem('bb_last_network', network.id);
+      window.location.reload();
     }
 
     return network;

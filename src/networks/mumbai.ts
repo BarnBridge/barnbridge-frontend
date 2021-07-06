@@ -17,6 +17,7 @@ export const MUMBAI_CHAIN_ID = 80001;
 export const MumbaiConfig: NetworkConfig = {
   features: {
     smartYield: true,
+    smartYieldReward: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',

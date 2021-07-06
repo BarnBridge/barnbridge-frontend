@@ -57,7 +57,7 @@ class DaoRewardContract extends Web3Contract {
       startTs: Number(pullFeature[1]),
       endTs: Number(pullFeature[2]),
       totalDuration: Number(pullFeature[3]),
-      totalAmount: new BigNumber(pullFeature[4]),
+      totalAmount: new BigNumber(pullFeature[4]).unscaleBy(18), /// TODO: re-check
     };
     this.emit(Web3Contract.UPDATE_DATA);
   }
@@ -68,7 +68,7 @@ class DaoRewardContract extends Web3Contract {
 
     const [toClaim] = await this.batch([{ method: 'claim', callArgs: { from: account } }]);
 
-    this.toClaim = new BigNumber(toClaim);
+    this.toClaim = new BigNumber(toClaim).unscaleBy(18); /// TODO: re-check
     this.emit(Web3Contract.UPDATE_DATA);
   }
 

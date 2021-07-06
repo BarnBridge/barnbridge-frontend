@@ -8,7 +8,7 @@ import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { TokenIconNames } from 'components/custom/icon';
 import { isDevelopmentMode, useConfig } from 'components/providers/configProvider';
-import { MainnetHttpsWeb3Provider } from 'components/providers/web3Provider';
+import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -104,6 +104,7 @@ const KnownTokensProvider: FC = props => {
 
   const config = useConfig();
   const wallet = useWallet();
+  const web3 = useWeb3();
   const { getContract } = useContractManager();
   const [reload] = useReload();
 
@@ -370,9 +371,8 @@ const KnownTokensProvider: FC = props => {
       return Promise.reject();
     }
 
-    const priceFeedContract = getContract<Erc20Contract>(bondToken.priceFeed, () => {
-      return new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed!);
-    });
+    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, bondToken.priceFeed);
+    priceFeedContract.setCallProvider(web3.activeProvider);
     const [decimals, [reserve0, reserve1], token0] = await priceFeedContract.batch([
       { method: 'decimals', transform: Number },
       {
@@ -399,9 +399,8 @@ const KnownTokensProvider: FC = props => {
       return Promise.reject();
     }
 
-    const priceFeedContract = getContract<Erc20Contract>(univ2Token.priceFeed, () => {
-      return new Erc20Contract(BOND_PRICE_FEED_ABI, univ2Token.priceFeed!);
-    });
+    const priceFeedContract = new Erc20Contract(BOND_PRICE_FEED_ABI, univ2Token.priceFeed);
+    priceFeedContract.setCallProvider(web3.activeProvider);
 
     const [decimals, totalSupply, [reserve0, reserve1], token0] = await priceFeedContract.batch([
       { method: 'decimals', transform: Number },
@@ -428,9 +427,8 @@ const KnownTokensProvider: FC = props => {
         return Promise.reject();
       }
 
-      const priceFeedContract = getContract<Erc20Contract>(token.priceFeed, () => {
-        return new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed!);
-      });
+      const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed!);
+      priceFeedContract.setCallProvider(web3.activeProvider);
 
       const price = await priceFeedContract.call('price');
 
@@ -447,9 +445,7 @@ const KnownTokensProvider: FC = props => {
         return Promise.reject();
       }
 
-      const priceFeedContract = getContract<Erc20Contract>(token.priceFeed, () => {
-        return new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed!);
-      });
+      const priceFeedContract = new Erc20Contract(J_PRICE_FEED_ABI, token.priceFeed!);
       priceFeedContract.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
 
       const price = await priceFeedContract.call('price');
@@ -568,28 +564,31 @@ const KnownTokensProvider: FC = props => {
             case KnownTokens.bbaGUSD:
               token.price = await getJATokenPrice(token.symbol);
               break;
+            case KnownTokens.STK_AAVE:
+              break;
             default:
               token.price = await getFeedPrice(token.symbol);
+              console.log(token.symbol, token.price);
               break;
           }
         }),
       );
 
       tokens.forEach(token => {
-        if (token.priceFeed && token.price === undefined) {
-          token.price = BigNumber.ZERO;
-        } else if (token.pricePath) {
-          for (let path of token.pricePath) {
-            const tk = getTokenBySymbol(path);
-
-            if (!tk || !tk.price) {
-              token.price = undefined;
-              break;
-            }
-
-            token.price = token.price?.multipliedBy(tk.price) ?? tk.price;
-          }
-        }
+        // if (token.priceFeed && token.price === undefined) {
+        //   token.price = BigNumber.ZERO;
+        // } else if (token.pricePath) {
+        //   for (let path of token.pricePath) {
+        //     const tk = getTokenBySymbol(path);
+        //
+        //     if (!tk || !tk.price) {
+        //       token.price = undefined;
+        //       break;
+        //     }
+        //
+        //     token.price = token.price?.multipliedBy(tk.price) ?? tk.price;
+        //   }
+        // }
 
         console.log(`[Token Price] ${token.symbol} = ${formatUSD(token.price)}`);
       });

@@ -1,4 +1,5 @@
 import React, { FC, createContext, useContext, useEffect, useRef } from 'react';
+import { AbiItem } from 'web3-utils';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
@@ -10,6 +11,7 @@ import { useWallet } from 'wallets/walletProvider';
 import { InvariantContext } from 'utils/context';
 
 export type ContractManagerType = {
+  preRegisterAddress<T extends Web3Contract>(address: string, factory: () => T): void;
   getContract<T extends Web3Contract>(address: string, factory?: () => T): T;
 };
 
@@ -27,10 +29,15 @@ export function useContract<T extends Web3Contract>(address: string, factory?: (
   return contract;
 }
 
-export function useErc20Contract(address: string): Erc20Contract {
+export function useErc20Contract(address: string, abi: AbiItem[] = []): Erc20Contract | undefined {
   const [reload] = useReload();
   const manager = useContractManager();
-  const contract = manager.getContract<Erc20Contract>(address, () => new Erc20Contract([], address));
+
+  if (!address) {
+    return undefined; /// TODO: re-think
+  }
+
+  const contract = manager.getContract<Erc20Contract>(address, () => new Erc20Contract(abi, address));
   contract.on(Web3Contract.UPDATE_DATA, reload);
   return contract;
 }
@@ -42,6 +49,23 @@ const ContractManagerProvider: FC = props => {
   const web3 = useWeb3();
   const contractsRef = useRef<Map<string, Web3Contract>>(new Map());
   const [reload] = useReload();
+
+  function preRegisterAddress<T extends Web3Contract>(address: string, factory: () => T): void {
+    let contract: Web3Contract | undefined;
+
+    if (!contractsRef.current.has(address)) {
+      contract = factory();
+      contract.setProvider(web3.activeProvider);
+      contract.setCallProvider(web3.activeProvider);
+
+      if (wallet.account) {
+        contract.setAccount(wallet.account);
+      }
+
+      contractsRef.current.set(address, contract);
+      reload();
+    }
+  }
 
   /**
    * @param address - Contract address
@@ -93,6 +117,7 @@ const ContractManagerProvider: FC = props => {
   }, []);
 
   const value: ContractManagerType = {
+    preRegisterAddress,
     getContract,
   };
 

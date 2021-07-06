@@ -4,10 +4,13 @@ import AntdSpin from 'antd/lib/spin';
 
 import ErrorBoundary from 'components/custom/error-boundary';
 import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import WarningProvider from 'components/providers/warning-provider';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
+import { GoerliNetwork } from 'networks/goerli';
+import { MumbaiNetwork } from 'networks/mumbai';
 
 import s from './s.module.scss';
 
@@ -19,6 +22,7 @@ const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
+  const { activeNetwork } = useNetwork();
   const { features } = useConfig();
 
   return (
@@ -48,6 +52,8 @@ const LayoutView: React.FC = () => {
                       )}
                     />
                   )}
+                  {activeNetwork === GoerliNetwork && <Redirect to="/governance" />}
+                  {activeNetwork === MumbaiNetwork && <Redirect to="/smart-yield" />}
                   <Redirect from="/" to="/smart-yield" />
                 </Switch>
               </Suspense>

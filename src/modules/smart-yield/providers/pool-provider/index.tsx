@@ -158,9 +158,7 @@ const PoolProvider: React.FC = props => {
       }
     }
 
-    const aToken = getContract<SYAaveTokenContract>(aTokenAddress, () => {
-      return new SYAaveTokenContract(aTokenAddress);
-    });
+    const aToken = new SYAaveTokenContract(aTokenAddress);
     aToken.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
     await aToken.loadCommon();
 
