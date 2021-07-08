@@ -51,11 +51,14 @@ const PortfolioDeposit: FC = () => {
     setSaving(true);
 
     try {
-      await daoCtx.daoBarn.deposit(amount, gasPrice);
+      const depositAmount = amount.scaleBy(18)!;
+      await daoCtx.daoBarn.deposit(depositAmount, gasPrice);
       setAmount('');
       // daoCtx.daoBarn.reload(); /// TODO: check
       (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
-    } catch {}
+    } catch (e) {
+      console.error(e);
+    }
 
     setSaving(false);
   }
@@ -160,7 +163,7 @@ const PortfolioDeposit: FC = () => {
       )}
       {confirmModalVisible && (
         <TxConfirmModal
-          title="Stake"
+          title="Confirm deposit"
           header={
             <div className="flex align-center justify-center">
               <Text type="h2" weight="bold" color="primary" className="mr-8">
@@ -168,7 +171,7 @@ const PortfolioDeposit: FC = () => {
               </Text>
             </div>
           }
-          submitText={`Confirm your stake`}
+          submitText="Confirm your deposit"
           onCancel={handleCancel}
           onConfirm={({ gasPrice }) => handleConfirm(gasPrice)}
         />
