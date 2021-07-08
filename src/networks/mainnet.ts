@@ -1,5 +1,6 @@
 import { toHex } from 'web3-utils';
 
+import { isAlphaMode } from 'components/providers/configProvider';
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
@@ -15,6 +16,7 @@ const EXPLORER_API_URL = 'https://api.etherscan.io';
 export const MAINNET_CHAIN_ID = 1;
 
 export const MainnetConfig: NetworkConfig = {
+  title: isAlphaMode ? 'BarnBridge Alpha' : 'BarnBridge',
   features: {
     yieldFarming: true,
     dao: true,
@@ -31,7 +33,7 @@ export const MainnetConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://api.barnbridge.com',
+    baseUrl: isAlphaMode ? 'https://alpha.api.barnbridge.com' : 'https://api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400000,
@@ -85,8 +87,8 @@ export const MainnetConfig: NetworkConfig = {
     },
     se: {
       ePool: '0xD8124BBb4bf94c5d2850011B64bEA9a47266A768',
-      ePoolPeriphery: '0x7801f3a773cCdC9f5A2E49753E3c34f226b89234',
-      ePoolHelper: '0xF22482e6B98bdde2427B091c1c131996583FDb22',
+      ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
+      ePoolHelper: '0x8a63822d8c1be5590bbf72fb58e69285a776a5df',
     },
   },
 };

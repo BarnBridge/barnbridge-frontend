@@ -4,6 +4,7 @@ import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import { useNetwork } from 'components/providers/networkProvider';
 import { useWallet } from 'wallets/walletProvider';
 
 export type UnsupportedChainModalProps = ModalProps;
@@ -11,6 +12,7 @@ export type UnsupportedChainModalProps = ModalProps;
 const UnsupportedChainModal: FC<UnsupportedChainModalProps> = props => {
   const { ...modalProps } = props;
 
+  const { activeNetwork } = useNetwork();
   const wallet = useWallet();
 
   return (
@@ -21,7 +23,7 @@ const UnsupportedChainModal: FC<UnsupportedChainModalProps> = props => {
             Wrong network
           </Text>
           <Text type="p1" weight="semibold" color="secondary">
-            Please switch your wallet network to {'<!>'} to use the app
+            Please switch your wallet network to {activeNetwork.meta.name} to use the app
           </Text>
           <Text type="p1" color="secondary">
             If you still encounter problems, you may want to switch to a different wallet

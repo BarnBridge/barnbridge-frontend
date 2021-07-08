@@ -15,6 +15,7 @@ const EXPLORER_API_URL = 'https://api-testnet.polygonscan.com';
 export const MUMBAI_CHAIN_ID = 80001;
 
 export const MumbaiConfig: NetworkConfig = {
+  title: 'BarnBridge Mumbai',
   features: {
     smartYield: true,
     smartYieldReward: true,
@@ -86,7 +87,7 @@ export const MumbaiNetwork: Web3Network = {
   id: 'mumbai',
   meta: {
     chainId: MUMBAI_CHAIN_ID,
-    name: 'Ethereum Mumbai',
+    name: 'Polygon Dev (Mumbai)',
     logo: 'testnet-logo',
   },
   rpc: {

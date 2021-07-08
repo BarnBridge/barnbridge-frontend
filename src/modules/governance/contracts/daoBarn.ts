@@ -77,15 +77,19 @@ class DaoBarnContract extends Web3Contract {
   }
 
   getBondStakedAtTs(timestamp: number): Promise<BigNumber> {
-    return this.call('bondStakedAtTs', [timestamp]).then(value => new BigNumber(value).unscaleBy(18)); /// TODO: re-check
+    return this.call('bondStakedAtTs', [timestamp]).then(value => new BigNumber(value).unscaleBy(18)!); /// TODO: re-check
+  }
+
+  getVotingPower(address: string): Promise<BigNumber> {
+    return this.call('votingPower', [address]).then(value => new BigNumber(value).unscaleBy(18)!); /// TODO: re-check
   }
 
   getVotingPowerAtTs(address: string, timestamp: number): Promise<BigNumber> {
-    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)); /// TODO: re-check
+    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)!); /// TODO: re-check
   }
 
   getMultiplierAtTs(address: string, timestamp: number): Promise<BigNumber> {
-    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)); /// TODO: re-check
+    return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)!); /// TODO: re-check
   }
 
   deposit(amount: BigNumber, gasPrice?: number): Promise<void> {

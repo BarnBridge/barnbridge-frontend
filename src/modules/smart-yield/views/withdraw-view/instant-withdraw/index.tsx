@@ -108,14 +108,14 @@ const InstantWithdraw: React.FC = () => {
       // minUnderlying => toPay - slippage
 
       const decimals = pool.underlyingDecimals;
-      const tokenAmount = getNonHumanValue(BigNumber.from(from), decimals);
+      const tokenAmount = getNonHumanValue(new BigNumber(from), decimals);
       const forfeitsValue = await poolCtx.actions.getForfeitsFor(tokenAmount);
       const price = await smartYieldContract.getPrice();
       const toPay = tokenAmount
         .multipliedBy(price)
         .div(1e18)
         .minus(forfeitsValue ?? BigNumber.ZERO);
-      const minUnderlying = BigNumber.from(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
+      const minUnderlying = new BigNumber(toPay.multipliedBy(1 - (slippage ?? 0) / 100).toFixed(0)); // slippage / rounding mode
       const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
       await poolCtx.actions.instantWithdraw(tokenAmount, minUnderlying, deadlineTs, args.gasPrice);

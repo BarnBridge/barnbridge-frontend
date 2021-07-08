@@ -75,8 +75,8 @@ export type KnownTokensContextType = {
   getTokenByAddress(address: string): TokenMeta | undefined;
   getTokenIconBySymbol(address: string): string;
   getTokenPriceIn(source: string, target: string): BigNumber | undefined;
-  convertTokenIn(amount: BigNumber | undefined, source: string, target: string): BigNumber | undefined;
-  convertTokenInUSD(amount: BigNumber | undefined, source: string): BigNumber | undefined;
+  convertTokenIn(amount: BigNumber | number | undefined, source: string, target: string): BigNumber | undefined;
+  convertTokenInUSD(amount: BigNumber | number | undefined, source: string): BigNumber | undefined;
 };
 
 const Context = createContext<KnownTokensContextType>(InvariantContext('KnownTokensProvider'));
@@ -568,27 +568,26 @@ const KnownTokensProvider: FC = props => {
               break;
             default:
               token.price = await getFeedPrice(token.symbol);
-              console.log(token.symbol, token.price);
               break;
           }
         }),
       );
 
       tokens.forEach(token => {
-        // if (token.priceFeed && token.price === undefined) {
-        //   token.price = BigNumber.ZERO;
-        // } else if (token.pricePath) {
-        //   for (let path of token.pricePath) {
-        //     const tk = getTokenBySymbol(path);
-        //
-        //     if (!tk || !tk.price) {
-        //       token.price = undefined;
-        //       break;
-        //     }
-        //
-        //     token.price = token.price?.multipliedBy(tk.price) ?? tk.price;
-        //   }
-        // }
+        if (token.priceFeed && token.price === undefined) {
+          token.price = BigNumber.ZERO;
+        } else if (token.pricePath) {
+          for (let path of token.pricePath) {
+            const tk = getTokenBySymbol(path);
+
+            if (!tk || !tk.price) {
+              token.price = undefined;
+              break;
+            }
+
+            token.price = token.price?.multipliedBy(tk.price) ?? tk.price;
+          }
+        }
 
         console.log(`[Token Price] ${token.symbol} = ${formatUSD(token.price)}`);
       });

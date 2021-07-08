@@ -15,6 +15,7 @@ const EXPLORER_API_URL = 'https://api-kovan.etherscan.io';
 export const KOVAN_CHAIN_ID = 42;
 
 export const KovanConfig: NetworkConfig = {
+  title: 'BarnBridge Kovan',
   features: {
     yieldFarming: true,
     dao: true,
@@ -107,7 +108,7 @@ export const KovanNetwork: Web3Network = {
   id: 'kovan',
   meta: {
     chainId: KOVAN_CHAIN_ID,
-    name: 'Ethereum Kovan',
+    name: 'Ethereum Dev (Kovan)',
     logo: 'testnet-logo',
   },
   rpc: {

@@ -83,7 +83,7 @@ const TwoStepWithdraw: React.FC = () => {
     try {
       const abond = await smartYieldContract.getAbond();
       const decimals = pool.underlyingDecimals;
-      const tokenAmount = getNonHumanValue(BigNumber.from(to), decimals);
+      const tokenAmount = getNonHumanValue(new BigNumber(to), decimals);
       const maxMaturesAt = 1 + abond.maturesAt;
       const deadlineMs = Math.round(Date.now() / 1_000) + deadline * 60;
 

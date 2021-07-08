@@ -6,8 +6,10 @@ import { InvariantContext } from 'utils/context';
 
 import { NetworkConfig } from 'networks/types';
 
-export const isDevelopmentMode = process.env.REACT_APP_ENV === 'development';
-export const isProductionMode = process.env.REACT_APP_ENV === 'production';
+const env = process.env.REACT_APP_ENV;
+export const isDevelopmentMode = env === 'development';
+export const isAlphaMode = env === 'alpha';
+export const isProductionMode = env === 'production' || isAlphaMode;
 
 export type ConfigContextType = NetworkConfig & {
   links: {

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useEffect } from 'react';
-import { useContract, useContractManager } from 'web3/components/contractManagerProvider';
+import { useContract } from 'web3/components/contractManagerProvider';
 
 import { useConfig } from 'components/providers/configProvider';
 import { useReload } from 'hooks/useReload';
@@ -11,6 +11,7 @@ import { useWallet } from 'wallets/walletProvider';
 import { InvariantContext } from 'utils/context';
 
 type SEContextType = {
+  ePoolContract: SeEPoolContract;
   ePoolHelperContract: SeEPoolHelperContract;
   ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
@@ -26,7 +27,6 @@ export const SEPoolsProvider: React.FC = props => {
 
   const walletCtx = useWallet();
   const config = useConfig();
-  const [reload] = useReload();
 
   const ePoolContract = useContract<SeEPoolContract>(config.contracts.se?.ePool!, () => {
     return new SeEPoolContract(config.contracts.se?.ePool!);
@@ -49,6 +49,7 @@ export const SEPoolsProvider: React.FC = props => {
   }, [walletCtx.account]);
 
   const value = {
+    ePoolContract,
     ePoolHelperContract,
     ePoolPeripheryContract,
   };
@@ -58,7 +59,6 @@ export const SEPoolsProvider: React.FC = props => {
 
 export const useEPoolContract = (address: string): SeEPoolContract => {
   const [reload] = useReload();
-  const {} = useContractManager();
 
   const contract = useContract<SeEPoolContract>(address, () => {
     return new SeEPoolContract(address);

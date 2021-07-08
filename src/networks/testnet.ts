@@ -15,6 +15,7 @@ const EXPLORER_API_URL = 'https://api-kovan.etherscan.io';
 export const TESTNET_CHAIN_ID = 42;
 
 export const TestnetConfig: NetworkConfig = {
+  title: 'BarnBridge Testnet',
   features: {
     dao: true,
     faucets: true,

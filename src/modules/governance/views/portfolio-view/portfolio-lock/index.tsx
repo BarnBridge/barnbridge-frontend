@@ -14,7 +14,6 @@ import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
-import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
@@ -22,9 +21,8 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
-
 // import WalletLockChart from './components/wallet-lock-chart';
-import WalletLockConfirmModal from './components/wallet-lock-confirm-modal';
+import WalletLockConfirmModal from 'modules/governance/views/portfolio-view/portfolio-lock/components/wallet-lock-confirm-modal';
 
 import { getFormattedDuration, isValidAddress } from 'utils';
 
@@ -83,7 +81,7 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
   }
 }
 
-const WalletLockView: React.FC = () => {
+const PortfolioLock: React.FC = () => {
   const [form] = Antd.Form.useForm<LockFormData>();
 
   const { projectToken } = useKnownTokens();
@@ -183,65 +181,52 @@ const WalletLockView: React.FC = () => {
         onValuesChange={handleValuesChange}
         onFinish={handleFinish}>
         <Grid flow="row" gap={32}>
-          <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
-            <Grid flow="row" gap={32}>
-              <Form.Item label="Add lock duration" dependencies={['lockEndDate']}>
-                {() => (
-                  <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
-                    {DURATION_OPTIONS.map(opt => (
-                      <button
-                        key={opt}
-                        type="button"
-                        className={cn('button-ghost-monochrome ph-24 pv-16', {
-                          selected: state.lockDurationOption === opt,
-                        })}
-                        disabled={
-                          formDisabled ||
-                          state.saving ||
-                          (getLockEndDate(minAllowedDate, opt) ?? new Date()) > maxAllowedDate
-                        }
-                        onClick={() => {
-                          form.setFieldsValue({
-                            lockEndDate: getLockEndDate(new Date(), opt),
-                          });
-                          setState({
-                            lockDurationOption: opt,
-                          });
-                        }}>
-                        <Text type="p1" weight="semibold" color="primary">
-                          {opt}
-                        </Text>
-                      </button>
-                    ))}
-                  </div>
-                )}
-              </Form.Item>
-              <Text type="p1">OR</Text>
-              <Form.Item
-                name="lockEndDate"
-                label="Manual choose your lock end date"
-                rules={[{ required: true, message: 'Required' }]}>
-                <DatePicker
-                  showTime
-                  showNow={false}
-                  disabledDate={(date: Date) => isBefore(date, minAllowedDate) || isAfter(date, maxAllowedDate)}
-                  format="DD/MM/YYYY HH:mm"
-                  size="large"
-                  disabled={formDisabled || state.saving}
-                />
-              </Form.Item>
-              <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
-            </Grid>
-            <Grid flow="row">
-              <Form.Item
-                name="gasPrice"
-                label="Gas Fee (Gwei)"
-                hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-                rules={[{ required: true, message: 'Required' }]}>
-                <GasFeeList disabled={state.saving} />
-              </Form.Item>
-            </Grid>
-          </Grid>
+          <Form.Item label="Add lock duration" dependencies={['lockEndDate']}>
+            {() => (
+              <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
+                {DURATION_OPTIONS.map(opt => (
+                  <button
+                    key={opt}
+                    type="button"
+                    className={cn('button-ghost-monochrome ph-24 pv-16', {
+                      selected: state.lockDurationOption === opt,
+                    })}
+                    disabled={
+                      formDisabled ||
+                      state.saving ||
+                      (getLockEndDate(minAllowedDate, opt) ?? new Date()) > maxAllowedDate
+                    }
+                    onClick={() => {
+                      form.setFieldsValue({
+                        lockEndDate: getLockEndDate(new Date(), opt),
+                      });
+                      setState({
+                        lockDurationOption: opt,
+                      });
+                    }}>
+                    <Text type="p1" weight="semibold" color="primary">
+                      {opt}
+                    </Text>
+                  </button>
+                ))}
+              </div>
+            )}
+          </Form.Item>
+          <Text type="p1">OR</Text>
+          <Form.Item
+            name="lockEndDate"
+            label="Manual choose your lock end date"
+            rules={[{ required: true, message: 'Required' }]}>
+            <DatePicker
+              showTime
+              showNow={false}
+              disabledDate={(date: Date) => isBefore(date, minAllowedDate) || isAfter(date, maxAllowedDate)}
+              format="DD/MM/YYYY HH:mm"
+              size="large"
+              disabled={formDisabled || state.saving}
+            />
+          </Form.Item>
+          <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
 
           {/* <Form.Item shouldUpdate> */}
           {/*  {({ getFieldsValue }) => { */}
@@ -276,4 +261,4 @@ const WalletLockView: React.FC = () => {
   );
 };
 
-export default WalletLockView;
+export default PortfolioLock;

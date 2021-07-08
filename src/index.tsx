@@ -1,4 +1,5 @@
 import 'styles/index.scss';
+import 'utils/bignumber';
 import 'utils';
 import 'web3/utils';
 

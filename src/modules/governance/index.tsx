@@ -12,11 +12,11 @@ import { useWallet } from 'wallets/walletProvider';
 import DAOProvider from './components/dao-provider';
 import VotingHeader from './components/voting-header';
 import OverviewView from './views/overview-view';
+import PortfolioView from './views/portfolio-view';
 import ProposalCreateView from './views/proposal-create-view';
 import ProposalDetailView from './views/proposal-detail-view';
 import ProposalsView from './views/proposals-view';
 import TreasuryView from './views/treasury-view';
-import WalletView from './views/wallets-view';
 
 import s from './s.module.scss';
 
@@ -61,11 +61,11 @@ const GovernanceViewInternal: React.FC = () => {
           }
         />
         <Tabs.Tab
-          key="wallet"
+          key="portfolio"
           disabled={!wallet.account}
           tab={
             <>
-              <Icon name="wallet-outlined" /> Wallet
+              <Icon name="wallet-outlined" /> Portfolio
             </>
           }
         />
@@ -117,8 +117,8 @@ const GovernanceViewInternal: React.FC = () => {
       <div className="content-container-fix content-container">
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
-          <Route path="/governance/wallet/:action(\w+)" component={WalletView} />
-          <Redirect from="/governance/wallet" to="/governance/wallet/deposit" />
+          <Route path="/governance/portfolio/:action(\w+)" component={PortfolioView} />
+          <Redirect from="/governance/portfolio" to="/governance/portfolio/deposit" />
           <Route path="/governance/treasury/:tab(\w+)" exact component={TreasuryView} />
           <Redirect from="/governance/treasury" to="/governance/treasury/holdings" />
           <Route path="/governance/proposals/create" exact component={ProposalCreateView} />

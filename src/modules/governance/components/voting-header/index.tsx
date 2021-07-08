@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Spin } from 'antd';
-import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatBigValue, formatToken } from 'web3/utils';
@@ -44,11 +43,11 @@ const VotingHeader: React.FC = () => {
   const { toClaim } = daoCtx.daoReward;
   const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
   const { votingPower, userLockedUntil } = daoCtx.daoBarn;
-  const [multiplier, setMultiplier] = useState<BigNumber>(BigNumber.from(1));
+  const [multiplier, setMultiplier] = useState(1);
 
   useEffect(() => {
     if (walletCtx.account) {
-      daoCtx.daoBarn.getMultiplierAtTs(walletCtx.account, getNowTs()).then(value => setMultiplier(value));
+      daoCtx.daoBarn.getMultiplierAtTs(walletCtx.account, getNowTs()).then(value => setMultiplier(value.toNumber()));
     }
   }, [walletCtx.account]);
 
@@ -133,12 +132,9 @@ const VotingHeader: React.FC = () => {
 
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {leftTime => {
-            const leftMultiplier = BigNumber.from(multiplier - 1)
-              .multipliedBy(leftTime)
-              .div(loadedUserLockedUntil)
-              .plus(1);
+            const leftMultiplier = (multiplier - 1) * (leftTime / loadedUserLockedUntil) + 1;
 
-            return leftMultiplier.gt(1) ? (
+            return leftMultiplier > 1 ? (
               <>
                 <Divider type="vertical" />
                 <Grid flow="row" gap={4}>

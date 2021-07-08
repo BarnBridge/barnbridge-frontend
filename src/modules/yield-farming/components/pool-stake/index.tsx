@@ -73,7 +73,7 @@ const PoolStake: FC = () => {
   async function handleStakeConfirm({ gasPrice }: any) {
     setConfirmModalVisible(false);
 
-    let value = BigNumber.from(amount);
+    let value = new BigNumber(amount);
 
     if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();
@@ -204,7 +204,13 @@ const PoolStake: FC = () => {
         <button
           type="button"
           className="button-primary"
-          disabled={!allowance?.gt(BigNumber.ZERO) || bnAmount.eq(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
+          disabled={
+            !allowance?.gt(BigNumber.ZERO) ||
+            !bnAmount ||
+            bnAmount.eq(BigNumber.ZERO) ||
+            bnAmount.gt(maxAmount) ||
+            staking
+          }
           onClick={handleStake}>
           {staking && <Spin spinning />}
           Stake

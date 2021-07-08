@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Form from 'components/antd/form';
-import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenInput from 'components/custom/token-input';
@@ -36,7 +35,7 @@ const InitialState: WalletDelegateViewState = {
   saving: false,
 };
 
-const WalletDelegateView: React.FC = () => {
+const PortfolioDelegate: React.FC = () => {
   const [form] = Antd.Form.useForm<DelegateFormData>();
 
   const { projectToken } = useKnownTokens();
@@ -117,29 +116,13 @@ const WalletDelegateView: React.FC = () => {
         validateTrigger={['onSubmit']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={32}>
-          <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
-            <Grid flow="row" gap={32}>
-              <Form.Item
-                name="delegateAddress"
-                label="Delegate address"
-                rules={[{ required: true, message: 'Required' }]}>
-                <TokenInput disabled={formDisabled || state.saving} />
-              </Form.Item>
-              <Alert message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
-              {isLocked && (
-                <Alert message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
-              )}
-            </Grid>
-            <Grid flow="row">
-              <Form.Item
-                name="gasPrice"
-                label="Gas Fee (Gwei)"
-                hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-                rules={[{ required: true, message: 'Required' }]}>
-                <GasFeeList disabled={state.saving} />
-              </Form.Item>
-            </Grid>
-          </Grid>
+          <Form.Item name="delegateAddress" label="Delegate address" rules={[{ required: true, message: 'Required' }]}>
+            <TokenInput disabled={formDisabled || state.saving} />
+          </Form.Item>
+          <Alert message="Delegating your voting power to this address means that they will be able to vote in your place. You can’t delegate the voting bonus, only the staked balance." />
+          {isLocked && (
+            <Alert message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
+          )}
           <Form.Item shouldUpdate>
             {({ getFieldsValue }) => {
               const { delegateAddress } = getFieldsValue();
@@ -162,4 +145,4 @@ const WalletDelegateView: React.FC = () => {
   );
 };
 
-export default WalletDelegateView;
+export default PortfolioDelegate;

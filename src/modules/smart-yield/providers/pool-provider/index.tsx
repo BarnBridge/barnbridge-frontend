@@ -162,8 +162,8 @@ const PoolProvider: React.FC = props => {
     aToken.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
     await aToken.loadCommon();
 
-    const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), stkAaveToken.symbol, ethToken.symbol);
-    const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, ethToken.symbol);
+    const aTokenPriceInEth = convertTokenIn(1, stkAaveToken.symbol, ethToken.symbol);
+    const uTokenPriceInEth = convertTokenIn(1, uSymbol, ethToken.symbol);
 
     return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
   }
@@ -230,7 +230,7 @@ const PoolProvider: React.FC = props => {
 
         const rewardPools = await syAPI.fetchSYRewardPools(pool.protocolId, pool.underlyingSymbol);
 
-        if (rewardPools.length > 0) {
+        if (rewardPools?.length > 0) {
           rewardPool = getContract<SYRewardPoolContract>(pool.rewardPoolAddress, () => {
             return new SYRewardPoolContract(pool.rewardPoolAddress, rewardPools[0].poolType === 'MULTI');
           });
@@ -264,7 +264,8 @@ const PoolProvider: React.FC = props => {
           loading: false,
           pool: extPool,
         }));
-      } catch {
+      } catch (e) {
+        console.error(e);
         setState(prevState => ({
           ...prevState,
           loading: false,

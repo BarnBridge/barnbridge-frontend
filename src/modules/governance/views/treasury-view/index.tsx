@@ -2,6 +2,7 @@ import React from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Tabs } from 'components/custom/tabs';
+import SyAPIProvider from 'modules/smart-yield/api';
 
 import TreasuryFees from './treasury-fees';
 import TreasuryHoldings from './treasury-holdings';
@@ -59,7 +60,14 @@ const TreasuryView: React.FC = () => {
       />
       <Switch>
         <Route path="/governance/treasury/holdings" component={TreasuryHoldings} />
-        <Route path="/governance/treasury/fees" component={TreasuryFees} />
+        <Route
+          path="/governance/treasury/fees"
+          render={() => (
+            <SyAPIProvider>
+              <TreasuryFees />
+            </SyAPIProvider>
+          )}
+        />
       </Switch>
     </>
   );

@@ -80,7 +80,7 @@ const YfAPIProvider: FC = props => {
           ...result,
           data: (result.data ?? []).map((item: APIYFPoolTransaction) => ({
             ...item,
-            amount: BigNumber.from(item.amount),
+            amount: new BigNumber(item.amount),
           })),
         };
       });

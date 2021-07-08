@@ -64,7 +64,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
             {getStrongText(shortenAddr(n.metadata.proposer))} and entered the warm-up phase. You have{' '}
             {getStrongText(getRelativeTime(n.metadata.displayDuration))} to stake your BOND
           </Text>
-          <Link to="/governance/wallet/deposit" className="button-primary">
+          <Link to="/governance/portfolio/deposit" className="button-primary">
             Deposit now
           </Link>
         </>,

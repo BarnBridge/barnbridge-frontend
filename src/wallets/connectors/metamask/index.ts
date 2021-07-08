@@ -37,25 +37,33 @@ export type MetamaskWatchAsset = {
   };
 };
 
-export function metamask_AddEthereumChain(provider: any, ...infos: MetamaskAddEthereumChain[]): Promise<Error | null> {
-  return provider.request({
-    method: 'wallet_addEthereumChain',
-    params: infos,
-  });
-}
+export class MetamaskConnector extends InjectedConnector {
+  addChain(...infos: MetamaskAddEthereumChain[]): Promise<Error | null> {
+    return this.getProvider().then(provider => {
+      return provider.request({
+        method: 'wallet_addEthereumChain',
+        params: infos,
+      });
+    });
+  }
 
-export function metamask_SwitchEthereumChain(provider: any, info: MetamaskSwitchEthereumChain): Promise<Error | null> {
-  return provider.request({
-    method: 'wallet_switchEthereumChain',
-    params: [info],
-  });
-}
+  switchChain(info: MetamaskSwitchEthereumChain): Promise<Error | null> {
+    return this.getProvider().then(provider => {
+      return provider.request({
+        method: 'wallet_switchEthereumChain',
+        params: [info],
+      });
+    });
+  }
 
-export function metamask_AddToken(provider: any, info: MetamaskWatchAsset): Promise<boolean> {
-  return provider.request({
-    method: 'wallet_watchAsset',
-    params: info,
-  });
+  addToken(info: MetamaskWatchAsset): Promise<boolean> {
+    return this.getProvider().then(provider => {
+      return provider.request({
+        method: 'wallet_watchAsset',
+        params: info,
+      });
+    });
+  }
 }
 
 const MetamaskWalletConfig: BaseWalletConfig = {
@@ -63,7 +71,7 @@ const MetamaskWalletConfig: BaseWalletConfig = {
   logo: [MetamaskLogo, MetamaskLogoDark],
   name: 'MetaMask',
   factory(network: Web3Network): AbstractConnector {
-    return new InjectedConnector({
+    return new MetamaskConnector({
       supportedChainIds: [network.meta.chainId],
     });
   },

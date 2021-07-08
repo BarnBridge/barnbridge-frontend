@@ -3,6 +3,7 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 export const DEFAULT_RPC_POOLING_INTERVAL = 12_000;
 
 export type NetworkConfig = {
+  title: string;
   features: {
     yieldFarming?: boolean;
     dao?: boolean;

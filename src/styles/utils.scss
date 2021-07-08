@@ -1,5 +1,10 @@
 @import 'src/styles/text';
 
+.content-container-fix {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .content-container {
   --content-container-v-padding: 40px;
 
@@ -11,13 +16,15 @@
   }
 }
 
-.content-container-fix {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-}
-
 .container-limit {
   max-width: 1070px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-fit {
+  max-width: 640px;
   width: 100%;
   margin-left: auto;
   margin-right: auto;

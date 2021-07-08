@@ -474,7 +474,7 @@ const SyAPIProvider: FC = props => {
         ...result,
         data: (result.data ?? []).map((item: APISYPoolTransaction) => ({
           ...item,
-          amount: BigNumber.from(item.amount),
+          amount: new BigNumber(item.amount),
         })),
       }));
   }
@@ -503,8 +503,8 @@ const SyAPIProvider: FC = props => {
         ...result,
         data: (result.data ?? []).map((item: APISYSeniorBonds) => ({
           ...item,
-          depositedAmount: BigNumber.from(item.depositedAmount),
-          redeemableAmount: BigNumber.from(item.redeemableAmount),
+          depositedAmount: new BigNumber(item.depositedAmount),
+          redeemableAmount: new BigNumber(item.redeemableAmount),
         })),
       }));
   }
@@ -533,7 +533,7 @@ const SyAPIProvider: FC = props => {
         ...result,
         data: (result.data ?? []).map((item: APISYJuniorBonds) => ({
           ...item,
-          depositedAmount: BigNumber.from(item.depositedAmount),
+          depositedAmount: new BigNumber(item.depositedAmount),
         })),
       }));
   }
@@ -617,9 +617,9 @@ const SyAPIProvider: FC = props => {
         ...result,
         data: (result.data ?? []).map((item: APISYJuniorPastPosition) => ({
           ...item,
-          tokensIn: BigNumber.from(item.tokensIn),
-          underlyingOut: BigNumber.from(item.underlyingOut),
-          forfeits: BigNumber.from(item.forfeits),
+          tokensIn: new BigNumber(item.tokensIn),
+          underlyingOut: new BigNumber(item.underlyingOut),
+          forfeits: new BigNumber(item.forfeits),
         })),
       }));
   }
@@ -699,7 +699,7 @@ const SyAPIProvider: FC = props => {
         ...result,
         data: (result.data ?? []).map((item: APISYRewardPoolTransaction) => ({
           ...item,
-          amount: BigNumber.from(item.amount),
+          amount: new BigNumber(item.amount),
         })),
       }));
   }
