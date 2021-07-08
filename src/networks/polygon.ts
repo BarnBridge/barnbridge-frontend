@@ -1,5 +1,6 @@
 import { toHex } from 'web3-utils';
 
+import { isAlphaMode } from 'components/providers/configProvider';
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
@@ -15,6 +16,7 @@ const EXPLORER_API_URL = 'https://api.polygonscan.com';
 export const POLYGON_CHAIN_ID = 137;
 
 export const PolygonConfig: NetworkConfig = {
+  title: isAlphaMode ? 'BarnBridge Alpha Polygon' : 'BarnBridge Polygon',
   features: {
     smartYield: true,
   },
@@ -26,7 +28,7 @@ export const PolygonConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://api.barnbridge.com',
+    baseUrl: isAlphaMode ? 'https://alpha.polygon.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400000,
@@ -85,7 +87,7 @@ export const PolygonNetwork: Web3Network = {
   id: 'polygon',
   meta: {
     chainId: POLYGON_CHAIN_ID,
-    name: 'Polygon',
+    name: 'Polygon Mainnet',
     logo: 'polygon-logo',
   },
   rpc: {

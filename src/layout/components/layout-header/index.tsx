@@ -9,31 +9,33 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import ConnectedWallet from 'wallets/components/connected-wallet';
-import MetamaskWalletConfig, { metamask_AddToken } from 'wallets/connectors/metamask';
+import MetamaskWalletConfig, { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
 const LayoutHeader: React.FC = () => {
   const { setNavOpen } = useGeneral();
-  const network = useNetwork();
-  const ethWeb3 = useWeb3();
+  const { activeNetwork } = useNetwork();
+  const { showNetworkSelect } = useWeb3();
   const wallet = useWallet();
   const { projectToken } = useKnownTokens();
 
-  async function handleMetamaskAddToken() {
-    try {
-      await metamask_AddToken(ethWeb3.activeProvider, {
-        type: 'ERC20',
-        options: {
-          address: projectToken.address,
-          symbol: projectToken.symbol,
-          decimals: projectToken.decimals,
-          image: `${window.location.origin}/android-chrome-192x192.png`,
-        },
-      });
-    } catch (e) {
-      console.error(e);
+  async function handleAddProjectToken() {
+    if (wallet.connector instanceof MetamaskConnector) {
+      try {
+        await wallet.connector.addToken({
+          type: 'ERC20',
+          options: {
+            address: projectToken.address,
+            symbol: projectToken.symbol,
+            decimals: projectToken.decimals,
+            image: `${window.location.origin}/android-chrome-192x192.png`,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
     }
   }
 
@@ -55,22 +57,20 @@ const LayoutHeader: React.FC = () => {
         </Switch>
       </Text>
       <div className="flex align-center ml-auto">
-        {wallet.meta?.id === MetamaskWalletConfig.id && (
-          <button className="button-text mr-24" onClick={handleMetamaskAddToken}>
+        {wallet.meta === MetamaskWalletConfig && (
+          <button className="button-text mr-24" onClick={handleAddProjectToken}>
             <Icon name="bond-add-token" width={40} height={40} />
           </button>
         )}
-        {/*{wallet.meta?.id === MetamaskWalletConfig.id && (*/}
         <button
           className="button-ghost-monochrome mr-24"
           style={{ padding: '8px 12px 8px 8px' }}
-          onClick={() => network.showNetworkSelect()}>
-          <Icon name={network.activeNetwork.meta.logo as IconNames} width={24} height={24} className="mr-8" />
+          onClick={() => showNetworkSelect()}>
+          <Icon name={activeNetwork.meta.logo as IconNames} width={24} height={24} className="mr-8" />
           <Text type="p2" weight="semibold" color="secondary">
-            {network.activeNetwork.meta.name}
+            {activeNetwork.meta.name}
           </Text>
         </button>
-        {/*)}*/}
         <ConnectedWallet />
       </div>
     </header>

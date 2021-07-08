@@ -1,14 +1,12 @@
-import { FC, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSessionStorage } from 'react-use-storage';
 
-import Icon, { IconNames } from 'components/custom/icon';
-import { Modal } from 'components/custom/modal';
-import { Text } from 'components/custom/typography';
 import { isDevelopmentMode, isProductionMode } from 'components/providers/configProvider';
 import { GoerliNetwork } from 'networks/goerli';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { MumbaiNetwork } from 'networks/mumbai';
+import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
 import { InvariantContext } from 'utils/context';
@@ -19,8 +17,9 @@ export type NetworkType = {
   networks: Web3Network[];
   defaultNetwork: Web3Network;
   activeNetwork: Web3Network;
+  findNetwork: (networkId: string) => Web3Network | undefined;
+  findNetworkByChainId: (chainId: number) => Web3Network | undefined;
   changeNetwork: (networkId: string) => Web3Network | undefined;
-  showNetworkSelect: () => void;
 };
 
 const Context = createContext<NetworkType>(InvariantContext('NetworkProvider'));
@@ -31,7 +30,7 @@ export function useNetwork(): NetworkType {
 
 const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
-    return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, TestnetNetwork];
+    return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, PolygonNetwork, TestnetNetwork];
   }
 
   if (isProductionMode) {
@@ -44,114 +43,56 @@ const networks: Web3Network[] = (() => {
 const NetworkProvider: FC = props => {
   const { children } = props;
 
-  const [lastNetwork, setLastNetwork] = useSessionStorage<string | undefined>('bb_last_network');
+  const [lastNetwork, setLastNetwork] = useSessionStorage<string | undefined>('last_network');
 
   const initialNetwork = useMemo<Web3Network>(() => {
     let network: Web3Network | undefined;
 
     try {
-      // const lsLastNetwork = localStorage.getItem('bb_last_network');
-      const lsLastNetwork = lastNetwork;
-
-      if (lsLastNetwork) {
-        const lastNetwork = lsLastNetwork.toLowerCase();
-        network = networks.find(n => n.id === lastNetwork);
+      if (lastNetwork) {
+        const networkId = lastNetwork?.toLowerCase();
+        network = networks.find(n => n.id.toLowerCase() === networkId);
       }
     } catch {}
 
     return network ?? networks[0];
+  }, [lastNetwork]);
+
+  const [activeNetwork] = useState<Web3Network>(initialNetwork);
+
+  const findNetwork = useCallback((networkId: string): Web3Network | undefined => {
+    return networks.find(n => n.id.toLowerCase() === networkId.toLowerCase());
   }, []);
 
-  const [activeNetwork, setActiveNetwork] = useState<Web3Network>(initialNetwork);
+  const findNetworkByChainId = useCallback((chainId: number): Web3Network | undefined => {
+    return networks.find(n => n.meta.chainId === chainId);
+  }, []);
 
   const changeNetwork = useCallback((networkId: string): Web3Network | undefined => {
-    showNetworkSelect(false);
-
-    const network = networks.find(n => n.id === networkId);
+    const network = findNetwork(networkId);
 
     if (network) {
-      // let canSetNetwork = true;
-      //
-      // if (network && activeProvider) {
-      //   if (activeProvider.isMetaMask && network.metamaskChain) {
-      //     try {
-      //       const error = await metamask_SwitchEthereumChain(activeProvider, {
-      //         chainId: network.metamaskChain.chainId,
-      //       });
-      //
-      //       if (error) {
-      //         canSetNetwork = false;
-      //       }
-      //     } catch (e) {
-      //       canSetNetwork = false;
-      //
-      //       if (e.code === 4902) {
-      //         await metamask_AddEthereumChain(activeProvider, network.metamaskChain);
-      //       }
-      //     }
-      //   }
-      //
-      //   if (canSetNetwork) {
-      //     if (storedNetwork !== network.id) {
-      //       setStoredNetwork(network.id);
-      //       window.location.reload();
-      //     }
-      //   }
-      // }
-
-      setActiveNetwork(network);
-      setLastNetwork(network.id);
-      // localStorage.setItem('bb_last_network', network.id);
+      setLastNetwork(network.id.toLowerCase());
       window.location.reload();
     }
 
     return network;
   }, []);
 
-  const [networkSelectVisible, showNetworkSelect] = useState(false);
+  useEffect(() => {
+    window.document.title = activeNetwork.config.title;
+  }, [activeNetwork]);
 
   const value: NetworkType = {
     networks,
     defaultNetwork: networks[0],
     activeNetwork,
+    findNetwork,
+    findNetworkByChainId,
     changeNetwork,
-    showNetworkSelect: () => {
-      showNetworkSelect(true);
-    },
   };
 
-  return (
-    <Context.Provider value={value}>
-      {children}
-      {networkSelectVisible && (
-        <Modal heading="Select network" closeHandler={showNetworkSelect}>
-          <div className="flex flow-row row-gap-16 p-24">
-            {networks.map(network => (
-              <button
-                key={network.id}
-                className="button-ghost-monochrome p-16"
-                style={{ height: 'inherit' }}
-                onClick={() => {
-                  changeNetwork(network.id);
-                }}>
-                <Icon name={network.meta.logo as IconNames} width={40} height={40} className="mr-12" />
-                <div className="flex flow-row align-start">
-                  <Text type="p1" weight="semibold" color="primary">
-                    {network.meta.name}
-                  </Text>
-                  {network === activeNetwork && (
-                    <Text type="small" weight="semibold" color="secondary">
-                      Connected
-                    </Text>
-                  )}
-                </div>
-              </button>
-            ))}
-          </div>
-        </Modal>
-      )}
-    </Context.Provider>
-  );
+  return <Context.Provider value={value}>{children}</Context.Provider>;
 };
 
 export default NetworkProvider;

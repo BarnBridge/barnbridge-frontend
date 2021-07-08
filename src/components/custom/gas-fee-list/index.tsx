@@ -42,7 +42,7 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
       loading: true,
     });
 
-    const url = `${activeNetwork.explorer.url}//api?module=gastracker&action=gasoracle&apikey=${activeNetwork.explorer.key}`;
+    const url = `${activeNetwork.explorer.apiUrl}/api?module=gastracker&action=gasoracle&apikey=${activeNetwork.explorer.key}`;
 
     fetch(url)
       .then(result => result.json())

@@ -1,9 +1,13 @@
-import { FC, createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { FC, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import Web3 from 'web3';
 import EventEmitter from 'wolfy87-eventemitter';
 
+import Icon, { IconNames } from 'components/custom/icon';
+import { Modal } from 'components/custom/modal';
+import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
+import { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
@@ -16,12 +20,13 @@ export const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 
 export type Web3ContextType = {
   web3: Web3;
+  event: EventEmitter;
   blockNumber: number | undefined;
   activeProvider: any;
+  showNetworkSelect: () => void;
   tryCall(to: string, from: string, data: string, value: string): any;
   getEtherscanTxUrl(txHash?: string): string | undefined;
   getEtherscanAddressUrl(address?: string): string | undefined;
-  event: EventEmitter;
 };
 
 const Context = createContext<Web3ContextType>(InvariantContext('Web3Provider'));
@@ -34,12 +39,13 @@ const Web3Provider: FC = props => {
   const { children } = props;
 
   const { windowState } = useGeneral();
-  const { activeNetwork } = useNetwork();
+  const { networks, activeNetwork, changeNetwork, findNetwork, findNetworkByChainId, defaultNetwork } = useNetwork();
   const wallet = useWallet();
 
   const event = useMemo(() => new EventEmitter(), []);
 
   const [blockNumber, setBlockNumber] = useState<number | undefined>();
+  const [networkSelectVisible, showNetworkSelect] = useState(false);
 
   const httpsWeb3 = useMemo(() => {
     const url = `${activeNetwork.rpc.httpsUrl}/${activeNetwork.rpc.key}`;
@@ -76,6 +82,52 @@ const Web3Provider: FC = props => {
       value,
     });
   }
+
+  useEffect(() => {
+    if (wallet.connector instanceof MetamaskConnector) {
+      wallet.connector.getProvider().then(provider => {
+        provider.on('chainChanged', (chainId: number) => {
+          const network = findNetworkByChainId(Number(chainId)) ?? defaultNetwork;
+          changeNetwork(network.id);
+        });
+      });
+    }
+  }, [wallet.connector]);
+
+  const switchNetwork = useCallback(
+    async (networkId: string) => {
+      const network = findNetwork(networkId);
+
+      if (!network) {
+        return;
+      }
+
+      let canSetNetwork = true;
+
+      if (wallet.connector instanceof MetamaskConnector && network.metamaskChain) {
+        try {
+          const error = await wallet.connector.switchChain({
+            chainId: network.metamaskChain.chainId,
+          });
+
+          if (error) {
+            canSetNetwork = false;
+          }
+        } catch (e) {
+          canSetNetwork = false;
+
+          if (e.code === 4902) {
+            await wallet.connector.addChain(network.metamaskChain);
+          }
+        }
+      }
+
+      if (canSetNetwork) {
+        changeNetwork(network.id);
+      }
+    },
+    [wallet.connector],
+  );
 
   useEffect(() => {
     if (!windowState.isVisible) {
@@ -120,15 +172,47 @@ const Web3Provider: FC = props => {
 
   const value = {
     web3,
+    event,
     blockNumber,
     activeProvider,
+    showNetworkSelect: () => {
+      showNetworkSelect(true);
+    },
     tryCall,
     getEtherscanTxUrl,
     getEtherscanAddressUrl,
-    event,
   };
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      {children}
+      {networkSelectVisible && (
+        <Modal heading="Select network" closeHandler={showNetworkSelect}>
+          <div className="flex flow-row row-gap-16 p-24">
+            {networks.map(network => (
+              <button
+                key={network.id}
+                className="button-ghost-monochrome p-16"
+                style={{ height: 'inherit' }}
+                onClick={() => switchNetwork(network.id)}>
+                <Icon name={network.meta.logo as IconNames} width={40} height={40} className="mr-12" />
+                <div className="flex flow-row align-start">
+                  <Text type="p1" weight="semibold" color="primary">
+                    {network.meta.name}
+                  </Text>
+                  {network === activeNetwork && (
+                    <Text type="small" weight="semibold" color="secondary">
+                      Connected
+                    </Text>
+                  )}
+                </div>
+              </button>
+            ))}
+          </div>
+        </Modal>
+      )}
+    </Context.Provider>
+  );
 };
 
 export default Web3Provider;

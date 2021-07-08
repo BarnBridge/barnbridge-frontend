@@ -235,7 +235,7 @@ const MultipleTokensForm = ({
     }
   };
 
-  const feeRate = BigNumber.from(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
+  const feeRate = BigNumber.from(ePoolContract.feeRate ?? 0)?.unscaleBy(18) ?? 0;
   const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract?.decimals) ?? BigNumber.ZERO;
 
   const tokenEErrors = useMemo(() => {
@@ -478,7 +478,7 @@ const SingleTokenForm = ({
     }
   };
 
-  const feeRate = BigNumber.from(ePoolContract.feeRate ?? 0).unscaleBy(18) ?? 0;
+  const feeRate = BigNumber.from(ePoolContract.feeRate ?? 0)?.unscaleBy(18) ?? 0;
   const tokenEMax = tokenEContract.balance?.unscaleBy(tokenEContract.decimals) ?? BigNumber.ZERO;
 
   const tokenEErrors = useMemo(() => {

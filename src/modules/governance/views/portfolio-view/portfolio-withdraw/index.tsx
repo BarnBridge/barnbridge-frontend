@@ -7,7 +7,6 @@ import { formatToken } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import Button from 'components/antd/button';
 import Form from 'components/antd/form';
-import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
@@ -36,7 +35,7 @@ const InitialState: WalletWithdrawViewState = {
   saving: false,
 };
 
-const WalletWithdrawView: React.FC = () => {
+const PortfolioWithdraw: React.FC = () => {
   const daoCtx = useDAO();
   const { projectToken } = useKnownTokens();
   const [form] = Antd.Form.useForm<WithdrawFormData>();
@@ -105,30 +104,17 @@ const WalletWithdrawView: React.FC = () => {
         validateTrigger={['onSubmit']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={32}>
-          <Grid flow="col" gap={64} colsTemplate="1fr 1fr">
-            <Grid flow="row" gap={32}>
-              <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
-                <TokenAmount
-                  tokenIcon={projectToken.icon!}
-                  max={stakedBalance}
-                  maximumFractionDigits={projectToken.decimals}
-                  displayDecimals={4}
-                  disabled={formDisabled || state.saving}
-                  slider
-                />
-              </Form.Item>
-              <Alert message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
-            </Grid>
-            <Grid flow="row">
-              <Form.Item
-                name="gasPrice"
-                label="Gas Fee (Gwei)"
-                hint="This value represents the gas price you're willing to pay for each unit of gas. Gwei is the unit of ETH typically used to denominate gas prices and generally, the more gas fees you pay, the faster the transaction will be mined."
-                rules={[{ required: true, message: 'Required' }]}>
-                <GasFeeList disabled={state.saving} />
-              </Form.Item>
-            </Grid>
-          </Grid>
+          <Form.Item name="amount" label="Amount" rules={[{ required: true, message: 'Required' }]}>
+            <TokenAmount
+              tokenIcon={projectToken.icon!}
+              max={stakedBalance}
+              maximumFractionDigits={projectToken.decimals}
+              displayDecimals={4}
+              disabled={formDisabled || state.saving}
+              slider
+            />
+          </Form.Item>
+          <Alert message="Locked balances are not available for withdrawal until the timer ends. Withdrawal means you will stop earning staking rewards for the amount withdrawn." />
           <Button
             type="primary"
             htmlType="submit"
@@ -143,4 +129,4 @@ const WalletWithdrawView: React.FC = () => {
   );
 };
 
-export default WalletWithdrawView;
+export default PortfolioWithdraw;

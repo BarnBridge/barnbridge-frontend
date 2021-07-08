@@ -15,6 +15,7 @@ const EXPLORER_API_URL = 'https://api-goerli.etherscan.io';
 export const GOERLI_CHAIN_ID = 5;
 
 export const GoerliConfig: NetworkConfig = {
+  title: 'BarnBridge Goerli',
   features: {
     dao: true,
   },
@@ -91,7 +92,7 @@ export const GoerliNetwork: Web3Network = {
   id: 'goerli',
   meta: {
     chainId: GOERLI_CHAIN_ID,
-    name: 'Ethereum Goerli',
+    name: 'Ethereum Dev (Goerli)',
     logo: 'testnet-logo',
   },
   rpc: {

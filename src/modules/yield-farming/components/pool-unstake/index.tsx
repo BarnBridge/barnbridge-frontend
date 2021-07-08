@@ -61,7 +61,7 @@ const PoolUnstake: FC = () => {
 
     let value = BigNumber.from(amount);
 
-    if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
+    if (!activeToken || !value || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();
     }
 
@@ -182,7 +182,7 @@ const PoolUnstake: FC = () => {
       <button
         type="button"
         className="button-primary"
-        disabled={!bnAmount.gt(BigNumber.ZERO) || bnAmount.gt(maxAmount) || unstaking}
+        disabled={!bnAmount || !bnAmount.gt(BigNumber.ZERO) || bnAmount.gt(maxAmount) || unstaking}
         onClick={handleUnstake}>
         {unstaking && <Spin spinning />}
         Unstake

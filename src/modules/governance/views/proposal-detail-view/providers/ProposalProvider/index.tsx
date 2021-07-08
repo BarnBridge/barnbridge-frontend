@@ -143,7 +143,7 @@ const ProposalProvider: React.FC<ProposalProviderProps> = props => {
 
     const { proposer } = state.proposal;
 
-    daoCtx.daoBarn.votingPower(proposer).then(votingPower => {
+    daoCtx.daoBarn.getVotingPower(proposer).then(votingPower => {
       if (votingPower) {
         setState({
           thresholdRate: votingPower.div(bondStaked).multipliedBy(100).toNumber(),

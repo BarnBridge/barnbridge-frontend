@@ -210,7 +210,7 @@ const DaoAPIProvider: FC = props => {
         ...result,
         data: (result.data ?? []).map((item: APIVoterEntity) => ({
           ...item,
-          bondStaked: getHumanValue(BigNumber.from(item.bondStaked), 18), // bond decimals
+          bondStaked: getHumanValue(BigNumber.from(item.bondStaked), 18)!, // bond decimals
           delegatedPower: getHumanValue(BigNumber.from(item.delegatedPower), 18)!,
           votingPower: getHumanValue(BigNumber.from(item.votingPower), 18)!,
         })),

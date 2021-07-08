@@ -88,11 +88,12 @@ const DAOProvider: React.FC = props => {
   React.useEffect(() => {
     const { isActive } = daoGovernance;
     const { bondStaked, votingPower } = daoBarn;
+    const activationThreshold = config.dao?.activationThreshold;
 
     let activationRate: number | undefined;
 
-    if (bondStaked && config.dao?.activationThreshold! > 0) {
-      activationRate = bondStaked.multipliedBy(100).div(config.dao?.activationThreshold).toNumber();
+    if (bondStaked && activationThreshold && activationThreshold > 0) {
+      activationRate = bondStaked.multipliedBy(100).div(activationThreshold).toNumber();
       activationRate = Math.min(activationRate!, 100);
     }
 

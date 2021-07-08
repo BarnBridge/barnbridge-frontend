@@ -202,7 +202,7 @@ const MultipleTokensForm = ({
 
     ePoolHelperContract
       .getTokenBForTokenA(poolAddress, trancheAddress, amount)
-      .then(amountB => setTokenBState(amountB.unscaleBy(tranche.tokenB.decimals)?.toString() ?? ''));
+      .then(amountB => setTokenBState(amountB?.unscaleBy(tranche.tokenB.decimals)?.toString() ?? ''));
   }, 400);
 
   const handleAmountTokenB = useDebounce((value: string) => {
@@ -218,7 +218,7 @@ const MultipleTokensForm = ({
 
     ePoolHelperContract
       .getTokenAForTokenB(poolAddress, trancheAddress, amount)
-      .then(amountA => setTokenAState(amountA.unscaleBy(tranche.tokenA.decimals)?.toString() ?? ''));
+      .then(amountA => setTokenAState(amountA?.unscaleBy(tranche.tokenA.decimals)?.toString() ?? ''));
   }, 400);
 
   useEffect(() => {
@@ -435,7 +435,7 @@ const SingleTokenForm = ({
       trancheAddress,
       amount,
     ).then(val => {
-      setSelectedTokenEMax(val.dividedBy(tranche.sFactorE));
+      setSelectedTokenEMax(val?.dividedBy(tranche.sFactorE));
     });
   }, [ePoolPeripheryContract, isTokenA, poolAddress, selectedTokenContract.balance, tranche.sFactorE, trancheAddress]);
 

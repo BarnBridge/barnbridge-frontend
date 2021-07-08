@@ -25,16 +25,6 @@ import { InvariantContext } from 'utils/context';
 
 import { BaseWalletConfig } from 'wallets/types';
 
-export enum Wallets {
-  coinbase = 'coinbase',
-  gnosisSafe = 'gnosisSafe',
-  ledger = 'ledger',
-  metamask = 'metamask',
-  portis = 'portis',
-  trezor = 'trezor',
-  walletConnect = 'walletConnect',
-}
-
 export const WalletConnectors: BaseWalletConfig[] = [
   MetamaskWalletConfig,
   LedgerWalletConfig,
@@ -66,7 +56,7 @@ export function useWallet(): WalletContextType {
 }
 
 const Web3WalletProvider: FC = props => {
-  const { networks, activeNetwork, defaultNetwork, changeNetwork } = useNetwork();
+  const { activeNetwork } = useNetwork();
   const web3React = useWeb3React();
   const safeApps = useSafeAppsSDK();
 
@@ -138,15 +128,6 @@ const Web3WalletProvider: FC = props => {
       function onSuccess() {
         if (!connectingRef.current) {
           return;
-        }
-
-        if (walletConfig.id === 'metamask') {
-          connector.getProvider().then(ethereum => {
-            ethereum.on('chainChanged', (chainId: number) => {
-              const network = networks.find(kn => kn.meta.chainId === Number(chainId)) ?? defaultNetwork;
-              changeNetwork(network.id);
-            });
-          });
         }
 
         walletConfig.onConnect?.(connector, args);
