@@ -19,6 +19,7 @@ export const PolygonConfig: NetworkConfig = {
   title: isAlphaMode ? 'BarnBridge Alpha Polygon' : 'BarnBridge Polygon',
   features: {
     smartYield: true,
+    smartExposure: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -68,7 +69,12 @@ export const PolygonConfig: NetworkConfig = {
     susd: '',
     dai: '',
   },
-  contracts: {},
+  contracts: {
+    se: {
+      ePoolPeriphery: '0xb9556a673f2e01333570e68d95dDd17d92A0511A',
+      ePoolHelper: '0x32f8E7FB11432263E545faA368a6a1f8eFB58314',
+    },
+  },
 };
 
 export const PolygonMetamaskChain: MetamaskAddEthereumChain = {

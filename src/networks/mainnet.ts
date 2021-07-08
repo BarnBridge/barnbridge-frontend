@@ -86,7 +86,6 @@ export const MainnetConfig: NetworkConfig = {
       reward: '0x9d0CF50547D848cC4b6A12BeDCF7696e9b334a22',
     },
     se: {
-      ePool: '0xD8124BBb4bf94c5d2850011B64bEA9a47266A768',
       ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
       ePoolHelper: '0x8a63822d8c1be5590bbf72fb58e69285a776a5df',
     },
