@@ -248,7 +248,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = true;
-            computedAmount = BigNumber.from(item.amount).multipliedBy(pool.state.jTokenPrice);
+            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
           }
         }
 

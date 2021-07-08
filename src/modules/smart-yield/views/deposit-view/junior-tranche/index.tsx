@@ -133,7 +133,7 @@ const JuniorTranche: React.FC = () => {
     }
 
     /// minTo = (from - fee) * price - slippage
-    const minAmount = from.multipliedBy(BigNumber.from(1).minus(juniorFee.dividedBy(1e18)));
+    const minAmount = from.multipliedBy(new BigNumber(1).minus(juniorFee.dividedBy(1e18)));
 
     return minAmount.dividedBy(price.dividedBy(1e18)).multipliedBy(1 - (slippage ?? 0) / 100);
   }
@@ -201,7 +201,7 @@ const JuniorTranche: React.FC = () => {
 
     const decimals = pool.underlyingDecimals;
     const amount = from.multipliedBy(10 ** decimals);
-    const minTokens = BigNumber.from((getMinAmount() ?? BigNumber.ZERO).multipliedBy(10 ** decimals).toFixed(0));
+    const minTokens = new BigNumber((getMinAmount() ?? BigNumber.ZERO).multipliedBy(10 ** decimals).toFixed(0));
     const deadlineTs = Math.floor(Date.now() / 1_000 + Number(deadline ?? 0) * 60);
 
     try {

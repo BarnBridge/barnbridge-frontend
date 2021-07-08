@@ -158,7 +158,7 @@ class SYRewardPoolContract extends Web3Contract {
   async loadRewardLeftFor(rewardTokenAddress: string): Promise<void> {
     const rewardLeft = await this.call('rewardLeft', this._isMulti ? [rewardTokenAddress] : []);
 
-    this.rewardLeft.set(rewardTokenAddress, BigNumber.from(rewardLeft));
+    this.rewardLeft.set(rewardTokenAddress, new BigNumber(rewardLeft));
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
@@ -171,7 +171,7 @@ class SYRewardPoolContract extends Web3Contract {
       rewardRatePerSecond = await this.call('rewardRatePerSecond', []);
     }
 
-    this.rewardRates.set(rewardTokenAddress, BigNumber.from(rewardRatePerSecond));
+    this.rewardRates.set(rewardTokenAddress, new BigNumber(rewardRatePerSecond));
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
@@ -202,7 +202,7 @@ class SYRewardPoolContract extends Web3Contract {
   async loadBalanceFor(rewardTokenAddress: string): Promise<void> {
     const balance = await this.call('balances', [rewardTokenAddress], { from: this.account });
 
-    this.balances.set(rewardTokenAddress, BigNumber.from(balance));
+    this.balances.set(rewardTokenAddress, new BigNumber(balance));
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
@@ -213,7 +213,7 @@ class SYRewardPoolContract extends Web3Contract {
   async loadClaimFor(rewardTokenAddress: string): Promise<void> {
     const claim = await this.call('claim', this._isMulti ? [rewardTokenAddress] : [], { from: this.account });
 
-    this.claims.set(rewardTokenAddress, BigNumber.from(claim));
+    this.claims.set(rewardTokenAddress, new BigNumber(claim));
     this.emit(Web3Contract.UPDATE_DATA);
   }
 

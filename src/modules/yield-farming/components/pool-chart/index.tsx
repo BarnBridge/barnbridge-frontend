@@ -133,12 +133,12 @@ const PoolChart: FC<Props> = props => {
             const prevItem = historyMap.get(timestamp);
             const prevDeposits = prevItem?.deposits ?? BigNumber.ZERO;
             const deposits = knownTokensCtx.convertTokenInUSD(
-              BigNumber.from(item.sumDeposits).unscaleBy(token.decimals),
+              new BigNumber(item.sumDeposits).unscaleBy(token.decimals),
               token.symbol,
             );
             const prevWithdrawals = prevItem?.withdrawals ?? BigNumber.ZERO;
             const withdrawals = knownTokensCtx
-              .convertTokenInUSD(BigNumber.from(item.sumWithdrawals).unscaleBy(token.decimals), token.symbol)
+              .convertTokenInUSD(new BigNumber(item.sumWithdrawals).unscaleBy(token.decimals), token.symbol)
               ?.multipliedBy(-1);
 
             historyMap.set(timestamp, {
