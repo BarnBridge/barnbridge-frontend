@@ -75,7 +75,7 @@ const PoolStake: FC = () => {
 
     let value = BigNumber.from(amount);
 
-    if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
+    if (!activeToken || !value || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();
     }
 
