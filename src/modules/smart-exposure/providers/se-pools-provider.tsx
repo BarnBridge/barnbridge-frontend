@@ -11,7 +11,6 @@ import { useWallet } from 'wallets/walletProvider';
 import { InvariantContext } from 'utils/context';
 
 type SEContextType = {
-  ePoolContract: SeEPoolContract;
   ePoolHelperContract: SeEPoolHelperContract;
   ePoolPeripheryContract: SeEPoolPeripheryContract;
 };
@@ -28,9 +27,6 @@ export const SEPoolsProvider: React.FC = props => {
   const walletCtx = useWallet();
   const config = useConfig();
 
-  const ePoolContract = useContract<SeEPoolContract>(config.contracts.se?.ePool!, () => {
-    return new SeEPoolContract(config.contracts.se?.ePool!);
-  });
   const ePoolPeripheryContract = useContract<SeEPoolPeripheryContract>(config.contracts.se?.ePoolPeriphery!, () => {
     return new SeEPoolPeripheryContract(config.contracts.se?.ePoolPeriphery!);
   });
@@ -49,7 +45,6 @@ export const SEPoolsProvider: React.FC = props => {
   }, [walletCtx.account]);
 
   const value = {
-    ePoolContract,
     ePoolHelperContract,
     ePoolPeripheryContract,
   };

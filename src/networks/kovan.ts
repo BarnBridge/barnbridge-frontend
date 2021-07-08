@@ -85,7 +85,6 @@ export const KovanConfig: NetworkConfig = {
       reward: '0xc2d3B609EB967c72AfF4731Ca96375f26926B1F9',
     },
     se: {
-      ePool: '0x4666ffa4b6ae6dc24dbaa627e0d9dfb44c353937',
       ePoolPeriphery: '0x117960a3d29a7ea6cb62c18f1300b0d4b714687c',
       ePoolHelper: '0x240fe3af3c66942f6970b9777992a00055dfff13',
     },
