@@ -44,7 +44,7 @@ class SeEPoolPeripheryContract extends Web3Contract {
   }
 
   getCurrentRatio(ePoolAddress: string, eTokenAddress: string): Promise<BigNumber> {
-    return this.call('currentRatio', [ePoolAddress, eTokenAddress]).then(value => new BigNumber(value));
+    return this.call('currentRatio', [ePoolAddress, eTokenAddress]).then(value => BigNumber.from(value));
   }
 
   getRouter(): Promise<string> {
@@ -53,9 +53,9 @@ class SeEPoolPeripheryContract extends Web3Contract {
 
   getDelta(ePoolAddress: string): Promise<DeltaResult> {
     return this.call('delta', [ePoolAddress]).then(value => ({
-      deltaA: new BigNumber(value[0]),
-      deltaB: new BigNumber(value[1]),
-      rChange: new BigNumber(value[2]),
+      deltaA: BigNumber.from(value[0]),
+      deltaB: BigNumber.from(value[1]),
+      rChange: BigNumber.from(value[2]),
     }));
   }
 
@@ -87,8 +87,8 @@ class SeEPoolPeripheryContract extends Web3Contract {
     totalA: BigNumber,
   ): Promise<TokenATokenBForETokenResult> {
     return this.call('tokenATokenBForTokenA', [ePoolAddress, eTokenAddress, totalA]).then(value => ({
-      amountA: new BigNumber(value[0]),
-      amountB: new BigNumber(value[1]),
+      amountA: BigNumber.from(value[0]),
+      amountB: BigNumber.from(value[1]),
     }));
   }
 
@@ -98,8 +98,8 @@ class SeEPoolPeripheryContract extends Web3Contract {
     totalB: BigNumber,
   ): Promise<TokenATokenBForETokenResult> {
     return this.call('tokenATokenBForTokenB', [ePoolAddress, eTokenAddress, totalB]).then(value => ({
-      amountA: new BigNumber(value[0]),
-      amountB: new BigNumber(value[1]),
+      amountA: BigNumber.from(value[0]),
+      amountB: BigNumber.from(value[1]),
     }));
   }
 
@@ -112,38 +112,38 @@ class SeEPoolPeripheryContract extends Web3Contract {
   // }
 
   getMinInputAmountAForEToken(ePoolAddress: string, eTokenAddress: string, amountA: BigNumber): Promise<BigNumber> {
-    return this.call('minInputAmountAForEToken', [ePoolAddress, eTokenAddress, amountA]).then(
-      value => new BigNumber(value),
+    return this.call('minInputAmountAForEToken', [ePoolAddress, eTokenAddress, amountA]).then(value =>
+      BigNumber.from(value),
     );
   }
 
   getMinInputAmountBForEToken(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-    return this.call('minInputAmountBForEToken', [ePoolAddress, eTokenAddress, amountB]).then(
-      value => new BigNumber(value),
+    return this.call('minInputAmountBForEToken', [ePoolAddress, eTokenAddress, amountB]).then(value =>
+      BigNumber.from(value),
     );
   }
 
   getMaxOutputAmountAForEToken(ePoolAddress: string, eTokenAddress: string, amountA: BigNumber): Promise<BigNumber> {
-    return this.call('maxOutputAmountAForEToken', [ePoolAddress, eTokenAddress, amountA]).then(
-      value => new BigNumber(value),
+    return this.call('maxOutputAmountAForEToken', [ePoolAddress, eTokenAddress, amountA]).then(value =>
+      BigNumber.from(value),
     );
   }
 
   getMaxOutputAmountBForEToken(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-    return this.call('maxOutputAmountBForEToken', [ePoolAddress, eTokenAddress, amountB]).then(
-      value => new BigNumber(value),
+    return this.call('maxOutputAmountBForEToken', [ePoolAddress, eTokenAddress, amountB]).then(value =>
+      BigNumber.from(value),
     );
   }
 
   getETokenForMinInputAmountA(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-    return this.call('eTokenForMinInputAmountA_Unsafe', [ePoolAddress, eTokenAddress, amountB]).then(
-      value => new BigNumber(value),
+    return this.call('eTokenForMinInputAmountA_Unsafe', [ePoolAddress, eTokenAddress, amountB]).then(value =>
+      BigNumber.from(value),
     );
   }
 
   getETokenForMinInputAmountB(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-    return this.call('eTokenForMinInputAmountB_Unsafe', [ePoolAddress, eTokenAddress, amountB]).then(
-      value => new BigNumber(value),
+    return this.call('eTokenForMinInputAmountB_Unsafe', [ePoolAddress, eTokenAddress, amountB]).then(value =>
+      BigNumber.from(value),
     );
   }
 

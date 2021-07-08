@@ -73,7 +73,7 @@ const PoolStake: FC = () => {
   async function handleStakeConfirm({ gasPrice }: any) {
     setConfirmModalVisible(false);
 
-    let value = new BigNumber(amount);
+    let value = BigNumber.from(amount);
 
     if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();

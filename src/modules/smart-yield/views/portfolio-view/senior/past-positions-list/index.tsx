@@ -176,7 +176,7 @@ const PastPositionsList: React.FC<Props> = props => {
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
                   {formatPercent(
-                    new BigNumber(entity.gain)
+                    BigNumber.from(entity.gain)
                       .dividedBy(entity.underlyingIn)
                       .dividedBy(entity.forDays)
                       .multipliedBy(365),
