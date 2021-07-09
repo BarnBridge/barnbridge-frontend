@@ -8,8 +8,7 @@ import { NetworkConfig } from 'networks/types';
 
 const env = process.env.REACT_APP_ENV;
 export const isDevelopmentMode = env === 'development';
-export const isAlphaMode = env === 'alpha';
-export const isProductionMode = env === 'production' || isAlphaMode;
+export const isProductionMode = env === 'production';
 
 export type ConfigContextType = NetworkConfig & {
   links: {

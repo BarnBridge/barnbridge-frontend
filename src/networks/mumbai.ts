@@ -4,9 +4,9 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '42d3fea6a96fc0700858bca99dd8224f785420d5';
-const RPC_HTTPS_URL = 'https://rpc-mumbai.maticvigil.com/v1';
-const RPC_WSS_URL = 'wss://rpc-mumbai.maticvigil.com/ws/v1';
+const RPC_KEY = 'ec7bd85d0babc7ec3e63aa71e7544214914fa01c';
+const RPC_HTTPS_URL = `https://rpc-mumbai.maticvigil.com/v1/${RPC_KEY}`;
+const RPC_WSS_URL = `wss://rpc-mumbai.maticvigil.com/ws/v1/${RPC_KEY}`;
 
 const EXPLORER_KEY = 'CPRM5D2KD52ZZD2T7HFXE99J3WDSJF4P78';
 const EXPLORER_URL = 'https://mumbai.polygonscan.com';
@@ -73,13 +73,13 @@ export const MumbaiConfig: NetworkConfig = {
 
 export const MumbaiMetamaskChain: MetamaskAddEthereumChain = {
   chainId: toHex(MUMBAI_CHAIN_ID),
-  chainName: 'Mumbai Testnet',
+  chainName: 'Matic Testnet Mumbai',
   nativeCurrency: {
     name: 'Matic',
-    symbol: 'MATIC',
+    symbol: 'tMATIC',
     decimals: 18,
   },
-  rpcUrls: [RPC_HTTPS_URL],
+  rpcUrls: ['https://rpc-mumbai.matic.today'],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
@@ -91,7 +91,6 @@ export const MumbaiNetwork: Web3Network = {
     logo: 'testnet-logo',
   },
   rpc: {
-    key: RPC_KEY,
     httpsUrl: RPC_HTTPS_URL,
     wssUrl: RPC_WSS_URL,
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,

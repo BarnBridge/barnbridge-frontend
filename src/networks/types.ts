@@ -72,7 +72,6 @@ export type Web3Network = {
     logo: string;
   };
   rpc: {
-    key: string;
     httpsUrl: string;
     wssUrl: string;
     poolingInterval: number;

@@ -48,14 +48,12 @@ const Web3Provider: FC = props => {
   const [networkSelectVisible, showNetworkSelect] = useState(false);
 
   const httpsWeb3 = useMemo(() => {
-    const url = `${activeNetwork.rpc.httpsUrl}/${activeNetwork.rpc.key}`;
-    const provider = new Web3.providers.HttpProvider(url);
+    const provider = new Web3.providers.HttpProvider(activeNetwork.rpc.httpsUrl);
     return new Web3(provider);
   }, [activeNetwork]);
 
   const wssWeb3 = useMemo(() => {
-    const url = `${activeNetwork.rpc.wssUrl}/${activeNetwork.rpc.key}`;
-    const provider = new Web3.providers.WebsocketProvider(url);
+    const provider = new Web3.providers.WebsocketProvider(activeNetwork.rpc.wssUrl);
     return new Web3(provider);
   }, [activeNetwork]);
 

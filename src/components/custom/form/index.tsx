@@ -1,16 +1,18 @@
-import React, { FC, createContext, useContext } from 'react';
+import { FC, ReactNode, createContext, useCallback, useContext, useMemo } from 'react';
 import { UseFormRegisterReturn, UseFormReturn, useForm } from 'react-hook-form';
 import { validate } from 'valirator';
 
-type VType = Record<string, any>;
+import { InvariantContext } from 'utils/context';
 
-type VFormType<V = VType> = {
+type FieldValues = Record<string, any>;
+
+type FormType<V = FieldValues> = {
   instance: UseFormReturn<V>;
 };
 
-const Context = createContext<VFormType>(undefined as any);
+const Context = createContext<FormType>(InvariantContext<FormType>('Form'));
 
-export function useVForm(): VFormType {
+export function useVForm(): FormType {
   return useContext(Context);
 }
 
@@ -18,11 +20,11 @@ type VFormScheme = {
   [field: string]: Record<string, any>;
 };
 
-type VFormContextType = {
+type ContextValues = {
   scheme?: VFormScheme;
 };
 
-export const VFormValidationResolver = async (values: any, context?: VFormContextType) => {
+export const VFormValidationResolver = async (values: FieldValues, context?: ContextValues) => {
   const validationResult = await validate(context?.scheme, values);
   const errors = validationResult.getErrors();
 
@@ -43,15 +45,16 @@ export const VFormValidationResolver = async (values: any, context?: VFormContex
   };
 };
 
-export type VFormProps = {
+export type FormProps = {
   validationScheme?: VFormScheme;
   watch?: string[];
   onSubmit: (values: any) => void;
 };
 
-export const VForm: FC<VFormProps> = props => {
+export const VForm: FC<FormProps> = props => {
   const { children, validationScheme, watch } = props;
-  const rhForm = useForm({
+
+  const rhForm = useForm<FieldValues, ContextValues>({
     resolver: VFormValidationResolver,
     context: {
       scheme: validationScheme,
@@ -62,13 +65,16 @@ export const VForm: FC<VFormProps> = props => {
     rhForm.watch(key);
   });
 
-  function handleSubmit() {
+  const handleSubmit = useCallback(() => {
     rhForm.handleSubmit(props.onSubmit);
-  }
+  }, [rhForm, props.onSubmit]);
 
-  const value: VFormType = {
-    instance: rhForm,
-  };
+  const value: FormType = useMemo(
+    () => ({
+      instance: rhForm,
+    }),
+    [rhForm],
+  );
 
   return (
     <Context.Provider value={value}>
@@ -77,14 +83,16 @@ export const VForm: FC<VFormProps> = props => {
   );
 };
 
-export type VFormItemProps = {
+export type FormItemProps = {
   name: string;
-  children: (field: UseFormRegisterReturn) => React.ReactNode;
+  children: (field: UseFormRegisterReturn) => ReactNode;
 };
 
-export const VFormItem: FC<VFormItemProps> = props => {
+export const VFormItem: FC<FormItemProps> = props => {
   const { children, name } = props;
-  const vForm = useVForm();
 
-  return <>{children(vForm.instance.register(name))}</>;
+  const vForm = useVForm();
+  const field = vForm.instance.register(name);
+
+  return <>{children(field)}</>;
 };

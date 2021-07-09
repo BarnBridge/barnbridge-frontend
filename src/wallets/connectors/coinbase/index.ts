@@ -18,7 +18,7 @@ const CoinbaseWalletConfig: BaseWalletConfig = {
     const darkMode = args?.darkMode ?? false;
 
     return new WalletLinkConnector({
-      url: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+      url: network.rpc.httpsUrl,
       appName: network.config.wallets.coinbaseAppName,
       appLogoUrl: '',
       darkMode,

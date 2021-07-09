@@ -5,8 +5,8 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
 const RPC_KEY = '5aa7739d0e474570a7561dd546a7dfe3';
-const RPC_HTTPS_URL = 'https://goerli.infura.io/v3';
-const RPC_WSS_URL = 'wss://goerli.infura.io/ws/v3';
+const RPC_HTTPS_URL = `https://goerli.infura.io/v3/${RPC_KEY}`;
+const RPC_WSS_URL = `wss://goerli.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
 const EXPLORER_URL = 'https://goerli.etherscan.com';
@@ -84,7 +84,7 @@ export const GoerliMetamaskChain: MetamaskAddEthereumChain = {
     symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: [RPC_HTTPS_URL],
+  rpcUrls: ['https://goerli.infura.io'],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
@@ -96,7 +96,6 @@ export const GoerliNetwork: Web3Network = {
     logo: 'testnet-logo',
   },
   rpc: {
-    key: RPC_KEY,
     httpsUrl: RPC_HTTPS_URL,
     wssUrl: RPC_WSS_URL,
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,

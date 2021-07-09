@@ -13,7 +13,7 @@ const WalletConnectConfig: BaseWalletConfig = {
   factory(network: Web3Network): AbstractConnector {
     return new WalletConnectConnector({
       rpc: {
-        [network.meta.chainId]: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+        [network.meta.chainId]: network.rpc.httpsUrl,
       },
       pollingInterval: network.rpc.poolingInterval,
       bridge: network.config.wallets.walletConnectBridge,

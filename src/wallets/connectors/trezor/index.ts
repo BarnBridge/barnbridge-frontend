@@ -14,7 +14,7 @@ const TrezorWalletConfig: BaseWalletConfig = {
   factory(network: Web3Network): AbstractConnector {
     return new TrezorConnector({
       chainId: network.meta.chainId,
-      url: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+      url: network.rpc.httpsUrl,
       pollingInterval: network.rpc.poolingInterval,
       manifestEmail: network.config.wallets.trezorEmail,
       manifestAppUrl: network.config.wallets.trezorAppUrl,

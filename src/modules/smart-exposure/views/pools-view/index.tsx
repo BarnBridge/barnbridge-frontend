@@ -23,7 +23,7 @@ const PoolsView: React.FC = () => {
 
   useEffect(() => {
     seAPI.fetchPools().then(result => {
-      setPools(result);
+      setPools(result ?? []);
     });
   }, []);
 
