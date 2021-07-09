@@ -67,6 +67,7 @@ export const MumbaiConfig: NetworkConfig = {
     usdt: '',
     susd: '',
     dai: '',
+    stkaave: '',
   },
   contracts: {},
 };

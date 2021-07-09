@@ -1,30 +1,40 @@
-import { FC, ReactNode, createContext, useCallback, useContext, useMemo } from 'react';
-import { UseFormRegisterReturn, UseFormReturn, useForm } from 'react-hook-form';
+import { FormEvent, ReactElement, createContext, useCallback, useContext } from 'react';
+import { Controller, FieldValues, useForm as rhUseForm, UseFormReturn as rhUseFormReturn } from 'react-hook-form';
+import { UseFormStateReturn } from 'react-hook-form/dist/types';
+import { ControllerFieldState, ControllerRenderProps } from 'react-hook-form/dist/types/controller';
+import { Resolver, ResolverResult } from 'react-hook-form/dist/types/resolvers';
 import { validate } from 'valirator';
+
+import { CP } from 'components/types.tx';
 
 import { InvariantContext } from 'utils/context';
 
-type FieldValues = Record<string, any>;
-
-type FormType<V = FieldValues> = {
-  instance: UseFormReturn<V>;
-};
-
-const Context = createContext<FormType>(InvariantContext<FormType>('Form'));
-
-export function useVForm(): FormType {
-  return useContext(Context);
-}
-
-type VFormScheme = {
+type SchemeType = {
   [field: string]: Record<string, any>;
 };
 
-type ContextValues = {
-  scheme?: VFormScheme;
+type FormContext = {
+  scheme?: SchemeType;
 };
 
-export const VFormValidationResolver = async (values: FieldValues, context?: ContextValues) => {
+type UseFormReturn<V extends FieldValues = FieldValues> = rhUseFormReturn<V> & {
+  submit: () => void | Promise<void>;
+};
+
+type InternalContextType<V extends FieldValues = FieldValues> = {
+  instance: UseFormReturn<V>;
+};
+
+const InternalContext = createContext<InternalContextType>(InvariantContext('Form'));
+
+function VFormEmptyResolver(values: FieldValues): ResolverResult {
+  return {
+    values,
+    errors: {},
+  };
+}
+
+export async function VFormValidationResolver(values: FieldValues, context?: FormContext): Promise<ResolverResult> {
   const validationResult = await validate(context?.scheme, values);
   const errors = validationResult.getErrors();
 
@@ -43,56 +53,75 @@ export const VFormValidationResolver = async (values: FieldValues, context?: Con
       return res;
     }, {} as Record<string, any>),
   };
+}
+
+type useFormProps = {
+  validationScheme?: SchemeType;
+  onSubmit: () => void | Promise<void>;
 };
 
-export type FormProps = {
-  validationScheme?: VFormScheme;
-  watch?: string[];
-  onSubmit: (values: any) => void;
-};
+export function useForm<V extends FieldValues = FieldValues>(props: useFormProps): UseFormReturn<V> {
+  const { validationScheme, onSubmit } = props;
 
-export const VForm: FC<FormProps> = props => {
-  const { children, validationScheme, watch } = props;
+  const resolver = (validationScheme ? VFormValidationResolver : VFormEmptyResolver) as Resolver<V, FormContext>;
 
-  const rhForm = useForm<FieldValues, ContextValues>({
-    resolver: VFormValidationResolver,
+  const rhForm = rhUseForm<V, FormContext>({
+    mode: 'all',
+    resolver,
     context: {
       scheme: validationScheme,
     },
   });
 
-  watch?.forEach(key => {
-    rhForm.watch(key);
+  const submit = rhForm.handleSubmit(onSubmit);
+
+  return Object.assign(rhForm, {
+    submit,
   });
+}
 
-  const handleSubmit = useCallback(() => {
-    rhForm.handleSubmit(props.onSubmit);
-  }, [rhForm, props.onSubmit]);
+export type FormProps = {
+  form: UseFormReturn<any>;
+};
 
-  const value: FormType = useMemo(
-    () => ({
-      instance: rhForm,
-    }),
-    [rhForm],
+export function Form(props: CP<FormProps>) {
+  const { children, className, form } = props;
+
+  const handleSubmit = useCallback(
+    (ev: FormEvent) => {
+      ev.preventDefault();
+      form.submit();
+    },
+    [form.submit],
   );
+
+  const value: InternalContextType = {
+    instance: form,
+  };
 
   return (
-    <Context.Provider value={value}>
-      <form onSubmit={handleSubmit}>{children}</form>
-    </Context.Provider>
+    <InternalContext.Provider value={value as InternalContextType}>
+      <form className={className} onSubmit={handleSubmit}>
+        {children}
+      </form>
+    </InternalContext.Provider>
   );
+}
+
+export type FormItemRender = {
+  field: ControllerRenderProps<FieldValues, string>;
+  fieldState: ControllerFieldState;
+  formState: UseFormStateReturn<FieldValues>;
 };
 
 export type FormItemProps = {
   name: string;
-  children: (field: UseFormRegisterReturn) => ReactNode;
+  children: (field: FormItemRender) => ReactElement;
 };
 
-export const VFormItem: FC<FormItemProps> = props => {
+export function FormItem(props: CP<FormItemProps>) {
   const { children, name } = props;
+  const { instance } = useContext(InternalContext);
 
-  const vForm = useVForm();
-  const field = vForm.instance.register(name);
-
-  return <>{children(field)}</>;
-};
+  return <Controller name={name} control={instance.control} render={children} />;
+}

@@ -66,6 +66,7 @@ export const GoerliConfig: NetworkConfig = {
     usdt: '',
     susd: '',
     dai: '',
+    stkaave: '',
   },
   contracts: {
     dao: {

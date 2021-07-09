@@ -5,7 +5,6 @@ import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
-import { isProductionMode } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
@@ -83,27 +82,15 @@ const PoolsProvider: React.FC = props => {
 
   const getAaveIncentivesAPY = useCallback(
     async (cTokenAddress: string, uDecimals: number, uSymbol: string): Promise<BigNumber | undefined> => {
-      let aTokenAddress = '';
-      let aTokenDecimals = 0;
-
-      if (isProductionMode) {
-        aTokenAddress = cTokenAddress;
-        aTokenDecimals = uDecimals;
-      } else {
-        const uToken = getTokenBySymbol(uSymbol);
-
-        if (uToken) {
-          aTokenAddress = uToken.address;
-          aTokenDecimals = uToken.decimals;
-        }
-      }
+      const aTokenAddress = cTokenAddress;
+      const aTokenDecimals = uDecimals;
 
       const aToken = new SYAaveTokenContract(aTokenAddress); // TODO: re-think
       aToken.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
       await aToken.loadCommon();
 
-      const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), stkAaveToken.symbol, ethToken.symbol);
-      const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, ethToken.symbol);
+      const aTokenPriceInEth = convertTokenIn(1, stkAaveToken.symbol, ethToken.symbol);
+      const uTokenPriceInEth = convertTokenIn(1, uSymbol, ethToken.symbol);
 
       return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
     },
