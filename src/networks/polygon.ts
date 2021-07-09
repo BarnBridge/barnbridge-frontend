@@ -68,6 +68,7 @@ export const PolygonConfig: NetworkConfig = {
     usdt: '',
     susd: '',
     dai: '',
+    stkaave: '',
   },
   contracts: {
     se: {

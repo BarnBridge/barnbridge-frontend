@@ -1,8 +1,9 @@
-import { CSSProperties, FC } from 'react';
+import { CSSProperties, FC, ReactNode } from 'react';
 
-export type FCx<P = {}> = FC<
-  P & {
-    className?: string;
-    style?: CSSProperties;
-  }
->;
+export type CP<P = {}> = P & {
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
+export type FCx<P = {}> = FC<CP<P>>;

@@ -52,7 +52,7 @@ export type NetworkConfig = {
     | 'bb_crdai',
     string
   >;
-  feeds: Record<'btc' | 'eth' | 'bond' | 'univ2' | 'usdc' | 'usdt' | 'susd' | 'dai', string>;
+  feeds: Record<'btc' | 'eth' | 'bond' | 'univ2' | 'usdc' | 'usdt' | 'susd' | 'dai' | 'stkaave', string>;
   contracts: {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
     dao?: Record<'governance' | 'barn' | 'reward', string>;

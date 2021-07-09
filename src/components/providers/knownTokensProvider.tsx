@@ -232,8 +232,8 @@ const KnownTokensProvider: FC = props => {
         address: config.tokens.stkaave,
         decimals: 18,
         icon: 'static/token-staked-aave',
-        priceFeed: config.tokens.stkaave, // stkAAVE -> USDC
-        pricePath: [KnownTokens.USDC],
+        priceFeed: config.feeds.stkaave, // stkAAVE -> USD
+        pricePath: [],
         contract: stkaaveContract,
       },
       {
@@ -563,8 +563,6 @@ const KnownTokensProvider: FC = props => {
             case KnownTokens.bbaUSDT:
             case KnownTokens.bbaGUSD:
               token.price = await getJATokenPrice(token.symbol);
-              break;
-            case KnownTokens.STK_AAVE:
               break;
             default:
               token.price = await getFeedPrice(token.symbol);
