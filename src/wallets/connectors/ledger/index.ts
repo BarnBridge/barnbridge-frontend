@@ -26,7 +26,7 @@ const LedgerWalletConfig: BaseWalletConfig = {
 
     return new LedgerConnector({
       chainId: network.meta.chainId,
-      url: `${network.rpc.httpsUrl}/${network.rpc.key}`,
+      url: network.rpc.httpsUrl,
       pollingInterval: network.rpc.poolingInterval,
       baseDerivationPath,
     });

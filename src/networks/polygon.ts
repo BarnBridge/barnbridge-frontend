@@ -1,13 +1,13 @@
 import { toHex } from 'web3-utils';
 
-import { isAlphaMode } from 'components/providers/configProvider';
+import { isDevelopmentMode } from 'components/providers/configProvider';
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
-const RPC_HTTPS_URL = 'https://rpc-mainnet.maticvigil.com';
-const RPC_WSS_URL = 'wss://rpc-mainnet.maticvigil.com';
+const RPC_KEY = 'ec7bd85d0babc7ec3e63aa71e7544214914fa01c';
+const RPC_HTTPS_URL = `https://rpc-mainnet.maticvigil.com/v1/${RPC_KEY}`;
+const RPC_WSS_URL = `wss://rpc-mainnet.maticvigil.com/ws/v1/${RPC_KEY}`;
 
 const EXPLORER_KEY = 'CPRM5D2KD52ZZD2T7HFXE99J3WDSJF4P78';
 const EXPLORER_URL = 'https://polygonscan.com';
@@ -16,7 +16,7 @@ const EXPLORER_API_URL = 'https://api.polygonscan.com';
 export const POLYGON_CHAIN_ID = 137;
 
 export const PolygonConfig: NetworkConfig = {
-  title: isAlphaMode ? 'BarnBridge Alpha Polygon' : 'BarnBridge Polygon',
+  title: isDevelopmentMode ? 'BarnBridge Alpha Polygon' : 'BarnBridge Polygon',
   features: {
     smartYield: true,
     smartExposure: true,
@@ -29,7 +29,7 @@ export const PolygonConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isAlphaMode ? 'https://alpha.polygon.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha.polygon.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400000,
@@ -37,7 +37,7 @@ export const PolygonConfig: NetworkConfig = {
   tokens: {
     wbtc: '',
     weth: '',
-    bond: '',
+    bond: '0xA041544fe2BE56CCe31Ebb69102B965E06aacE80',
     univ2: '',
     usdc: '',
     usdt: '',
@@ -79,13 +79,13 @@ export const PolygonConfig: NetworkConfig = {
 
 export const PolygonMetamaskChain: MetamaskAddEthereumChain = {
   chainId: toHex(POLYGON_CHAIN_ID),
-  chainName: 'Matic',
+  chainName: 'Matic(Polygon) Mainnet',
   nativeCurrency: {
     name: 'Matic',
     symbol: 'MATIC',
     decimals: 18,
   },
-  rpcUrls: [RPC_HTTPS_URL],
+  rpcUrls: ['https://rpc-mainnet.matic.network'],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
@@ -93,11 +93,10 @@ export const PolygonNetwork: Web3Network = {
   id: 'polygon',
   meta: {
     chainId: POLYGON_CHAIN_ID,
-    name: 'Polygon Mainnet',
+    name: isDevelopmentMode ? 'Polygon Mainnet (Alpha)' : 'Polygon Mainnet',
     logo: 'polygon-logo',
   },
   rpc: {
-    key: RPC_KEY,
     httpsUrl: RPC_HTTPS_URL,
     wssUrl: RPC_WSS_URL,
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
