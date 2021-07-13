@@ -13,6 +13,10 @@ import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
+type FormType = {
+  amount: string;
+};
+
 const PortfolioWithdraw: FC = () => {
   const { projectToken } = useKnownTokens();
   const daoCtx = useDAO();
@@ -28,7 +32,7 @@ const PortfolioWithdraw: FC = () => {
   const isLocked = (userLockedUntil ?? 0) > Date.now();
   const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
 
-  const form = useForm<{ amount: string }>({
+  const form = useForm<FormType>({
     validationScheme: {
       amount: {
         rules: {

@@ -1,60 +1,31 @@
-import React from 'react';
-import * as Antd from 'antd';
-import BigNumber from 'bignumber.js';
-import cn from 'classnames';
+import React, { FC, useEffect, useState } from 'react';
+import classnames from 'classnames';
 import addDays from 'date-fns/addDays';
+import addMinutes from 'date-fns/addMinutes';
 import addMonths from 'date-fns/addMonths';
-import addSeconds from 'date-fns/addSeconds';
+import addYears from 'date-fns/addYears';
+import formatDuration from 'date-fns/formatDuration';
 import getUnixTime from 'date-fns/getUnixTime';
-import isAfter from 'date-fns/isAfter';
-import isBefore from 'date-fns/isBefore';
+import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
-import Button from 'components/antd/button';
 import DatePicker from 'components/antd/datepicker';
-import Form from 'components/antd/form';
-import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import { Form, FormItem, useForm } from 'components/custom/form';
+import Icon, { IconNames } from 'components/custom/icon';
+import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
-// import WalletLockChart from './components/wallet-lock-chart';
-import WalletLockConfirmModal from 'modules/governance/views/portfolio-view/portfolio-lock/components/wallet-lock-confirm-modal';
 
-import { getFormattedDuration, isValidAddress } from 'utils';
+import { getFormattedDuration } from 'utils';
 
-type WalletLockViewState = {
-  lockDurationOption?: string;
-  showLockConfirmModal: boolean;
-  saving: boolean;
-};
-
-const InitialState: WalletLockViewState = {
-  lockDurationOption: undefined,
-  showLockConfirmModal: false,
-  saving: false,
-};
-
-type LockFormData = {
-  lockEndDate?: Date;
-  gasPrice?: {
-    value: number;
-  };
-};
-
-const InitialFormValues: LockFormData = {
-  lockEndDate: undefined,
-  gasPrice: undefined,
-};
-
-const DURATION_1_WEEK = '1w';
-const DURATION_1_MONTH = '1mo';
-const DURATION_3_MONTH = '3mo';
-const DURATION_6_MONTH = '6mo';
-const DURATION_1_YEAR = '1y';
+const DURATION_1_WEEK = '1 w';
+const DURATION_1_MONTH = '1 mo';
+const DURATION_3_MONTH = '3 mo';
+const DURATION_6_MONTH = '6 mo';
+const DURATION_1_YEAR = '1 y';
 
 const DURATION_OPTIONS: string[] = [
   DURATION_1_WEEK,
@@ -81,183 +52,201 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
   }
 }
 
-const PortfolioLock: React.FC = () => {
-  const [form] = Antd.Form.useForm<LockFormData>();
+type FormType = {
+  lockStartDate: Date | undefined;
+  lockEndDate: Date | undefined;
+};
 
+const PortfolioLock: FC = () => {
   const { projectToken } = useKnownTokens();
   const daoCtx = useDAO();
-  const [state, setState] = useMergeState<WalletLockViewState>(InitialState);
 
-  const { balance: stakedBalance, userLockedUntil, userDelegatedTo } = daoCtx.daoBarn;
+  const [isLoading, setLoading] = useState(false);
+  const [isSubmitting, setSubmitting] = useState(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
-  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
-  const hasDelegation = isValidAddress(userDelegatedTo);
-  const formDisabled = !hasStakedBalance || hasDelegation;
+  const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
 
-  const minAllowedDate = React.useMemo(() => {
-    const min = Math.max(userLockedUntil ?? 0, Date.now());
+  const form = useForm<FormType>({
+    validationScheme: {
+      lockEndDate: {
+        rules: {
+          required: true,
+          min: (value: Date | undefined) => {
+            return addMinutes(Date.now(), 1).valueOf() < (value?.valueOf() ?? 0);
+          },
+          max: (value: Date | undefined) => {
+            return addYears(Date.now(), 1).valueOf() > (value?.valueOf() ?? 0);
+          },
+        },
+        messages: {
+          required: 'Required',
+          min: 'Should be more than 1 minute',
+          max: 'Should be less than 1 year',
+        },
+      },
+    },
+    onSubmit: () => {
+      setConfirmModalVisible(true);
+    },
+  });
 
-    return addSeconds(min, 1);
-  }, [userLockedUntil]);
-
-  const maxAllowedDate = addSeconds(addDays(Date.now(), 365), 1);
-
-  function handleValuesChange(changedValues: Partial<LockFormData>) {
-    if (changedValues.lockEndDate !== undefined) {
-      setState({
-        lockDurationOption: undefined,
-      });
-    }
-  }
-
-  function handleFinish() {
-    setState({ showLockConfirmModal: true });
-  }
-
-  async function handleSubmit(values: LockFormData) {
-    const { lockEndDate, gasPrice } = values;
-
-    if (!lockEndDate || !gasPrice) {
-      return;
-    }
-
-    setState({ saving: true });
+  async function loadData() {
+    setLoading(true);
 
     try {
-      await daoCtx.daoBarn.lock(getUnixTime(lockEndDate), gasPrice.value);
-      form.setFieldsValue(InitialFormValues);
-      // daoCtx.daoBarn.reload(); /// TODO: check
+      await daoCtx.daoBarn.loadUserData();
+      const { userLockedUntil } = daoCtx.daoBarn;
+      let lockEndDate = userLockedUntil ? new Date(userLockedUntil * 1_000) : undefined;
+
+      if (lockEndDate && lockEndDate.valueOf() <= Date.now()) {
+        lockEndDate = undefined;
+      }
+
+      form.reset({
+        lockEndDate,
+      });
     } catch {}
 
-    setState({ saving: false });
+    setLoading(false);
   }
 
-  React.useEffect(() => {
-    form.setFieldsValue({
-      lockEndDate: userLockedUntil && userLockedUntil > Date.now() ? new Date(userLockedUntil) : undefined,
-    });
-  }, [userLockedUntil]);
+  useEffect(() => {
+    loadData().catch(Error);
+  }, []);
+
+  const { formState, watch } = form;
+  const lockEndDate = watch('lockEndDate');
+
+  const canSubmit = formState.isDirty && !isSubmitting;
+
+  async function doLock(lockUntil: Date | undefined, gasPrice: number) {
+    setSubmitting(true);
+
+    try {
+      if (lockUntil) {
+        const timestamp = getUnixTime(lockUntil);
+
+        if (timestamp && timestamp > 0) {
+          await daoCtx.daoBarn.lock(timestamp, gasPrice);
+          await loadData();
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    setSubmitting(false);
+  }
+
+  function handleCancel() {
+    setConfirmModalVisible(false);
+  }
+
+  async function handleConfirm(gasPrice: number) {
+    setConfirmModalVisible(false);
+    await doLock(lockEndDate, gasPrice);
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-24" style={{ minHeight: '518px' }}>
+        <Spinner />
+      </div>
+    );
+  }
 
   return (
-    <div className="card">
-      <Grid className="card-header" flow="col" gap={24} colsTemplate="1fr 1fr 1fr 1fr 42px" align="start">
-        <Grid flow="col" gap={12}>
-          <Icon name={projectToken.icon!} width={40} height={40} />
-          <Text type="p1" weight="semibold" color="primary">
-            {projectToken.symbol}
-          </Text>
-        </Grid>
-
-        <Grid flow="row" gap={4}>
-          <Text type="small" weight="semibold" color="secondary">
-            Staked Balance
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatToken(stakedBalance)}
-          </Text>
-        </Grid>
-
-        <Grid flow="row" gap={4}>
-          <Text type="small" weight="semibold" color="secondary">
-            Lock Duration
-          </Text>
-          <UseLeftTime end={userLockedUntil ?? 0} delay={1_000}>
-            {leftTime => (
-              <Text type="p1" weight="semibold" color="primary">
-                {leftTime > 0 ? getFormattedDuration(0, userLockedUntil) : '0s'}
+    <>
+      <Form form={form} className="flex flow-row row-gap-32 p-24" disabled={isSubmitting}>
+        <div className="container-box flex flow-col col-gap-44">
+          <div className="flex flow-row row-gap-4">
+            <Text type="small" weight="semibold" color="secondary">
+              Portfolio balance
+            </Text>
+            <div className="flex flow-col col-gap-8 align-center">
+              <Text type="p1" weight="bold" color="primary">
+                {formatToken(stakedBalance) ?? '-'}
               </Text>
-            )}
-          </UseLeftTime>
-        </Grid>
-
-        <div />
-      </Grid>
-
-      <Form
-        className="p-24"
-        form={form}
-        initialValues={InitialFormValues}
-        validateTrigger={['onSubmit']}
-        onValuesChange={handleValuesChange}
-        onFinish={handleFinish}>
-        <Grid flow="row" gap={32}>
-          <Form.Item label="Add lock duration" dependencies={['lockEndDate']}>
-            {() => (
-              <div className="flexbox-list" style={{ '--gap': '8px' } as React.CSSProperties}>
-                {DURATION_OPTIONS.map(opt => (
+              <Icon name={projectToken.icon as IconNames} />
+            </div>
+          </div>
+          <div className="flex flow-row row-gap-4">
+            <Text type="small" weight="semibold" color="secondary">
+              Lock duration
+            </Text>
+            <div className="flex flow-col col-gap-8 align-center">
+              <UseLeftTime end={userLockedUntil ?? new Date()} delay={1_000}>
+                {leftTime => (
+                  <Text type="p1" weight="bold" color="primary">
+                    {getFormattedDuration(leftTime / 1_000)?.trim() || '0s'}
+                  </Text>
+                )}
+              </UseLeftTime>
+            </div>
+          </div>
+        </div>
+        <FormItem name="lockEndDate" label="Lock end date">
+          {({ field: { ref, ...field } }) => (
+            <div className="flex flow-row row-gap-16">
+              <DatePicker showTime showNow={false} format="DD/MM/YYYY HH:mm" size="large" {...field} />
+              <div className="flexbox-grid" style={{ '--gap': '8px' } as React.CSSProperties}>
+                {DURATION_OPTIONS.map(item => (
                   <button
-                    key={opt}
+                    key={item}
                     type="button"
-                    className={cn('button-ghost-monochrome ph-24 pv-16', {
-                      selected: state.lockDurationOption === opt,
-                    })}
-                    disabled={
-                      formDisabled ||
-                      state.saving ||
-                      (getLockEndDate(minAllowedDate, opt) ?? new Date()) > maxAllowedDate
-                    }
+                    className={classnames(
+                      'flex justify-center ph-24 pv-16',
+                      field.value?.valueOf() === getLockEndDate(new Date(), item)?.valueOf()
+                        ? 'button-primary'
+                        : 'button-ghost-monochrome',
+                    )}
                     onClick={() => {
-                      form.setFieldsValue({
-                        lockEndDate: getLockEndDate(new Date(), opt),
-                      });
-                      setState({
-                        lockDurationOption: opt,
-                      });
+                      form.updateValue('lockEndDate', getLockEndDate(new Date(), item));
                     }}>
-                    <Text type="p1" weight="semibold" color="primary">
-                      {opt}
-                    </Text>
+                    {item}
                   </button>
                 ))}
               </div>
-            )}
-          </Form.Item>
-          <Text type="p1">OR</Text>
-          <Form.Item
-            name="lockEndDate"
-            label="Manual choose your lock end date"
-            rules={[{ required: true, message: 'Required' }]}>
-            <DatePicker
-              showTime
-              showNow={false}
-              disabledDate={(date: Date) => isBefore(date, minAllowedDate) || isAfter(date, maxAllowedDate)}
-              format="DD/MM/YYYY HH:mm"
-              size="large"
-              disabled={formDisabled || state.saving}
-            />
-          </Form.Item>
-          <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
-
-          {/* <Form.Item shouldUpdate> */}
-          {/*  {({ getFieldsValue }) => { */}
-          {/*    const { lockEndDate } = getFieldsValue(); */}
-          {/*    return lockEndDate ? <WalletLockChart lockEndDate={lockEndDate} /> : null; */}
-          {/*  }} */}
-          {/* </Form.Item> */}
-
-          <Button
-            type="primary"
-            htmlType="submit"
-            loading={state.saving}
-            disabled={formDisabled}
-            style={{ justifySelf: 'start' }}>
+            </div>
+          )}
+        </FormItem>
+        <Alert message="All locked balances will be unavailable for withdrawal until the lock timer ends. All future deposits will be locked for the same time." />
+        <div className="flex flow-col col-gap-12 align-center justify-end">
+          <button type="submit" className="button-primary" disabled={!canSubmit}>
+            {isSubmitting && <Spinner className="mr-4" />}
             Lock
-          </Button>
-        </Grid>
+          </button>
+        </div>
       </Form>
 
-      {state.showLockConfirmModal && (
-        <WalletLockConfirmModal
-          balance={stakedBalance}
-          duration={form.getFieldsValue().lockEndDate!.valueOf()}
-          onCancel={() => setState({ showLockConfirmModal: false })}
-          onOk={() => {
-            setState({ showLockConfirmModal: false });
-            return handleSubmit(form.getFieldsValue());
-          }}
+      {confirmModalVisible && (
+        <TxConfirmModal
+          title="Are you sure you want to lock your balance?"
+          header={
+            <div className="flex flow-row row-gap-16">
+              <Text type="p2" weight="bold" color="secondary">
+                You are about to lock{' '}
+                <span className="primary-color">
+                  {formatToken(stakedBalance)} {projectToken.symbol}
+                </span>{' '}
+                for{' '}
+                <span className="primary-color">{getFormattedDuration(Date.now(), lockEndDate?.valueOf() ?? 0)}</span>.
+                You cannot undo this or partially lock your balance. Locked tokens will be unavailable for withdrawal
+                until the lock timer ends. All future deposits you make will be locked for the same time.
+              </Text>
+              <Text type="p2" weight="bold" color="primary">
+                The multiplier you get for locking tokens only applies to your voting power, it does not earn more
+                rewards.
+              </Text>
+            </div>
+          }
+          submitText="Lock balance"
+          onCancel={handleCancel}
+          onConfirm={({ gasPrice }) => handleConfirm(gasPrice)}
         />
       )}
-    </div>
+    </>
   );
 };
 

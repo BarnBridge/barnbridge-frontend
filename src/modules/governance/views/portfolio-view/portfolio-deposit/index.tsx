@@ -16,6 +16,10 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import WalletDepositConfirmModal from 'modules/governance/views/portfolio-view/portfolio-deposit/components/wallet-deposit-confirm-modal';
 
+type FormType = {
+  amount: string;
+};
+
 const PortfolioDeposit: FC = () => {
   const config = useConfig();
   const { projectToken } = useKnownTokens();
@@ -33,7 +37,7 @@ const PortfolioDeposit: FC = () => {
   const barnAllowance = projectTokenContract.getAllowanceOf(config.contracts.dao?.barn!);
   const isLocked = (userLockedUntil ?? 0) > Date.now();
 
-  const form = useForm<{ amount: string }>({
+  const form = useForm<FormType>({
     validationScheme: {
       amount: {
         rules: {
