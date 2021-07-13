@@ -48,6 +48,7 @@ export const KovanConfig: NetworkConfig = {
     gusd: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
     dai: '0xEa8BE82DF1519D4a25E2539bcA0342a1203CD591',
     stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
+    wmatic: '',
     ausdc: '0xe12AFeC5aa12Cf614678f9bFeeB98cA9Bb95b5B0',
     ausdt: '0xFF3c8bc103682FA918c954E84F5056aB4DD5189d',
     agusd: '0xD37EE7e4f452C6638c96536e68090De8cBcdb583',
@@ -72,6 +73,7 @@ export const KovanConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {
     yf: {

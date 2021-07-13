@@ -64,7 +64,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
               {formatPercent(aggregated)}
             </Text>
             {Boolean(aggregatedApr) && (
-              <AprLabel icons={[projectToken.icon!, stkAaveToken.icon!]}> +{formatPercent(aggregatedApr)} APR</AprLabel>
+              <AprLabel icons={[projectToken.icon!, stkAaveToken.icon!]}> +{formatPercent(aggregatedApr ?? 0)} APR</AprLabel>
             )}
           </div>
         )}

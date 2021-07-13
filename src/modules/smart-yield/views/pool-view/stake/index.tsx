@@ -137,7 +137,7 @@ const StakeForm: FC = () => {
                   />
                 }
                 disabled={formDisabled}
-                max={maxAmountUnscaled?.toNumber()}
+                max={maxAmountUnscaled}
                 decimals={smartYield.decimals}
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
@@ -300,7 +300,7 @@ const UnstakeForm: FC = () => {
                   />
                 }
                 disabled={formDisabled}
-                max={maxAmountUnscaled?.toNumber()}
+                max={maxAmountUnscaled}
                 decimals={smartYield.decimals}
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}

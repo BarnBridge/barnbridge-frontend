@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 
 import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
@@ -130,7 +131,7 @@ const ChangeTrancheView: React.FC = () => {
             before={<IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} />}
             value={tokenState}
             onChange={setTokenState}
-            max={9.789}
+            max={BigNumber.ZERO}
             placeholder={`0 (Max ${9.789})`}
             className="mb-40"
             slider

@@ -49,6 +49,7 @@ export const MainnetConfig: NetworkConfig = {
     gusd: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
     dai: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
+    wmatic: '',
     ausdc: '0xBcca60bB61934080951369a648Fb03DF4F96263C',
     ausdt: '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
     agusd: '0xD37EE7e4f452C6638c96536e68090De8cBcdb583',
@@ -73,6 +74,7 @@ export const MainnetConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {
     yf: {

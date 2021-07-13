@@ -248,7 +248,7 @@ const SeniorTranche: React.FC = () => {
             className="mb-24"
             before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
-            max={maxAmount?.toNumber() ?? 0}
+            max={maxAmount}
             disabled={state.isSaving}
             decimals={pool?.underlyingDecimals}
             value={amount}

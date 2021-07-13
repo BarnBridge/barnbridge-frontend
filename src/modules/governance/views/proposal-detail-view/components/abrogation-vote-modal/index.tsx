@@ -64,7 +64,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
   const [form] = AntdForm.useForm<FormState>();
 
   async function handleSubmit(values: FormState) {
-    if (!abrogationCtx.abrogation && voteState !== VoteAbrogationState.VoteInitiate) {
+    if (voteState !== VoteAbrogationState.VoteInitiate && !abrogationCtx.abrogation) {
       return;
     }
 
@@ -103,7 +103,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
         changeOption: abrogationCtx.receipt?.support,
       });
     }
-  }, [voteState, abrogationCtx.receipt]);
+  }, [voteState, abrogationCtx.receipt]); /// TODO
 
   return (
     <Modal
