@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC, forwardRef } from 'react';
 import { InputProps as AntdInputProps } from 'antd/lib/input/Input';
 import cn from 'classnames';
 import { isAddress } from 'web3-utils';
@@ -10,7 +10,7 @@ import s from './s.module.scss';
 
 export type TokenInputProps = AntdInputProps;
 
-const TokenInput: React.FC<TokenInputProps> = props => {
+export const TokenInput: FC<TokenInputProps> = forwardRef<HTMLInputElement, TokenInputProps>(props => {
   const { className, value, ...inputProps } = props;
 
   const addonBefore = React.useMemo(
@@ -27,6 +27,6 @@ const TokenInput: React.FC<TokenInputProps> = props => {
       {...inputProps}
     />
   );
-};
+});
 
 export default TokenInput;

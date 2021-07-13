@@ -9,7 +9,7 @@ const RPC_HTTPS_URL = `https://goerli.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://goerli.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
-const EXPLORER_URL = 'https://goerli.etherscan.com';
+const EXPLORER_URL = 'https://goerli.etherscan.io';
 const EXPLORER_API_URL = 'https://api-goerli.etherscan.io';
 
 export const GOERLI_CHAIN_ID = 5;

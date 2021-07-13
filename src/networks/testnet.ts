@@ -9,7 +9,7 @@ const RPC_HTTPS_URL = `https://kovan.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
-const EXPLORER_URL = 'https://kovan.etherscan.com';
+const EXPLORER_URL = 'https://kovan.etherscan.io';
 const EXPLORER_API_URL = 'https://api-kovan.etherscan.io';
 
 export const TESTNET_CHAIN_ID = 42;
