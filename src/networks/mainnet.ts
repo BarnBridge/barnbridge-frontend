@@ -10,7 +10,7 @@ const RPC_HTTPS_URL = `https://mainnet.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://mainnet.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
-const EXPLORER_URL = 'https://etherscan.com';
+const EXPLORER_URL = 'https://etherscan.io';
 const EXPLORER_API_URL = 'https://api.etherscan.io';
 
 export const MAINNET_CHAIN_ID = 1;

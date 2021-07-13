@@ -117,10 +117,10 @@ const GovernanceViewInternal: React.FC = () => {
       <div className="content-container-fix content-container">
         <Switch>
           <Route path="/governance/overview" exact component={OverviewView} />
+          <Redirect exact from="/governance/portfolio" to="/governance/portfolio/deposit" />
           <Route path="/governance/portfolio/:action(\w+)" component={PortfolioView} />
-          <Redirect from="/governance/portfolio" to="/governance/portfolio/deposit" />
+          <Redirect exact from="/governance/treasury" to="/governance/treasury/holdings" />
           <Route path="/governance/treasury/:tab(\w+)" exact component={TreasuryView} />
-          <Redirect from="/governance/treasury" to="/governance/treasury/holdings" />
           <Route path="/governance/proposals/create" exact component={ProposalCreateView} />
           <Route path="/governance/proposals/:id(\d+)" exact component={ProposalDetailView} />
           <Route path="/governance/proposals" exact component={ProposalsView} />
