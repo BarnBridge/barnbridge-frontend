@@ -1,5 +1,5 @@
 import BigNumber from 'bignumber.js';
-import Web3Contract, { createAbiItem } from 'web3/web3Contract';
+import Web3Contract, { AbiTupleArray, createAbiItem } from 'web3/web3Contract';
 
 class SeEPoolContract extends Web3Contract {
   constructor(address: string) {
@@ -11,7 +11,7 @@ class SeEPoolContract extends Web3Contract {
         createAbiItem('rebalanceInterval', [], ['uint256']),
         createAbiItem('lastRebalance', [], ['uint256']),
         createAbiItem('getRate', [], ['uint256']),
-        createAbiItem('getTranches', [], [['address', 'uint256', 'uint256', 'uint256', 'uint256']]),
+        createAbiItem('getTranches', [], [new AbiTupleArray(['address', 'uint256', 'uint256', 'uint256', 'uint256'])]),
         createAbiItem('getTranche', ['address'], ['address', 'uint256', 'uint256', 'uint256', 'uint256']),
         // send
         createAbiItem('issueExact', ['address', 'uint256'], ['uint256', 'uint256']),
