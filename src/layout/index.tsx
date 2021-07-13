@@ -3,11 +3,14 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import ErrorBoundary from 'components/custom/error-boundary';
+import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import WarningProvider from 'components/providers/warning-provider';
-import config from 'config';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
+import { GoerliNetwork } from 'networks/goerli';
+import { MumbaiNetwork } from 'networks/mumbai';
 
 import s from './s.module.scss';
 
@@ -19,6 +22,9 @@ const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
+  const { activeNetwork } = useNetwork();
+  const { features } = useConfig();
+
   return (
     <div className={s.layout}>
       <LayoutSideNav />
@@ -29,17 +35,25 @@ const LayoutView: React.FC = () => {
             <ErrorBoundary>
               <Suspense fallback={<AntdSpin className="pv-24 ph-64" />}>
                 <Switch>
-                  {config.isTestnet ? (
-                    <Route path="/faucets" component={FaucetsView} />
-                  ) : (
-                    <Route path="/yield-farming" component={YieldFarmingView} />
+                  {features.yieldFarming && <Route path="/yield-farming" component={YieldFarmingView} />}
+                  {features.dao && <Route path="/governance/:vt(\w+)" component={GovernanceView} />}
+                  {features.dao && <Route path="/governance" component={GovernanceView} />}
+                  {features.smartAlpha && <Route path="/smart-alpha" component={SmartAlphaView} />}
+                  {features.smartExposure && <Route path="/smart-exposure" component={SmartExposureView} />}
+                  {features.faucets && <Route path="/faucets" component={FaucetsView} />}
+                  {features.smartYield && (
+                    <Route
+                      path="/smart-yield"
+                      render={() => (
+                        <Switch>
+                          <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
+                          <Route path="/smart-yield" component={SmartYieldView} />
+                        </Switch>
+                      )}
+                    />
                   )}
-                  <Route path="/governance/:vt(\w+)" component={GovernanceView} />
-                  <Route path="/governance" component={GovernanceView} />
-                  <Route path="/smart-yield/:vt(\w+)" component={SmartYieldView} />
-                  <Route path="/smart-yield" component={SmartYieldView} />
-                  <Route path="/smart-alpha" component={SmartAlphaView} />
-                  <Route path="/smart-exposure" component={SmartExposureView} />
+                  {activeNetwork === GoerliNetwork && <Redirect to="/governance" />}
+                  {activeNetwork === MumbaiNetwork && <Redirect to="/smart-yield" />}
                   <Redirect from="/" to="/smart-yield" />
                 </Switch>
               </Suspense>

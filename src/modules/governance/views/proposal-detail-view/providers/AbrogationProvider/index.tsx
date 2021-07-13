@@ -5,12 +5,14 @@ import BigNumber from 'bignumber.js';
 
 import useMergeState from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import { APIAbrogationEntity, fetchAbrogation } from 'modules/governance/api';
+import { APIAbrogationEntity, useDaoAPI } from 'modules/governance/api';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import { AbrogationProposalReceipt } from 'modules/governance/contracts/daoGovernance';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { useProposal } from '../ProposalProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type AbrogationProviderState = {
   abrogation?: APIAbrogationEntity;
@@ -32,15 +34,10 @@ export type AbrogationContextType = AbrogationProviderState & {
   abrogationProposalCancelVote(gasPrice: number): Promise<void>;
 };
 
-const AbrogationContext = React.createContext<AbrogationContextType>({
-  ...InitialState,
-  reload: () => undefined,
-  abrogationProposalCastVote: () => Promise.reject(),
-  abrogationProposalCancelVote: () => Promise.reject(),
-});
+const Context = React.createContext<AbrogationContextType>(InvariantContext('AbrogationProvider'));
 
 export function useAbrogation(): AbrogationContextType {
-  return React.useContext(AbrogationContext);
+  return React.useContext(Context);
 }
 
 const AbrogationProvider: React.FC = props => {
@@ -49,6 +46,7 @@ const AbrogationProvider: React.FC = props => {
   const history = useHistory();
   const [reload, version] = useReload();
   const wallet = useWallet();
+  const daoAPI = useDaoAPI();
   const daoCtx = useDAO();
   const { proposal } = useProposal();
 
@@ -62,7 +60,8 @@ const AbrogationProvider: React.FC = props => {
       return;
     }
 
-    fetchAbrogation(proposal.proposalId)
+    daoAPI
+      .fetchAbrogation(proposal.proposalId)
       .then(abrogation => {
         setState({
           abrogation,
@@ -109,12 +108,12 @@ const AbrogationProvider: React.FC = props => {
       againstRate,
     });
 
-    daoCtx.daoBarn.actions.bondStakedAtTs(createTime - 1).then(bondStakedAt => {
+    daoCtx.daoBarn.getBondStakedAtTs(createTime - 1).then(bondStakedAt => {
       let approvalRate: number | undefined;
 
       if (bondStakedAt?.gt(BigNumber.ZERO)) {
         approvalRate = forVotes.multipliedBy(100).div(bondStakedAt).toNumber();
-        approvalRate = Math.min(approvalRate, 100);
+        approvalRate = Math.min(approvalRate!, 100);
       }
 
       setState({
@@ -134,13 +133,13 @@ const AbrogationProvider: React.FC = props => {
 
     const { proposalId, createTime } = state.abrogation;
 
-    daoCtx.daoBarn.actions.votingPowerAtTs(createTime - 1).then(votingPower => {
+    daoCtx.daoBarn.getVotingPowerAtTs(wallet.account, createTime - 1).then(votingPower => {
       setState({
         votingPower,
       });
     });
 
-    daoCtx.daoGovernance.actions.getAbrogationProposalReceipt(proposalId).then(receipt => {
+    daoCtx.daoGovernance.getAbrogationProposalReceipt(proposalId, wallet.account!).then(receipt => {
       setState({
         receipt,
       });
@@ -149,20 +148,18 @@ const AbrogationProvider: React.FC = props => {
 
   function abrogationProposalCastVote(support: boolean, gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? daoCtx.daoGovernance.actions
-          .abrogationProposalCastVote(proposal?.proposalId, support, gasPrice)
-          .then(() => reload())
+      ? daoCtx.daoGovernance.abrogationProposalCastVote(proposal?.proposalId, support, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   function abrogationProposalCancelVote(gasPrice: number): Promise<void> {
     return proposal?.proposalId
-      ? daoCtx.daoGovernance.actions.abrogationProposalCancelVote(proposal?.proposalId, gasPrice).then(() => reload())
+      ? daoCtx.daoGovernance.abrogationProposalCancelVote(proposal?.proposalId, gasPrice).then(() => reload())
       : Promise.reject();
   }
 
   return (
-    <AbrogationContext.Provider
+    <Context.Provider
       value={{
         ...state,
         reload,
@@ -170,7 +167,7 @@ const AbrogationProvider: React.FC = props => {
         abrogationProposalCancelVote,
       }}>
       {children}
-    </AbrogationContext.Provider>
+    </Context.Provider>
   );
 };
 

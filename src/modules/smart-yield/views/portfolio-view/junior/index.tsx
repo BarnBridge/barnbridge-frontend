@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -11,7 +12,7 @@ import { SquareBadge } from 'components/custom/badge';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
@@ -22,7 +23,7 @@ import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldCont
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import RewardPoolsProvider, { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import StakedPositionsTable from 'modules/smart-yield/views/portfolio-view/junior/staked-positions-table';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import ActivePositionsTable, { ActivePositionsTableEntity } from './active-positions-table';
 import LockedPositionsTable, { LockedPositionsTableEntity } from './locked-positions-table';
@@ -77,6 +78,7 @@ const JuniorPortfolioInner: React.FC = () => {
   const walletCtx = useWallet();
   const poolsCtx = usePools();
   const rewardPoolsCtx = useRewardPools();
+  const { getContract } = useContractManager();
 
   const { pools } = poolsCtx;
 
@@ -98,9 +100,9 @@ const JuniorPortfolioInner: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-        smartYieldContract.setProvider(walletCtx.provider);
-        smartYieldContract.setAccount(walletCtx.account);
+        const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+          return new SYSmartYieldContract(pool.smartYieldAddress);
+        });
 
         return new Promise<any>(resolve => {
           (async () => {
@@ -145,9 +147,9 @@ const JuniorPortfolioInner: React.FC = () => {
 
     (async () => {
       const result = await doSequential<PoolsSYPool>(pools, async pool => {
-        const juniorBondContract = new SYJuniorBondContract(pool.juniorBondAddress);
-        juniorBondContract.setProvider(walletCtx.provider);
-        juniorBondContract.setAccount(walletCtx.account);
+        const juniorBondContract = getContract<SYJuniorBondContract>(pool.juniorBondAddress, () => {
+          return new SYJuniorBondContract(pool.juniorBondAddress);
+        });
 
         return new Promise<any>(resolve => {
           (async () => {
@@ -157,8 +159,9 @@ const JuniorPortfolioInner: React.FC = () => {
               return resolve(undefined);
             }
 
-            const smartYieldContract = new SYSmartYieldContract(pool.smartYieldAddress);
-            smartYieldContract.setProvider(walletCtx.provider);
+            const smartYieldContract = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+              return new SYSmartYieldContract(pool.smartYieldAddress);
+            });
 
             const jBonds = await smartYieldContract.getJuniorBonds(jBondIds);
 

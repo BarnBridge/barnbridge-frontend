@@ -13,7 +13,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
 import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { useDAO } from '../../components/dao-provider';
 import ActivationThreshold from '../overview-view/components/activation-threshold';

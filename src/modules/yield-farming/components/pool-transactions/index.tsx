@@ -2,7 +2,7 @@
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -10,12 +10,13 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD, getTokenByAddress } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
-import { useWallet } from 'wallets/wallet';
+import { APIYFPoolActionType, APIYFPoolTransaction, useYfAPI } from 'modules/yield-farming/api';
+import { useWallet } from 'wallets/walletProvider';
 
-import { APIYFPoolActionType, APIYFPoolTransaction, fetchYFPoolTransactions } from '../../api';
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 type TableEntity = APIYFPoolTransaction;
@@ -50,6 +51,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Transaction',
       width: '25%',
       render: function TransactionColumn(_, entity) {
+        const { getTokenByAddress } = useKnownTokens();
         const knownToken = getTokenByAddress(entity.tokenAddress);
 
         if (!knownToken) {
@@ -76,6 +78,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Amount',
       width: '25%',
       render: function AmountColumn(_, entity) {
+        const { getTokenByAddress, convertTokenInUSD } = useKnownTokens();
         const isStake = entity.actionType === APIYFPoolActionType.DEPOSIT;
         const knownToken = getTokenByAddress(entity.tokenAddress);
 
@@ -106,30 +109,38 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           title: 'Address',
           dataIndex: 'from',
           width: '25%',
-          render: (_, entity) => (
-            <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
-              <Text type="p1" weight="semibold">
-                {shortenAddr(entity.userAddress)}
-              </Text>
-            </ExternalLink>
-          ),
+          render: function Render(_, entity) {
+            const { getEtherscanAddressUrl } = useWeb3();
+
+            return (
+              <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
+                <Text type="p1" weight="semibold">
+                  {shortenAddr(entity.userAddress)}
+                </Text>
+              </ExternalLink>
+            );
+          },
         }
       : {},
     {
       title: 'Transaction hash/timestamp',
       width: '25%',
-      render: (_, entity) => (
-        <>
-          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-            <Text type="p1" weight="semibold">
-              {shortenAddr(entity.transactionHash)}
+      render: function Render(_, entity) {
+        const { getEtherscanTxUrl } = useWeb3();
+
+        return (
+          <>
+            <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+              <Text type="p1" weight="semibold">
+                {shortenAddr(entity.transactionHash)}
+              </Text>
+            </ExternalLink>
+            <Text type="small" weight="semibold" color="secondary">
+              {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
             </Text>
-          </ExternalLink>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-          </Text>
-        </>
-      ),
+          </>
+        );
+      },
     },
   ];
 }
@@ -152,7 +163,8 @@ const TX_OPTS: SelectOption[] = [
 const PoolTransactions: FC = () => {
   const walletCtx = useWallet();
   const poolsCtx = useYFPools();
-  const poolCtx = useYFPool();
+  const poolCtx = useYfPool();
+  const yfAPI = useYfAPI();
 
   const hasOwnTab = !!poolCtx.poolMeta && walletCtx.isActive;
   const [reload, version] = useReload();
@@ -214,11 +226,11 @@ const PoolTransactions: FC = () => {
         const {
           data: transactions,
           meta: { count },
-        } = await fetchYFPoolTransactions(
+        } = await yfAPI.fetchYFPoolTransactions(
           state.page,
           state.pageSize,
           state.filters.tokenAddress,
-          activeTab === 'own' ? walletCtx.account : 'all',
+          activeTab === 'own' ? walletCtx.account ?? 'all' : 'all',
           state.filters.actionType,
         );
 

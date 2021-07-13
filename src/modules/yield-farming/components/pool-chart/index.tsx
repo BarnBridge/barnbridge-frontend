@@ -12,12 +12,12 @@ import Select from 'components/antd/select';
 import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useReload } from 'hooks/useReload';
+import { useYfAPI } from 'modules/yield-farming/api';
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
-import { fetchYFPoolChart } from '../../api';
-import { UnilpYfPool, YFPoolID, useYFPools } from '../../providers/pools-provider';
+import { YFPoolID, useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
@@ -33,11 +33,13 @@ type Props = {
 
 const PoolChart: FC<Props> = props => {
   const [reload, version] = useReload();
+  const yfAPI = useYfAPI();
   const knownTokensCtx = useKnownTokens();
   const yfPoolsCtx = useYFPools();
   const { yfPools } = yfPoolsCtx;
 
-  const [selectedYfPool, setSelectedYfPool] = useState<string>(UnilpYfPool.name);
+  const unilpYfPool = yfPoolsCtx.getYFKnownPoolByName(YFPoolID.UNILP);
+  const [selectedYfPool, setSelectedYfPool] = useState<string>(unilpYfPool?.name!);
   const [selectedYfEpoch, setSelectedYfEpoch] = useState('all');
   const [selectedYfType, setSelectedYfType] = useState('all');
 
@@ -113,12 +115,12 @@ const PoolChart: FC<Props> = props => {
       setLoading(true);
 
       try {
-        const result = await fetchYFPoolChart(addresses, epochStart, epochEnd, scale);
+        const result = await yfAPI.fetchYFPoolChart(addresses, epochStart, epochEnd, scale);
 
         const historyMap = new Map<string, HistoryChartItem>();
 
         activeYfPool.tokens.forEach(token => {
-          const tokenHistory = result[token.address];
+          const tokenHistory = result[token.address]; /// TODO: discuss
 
           Object.entries(tokenHistory).forEach(([timestamp, item]) => {
             const dt = getUnixTime(new Date(timestamp));
@@ -148,7 +150,9 @@ const PoolChart: FC<Props> = props => {
         });
 
         setChartData(Array.from(historyMap.values()) as any);
-      } catch {}
+      } catch (e) {
+        console.error(e);
+      }
 
       setLoading(false);
     })();

@@ -3,7 +3,7 @@ import SafeAppsSDK from '@gnosis.pm/safe-apps-sdk';
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { ConnectorUpdate } from '@web3-react/types/dist';
 
-import { WalletConnector } from 'wallets/types';
+import { BaseWalletConfig } from 'wallets/types';
 
 const GnosisAppsSDK = new SafeAppsSDK({
   // whitelistedDomains: [/gnosis-safe\\.io/],
@@ -48,7 +48,7 @@ class GnosisSafeConnector extends AbstractConnector {
   }
 }
 
-const GnosisSafeConfig: WalletConnector = {
+const GnosisSafeConfig: BaseWalletConfig = {
   id: 'gnosis-safe',
   logo: ['', ''],
   name: 'Gnosis Safe',

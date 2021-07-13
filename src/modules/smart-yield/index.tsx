@@ -4,8 +4,10 @@ import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
+import { useConfig } from 'components/providers/configProvider';
+import SyAPIProvider from 'modules/smart-yield/api';
 import RewardPoolProvider from 'modules/smart-yield/providers/reward-pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import PoolProvider from './providers/pool-provider';
 import PoolsProvider from './providers/pools-provider';
@@ -29,6 +31,7 @@ const SmartYieldView: React.FC = () => {
   const {
     params: { vt = 'markets' },
   } = useRouteMatch<SmartYieldViewParams>();
+  const config = useConfig();
   const wallet = useWallet();
   const [activeTab, setActiveTab] = React.useState<string>(vt);
 
@@ -81,18 +84,22 @@ const SmartYieldView: React.FC = () => {
       },
       disabled: !wallet.account,
     } as NavLinkProps,
-    {
-      children: (
-        <>
-          <Icon name="savings-outlined" className="mr-8" /> Pools
-        </>
-      ),
-      to: '/smart-yield/pools',
-    },
+    ...(config.features.smartYieldReward
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="savings-outlined" className="mr-8" /> Pools
+              </>
+            ),
+            to: '/smart-yield/pools',
+          },
+        ]
+      : []),
   ];
 
   return (
-    <>
+    <SyAPIProvider>
       <NavTabs tabs={tabs} className={s.tabs} />
       <div className="content-container-fix content-container">
         <Suspense fallback={<AntdSpin />}>
@@ -136,21 +143,25 @@ const SmartYieldView: React.FC = () => {
                 <StatsView />
               </PoolProvider>
             </Route>
-            <Route path="/smart-yield/pools" exact>
-              <RewardPoolsProvider>
-                <PoolsView />
-              </RewardPoolsProvider>
-            </Route>
-            <Route path="/smart-yield/pool" component={PoolView}>
-              <RewardPoolProvider>
-                <PoolView />
-              </RewardPoolProvider>
-            </Route>
+            {config.features.smartYieldReward && (
+              <Route path="/smart-yield/pools" exact>
+                <RewardPoolsProvider>
+                  <PoolsView />
+                </RewardPoolsProvider>
+              </Route>
+            )}
+            {config.features.smartYieldReward && (
+              <Route path="/smart-yield/pool" component={PoolView}>
+                <RewardPoolProvider>
+                  <PoolView />
+                </RewardPoolProvider>
+              </Route>
+            )}
             <Redirect to="/smart-yield/markets" />
           </Switch>
         </Suspense>
       </div>
-    </>
+    </SyAPIProvider>
   );
 };
 

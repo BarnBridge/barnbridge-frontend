@@ -2,9 +2,9 @@ import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import ContractListener from 'web3/components/contract-listener';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
-import { formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatToken, formatUSD } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Divider from 'components/antd/divider';
@@ -16,11 +16,12 @@ import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, useSyAPI } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 type SYPoolEntity = APISYPool & {
   provider: SYProviderContract;
@@ -119,7 +120,6 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
           )}
         </TxConfirmModal>
       )}
-      <ContractListener contract={props.entity.provider} />
     </>
   );
 };
@@ -128,7 +128,8 @@ const Columns: ColumnsType<SYPoolEntity> = [
   {
     title: 'Market / Originator',
     align: 'left',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
       const market = Markets.get(entity.protocolId);
       const meta = Pools.get(entity.underlyingSymbol);
 
@@ -153,7 +154,8 @@ const Columns: ColumnsType<SYPoolEntity> = [
   {
     title: 'Fees Amount',
     align: 'right',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { convertTokenInUSD } = useKnownTokens();
       const amount = entity.provider.underlyingFees?.unscaleBy(entity.underlyingDecimals);
       const amountUSD = convertTokenInUSD(amount, entity.underlyingSymbol);
 
@@ -227,8 +229,11 @@ const Filters: TableFilterType[] = [
 
 const TreasuryFees: React.FC = () => {
   const wallet = useWallet();
+  const { convertTokenInUSD } = useKnownTokens();
   const walletRef = React.useRef(wallet);
   walletRef.current = wallet;
+  const { getContract } = useContractManager();
+  const syAPI = useSyAPI();
 
   const [reloadFees, versionFees] = useReload();
   const [reload, version] = useReload();
@@ -256,14 +261,17 @@ const TreasuryFees: React.FC = () => {
       },
     }));
 
-    fetchSYPools()
+    syAPI
+      .fetchSYPools()
       .then(data => {
         setState(prevState => ({
           ...prevState,
           fees: {
             ...prevState.fees,
             items: data.map(item => {
-              const providerContract = new SYProviderContract(item.providerAddress);
+              const providerContract = getContract<SYProviderContract>(item.providerAddress, () => {
+                return new SYProviderContract(item.providerAddress);
+              });
               providerContract.on(Web3Contract.UPDATE_DATA, reload);
 
               const result = {

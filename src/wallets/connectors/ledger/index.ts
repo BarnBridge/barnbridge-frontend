@@ -1,11 +1,11 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { LedgerConnector } from '@web3-react/ledger-connector';
 
-import config from 'config';
 import LedgerLogoDark from 'resources/svg/wallets/ledger-logo-dark.svg';
 import LedgerLogo from 'resources/svg/wallets/ledger-logo.svg';
 
-import { WalletConnector } from 'wallets/types';
+import { Web3Network } from 'networks/types';
+import { BaseWalletConfig } from 'wallets/types';
 
 const LEDGER_BASE_DERIVATION_PATH = 'base_derivation_path';
 
@@ -13,11 +13,11 @@ export type LedgerWalletArgs = {
   baseDerivationPath?: string;
 };
 
-const LedgerWalletConfig: WalletConnector = {
+const LedgerWalletConfig: BaseWalletConfig = {
   id: 'ledger',
   logo: [LedgerLogo, LedgerLogoDark],
   name: 'Ledger',
-  factory(chainId: number, args?: LedgerWalletArgs): AbstractConnector {
+  factory(network: Web3Network, args?: LedgerWalletArgs): AbstractConnector {
     let baseDerivationPath: string | undefined = args?.baseDerivationPath;
 
     if (!baseDerivationPath) {
@@ -25,9 +25,9 @@ const LedgerWalletConfig: WalletConnector = {
     }
 
     return new LedgerConnector({
-      chainId,
-      url: config.web3.rpc.httpsUrl,
-      pollingInterval: config.web3.poolingInterval,
+      chainId: network.meta.chainId,
+      url: network.rpc.httpsUrl,
+      pollingInterval: network.rpc.poolingInterval,
       baseDerivationPath,
     });
   },

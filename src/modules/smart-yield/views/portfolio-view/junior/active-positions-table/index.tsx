@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -12,7 +12,8 @@ import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
-import { ProjectToken, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
@@ -27,27 +28,32 @@ export type ActivePositionsTableEntity = PoolsSYPool & {
 const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => (
-      <div className="flex flow-col align-center">
-        <IconBubble
-          name={entity.meta?.icon}
-          bubbleName={ProjectToken.icon!}
-          secondBubbleName={entity.market?.icon}
-          className="mr-16"
-        />
-        <div className="flex flow-row">
-          <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
-            <Text type="p1" weight="semibold" color="blue" className="mr-4">
-              {entity.underlyingSymbol}
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+      const { projectToken } = useKnownTokens();
+
+      return (
+        <div className="flex flow-col align-center">
+          <IconBubble
+            name={entity.meta?.icon}
+            bubbleName={projectToken.icon!}
+            secondBubbleName={entity.market?.icon}
+            className="mr-16"
+          />
+          <div className="flex flow-row">
+            <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
+              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+                {entity.underlyingSymbol}
+              </Text>
+              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
+            </ExternalLink>
+            <Text type="small" weight="semibold">
+              {entity.market?.name}
             </Text>
-            <Icon name="arrow-top-right" width={8} height={8} color="blue" />
-          </ExternalLink>
-          <Text type="small" weight="semibold">
-            {entity.market?.name}
-          </Text>
+          </div>
         </div>
-      </div>
-    ),
+      );
+    },
   },
   {
     title: 'Current balance',

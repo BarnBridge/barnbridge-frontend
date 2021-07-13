@@ -1,20 +1,33 @@
+import classNames from 'classnames';
+
 import { Pagination } from 'components/custom/pagination';
+import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 
-type ColumnType<T> = {
+import s from './s.module.scss';
+
+export type ColumnType<T> = {
   heading: React.ReactNode;
-  render: (item: T) => React.ReactNode;
+  render: (item: T) => React.ReactElement;
 };
 
 type Props<T> = {
   columns: ColumnType<T>[];
   data: T[];
+  loading?: boolean;
+  rowKey?: (item: T) => string;
 };
 
-export const Table = <T extends Record<string, any>>({ columns, data }: Props<T>) => {
+export const Table = <T extends Record<string, any>>({ columns, data, loading, rowKey }: Props<T>) => {
   return (
-    <div className="table-container">
-      <table className="table">
+    <div
+      className={classNames('table-container', s.tableContainer, {
+        [s.loading]: loading,
+      })}>
+      <table
+        className={classNames('table', s.table, {
+          [s.loading]: loading,
+        })}>
         <thead>
           <tr>
             {columns.map((col, dataIdx) => (
@@ -24,14 +37,28 @@ export const Table = <T extends Record<string, any>>({ columns, data }: Props<T>
         </thead>
         <tbody>
           {data.map((item, itemIdx) => (
-            <tr key={itemIdx}>
-              {columns.map((col, dataIdx) => (
-                <td key={dataIdx}>{col.render(item)}</td>
+            <tr key={rowKey?.(item) ?? itemIdx}>
+              {columns.map(({ render: Render }, dataIdx) => (
+                <td key={dataIdx}>
+                  <Render {...item} />
+                </td>
               ))}
             </tr>
           ))}
         </tbody>
       </table>
+      {loading && (
+        <Spinner
+          className={s.spinner}
+          style={{
+            width: 40,
+            height: 40,
+            position: 'absolute',
+            marginTop: -20,
+            marginLeft: -20,
+          }}
+        />
+      )}
     </div>
   );
 };
@@ -51,7 +78,7 @@ export const TableFooter: React.FC<TableFooterType> = ({ children, total, curren
         {typeof children === 'function'
           ? children({
               total,
-              from: (current - 1) * pageSize + 1,
+              from: total ? (current - 1) * pageSize + 1 : 0,
               to: current * pageSize > total ? total : current * pageSize,
             })
           : children}

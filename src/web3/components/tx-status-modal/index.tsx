@@ -1,5 +1,4 @@
 import React from 'react';
-import { getEtherscanTxUrl } from 'web3/utils';
 import { Web3SendState } from 'web3/web3Contract';
 
 import Button from 'components/antd/button';
@@ -7,6 +6,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { useWeb3 } from 'components/providers/web3Provider';
 
 type Props = ModalProps & {
   state?: Web3SendState;
@@ -17,6 +17,8 @@ type Props = ModalProps & {
 
 const TxStatusModal: React.FC<Props> = props => {
   const { state, txHash, renderProgress, renderSuccess, ...modalProps } = props;
+
+  const { getEtherscanTxUrl } = useWeb3();
 
   return (
     <Modal width={560} title="Transaction status" {...modalProps}>

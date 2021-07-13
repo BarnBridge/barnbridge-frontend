@@ -8,13 +8,14 @@ import cn from 'classnames';
 import Tooltip from 'components/antd/tooltip';
 import Icon, { IconNames } from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useGeneral } from 'components/providers/general-provider';
-import config from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { useGeneral } from 'components/providers/generalProvider';
 
 import s from './s.module.scss';
 
 const LayoutSideNav: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
+  const { features } = useConfig();
   const location = useLocation();
   const [expanded, setExpanded] = React.useState<boolean>(false);
 
@@ -50,7 +51,7 @@ const LayoutSideNav: React.FC = () => {
           </Link>
         </div>
         <nav className={s.top}>
-          {config.isTestnet ? (
+          {features.faucets && (
             <Tooltip title={displayTooltip && 'Faucets'} placement="right">
               <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
                 <Icon name="building" />
@@ -59,7 +60,8 @@ const LayoutSideNav: React.FC = () => {
                 </Text>
               </NavLink>
             </Tooltip>
-          ) : (
+          )}
+          {features.yieldFarming && (
             <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
               <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
                 <Icon name="tractor-outlined" />
@@ -69,63 +71,48 @@ const LayoutSideNav: React.FC = () => {
               </NavLink>
             </Tooltip>
           )}
-          <Tooltip title={displayTooltip && 'Governance'} placement="right">
-            <NavLink to="/governance" className={s.button} activeClassName={s.active}>
-              <Icon name="bank-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                Governance
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
-            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-              <Icon name="paper-bill-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Yield
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
-            <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-              <Icon name="balance" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Exposure
-              </Text>
-            </NavLink>
-          </Tooltip>
-          <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
-            <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
-              <Icon name="paper-alpha-outlined" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                SMART Alpha
-              </Text>
-            </NavLink>
-          </Tooltip>
-        </nav>
-        <div className={s.bottom}>
-          {config.isTestnet ? (
-            <Tooltip title={displayTooltip && 'Mainnet'} placement="right">
-              <a rel="noopener noreferrer" target="_blank" href="https://app.barnbridge.com/" className={s.button}>
-                <Icon name="internet" />
+          {features.dao && (
+            <Tooltip title={displayTooltip && 'Governance'} placement="right">
+              <NavLink to="/governance" className={s.button} activeClassName={s.active}>
+                <Icon name="bank-outlined" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                  Mainnet
+                  Governance
                 </Text>
-              </a>
-            </Tooltip>
-          ) : (
-            <Tooltip title={displayTooltip && 'Testnet'} placement="right">
-              <a
-                rel="noopener noreferrer"
-                target="_blank"
-                href="https://testnet.app.barnbridge.com/"
-                className={s.button}>
-                <Icon name="science" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                  Testnet
-                </Text>
-              </a>
+              </NavLink>
             </Tooltip>
           )}
+          {features.smartYield && (
+            <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
+              <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+                <Icon name="paper-bill-outlined" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  SMART Yield
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
+          {features.smartExposure && (
+            <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
+              <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
+                <Icon name="balance" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  SMART Exposure
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
+          {features.smartAlpha && (
+            <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
+              <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
+                <Icon name="paper-alpha-outlined" />
+                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+                  SMART Alpha
+                </Text>
+              </NavLink>
+            </Tooltip>
+          )}
+        </nav>
+        <div className={s.bottom}>
           <Tooltip title={displayTooltip && 'Docs'} placement="right">
             <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
               <Icon name="docs-outlined" />

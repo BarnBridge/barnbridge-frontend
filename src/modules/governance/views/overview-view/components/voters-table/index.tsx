@@ -2,31 +2,36 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { formatBigValue, getEtherscanAddressUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { APIVoterEntity, fetchVoters } from 'modules/governance/api';
+import { useWeb3 } from 'components/providers/web3Provider';
+import { APIVoterEntity, useDaoAPI } from 'modules/governance/api';
 
 const Columns: ColumnsType<APIVoterEntity> = [
   {
     title: 'Address',
     dataIndex: 'address',
-    render: (value: string) => (
-      <div className="flex col-gap-16 align-center">
-        <Identicon address={value} width={32} height={32} />
-        <ExternalLink href={getEtherscanAddressUrl(value)} className="link-blue">
-          <Text type="p1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
-            {value}
-          </Text>
-          <Text type="p1" weight="semibold" wrap={false} className="hidden-desktop">
-            {shortenAddr(value)}
-          </Text>
-        </ExternalLink>
-      </div>
-    ),
+    render: function Render(value: string) {
+      const { getEtherscanAddressUrl } = useWeb3();
+
+      return (
+        <div className="flex col-gap-16 align-center">
+          <Identicon address={value} width={32} height={32} />
+          <ExternalLink href={getEtherscanAddressUrl(value)} className="link-blue">
+            <Text type="p1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
+              {value}
+            </Text>
+            <Text type="p1" weight="semibold" wrap={false} className="hidden-desktop">
+              {shortenAddr(value)}
+            </Text>
+          </ExternalLink>
+        </div>
+      );
+    },
   },
   {
     title: 'Staked Balance',
@@ -81,6 +86,7 @@ export type VotersTableProps = {
 const VotersTable: React.FC<VotersTableProps> = props => {
   const { className } = props;
 
+  const daoAPI = useDaoAPI();
   const [loading, setLoading] = React.useState<boolean>(false);
   const [voters, setVoters] = React.useState<APIVoterEntity[]>([]);
   const [totalVoters, setTotal] = React.useState<number>(0);
@@ -90,7 +96,8 @@ const VotersTable: React.FC<VotersTableProps> = props => {
   React.useEffect(() => {
     setLoading(true);
 
-    fetchVoters(page, pageSize)
+    daoAPI
+      .fetchVoters(page, pageSize)
       .then(data => {
         setVoters(data.data);
         setTotal(data.meta.count);

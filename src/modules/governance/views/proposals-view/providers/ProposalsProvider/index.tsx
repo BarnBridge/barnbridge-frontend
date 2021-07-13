@@ -1,7 +1,9 @@
 import React from 'react';
 
 import useMergeState from 'hooks/useMergeState';
-import { APILiteProposalEntity, fetchProposals } from 'modules/governance/api';
+import { APILiteProposalEntity, useDaoAPI } from 'modules/governance/api';
+
+import { InvariantContext } from 'utils/context';
 
 export type LiteProposalEntity = APILiteProposalEntity & {
   stateTimeLeftTs: number;
@@ -33,15 +35,10 @@ export type ProposalsContextType = ProposalsProviderState & {
   changePage(page: number): void;
 };
 
-const ProposalsContext = React.createContext<ProposalsContextType>({
-  ...InitialState,
-  changeStateFilter: () => undefined,
-  changeSearchFilter: () => undefined,
-  changePage: () => undefined,
-});
+const Context = React.createContext<ProposalsContextType>(InvariantContext('ProposalsProvider'));
 
 export function useProposals(): ProposalsContextType {
-  return React.useContext(ProposalsContext);
+  return React.useContext(Context);
 }
 
 export type ProposalsProviderProps = {
@@ -52,6 +49,7 @@ export type ProposalsProviderProps = {
 const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
   const { stateFilter, searchFilter, children } = props;
 
+  const daoAPI = useDaoAPI();
   const [state, setState] = useMergeState<ProposalsProviderState>(InitialState);
 
   React.useEffect(() => {
@@ -67,7 +65,8 @@ const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
       loading: true,
     });
 
-    fetchProposals(state.page, state.pageSize, state.stateFilter, state.searchFilter)
+    daoAPI
+      .fetchProposals(state.page, state.pageSize, state.stateFilter, state.searchFilter)
       .then(data => {
         setState({
           loading: false,
@@ -99,7 +98,7 @@ const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
   }
 
   return (
-    <ProposalsContext.Provider
+    <Context.Provider
       value={{
         ...state,
         changeStateFilter,
@@ -107,7 +106,7 @@ const ProposalsProvider: React.FC<ProposalsProviderProps> = props => {
         changePage,
       }}>
       {children}
-    </ProposalsContext.Provider>
+    </Context.Provider>
   );
 };
 

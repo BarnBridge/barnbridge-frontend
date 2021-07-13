@@ -12,19 +12,20 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { useConfig } from 'components/providers/configProvider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
 const PoolStake: FC = () => {
-  const knownTokensCtx = useKnownTokens();
+  const config = useConfig();
+  const { getTokenBySymbol, convertTokenInUSD } = useKnownTokens();
   const yfPoolsCtx = useYFPools();
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const [activeToken, setActiveToken] = useState(yfPoolCtx.poolMeta?.tokens[0]);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -40,14 +41,14 @@ const PoolStake: FC = () => {
   }
 
   const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken.address);
-  const allowance = activeContract.getAllowanceOf(config.contracts.yf.staking)?.unscaleBy(activeToken.decimals);
+  const allowance = activeContract.getAllowanceOf(config.contracts.yf?.staking!)?.unscaleBy(activeToken.decimals);
   const stakedBalance = selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken.decimals);
   const walletBalance = activeContract.balance?.unscaleBy(activeToken.decimals);
   const maxAmount = BigNumber.min(walletBalance ?? BigNumber.ZERO, allowance ?? BigNumber.ZERO);
-  const bnAmount = new BigNumber(amount);
+  const bnAmount = BigNumber.from(amount);
 
   function handleTokenSelect(tokenSymbol: string) {
-    const tokenMeta = knownTokensCtx.getTokenBySymbol(tokenSymbol);
+    const tokenMeta = getTokenBySymbol(tokenSymbol);
     setActiveToken(tokenMeta);
   }
 
@@ -72,9 +73,9 @@ const PoolStake: FC = () => {
   async function handleStakeConfirm({ gasPrice }: any) {
     setConfirmModalVisible(false);
 
-    let value = new BigNumber(amount);
+    let value = BigNumber.from(amount);
 
-    if (!activeToken || value.isNaN() || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
+    if (!activeToken || !value || value.isLessThanOrEqualTo(BigNumber.ZERO)) {
       return Promise.reject();
     }
 
@@ -138,7 +139,7 @@ const PoolStake: FC = () => {
         }
         value={amount}
         onChange={setAmount}
-        max={maxAmount.toNumber()}
+        max={maxAmount}
         placeholder={`0 (Max ${formatNumber(maxAmount, { decimals: activeToken.decimals })})`}
         slider
         className="mb-40"
@@ -203,7 +204,13 @@ const PoolStake: FC = () => {
         <button
           type="button"
           className="button-primary"
-          disabled={!allowance?.gt(BigNumber.ZERO) || bnAmount.eq(BigNumber.ZERO) || bnAmount.gt(maxAmount) || staking}
+          disabled={
+            !allowance?.gt(BigNumber.ZERO) ||
+            !bnAmount ||
+            bnAmount.eq(BigNumber.ZERO) ||
+            bnAmount.gt(maxAmount) ||
+            staking
+          }
           onClick={handleStake}>
           {staking && <Spin spinning />}
           Stake

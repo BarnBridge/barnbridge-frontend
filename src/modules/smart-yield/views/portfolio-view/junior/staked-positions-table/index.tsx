@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
-import { formatPercent, formatToken, formatUSD, getEtherscanAddressUrl } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
@@ -9,27 +9,24 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
-import IconsSet from 'components/custom/icons-set';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
-import {
-  BondToken,
-  KnownTokens,
-  ProjectToken,
-  StkAaveToken,
-  useKnownTokens,
-} from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 export type StakedPositionsTableEntity = SYRewardPoolEntity;
 
 const Columns: ColumnsType<StakedPositionsTableEntity> = [
   {
     title: 'Token Name',
-    render: (_, entity) => {
+    render: function Render(_, entity) {
+      const { getEtherscanAddressUrl } = useWeb3();
+      const { projectToken } = useKnownTokens();
+
       const market = Markets.get(entity.meta.protocolId ?? '');
       const meta = Pools.get(entity.meta.underlyingSymbol ?? '');
 
@@ -37,7 +34,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
         <div className="flex flow-col align-center">
           <IconBubble
             name={meta?.icon}
-            bubbleName={ProjectToken.icon!}
+            bubbleName={projectToken.icon!}
             secondBubbleName={market?.icon}
             className="mr-16"
           />
@@ -108,6 +105,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
       </Hint>
     ),
     render: function APYRender(_, entity) {
+      const { bondToken, stkAaveToken } = useKnownTokens();
       const poolsCtx = usePools();
       const pool = poolsCtx.pools.find(
         pool => pool.protocolId === entity.meta.protocolId && pool.underlyingAddress === entity.meta.underlyingAddress,
@@ -123,35 +121,35 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             {formatPercent(pool.state.juniorApy)}
           </Text>
           {entity.rewardPool?.rewardTokensCount! > 1 ? (
-            <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}>
-              +{formatPercent(entity.apr?.plus(pool.apy ?? 0))} APR
+            <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
+              +{formatPercent(entity.apr?.plus(pool.apy ?? 0) ?? 0)} APR
             </AprLabel>
           ) : entity.apr ? (
-            <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
+            <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
           ) : null}
         </div>
       );
     },
   },
   {
-    title: `My $${ProjectToken.symbol} rewards`,
+    title: `My $BOND rewards`,
     width: '20%',
     align: 'right',
     render: function RewardsRender(_, entity) {
-      const knownTokensCtx = useKnownTokens();
-      const bondToClaim = entity.rewardPool.getClaimFor(BondToken.address)?.unscaleBy(BondToken.decimals);
-      const bondToClaimInUSD = knownTokensCtx.convertTokenInUSD(bondToClaim, BondToken.symbol!);
+      const { bondToken, convertTokenInUSD } = useKnownTokens();
+      const bondToClaim = entity.rewardPool.getClaimFor(bondToken.address)?.unscaleBy(bondToken.decimals);
+      const bondToClaimInUSD = convertTokenInUSD(bondToClaim, bondToken.symbol!);
 
       return (
         <>
           <Tooltip
             title={formatToken(bondToClaim, {
-              tokenName: BondToken.symbol,
-              decimals: BondToken.decimals,
+              tokenName: bondToken.symbol,
+              decimals: bondToken.decimals,
             })}>
             <Text type="p1" weight="semibold" color="primary">
               {formatToken(bondToClaim, {
-                tokenName: BondToken.symbol,
+                tokenName: bondToken.symbol,
               })}
             </Text>
           </Tooltip>

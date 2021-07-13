@@ -5,7 +5,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Select, { SelectOption } from 'components/antd/select';
 import Grid from 'components/custom/grid';
 import LedgerWalletConfig from 'wallets/connectors/ledger';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 const WEB3_LEDGER_DERIVATION_PATHS: SelectOption[] = [
   {

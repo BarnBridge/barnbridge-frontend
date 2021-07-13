@@ -9,6 +9,7 @@ export type LogoIconNames = 'barnbridge';
 
 export type TokenIconNames =
   | 'bond-square-token'
+  | 'bond-add-token'
   | 'token-unknown'
   | 'token-eth'
   | 'token-btc'
@@ -23,11 +24,13 @@ export type TokenIconNames =
   | 'static/token-bond'
   | 'static/token-uniswap'
   | 'static/token-staked-aave'
+  | 'token-wmatic'
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
   | 'aave_polygon'
-  | 'token-all';
+  | 'token-all'
+  | 'polygon';
 
 export type NavIconNames =
   | 'paper-bill-outlined'
@@ -50,9 +53,13 @@ export type IconNames =
   | TokenIconNames
   | NavIconNames
   | ThemeIconNames
+  | 'mainnet-logo'
+  | 'testnet-logo'
+  | 'polygon-logo'
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'
+  | 'plus-circle'
   | 'refresh'
   | 'notification'
   | 'chevron-right'
@@ -126,7 +133,8 @@ export type IconNames =
   | 'building'
   | 'internet'
   | 'checkbox-checked'
-  | 'checkbox';
+  | 'checkbox'
+  | 'loader';
 
 export type IconProps = {
   name: IconNames;

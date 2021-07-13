@@ -6,12 +6,10 @@ import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils'
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
-import IconsSet from 'components/custom/icons-set';
 import { AprLabel } from 'components/custom/label';
 import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';
@@ -51,6 +49,7 @@ const tabs = [
 
 const MarketDetails: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('market');
+  const { bondToken, stkAaveToken } = useKnownTokens();
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
 
@@ -82,7 +81,7 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(new BigNumber(pool.state.seniorLiquidity))}
+                      {formatUSD(BigNumber.from(pool.state.seniorLiquidity))}
                     </Text>
                   </>
                 }>
@@ -115,7 +114,7 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(new BigNumber(pool.state.juniorLiquidity))}
+                      {formatUSD(BigNumber.from(pool.state.juniorLiquidity))}
                     </Text>
                   </>
                 }>
@@ -172,9 +171,9 @@ const MarketDetails: React.FC = () => {
                 {formatPercent(pool.state.juniorApy)}
               </Text>
               {pool.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-                <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}>+{formatPercent(pool.apr)} APR</AprLabel>
+                <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>+{formatPercent(pool.apr?.plus(pool.apy ?? 0) ?? 0)} APR</AprLabel>
               ) : pool.apr ? (
-                <AprLabel icons={['static/token-bond']}>+{formatPercent(pool.apr)} APR</AprLabel>
+                <AprLabel icons={['static/token-bond']}>+{formatPercent(pool.apr ?? 0)} APR</AprLabel>
               ) : null}
             </div>
           </div>
@@ -206,7 +205,7 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(new BigNumber(pool.state.juniorLiquidityLocked))}
+                      {formatUSD(BigNumber.from(pool.state.juniorLiquidityLocked))}
                     </Text>
                   </>
                 }>

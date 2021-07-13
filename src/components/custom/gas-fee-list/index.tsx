@@ -1,11 +1,11 @@
 import React from 'react';
 import AntdRadio, { RadioChangeEvent, RadioGroupProps } from 'antd/lib/radio';
 import AntdSpin from 'antd/lib/spin';
-import { fetchGasPrice } from 'web3/utils';
 
 import RadioButton from 'components/antd/radio-button';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import { useNetwork } from 'components/providers/networkProvider';
 import useMergeState from 'hooks/useMergeState';
 
 import s from './s.module.scss';
@@ -30,6 +30,7 @@ export type GasFeeListProps = RadioGroupProps & {
 const GasFeeList: React.FC<GasFeeListProps> = props => {
   const { className, value, onChange, ...groupProps } = props;
 
+  const { activeNetwork } = useNetwork();
   const [state, setState] = useMergeState<GasFeeListState>({
     options: [],
     loading: false,
@@ -41,7 +42,19 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
       loading: true,
     });
 
-    fetchGasPrice()
+    const url = `${activeNetwork.explorer.apiUrl}/api?module=gastracker&action=gasoracle&apikey=${activeNetwork.explorer.key}`;
+
+    fetch(url)
+      .then(result => result.json())
+      .then(result => result.result)
+      .then(result => {
+        return {
+          veryFast: Number(result.FastGasPrice),
+          fast: Number(result.ProposeGasPrice),
+          average: Math.round((Number(result.ProposeGasPrice) + Number(result.SafeGasPrice)) / 2),
+          safeLow: Number(result.SafeGasPrice),
+        };
+      })
       .then(result => {
         const options = [
           {

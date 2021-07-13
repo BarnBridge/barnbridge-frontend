@@ -10,20 +10,20 @@ import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { BondToken, ProjectToken, convertTokenInUSD, useKnownTokens } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
-import { useYFPool } from '../../providers/pool-provider';
+import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
 const PoolStatistics: FC = () => {
-  const knownTokensCtx = useKnownTokens();
+  const { projectToken, convertTokenInUSD, getTokenBySymbol } = useKnownTokens();
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const { poolMeta } = yfPoolCtx;
 
@@ -31,7 +31,7 @@ const PoolStatistics: FC = () => {
   const [claiming, setClaiming] = useState(false);
   const [confirmClaimVisible, setConfirmClaimVisible] = useState(false);
 
-  const bondContract = BondToken.contract as Erc20Contract;
+  const bondContract = projectToken.contract as Erc20Contract;
   const activeContract = activeToken?.contract as Erc20Contract;
 
   if (!walletCtx.isActive || !poolMeta) {
@@ -41,7 +41,7 @@ const PoolStatistics: FC = () => {
   const selectedStakedToken = yfPoolsCtx.stakingContract?.stakedTokens.get(activeToken?.address!);
 
   function handleTabSelect(tokenSymbol: string) {
-    const tokenMeta = knownTokensCtx.getTokenBySymbol(tokenSymbol);
+    const tokenMeta = getTokenBySymbol(tokenSymbol);
     setActiveToken(tokenMeta);
   }
 
@@ -55,7 +55,7 @@ const PoolStatistics: FC = () => {
 
     try {
       await poolMeta.contract.claim(args.gasPrice);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
       (poolMeta.contract as YfPoolContract).loadUserData().catch(Error);
     } catch {}
 
@@ -73,12 +73,12 @@ const PoolStatistics: FC = () => {
         <div className="p-24">
           <div className="flex align-center justify-space-between mb-24">
             <Text type="small" weight="semibold" color="secondary">
-              {ProjectToken.symbol} balance
+              {projectToken.symbol} balance
             </Text>
             <div className="flex align-center">
-              <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
+              <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
-                {formatToken(bondContract.balance?.unscaleBy(BondToken.decimals)) ?? '-'}
+                {formatToken(bondContract.balance?.unscaleBy(projectToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -87,7 +87,7 @@ const PoolStatistics: FC = () => {
               Potential reward this epoch
             </Text>
             <div className="flex align-center">
-              <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
+              <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.potentialReward) ?? '-'}
               </Text>
@@ -98,11 +98,11 @@ const PoolStatistics: FC = () => {
           <div className={cn('flex align-center justify-space-between', s.claimBlock)}>
             <div className="flex flow-row">
               <div className="flex align-center mb-4">
-                <Icon name={ProjectToken.icon!} className="mr-8" style={{ flexShrink: 0 }} />
+                <Icon name={projectToken.icon!} className="mr-8" style={{ flexShrink: 0 }} />
                 <Tooltip
                   title={
-                    formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals), {
-                      decimals: BondToken.decimals,
+                    formatToken(poolMeta.contract.toClaim?.unscaleBy(projectToken.decimals), {
+                      decimals: projectToken.decimals,
                     }) ?? '-'
                   }>
                   <Text
@@ -111,8 +111,8 @@ const PoolStatistics: FC = () => {
                     color="primary"
                     className="text-ellipsis"
                     style={{ maxWidth: '120px' }}>
-                    {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals), {
-                      decimals: BondToken.decimals,
+                    {formatToken(poolMeta.contract.toClaim?.unscaleBy(projectToken.decimals), {
+                      decimals: projectToken.decimals,
                     }) ?? '-'}
                   </Text>
                 </Tooltip>
@@ -226,9 +226,9 @@ const PoolStatistics: FC = () => {
           header={
             <div className="flex col-gap-8 align-center justify-center">
               <Text type="h2" weight="semibold" color="primary">
-                {formatToken(poolMeta.contract.toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
+                {formatToken(poolMeta.contract.toClaim?.unscaleBy(projectToken.decimals)) ?? '-'}
               </Text>
-              <Icon name={ProjectToken.icon!} width={32} height={32} />
+              <Icon name={projectToken.icon!} width={32} height={32} />
             </div>
           }
           submitText="Claim"

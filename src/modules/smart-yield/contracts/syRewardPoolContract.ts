@@ -150,7 +150,7 @@ class SYRewardPoolContract extends Web3Contract {
 
     const [poolSize, numRewardTokens] = await this.batch([{ method: 'poolSize' }, { method: 'numRewardTokens' }]);
 
-    this.poolSize = new BigNumber(poolSize);
+    this.poolSize = BigNumber.from(poolSize);
     this.rewardTokensCount = Number(numRewardTokens) || 1;
     this.emit(Web3Contract.UPDATE_DATA);
   }
