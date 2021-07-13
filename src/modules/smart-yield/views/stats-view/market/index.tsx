@@ -171,9 +171,9 @@ const MarketDetails: React.FC = () => {
                 {formatPercent(pool.state.juniorApy)}
               </Text>
               {pool.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-                <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>+{formatPercent(pool.apr)} APR</AprLabel>
+                <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>+{formatPercent(pool.apr?.plus(pool.apy ?? 0) ?? 0)} APR</AprLabel>
               ) : pool.apr ? (
-                <AprLabel icons={['static/token-bond']}>+{formatPercent(pool.apr)} APR</AprLabel>
+                <AprLabel icons={['static/token-bond']}>+{formatPercent(pool.apr ?? 0)} APR</AprLabel>
               ) : null}
             </div>
           </div>

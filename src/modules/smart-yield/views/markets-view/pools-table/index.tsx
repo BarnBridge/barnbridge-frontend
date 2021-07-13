@@ -147,10 +147,10 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
             </Text>
             {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
               <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
-                +{formatPercent(entity.apr?.plus(entity.apy ?? 0))} APR
+                +{formatPercent(entity.apr?.plus(entity.apy ?? 0) ?? 0)} APR
               </AprLabel>
             ) : entity.apr ? (
-              <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr)} APR</AprLabel>
+              <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
             ) : null}
           </div>
         );

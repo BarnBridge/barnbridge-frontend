@@ -44,14 +44,6 @@ export const Markets = new Map<string, SYMarketMeta>([
       icon: `cream_finance`,
     },
   ],
-  [
-    'aave-polygon',
-    {
-      id: 'aave-polygon',
-      name: 'AAVE Polygon',
-      icon: 'static/aave_polygon_grayed',
-    },
-  ],
 ]); /// TODO: remove
 
 export const Pools = new Map<string, SYPoolMeta>([
@@ -318,6 +310,7 @@ export type APISYRewardPool = {
   }[];
   underlyingAddress: string;
   underlyingSymbol: string;
+  poolControllerAddress: string;
 };
 
 export enum APISYRewardTxHistoryType {

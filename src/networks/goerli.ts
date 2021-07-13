@@ -43,6 +43,7 @@ export const GoerliConfig: NetworkConfig = {
     gusd: '',
     dai: '',
     stkaave: '',
+    wmatic: '',
     ausdc: '',
     ausdt: '',
     agusd: '',
@@ -67,6 +68,7 @@ export const GoerliConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    wmatic: '',
   },
   contracts: {
     dao: {

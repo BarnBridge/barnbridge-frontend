@@ -13,6 +13,8 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
+import { useNetwork } from 'components/providers/networkProvider';
+import { PolygonNetwork } from 'networks/polygon';
 
 export enum KnownTokens {
   ETH = 'ETH',
@@ -27,6 +29,7 @@ export enum KnownTokens {
   UNIV2 = 'UNI-V2',
   USDT = 'USDT',
   STK_AAVE = 'stkAAVE',
+  WMATIC = 'wMATIC',
 }
 
 /* eslint-disable @typescript-eslint/no-redeclare */
@@ -102,6 +105,7 @@ const J_PRICE_FEED_ABI: AbiItem[] = [createAbiItem('price', [], ['uint256'])];
 const KnownTokensProvider: FC = props => {
   const { children } = props;
 
+  const network = useNetwork();
   const config = useConfig();
   const wallet = useWallet();
   const web3 = useWeb3();
@@ -118,6 +122,7 @@ const KnownTokensProvider: FC = props => {
   const daiContract = useErc20Contract(config.tokens.dai);
   const univ2Contract = useErc20Contract(config.tokens.univ2);
   const stkaaveContract = useErc20Contract(config.tokens.stkaave);
+  const wmaticContract = useErc20Contract(config.tokens.wmatic);
 
   const tokens = useMemo<TokenMeta[]>(
     () => [
@@ -235,6 +240,16 @@ const KnownTokensProvider: FC = props => {
         priceFeed: config.feeds.stkaave, // stkAAVE -> USD
         pricePath: [],
         contract: stkaaveContract,
+      },
+      {
+        symbol: KnownTokens.WMATIC,
+        name: 'wMATIC',
+        address: config.tokens.wmatic.toLowerCase(),
+        decimals: 18,
+        icon: 'token-wmatic',
+        priceFeed: config.feeds.wmatic, // WMATIC -> USD
+        pricePath: [],
+        contract: wmaticContract,
       },
       {
         symbol: KnownTokens.bbcUSDC,
@@ -541,7 +556,7 @@ const KnownTokensProvider: FC = props => {
       getTokenBySymbol(KnownTokens.BOND)!,
       getTokenBySymbol(KnownTokens.BOND)!,
       getTokenBySymbol(KnownTokens.ETH)!,
-      getTokenBySymbol(KnownTokens.STK_AAVE)!,
+      network.activeNetwork !== PolygonNetwork ? getTokenBySymbol(KnownTokens.STK_AAVE)! : getTokenBySymbol(KnownTokens.WMATIC)!,
       getTokenBySymbol(KnownTokens.DAI)!,
       getTokenBySymbol(KnownTokens.GUSD)!,
       getTokenBySymbol(KnownTokens.SUSD)!,

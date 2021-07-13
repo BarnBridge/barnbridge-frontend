@@ -44,6 +44,7 @@ export const MumbaiConfig: NetworkConfig = {
     gusd: '',
     dai: '',
     stkaave: '',
+    wmatic: '',
     ausdc: '0x2271e3Fef9e15046d09E1d78a8FF038c691E9Cf9',
     ausdt: '',
     agusd: '',
@@ -68,6 +69,7 @@ export const MumbaiConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    wmatic: '',
   },
   contracts: {},
 };
