@@ -29,7 +29,7 @@ const PortfolioWithdraw: FC = () => {
   const projectTokenContract = projectToken.contract as Erc20Contract;
   const bondBalance = projectTokenContract.balance?.unscaleBy(projectToken.decimals);
 
-  const isLocked = (userLockedUntil ?? 0) > Date.now();
+  const isLocked = ((userLockedUntil ?? 0) * 1_000) > Date.now();
   const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
 
   const form = useForm<FormType>({
@@ -71,7 +71,7 @@ const PortfolioWithdraw: FC = () => {
   const amount = watch('amount');
   const bnAmount = BigNumber.from(amount);
 
-  const canSubmit = formState.isDirty && !isSubmitting;
+  const canSubmit = formState.isDirty && !isSubmitting && !isLocked;
 
   async function doWithdraw(amount: BigNumber, gasPrice: number) {
     setSubmitting(true);

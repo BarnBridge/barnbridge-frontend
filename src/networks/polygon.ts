@@ -19,6 +19,7 @@ export const PolygonConfig: NetworkConfig = {
   title: isDevelopmentMode ? 'BarnBridge Alpha Polygon' : 'BarnBridge Polygon',
   features: {
     smartYield: true,
+    smartYieldReward: false,
     smartExposure: true,
   },
   wallets: {
