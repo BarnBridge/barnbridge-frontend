@@ -53,7 +53,6 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
 }
 
 type FormType = {
-  lockStartDate: Date | undefined;
   lockEndDate: Date | undefined;
 };
 
@@ -176,7 +175,7 @@ const PortfolioLock: FC = () => {
               Lock duration
             </Text>
             <div className="flex flow-col col-gap-8 align-center">
-              <UseLeftTime end={userLockedUntil ?? new Date()} delay={1_000}>
+              <UseLeftTime end={(userLockedUntil ?? getUnixTime(new Date())) * 1_000} delay={1_000}>
                 {leftTime => (
                   <Text type="p1" weight="bold" color="primary">
                     {getFormattedDuration(leftTime / 1_000)?.trim() || '0s'}
