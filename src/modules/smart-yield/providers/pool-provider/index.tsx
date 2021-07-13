@@ -187,7 +187,6 @@ const PoolProvider: React.FC = props => {
         let apy;
 
         if (pool.protocolId === AaveMarket.id) {
-          console.log(pool);
           apy = await getAaveIncentivesAPY(pool.cTokenAddress, pool.underlyingDecimals, pool.underlyingSymbol);
         }
 
