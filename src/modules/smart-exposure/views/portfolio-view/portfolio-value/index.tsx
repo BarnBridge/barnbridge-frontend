@@ -7,8 +7,8 @@ import * as ReCharts from 'recharts';
 import Spin from 'components/antd/spin';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { PortfolioValueType, fetchPortfolioValue } from 'modules/smart-exposure/api';
-import { useWallet } from 'wallets/wallet';
+import { PortfolioValueType, useSeAPI } from 'modules/smart-exposure/api';
+import { useWallet } from 'wallets/walletProvider';
 
 import { numberFormat } from 'utils';
 import { formatTick, generateTicks } from 'utils/chart';
@@ -23,6 +23,7 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const [loading, setLoading] = useState<boolean>(false);
   const [dataList, setDataList] = useState<PortfolioValueType[]>([]);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
     if (!account) {
@@ -30,11 +31,12 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
     }
 
     setLoading(true);
-    fetchPortfolioValue({
-      accountAddress: account,
-      window: periodFilter,
-      poolAddress,
-    })
+    seAPI
+      .fetchPortfolioValue({
+        accountAddress: account,
+        window: periodFilter,
+        poolAddress,
+      })
       .then(result => setDataList(result.data))
       .catch(err => {
         setDataList([]);

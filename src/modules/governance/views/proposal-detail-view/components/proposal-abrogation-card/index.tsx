@@ -6,8 +6,8 @@ import Popover from 'components/antd/popover';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import useMergeState from 'hooks/useMergeState';
+import { APIProposalState } from 'modules/governance/api';
 
-import { APIProposalState } from '../../../../api';
 import { useDAO } from '../../../../components/dao-provider';
 import { useProposal } from '../../providers/ProposalProvider';
 import AbrogationProposalModal from '../abrogation-proposal-modal';

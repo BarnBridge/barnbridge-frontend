@@ -4,13 +4,13 @@ import { isMobile } from 'react-device-detect';
 import { Text } from 'components/custom/typography';
 import RewardPoolsProvider from 'modules/smart-yield/providers/reward-pools-provider';
 import AggregatedPoolCard from 'modules/smart-yield/views/pools-view/aggregated-pool-card';
-import { useWallet } from 'wallets/wallet';
+import PoolsTransactions from 'modules/yield-farming/components/pools-transactions';
+import { useWallet } from 'wallets/walletProvider';
 
 import PoolCard from '../../components/pool-card';
 import PoolChart from '../../components/pool-chart';
 import PoolRewards from '../../components/pool-rewards';
 import PoolStats from '../../components/pool-stats';
-import PoolTransactions from '../../components/pool-transactions';
 import { YFPoolID } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
@@ -38,7 +38,7 @@ const PoolsView: FC = () => {
           </div>
         </RewardPoolsProvider>
         <PoolChart className="mb-32" />
-        <PoolTransactions />
+        <PoolsTransactions />
       </div>
     </>
   );

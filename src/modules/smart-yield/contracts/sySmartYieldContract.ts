@@ -241,17 +241,17 @@ class SYSmartYieldContract extends Erc20Contract {
     return this.batch([
       {
         method: 'price',
-        transform: value => new BigNumber(value),
+        transform: value => BigNumber.from(value),
       },
       {
         method: 'abondDebt',
-        transform: value => new BigNumber(value),
+        transform: value => BigNumber.from(value),
       },
       {
         method: 'abond',
         transform: (value: SYAbond) => ({
-          principal: new BigNumber(value.principal),
-          gain: new BigNumber(value.gain),
+          principal: BigNumber.from(value.principal),
+          gain: BigNumber.from(value.gain),
           issuedAt: Math.floor(new BigNumber(value.issuedAt).dividedBy(1e18).toNumber()),
           maturesAt: Math.floor(new BigNumber(value.maturesAt).dividedBy(1e18).toNumber()),
           liquidated: value.liquidated,
@@ -297,7 +297,7 @@ class SYSmartYieldContract extends Erc20Contract {
       methodArgs: [jBondId],
       transform: value => ({
         jBondId,
-        tokens: new BigNumber(value.tokens),
+        tokens: BigNumber.from(value.tokens),
         maturesAt: Number(value.maturesAt),
       }),
     }));
@@ -315,8 +315,8 @@ class SYSmartYieldContract extends Erc20Contract {
       methodArgs: [sBondId],
       transform: value => ({
         sBondId,
-        principal: new BigNumber(value.principal),
-        gain: new BigNumber(value.gain),
+        principal: BigNumber.from(value.principal),
+        gain: BigNumber.from(value.gain),
         issuedAt: Number(value.issuedAt),
         maturesAt: Number(value.maturesAt),
       }),

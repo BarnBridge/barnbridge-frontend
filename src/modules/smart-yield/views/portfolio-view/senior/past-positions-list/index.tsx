@@ -3,7 +3,7 @@ import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatBigValue, formatPercent, formatUSDValue, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSDValue, shortenAddr } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
@@ -11,10 +11,11 @@ import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { mergeState } from 'hooks/useMergeState';
-import { APISYSeniorRedeem, fetchSYSeniorRedeems } from 'modules/smart-yield/api';
+import { APISYSeniorRedeem, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -47,8 +48,9 @@ const PastPositionsList: React.FC<Props> = props => {
   const { originatorFilter = 'all', tokenFilter = 'all' } = props;
 
   const wallet = useWallet();
+  const { getEtherscanTxUrl } = useWeb3();
   const poolsCtx = usePools();
-
+  const syAPI = useSyAPI();
   const { pools } = poolsCtx;
 
   const [state, setState] = React.useState<State>(InitialState);
@@ -70,7 +72,7 @@ const PastPositionsList: React.FC<Props> = props => {
       );
 
       try {
-        const redeems = await fetchSYSeniorRedeems(
+        const redeems = await syAPI.fetchSYSeniorRedeems(
           wallet.account,
           state.page,
           state.pageSize,

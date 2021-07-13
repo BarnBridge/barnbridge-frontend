@@ -4,8 +4,8 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { APIProposalState } from 'modules/governance/api';
 
-import { APIProposalState } from '../../../../api';
 import AbrogationProvider from '../../providers/AbrogationProvider';
 import { useProposal } from '../../providers/ProposalProvider';
 import AbrogationApprovalCard from '../abrogation-approval-card';

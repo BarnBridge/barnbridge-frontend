@@ -16,9 +16,9 @@ import IconsSet from 'components/custom/icons-set';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
-import { BondToken, KnownTokens, ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
 
@@ -33,6 +33,7 @@ const PoolCard: FC<Props> = props => {
 
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
+  const { convertTokenInUSD, projectToken } = useKnownTokens();
 
   const poolMeta = yfPoolsCtx.getYFKnownPoolByName(poolId);
   const isEnded = poolMeta?.contract.isPoolEnded === true;
@@ -69,7 +70,7 @@ const PoolCard: FC<Props> = props => {
 
     try {
       await poolMeta?.contract.claim(args.gasPrice);
-      (BondToken.contract as Erc20Contract).loadBalance().catch(Error);
+      (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
       (poolMeta?.contract as YfPoolContract).loadUserData().catch(Error);
     } catch {}
 
@@ -136,7 +137,7 @@ const PoolCard: FC<Props> = props => {
                 Weekly reward
               </Text>
               <div className="flex align-center">
-                <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
+                <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(epochReward) ?? '-'}
                 </Text>
@@ -180,7 +181,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name={ProjectToken.icon!} width={16} height={16} className="mr-8" />
+                <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(potentialReward) ?? '-'}
                 </Text>
@@ -283,9 +284,9 @@ const PoolCard: FC<Props> = props => {
             header={
               <div className="flex col-gap-8 align-center justify-center">
                 <Text type="h2" weight="semibold" color="primary">
-                  {formatToken(toClaim?.unscaleBy(BondToken.decimals)) ?? '-'}
+                  {formatToken(toClaim?.unscaleBy(projectToken.decimals)) ?? '-'}
                 </Text>
-                <Icon name={ProjectToken.icon!} width={32} height={32} />
+                <Icon name={projectToken.icon!} width={32} height={32} />
               </div>
             }
             submitText="Claim"

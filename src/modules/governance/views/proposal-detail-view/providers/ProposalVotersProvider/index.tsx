@@ -1,9 +1,11 @@
 import React from 'react';
 
 import useMergeState from 'hooks/useMergeState';
-import { APIVoteEntity, fetchProposalVoters } from 'modules/governance/api';
+import { APIVoteEntity, useDaoAPI } from 'modules/governance/api';
 
 import { useProposal } from '../ProposalProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type ProposalVotersProviderState = {
   votes: APIVoteEntity[];
@@ -28,19 +30,16 @@ const InitialState: ProposalVotersProviderState = {
   supportFilter: undefined,
 };
 
-const ProposalVotersContext = React.createContext<ProposalVotersContextType>({
-  ...InitialState,
-  changeSupportFilter: () => undefined,
-  changePage: () => undefined,
-});
+const Context = React.createContext<ProposalVotersContextType>(InvariantContext('ProposalVotersProvider'));
 
 export function useProposalVoters(): ProposalVotersContextType {
-  return React.useContext(ProposalVotersContext);
+  return React.useContext(Context);
 }
 
 const ProposalVotersProvider: React.FC = props => {
   const { children } = props;
 
+  const daoAPI = useDaoAPI();
   const { proposal } = useProposal();
   const [state, setState] = useMergeState<ProposalVotersProviderState>(InitialState);
 
@@ -55,7 +54,8 @@ const ProposalVotersProvider: React.FC = props => {
 
     setState({ loading: true });
 
-    fetchProposalVoters(proposal.proposalId, state.page, state.pageSize, state.supportFilter)
+    daoAPI
+      .fetchProposalVoters(proposal.proposalId, state.page, state.pageSize, state.supportFilter)
       .then(data => {
         setState({
           loading: false,
@@ -83,14 +83,14 @@ const ProposalVotersProvider: React.FC = props => {
   }
 
   return (
-    <ProposalVotersContext.Provider
+    <Context.Provider
       value={{
         ...state,
         changeSupportFilter,
         changePage,
       }}>
       {children}
-    </ProposalVotersContext.Provider>
+    </Context.Provider>
   );
 };
 

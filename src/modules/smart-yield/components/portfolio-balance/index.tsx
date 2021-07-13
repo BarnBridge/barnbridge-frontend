@@ -5,7 +5,7 @@ import Divider from 'components/antd/divider';
 import Progress from 'components/antd/progress';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text, TextProps } from 'components/custom/typography';
-import { BondToken, StkAaveToken } from 'components/providers/known-tokens-provider';
+import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 
 import s from './s.module.scss';
 
@@ -29,6 +29,9 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     aggregatedText,
     data: [[label1, value1, color1], [label2, value2, color2]],
   } = props;
+
+  const { projectToken, getTokenBySymbol } = useKnownTokens();
+  const stkAaveToken = getTokenBySymbol(KnownTokens.STK_AAVE)!;
 
   const progress = ((value1 ?? 0) * 100) / ((value1 ?? 0) + (value2 ?? 0));
 
@@ -61,7 +64,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
               {formatPercent(aggregated)}
             </Text>
             {Boolean(aggregatedApr) && (
-              <AprLabel icons={[BondToken.icon!, StkAaveToken.icon!]}> +{formatPercent(aggregatedApr)} APR</AprLabel>
+              <AprLabel icons={[projectToken.icon!, stkAaveToken.icon!]}> +{formatPercent(aggregatedApr)} APR</AprLabel>
             )}
           </div>
         )}

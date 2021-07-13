@@ -3,8 +3,8 @@ import React from 'react';
 import Grid from 'components/custom/grid';
 import { Notification } from 'components/custom/notification';
 import { Text } from 'components/custom/typography';
-import { useGeneral } from 'components/providers/general-provider';
-import { useNotifications } from 'components/providers/notifications-provider';
+import { useGeneral } from 'components/providers/generalProvider';
+import { useNotifications } from 'components/providers/notificationsProvider';
 import { ReactComponent as ZeroNotificationsDarkSvg } from 'resources/svg/zero-notifications-dark.svg';
 import { ReactComponent as ZeroNotificationsSvg } from 'resources/svg/zero-notifications.svg';
 

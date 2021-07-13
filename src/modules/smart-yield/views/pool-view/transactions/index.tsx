@@ -2,7 +2,7 @@ import React, { FC } from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
 import format from 'date-fns/format';
-import { formatToken, formatUSD, getEtherscanAddressUrl, getEtherscanTxUrl, shortenAddr } from 'web3/utils';
+import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
@@ -11,16 +11,17 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
-import { ProjectToken, convertTokenInUSD } from 'components/providers/known-tokens-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 import {
   APISYRewardPoolTransaction,
   APISYRewardTxHistoryType,
   RewardHistoryShortTypes,
-  fetchSYRewardPoolTransactions,
+  useSyAPI,
 } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
@@ -54,6 +55,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Transaction',
       width: '25%',
       render: function TransactionRender(_, entity) {
+        const { projectToken } = useKnownTokens();
         const rpCtx = useRewardPool();
         const { market: poolMarket, uToken, pool } = rpCtx;
         const { smartYield } = pool!;
@@ -62,7 +64,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           <div className="flex flow-col col-gap-16 align-center">
             <IconBubble
               name={uToken?.icon}
-              bubbleName={ProjectToken.icon!}
+              bubbleName={projectToken.icon!}
               secondBubbleName={poolMarket?.icon.active}
             />
             <div>
@@ -81,6 +83,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Amount',
       width: '25%',
       render: function TransactionRender(_, entity) {
+        const { convertTokenInUSD } = useKnownTokens();
         const rpCtx = useRewardPool();
         const { pool } = rpCtx;
         const { smartYield } = pool!;
@@ -115,30 +118,38 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           title: 'Address',
           dataIndex: 'from',
           width: '25%',
-          render: (_, entity) => (
-            <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
-              <Text type="p1" weight="semibold">
-                {shortenAddr(entity.userAddress)}
-              </Text>
-            </ExternalLink>
-          ),
+          render: function Render(_, entity) {
+            const { getEtherscanAddressUrl } = useWeb3();
+
+            return (
+              <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
+                <Text type="p1" weight="semibold">
+                  {shortenAddr(entity.userAddress)}
+                </Text>
+              </ExternalLink>
+            );
+          },
         }
       : {},
     {
       title: 'Transaction hash/timestamp',
       width: '25%',
-      render: (_, entity) => (
-        <>
-          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-            <Text type="p1" weight="semibold">
-              {shortenAddr(entity.transactionHash)}
+      render: function Render(_, entity) {
+        const { getEtherscanTxUrl } = useWeb3();
+
+        return (
+          <>
+            <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+              <Text type="p1" weight="semibold">
+                {shortenAddr(entity.transactionHash)}
+              </Text>
+            </ExternalLink>
+            <Text type="small" weight="semibold" color="secondary">
+              {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
             </Text>
-          </ExternalLink>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
-          </Text>
-        </>
-      ),
+          </>
+        );
+      },
     },
   ];
 }
@@ -146,6 +157,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 const Transactions: FC = () => {
   const wallet = useWallet();
   const rewardPool = useRewardPool();
+  const syAPI = useSyAPI();
 
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
@@ -204,7 +216,7 @@ const Transactions: FC = () => {
         const {
           data: transactions,
           meta: { count },
-        } = await fetchSYRewardPoolTransactions(
+        } = await syAPI.fetchSYRewardPoolTransactions(
           meta.poolAddress,
           state.page,
           state.pageSize,

@@ -66,7 +66,7 @@ class SeEPoolPeripheryContract extends Web3Contract {
   //   amountB: BigNumber,
   // ): Promise<BigNumber> {
   //   return this.call('eTokenForTokenATokenB', [ePoolAddress, eTokenAddress, amountA, amountB]).then(
-  //     value => new BigNumber(value),
+  //     value => BigNumber.from(value),
   //   );
   // }
 
@@ -76,8 +76,8 @@ class SeEPoolPeripheryContract extends Web3Contract {
   //   amount: BigNumber,
   // ): Promise<TokenATokenBForETokenResult> {
   //   return this.call('tokenATokenBForEToken', [ePoolAddress, eTokenAddress, amount]).then(value => ({
-  //     amountA: new BigNumber(value[0]),
-  //     amountB: new BigNumber(value[1]),
+  //     amountA: BigNumber.from(value[0]),
+  //     amountB: BigNumber.from(value[1]),
   //   }));
   // }
 
@@ -104,11 +104,11 @@ class SeEPoolPeripheryContract extends Web3Contract {
   }
 
   // getAmountBForAmountA(ePoolAddress: string, eTokenAddress: string, amountA: BigNumber): Promise<BigNumber> {
-  //   return this.call('amountBForAmountA', [ePoolAddress, eTokenAddress, amountA]).then(value => new BigNumber(value));
+  //   return this.call('amountBForAmountA', [ePoolAddress, eTokenAddress, amountA]).then(value => BigNumber.from(value));
   // }
 
   // getAmountAForAmountB(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
-  //   return this.call('amountAForAmountB', [ePoolAddress, eTokenAddress, amountB]).then(value => new BigNumber(value));
+  //   return this.call('amountAForAmountB', [ePoolAddress, eTokenAddress, amountB]).then(value => BigNumber.from(value));
   // }
 
   getMinInputAmountAForEToken(ePoolAddress: string, eTokenAddress: string, amountA: BigNumber): Promise<BigNumber> {
@@ -140,6 +140,7 @@ class SeEPoolPeripheryContract extends Web3Contract {
       value => new BigNumber(value),
     );
   }
+
   getETokenForMinInputAmountB(ePoolAddress: string, eTokenAddress: string, amountB: BigNumber): Promise<BigNumber> {
     return this.call('eTokenForMinInputAmountB_Unsafe', [ePoolAddress, eTokenAddress, amountB]).then(
       value => new BigNumber(value),

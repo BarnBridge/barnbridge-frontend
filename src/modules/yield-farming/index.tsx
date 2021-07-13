@@ -4,8 +4,9 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import { useWarning } from 'components/providers/warning-provider';
+import YfAPIProvider from 'modules/yield-farming/api';
 
-import YFPoolsProvider from './providers/pools-provider';
+import YfPoolsProvider from './providers/pools-provider';
 
 const PoolsView = lazy(() => import('./views/pools-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
@@ -36,15 +37,17 @@ const YieldFarmingView: FC = () => {
   }, [isMobile]);
 
   return (
-    <YFPoolsProvider>
-      <Suspense fallback={<AntdSpin />}>
-        <Switch>
-          <Route path="/yield-farming" exact component={PoolsView} />
-          <Route path="/yield-farming/:poolId" exact component={PoolView} />
-          <Redirect to="/yield-farming" />
-        </Switch>
-      </Suspense>
-    </YFPoolsProvider>
+    <YfAPIProvider>
+      <YfPoolsProvider>
+        <Suspense fallback={<AntdSpin />}>
+          <Switch>
+            <Route path="/yield-farming" exact component={PoolsView} />
+            <Route path="/yield-farming/:poolId" exact component={PoolView} />
+            <Redirect to="/yield-farming" />
+          </Switch>
+        </Suspense>
+      </YfPoolsProvider>
+    </YfAPIProvider>
   );
 };
 

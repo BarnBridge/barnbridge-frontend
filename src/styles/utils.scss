@@ -1,5 +1,10 @@
 @import 'src/styles/text';
 
+.content-container-fix {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .content-container {
   --content-container-v-padding: 40px;
 
@@ -11,13 +16,15 @@
   }
 }
 
-.content-container-fix {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-}
-
 .container-limit {
   max-width: 1070px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.container-fit {
+  max-width: 640px;
   width: 100%;
   margin-left: auto;
   margin-right: auto;
@@ -178,4 +185,10 @@
     background-color: var(--dot-color, currentColor);
     border-radius: 50%;
   }
+}
+
+.container-box {
+  background: var(--theme-body-color);
+  border-radius: 4px;
+  padding: 24px 32px;
 }

@@ -10,13 +10,13 @@ import PoolStake from '../../components/pool-stake';
 import PoolStatistics from '../../components/pool-statistics';
 import PoolTransactions from '../../components/pool-transactions';
 import PoolUnstake from '../../components/pool-unstake';
-import YFPoolProvider, { useYFPool } from '../../providers/pool-provider';
+import YfPoolProvider, { useYfPool } from '../../providers/pool-provider';
 import { YFPoolID } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
 const PoolViewInner: FC = () => {
-  const yfPoolCtx = useYFPool();
+  const yfPoolCtx = useYfPool();
 
   const { poolMeta } = yfPoolCtx;
 
@@ -92,9 +92,9 @@ const PoolView: FC = () => {
   const { poolId } = match.params;
 
   return (
-    <YFPoolProvider poolId={poolId}>
+    <YfPoolProvider poolId={poolId}>
       <PoolViewInner />
-    </YFPoolProvider>
+    </YfPoolProvider>
   );
 };
 

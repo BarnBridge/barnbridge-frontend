@@ -1,22 +1,22 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { WalletConnectConnector } from '@web3-react/walletconnect-connector';
 
-import config from 'config';
 import WalletConnectLogo from 'resources/svg/wallets/walletconnect-logo.svg';
 
-import { WalletConnector } from 'wallets/types';
+import { Web3Network } from 'networks/types';
+import { BaseWalletConfig } from 'wallets/types';
 
-const WalletConnectConfig: WalletConnector = {
+const WalletConnectConfig: BaseWalletConfig = {
   id: 'walletconnect',
   logo: WalletConnectLogo,
   name: 'WalletConnect',
-  factory(chainId: number): AbstractConnector {
+  factory(network: Web3Network): AbstractConnector {
     return new WalletConnectConnector({
       rpc: {
-        [chainId]: config.web3.rpc.httpsUrl,
+        [network.meta.chainId]: network.rpc.httpsUrl,
       },
-      pollingInterval: config.web3.poolingInterval,
-      bridge: config.web3.wallets.walletConnect.bridge,
+      pollingInterval: network.rpc.poolingInterval,
+      bridge: network.config.wallets.walletConnectBridge,
       qrcode: true,
     });
   },

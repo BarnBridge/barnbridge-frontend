@@ -30,7 +30,7 @@ class SYProviderContract extends Web3Contract {
 
   async loadUnderlyingFees(): Promise<void> {
     return this.call('underlyingFees').then(value => {
-      this.underlyingFees = new BigNumber(value);
+      this.underlyingFees = BigNumber.from(value);
       this.emit(Web3Contract.UPDATE_DATA);
     });
   }

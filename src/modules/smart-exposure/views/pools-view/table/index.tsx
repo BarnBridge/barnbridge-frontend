@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { NavLink } from 'react-router-dom';
-import BigNumber from 'bignumber.js';
 import { formatPercent, formatUSD } from 'web3/utils';
 
-import { Badge } from 'components/custom/badge';
 import Icon from 'components/custom/icon';
 import { TranchePercentageProgress } from 'components/custom/progress';
 import { ColumnType, Table } from 'components/custom/table';
 import { InfoTooltip } from 'components/custom/tooltip';
-import { getTokenBySymbol } from 'components/providers/known-tokens-provider';
-import { PoolApiType, TranchesItemApiType, fetchTranches } from 'modules/smart-exposure/api';
-import { useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { PoolApiType, TranchesItemApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 const tableColumns: ColumnType<TranchesItemApiType>[] = [
   {
@@ -20,7 +17,8 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
         <InfoTooltip>The target funds ratio (top) and the current actual ratio (bottom)</InfoTooltip>
       </div>
     ),
-    render: item => {
+    render: function Render(item) {
+      const { getTokenBySymbol } = useKnownTokens();
       const tokenA = getTokenBySymbol(item.tokenA.symbol);
       const tokenB = getTokenBySymbol(item.tokenB.symbol);
 
@@ -142,9 +140,10 @@ type Props = {
 
 export const PairsTable: React.FC<Props> = ({ pool }) => {
   const [tranches, setTranches] = useState<TranchesItemApiType[]>([]);
+  const seAPI = useSeAPI();
 
   useEffect(() => {
-    fetchTranches(pool.poolAddress).then(setTranches);
+    seAPI.fetchTranches(pool.poolAddress).then(setTranches);
   }, [pool.poolAddress]);
 
   return <Table<TranchesItemApiType> columns={tableColumns} data={tranches} />;

@@ -1,32 +1,23 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
-import { getEtherscanTxUrl } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
-import { MainnetHttpsWeb3Provider } from 'components/providers/eth-web3-provider';
-import {
-  BondToken,
-  DaiToken,
-  EthToken,
-  GusdToken,
-  StkAaveToken,
-  UsdcToken,
-  UsdtToken,
-  convertTokenIn,
-  convertTokenInUSD,
-} from 'components/providers/known-tokens-provider';
-import config from 'config';
+import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, fetchSYPools } from 'modules/smart-yield/api';
+import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, useSyAPI } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { AaveMarket } from 'modules/smart-yield/providers/markets';
-import { useWallet } from 'wallets/wallet';
+import { useWallet } from 'wallets/walletProvider';
+
+import { InvariantContext } from 'utils/context';
 
 export type PoolsSYPool = APISYPool & {
   meta?: SYPoolMeta;
@@ -57,13 +48,7 @@ type ContextType = State & {
   transferFrom: (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => Promise<void>;
 };
 
-const Context = React.createContext<ContextType>({
-  ...InitialState,
-  getMarketTVL: () => BigNumber.ZERO,
-  redeemBond: () => Promise.reject(),
-  redeemJuniorBond: () => Promise.reject(),
-  transferFrom: () => Promise.reject(),
-});
+const Context = React.createContext<ContextType>(InvariantContext('PoolsProvider'));
 
 type StatusModal = {
   visible: boolean;
@@ -76,55 +61,17 @@ export function usePools(): ContextType {
   return React.useContext(Context);
 }
 
-async function getAaveIncentivesAPY(
-  cTokenAddress: string,
-  uDecimals: number,
-  uSymbol: string,
-): Promise<BigNumber | undefined> {
-  let aTokenAddress = '';
-  let aTokenDecimals = 0;
-
-  if (config.isProd) {
-    aTokenAddress = cTokenAddress;
-    aTokenDecimals = uDecimals;
-  } else {
-    switch (uSymbol) {
-      case UsdcToken.symbol:
-        aTokenAddress = config.tokens.aUsdc;
-        aTokenDecimals = UsdcToken.decimals;
-        break;
-      case DaiToken.symbol:
-        aTokenAddress = config.tokens.aDai;
-        aTokenDecimals = DaiToken.decimals;
-        break;
-      case UsdtToken.symbol:
-        aTokenAddress = config.tokens.aUsdt;
-        aTokenDecimals = UsdtToken.decimals;
-        break;
-      case GusdToken.symbol:
-        aTokenAddress = config.tokens.aGusd;
-        aTokenDecimals = GusdToken.decimals;
-        break;
-    }
-  }
-
-  const aToken = new SYAaveTokenContract(aTokenAddress);
-  aToken.setCallProvider(MainnetHttpsWeb3Provider);
-  await aToken.loadCommon();
-
-  const aTokenPriceInEth = convertTokenIn(BigNumber.from(1), StkAaveToken.symbol, EthToken.symbol);
-  const uTokenPriceInEth = convertTokenIn(BigNumber.from(1), uSymbol, EthToken.symbol);
-
-  return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
-}
-
 const PoolsProvider: React.FC = props => {
   const { children } = props;
 
   const history = useHistory();
   const wallet = useWallet();
+  const { getEtherscanTxUrl } = useWeb3();
+  const { getContract } = useContractManager();
+  const { getTokenBySymbol, convertTokenIn, convertTokenInUSD, stkAaveToken, ethToken, bondToken } = useKnownTokens();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
+  const syAPI = useSyAPI();
 
   const [statusModal, setStatusModal] = React.useState<StatusModal>({
     visible: false,
@@ -132,6 +79,23 @@ const PoolsProvider: React.FC = props => {
     state: undefined,
     txHash: undefined,
   });
+
+  const getAaveIncentivesAPY = useCallback(
+    async (cTokenAddress: string, uDecimals: number, uSymbol: string): Promise<BigNumber | undefined> => {
+      const aTokenAddress = cTokenAddress;
+      const aTokenDecimals = uDecimals;
+
+      const aToken = new SYAaveTokenContract(aTokenAddress); // TODO: re-think
+      aToken.setCallProvider(MainnetHttpsWeb3Provider); // TODO: Re-think about mainnet provider
+      await aToken.loadCommon();
+
+      const aTokenPriceInEth = convertTokenIn(1, stkAaveToken.symbol, ethToken.symbol);
+      const uTokenPriceInEth = convertTokenIn(1, uSymbol, ethToken.symbol);
+
+      return aToken.calculateIncentivesAPY(aTokenPriceInEth!, uTokenPriceInEth!, aTokenDecimals);
+    },
+    [convertTokenIn, ethToken, getTokenBySymbol, stkAaveToken],
+  );
 
   React.useEffect(() => {
     setState(prevState => ({
@@ -142,15 +106,19 @@ const PoolsProvider: React.FC = props => {
 
     (async () => {
       try {
-        const pools = await fetchSYPools();
+        const pools = await syAPI.fetchSYPools();
 
         setState(prevState => ({
           ...prevState,
           loading: false,
-          pools: pools.map(pool => {
-            const smartYield = new SYSmartYieldContract(pool.smartYieldAddress);
+          pools: (pools ?? []).map(pool => {
+            const smartYield = getContract<SYSmartYieldContract>(pool.smartYieldAddress, () => {
+              return new SYSmartYieldContract(pool.smartYieldAddress);
+            });
             smartYield.on(Web3Contract.UPDATE_DATA, reload);
-            const underlying = new Erc20Contract([], pool.underlyingAddress);
+            const underlying = getContract<Erc20Contract>(pool.underlyingAddress, () => {
+              return new Erc20Contract([], pool.underlyingAddress);
+            });
             underlying.on(Web3Contract.UPDATE_DATA, reload);
 
             smartYield.loadCommon();
@@ -170,19 +138,21 @@ const PoolsProvider: React.FC = props => {
             };
 
             if (pool.rewardPoolAddress) {
-              const rewardPool = new SYRewardPoolContract(pool.rewardPoolAddress, pool.protocolId === AaveMarket.id);
+              const rewardPool = getContract<SYRewardPoolContract>(pool.rewardPoolAddress, () => {
+                return new SYRewardPoolContract(pool.rewardPoolAddress, pool.protocolId === AaveMarket.id);
+              });
               rewardPool.on(Web3Contract.UPDATE_DATA, reload);
               rewardPool
                 .loadCommon()
                 .then(() => {
-                  return rewardPool.loadRewardRateFor(BondToken.address) as any;
+                  return rewardPool.loadRewardRateFor(bondToken.address) as any;
                 })
                 .then(() => {
                   const { poolSize } = rewardPool;
 
                   if (poolSize) {
-                    const r = rewardPool.getDailyRewardFor(BondToken.address)?.unscaleBy(BondToken.decimals);
-                    const yearlyReward = convertTokenInUSD(r, BondToken.symbol!)?.multipliedBy(365);
+                    const r = rewardPool.getDailyRewardFor(bondToken.address)?.unscaleBy(bondToken.decimals);
+                    const yearlyReward = convertTokenInUSD(r, bondToken.symbol!)?.multipliedBy(365);
 
                     const p = poolSize.dividedBy(10 ** (smartYield.decimals ?? 0));
                     const poolBalance = convertTokenInUSD(p, smartYield.symbol!);
@@ -222,7 +192,9 @@ const PoolsProvider: React.FC = props => {
 
       pool.contracts.underlying?.setProvider(wallet.provider);
       pool.contracts.underlying?.setAccount(wallet.account);
-      pool.contracts.underlying?.loadBalance();
+      if (wallet.account) {
+        pool.contracts.underlying?.loadBalance();
+      }
 
       pool.contracts.rewardPool?.setProvider(wallet.provider);
       pool.contracts.rewardPool?.setAccount(wallet.account);
@@ -275,9 +247,9 @@ const PoolsProvider: React.FC = props => {
 
   const redeemBond = React.useCallback(
     (smartYieldAddress: string, sBondId: number, gasPrice: number) => {
-      const smartYieldContract = new SYSmartYieldContract(smartYieldAddress);
-      smartYieldContract.setProvider(wallet.provider);
-      smartYieldContract.setAccount(wallet.account);
+      const smartYieldContract = getContract<SYSmartYieldContract>(smartYieldAddress, () => {
+        return new SYSmartYieldContract(smartYieldAddress);
+      });
 
       smartYieldContract
         .on('tx:hash', (txHash: string) => {
@@ -309,9 +281,9 @@ const PoolsProvider: React.FC = props => {
 
   const redeemJuniorBond = React.useCallback(
     (smartYieldAddress: string, jBondId: number, gasPrice: number) => {
-      const smartYieldContract = new SYSmartYieldContract(smartYieldAddress);
-      smartYieldContract.setProvider(wallet.provider);
-      smartYieldContract.setAccount(wallet.account);
+      const smartYieldContract = getContract<SYSmartYieldContract>(smartYieldAddress, () => {
+        return new SYSmartYieldContract(smartYieldAddress);
+      });
 
       smartYieldContract
         .on('tx:hash', (txHash: string) => {
@@ -343,9 +315,9 @@ const PoolsProvider: React.FC = props => {
 
   const transferFrom = React.useCallback(
     (seniorBondAddress: string, address: string, sBondId: number, gasPrice: number) => {
-      const seniorBondContract = new SYSeniorBondContract(seniorBondAddress);
-      seniorBondContract.setProvider(wallet.provider);
-      seniorBondContract.setAccount(wallet.account);
+      const seniorBondContract = getContract<SYSeniorBondContract>(seniorBondAddress, () => {
+        return new SYSeniorBondContract(seniorBondAddress);
+      });
 
       seniorBondContract
         .on('tx:hash', (txHash: string) => {
