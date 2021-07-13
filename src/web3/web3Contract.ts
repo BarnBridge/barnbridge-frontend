@@ -10,32 +10,60 @@ import EventEmitter from 'wolfy87-eventemitter';
 
 import { WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
 
+export class AbiTuple {
+  items: string[] = [];
+
+  constructor(items: string[]) {
+    this.items = items;
+  }
+}
+
+export class AbiTupleArray {
+  items: string[] = [];
+
+  constructor(items: string[]) {
+    this.items = items;
+  }
+}
+
 export function createAbiItem(
   name: string,
-  inputs: (string | string[])[] = [],
-  outputs: (string | string[])[] = [],
+  inputs: (string | AbiTuple | AbiTupleArray)[] = [],
+  outputs: (string | AbiTuple | AbiTupleArray)[] = [],
 ): AbiItem {
   return {
     name,
     type: 'function',
     stateMutability: 'view',
     inputs: inputs.map(type => {
-      if (Array.isArray(type)) {
+      if (type instanceof AbiTuple) {
+        return {
+          name: '',
+          type: 'tuple',
+          components: type.items.map(t => ({ name: '', type: t })),
+        };
+      } else if (type instanceof AbiTupleArray) {
         return {
           name: '',
           type: 'tuple[]',
-          components: type.map(t => ({ name: '', type: t })),
+          components: type.items.map(t => ({ name: '', type: t })),
         };
       }
 
       return { name: '', type };
     }),
     outputs: outputs.map(type => {
-      if (Array.isArray(type)) {
+      if (type instanceof AbiTuple) {
+        return {
+          name: '',
+          type: 'tuple',
+          components: type.items.map(t => ({ name: '', type: t })),
+        };
+      } else if (type instanceof AbiTupleArray) {
         return {
           name: '',
           type: 'tuple[]',
-          components: type.map(t => ({ name: '', type: t })),
+          components: type.items.map(t => ({ name: '', type: t })),
         };
       }
 
