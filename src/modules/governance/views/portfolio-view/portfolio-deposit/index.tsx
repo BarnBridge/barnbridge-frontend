@@ -174,7 +174,7 @@ const PortfolioDeposit: FC = () => {
           {({ field }) => (
             <TokenAmount
               before={<Icon name={projectToken.icon as TokenIconNames} />}
-              max={bondBalance?.toNumber() ?? 0}
+              max={bondBalance}
               disabled={isSubmitting}
               decimals={projectToken.decimals}
               slider

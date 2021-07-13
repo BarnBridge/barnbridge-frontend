@@ -266,7 +266,7 @@ const MultipleTokensForm = ({
           setTokenEState(value);
           tokenEAmountHandler(value);
         }}
-        max={tokenEMax.toString()}
+        max={tokenEMax}
         placeholder={`0 (Max ${tokenEMax ?? 0})`}
         className="mb-8"
         slider
@@ -507,7 +507,7 @@ const SingleTokenForm = ({
         before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
         value={tokenEState}
         onChange={setTokenEState}
-        max={tokenEMax.toString()}
+        max={tokenEMax}
         placeholder={`0 (Max ${tokenEMax ?? 0})`}
         className="mb-8"
         slider

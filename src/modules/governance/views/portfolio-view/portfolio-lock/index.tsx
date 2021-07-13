@@ -4,7 +4,6 @@ import addDays from 'date-fns/addDays';
 import addMinutes from 'date-fns/addMinutes';
 import addMonths from 'date-fns/addMonths';
 import addYears from 'date-fns/addYears';
-import formatDuration from 'date-fns/formatDuration';
 import getUnixTime from 'date-fns/getUnixTime';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import { formatToken } from 'web3/utils';
