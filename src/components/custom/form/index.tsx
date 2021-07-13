@@ -90,6 +90,7 @@ export function useForm<V extends FieldValues = FieldValues>(props: useFormProps
   const updateValue = (fieldName: FieldPath<V>, value: UnpackNestedValue<FieldPathValue<V, FieldPath<V>>>) => {
     rhForm.setValue(fieldName, value, {
       shouldDirty: true,
+      shouldValidate: true,
     });
   };
 
