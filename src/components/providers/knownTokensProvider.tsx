@@ -32,7 +32,7 @@ export enum KnownTokens {
 /* eslint-disable @typescript-eslint/no-redeclare */
 export namespace KnownTokens {
   // compound
-  export const bbcUSDC = isDevelopmentMode ? 'bbcUSDC' : 'bb_cUSDC';
+  export const bbcUSDC = 'bb_cUSDC';
   export const bbcDAI = 'bb_cDAI';
   // aave
   export const bbaUSDC = 'bb_aUSDC';
@@ -323,6 +323,10 @@ const KnownTokensProvider: FC = props => {
 
   const getTokenBySymbol = useCallback(
     (symbol: string): TokenMeta | undefined => {
+      if (isDevelopmentMode && symbol === KnownTokens.bbcUSDC) {
+        return tokens.find(token => token.symbol === 'bb_cUSDC');
+      }
+
       return tokens.find(token => token.symbol === symbol);
     },
     [tokens],
@@ -337,7 +341,14 @@ const KnownTokensProvider: FC = props => {
 
   const getTokenIconBySymbol = useCallback(
     (symbol: string): string => {
-      const foundToken = tokens.find(token => token.symbol === symbol);
+      let foundToken: TokenMeta | undefined;
+
+      if (isDevelopmentMode && symbol === KnownTokens.bbcUSDC) {
+        foundToken = tokens.find(token => token.symbol === 'bb_cUSDC');
+      } else {
+        foundToken = tokens.find(token => token.symbol === symbol);
+      }
+
       return foundToken?.icon || 'token-unknown';
     },
     [tokens],

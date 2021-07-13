@@ -138,7 +138,7 @@ const PoolsProvider: React.FC = props => {
             };
 
             if (pool.rewardPoolAddress) {
-              const rewardPool = getContract<SYRewardPoolContract>('', () => {
+              const rewardPool = getContract<SYRewardPoolContract>(pool.rewardPoolAddress, () => {
                 return new SYRewardPoolContract(pool.rewardPoolAddress, pool.protocolId === AaveMarket.id);
               });
               rewardPool.on(Web3Contract.UPDATE_DATA, reload);
