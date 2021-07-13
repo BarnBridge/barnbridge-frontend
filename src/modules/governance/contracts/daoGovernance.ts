@@ -1,5 +1,5 @@
 import { AbiItem } from 'web3-utils';
-import Web3Contract, { createAbiItem } from 'web3/web3Contract';
+import Web3Contract, { AbiTuple, createAbiItem } from 'web3/web3Contract';
 
 export type ProposalReceipt = {
   hasVoted: boolean;
@@ -25,9 +25,9 @@ const DaoGovernanceABI: AbiItem[] = [
   createAbiItem('isActive', [], ['bool']),
   createAbiItem('state', ['uint256'], ['uint8']),
   createAbiItem('latestProposalIds', ['address'], ['uint256']),
-  createAbiItem('getReceipt', ['uint256', 'address'], [['bool', 'uint256', 'bool']]),
-  createAbiItem('abrogationProposals', ['uint256'], [['address', 'uint256', 'string', 'uint256', 'uint256']]),
-  createAbiItem('getAbrogationProposalReceipt', ['uint256', 'address'], [['bool', 'uint256', 'bool']]),
+  createAbiItem('getReceipt', ['uint256', 'address'], [new AbiTuple(['bool', 'uint256', 'bool'])]),
+  createAbiItem('abrogationProposals', ['uint256'], ['address', 'uint256', 'string', 'uint256', 'uint256']),
+  createAbiItem('getAbrogationProposalReceipt', ['uint256', 'address'], [new AbiTuple(['bool', 'uint256', 'bool'])]),
   // send
   createAbiItem('activate', [], []),
   createAbiItem('propose', ['address[]', 'uint256[]', 'string[]', 'bytes[]', 'string', 'string'], ['uint256']),
@@ -65,15 +65,15 @@ class DaoGovernanceContract extends Web3Contract {
   }
 
   getState(proposalId: number): Promise<number> {
-    return this.call('state', [proposalId], {}).then(value => Number(value));
+    return this.call('state', [proposalId]).then(value => Number(value));
   }
 
   getLatestProposalIds(address: string): Promise<number> {
-    return this.call('latestProposalIds', [address], {}).then(value => Number(value));
+    return this.call('latestProposalIds', [address]).then(value => Number(value));
   }
 
   getReceipt(proposalId: number, voterAddress: string): Promise<ProposalReceipt> {
-    return this.call('getReceipt', [proposalId, voterAddress], {}).then(value => ({
+    return this.call('getReceipt', [proposalId, voterAddress]).then(value => ({
       hasVoted: Boolean(value[0]),
       votes: Number(value[1]),
       support: Boolean(value[2]),
@@ -81,7 +81,7 @@ class DaoGovernanceContract extends Web3Contract {
   }
 
   getAbrogationProposals(proposalId: number): Promise<AbrogationProposal> {
-    return this.call('abrogationProposals', [proposalId], {}).then(value => ({
+    return this.call('abrogationProposals', [proposalId]).then(value => ({
       creator: value[0],
       createTime: Number(value[1]),
       description: value[2],
@@ -91,7 +91,7 @@ class DaoGovernanceContract extends Web3Contract {
   }
 
   getAbrogationProposalReceipt(proposalId: number, voterAddress: string): Promise<AbrogationProposalReceipt> {
-    return this.call('getAbrogationProposalReceipt', [proposalId, voterAddress], {}).then(value => ({
+    return this.call('getAbrogationProposalReceipt', [proposalId, voterAddress]).then(value => ({
       hasVoted: Boolean(value[0]),
       votes: Number(value[1]),
       support: Boolean(value[2]),
