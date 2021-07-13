@@ -8,13 +8,13 @@ import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { TokenIconNames } from 'components/custom/icon';
 import { isDevelopmentMode, useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
+import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
-import { useNetwork } from 'components/providers/networkProvider';
-import { PolygonNetwork } from 'networks/polygon';
 
 export enum KnownTokens {
   ETH = 'ETH',
@@ -556,7 +556,9 @@ const KnownTokensProvider: FC = props => {
       getTokenBySymbol(KnownTokens.BOND)!,
       getTokenBySymbol(KnownTokens.BOND)!,
       getTokenBySymbol(KnownTokens.ETH)!,
-      network.activeNetwork !== PolygonNetwork ? getTokenBySymbol(KnownTokens.STK_AAVE)! : getTokenBySymbol(KnownTokens.WMATIC)!,
+      network.activeNetwork !== PolygonNetwork
+        ? getTokenBySymbol(KnownTokens.STK_AAVE)!
+        : getTokenBySymbol(KnownTokens.WMATIC)!,
       getTokenBySymbol(KnownTokens.DAI)!,
       getTokenBySymbol(KnownTokens.GUSD)!,
       getTokenBySymbol(KnownTokens.SUSD)!,
