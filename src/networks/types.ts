@@ -37,6 +37,7 @@ export type NetworkConfig = {
     | 'gusd'
     | 'dai'
     | 'stkaave'
+    | 'wmatic'
     | 'ausdc'
     | 'ausdt'
     | 'agusd'
@@ -52,7 +53,7 @@ export type NetworkConfig = {
     | 'bb_crdai',
     string
   >;
-  feeds: Record<'btc' | 'eth' | 'bond' | 'univ2' | 'usdc' | 'usdt' | 'susd' | 'dai' | 'stkaave', string>;
+  feeds: Record<'btc' | 'eth' | 'bond' | 'univ2' | 'usdc' | 'usdt' | 'susd' | 'dai' | 'stkaave' | 'wmatic', string>;
   contracts: {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
     dao?: Record<'governance' | 'barn' | 'reward', string>;

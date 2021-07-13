@@ -19,7 +19,7 @@ export const PolygonConfig: NetworkConfig = {
   title: isDevelopmentMode ? 'BarnBridge Alpha Polygon' : 'BarnBridge Polygon',
   features: {
     smartYield: true,
-    smartYieldReward: false,
+    smartYieldReward: true,
     smartExposure: true,
   },
   wallets: {
@@ -46,6 +46,7 @@ export const PolygonConfig: NetworkConfig = {
     gusd: '',
     dai: '',
     stkaave: '',
+    wmatic: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     ausdc: '',
     ausdt: '',
     agusd: '',
@@ -61,15 +62,16 @@ export const PolygonConfig: NetworkConfig = {
     bb_crdai: '',
   },
   feeds: {
-    btc: '',
-    eth: '',
-    bond: '',
-    univ2: '',
-    usdc: '',
-    usdt: '',
-    susd: '',
-    dai: '',
-    stkaave: '',
+    btc: '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c',
+    eth: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
+    bond: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
+    univ2: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
+    usdc: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
+    usdt: '0x4e58ab12d2051ea2068e78e4fcee7ddee6785848',
+    susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
+    dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
+    stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {
     se: {

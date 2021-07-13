@@ -314,7 +314,7 @@ const MultipleTokensForm = ({
           setTokenAState(value);
           handleAmountTokenA(value);
         }}
-        max={tokenAMax?.toString()}
+        max={tokenAMax}
         placeholder={`0 (Max ${tokenAMax ?? 0})`}
         className="mb-16"
         errors={tokenAErrors}
@@ -342,7 +342,7 @@ const MultipleTokensForm = ({
           setTokenBState(value);
           handleAmountTokenB(value);
         }}
-        max={tokenBMax?.toString()}
+        max={tokenBMax}
         placeholder={`0 (Max ${tokenBMax ?? 0})`}
         className="mb-16"
         errors={tokenBErrors}
@@ -560,7 +560,7 @@ const SingleTokenForm = ({
           setTokenEState(value);
           handleAmountTokenE(value);
         }}
-        max={selectedTokenEMax?.toString() ?? 0}
+        max={selectedTokenEMax}
         placeholder={`0 (Max ${selectedTokenEMax ?? 0})`}
         className="mb-32"
         slider

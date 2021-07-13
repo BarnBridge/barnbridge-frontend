@@ -34,16 +34,7 @@ const CreamFinanceMarket: MarketMeta = {
   },
 };
 
-const AavePolygonMarket: MarketMeta = {
-  id: 'aave-polygon',
-  name: 'AAVE Polygon',
-  icon: {
-    active: 'static/aave_polygon',
-    inactive: 'static/aave_polygon_grayed',
-  },
-};
-
-export const KnownMarkets: MarketMeta[] = [CompoundMarket, AaveMarket, CreamFinanceMarket, AavePolygonMarket];
+export const KnownMarkets: MarketMeta[] = [CompoundMarket, AaveMarket, CreamFinanceMarket];
 
 export function getKnownMarketById(marketId: string): MarketMeta | undefined {
   return KnownMarkets.find(km => km.id === marketId);

@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes, FC, ReactNode, forwardRef } from 'react';
+import { ButtonHTMLAttributes, CSSProperties, FC, ForwardedRef, ReactNode, forwardRef } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import classNames from 'classnames';
@@ -20,16 +20,30 @@ type TokenAmountType = {
   classNameBefore?: string;
   placeholder?: string;
   disabled?: boolean;
-  max?: number | string;
+  max?: BigNumber | number;
   slider?: boolean;
   decimals?: number;
   errors?: string[];
-  ref?: React.ForwardedRef<HTMLInputElement>;
+  ref?: ForwardedRef<HTMLInputElement>;
 };
 
 export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, TokenAmountType>(
-  ({ onChange, before, secondary, className, classNameBefore, slider, errors = [], decimals = 6, ...rest }, ref) => {
-    const max = BigNumber.from(rest.max) ?? new BigNumber(0);
+  (
+    {
+      onChange,
+      before,
+      secondary,
+      className,
+      classNameBefore,
+      slider,
+      errors = [],
+      decimals = 6,
+      max: maxValue,
+      ...rest
+    },
+    ref,
+  ) => {
+    const max = BigNumber.from(maxValue) ?? BigNumber.ZERO;
 
     return (
       <div className={className}>
@@ -119,7 +133,7 @@ type TokenSelectType = {
   onChange: (value: KnownTokens) => void;
   tokens: KnownTokens[];
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
 export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, className, style }) => {

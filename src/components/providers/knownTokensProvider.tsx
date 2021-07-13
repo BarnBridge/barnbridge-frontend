@@ -13,6 +13,8 @@ import { useReload } from 'hooks/useReload';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
+import { useNetwork } from 'components/providers/networkProvider';
+import { PolygonNetwork } from 'networks/polygon';
 
 export enum KnownTokens {
   ETH = 'ETH',
@@ -27,6 +29,7 @@ export enum KnownTokens {
   UNIV2 = 'UNI-V2',
   USDT = 'USDT',
   STK_AAVE = 'stkAAVE',
+  WMATIC = 'wMATIC',
 }
 
 /* eslint-disable @typescript-eslint/no-redeclare */
@@ -102,6 +105,7 @@ const J_PRICE_FEED_ABI: AbiItem[] = [createAbiItem('price', [], ['uint256'])];
 const KnownTokensProvider: FC = props => {
   const { children } = props;
 
+  const network = useNetwork();
   const config = useConfig();
   const wallet = useWallet();
   const web3 = useWeb3();
@@ -118,6 +122,7 @@ const KnownTokensProvider: FC = props => {
   const daiContract = useErc20Contract(config.tokens.dai);
   const univ2Contract = useErc20Contract(config.tokens.univ2);
   const stkaaveContract = useErc20Contract(config.tokens.stkaave);
+  const wmaticContract = useErc20Contract(config.tokens.wmatic);
 
   const tokens = useMemo<TokenMeta[]>(
     () => [
@@ -132,7 +137,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.WBTC,
         name: 'Wrapped BTC',
-        address: config.tokens.wbtc,
+        address: config.tokens.wbtc.toLowerCase(),
         decimals: 8,
         icon: 'token-wbtc',
         pricePath: [KnownTokens.BTC],
@@ -149,7 +154,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.WETH,
         name: 'Wrapped Ether',
-        address: config.tokens.weth,
+        address: config.tokens.weth.toLowerCase(),
         decimals: 18,
         icon: 'token-weth',
         pricePath: [KnownTokens.ETH],
@@ -158,7 +163,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.USDC,
         name: 'USD Coin',
-        address: config.tokens.usdc,
+        address: config.tokens.usdc.toLowerCase(),
         decimals: 6,
         icon: 'token-usdc',
         color: '#4f6ae5',
@@ -168,7 +173,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.BOND,
         name: 'BarnBridge',
-        address: config.tokens.bond,
+        address: config.tokens.bond.toLowerCase(),
         decimals: 18,
         icon: 'static/token-bond',
         priceFeed: config.feeds.bond, // BOND -> USDC
@@ -178,7 +183,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.USDT,
         name: 'Tether USD',
-        address: config.tokens.usdt,
+        address: config.tokens.usdt.toLowerCase(),
         decimals: 6,
         icon: 'token-usdt',
         priceFeed: config.feeds.usdt, // USDT -> $
@@ -187,7 +192,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.SUSD,
         name: 'Synth sUSD',
-        address: config.tokens.susd,
+        address: config.tokens.susd.toLowerCase(),
         decimals: 18,
         icon: 'token-susd',
         color: '#1e1a31',
@@ -198,7 +203,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.GUSD,
         name: 'Gemini dollar',
-        address: config.tokens.gusd,
+        address: config.tokens.gusd.toLowerCase(),
         decimals: 2,
         icon: 'token-gusd',
         price: new BigNumber(1),
@@ -209,7 +214,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.DAI,
         name: 'Dai Stablecoin',
-        address: config.tokens.dai,
+        address: config.tokens.dai.toLowerCase(),
         decimals: 18,
         icon: 'token-dai',
         color: '#ffd160',
@@ -219,7 +224,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.UNIV2,
         name: 'Uniswap V2',
-        address: config.tokens.univ2,
+        address: config.tokens.univ2.toLowerCase(),
         decimals: 18,
         icon: 'static/token-uniswap',
         priceFeed: config.feeds.univ2, // UNIV2 -> USDC
@@ -229,7 +234,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.STK_AAVE,
         name: 'Staked AAVE',
-        address: config.tokens.stkaave,
+        address: config.tokens.stkaave.toLowerCase(),
         decimals: 18,
         icon: 'static/token-staked-aave',
         priceFeed: config.feeds.stkaave, // stkAAVE -> USD
@@ -237,9 +242,19 @@ const KnownTokensProvider: FC = props => {
         contract: stkaaveContract,
       },
       {
+        symbol: KnownTokens.WMATIC,
+        name: 'wMATIC',
+        address: config.tokens.wmatic.toLowerCase(),
+        decimals: 18,
+        icon: 'token-wmatic',
+        priceFeed: config.feeds.wmatic, // WMATIC -> USD
+        pricePath: [],
+        contract: wmaticContract,
+      },
+      {
         symbol: KnownTokens.bbcUSDC,
         name: 'BarnBridge cUSDC',
-        address: config.tokens.bb_cusdc,
+        address: config.tokens.bb_cusdc.toLowerCase(),
         decimals: 6,
         icon: 'token-usdc',
         priceFeed: config.tokens.bb_cusdc, // bb_cUSDC -> USDC
@@ -248,7 +263,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbcDAI,
         name: 'BarnBridge cDAI',
-        address: config.tokens.bb_cdai,
+        address: config.tokens.bb_cdai.toLowerCase(),
         decimals: 18,
         icon: 'token-dai',
         priceFeed: config.tokens.bb_cdai, // bb_cDAI -> DAI
@@ -257,7 +272,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbaUSDC,
         name: 'BarnBridge aUSDC',
-        address: config.tokens.bb_ausdc,
+        address: config.tokens.bb_ausdc.toLowerCase(),
         decimals: 6,
         icon: 'token-usdc',
         priceFeed: config.tokens.bb_ausdc, // bb_aUSDC -> USDC
@@ -266,7 +281,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbaDAI,
         name: 'BarnBridge aDAI',
-        address: config.tokens.bb_adai,
+        address: config.tokens.bb_adai.toLowerCase(),
         decimals: 18,
         icon: 'token-dai',
         priceFeed: config.tokens.bb_adai, // bb_aDAI -> DAI
@@ -275,7 +290,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbaUSDT,
         name: 'BarnBridge aUSDT',
-        address: config.tokens.bb_ausdt,
+        address: config.tokens.bb_ausdt.toLowerCase(),
         decimals: 6,
         icon: 'token-usdt',
         priceFeed: config.tokens.bb_ausdt, // bb_aUSDT -> USDT
@@ -284,7 +299,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbaGUSD,
         name: 'BarnBridge aGUSD',
-        address: config.tokens.bb_agusd,
+        address: config.tokens.bb_agusd.toLowerCase(),
         decimals: 2,
         icon: 'token-gusd',
         priceFeed: config.tokens.bb_agusd, // bb_aGUSD -> GUSD
@@ -293,7 +308,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbcrUSDC,
         name: 'BarnBridge crUSDC',
-        address: config.tokens.bb_crusdc,
+        address: config.tokens.bb_crusdc.toLowerCase(),
         decimals: 6,
         icon: 'token-usdc',
         priceFeed: config.tokens.bb_crusdc, // bb_crUSDC -> USDC
@@ -302,7 +317,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbcrDAI,
         name: 'BarnBridge crDAI',
-        address: config.tokens.bb_crdai,
+        address: config.tokens.bb_crdai.toLowerCase(),
         decimals: 18,
         icon: 'token-dai',
         priceFeed: config.tokens.bb_crdai, // bb_crDAI -> DAI
@@ -311,7 +326,7 @@ const KnownTokensProvider: FC = props => {
       {
         symbol: KnownTokens.bbcrUSDT,
         name: 'BarnBridge crUSDT',
-        address: config.tokens.bb_crusdt,
+        address: config.tokens.bb_crusdt.toLowerCase(),
         decimals: 6,
         icon: 'token-usdt',
         priceFeed: config.tokens.bb_crusdt, // bb_crUSDT -> USDT
@@ -541,7 +556,7 @@ const KnownTokensProvider: FC = props => {
       getTokenBySymbol(KnownTokens.BOND)!,
       getTokenBySymbol(KnownTokens.BOND)!,
       getTokenBySymbol(KnownTokens.ETH)!,
-      getTokenBySymbol(KnownTokens.STK_AAVE)!,
+      network.activeNetwork !== PolygonNetwork ? getTokenBySymbol(KnownTokens.STK_AAVE)! : getTokenBySymbol(KnownTokens.WMATIC)!,
       getTokenBySymbol(KnownTokens.DAI)!,
       getTokenBySymbol(KnownTokens.GUSD)!,
       getTokenBySymbol(KnownTokens.SUSD)!,

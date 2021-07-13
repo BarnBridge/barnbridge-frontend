@@ -24,11 +24,13 @@ export type TokenIconNames =
   | 'static/token-bond'
   | 'static/token-uniswap'
   | 'static/token-staked-aave'
+  | 'token-wmatic'
   | 'compound'
   | 'static/aave'
   | 'cream_finance'
   | 'aave_polygon'
-  | 'token-all';
+  | 'token-all'
+  | 'polygon';
 
 export type NavIconNames =
   | 'paper-bill-outlined'

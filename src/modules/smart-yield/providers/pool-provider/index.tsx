@@ -103,14 +103,7 @@ const PoolProvider: React.FC = props => {
   const wallet = useWallet();
   const { getEtherscanTxUrl } = useWeb3();
   const { getContract } = useContractManager();
-  const {
-    projectToken,
-    stkAaveToken,
-    ethToken,
-    convertTokenIn,
-    convertTokenInUSD,
-    getTokenBySymbol,
-  } = useKnownTokens();
+  const { projectToken, stkAaveToken, ethToken, convertTokenIn, convertTokenInUSD } = useKnownTokens();
   const syAPI = useSyAPI();
   const [reload, version] = useReload();
   const [state, setState] = React.useState(InitialState);

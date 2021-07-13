@@ -28,7 +28,7 @@ const PoolView: FC = () => {
     return null;
   }
 
-  const { rewardPool, smartYield, apr } = pool;
+  const { rewardPool, smartYield, apr, apy } = pool;
 
   return (
     <div className="container-limit">
@@ -75,7 +75,7 @@ const PoolView: FC = () => {
               <AprLabel
                 icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
                 size="large">
-                {formatPercent(apr)}
+                {formatPercent(apr?.plus(apy ?? 0) ?? 0)}
               </AprLabel>
             </dd>
           </div>

@@ -26,7 +26,7 @@ export type PoolCardProps = {
 export const PoolCard: FC<PoolCardProps> = props => {
   const { className, pool } = props;
 
-  const { smartYield, rewardPool, apr } = pool;
+  const { smartYield, rewardPool, apr, apy } = pool;
   const rewardTokens = Array.from(pool.rewardTokens.values());
 
   const { getTokenBySymbol, projectToken, bondToken, stkAaveToken } = useKnownTokens();
@@ -95,7 +95,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 <AprLabel
                   icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
                   size="large">
-                  {formatPercent(apr)}
+                  {formatPercent(apr?.plus(apy ?? 0) ?? 0)}
                 </AprLabel>
               </dd>
             </div>
@@ -170,7 +170,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 <AprLabel
                   icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
                   size="large">
-                  {formatPercent(apr)}
+                  {formatPercent(apr ?? 0)}
                 </AprLabel>
               </dd>
             </div>
