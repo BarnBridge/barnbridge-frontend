@@ -1,7 +1,8 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { isMobile } from 'react-device-detect';
 
 import { Text } from 'components/custom/typography';
+import SyAPIProvider from 'modules/smart-yield/api';
 import RewardPoolsProvider from 'modules/smart-yield/providers/reward-pools-provider';
 import AggregatedPoolCard from 'modules/smart-yield/views/pools-view/aggregated-pool-card';
 import PoolsTransactions from 'modules/yield-farming/components/pools-transactions';
@@ -19,7 +20,7 @@ const PoolsView: FC = () => {
   const walletCtx = useWallet();
 
   return (
-    <>
+    <SyAPIProvider>
       {!isMobile && walletCtx.isActive && <PoolRewards />}
       <div className="content-container-fix content-container">
         <RewardPoolsProvider>
@@ -40,7 +41,7 @@ const PoolsView: FC = () => {
         <PoolChart className="mb-32" />
         <PoolsTransactions />
       </div>
-    </>
+    </SyAPIProvider>
   );
 };
 
