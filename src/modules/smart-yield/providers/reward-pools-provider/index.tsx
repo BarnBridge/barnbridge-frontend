@@ -86,7 +86,7 @@ const RewardPoolsProvider: FC = props => {
         const result = await syAPI.fetchSYRewardPools();
         const rewardPools = result.map(item => {
           const entity = new SYRewardPoolEntity(item, knownTokensCtx, contractManagerCtx);
-          entity.updateProvider(walletCtx.provider);
+          // entity.updateProvider(walletCtx.provider);
           entity.onDataUpdate(reload);
           entity.loadCommonData();
           return entity;
