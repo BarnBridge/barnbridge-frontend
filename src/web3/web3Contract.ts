@@ -186,6 +186,8 @@ class Web3Contract {
     if (this._sendContract.currentProvider !== provider) {
       this._sendContract.setProvider(provider);
     }
+
+    this.setCallProvider(provider);
   }
 
   setAccount(account?: string): void {
