@@ -6,7 +6,8 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useWeb3 } from 'components/providers/web3Provider';
+import { useNetwork } from 'providers/networkProvider';
+import { useWeb3 } from 'providers/web3Provider';
 
 type Props = ModalProps & {
   state?: Web3SendState;
@@ -19,6 +20,7 @@ const TxStatusModal: React.FC<Props> = props => {
   const { state, txHash, renderProgress, renderSuccess, ...modalProps } = props;
 
   const { getEtherscanTxUrl } = useWeb3();
+  const { activeNetwork } = useNetwork();
 
   return (
     <Modal width={560} title="Transaction status" {...modalProps}>
@@ -31,7 +33,7 @@ const TxStatusModal: React.FC<Props> = props => {
             </Text>
             <div className="mb-64">{renderProgress?.()}</div>
             <ExternalLink href={getEtherscanTxUrl(txHash)} className="button-primary full-width">
-              View on Etherscan
+              View on {activeNetwork.explorer.name}
             </ExternalLink>
           </>
         )}

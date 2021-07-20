@@ -99,6 +99,7 @@ export const MumbaiNetwork: Web3Network = {
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
+    name: 'Polygonscan',
     key: EXPLORER_KEY,
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,

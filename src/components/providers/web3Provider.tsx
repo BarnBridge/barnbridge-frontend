@@ -185,7 +185,13 @@ const Web3Provider: FC = props => {
     <Context.Provider value={value}>
       {children}
       {networkSelectVisible && (
-        <Modal heading="Select network" closeHandler={showNetworkSelect}>
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Select network
+            </Text>
+          }
+          closeHandler={showNetworkSelect}>
           <div className="flex flow-row row-gap-16 p-24">
             {networks.map(network => (
               <button

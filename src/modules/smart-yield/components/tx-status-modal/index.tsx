@@ -5,6 +5,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { useNetwork } from 'providers/networkProvider';
 
 type Props = ModalProps & {
   type?: 'deposit' | 'withdraw' | 'redeem' | 'transfer' | 'redeemJunior';
@@ -15,6 +16,7 @@ type Props = ModalProps & {
 
 const TxStatusModal: React.FC<Props> = props => {
   const { type, state, txLink, onSuccessClick, ...modalProps } = props;
+  const { activeNetwork } = useNetwork();
 
   return (
     <Modal width={560} title="Transaction status" {...modalProps}>
@@ -27,7 +29,7 @@ const TxStatusModal: React.FC<Props> = props => {
             </Text>
             <ExternalLink href={txLink}>
               <Button htmlType="submit" type="primary" className="full-width">
-                View on Etherscan
+                View on {activeNetwork.explorer.name}
               </Button>
             </ExternalLink>
           </>
