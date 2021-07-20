@@ -96,7 +96,7 @@ export const GoerliNetwork: Web3Network = {
   meta: {
     chainId: GOERLI_CHAIN_ID,
     name: 'Ethereum Dev (Goerli)',
-    logo: 'testnet-logo',
+    logo: 'goerli-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

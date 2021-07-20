@@ -91,7 +91,7 @@ export const MumbaiNetwork: Web3Network = {
   meta: {
     chainId: MUMBAI_CHAIN_ID,
     name: 'Polygon Dev (Mumbai)',
-    logo: 'testnet-logo',
+    logo: 'mumbai-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
