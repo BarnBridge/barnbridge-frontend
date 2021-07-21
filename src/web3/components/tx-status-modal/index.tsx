@@ -6,8 +6,8 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useNetwork } from 'providers/networkProvider';
-import { useWeb3 } from 'providers/web3Provider';
+import { useNetwork } from 'components/providers/networkProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 
 type Props = ModalProps & {
   state?: Web3SendState;

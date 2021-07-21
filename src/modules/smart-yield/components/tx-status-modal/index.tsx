@@ -5,7 +5,7 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useNetwork } from 'providers/networkProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 
 type Props = ModalProps & {
   type?: 'deposit' | 'withdraw' | 'redeem' | 'transfer' | 'redeemJunior';
