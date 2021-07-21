@@ -64,7 +64,7 @@ const RewardPoolProvider: FC = props => {
         }
 
         const entity = new SYRewardPoolEntity(pools[0], knownTokensCtx, contractManagerCtx);
-        entity.updateProvider(walletCtx.provider);
+        // entity.updateProvider(walletCtx.provider);
         entity.onDataUpdate(reload);
         entity.loadCommonData();
         setPool(entity);
