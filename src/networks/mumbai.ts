@@ -91,7 +91,7 @@ export const MumbaiNetwork: Web3Network = {
   meta: {
     chainId: MUMBAI_CHAIN_ID,
     name: 'Polygon Dev (Mumbai)',
-    logo: 'testnet-logo',
+    logo: 'mumbai-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
@@ -99,6 +99,7 @@ export const MumbaiNetwork: Web3Network = {
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
+    name: 'Polygonscan',
     key: EXPLORER_KEY,
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,
