@@ -276,11 +276,15 @@ const PoolProvider: React.FC = props => {
     }
 
     pool.contracts.smartYield.setAccount(wallet.account);
-    pool.contracts.smartYield.loadBalance().then(reload);
+    if (wallet.account) {
+      pool.contracts.smartYield.loadBalance().then(reload);
+    }
 
     pool.contracts.underlying.setAccount(wallet.account);
-    pool.contracts.underlying.loadBalance().then(reload);
-    pool.contracts.underlying.loadAllowance(pool.providerAddress).then(reload);
+    if (wallet.account) {
+      pool.contracts.underlying.loadBalance().then(reload);
+      pool.contracts.underlying.loadAllowance(pool.providerAddress).then(reload);
+    }
   }, [state.pool, wallet.account]);
 
   const getForfeitsFor = React.useCallback(
