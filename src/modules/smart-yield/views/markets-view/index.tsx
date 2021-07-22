@@ -17,7 +17,9 @@ const MarketsView: FC = () => {
   const { activeNetwork } = useNetwork();
   const poolsCtx = usePools();
 
-  const [marketsSelection, setMarketsSelection] = useSessionStorage<string | undefined>('sy-markets-selection');
+  const [marketsSelection, setMarketsSelection] = useSessionStorage<string | undefined>(
+    `${activeNetwork.id}#sy-markets-selection`,
+  );
 
   const [selectedMarkets, setSelectedMarkets] = useState<SYMarketMeta[]>([]);
 

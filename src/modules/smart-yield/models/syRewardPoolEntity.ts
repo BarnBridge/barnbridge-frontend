@@ -156,20 +156,4 @@ export class SYRewardPoolEntity extends ManagedEntity {
     this.loadUserBalances();
     this.loadClaims();
   }
-
-  updateProvider(provider?: any) {
-    this.smartYield.setProvider(provider);
-    this.rewardPool.setProvider(provider);
-    this.rewardTokens.forEach(rewardContract => {
-      rewardContract.contract?.setProvider(provider);
-    });
-  }
-
-  updateAccount(account?: string) {
-    this.smartYield.setAccount(account);
-    this.rewardPool.setAccount(account);
-    this.rewardTokens.forEach(rewardContract => {
-      rewardContract.contract?.setAccount(account);
-    });
-  }
 }
