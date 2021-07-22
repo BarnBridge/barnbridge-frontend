@@ -64,7 +64,6 @@ const RewardPoolProvider: FC = props => {
         }
 
         const entity = new SYRewardPoolEntity(pools[0], knownTokensCtx, contractManagerCtx);
-        // entity.updateProvider(walletCtx.provider);
         entity.onDataUpdate(reload);
         entity.loadCommonData();
         setPool(entity);
@@ -75,12 +74,6 @@ const RewardPoolProvider: FC = props => {
   }, [market, uToken]);
 
   useEffect(() => {
-    pool?.updateProvider(walletCtx.provider);
-  }, [pool, walletCtx.provider]);
-
-  useEffect(() => {
-    pool?.updateAccount(walletCtx.account);
-
     if (walletCtx.account) {
       pool?.loadUserData();
       pool?.smartYield.loadAllowance(pool?.rewardPool.address);

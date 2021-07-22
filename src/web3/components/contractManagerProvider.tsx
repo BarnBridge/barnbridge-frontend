@@ -11,7 +11,6 @@ import { useWallet } from 'wallets/walletProvider';
 import { InvariantContext } from 'utils/context';
 
 export type ContractManagerType = {
-  preRegisterAddress<T extends Web3Contract>(address: string, factory: () => T): void;
   getContract<T extends Web3Contract>(address: string, factory?: () => T): T;
 };
 
@@ -50,21 +49,34 @@ const ContractManagerProvider: FC = props => {
   const contractsRef = useRef<Map<string, Web3Contract>>(new Map());
   const [reload] = useReload();
 
-  function preRegisterAddress<T extends Web3Contract>(address: string, factory: () => T): void {
-    let contract: Web3Contract | undefined;
+  const web3ProviderRef = useRef(web3.activeProvider);
 
-    if (!contractsRef.current.has(address)) {
-      contract = factory();
-      contract.setProvider(web3.activeProvider);
+  if (web3ProviderRef.current !== web3.activeProvider) {
+    web3ProviderRef.current = web3.activeProvider;
+
+    contractsRef.current.forEach(contract => {
       contract.setCallProvider(web3.activeProvider);
+    });
+  }
 
-      if (wallet.account) {
-        contract.setAccount(wallet.account);
-      }
+  const walletProviderRef = useRef(wallet.provider);
 
-      contractsRef.current.set(address, contract);
-      reload();
-    }
+  if (walletProviderRef.current !== wallet.provider) {
+    walletProviderRef.current = wallet.provider;
+
+    contractsRef.current.forEach(contract => {
+      contract.setProvider(wallet.provider);
+    });
+  }
+
+  const walletAccountRef = useRef(wallet.account);
+
+  if (walletAccountRef.current !== wallet.account) {
+    walletAccountRef.current = wallet.account;
+
+    contractsRef.current.forEach(contract => {
+      contract.setAccount(wallet.account);
+    });
   }
 
   /**
@@ -77,12 +89,9 @@ const ContractManagerProvider: FC = props => {
     if (!contractsRef.current.has(address)) {
       contract = factory?.() ?? new Web3Contract([], address, '');
 
-      contract.setProvider(web3.activeProvider);
       contract.setCallProvider(web3.activeProvider);
-
-      if (wallet.account) {
-        contract.setAccount(wallet.account);
-      }
+      contract.setProvider(wallet.provider);
+      contract.setAccount(wallet.account);
 
       contractsRef.current.set(address, contract);
       reload();
@@ -93,31 +102,7 @@ const ContractManagerProvider: FC = props => {
     return contract as T;
   }
 
-  useEffect(() => {
-    function onUpdateProvider(provider: any) {
-      contractsRef.current.forEach(contract => {
-        contract.setProvider(provider);
-        contract.setCallProvider(provider);
-      });
-    }
-
-    function onUpdateAccount(account: string) {
-      contractsRef.current.forEach(contract => {
-        contract.setAccount(account);
-      });
-    }
-
-    web3.event.on('UPDATE_PROVIDER', onUpdateProvider);
-    wallet.event.on('UPDATE_ACCOUNT', onUpdateAccount);
-
-    return () => {
-      web3.event.off('UPDATE_PROVIDER', onUpdateProvider);
-      wallet.event.off('UPDATE_ACCOUNT', onUpdateAccount);
-    };
-  }, []);
-
   const value: ContractManagerType = {
-    preRegisterAddress,
     getContract,
   };
 
