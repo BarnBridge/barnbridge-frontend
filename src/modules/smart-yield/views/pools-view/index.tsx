@@ -18,7 +18,9 @@ const PoolsView: FC = () => {
   const rewardPoolsCtx = useRewardPools();
   const { loading, pools } = rewardPoolsCtx;
 
-  const [marketsSelection, setMarketsSelection] = useSessionStorage<string | undefined>('sy-markets-selection');
+  const [marketsSelection, setMarketsSelection] = useSessionStorage<string | undefined>(
+    `${activeNetwork.id}#sy-markets-selection`,
+  );
 
   const [selectedMarkets, setSelectedMarkets] = useState<SYMarketMeta[]>([]);
 

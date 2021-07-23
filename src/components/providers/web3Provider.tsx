@@ -7,19 +7,17 @@ import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
+import { MainnetNetwork } from 'networks/mainnet';
 import { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
 
-export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(
-  'https://mainnet.infura.io/v3/6c58700fe84943eb83c4cd5c23dff3d8',
-);
+export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(MainnetNetwork.rpc.httpsUrl);
 
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 
 export type Web3ContextType = {
-  web3: Web3;
   event: EventEmitter;
   blockNumber: number | undefined;
   activeProvider: any;
@@ -57,23 +55,8 @@ const Web3Provider: FC = props => {
     return new Web3(provider);
   }, [activeNetwork]);
 
-  const activeProvider = useMemo(() => {
-    return wallet.isActive ? wallet.provider : httpsWeb3; //??
-  }, [wallet.isActive, wallet.provider, httpsWeb3]);
-
-  const web3 = useMemo(() => {
-    return new Web3(activeProvider);
-  }, [activeProvider]);
-
-  const prevActiveProvider = useRef(activeProvider);
-
-  if (prevActiveProvider.current !== activeProvider) {
-    prevActiveProvider.current = activeProvider;
-    event.emit('UPDATE_PROVIDER', activeProvider);
-  }
-
   function tryCall(to: string, from: string, data: string, value: string): any {
-    return web3.eth.call({
+    return httpsWeb3.eth.call({
       to,
       from,
       data,
@@ -168,11 +151,10 @@ const Web3Provider: FC = props => {
     return address ? `${activeNetwork.explorer.url}/address/${address}` : undefined;
   }
 
-  const value = {
-    web3,
+  const value: Web3ContextType = {
     event,
     blockNumber,
-    activeProvider,
+    activeProvider: httpsWeb3,
     showNetworkSelect: () => {
       showNetworkSelect(true);
     },
@@ -185,7 +167,13 @@ const Web3Provider: FC = props => {
     <Context.Provider value={value}>
       {children}
       {networkSelectVisible && (
-        <Modal heading="Select network" closeHandler={showNetworkSelect}>
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Select network
+            </Text>
+          }
+          closeHandler={showNetworkSelect}>
           <div className="flex flow-row row-gap-16 p-24">
             {networks.map(network => (
               <button

@@ -1,0 +1,25 @@
+.component {
+  &.icon-color {
+    color: var(--theme-icon-color);
+  }
+
+  &.primary-color {
+    color: var(--theme-primary-color);
+  }
+
+  &.secondary-color {
+    color: var(--theme-secondary-color);
+  }
+
+  &.red-color {
+    color: var(--theme-red-color);
+  }
+
+  &.green-color {
+    color: var(--theme-green-color);
+  }
+
+  &.blue-color {
+    color: var(--theme-blue-color);
+  }
+}

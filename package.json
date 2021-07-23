@@ -17,7 +17,10 @@
     "lessc": "lessc src/styles/antd.less src/styles/antd.css -js",
     "lint": "eslint src/**/*.ts{,x} && tsc --noEmit && stylelint --syntax scss 'src/**/*.scss'",
     "format": "prettier --write src/**/*.ts{,x}",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "storybook": "start-storybook -p 6006 -s public",
+    "build-storybook": "build-storybook -s public",
+    "deploy-storybook": "storybook-to-ghpages"
   },
   "engines": {
     "node": "> 12.x",
@@ -56,7 +59,17 @@
         }
       ],
       "react-hooks/exhaustive-deps": "off"
-    }
+    },
+    "overrides": [
+      {
+        "files": [
+          "**/*.stories.*"
+        ],
+        "rules": {
+          "import/no-anonymous-default-export": "off"
+        }
+      }
+    ]
   },
   "prettier": {
     "printWidth": 120,
@@ -142,6 +155,13 @@
   },
   "devDependencies": {
     "@popperjs/core": "2.9.2",
+    "@storybook/addon-actions": "^6.3.4",
+    "@storybook/addon-essentials": "^6.3.4",
+    "@storybook/addon-links": "^6.3.4",
+    "@storybook/node-logger": "^6.3.4",
+    "@storybook/preset-create-react-app": "^3.2.0",
+    "@storybook/react": "^6.3.4",
+    "@storybook/storybook-deployer": "^2.8.10",
     "@types/classnames": "2.3.1",
     "@types/identicon.js": "2.3.0",
     "@types/lodash": "4.14.168",

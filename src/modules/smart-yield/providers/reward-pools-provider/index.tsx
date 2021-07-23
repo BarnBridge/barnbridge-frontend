@@ -86,7 +86,6 @@ const RewardPoolsProvider: FC = props => {
         const result = await syAPI.fetchSYRewardPools();
         const rewardPools = result.map(item => {
           const entity = new SYRewardPoolEntity(item, knownTokensCtx, contractManagerCtx);
-          entity.updateProvider(walletCtx.provider);
           entity.onDataUpdate(reload);
           entity.loadCommonData();
           return entity;
@@ -101,13 +100,6 @@ const RewardPoolsProvider: FC = props => {
 
   useEffect(() => {
     pools.forEach(pool => {
-      pool.updateProvider(walletCtx.provider);
-    });
-  }, [pools, walletCtx.provider]);
-
-  useEffect(() => {
-    pools.forEach(pool => {
-      pool.updateAccount(walletCtx.account);
       if (walletCtx.account) {
         pool.loadUserData();
       }

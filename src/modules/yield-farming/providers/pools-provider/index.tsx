@@ -100,7 +100,7 @@ const YfPoolsProvider: FC = props => {
         stakingContract.loadCommonFor(tokenMeta.address).catch(Error);
       });
     });
-  }, [yfPools, web3Ctx.activeProvider, stakingContract]);
+  }, [yfPools, stakingContract]);
 
   useEffect(() => {
     if (walletCtx.account) {
