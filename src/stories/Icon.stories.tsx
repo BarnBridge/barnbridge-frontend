@@ -1,12 +1,24 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 
 // import { Button } from './Button';
-import { Icon as IconComponent, IconNames, TokenIcon as TokenIconComponent, TokenIconNames } from 'components/icon';
+import { Icon as IconComponent, IconNames } from 'components/icon';
 
 export default {
   title: 'Components/Icons',
   component: IconComponent,
 } as ComponentMeta<typeof IconComponent>;
+
+const IconTemplate: ComponentStory<typeof IconComponent> = args => (
+  <div style={{ color: '#ffa500' }}>
+    parent text color is orange
+    <IconComponent {...args} />
+  </div>
+);
+export const Icon = IconTemplate.bind({});
+Icon.args = {
+  name: 'add',
+  size: 24,
+};
 
 const names: IconNames[] = [
   'certificate',
@@ -85,7 +97,7 @@ const names: IconNames[] = [
   'external',
 ];
 
-export const Icon = () => (
+export const Icons = () => (
   <dl
     style={{
       display: 'flex',
@@ -107,76 +119,3 @@ export const Icon = () => (
     ))}
   </dl>
 );
-
-const tokenNames: TokenIconNames[] = [
-  'aave',
-  'stkaave',
-  'compound',
-  'cream',
-  'yearn',
-  'polygon',
-  'bond',
-  'usdc',
-  'dai',
-  'susd',
-  'eth',
-  'wbtc',
-  'gusd',
-  'usdt',
-  'sy-pools',
-  'unknown',
-  'weth',
-  'fiat',
-  'usd',
-];
-
-export const TokenIcon = () => (
-  <dl
-    style={{
-      display: 'flex',
-      flexWrap: 'wrap',
-    }}>
-    {tokenNames.map((name, idx) => (
-      <div
-        key={idx}
-        style={{
-          padding: 8,
-          margin: 4,
-          background: '#ccc',
-        }}>
-        <dt>{name}</dt>
-        <dd>
-          <TokenIconComponent name={name} />
-        </dd>
-      </div>
-    ))}
-  </dl>
-);
-
-// const Template: ComponentStory<typeof Button> = args => <Button {...args} />;
-
-// export const Primary = Template.bind({});
-// Primary.args = {
-//   children: 'Button',
-//   variation: 'primary',
-// };
-
-// export const Secondary = Template.bind({});
-// Secondary.args = {
-//   children: 'Button',
-//   variation: 'secondary',
-// };
-
-// export const Large = Template.bind({});
-// Large.args = {
-//   children: 'Button',
-//   variation: 'secondary',
-//   size: 'big',
-// };
-
-// export const Small = Template.bind({});
-// Small.args = {
-//   children: 'Button',
-//   variation: 'secondary',
-//   size: 'small',
-// };

@@ -18,6 +18,7 @@ import NotificationsProvider from 'components/providers/notificationsProvider';
 import Web3Provider from 'components/providers/web3Provider';
 import LayoutView from 'layout';
 import { ReactComponent as StaticSprite } from 'resources/svg/static-sprite.svg';
+import { ReactComponent as TokenIconsStaticSprite } from 'resources/svg/token-icons-sprite-static.svg';
 import WalletProvider from 'wallets/walletProvider';
 
 import { checkFlexGapSupport } from './checkFlexGap';
@@ -40,6 +41,7 @@ const App: FC = () => {
       <Router>
         <ProviderTree>
           <StaticSprite />
+          <TokenIconsStaticSprite />
           <LayoutView />
         </ProviderTree>
       </Router>
