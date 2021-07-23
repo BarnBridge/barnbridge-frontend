@@ -107,7 +107,7 @@ export const Icon: React.FC<IconProps> = props => {
       height={size}
       style={style}
       {...rest}>
-      <use xlinkHref={`/icons-sprite.svg#icon__${name}`} />
+      <use xlinkHref={`icons-sprite.svg#icon__${name}`} />
     </svg>
   );
 };

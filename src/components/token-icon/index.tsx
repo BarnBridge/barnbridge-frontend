@@ -34,7 +34,7 @@ type TokenIconProps = {
 
 const staticNames: TokenIconComplexNames[] = ['aave', 'stkaave', 'cream', 'bond'];
 
-const svgPath = '/token-icons-sprite.svg';
+const svgPath = 'token-icons-sprite.svg';
 
 export const TokenIcon: React.FC<TokenIconProps> = props => {
   const { name, size = 24, className, style, bubble1Name, bubble2Name, ...rest } = props;
