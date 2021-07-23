@@ -1,0 +1,31 @@
+{
+  "files": {
+    "0.e0309296.iframe.bundle.js": "./0.e0309296.iframe.bundle.js",
+    "main.css": "./static/css/main.55e34cfd.chunk.css",
+    "main.js": "./main.b02aa44d.iframe.bundle.js",
+    "main.css.map": "./static/css/main.55e34cfd.chunk.css.map",
+    "runtime~main.js": "./runtime~main.30c8f52e.iframe.bundle.js",
+    "vendors~main.js": "./vendors~main.27c70757.iframe.bundle.js",
+    "vendors~main.js.map": "./vendors~main.27c70757.iframe.bundle.js.map",
+    "4.d0d9a33e.iframe.bundle.js": "./4.d0d9a33e.iframe.bundle.js",
+    "4.d0d9a33e.iframe.bundle.js.map": "./4.d0d9a33e.iframe.bundle.js.map",
+    "5.474257a1.iframe.bundle.js": "./5.474257a1.iframe.bundle.js",
+    "6.f84da9f5.iframe.bundle.js": "./6.f84da9f5.iframe.bundle.js",
+    "6.f84da9f5.iframe.bundle.js.map": "./6.f84da9f5.iframe.bundle.js.map",
+    "7.3d88110e.iframe.bundle.js": "./7.3d88110e.iframe.bundle.js",
+    "4.d0d9a33e.iframe.bundle.js.LICENSE.txt": "./4.d0d9a33e.iframe.bundle.js.LICENSE.txt",
+    "6.f84da9f5.iframe.bundle.js.LICENSE.txt": "./6.f84da9f5.iframe.bundle.js.LICENSE.txt",
+    "iframe.html": "./iframe.html",
+    "static/media/Montserrat-Bold.ttf": "./static/media/Montserrat-Bold.079ca05d.ttf",
+    "static/media/Montserrat-Regular.ttf": "./static/media/Montserrat-Regular.3cd78665.ttf",
+    "static/media/Montserrat-SemiBold.ttf": "./static/media/Montserrat-SemiBold.fa8441f3.ttf",
+    "static/media/token-icons-sprite-static.svg": "./static/media/token-icons-sprite-static.124acd6b.svg",
+    "vendors~main.27c70757.iframe.bundle.js.LICENSE.txt": "./vendors~main.27c70757.iframe.bundle.js.LICENSE.txt"
+  },
+  "entrypoints": [
+    "runtime~main.30c8f52e.iframe.bundle.js",
+    "vendors~main.27c70757.iframe.bundle.js",
+    "static/css/main.55e34cfd.chunk.css",
+    "main.b02aa44d.iframe.bundle.js"
+  ]
+}
