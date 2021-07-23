@@ -12,10 +12,10 @@ import { PoolActionsView } from './views/pool-actions-view';
 
 import s from './s.module.scss';
 
-const PoolsView = lazy(() => import('./views/pools-view'));
-const TrancheView = lazy(() => import('./views/tranche-view'));
+const PoolsView = lazy(() => import(/* webpackChunkName: "pools-view" */ './views/pools-view'));
+const TrancheView = lazy(() => import(/* webpackChunkName: "tranche-view" */ './views/tranche-view'));
 
-const PortfolioView = lazy(() => import('./views/portfolio-view'));
+const PortfolioView = lazy(() => import(/* webpackChunkName: "portfolio-view" */ './views/portfolio-view'));
 
 const SmartExposureView: React.FC = () => {
   const wallet = useWallet();
