@@ -96,7 +96,7 @@ export const GoerliNetwork: Web3Network = {
   meta: {
     chainId: GOERLI_CHAIN_ID,
     name: 'Ethereum Dev (Goerli)',
-    logo: 'testnet-logo',
+    logo: 'goerli-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
@@ -104,6 +104,7 @@ export const GoerliNetwork: Web3Network = {
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
+    name: 'Etherscan',
     key: EXPLORER_KEY,
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,

@@ -119,6 +119,7 @@ export const KovanNetwork: Web3Network = {
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
+    name: 'Etherscan',
     key: EXPLORER_KEY,
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,

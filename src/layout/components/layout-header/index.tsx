@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import classnames from 'classnames';
 
 import Button from 'components/antd/button';
 import Icon, { IconNames } from 'components/custom/icon';
@@ -58,8 +59,8 @@ const LayoutHeader: React.FC = () => {
       </Text>
       <div className="flex align-center ml-auto">
         {wallet.meta === MetamaskWalletConfig && (
-          <button className="button-text mr-24" onClick={handleAddProjectToken}>
-            <Icon name="bond-add-token" width={40} height={40} />
+          <button className={classnames('button-text mr-24', s.addToken)} onClick={handleAddProjectToken}>
+            <Icon name="bond-add-token" />
           </button>
         )}
         <button
