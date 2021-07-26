@@ -4,10 +4,11 @@ import { nanoid } from 'nanoid';
 
 import s from './s.module.scss';
 
-type TokenIconComplexNames = 'aave' | 'stkaave' | 'cream' | 'bond';
-
 export type TokenIconNames =
-  | TokenIconComplexNames
+  | 'aave'
+  | 'stkaave'
+  | 'cream'
+  | 'bond'
   | 'compound'
   | 'cream'
   | 'yearn'
@@ -36,7 +37,7 @@ type TokenIconProps = {
   outline?: 'green' | 'purple';
 };
 
-const staticNames: TokenIconComplexNames[] = ['aave', 'stkaave', 'cream', 'bond'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond'];
 
 const svgPath = 'token-icons-sprite.svg';
 
@@ -58,7 +59,6 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
       </mask>
       <g mask={`url(#${id})`}>
         <g mask={outline ? `url(#${id}-outline)` : ''}>
-          {/* @ts-ignore */}
           <use xlinkHref={`${staticNames.includes(name) ? '' : svgPath}#icon__${name}`} />
         </g>
         {outline ? (
@@ -77,7 +77,6 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
 
       {bubble1Name && (
         <use
-          // @ts-ignore
           xlinkHref={`${staticNames.includes(bubble1Name) ? '' : svgPath}#icon__${bubble1Name}`}
           width="45%"
           height="45%"
@@ -87,7 +86,6 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
       )}
       {bubble2Name && (
         <use
-          // @ts-ignore
           xlinkHref={`${staticNames.includes(bubble2Name) ? '' : svgPath}#icon__${bubble2Name}`}
           width="45%"
           height="45%"
@@ -127,7 +125,6 @@ export const TokenIconPair: React.FC<TokenPairProps> = props => {
         <circle cx={iconSize / 2} cy={iconSize / 2 + iconIndent} r={cutSize} fill="black" />
       </mask>
       <use
-        // @ts-ignore
         xlinkHref={`${staticNames.includes(name1) ? '' : svgPath}#icon__${name1}`}
         width={iconSize}
         height={iconSize}
@@ -136,7 +133,6 @@ export const TokenIconPair: React.FC<TokenPairProps> = props => {
       />
       <g mask={`url(#${id})`}>
         <use
-          // @ts-ignore
           xlinkHref={`${staticNames.includes(name2) ? '' : svgPath}#icon__${name2}`}
           width={iconSize}
           height={iconSize}
