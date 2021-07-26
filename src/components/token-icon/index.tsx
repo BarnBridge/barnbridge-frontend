@@ -1,5 +1,8 @@
 import { useMemo } from 'react';
+import classNames from 'classnames';
 import { nanoid } from 'nanoid';
+
+import s from './s.module.scss';
 
 type TokenIconComplexNames = 'aave' | 'stkaave' | 'cream' | 'bond';
 
@@ -30,6 +33,7 @@ type TokenIconProps = {
   size?: number | string;
   className?: string;
   style?: React.CSSProperties;
+  outline?: 'green' | 'purple';
 };
 
 const staticNames: TokenIconComplexNames[] = ['aave', 'stkaave', 'cream', 'bond'];
@@ -37,7 +41,7 @@ const staticNames: TokenIconComplexNames[] = ['aave', 'stkaave', 'cream', 'bond'
 const svgPath = 'token-icons-sprite.svg';
 
 export const TokenIcon: React.FC<TokenIconProps> = props => {
-  const { name, size = 24, className, style, bubble1Name, bubble2Name, ...rest } = props;
+  const { name, size = 24, className, style, bubble1Name, bubble2Name, outline, ...rest } = props;
 
   const id = useMemo(nanoid, []);
 
@@ -48,9 +52,27 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
         {bubble1Name && <circle cx="77.5%" cy="22.5%" r="25%" fill="black" />}
         {bubble2Name && <circle cx="77.5%" cy="77.5%" r="25%" fill="black" />}
       </mask>
+      <mask id={`${id}-outline`}>
+        <circle cx="50%" cy="50%" r="50%" fill="black" />
+        <circle cx="50%" cy="50%" r="44%" fill="white" />
+      </mask>
       <g mask={`url(#${id})`}>
-        {/* @ts-ignore */}
-        <use xlinkHref={`${staticNames.includes(name) ? '' : svgPath}#icon__${name}`} />
+        <g mask={outline ? `url(#${id}-outline)` : ''}>
+          {/* @ts-ignore */}
+          <use xlinkHref={`${staticNames.includes(name) ? '' : svgPath}#icon__${name}`} />
+        </g>
+        {outline ? (
+          <circle
+            cx="50%"
+            cy="50%"
+            r="50%"
+            fill="none"
+            stroke-width="4%"
+            className={classNames({
+              [s[`${outline}-outline`]]: outline,
+            })}
+          />
+        ) : null}
       </g>
 
       {bubble1Name && (
