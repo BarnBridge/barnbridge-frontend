@@ -7,35 +7,85 @@ import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
+import Icon from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon } from 'components/token-icon';
-import { SYMarketMeta } from 'modules/smart-yield/api';
+import { SYMarketMeta, SYPoolMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
 type PoolEntity = PoolsSYPool;
+
+function getMarketInsuranceLink(marketTokenSymbol?: string): string {
+  switch (marketTokenSymbol) {
+    case 'bb_cUSDC':
+      return 'https://app.riskharbor.com/pool/mainnet/0x6c6531b77831166ae657d586f9a466370775730b';
+    case 'bb_amDAI':
+      return 'https://app.riskharbor.com/pool/matic/0x3e114057bb7b0fceaf53f3254c084f3de16e5dab';
+    case 'bb_amUSDC':
+      return 'https://app.riskharbor.com/pool/matic/0xc25ab272e83e7b5105299e32bdc61e34598e094c';
+    case 'bb_amUSDT':
+      return 'https://app.riskharbor.com/pool/matic/0x326b4a921c61dd98cf80592323a9ab0df45e4604';
+    default:
+      return '';
+  }
+}
 
 function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
   return [
     {
       title: 'Token Name',
       fixed: 'left',
-      render: (_, entity) => (
-        <div className="flex flow-col col-gap-16 align-center">
-          <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
-          <div>
-            <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-              {entity.underlyingSymbol}
-            </Text>
-            <Text type="small" weight="semibold" wrap={false}>
-              {entity.meta?.name}
-            </Text>
+      render: (_, entity) => {
+        const marketInsuranceLink = getMarketInsuranceLink(entity.contracts.smartYield?.symbol);
+
+        return (
+          <div className="flex flow-col col-gap-16 align-center">
+            <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
+            <div>
+              <div className="mb-4 flex align-center">
+                <Text type="p1" weight="semibold" wrap={false} color="primary" className="mr-4">
+                  {entity.underlyingSymbol}
+                </Text>
+                {marketInsuranceLink ? (
+                  <Tooltip
+                    title={
+                      <>
+                        This market is covered by: <br /> - Nexus Mutual,{' '}
+                        <a
+                          href="https://app.nexusmutual.io/cover/buy/get-quote?address=0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840"
+                          rel="noopener noreferrer"
+                          target="_blank">
+                          click here
+                        </a>{' '}
+                        to purchase coverage <br /> - Bridge Mutual,{' '}
+                        <a
+                          href="https://app.bridgemutual.io/user/cover/0xdb9A242cfD588507106919051818e771778202e9"
+                          rel="noopener noreferrer"
+                          target="_blank">
+                          click here
+                        </a>{' '}
+                        to purchase coverage <br /> - Risk Harbor,{' '}
+                        <a href={marketInsuranceLink} rel="noopener noreferrer" target="_blank">
+                          click here
+                        </a>{' '}
+                        to purchase coverage
+                      </>
+                    }>
+                    <Icon name="insured" color="green" width={24} height={24} />
+                  </Tooltip>
+                ) : null}
+              </div>
+              <Text type="small" weight="semibold" wrap={false}>
+                {entity.meta?.name}
+              </Text>
+            </div>
           </div>
-        </div>
-      ),
+        );
+      },
     },
     {
       title: 'Senior Liquidity',

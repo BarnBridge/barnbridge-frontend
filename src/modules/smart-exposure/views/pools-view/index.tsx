@@ -3,6 +3,7 @@ import cn from 'classnames';
 import { format } from 'date-fns';
 import { formatPercent, formatUSD } from 'web3/utils';
 
+import Tooltip from 'components/antd/tooltip';
 import Icon, { IconNames } from 'components/custom/icon';
 import IconsPair from 'components/custom/icons-pair';
 import { InfoTooltip } from 'components/custom/tooltip';
@@ -85,9 +86,27 @@ const PoolsView: React.FC = () => {
       <Text type="p1" weight="semibold" color="secondary" className="mb-4">
         Total value locked
       </Text>
-      <Text type="h2" weight="bold" color="primary" className="mb-40">
-        {formatUSD(totalValueLocked)}
-      </Text>
+      <div className="mb-40 flex align-center">
+        <Text type="h2" weight="bold" color="primary" className="mr-8">
+          {formatUSD(totalValueLocked)}
+        </Text>
+        <Tooltip
+          title={
+            <>
+              The BarnBridge SMART Exposure contracts are covered by:
+              <br /> - Bridge Mutual,{' '}
+              <a
+                href="https://app.bridgemutual.io/user/cover/0xdb9A242cfD588507106919051818e771778202e9"
+                rel="noopener noreferrer"
+                target="_blank">
+                click here
+              </a>{' '}
+              to purchase coverage
+            </>
+          }>
+          <Icon name="insured" color="green" width={32} height={32} />
+        </Tooltip>
+      </div>
 
       {poolsToDisplay.map(pool => {
         const tokenA = getTokenBySymbol(pool.tokenA.symbol);

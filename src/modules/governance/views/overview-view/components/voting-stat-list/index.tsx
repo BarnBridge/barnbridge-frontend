@@ -3,8 +3,10 @@ import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD } from 'web3/utils';
 
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
+import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -53,6 +55,21 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               <Text type="p1" color="secondary">
                 {projectToken.symbol}
               </Text>
+              <Tooltip
+                title={
+                  <>
+                    The BarnBridge Governance contracts are covered by: <br />- Bridge Mutual,{' '}
+                    <a
+                      href="https://app.bridgemutual.io/user/cover/0xdb9A242cfD588507106919051818e771778202e9"
+                      rel="noopener noreferrer"
+                      target="_blank">
+                      click here
+                    </a>{' '}
+                    to purchase coverage
+                  </>
+                }>
+                <Icon name="insured" color="green" width={32} height={32} />
+              </Tooltip>
             </Grid>
             <Text type="p1" color="secondary">
               {formatUSD(convertTokenInUSD(daoCtx.daoBarn.bondStaked, projectToken.symbol))}
