@@ -8,7 +8,6 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { EnableTokenButton } from 'components/custom/enable-token';
 import Icon, { IconNames } from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
 import { Spinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
@@ -16,6 +15,7 @@ import TransactionDetails from 'components/custom/transaction-details';
 import { TransactionSummary } from 'components/custom/transaction-summary';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIconPair } from 'components/token-icon';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useEPoolContract, useSEPools } from 'modules/smart-exposure/providers/se-pools-provider';
@@ -83,7 +83,7 @@ const WithdrawView: React.FC = () => {
       </div>
       <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
         <div className="flex">
-          <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
+          <TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
               tranche.tokenA.symbol
@@ -260,7 +260,7 @@ const MultipleTokensForm = ({
         <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
-        before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
+        before={<TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={24} />}
         value={tokenEState}
         onChange={value => {
           setTokenEState(value);
@@ -504,7 +504,7 @@ const SingleTokenForm = ({
         <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
-        before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
+        before={<TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={24} />}
         value={tokenEState}
         onChange={setTokenEState}
         max={tokenEMax}

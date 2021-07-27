@@ -4,10 +4,10 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken } from 'web3/utils';
 
 import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import Stake from 'modules/smart-yield/views/pool-view/stake';
 import Statistics from 'modules/smart-yield/views/pool-view/statistics';
@@ -39,12 +39,11 @@ const PoolView: FC = () => {
         </Link>
       </div>
       <div className="flex align-center mb-32">
-        <IconBubble
-          name={uToken?.icon}
-          bubbleName={projectToken.icon!}
-          secondBubbleName={poolMarket?.icon.active}
-          width={36}
-          height={36}
+        <TokenIcon
+          name={uToken?.icon as TokenIconNames}
+          bubble1Name={projectToken.icon!}
+          bubble2Name={poolMarket?.icon.active as TokenIconNames}
+          size={36}
           className="mr-16"
         />
         <Text type="p1" weight="semibold" color="primary">
@@ -56,12 +55,11 @@ const PoolView: FC = () => {
           <div className={s.headerTermRow}>
             <dt>Pool balance</dt>
             <dd>
-              <IconBubble
-                name={uToken?.icon}
-                bubbleName={projectToken.icon!}
-                secondBubbleName={poolMarket?.icon.active}
-                width={16}
-                height={16}
+              <TokenIcon
+                name={uToken?.icon as TokenIconNames}
+                bubble1Name={projectToken.icon!}
+                bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                size={16}
                 className="mr-8"
               />
               {formatToken(rewardPool.poolSize, {
@@ -73,7 +71,7 @@ const PoolView: FC = () => {
             <dt>APR</dt>
             <dd>
               <AprLabel
-                icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
+                icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                 size="large">
                 {formatPercent(apr?.plus(apy ?? 0) ?? 0)}
               </AprLabel>
@@ -85,7 +83,7 @@ const PoolView: FC = () => {
                 <div className={s.headerTermRow}>
                   <dt>{rewardToken.symbol} daily rewards</dt>
                   <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                     {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
@@ -96,7 +94,7 @@ const PoolView: FC = () => {
                 <div className={s.headerTermRow}>
                   <dt>{rewardToken.symbol} rewards left</dt>
                   <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                     {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
@@ -106,7 +104,7 @@ const PoolView: FC = () => {
                 <div className={s.headerTermRow}>
                   <dt>{rewardToken.symbol} rewards balance</dt>
                   <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                     {formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}

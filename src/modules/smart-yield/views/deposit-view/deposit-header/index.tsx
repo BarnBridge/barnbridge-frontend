@@ -5,8 +5,8 @@ import { formatPercent, formatToken } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import Grid from 'components/custom/grid';
-import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -37,7 +37,7 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
       className={cn('flexbox-list', className)}
       style={{ '--gap': '24px 64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       <Grid flow="col" gap={16} align="center">
-        <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} />
+        <TokenIcon name={pool.meta?.icon as TokenIconNames} bubble1Name={pool.market?.icon as TokenIconNames} />
         <div className="ml-auto">
           <div
             className="mb-4"

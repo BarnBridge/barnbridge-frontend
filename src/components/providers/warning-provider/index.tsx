@@ -4,8 +4,8 @@ import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 
 import { InvariantContext } from 'utils/context';
 
@@ -55,7 +55,7 @@ const Warn: React.FC<WarnProps> = props => {
         'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24',
       )}>
       <Grid flow="col" gap={16} align="center">
-        <Icon name="warning-outlined" color="red" />
+        <Icon name="danger" color="red" />
         <Text type="p2" weight="semibold" className={s.text}>
           {text}
         </Text>

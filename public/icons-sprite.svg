@@ -119,11 +119,8 @@
 	<symbol id="icon__close" fill="none" viewBox="0 0 24 24">
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M18.222 5.777L14.4 9.6M16.675 7.323l-10.899 10.9M18.223 18.223L5.778 5.777" />
 	</symbol>
-	<symbol id="icon__arrow-right" fill="none" viewBox="0 0 24 24">
+	<symbol id="icon__arrow" fill="none" viewBox="0 0 24 24">
 		<path fill="currentColor" d="M13.53 5.47a.75.75 0 10-1.06 1.06l1.06-1.06zm4.763 5.823l-.53.53.53-.53zm0 1.414l-.53-.53.53.53zM12.47 17.47a.75.75 0 101.06 1.06l-1.06-1.06zM18 12.75a.75.75 0 000-1.5v1.5zm-13-1.5a.75.75 0 000 1.5v-1.5zm7.47-4.72l5.293 5.293 1.06-1.06L13.53 5.47l-1.06 1.06zm5.293 5.647L12.47 17.47l1.06 1.06 5.293-5.293-1.06-1.06zm0-.354a.25.25 0 010 .354l1.06 1.06a1.75 1.75 0 000-2.474l-1.06 1.06zM18 11.25H5v1.5h13v-1.5z" />
-	</symbol>
-	<symbol id="icon__arrow-left" fill="none" viewBox="0 0 24 24">
-		<path fill="currentColor" d="M10.47 18.53a.75.75 0 101.06-1.06l-1.06 1.06zm-4.763-5.823l.53-.53-.53.53zm0-1.414l.53.53-.53-.53zM11.53 6.53a.75.75 0 00-1.06-1.06l1.06 1.06zM6 11.25a.75.75 0 000 1.5v-1.5zm13 1.5a.75.75 0 000-1.5v1.5zm-7.47 4.72l-5.293-5.293-1.06 1.06 5.293 5.293 1.06-1.06zm-5.293-5.647L11.53 6.53l-1.06-1.06-5.293 5.293 1.06 1.06zm0 .354a.25.25 0 010-.354l-1.06-1.06a1.75 1.75 0 000 2.474l1.06-1.06zM6 12.75h13v-1.5H6v1.5z" />
 	</symbol>
 	<symbol id="icon__chevron" fill="none" viewBox="0 0 24 24">
 		<path fill="currentColor" d="M9.53 5.47a.75.75 0 00-1.06 1.06l1.06-1.06zm4.763 5.823l-.53.53.53-.53zm0 1.414l-.53-.53.53.53zM8.47 17.47a.75.75 0 101.06 1.06l-1.06-1.06zm0-10.94l5.293 5.293 1.06-1.06L9.53 5.47 8.47 6.53zm5.293 5.647L8.47 17.47l1.06 1.06 5.293-5.293-1.06-1.06zm0-.354a.25.25 0 010 .354l1.06 1.06a1.75 1.75 0 000-2.474l-1.06 1.06z" />
@@ -311,5 +308,8 @@
 	</symbol>
 	<symbol id="icon__external" fill="none" viewBox="0 0 8 8">
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.732 1.067h3.2v3.2M6.933 1.067L2 6" />
+	</symbol>
+	<symbol id="icon__burger" fill="none" viewBox="0 0 24 25">
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.2 6.012h17.6M3.2 12.015h17.6M3.2 18.418h17.6" />
 	</symbol>
 </svg>

@@ -11,12 +11,12 @@ import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 import { APITreasuryHistory, APITreasuryToken, useDaoAPI } from 'modules/governance/api';
 
@@ -69,7 +69,7 @@ const Columns: ColumnsType<APITreasuryHistory> = [
 
       return (
         <div className="flex flow-col align-center">
-          <Icon name={(tokenMeta?.icon as TokenIconNames) ?? 'token-unknown'} className="mr-16" />
+          <TokenIcon name={(tokenMeta?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" />
           <Text type="p1" weight="semibold" color="primary" className="mr-4">
             {entity.tokenSymbol}
           </Text>
@@ -375,7 +375,7 @@ const TreasuryHoldings: React.FC = () => {
           return (
             <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
               <div className="flex mb-16">
-                <Icon name={(tokenMeta?.icon as IconNames) ?? 'token-unknown'} className="mr-8" />
+                <TokenIcon name={(tokenMeta?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {item.tokenSymbol}
                 </Text>

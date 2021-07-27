@@ -4,8 +4,8 @@ import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import Spin from 'components/antd/spin';
-import IconBubble from 'components/custom/icon-bubble';
 import { ColumnType, Table } from 'components/custom/table';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { FaucetType, useFauceteer } from 'modules/faucets/providers/fauceteerProvider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -18,12 +18,11 @@ const columns: ColumnType<FaucetType>[] = [
     render: item => {
       return (
         <div className="flex align-center">
-          <IconBubble
-            name={item.icon}
-            bubbleName={item.markets?.[0]?.icon!}
-            secondBubbleName={item.markets?.[1]?.icon!}
-            width={40}
-            height={40}
+          <TokenIcon
+            name={item.icon as TokenIconNames}
+            bubble1Name={item.markets?.[0]?.icon! as TokenIconNames}
+            bubble2Name={item.markets?.[1]?.icon! as TokenIconNames}
+            size={40}
             className="mr-16"
           />
           <div>

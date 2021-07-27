@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
@@ -9,11 +9,10 @@ import Spin from 'components/antd/spin';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
 import { VFormValidationResolver } from 'components/custom/form';
-import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -127,12 +126,11 @@ const StakeForm: FC = () => {
                 {...field}
                 className="mb-12"
                 before={
-                  <IconBubble
-                    name={uToken?.icon}
-                    bubbleName={projectToken.icon}
-                    secondBubbleName={poolMarket?.icon.active}
-                    width={32}
-                    height={32}
+                  <TokenIcon
+                    name={uToken?.icon as TokenIconNames}
+                    bubble1Name={projectToken.icon}
+                    bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                    size={32}
                     className="mr-8"
                   />
                 }
@@ -172,12 +170,11 @@ const StakeForm: FC = () => {
               <Text type="h2" weight="semibold" color="primary">
                 {formatToken(bnAmount) ?? '-'}
               </Text>
-              <IconBubble
-                name={uToken?.icon}
-                bubbleName={projectToken.icon}
-                secondBubbleName={poolMarket?.icon.active}
-                width={32}
-                height={32}
+              <TokenIcon
+                name={uToken?.icon as TokenIconNames}
+                bubble1Name={projectToken.icon}
+                bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                size={32}
                 className="mr-8"
               />
             </div>
@@ -290,12 +287,11 @@ const UnstakeForm: FC = () => {
                 {...field}
                 className="mb-12"
                 before={
-                  <IconBubble
-                    name={uToken?.icon}
-                    bubbleName={projectToken.icon}
-                    secondBubbleName={poolMarket?.icon.active}
-                    width={32}
-                    height={32}
+                  <TokenIcon
+                    name={uToken?.icon as TokenIconNames}
+                    bubble1Name={projectToken.icon}
+                    bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                    size={32}
                     className="mr-8"
                   />
                 }
@@ -351,12 +347,11 @@ const UnstakeForm: FC = () => {
                   <Text type="h2" weight="semibold" color="primary">
                     {formatToken(bnAmount) ?? '-'}
                   </Text>
-                  <IconBubble
-                    name={uToken?.icon}
-                    bubbleName={projectToken.icon!}
-                    secondBubbleName={poolMarket?.icon.active}
-                    width={32}
-                    height={32}
+                  <TokenIcon
+                    name={uToken?.icon as TokenIconNames}
+                    bubble1Name={projectToken.icon!}
+                    bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                    size={32}
                     className="mr-8"
                   />
                 </div>
@@ -377,7 +372,7 @@ const UnstakeForm: FC = () => {
                             scale: rewardToken.decimals,
                           }) ?? '-'}
                         </Text>
-                        <Icon name={rewardToken.icon!} width={32} height={32} />
+                        <TokenIcon name={rewardToken.icon!} size={32} />
                       </div>
                     );
                   })}

@@ -6,7 +6,7 @@ import AntdForm, {
 } from 'antd/lib/form';
 import cn from 'classnames';
 
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 
 import Grid from '../../custom/grid';
 import Tooltip from '../tooltip';
@@ -39,7 +39,7 @@ const FormItem: React.FC<FormItemProps> = props => {
             {hint && (
               <Tooltip title={hint}>
                 <span>
-                  <Icon name="info-outlined" width={15} height={15} />
+                  <Icon name="info" size={15} />
                 </span>
               </Tooltip>
             )}

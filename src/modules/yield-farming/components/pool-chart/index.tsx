@@ -9,10 +9,10 @@ import { formatUSD, formatUSDValue } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
-import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 import { useYfAPI } from 'modules/yield-farming/api';
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
@@ -166,7 +166,7 @@ const PoolChart: FC<Props> = props => {
             <IconsSet
               className="mr-8"
               icons={activeYfPool.tokens.map(token => (
-                <Icon key={token.symbol} name={token.icon!} />
+                <TokenIcon key={token.symbol} name={token.icon!} />
               ))}
             />
           )}
@@ -247,7 +247,10 @@ const PoolChart: FC<Props> = props => {
                       <div className="card flex flow-row row-gap-4 p-4" style={{ minWidth: 250 }}>
                         <div
                           className="p-8 text-center"
-                          style={{ minHeight: 40, background: 'var(--theme-body-color)' }}>
+                          style={{
+                            minHeight: 40,
+                            background: 'var(--theme-body-color)',
+                          }}>
                           <Text type="p2" weight="semibold" color="primary">
                             {label}
                           </Text>

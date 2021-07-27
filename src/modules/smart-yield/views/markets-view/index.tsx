@@ -4,10 +4,10 @@ import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
 import { formatUSD } from 'web3/utils';
 
-import Icon, { IconNames } from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
@@ -67,11 +67,10 @@ const MarketsView: FC = () => {
                   setSelectedMarkets(newSelection);
                   setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
                 }}>
-                <IconBubble
-                  name={market.icon as IconNames}
-                  secondBubbleName={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
-                  width={24}
-                  height={24}
+                <TokenIcon
+                  name={market.icon as TokenIconNames}
+                  bubble2Name={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
+                  size={24}
                   className="mr-16"
                 />
                 <Text type="p1" weight="semibold" color="primary">
@@ -99,13 +98,7 @@ const MarketsView: FC = () => {
           <Fragment key={selectedMarket.id}>
             <div className="card mb-8 p-24 flex wrap align-center col-gap-64 row-gap-16">
               <div className="flex">
-                <Icon
-                  name={selectedMarket.icon as IconNames}
-                  width={40}
-                  height={40}
-                  className="mr-16"
-                  color="inherit"
-                />
+                <TokenIcon name={selectedMarket.icon as TokenIconNames} size={40} className="mr-16" />
                 <div>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
                     {selectedMarket.name}

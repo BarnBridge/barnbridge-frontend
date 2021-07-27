@@ -7,11 +7,10 @@ import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon } from 'components/token-icon';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -25,7 +24,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       fixed: 'left',
       render: (_, entity) => (
         <div className="flex flow-col col-gap-16 align-center">
-          <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
+          <TokenIcon name={entity.meta?.icon as TokenIconNames} bubble1Name={entity.market?.icon as TokenIconNames} />
           <div>
             <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
               {entity.underlyingSymbol}
@@ -151,7 +150,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
                 +{formatPercent(entity.apr?.plus(entity.apy ?? 0) ?? 0)} APR
               </AprLabel>
             ) : entity.apr ? (
-              <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
+              <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
             ) : null}
           </div>
         );

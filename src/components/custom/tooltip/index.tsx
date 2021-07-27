@@ -1,5 +1,5 @@
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 
 type PropsType = {
   className?: string;
@@ -9,9 +9,8 @@ type PropsType = {
 export const InfoTooltip: React.FC<PropsType> = ({ children, className, style }) => (
   <Tooltip title={children}>
     <Icon
-      name="info-outlined"
-      width={16}
-      height={16}
+      name="info"
+      size={16}
       className={className}
       style={{
         flexShrink: 0,

@@ -4,11 +4,11 @@ import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { formatToken, formatUSD } from 'web3/utils';
 
-import Icon from 'components/custom/icon';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -72,7 +72,11 @@ const AggregatedPoolCard: FCx = props => {
           <StatusTag
             text="NEW"
             color="blue"
-            style={{ minWidth: 49, height: 24, padding: '4px 8px' }}
+            style={{
+              minWidth: 49,
+              height: 24,
+              padding: '4px 8px',
+            }}
             className="mr-16"
           />
           <Text type="p1" weight="semibold" color="primary">
@@ -105,7 +109,7 @@ const AggregatedPoolCard: FCx = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name={bondToken.icon!} width={16} height={16} className="mr-8" />
+                <TokenIcon name={bondToken.icon!} size={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(totalDailyRewards.get(bondToken.address)) ?? '-'}
                 </Text>
@@ -138,7 +142,7 @@ const AggregatedPoolCard: FCx = props => {
                   My potential {rewardToken.symbol} reward
                 </Text>
                 <div className="flex align-center">
-                  <Icon name={rewardToken.icon!} width={16} height={16} className="mr-8" />
+                  <TokenIcon name={rewardToken.icon!} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
                     {formatToken(totalPotentialRewards.get(rewardToken.address)) ?? '-'}
                   </Text>
