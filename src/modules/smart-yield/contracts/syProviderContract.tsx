@@ -35,14 +35,19 @@ class SYProviderContract extends Web3Contract {
     });
   }
 
-  transferFeesSend(): Promise<void> {
+  transferFeesSend(gasPrice: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }
 
-    return this.send('transferFees', [], {
-      from: this.account,
-    });
+    return this.send(
+      'transferFees',
+      [],
+      {
+        from: this.account,
+      },
+      gasPrice,
+    );
   }
 }
 

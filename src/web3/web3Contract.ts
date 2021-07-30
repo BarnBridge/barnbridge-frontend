@@ -155,7 +155,7 @@ class Web3Contract {
     this._events = new EventEmitter();
     this._abi = abi;
     this.address = address;
-    this.name = name;
+    this.name = name ?? address;
 
     const web3 = new Web3();
     this._callContract = new web3.eth.Contract(abi, address) as EthContract;
@@ -223,18 +223,22 @@ class Web3Contract {
     const contractMethod = this._callContract.methods[method];
 
     if (!contractMethod) {
-      return Promise.reject(new Error(`Invalid contract method name [${method}].`));
+      return Promise.reject(new Error(`Unknown method "${method}". (Ref. ${this.name}.${method})`));
+    }
+
+    if (!this._callContract.currentProvider) {
+      return Promise.reject(new Error(`Contract call failure. Missing call provider. (Ref. ${this.name}.${method})`));
     }
 
     return new Promise((resolve, reject) => {
       const req = contractMethod(...methodArgs).call.request(callArgs, (err: Error, value: string) => {
         if (err) {
-          // console.error(err);
+          console.error(err);
           return reject(err);
         }
 
         if (+value === WEB3_ERROR_VALUE) {
-          return Promise.reject(new Error(`Contract call failure. (${this.name}.${method})`));
+          return Promise.reject(new Error(`Contract call failure. (Ref. ${this.name}.${method})`));
         }
 
         resolve(value);
@@ -250,7 +254,11 @@ class Web3Contract {
     const contractMethod = this._sendContract.methods[method];
 
     if (!contractMethod) {
-      return Promise.reject(new Error(`Unknown method "${method}" in contract.`));
+      return Promise.reject(new Error(`Unknown method "${method}". (Ref. ${this.name}.${method})`));
+    }
+
+    if (!this._sendContract.currentProvider) {
+      return Promise.reject(new Error(`Contract send failure. Missing send provider. (Ref. ${this.name}.${method})`));
     }
 
     const _sendArgs = {

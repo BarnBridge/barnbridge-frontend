@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import Icon, { IconNames } from 'components/custom/icon';
@@ -13,7 +13,6 @@ import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
-import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 const PoolsView: React.FC = () => {

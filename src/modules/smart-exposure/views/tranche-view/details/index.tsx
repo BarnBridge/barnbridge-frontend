@@ -14,7 +14,6 @@ import { useContract } from 'hooks/useContract';
 import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
-import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 import s from './s.module.scss';

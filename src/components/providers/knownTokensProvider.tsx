@@ -7,7 +7,7 @@ import { formatUSD } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { TokenIconNames } from 'components/custom/icon';
-import { isDevelopmentMode, useConfig } from 'components/providers/configProvider';
+import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
@@ -15,7 +15,10 @@ import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
+import TokensProvider from './tokensProvider';
+
 import { InvariantContext } from 'utils/context';
+import { isDevelopmentMode } from '../../utils';
 
 export enum KnownTokens {
   ETH = 'ETH',
@@ -690,7 +693,11 @@ const KnownTokensProvider: FC = props => {
     convertTokenInUSD,
   };
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      <TokensProvider>{children}</TokensProvider>
+    </Context.Provider>
+  );
 };
 
 export default KnownTokensProvider;

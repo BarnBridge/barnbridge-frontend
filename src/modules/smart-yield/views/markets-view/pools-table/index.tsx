@@ -12,8 +12,7 @@ import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon } from 'components/token-icon';
-import { SYMarketMeta, SYPoolMeta } from 'modules/smart-yield/api';
+import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 

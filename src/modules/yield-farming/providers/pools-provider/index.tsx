@@ -4,7 +4,6 @@ import { useContract } from 'web3/components/contractManagerProvider';
 
 import { useConfig } from 'components/providers/configProvider';
 import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { YfStakingContract } from 'modules/yield-farming/contracts/yfStaking';
 import { useWallet } from 'wallets/walletProvider';
@@ -61,7 +60,6 @@ const YfPoolsProvider: FC = props => {
 
   const config = useConfig();
   const walletCtx = useWallet();
-  const web3Ctx = useWeb3();
   const { usdcToken, daiToken, susdToken, univ2Token, bondToken, convertTokenInUSD } = useKnownTokens();
 
   const stakingContract = useYfStakingContract(config.contracts.yf?.staking!);
