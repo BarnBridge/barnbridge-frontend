@@ -47,7 +47,7 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     heading: 'Token Name',
     render: entity => (
       <div className="flex flow-col col-gap-12 align-center">
-        <TokenIcon name={(entity.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" />
+        <TokenIcon name={(entity.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" size={32} />
         <div className="flex flow-row row-gap-4">
           <Text type="p1" weight="semibold" color="primary">
             {entity.tokenSymbol ?? '-'}
@@ -283,7 +283,7 @@ const TreasuryHoldings: FC = () => {
       <div className="grid gap-16 mb-32" style={{ gridTemplateColumns: 'repeat(3, 1fr)' } as CSSProperties}>
         {tokensSource.map(item => (
           <div key={item.tokenAddress} className="card flex flow-col col-gap-12 align-center p-24">
-            <TokenIcon name={(item.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" />
+            <TokenIcon name={(item.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" size={32} />
             <div className="flex flow-row row-gap-4">
               <Text type="p1" weight="semibold" color="primary">
                 {item.tokenSymbol ?? '-'}

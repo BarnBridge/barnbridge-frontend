@@ -155,7 +155,12 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
                     Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
                     Treasury. Make sure you are willing to spend the gas to send this transaction!
                   </Text>
-                  <Divider style={{ margin: '0 -24px', width: 'calc(100% + 48px)' }} />
+                  <Divider
+                    style={{
+                      margin: '0 -24px',
+                      width: 'calc(100% + 48px)',
+                    }}
+                  />
                 </div>
               )}
             </TxConfirmModal>
@@ -317,7 +322,7 @@ const TreasuryFees: FC = () => {
           <div
             className="p-8 mr-16"
             style={{
-              backgroundColor: '#FF4339',
+              backgroundColor: '#ff4339',
               color: '#fff',
               borderRadius: '50%',
               width: '40px',

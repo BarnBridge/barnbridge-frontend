@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import Icon, { IconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/generalProvider';
