@@ -10,12 +10,12 @@ import Select from 'components/antd/select';
 import Tooltip from 'components/antd/tooltip';
 import { ExplorerAddressLink } from 'components/custom/externalLink';
 import Icon, { IconNames } from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { Spinner } from 'components/custom/spinner';
 import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { TokenType, useTokens } from 'components/providers/tokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
 import { APISYPool } from 'modules/smart-yield/api';
@@ -42,7 +42,11 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
     heading: <div>Token Name</div>,
     render: entity => (
       <div className="flex flow-col align-center">
-        <IconBubble name={entity.token?.icon} bubbleName={entity.market?.icon.active} className="mr-16" />
+        <TokenIcon
+          name={entity.token?.icon as TokenIconNames}
+          bubble1Name={entity.market?.icon.active as TokenIconNames}
+          className="mr-16"
+        />
         <div className="flex flow-row">
           <ExplorerAddressLink address={entity.smartYieldAddress} className="flex flow-col mb-4">
             <Text type="p1" weight="semibold" color="blue" className="mr-4">
@@ -151,7 +155,12 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
                     Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
                     Treasury. Make sure you are willing to spend the gas to send this transaction!
                   </Text>
-                  <Divider style={{ margin: '0 -24px', width: 'calc(100% + 48px)' }} />
+                  <Divider
+                    style={{
+                      margin: '0 -24px',
+                      width: 'calc(100% + 48px)',
+                    }}
+                  />
                 </div>
               )}
             </TxConfirmModal>
@@ -313,7 +322,7 @@ const TreasuryFees: FC = () => {
           <div
             className="p-8 mr-16"
             style={{
-              backgroundColor: '#FF4339',
+              backgroundColor: '#ff4339',
               color: '#fff',
               borderRadius: '50%',
               width: '40px',

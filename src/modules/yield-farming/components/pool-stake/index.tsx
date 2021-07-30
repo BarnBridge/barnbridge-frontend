@@ -9,11 +9,11 @@ import { formatNumber, formatToken, formatUSD } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
 import { TokenAmount, TokenSelect } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon } from 'components/token-icon';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 
 import { useYfPool } from '../../providers/pool-provider';
@@ -134,7 +134,7 @@ const PoolStake: FC = () => {
               tokens={poolMeta.tokens.map(t => t.symbol as KnownTokens)}
             />
           ) : (
-            <Icon name={activeToken.icon!} width={24} height={24} />
+            <TokenIcon name={activeToken.icon!} size={24} />
           )
         }
         value={amount}
@@ -227,7 +227,7 @@ const PoolStake: FC = () => {
                   decimals: activeToken.decimals,
                 })}
               </Text>
-              <Icon name={activeToken.icon!} />
+              <TokenIcon name={activeToken.icon!} />
             </div>
           }
           submitText={`Confirm your stake`}

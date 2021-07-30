@@ -3,7 +3,7 @@ import Web3 from 'web3';
 import { AbiItem } from 'web3-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import Icon, { IconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/generalProvider';
@@ -120,6 +120,7 @@ const Web3Provider: FC = props => {
         } catch (e) {
           canSetNetwork = false;
 
+          // @ts-ignore
           if (e.code === 4902) {
             await wallet.connector.addChain(network.metamaskChain);
           }
@@ -205,7 +206,7 @@ const Web3Provider: FC = props => {
                 className="button-ghost-monochrome p-16"
                 style={{ height: 'inherit' }}
                 onClick={() => switchNetwork(network.id)}>
-                <Icon name={network.meta.logo as IconNames} width={40} height={40} className="mr-12" />
+                <Icon name={network.meta.logo} width={40} height={40} className="mr-12" />
                 <div className="flex flow-row align-start">
                   <Text type="p1" weight="semibold" color="primary">
                     {network.meta.name}

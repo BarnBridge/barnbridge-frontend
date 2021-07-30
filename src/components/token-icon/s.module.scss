@@ -1,3 +1,11 @@
+.tokenIcon {
+  flex-shrink: 0;
+}
+
+.tokenIconPair {
+  flex-shrink: 0;
+}
+
 .green-outline {
   stroke: var(--theme-green-color);
 }

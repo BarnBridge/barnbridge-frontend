@@ -8,12 +8,12 @@ import Web3Contract from 'web3/web3Contract';
 import Select from 'components/antd/select';
 import Tooltip from 'components/antd/tooltip';
 import { ExplorerAddressLink } from 'components/custom/externalLink';
-import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { TokenType, useTokens } from 'components/providers/tokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
 import {
@@ -47,7 +47,7 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     heading: 'Token Name',
     render: entity => (
       <div className="flex flow-col col-gap-12 align-center">
-        <Icon name={(entity.token?.icon ?? 'token-unknown') as TokenIconNames} width={32} height={32} />
+        <TokenIcon name={(entity.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" size={32} />
         <div className="flex flow-row row-gap-4">
           <Text type="p1" weight="semibold" color="primary">
             {entity.tokenSymbol ?? '-'}
@@ -283,7 +283,7 @@ const TreasuryHoldings: FC = () => {
       <div className="grid gap-16 mb-32" style={{ gridTemplateColumns: 'repeat(3, 1fr)' } as CSSProperties}>
         {tokensSource.map(item => (
           <div key={item.tokenAddress} className="card flex flow-col col-gap-12 align-center p-24">
-            <Icon name={(item.token?.icon ?? 'token-unknown') as IconNames} width={32} height={32} />
+            <TokenIcon name={(item.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" size={32} />
             <div className="flex flow-row row-gap-4">
               <Text type="p1" weight="semibold" color="primary">
                 {item.tokenSymbol ?? '-'}

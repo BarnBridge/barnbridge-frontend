@@ -7,12 +7,13 @@ import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import { Form, FormItem, useForm } from 'components/custom/form';
-import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import WalletDepositConfirmModal from 'modules/governance/views/portfolio-view/portfolio-deposit/components/wallet-deposit-confirm-modal';
 
@@ -155,7 +156,7 @@ const PortfolioDeposit: FC = () => {
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(stakedBalance) ?? '-'}
               </Text>
-              <Icon name={projectToken.icon as IconNames} />
+              <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
           <div className="flex flow-row row-gap-4">
@@ -166,14 +167,14 @@ const PortfolioDeposit: FC = () => {
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(bondBalance) ?? '-'}
               </Text>
-              <Icon name={projectToken.icon as IconNames} />
+              <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
         </div>
         <FormItem name="amount" label="Amount">
           {({ field }) => (
             <TokenAmount
-              before={<Icon name={projectToken.icon as TokenIconNames} />}
+              before={<TokenIcon name={projectToken.icon as TokenIconNames} />}
               max={bondBalance}
               disabled={isSubmitting}
               decimals={projectToken.decimals}
@@ -225,7 +226,7 @@ const PortfolioDeposit: FC = () => {
                     decimals: projectToken.decimals,
                   })}
                 </Text>
-                <Icon name={projectToken.icon as IconNames} />
+                <TokenIcon name={projectToken.icon as TokenIconNames} />
               </div>
             </div>
           }

@@ -9,12 +9,12 @@ import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Spin from 'components/antd/spin';
-import Icon, { TokenIconNames } from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
+import Icon from 'components/custom/icon';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
@@ -234,7 +234,7 @@ const JuniorTranche: React.FC = () => {
         <Form.Item label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             className="mb-24"
-            before={<Icon name={pool?.token?.icon as TokenIconNames} />}
+            before={<TokenIcon name={pool?.token?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount}
             disabled={state.isSaving}
@@ -274,12 +274,11 @@ const JuniorTranche: React.FC = () => {
               <TokenAmountPreview
                 className="mb-24"
                 before={
-                  <IconBubble
-                    name={pool?.token?.icon}
-                    bubbleName={projectToken.icon!}
-                    secondBubbleName={pool?.market?.icon.active}
-                    width={24}
-                    height={24}
+                  <TokenIcon
+                    name={pool?.token?.icon as TokenIconNames}
+                    bubble1Name={projectToken.icon! as TokenIconNames}
+                    bubble2Name={pool?.market?.icon.active as TokenIconNames}
+                    size={24}
                   />
                 }
                 value={formatToken(getAmount(), {

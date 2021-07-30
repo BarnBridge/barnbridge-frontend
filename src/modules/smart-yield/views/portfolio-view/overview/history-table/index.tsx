@@ -9,10 +9,10 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import {
   APISYTxHistoryType,
@@ -43,13 +43,16 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <Grid flow="col" gap={16} align="center">
           {entity.isTokenAmount ? (
-            <IconBubble
-              name={entity.poolEntity?.token?.icon}
-              bubbleName={projectToken.icon!}
-              secondBubbleName={entity.poolEntity?.market?.icon.active}
+            <TokenIcon
+              name={entity.poolEntity?.token?.icon as TokenIconNames}
+              bubble1Name={projectToken.icon!}
+              bubble2Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
             />
           ) : (
-            <IconBubble name={entity.poolEntity?.token?.icon} bubbleName={entity.poolEntity?.market?.icon.active} />
+            <TokenIcon
+              name={entity.poolEntity?.token?.icon as TokenIconNames}
+              bubble1Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
+            />
           )}
           <Grid flow="row" gap={4} className="ml-auto">
             <Text type="p1" weight="semibold" color="primary" className="mb-4">

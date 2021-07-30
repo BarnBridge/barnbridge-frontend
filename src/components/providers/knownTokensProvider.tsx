@@ -6,10 +6,10 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatUSD } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import { TokenIconNames } from 'components/custom/icon';
 import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
+import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
@@ -82,7 +82,7 @@ export type KnownTokensContextType = {
   usdtToken: TokenMeta;
   getTokenBySymbol(symbol: string): TokenMeta | undefined;
   getTokenByAddress(address: string): TokenMeta | undefined;
-  getTokenIconBySymbol(address: string): string;
+  getTokenIconBySymbol(address: string): TokenIconNames;
   getTokenPriceIn(source: string, target: string): BigNumber | undefined;
   convertTokenIn(amount: BigNumber | number | undefined, source: string, target: string): BigNumber | undefined;
   convertTokenInUSD(amount: BigNumber | number | undefined, source: string): BigNumber | undefined;
@@ -162,7 +162,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BTC',
         address: '0x',
         decimals: 0,
-        icon: 'token-wbtc',
+        icon: 'wbtc',
         priceFeed: config.feeds.btc, // BTC -> $
       },
       {
@@ -170,7 +170,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Wrapped BTC',
         address: config.tokens.wbtc.toLowerCase(),
         decimals: 8,
-        icon: 'token-wbtc',
+        icon: 'wbtc',
         pricePath: [KnownTokens.BTC],
         contract: wbtcContract,
       },
@@ -179,7 +179,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Ether',
         address: '0x',
         decimals: 18,
-        icon: 'token-eth',
+        icon: 'eth',
         priceFeed: config.feeds.eth, // ETH -> $
       },
       {
@@ -187,7 +187,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Wrapped Ether',
         address: config.tokens.weth.toLowerCase(),
         decimals: 18,
-        icon: 'token-weth',
+        icon: 'weth',
         pricePath: [KnownTokens.ETH],
         contract: wethContract,
       },
@@ -196,7 +196,7 @@ const KnownTokensProvider: FC = props => {
         name: 'USD Coin',
         address: config.tokens.usdc.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdc',
+        icon: 'usdc',
         color: '#4f6ae5',
         priceFeed: config.feeds.usdc, // USDC -> $
         contract: usdcContract,
@@ -206,7 +206,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge',
         address: config.tokens.bond.toLowerCase(),
         decimals: 18,
-        icon: 'static/token-bond',
+        icon: 'bond',
         priceFeed: config.feeds.bond, // BOND -> USDC
         pricePath: [KnownTokens.USDC],
         contract: bondContract,
@@ -216,7 +216,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Tether USD',
         address: config.tokens.usdt.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdt',
+        icon: 'usdt',
         priceFeed: config.feeds.usdt, // USDT -> $
         contract: usdtContract,
       },
@@ -225,7 +225,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Synth sUSD',
         address: config.tokens.susd.toLowerCase(),
         decimals: 18,
-        icon: 'token-susd',
+        icon: 'susd',
         color: '#1e1a31',
         priceFeed: config.feeds.susd, // sUSD -> ETH
         pricePath: [KnownTokens.ETH],
@@ -236,7 +236,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Gemini dollar',
         address: config.tokens.gusd.toLowerCase(),
         decimals: 2,
-        icon: 'token-gusd',
+        icon: 'gusd',
         price: BigNumber.ZERO,
         priceFeed: undefined,
         pricePath: undefined,
@@ -247,7 +247,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Dai Stablecoin',
         address: config.tokens.dai.toLowerCase(),
         decimals: 18,
-        icon: 'token-dai',
+        icon: 'dai',
         color: '#ffd160',
         priceFeed: config.feeds.dai, // DAI -> $
         contract: daiContract,
@@ -257,7 +257,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Rai Reflex Index',
         address: config.tokens.rai.toLowerCase(),
         decimals: 18,
-        icon: 'token-rai',
+        icon: 'rai',
         price: BigNumber.ZERO,
         priceFeed: undefined,
         pricePath: undefined,
@@ -268,7 +268,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Uniswap V2',
         address: config.tokens.univ2.toLowerCase(),
         decimals: 18,
-        icon: 'static/token-uniswap',
+        icon: 'uniswap',
         priceFeed: config.feeds.univ2, // UNIV2 -> USDC
         pricePath: [KnownTokens.USDC],
         contract: univ2Contract,
@@ -278,7 +278,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Staked AAVE',
         address: config.tokens.stkaave.toLowerCase(),
         decimals: 18,
-        icon: 'static/token-staked-aave',
+        icon: 'aave',
         priceFeed: config.feeds.stkaave, // stkAAVE -> USD
         pricePath: [],
         contract: stkaaveContract,
@@ -288,7 +288,7 @@ const KnownTokensProvider: FC = props => {
         name: 'wMATIC',
         address: config.tokens.wmatic.toLowerCase(),
         decimals: 18,
-        icon: 'token-wmatic',
+        icon: 'wmatic',
         priceFeed: config.feeds.wmatic, // WMATIC -> USD
         pricePath: [],
         contract: wmaticContract,
@@ -298,7 +298,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge cUSDC',
         address: config.tokens.bb_cusdc.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdc',
+        icon: 'usdc',
         priceFeed: config.tokens.bb_cusdc, // bb_cUSDC -> USDC
         pricePath: [KnownTokens.USDC],
       },
@@ -307,7 +307,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge cDAI',
         address: config.tokens.bb_cdai.toLowerCase(),
         decimals: 18,
-        icon: 'token-dai',
+        icon: 'dai',
         priceFeed: config.tokens.bb_cdai, // bb_cDAI -> DAI
         pricePath: [KnownTokens.DAI],
       },
@@ -316,7 +316,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge aUSDC',
         address: config.tokens.bb_ausdc.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdc',
+        icon: 'usdc',
         priceFeed: config.tokens.bb_ausdc, // bb_aUSDC -> USDC
         pricePath: [KnownTokens.USDC],
       },
@@ -325,7 +325,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge aDAI',
         address: config.tokens.bb_adai.toLowerCase(),
         decimals: 18,
-        icon: 'token-dai',
+        icon: 'dai',
         priceFeed: config.tokens.bb_adai, // bb_aDAI -> DAI
         pricePath: [KnownTokens.DAI],
       },
@@ -334,7 +334,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge aUSDT',
         address: config.tokens.bb_ausdt.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdt',
+        icon: 'usdt',
         priceFeed: config.tokens.bb_ausdt, // bb_aUSDT -> USDT
         pricePath: [KnownTokens.USDT],
       },
@@ -343,7 +343,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge aGUSD',
         address: config.tokens.bb_agusd.toLowerCase(),
         decimals: 2,
-        icon: 'token-gusd',
+        icon: 'gusd',
         priceFeed: config.tokens.bb_agusd, // bb_aGUSD -> GUSD
         pricePath: [KnownTokens.GUSD],
       },
@@ -352,7 +352,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge crUSDC',
         address: config.tokens.bb_crusdc.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdc',
+        icon: 'usdc',
         priceFeed: config.tokens.bb_crusdc, // bb_crUSDC -> USDC
         pricePath: [KnownTokens.USDC],
       },
@@ -361,7 +361,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge crDAI',
         address: config.tokens.bb_crdai.toLowerCase(),
         decimals: 18,
-        icon: 'token-dai',
+        icon: 'dai',
         priceFeed: config.tokens.bb_crdai, // bb_crDAI -> DAI
         pricePath: [KnownTokens.DAI],
       },
@@ -370,7 +370,7 @@ const KnownTokensProvider: FC = props => {
         name: 'BarnBridge crUSDT',
         address: config.tokens.bb_crusdt.toLowerCase(),
         decimals: 6,
-        icon: 'token-usdt',
+        icon: 'usdt',
         priceFeed: config.tokens.bb_crusdt, // bb_crUSDT -> USDT
         pricePath: [KnownTokens.USDT],
       },
@@ -433,7 +433,7 @@ const KnownTokensProvider: FC = props => {
   );
 
   const getTokenIconBySymbol = useCallback(
-    (symbol: string): string => {
+    (symbol: string): TokenIconNames => {
       let foundToken: TokenMeta | undefined;
 
       if (isDevelopmentMode && symbol === KnownTokens.bbcUSDC) {
@@ -442,7 +442,7 @@ const KnownTokensProvider: FC = props => {
         foundToken = tokens.find(token => token.symbol === symbol);
       }
 
-      return foundToken?.icon || 'token-unknown';
+      return foundToken?.icon || 'unknown';
     },
     [tokens],
   );

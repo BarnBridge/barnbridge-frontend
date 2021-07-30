@@ -1,6 +1,6 @@
 import classNames from 'classnames';
 
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 import { FCx } from 'components/types.tx';
 
 import s from './s.module.scss';

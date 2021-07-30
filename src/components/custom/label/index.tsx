@@ -1,12 +1,12 @@
 import classNames from 'classnames';
 
-import Icon, { IconNames } from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 
 import s from './s.module.scss';
 
 type AprLabelPropsType = {
-  icons: IconNames[];
+  icons: TokenIconNames[];
   size?: 'large';
 };
 
@@ -21,7 +21,7 @@ export const AprLabel: React.FC<AprLabelPropsType> = ({ icons, size, children })
       <IconsSet
         className="mr-4"
         icons={icons.map((icon, idx) => (
-          <Icon key={idx} width={iconSize} height={iconSize} name={icon} />
+          <TokenIcon key={idx} name={icon} size={iconSize} />
         ))}
       />
       <div

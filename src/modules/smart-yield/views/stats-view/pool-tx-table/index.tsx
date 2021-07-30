@@ -10,11 +10,11 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import {
   APISYPoolTransaction,
   APISYTxHistoryType,
@@ -40,16 +40,16 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <div className="flex">
           {entity.isTokenAmount ? (
-            <IconBubble
-              name={entity.poolEntity?.token?.icon}
-              bubbleName={projectToken.icon!}
-              secondBubbleName={entity.poolEntity?.market?.icon.active}
+            <TokenIcon
+              name={entity.poolEntity?.token?.icon as TokenIconNames}
+              bubble1Name={projectToken.icon!}
+              bubble2Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
               className="mr-16"
             />
           ) : (
-            <IconBubble
-              name={entity.poolEntity?.token?.icon}
-              bubbleName={entity.poolEntity?.market?.icon.active}
+            <TokenIcon
+              name={entity.poolEntity?.token?.icon as TokenIconNames}
+              bubble1Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
               className="mr-16"
             />
           )}

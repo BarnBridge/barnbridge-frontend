@@ -13,13 +13,15 @@ const Cell = ({
   icon,
   iconPosition,
   size,
+  iconRotate,
 }: {
   variation: ButtonProps['variation'];
   icon?: ButtonProps['icon'];
   iconPosition?: ButtonProps['iconPosition'];
   size?: ButtonProps['size'];
+  iconRotate?: ButtonProps['iconRotate'];
 }) => (
-  <Button variation={variation} icon={icon} iconPosition={iconPosition} size={size}>
+  <Button variation={variation} icon={icon} iconPosition={iconPosition} iconRotate={iconRotate} size={size}>
     Button
   </Button>
 );
@@ -37,10 +39,12 @@ const Row = ({
   icon,
   iconPosition,
   size,
+  iconRotate,
 }: {
   icon?: ButtonProps['icon'];
   iconPosition?: ButtonProps['iconPosition'];
   size?: ButtonProps['size'];
+  iconRotate?: ButtonProps['iconRotate'];
 }) => (
   <tr>
     <th>
@@ -62,9 +66,9 @@ const Row = ({
 const Tbody = ({ size }: { size?: ButtonProps['size'] }) => (
   <tbody style={{ borderBottom: '1px solid #ccc' }}>
     <Row size={size} />
-    <Row icon="arrow-right" iconPosition="right" size={size} />
-    <Row icon="arrow-left" iconPosition="left" size={size} />
-    <Row icon="arrow-right" iconPosition="only" size={size} />
+    <Row icon="arrow" iconPosition="right" size={size} />
+    <Row icon="arrow" iconRotate={180} iconPosition="left" size={size} />
+    <Row icon="arrow" iconPosition="only" size={size} />
   </tbody>
 );
 

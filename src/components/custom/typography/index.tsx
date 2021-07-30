@@ -2,7 +2,7 @@ import React from 'react';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -68,7 +68,7 @@ export const Hint: React.FC<HintProps> = props => {
         overlayStyle={overlayStyle}
         overlayInnerStyle={overlayStyle}>
         <span>
-          <Icon name="info-outlined" width={16} height={16} className={s.icon} />
+          <Icon name="info" size={16} className={s.icon} color="icon" />
         </span>
       </Tooltip>
     </div>

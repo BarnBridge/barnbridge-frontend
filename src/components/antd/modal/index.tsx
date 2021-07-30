@@ -4,8 +4,8 @@ import cn from 'classnames';
 
 import Button from 'components/antd/button';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -35,7 +35,7 @@ const Modal: React.FC<ModalProps> = props => {
       visible
       centered
       footer={null}
-      closeIcon={<Icon name="close-circle-outlined" />}
+      closeIcon={<Icon name="close" />}
       onCancel={handleCancel}
       {...modalProps}>
       {children}

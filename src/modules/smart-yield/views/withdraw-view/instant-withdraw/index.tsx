@@ -11,12 +11,12 @@ import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon, { TokenIconNames } from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
+import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -159,12 +159,11 @@ const InstantWithdraw: React.FC = () => {
         <Form.Item className="mb-32" name="from" label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             tokenIcon={
-              <IconBubble
-                name={pool.token?.icon}
-                bubbleName={projectToken.icon!}
-                secondBubbleName={pool.market?.icon.active}
-                width={36}
-                height={36}
+              <TokenIcon
+                name={pool.token?.icon as TokenIconNames}
+                bubble1Name={projectToken.icon!}
+                bubble2Name={pool.market?.icon.active as TokenIconNames}
+                size={36}
               />
             }
             max={getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals)}

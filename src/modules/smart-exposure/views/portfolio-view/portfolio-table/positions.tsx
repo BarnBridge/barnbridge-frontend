@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatToken, formatUSD } from 'web3/utils';
 
-import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table } from 'components/custom/table';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIconPair } from 'components/token-icon';
 import { useContract } from 'hooks/useContract';
 import { TranchesItemApiType, useSeAPI } from 'modules/smart-exposure/api';
 
@@ -16,9 +16,9 @@ const columns: ColumnType<TranchesItemApiType>[] = [
 
       return (
         <div className="flex align-center">
-          <IconsPair
-            icon1={getTokenIconBySymbol(item.tokenA.symbol)}
-            icon2={getTokenIconBySymbol(item.tokenB.symbol)}
+          <TokenIconPair
+            name1={getTokenIconBySymbol(item.tokenA.symbol)}
+            name2={getTokenIconBySymbol(item.tokenB.symbol)}
             size={40}
             className="mr-16"
             style={{ flexShrink: 0 }}

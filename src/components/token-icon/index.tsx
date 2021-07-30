@@ -16,6 +16,7 @@ export type TokenIconNames =
   | 'bond'
   | 'usdc'
   | 'dai'
+  | 'rai'
   | 'susd'
   | 'eth'
   | 'wbtc'
@@ -25,7 +26,10 @@ export type TokenIconNames =
   | 'unknown'
   | 'weth'
   | 'fiat'
-  | 'usd';
+  | 'usd'
+  | 'uniswap'
+  | 'wmatic'
+  | 'all';
 
 type TokenIconProps = {
   name: TokenIconNames;
@@ -37,9 +41,9 @@ type TokenIconProps = {
   outline?: 'green' | 'purple';
 };
 
-const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap'];
 
-const svgPath = 'token-icons-sprite.svg';
+const svgPath = `${process.env.PUBLIC_URL}/token-icons-sprite.svg`;
 
 export const TokenIcon: React.FC<TokenIconProps> = props => {
   const { name, size = 24, className, style, bubble1Name, bubble2Name, outline, ...rest } = props;
@@ -47,7 +51,7 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
   const id = useMemo(nanoid, []);
 
   return (
-    <svg className={className} width={size} height={size} style={style} {...rest}>
+    <svg className={classNames(s.tokenIcon, className)} width={size} height={size} style={style} {...rest}>
       <mask id={id}>
         <circle cx="50%" cy="50%" r="50%" fill="white" />
         {bubble1Name && <circle cx="77.5%" cy="22.5%" r="25%" fill="black" />}
@@ -57,7 +61,7 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
         <circle cx="50%" cy="50%" r="50%" fill="black" />
         <circle cx="50%" cy="50%" r="44%" fill="white" />
       </mask>
-      <g mask={`url(#${id})`}>
+      <g mask={bubble1Name || bubble2Name ? `url(#${id})` : ''}>
         <g mask={outline ? `url(#${id}-outline)` : ''}>
           <use xlinkHref={`${staticNames.includes(name) ? '' : svgPath}#icon__${name}`} />
         </g>
@@ -119,7 +123,7 @@ export const TokenIconPair: React.FC<TokenPairProps> = props => {
   const cutSize = iconSize / 2 + gap;
 
   return (
-    <svg width={size} height={size} className={className} style={style}>
+    <svg width={size} height={size} className={classNames(className, s.tokenIconPair)} style={style}>
       <mask id={id}>
         <rect width={size} height={size} fill="white" />
         <circle cx={iconSize / 2} cy={iconSize / 2 + iconIndent} r={cutSize} fill="black" />
