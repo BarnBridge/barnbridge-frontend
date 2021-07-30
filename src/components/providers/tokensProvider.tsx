@@ -19,6 +19,7 @@ export enum Tokens {
   SUSD = 'sUSD',
   GUSD = 'GUSD',
   DAI = 'DAI',
+  RAI = 'RAI',
   STK_AAVE = 'stkAAVE',
   WMATIC = 'MATIC',
   BOND = 'BOND',
@@ -87,6 +88,14 @@ export const DAI: BaseTokenType = {
   name: 'Dai Stablecoin',
   decimals: 18,
   icon: 'token-dai',
+};
+
+export const RAI: BaseTokenType = {
+  address: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
+  symbol: Tokens.RAI,
+  name: 'Rai Reflex Index',
+  decimals: 18,
+  icon: 'token-rai',
 };
 
 export const STK_AAVE: BaseTokenType = {
@@ -172,6 +181,18 @@ async function getGusdPrice(): Promise<BigNumber | undefined> {
   return BigNumber.from(result['gemini-dollar'].usd);
 }
 
+async function getRaiPrice(): Promise<BigNumber | undefined> {
+  const query = queryfy({
+    ids: ['rai'],
+    vs_currencies: 'usd',
+  });
+
+  const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
+  const result = await fetch(String(url)).then(response => response.json());
+
+  return BigNumber.from(result['rai'].usd);
+}
+
 async function getBondPrice(poolAddress: string): Promise<BigNumber | undefined> {
   const contract = new Erc20Contract(UNISWAP_V2_BOND_USDC_ABI, poolAddress);
   contract.setCallProvider(MainnetHttpsWeb3Provider);
@@ -227,6 +248,8 @@ async function getPriceFor(symbol: string): Promise<BigNumber | undefined> {
       return getChainlinkFeedPrice('0x7bac85a8a13a4bcd8abb3eb7d6b4d632c5a57676'); // Chainlink: MATIC/USD
     case Tokens.GUSD:
       return getGusdPrice(); // Coingecko API: GUSD/USD
+    case Tokens.RAI:
+      return getRaiPrice(); // Coingecko API: RAI/USD
     case Tokens.BOND:
       return getBondPrice('0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244'); // UNISWAP V2: BOND/USDC
     case Tokens.UNIV2:
@@ -236,7 +259,7 @@ async function getPriceFor(symbol: string): Promise<BigNumber | undefined> {
   }
 }
 
-const ALL_TOKENS: BaseTokenType[] = [WBTC, WETH, USDC, USDT, SUSD, GUSD, DAI, STK_AAVE, MATIC, BOND, UNIV2];
+const ALL_TOKENS: BaseTokenType[] = [WBTC, WETH, USDC, USDT, SUSD, GUSD, DAI, RAI, STK_AAVE, MATIC, BOND, UNIV2];
 
 const TokensProvider: FC = props => {
   const { children } = props;

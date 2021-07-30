@@ -19,6 +19,7 @@ export type TokenIconNames =
   | 'token-usdc'
   | 'token-usdt'
   | 'token-dai'
+  | 'token-rai'
   | 'token-susd'
   | 'token-gusd'
   | 'static/token-bond'

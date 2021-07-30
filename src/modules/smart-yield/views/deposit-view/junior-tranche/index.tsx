@@ -234,7 +234,7 @@ const JuniorTranche: React.FC = () => {
         <Form.Item label="From" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             className="mb-24"
-            before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
+            before={<Icon name={pool?.token?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount}
             disabled={state.isSaving}
@@ -275,9 +275,9 @@ const JuniorTranche: React.FC = () => {
                 className="mb-24"
                 before={
                   <IconBubble
-                    name={pool?.meta?.icon}
+                    name={pool?.token?.icon}
                     bubbleName={projectToken.icon!}
-                    secondBubbleName={pool?.market?.icon}
+                    secondBubbleName={pool?.market?.icon.active}
                     width={24}
                     height={24}
                   />

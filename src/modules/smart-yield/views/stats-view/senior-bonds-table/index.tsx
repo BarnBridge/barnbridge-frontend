@@ -24,7 +24,7 @@ const TokenNameColumn: React.FC = () => {
 
   return (
     <div className="flex">
-      <IconBubble name={pool?.meta?.icon} bubbleName={pool?.market?.icon} className="mr-16" />
+      <IconBubble name={pool?.token?.icon} bubbleName={pool?.market?.icon.active} className="mr-16" />
       <div className="flex flow-row">
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
           {pool?.underlyingSymbol}

@@ -42,6 +42,7 @@ export const GoerliConfig: NetworkConfig = {
     susd: '',
     gusd: '',
     dai: '',
+    rai: '',
     stkaave: '',
     wmatic: '',
     ausdc: '',

@@ -49,6 +49,7 @@ export const MainnetConfig: NetworkConfig = {
     susd: '0x57Ab1ec28D129707052df4dF418D58a2D46d5f51',
     gusd: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
     dai: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+    rai: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
     stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
     wmatic: '',
     ausdc: '0xBcca60bB61934080951369a648Fb03DF4F96263C',

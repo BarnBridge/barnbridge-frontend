@@ -41,15 +41,15 @@ const Columns: ColumnsType<TableEntity> = [
         <div className="flex">
           {entity.isTokenAmount ? (
             <IconBubble
-              name={entity.poolEntity?.meta?.icon}
+              name={entity.poolEntity?.token?.icon}
               bubbleName={projectToken.icon!}
-              secondBubbleName={entity.poolEntity?.market?.icon}
+              secondBubbleName={entity.poolEntity?.market?.icon.active}
               className="mr-16"
             />
           ) : (
             <IconBubble
-              name={entity.poolEntity?.meta?.icon}
-              bubbleName={entity.poolEntity?.market?.icon}
+              name={entity.poolEntity?.token?.icon}
+              bubbleName={entity.poolEntity?.market?.icon.active}
               className="mr-16"
             />
           )}

@@ -126,7 +126,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   return (
     <div className="card">
       <div className="p-24" style={{ display: 'flex', flexWrap: 'wrap' }}>
-        <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} className="mr-16" />
+        <IconBubble name={pool.token?.icon} bubbleName={pool.market?.icon.active} className="mr-16" />
         <div>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {pool.underlyingSymbol}

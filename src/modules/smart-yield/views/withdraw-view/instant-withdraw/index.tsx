@@ -160,9 +160,9 @@ const InstantWithdraw: React.FC = () => {
           <TokenAmount
             tokenIcon={
               <IconBubble
-                name={pool.meta?.icon}
+                name={pool.token?.icon}
                 bubbleName={projectToken.icon!}
-                secondBubbleName={pool.market?.icon}
+                secondBubbleName={pool.market?.icon.active}
                 width={36}
                 height={36}
               />
@@ -205,7 +205,7 @@ const InstantWithdraw: React.FC = () => {
 
             return (
               <TokenAmount
-                tokenIcon={pool.meta?.icon as TokenIconNames}
+                tokenIcon={pool?.token?.icon as TokenIconNames}
                 maximumFractionDigits={pool.underlyingDecimals}
                 displayDecimals={pool.underlyingDecimals}
                 value={to}

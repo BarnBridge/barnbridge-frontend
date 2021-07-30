@@ -8,10 +8,11 @@ import Icon, { IconNames } from 'components/custom/icon';
 import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
-import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { PoolCard } from 'modules/smart-yield/views/pools-view/pool-card';
 import { PolygonNetwork } from 'networks/polygon';
+
+import { KnownMarkets, MarketMeta, getKnownMarketById } from '../../providers/markets';
 
 const PoolsView: FC = () => {
   const { activeNetwork } = useNetwork();
@@ -22,11 +23,11 @@ const PoolsView: FC = () => {
     `${activeNetwork.id}#sy-markets-selection`,
   );
 
-  const [selectedMarkets, setSelectedMarkets] = useState<SYMarketMeta[]>([]);
+  const [selectedMarkets, setSelectedMarkets] = useState<MarketMeta[]>([]);
 
   const marketsToDisplay = useMemo(() => {
     if (!selectedMarkets.length) {
-      return Array.from(Markets.values()).filter(market => {
+      return KnownMarkets.filter(market => {
         return pools.some(pool => pool.meta.protocolId === market.id);
       });
     }
@@ -35,11 +36,10 @@ const PoolsView: FC = () => {
   }, [selectedMarkets, pools]);
 
   useEffect(() => {
-    const markets = Array.from(Markets.values());
     const activeMarkets = marketsSelection
       ?.split('<#>')
       .map(marketId => {
-        return markets.find(mk => mk.id === marketId)!;
+        return getKnownMarketById(marketId)!;
       })
       .filter(Boolean);
 
@@ -49,45 +49,43 @@ const PoolsView: FC = () => {
   return (
     <>
       <div className="tab-cards mb-64">
-        {Array.from(Markets.values())
-          .filter(market => {
-            return pools.some(pool => pool.meta.protocolId === market.id);
-          })
-          .map(market => {
-            const isSelected = selectedMarkets.includes(market);
+        {KnownMarkets.filter(market => {
+          return pools.some(pool => pool.meta.protocolId === market.id);
+        }).map(market => {
+          const isSelected = selectedMarkets.includes(market);
 
-            return (
-              <button
-                key={market.name}
-                type="button"
-                className={cn('tab-card', isSelected && 'active')}
-                onClick={() => {
-                  const newSelection = selectedMarkets.includes(market)
-                    ? selectedMarkets.filter(ps => ps !== market)
-                    : [...selectedMarkets, market];
-                  setSelectedMarkets(newSelection);
-                  setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
-                }}>
-                <IconBubble
-                  name={market.icon as IconNames}
-                  secondBubbleName={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
-                  width={24}
-                  height={24}
-                  className="mr-16"
-                />
-                <Text type="p1" weight="semibold" color="primary">
-                  {market.name}
-                </Text>
-                <Icon
-                  name={isSelected ? 'checkbox-checked' : 'checkbox'}
-                  style={{
-                    marginLeft: 24,
-                    flexShrink: 0,
-                  }}
-                />
-              </button>
-            );
-          })}
+          return (
+            <button
+              key={market.name}
+              type="button"
+              className={cn('tab-card', isSelected && 'active')}
+              onClick={() => {
+                const newSelection = selectedMarkets.includes(market)
+                  ? selectedMarkets.filter(ps => ps !== market)
+                  : [...selectedMarkets, market];
+                setSelectedMarkets(newSelection);
+                setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
+              }}>
+              <IconBubble
+                name={market.icon.active as IconNames}
+                secondBubbleName={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
+                width={24}
+                height={24}
+                className="mr-16"
+              />
+              <Text type="p1" weight="semibold" color="primary">
+                {market.name}
+              </Text>
+              <Icon
+                name={isSelected ? 'checkbox-checked' : 'checkbox'}
+                style={{
+                  marginLeft: 24,
+                  flexShrink: 0,
+                }}
+              />
+            </button>
+          );
+        })}
       </div>
       <Text type="p1" weight="semibold" color="secondary" className="mb-4">
         Total value locked
@@ -109,7 +107,7 @@ const PoolsView: FC = () => {
                 <div className="flex wrap align-center col-gap-64 row-gap-16 mb-32">
                   <div className="flex">
                     <Icon
-                      name={selectedMarket.icon as IconNames}
+                      name={selectedMarket.icon.active as IconNames}
                       width={40}
                       height={40}
                       className="mr-16"

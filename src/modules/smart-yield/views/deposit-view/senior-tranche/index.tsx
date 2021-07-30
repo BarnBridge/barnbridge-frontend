@@ -246,7 +246,7 @@ const SeniorTranche: React.FC = () => {
         <Form.Item label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             className="mb-24"
-            before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
+            before={<Icon name={pool?.token?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount}
             disabled={state.isSaving}
