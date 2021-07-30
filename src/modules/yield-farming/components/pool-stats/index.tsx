@@ -3,7 +3,9 @@ import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import { formatToken, formatUSD } from 'web3/utils';
 
+import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
+import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -60,11 +62,28 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             </Hint>
           </div>
           <div className="flex flow-row">
-            <Text type="h2" weight="bold" color="primary" className="mb-4">
-              {formatUSD(totalStakedInUSD, {
-                decimals: 0,
-              }) ?? '-'}
-            </Text>
+            <div className="flex align-center">
+              <Text type="h2" weight="bold" color="primary" className="mb-4 mr-8">
+                {formatUSD(totalStakedInUSD, {
+                  decimals: 0,
+                }) ?? '-'}
+              </Text>
+              <Tooltip
+                title={
+                  <>
+                    The BarnBridge Yield Farming contracts are covered by: <br />- Bridge Mutual,{' '}
+                    <a
+                      href="https://app.bridgemutual.io/user/cover/0xdb9A242cfD588507106919051818e771778202e9"
+                      rel="noopener noreferrer"
+                      target="_blank">
+                      click here
+                    </a>{' '}
+                    to purchase coverage
+                  </>
+                }>
+                <Icon name="insured" color="green" width={32} height={32} />
+              </Tooltip>
+            </div>
             <Text type="p1" color="secondary">
               {formatUSD(totalEffectiveStakedInUSD, {
                 decimals: 0,
