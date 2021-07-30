@@ -117,8 +117,8 @@ const PastPositionsList: React.FC<Props> = props => {
             <div className="card" key={entity.seniorBondId}>
               <div className="card-header flex">
                 <TokenIcon
-                  name={entity.pool?.meta?.icon as TokenIconNames}
-                  bubble1Name={entity.pool?.market?.icon as TokenIconNames}
+                  name={entity.pool?.token?.icon as TokenIconNames}
+                  bubble1Name={entity.pool?.market?.icon.active as TokenIconNames}
                   className="mr-16"
                 />
                 <div>

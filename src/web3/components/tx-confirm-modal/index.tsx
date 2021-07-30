@@ -8,6 +8,8 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
 
+import { useIsUnmount } from '../../../hooks/useIsUnmount';
+
 import s from './s.module.scss';
 
 export type ConfirmTxModalArgs = {
@@ -38,6 +40,8 @@ const TxConfirmModal: React.FC<Props> = props => {
   const [form] = Antd.Form.useForm<FormValues>();
   const [submitting, setSubmitting] = React.useState<boolean>(false);
 
+  const isUnmountRef = useIsUnmount();
+
   async function handleSubmit(values: FormValues) {
     const { gasPrice } = values;
 
@@ -55,7 +59,9 @@ const TxConfirmModal: React.FC<Props> = props => {
       props.onCancel?.();
     } catch {}
 
-    setSubmitting(false);
+    if (!isUnmountRef.current) {
+      setSubmitting(false);
+    }
   }
 
   return (

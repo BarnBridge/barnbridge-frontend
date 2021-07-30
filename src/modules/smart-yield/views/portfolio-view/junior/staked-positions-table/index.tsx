@@ -11,12 +11,14 @@ import Icon from 'components/custom/icon';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
-import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { getKnownMarketById } from '../../../../providers/markets';
 
 export type StakedPositionsTableEntity = SYRewardPoolEntity;
 
@@ -25,17 +27,18 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     title: 'Token Name',
     render: function Render(_, entity) {
       const { getEtherscanAddressUrl } = useWeb3();
+      const { getToken } = useTokens();
       const { projectToken } = useKnownTokens();
 
-      const market = Markets.get(entity.meta.protocolId ?? '');
-      const meta = Pools.get(entity.meta.underlyingSymbol ?? '');
+      const market = getKnownMarketById(entity.meta.protocolId ?? '');
+      const token = getToken(entity.meta.underlyingSymbol);
 
       return (
         <div className="flex flow-col align-center">
           <TokenIcon
-            name={meta?.icon as TokenIconNames}
+            name={token?.icon as TokenIconNames}
             bubble1Name={projectToken.icon!}
-            bubble2Name={market?.icon as TokenIconNames}
+            bubble2Name={market?.icon.active as TokenIconNames}
             className="mr-16"
           />
           <div className="flex flow-row">

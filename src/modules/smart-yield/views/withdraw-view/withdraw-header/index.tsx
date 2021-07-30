@@ -20,7 +20,7 @@ const WithdrawHeader: React.FC = () => {
       className="flexbox-list mb-64"
       style={{ '--gap': '64px', '--sm-gap': '24px', '--min': 'auto' } as React.CSSProperties}>
       <Grid flow="col" gap={16} align="center">
-        <TokenIcon name={pool.meta?.icon as TokenIconNames} bubble1Name={pool.market?.icon as TokenIconNames} />
+        <TokenIcon name={pool.token?.icon as TokenIconNames} bubble1Name={pool.market?.icon.active as TokenIconNames} />
         <div className="ml-auto">
           <div
             className="mb-4"
@@ -29,7 +29,7 @@ const WithdrawHeader: React.FC = () => {
               whiteSpace: 'nowrap',
             }}>
             <Text type="p1" weight="semibold" color="primary" className="mr-4">
-              {pool.meta?.name}
+              {pool.token?.name}
             </Text>
             <Text type="p1" weight="semibold">
               ({pool.underlyingSymbol})

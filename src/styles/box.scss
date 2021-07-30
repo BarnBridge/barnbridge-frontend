@@ -92,6 +92,10 @@ $paddings: 0, 4, 8, 12, 16, 24, 32, 48, 64;
   height: 100%;
 }
 
+.fit-width {
+  width: fit-content;
+}
+
 .absolute-center {
   position: absolute;
   top: 50%;

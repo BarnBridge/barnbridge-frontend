@@ -2,89 +2,9 @@ import { FC, createContext, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 
 import { useConfig } from 'components/providers/configProvider';
-import { TokenIconNames } from 'components/token-icon';
 
 import { InvariantContext } from 'utils/context';
 import { PaginatedResult, queryfy } from 'utils/fetch';
-
-export type SYMarketMeta = {
-  id: string;
-  name: string;
-  icon: TokenIconNames;
-};
-
-export type SYPoolMeta = {
-  id: string;
-  name: string;
-  icon: TokenIconNames;
-  color: string;
-};
-
-export const Markets = new Map<string, SYMarketMeta>([
-  [
-    'compound/v2',
-    {
-      id: 'compound/v2',
-      name: 'Compound',
-      icon: 'compound',
-    },
-  ],
-  [
-    'aave/v2',
-    {
-      id: 'aave/v2',
-      name: 'AAVE',
-      icon: `aave`,
-    },
-  ],
-  [
-    'cream/v2',
-    {
-      id: 'cream/v2',
-      name: 'C.R.E.A.M Finance',
-      icon: `cream`,
-    },
-  ],
-]); /// TODO: remove
-
-export const Pools = new Map<string, SYPoolMeta>([
-  [
-    'USDC',
-    {
-      id: 'USDC',
-      name: 'USD Coin',
-      icon: 'usdc',
-      color: 'var(--theme-blue-color)',
-    },
-  ],
-  [
-    'DAI',
-    {
-      id: 'DAI',
-      name: 'Dai Stablecoin',
-      icon: 'dai',
-      color: 'var(--theme-yellow-color)',
-    },
-  ],
-  [
-    'USDT',
-    {
-      id: 'USDT',
-      name: 'Tether USD',
-      icon: 'usdt',
-      color: '#50af95',
-    },
-  ],
-  [
-    'GUSD',
-    {
-      id: 'GUSD',
-      name: 'Gemini dollar',
-      icon: 'gusd',
-      color: '#00dcfa',
-    },
-  ],
-]); /// TODO: remove
 
 export type APISYPool = {
   protocolId: string;

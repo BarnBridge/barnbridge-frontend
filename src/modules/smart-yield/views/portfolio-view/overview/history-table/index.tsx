@@ -44,14 +44,14 @@ const Columns: ColumnsType<TableEntity> = [
         <Grid flow="col" gap={16} align="center">
           {entity.isTokenAmount ? (
             <TokenIcon
-              name={entity.poolEntity?.meta?.icon as TokenIconNames}
+              name={entity.poolEntity?.token?.icon as TokenIconNames}
               bubble1Name={projectToken.icon!}
-              bubble2Name={entity.poolEntity?.market?.icon as TokenIconNames}
+              bubble2Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
             />
           ) : (
             <TokenIcon
-              name={entity.poolEntity?.meta?.icon as TokenIconNames}
-              bubble1Name={entity.poolEntity?.market?.icon as TokenIconNames}
+              name={entity.poolEntity?.token?.icon as TokenIconNames}
+              bubble1Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
             />
           )}
           <Grid flow="row" gap={4} className="ml-auto">

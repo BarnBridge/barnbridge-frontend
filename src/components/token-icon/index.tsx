@@ -16,6 +16,7 @@ export type TokenIconNames =
   | 'bond'
   | 'usdc'
   | 'dai'
+  | 'rai'
   | 'susd'
   | 'eth'
   | 'wbtc'
@@ -50,7 +51,7 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
   const id = useMemo(nanoid, []);
 
   return (
-    <svg className={className} width={size} height={size} style={style} {...rest}>
+    <svg className={classNames(s.tokenIcon, className)} width={size} height={size} style={style} {...rest}>
       <mask id={id}>
         <circle cx="50%" cy="50%" r="50%" fill="white" />
         {bubble1Name && <circle cx="77.5%" cy="22.5%" r="25%" fill="black" />}
@@ -122,7 +123,7 @@ export const TokenIconPair: React.FC<TokenPairProps> = props => {
   const cutSize = iconSize / 2 + gap;
 
   return (
-    <svg width={size} height={size} className={className} style={style}>
+    <svg width={size} height={size} className={classNames(className, s.tokenIconPair)} style={style}>
       <mask id={id}>
         <rect width={size} height={size} fill="white" />
         <circle cx={iconSize / 2} cy={iconSize / 2 + iconIndent} r={cutSize} fill="black" />

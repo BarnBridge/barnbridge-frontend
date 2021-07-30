@@ -114,9 +114,9 @@ const TwoStepWithdraw: React.FC = () => {
           <TokenAmount
             tokenIcon={
               <TokenIcon
-                name={pool.meta?.icon as TokenIconNames}
+                name={pool.token?.icon as TokenIconNames}
                 bubble1Name={projectToken.icon!}
-                bubble2Name={pool.market?.icon as TokenIconNames}
+                bubble2Name={pool.market?.icon.active as TokenIconNames}
                 size={36}
               />
             }

@@ -12,9 +12,10 @@ import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
-import { SYMarketMeta } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { MarketMeta } from '../../../providers/markets';
 
 type PoolEntity = PoolsSYPool;
 
@@ -43,7 +44,10 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
 
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            <TokenIcon name={entity.meta?.icon as TokenIconNames} bubble1Name={entity.market?.icon as TokenIconNames} />
+            <TokenIcon
+              name={entity.token?.icon as TokenIconNames}
+              bubble1Name={entity.market?.icon.active as TokenIconNames}
+            />
             <div>
               <div className="mb-4 flex align-center">
                 <Text type="p1" weight="semibold" wrap={false} color="primary" className="mr-4">
@@ -79,7 +83,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
                 ) : null}
               </div>
               <Text type="small" weight="semibold" wrap={false}>
-                {entity.meta?.name}
+                {entity.token?.name}
               </Text>
             </div>
           </div>
@@ -289,7 +293,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
 }
 
 type Props = {
-  activeMarket?: SYMarketMeta;
+  activeMarket?: MarketMeta;
 };
 
 const PoolsTable: React.FC<Props> = props => {

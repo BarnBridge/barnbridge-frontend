@@ -1,437 +1,335 @@
-import React from 'react';
-import { ColumnsType } from 'antd/lib/table/interface';
+import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
-import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/custom/externalLink';
+import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
-import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenType, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
-import { APITreasuryHistory, APITreasuryToken, useDaoAPI } from 'modules/governance/api';
+import {
+  APITreasuryHistory,
+  APITreasuryToken,
+  useFetchTreasuryHistory,
+  useFetchTreasuryTokens,
+} from 'modules/governance/api';
+import { MarketMeta } from 'modules/smart-yield/providers/markets';
 
-type APITreasuryTokenEntity = APITreasuryToken & {
-  token: Erc20Contract;
+type ExtendedAPITreasuryToken = APITreasuryToken & {
+  balanceAmount: BigNumber | undefined;
+  balanceAmountUSD: BigNumber | undefined;
+  market: MarketMeta | undefined;
+  token: TokenType | undefined;
 };
 
-type State = {
-  tokens: {
-    items: APITreasuryTokenEntity[];
-    loading: boolean;
-  };
-  history: {
-    items: APITreasuryHistory[];
-    total: number;
-    page: number;
-    pageSize: number;
-    loading: boolean;
-    filters: {
-      token: string;
-      direction: string;
-    };
-  };
+type ExtendedAPITreasuryHistory = APITreasuryHistory & {
+  token: TokenType | undefined;
+  amount: BigNumber | undefined;
+  amountUSD: BigNumber | undefined;
 };
 
-const InitialState: State = {
-  tokens: {
-    items: [],
-    loading: false,
-  },
-  history: {
-    items: [],
-    total: 0,
-    page: 1,
-    pageSize: 10,
-    loading: false,
-    filters: {
-      token: 'all',
-      direction: 'all',
-    },
-  },
+type HistoryFilterType = {
+  token: string;
+  direction: string;
 };
 
-const Columns: ColumnsType<APITreasuryHistory> = [
+const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
   {
-    title: 'Token Name',
-    render: function Render(_, entity) {
-      const { getTokenBySymbol } = useKnownTokens();
-      const tokenMeta = getTokenBySymbol(entity.tokenSymbol);
-
-      return (
-        <div className="flex flow-col align-center">
-          <TokenIcon name={(tokenMeta?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" />
-          <Text type="p1" weight="semibold" color="primary" className="mr-4">
-            {entity.tokenSymbol}
+    heading: 'Token Name',
+    render: entity => (
+      <div className="flex flow-col col-gap-12 align-center">
+        <TokenIcon name={(entity.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" size={32} />
+        <div className="flex flow-row row-gap-4">
+          <Text type="p1" weight="semibold" color="primary">
+            {entity.tokenSymbol ?? '-'}
+          </Text>
+          <Text type="small" weight="semibold" color="secondary">
+            {entity.token?.name ?? '-'}
           </Text>
         </div>
-      );
-    },
+      </div>
+    ),
   },
   {
-    title: 'Transaction Hash',
-    render: function Render(_, entity) {
-      const { getEtherscanTxUrl } = useWeb3();
-
-      return (
-        <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {shortenAddr(entity.transactionHash)}
-          </Text>
-        </ExternalLink>
-      );
-    },
+    heading: 'Transaction Hash',
+    render: entity => (
+      <ExplorerAddressLink address={entity.transactionHash}>
+        <Text type="p1" weight="semibold" color="blue">
+          {shortenAddr(entity.transactionHash)}
+        </Text>
+      </ExplorerAddressLink>
+    ),
   },
   {
-    title: 'Date',
-    render: (_, entity) => (
+    heading: 'Date',
+    render: entity => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
           {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
         </Text>
-        <Text type="small" weight="semibold">
+        <Text type="small" weight="semibold" color="secondary">
           {format(entity.blockTimestamp * 1_000, 'HH:mm')}
         </Text>
       </>
     ),
   },
   {
-    title: 'Amount',
-    render: function Render(_, entity) {
-      const { convertTokenInUSD } = useKnownTokens();
-
-      return (
-        <Tooltip
-          placement="bottomRight"
-          title={formatToken(entity.amount, {
-            decimals: entity.tokenDecimals,
-            tokenName: entity.tokenSymbol,
-          })}>
+    heading: <div className="text-right">Amount</div>,
+    render: entity => (
+      <Tooltip
+        placement="bottomRight"
+        title={formatToken(entity.amount, {
+          decimals: entity.tokenDecimals,
+          tokenName: entity.tokenSymbol,
+        })}>
+        <div className="text-right">
           <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
-            {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount)}
+            {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount) ?? '-'}
           </Text>
           <Text type="small" weight="semibold">
-            {formatUSD(convertTokenInUSD(entity.amount, entity.tokenSymbol))}
+            {formatUSD(entity.amountUSD) ?? '-'}
           </Text>
-        </Tooltip>
-      );
-    },
+        </div>
+      </Tooltip>
+    ),
   },
   {
-    title: 'From',
-    render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
-
-      let address = '';
-      let label = '';
-
-      if (entity.transactionDirection === 'IN') {
-        address = entity.counterpartyAddress;
-        label = entity.counterpartyLabel || shortenAddr(entity.counterpartyAddress) || '';
-      } else {
-        address = entity.accountAddress;
-        label = entity.accountLabel || shortenAddr(entity.accountAddress) || '';
-      }
-
-      return (
-        <ExternalLink href={getEtherscanAddressUrl(address)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {label}
-          </Text>
-        </ExternalLink>
-      );
-    },
+    heading: 'From',
+    render: entity => (
+      <ExplorerAddressLink
+        address={entity.transactionDirection === 'IN' ? entity.counterpartyAddress : entity.accountAddress}>
+        <Text type="p1" weight="semibold" color="blue">
+          {entity.transactionDirection === 'IN'
+            ? entity.counterpartyLabel || shortenAddr(entity.counterpartyAddress)
+            : entity.accountLabel || shortenAddr(entity.accountAddress)}
+        </Text>
+      </ExplorerAddressLink>
+    ),
   },
   {
-    title: 'To',
-    render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
-
-      let address = '';
-      let label = '';
-
-      if (entity.transactionDirection === 'OUT') {
-        address = entity.counterpartyAddress;
-        label = entity.counterpartyLabel || shortenAddr(entity.counterpartyAddress) || '';
-      } else {
-        address = entity.accountAddress;
-        label = entity.accountLabel || shortenAddr(entity.accountAddress) || '';
-      }
-
-      return (
-        <ExternalLink href={getEtherscanAddressUrl(address)}>
-          <Text type="p1" weight="semibold" color="blue">
-            {label}
-          </Text>
-        </ExternalLink>
-      );
-    },
+    heading: 'To',
+    render: entity => (
+      <ExplorerAddressLink
+        address={entity.transactionDirection === 'OUT' ? entity.counterpartyAddress : entity.accountAddress}>
+        <Text type="p1" weight="semibold" color="blue">
+          {entity.transactionDirection === 'OUT'
+            ? entity.counterpartyLabel || shortenAddr(entity.counterpartyAddress)
+            : entity.accountLabel || shortenAddr(entity.accountAddress)}
+        </Text>
+      </ExplorerAddressLink>
+    ),
   },
 ];
 
-function getFilters(tokens: APITreasuryTokenEntity[]): TableFilterType[] {
-  return [
-    {
-      name: 'token',
-      label: 'Token address',
-      defaultValue: 'all',
-      itemRender: () => {
-        const tokenOpts = [
-          {
-            value: 'all',
-            label: 'All tokens',
-          },
-          ...tokens.map(token => ({
-            value: token.tokenAddress,
-            label: token.token.name ?? '-',
-          })),
-        ];
-
-        return <Select options={tokenOpts} className="full-width" />;
-      },
-    },
-    {
-      name: 'direction',
-      label: 'Transaction direction',
-      defaultValue: 'all',
-      itemRender: () => {
-        const options = [
-          {
-            value: 'all',
-            label: 'All pool transactions',
-          },
-          {
-            value: 'in',
-            label: 'In',
-          },
-          {
-            value: 'out',
-            label: 'Out',
-          },
-        ];
-
-        return <Select options={options} className="full-width" />;
-      },
-    },
-  ];
-}
-
-const TreasuryHoldings: React.FC = () => {
+const TreasuryHoldings: FC = () => {
   const config = useConfig();
-  const { getContract } = useContractManager();
-  const daoAPI = useDaoAPI();
   const [reload, version] = useReload();
-  const [state, setState] = React.useState<State>(InitialState);
-  const { getTokenBySymbol, convertTokenInUSD } = useKnownTokens();
+  const { getAmountInUSD, getToken } = useTokens();
+  const { getOrCreateContract, getContract } = useContractFactory();
 
-  function handlePaginationChange(page: number) {
-    setState(prevState => ({
-      ...prevState,
-      history: {
-        ...prevState.history,
-        page,
-      },
-    }));
-  }
+  const [historyPage, setHistoryPage] = useState(1);
+  const historyPageSize = 10;
+  const [tokenFilter, setTokenFilter] = useState('all');
+  const [directionFilter, setDirectionFilter] = useState('all');
+  const filterValue = useMemo<HistoryFilterType>(
+    () => ({
+      token: tokenFilter,
+      direction: directionFilter,
+    }),
+    [tokenFilter, directionFilter],
+  );
 
-  function handleFilterChange(filters: Record<string, any>) {
-    setState(prevState => ({
-      ...prevState,
-      history: {
-        ...prevState.history,
-        filters: {
-          ...prevState.history.filters,
-          ...filters,
+  const { data: treasuryTokens = [] } = useFetchTreasuryTokens();
+  const { data: historyResult, loading: historyLoading } = useFetchTreasuryHistory(
+    historyPage,
+    tokenFilter,
+    directionFilter,
+  );
+  const historyItems = historyResult?.data ?? [];
+  const historyItemsCount = historyResult?.meta.count ?? 0;
+
+  const tokensSource = useMemo(() => {
+    const tokens = treasuryTokens
+      ?.map<ExtendedAPITreasuryToken | undefined>(treasuryToken => {
+        const token = getToken(treasuryToken.tokenSymbol);
+
+        if (!token) {
+          return undefined;
+        }
+
+        const tokenContract = getContract<Erc20Contract>(treasuryToken.tokenAddress);
+        const balanceAmount = tokenContract
+          ?.getBalanceOf(config.contracts.dao?.governance)
+          ?.unscaleBy(treasuryToken.tokenDecimals);
+        const balanceAmountUSD = getAmountInUSD(balanceAmount, treasuryToken.tokenSymbol);
+
+        return {
+          ...treasuryToken,
+          balanceAmount,
+          balanceAmountUSD,
+          token,
+        } as ExtendedAPITreasuryToken;
+      })
+      .filter(Boolean) as ExtendedAPITreasuryToken[];
+
+    tokens.sort((a, b) =>
+      a.balanceAmountUSD && b.balanceAmountUSD ? b.balanceAmountUSD.minus(a.balanceAmountUSD).toNumber() : 0,
+    );
+
+    return tokens;
+  }, [getAmountInUSD, getContract, treasuryTokens, version]);
+
+  const totalHoldingsUSD = useMemo(() => {
+    return BigNumber.sumEach(tokensSource, item => item.balanceAmountUSD ?? BigNumber.ZERO);
+  }, [tokensSource]);
+
+  const historySource = useMemo(() => {
+    return (historyItems?.map(item => {
+      const token = getToken(item.tokenSymbol);
+      const amount = BigNumber.from(item.amount);
+      const amountUSD = getAmountInUSD(amount, item.tokenSymbol);
+
+      return {
+        ...item,
+        token,
+        amount,
+        amountUSD,
+      };
+    }) ?? []) as ExtendedAPITreasuryHistory[];
+  }, [historyItems]);
+
+  const historyFilters = useMemo(() => {
+    return [
+      {
+        name: 'token',
+        label: 'Token address',
+        defaultValue: 'all',
+        itemRender: () => {
+          const tokenOpts = [
+            {
+              value: 'all',
+              label: 'All tokens',
+            },
+            ...tokensSource.map(token => ({
+              value: token.tokenAddress,
+              label: token.token?.name ?? token.tokenSymbol,
+            })),
+          ];
+
+          return <Select options={tokenOpts} className="full-width" />;
         },
-        page: 1,
       },
-    }));
+      {
+        name: 'direction',
+        label: 'Transaction direction',
+        defaultValue: 'all',
+        itemRender: () => {
+          const options = [
+            {
+              value: 'all',
+              label: 'All pool transactions',
+            },
+            {
+              value: 'in',
+              label: 'In',
+            },
+            {
+              value: 'out',
+              label: 'Out',
+            },
+          ];
+
+          return <Select options={options} className="full-width" />;
+        },
+      },
+    ] as TableFilterType<HistoryFilterType>[];
+  }, [tokensSource]);
+
+  useEffect(() => {
+    treasuryTokens?.forEach(token => {
+      getOrCreateContract(token.tokenAddress, () => new Erc20Contract([], token.tokenAddress), {
+        afterInit: contract => {
+          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.loadCommon().catch(Error);
+          contract.loadBalance(config.contracts.dao?.governance).catch(Error);
+        },
+      });
+    });
+  }, [treasuryTokens]);
+
+  function handleFilterChange(filters: HistoryFilterType) {
+    setHistoryPage(1);
+    setTokenFilter(filters.token);
+    setDirectionFilter(filters.direction);
   }
-
-  React.useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      tokens: {
-        ...prevState.tokens,
-        loading: true,
-      },
-    }));
-
-    daoAPI
-      .fetchTreasuryTokens()
-      .then(data => {
-        const items = data.filter(item => Boolean(getTokenBySymbol(item.tokenSymbol as KnownTokens)));
-
-        const mappedItems = items.map(item => {
-          const tokenContract = getContract<Erc20Contract>(item.tokenAddress, () => {
-            return new Erc20Contract([], item.tokenAddress);
-          });
-          tokenContract.on(Web3Contract.UPDATE_DATA, reload);
-          tokenContract.loadCommon();
-          tokenContract.loadBalance(config.contracts.dao?.governance);
-
-          return {
-            ...item,
-            token: tokenContract,
-          };
-        });
-
-        mappedItems.sort((a, b) => (a.token.balance?.gt(b.token.balance ?? 0) ? 1 : -1));
-
-        setState(prevState => ({
-          ...prevState,
-          tokens: {
-            ...prevState.tokens,
-            items: mappedItems,
-            loading: false,
-          },
-        }));
-      })
-      .catch(() => {
-        setState(prevState => ({
-          ...prevState,
-          tokens: {
-            ...prevState.tokens,
-            items: [],
-            loading: false,
-          },
-        }));
-      });
-  }, []);
-
-  React.useEffect(() => {
-    const { page, pageSize, filters } = state.history;
-
-    setState(prevState => ({
-      ...prevState,
-      history: {
-        ...prevState.history,
-        loading: true,
-      },
-    }));
-
-    daoAPI
-      .fetchTreasuryHistory(page, pageSize, filters.token, filters.direction)
-      .then(data => {
-        setState(prevState => ({
-          ...prevState,
-          history: {
-            ...prevState.history,
-            items: data.data,
-            total: data.meta.count,
-            loading: false,
-          },
-        }));
-      })
-      .catch(() => {
-        setState(prevState => ({
-          ...prevState,
-          history: {
-            ...prevState.history,
-            items: [],
-            total: 0,
-            loading: false,
-          },
-        }));
-      });
-  }, [state.history.page, state.history.filters]);
-
-  const totalHoldings = React.useMemo(() => {
-    if (state.tokens.loading) {
-      return undefined;
-    }
-
-    return state.tokens.items.reduce((a, item) => {
-      const amount = item.token.getBalanceOf(config.contracts.dao?.governance)?.unscaleBy(item.tokenDecimals);
-      const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
-
-      return a.plus(amountUSD ?? 0);
-    }, BigNumber.ZERO);
-  }, [state.tokens, version]);
 
   return (
     <>
-      <Text type="p1" weight="semibold" color="secondary" className="mb-8">
+      <Text type="h2" weight="bold" color="primary" className="mb-4">
+        {formatUSD(totalHoldingsUSD) ?? '-'}
+      </Text>
+      <Text type="p2" weight="semibold" color="secondary" className="mb-32">
         Total holdings balance
       </Text>
-      <Text type="h2" weight="bold" color="primary" className="mb-40">
-        {formatUSD(totalHoldings) ?? '-'}
-      </Text>
-      <div className="flexbox-list mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
-        {state.tokens.items.map(item => {
-          const tokenMeta = getTokenBySymbol(item.tokenSymbol);
-          const amount = item.token.getBalanceOf(config.contracts.dao?.governance)?.unscaleBy(item.tokenDecimals);
-          const amountUSD = convertTokenInUSD(amount, item.tokenSymbol);
-
-          return (
-            <div key={item.tokenAddress} className="card p-24" style={{ minWidth: 195 }}>
-              <div className="flex mb-16">
-                <TokenIcon name={(tokenMeta?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" />
-                <Text type="p1" weight="semibold" color="primary">
-                  {item.tokenSymbol}
-                </Text>
-              </div>
-              <Tooltip
-                overlayStyle={{ maxWidth: 'inherit' }}
-                title={formatToken(amount, {
-                  decimals: item.tokenDecimals,
-                  tokenName: item.tokenSymbol,
-                })}>
-                <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  {formatToken(amount) ?? '-'}
-                </Text>
-              </Tooltip>
+      <div className="grid gap-16 mb-32" style={{ gridTemplateColumns: 'repeat(3, 1fr)' } as CSSProperties}>
+        {tokensSource.map(item => (
+          <div key={item.tokenAddress} className="card flex flow-col col-gap-12 align-center p-24">
+            <TokenIcon name={(item.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" size={32} />
+            <div className="flex flow-row row-gap-4">
+              <Text type="p1" weight="semibold" color="primary">
+                {item.tokenSymbol ?? '-'}
+              </Text>
               <Text type="small" weight="semibold" color="secondary">
-                {formatUSD(amountUSD)}
+                {item.token?.name ?? '-'}
               </Text>
             </div>
-          );
-        })}
+            <div className="flex flow-row row-gap-4 align-end ml-auto">
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(item.balanceAmount) ?? '-'}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {formatUSD(item.balanceAmountUSD) ?? '-'}
+              </Text>
+            </div>
+          </div>
+        ))}
       </div>
       <div className="card">
         <div className="card-header flex flow-col align-center justify-space-between pv-12">
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>
-          <TableFilter
-            filters={getFilters(state.tokens.items)}
-            value={state.history.filters}
-            onChange={handleFilterChange}
-          />
+          <TableFilter<HistoryFilterType> filters={historyFilters} value={filterValue} onChange={handleFilterChange} />
         </div>
-        <Table<APITreasuryHistory>
+        <Table<ExtendedAPITreasuryHistory>
           columns={Columns}
-          dataSource={state.history.items}
-          rowKey="transactionHash"
-          loading={state.history.loading}
-          locale={{
-            emptyText: 'No entries',
-          }}
-          pagination={{
-            total: state.history.total,
-            current: state.history.page,
-            pageSize: state.history.pageSize,
-            position: ['bottomRight'],
-            showTotal: (total: number, [from, to]: [number, number]) => (
-              <Text type="p2" weight="semibold" color="secondary">
-                Showing {from} to {to} out of {total} entries
-              </Text>
-            ),
-            onChange: handlePaginationChange,
-          }}
-          scroll={{
-            x: true,
-          }}
+          data={historySource}
+          rowKey={row => `${row.transactionHash}_${row.tokenSymbol}`}
+          loading={historyLoading}
+          // locale={{
+          //   emptyText: 'No entries', // TODO: Add support of empty result to Table component
+          // }}
         />
+        <TableFooter
+          total={historyItemsCount}
+          current={historyPage}
+          pageSize={historyPageSize}
+          onChange={setHistoryPage}>
+          {({ total, from, to }) => (
+            <>
+              Showing {from} to {to} out of {total} transactions
+            </>
+          )}
+        </TableFooter>
       </div>
     </>
   );

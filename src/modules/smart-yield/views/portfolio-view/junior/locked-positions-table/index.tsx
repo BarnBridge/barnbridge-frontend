@@ -34,9 +34,9 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
       return (
         <div className="flex flow-col align-center">
           <TokenIcon
-            name={entity.pool.meta?.icon as TokenIconNames}
+            name={entity.pool.token?.icon as TokenIconNames}
             bubble1Name={projectToken.icon!}
-            bubble2Name={entity.pool.market?.icon as TokenIconNames}
+            bubble2Name={entity.pool.market?.icon.active as TokenIconNames}
             className="mr-16"
           />
           <div className="flex flow-row">

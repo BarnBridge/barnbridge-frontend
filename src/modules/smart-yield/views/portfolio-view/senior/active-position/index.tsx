@@ -132,8 +132,8 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           flexWrap: 'wrap',
         }}>
         <TokenIcon
-          name={pool.meta?.icon as TokenIconNames}
-          bubble1Name={pool.market?.icon as TokenIconNames}
+          name={pool.token?.icon as TokenIconNames}
+          bubble1Name={pool.market?.icon.active as TokenIconNames}
           className="mr-16"
         />
         <div>

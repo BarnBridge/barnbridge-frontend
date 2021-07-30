@@ -58,7 +58,7 @@ const PositionsFilter: React.FC<Props> = props => {
       },
       ...uniqBy(
         originators.map(originator => ({
-          label: originator.meta?.name ?? '-',
+          label: originator.token?.name ?? '-',
           value: originator.underlyingAddress,
         })),
         'value',

@@ -6,7 +6,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatUSD } from 'web3/utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
-import { isDevelopmentMode, useConfig } from 'components/providers/configProvider';
+import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { TokenIconNames } from 'components/token-icon';
@@ -15,7 +15,11 @@ import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
+import TokensProvider from './tokensProvider';
+
 import { InvariantContext } from 'utils/context';
+import { isDevelopmentMode } from '../../utils';
+import { queryfy } from '../../utils/fetch';
 
 export enum KnownTokens {
   ETH = 'ETH',
@@ -25,6 +29,7 @@ export enum KnownTokens {
   BOND = 'BOND',
   USDC = 'USDC',
   DAI = 'DAI',
+  RAI = 'RAI',
   SUSD = 'sUSD',
   GUSD = 'GUSD',
   UNIV2 = 'UNI-V2',
@@ -103,6 +108,30 @@ const BOND_PRICE_FEED_ABI: AbiItem[] = [
 
 const J_PRICE_FEED_ABI: AbiItem[] = [createAbiItem('price', [], ['uint256'])];
 
+async function getGusdPrice(): Promise<BigNumber | undefined> {
+  const query = queryfy({
+    ids: ['gemini-dollar'],
+    vs_currencies: 'usd',
+  });
+
+  const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
+  const result = await fetch(String(url)).then(response => response.json());
+
+  return BigNumber.from(result['gemini-dollar'].usd);
+}
+
+async function getRaiPrice(): Promise<BigNumber | undefined> {
+  const query = queryfy({
+    ids: ['rai'],
+    vs_currencies: 'usd',
+  });
+
+  const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
+  const result = await fetch(String(url)).then(response => response.json());
+
+  return BigNumber.from(result['rai'].usd);
+}
+
 const KnownTokensProvider: FC = props => {
   const { children } = props;
 
@@ -121,6 +150,7 @@ const KnownTokensProvider: FC = props => {
   const susdContract = useErc20Contract(config.tokens.susd);
   const gusdContract = useErc20Contract(config.tokens.gusd);
   const daiContract = useErc20Contract(config.tokens.dai);
+  const raiContract = useErc20Contract(config.tokens.rai);
   const univ2Contract = useErc20Contract(config.tokens.univ2);
   const stkaaveContract = useErc20Contract(config.tokens.stkaave);
   const wmaticContract = useErc20Contract(config.tokens.wmatic);
@@ -207,7 +237,7 @@ const KnownTokensProvider: FC = props => {
         address: config.tokens.gusd.toLowerCase(),
         decimals: 2,
         icon: 'gusd',
-        price: new BigNumber(1),
+        price: BigNumber.ZERO,
         priceFeed: undefined,
         pricePath: undefined,
         contract: gusdContract,
@@ -221,6 +251,17 @@ const KnownTokensProvider: FC = props => {
         color: '#ffd160',
         priceFeed: config.feeds.dai, // DAI -> $
         contract: daiContract,
+      },
+      {
+        symbol: KnownTokens.RAI,
+        name: 'Rai Reflex Index',
+        address: config.tokens.rai.toLowerCase(),
+        decimals: 18,
+        icon: 'rai',
+        price: BigNumber.ZERO,
+        priceFeed: undefined,
+        pricePath: undefined,
+        contract: raiContract,
       },
       {
         symbol: KnownTokens.UNIV2,
@@ -629,6 +670,12 @@ const KnownTokensProvider: FC = props => {
             case KnownTokens.bbaGUSD:
               token.price = await getJATokenPrice(token.symbol);
               break;
+            case KnownTokens.GUSD:
+              token.price = await getGusdPrice();
+              break;
+            case KnownTokens.RAI:
+              token.price = await getRaiPrice();
+              break;
             default:
               token.price = await getFeedPrice(token.symbol);
               break;
@@ -690,7 +737,11 @@ const KnownTokensProvider: FC = props => {
     convertTokenInUSD,
   };
 
-  return <Context.Provider value={value}>{children}</Context.Provider>;
+  return (
+    <Context.Provider value={value}>
+      <TokensProvider>{children}</TokensProvider>
+    </Context.Provider>
+  );
 };
 
 export default KnownTokensProvider;
