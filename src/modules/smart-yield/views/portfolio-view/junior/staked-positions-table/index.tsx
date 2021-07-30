@@ -8,11 +8,11 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { Markets, Pools } from 'modules/smart-yield/api';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -32,10 +32,10 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
 
       return (
         <div className="flex flow-col align-center">
-          <IconBubble
-            name={meta?.icon}
-            bubbleName={projectToken.icon!}
-            secondBubbleName={market?.icon}
+          <TokenIcon
+            name={meta?.icon as TokenIconNames}
+            bubble1Name={projectToken.icon!}
+            bubble2Name={market?.icon as TokenIconNames}
             className="mr-16"
           />
           <div className="flex flow-row">
@@ -125,7 +125,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
               +{formatPercent(entity.apr?.plus(pool.apy ?? 0) ?? 0)} APR
             </AprLabel>
           ) : entity.apr ? (
-            <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
+            <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
           ) : null}
         </div>
       );

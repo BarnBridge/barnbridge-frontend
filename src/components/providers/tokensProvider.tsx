@@ -4,6 +4,7 @@ import { AbiItem } from 'web3-utils';
 import Erc20Contract from 'web3/erc20Contract';
 import { createAbiItem } from 'web3/web3Contract';
 
+import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 
 import { MainnetHttpsWeb3Provider } from './web3Provider';
@@ -30,7 +31,7 @@ export type BaseTokenType = {
   symbol: string;
   name: string;
   decimals: number;
-  icon: string | undefined;
+  icon: TokenIconNames | undefined;
 };
 
 export const WBTC: BaseTokenType = {
@@ -38,7 +39,7 @@ export const WBTC: BaseTokenType = {
   symbol: Tokens.WBTC,
   name: 'Wrapped BTC',
   decimals: 8,
-  icon: 'token-wbtc',
+  icon: 'wbtc',
 };
 
 export const WETH: BaseTokenType = {
@@ -46,7 +47,7 @@ export const WETH: BaseTokenType = {
   symbol: Tokens.WETH,
   name: 'Wrapped Ether',
   decimals: 18,
-  icon: 'token-weth',
+  icon: 'weth',
 };
 
 export const USDC: BaseTokenType = {
@@ -54,7 +55,7 @@ export const USDC: BaseTokenType = {
   symbol: Tokens.USDC,
   name: 'USD Coin',
   decimals: 6,
-  icon: 'token-usdc',
+  icon: 'usdc',
 };
 
 export const USDT: BaseTokenType = {
@@ -62,7 +63,7 @@ export const USDT: BaseTokenType = {
   symbol: Tokens.USDT,
   name: 'Tether USD',
   decimals: 6,
-  icon: 'token-usdt',
+  icon: 'usdt',
 };
 
 export const SUSD: BaseTokenType = {
@@ -70,7 +71,7 @@ export const SUSD: BaseTokenType = {
   symbol: Tokens.SUSD,
   name: 'Synth sUSD',
   decimals: 18,
-  icon: 'token-susd',
+  icon: 'susd',
 };
 
 export const GUSD: BaseTokenType = {
@@ -78,7 +79,7 @@ export const GUSD: BaseTokenType = {
   symbol: Tokens.GUSD,
   name: 'Gemini dollar',
   decimals: 2,
-  icon: 'token-gusd',
+  icon: 'gusd',
 };
 
 export const DAI: BaseTokenType = {
@@ -86,7 +87,7 @@ export const DAI: BaseTokenType = {
   symbol: Tokens.DAI,
   name: 'Dai Stablecoin',
   decimals: 18,
-  icon: 'token-dai',
+  icon: 'dai',
 };
 
 export const STK_AAVE: BaseTokenType = {
@@ -94,7 +95,7 @@ export const STK_AAVE: BaseTokenType = {
   symbol: Tokens.STK_AAVE,
   name: 'Staked Aave',
   decimals: 18,
-  icon: 'static/token-staked-aave',
+  icon: 'aave',
 };
 
 export const MATIC: BaseTokenType = {
@@ -102,7 +103,7 @@ export const MATIC: BaseTokenType = {
   symbol: Tokens.WMATIC,
   name: 'Matic Token',
   decimals: 18,
-  icon: 'token-wmatic',
+  icon: 'wmatic',
 };
 
 export const BOND: BaseTokenType = {
@@ -110,7 +111,7 @@ export const BOND: BaseTokenType = {
   symbol: Tokens.BOND,
   name: 'BarnBridge Governance Token',
   decimals: 18,
-  icon: 'static/token-bond',
+  icon: 'bond',
 };
 
 export const UNIV2: BaseTokenType = {
@@ -118,7 +119,7 @@ export const UNIV2: BaseTokenType = {
   symbol: Tokens.UNIV2,
   name: 'Uniswap V2',
   decimals: 18,
-  icon: 'static/token-uniswap',
+  icon: 'uniswap',
 };
 
 export const ProjectToken: BaseTokenType = BOND;

@@ -1,13 +1,13 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import { useSessionStorage } from 'react-use-storage';
 import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
 import { formatUSD } from 'web3/utils';
 
-import Icon, { IconNames } from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { PoolCard } from 'modules/smart-yield/views/pools-view/pool-card';
@@ -68,11 +68,10 @@ const PoolsView: FC = () => {
                   setSelectedMarkets(newSelection);
                   setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
                 }}>
-                <IconBubble
-                  name={market.icon as IconNames}
-                  secondBubbleName={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
-                  width={24}
-                  height={24}
+                <TokenIcon
+                  name={market.icon as TokenIconNames}
+                  bubble2Name={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
+                  size={24}
                   className="mr-16"
                 />
                 <Text type="p1" weight="semibold" color="primary">
@@ -108,13 +107,7 @@ const PoolsView: FC = () => {
               <div key={selectedMarket.id} className="flex flow-row mb-40">
                 <div className="flex wrap align-center col-gap-64 row-gap-16 mb-32">
                   <div className="flex">
-                    <Icon
-                      name={selectedMarket.icon as IconNames}
-                      width={40}
-                      height={40}
-                      className="mr-16"
-                      color="inherit"
-                    />
+                    <TokenIcon name={selectedMarket.icon as TokenIconNames} size={40} className="mr-16" />
                     <div>
                       <Text type="p1" weight="semibold" color="primary" className="mb-4">
                         {selectedMarket.name}

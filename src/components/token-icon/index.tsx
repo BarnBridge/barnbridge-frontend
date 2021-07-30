@@ -25,7 +25,10 @@ export type TokenIconNames =
   | 'unknown'
   | 'weth'
   | 'fiat'
-  | 'usd';
+  | 'usd'
+  | 'uniswap'
+  | 'wmatic'
+  | 'all';
 
 type TokenIconProps = {
   name: TokenIconNames;
@@ -37,9 +40,9 @@ type TokenIconProps = {
   outline?: 'green' | 'purple';
 };
 
-const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap'];
 
-const svgPath = 'token-icons-sprite.svg';
+const svgPath = `${process.env.PUBLIC_URL}/token-icons-sprite.svg`;
 
 export const TokenIcon: React.FC<TokenIconProps> = props => {
   const { name, size = 24, className, style, bubble1Name, bubble2Name, outline, ...rest } = props;
@@ -57,7 +60,7 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
         <circle cx="50%" cy="50%" r="50%" fill="black" />
         <circle cx="50%" cy="50%" r="44%" fill="white" />
       </mask>
-      <g mask={`url(#${id})`}>
+      <g mask={bubble1Name || bubble2Name ? `url(#${id})` : ''}>
         <g mask={outline ? `url(#${id}-outline)` : ''}>
           <use xlinkHref={`${staticNames.includes(name) ? '' : svgPath}#icon__${name}`} />
         </g>

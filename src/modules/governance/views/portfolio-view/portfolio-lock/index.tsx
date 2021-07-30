@@ -11,10 +11,10 @@ import { formatToken } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import DatePicker from 'components/antd/datepicker';
 import { Form, FormItem, useForm } from 'components/custom/form';
-import Icon, { IconNames } from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
@@ -166,7 +166,7 @@ const PortfolioLock: FC = () => {
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(stakedBalance) ?? '-'}
               </Text>
-              <Icon name={projectToken.icon as IconNames} />
+              <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
           <div className="flex flow-row row-gap-4">

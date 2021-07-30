@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import cn from 'classnames';
 
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -67,7 +67,7 @@ export const Pagination: React.FC<Props> = ({ className, total, current, pageSiz
         type="button"
         onClick={() => onChange(current - 1)}
         disabled={current <= 1}>
-        <Icon name="arrow-backward" width={24} height={24} color="inherit" />
+        <Icon name="chevron" rotate={180} size={24} />
       </button>
       {paginationList.map((page, idx) =>
         page ? (
@@ -92,7 +92,7 @@ export const Pagination: React.FC<Props> = ({ className, total, current, pageSiz
         type="button"
         onClick={() => onChange(current + 1)}
         disabled={current >= pages}>
-        <Icon name="arrow-forward" width={24} height={24} color="inherit" />
+        <Icon name="chevron" size={24} />
       </button>
     </div>
   );

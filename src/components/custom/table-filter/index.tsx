@@ -5,7 +5,7 @@ import classNames from 'classnames';
 import Form from 'components/antd/form';
 import Popover from 'components/antd/popover';
 import { SquareBadge } from 'components/custom/badge';
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 import { CP } from 'components/types.tx';
 
 type RecordType = Record<string, any>;
@@ -93,7 +93,7 @@ function TableFilter<T extends RecordType = RecordType>(props: CP<Props<T>>) {
       onVisibleChange={setVisible}
       placement="bottomRight">
       <button type="button" className={classNames('button-ghost-monochrome pv-16', className)}>
-        <Icon name="filter" className="mr-8" color="inherit" />
+        <Icon name="filter" className="mr-8" />
         <span className="mr-8">Filters</span>
         <SquareBadge>{countApplied}</SquareBadge>
       </button>

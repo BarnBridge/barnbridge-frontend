@@ -6,11 +6,11 @@ import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
 import { Form, FormItem, useForm } from 'components/custom/form';
-import Icon, { IconNames, TokenIconNames } from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
 type FormType = {
@@ -123,7 +123,7 @@ const PortfolioWithdraw: FC = () => {
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(stakedBalance) ?? '-'}
               </Text>
-              <Icon name={projectToken.icon as IconNames} />
+              <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
           <div className="flex flow-row row-gap-4">
@@ -134,14 +134,14 @@ const PortfolioWithdraw: FC = () => {
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(bondBalance) ?? '-'}
               </Text>
-              <Icon name={projectToken.icon as IconNames} />
+              <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
         </div>
         <FormItem name="amount" label="Amount">
           {({ field }) => (
             <TokenAmount
-              before={<Icon name={projectToken.icon as TokenIconNames} />}
+              before={<TokenIcon name={projectToken.icon as TokenIconNames} />}
               max={stakedBalance}
               disabled={isSubmitting}
               decimals={projectToken.decimals}
@@ -173,7 +173,7 @@ const PortfolioWithdraw: FC = () => {
                     decimals: projectToken.decimals,
                   })}
                 </Text>
-                <Icon name={projectToken.icon as IconNames} />
+                <TokenIcon name={projectToken.icon as TokenIconNames} />
               </div>
             </div>
           }

@@ -5,8 +5,8 @@ import { formatBigValue } from 'web3/utils';
 
 import Slider from 'components/antd/slider';
 import Grid from 'components/custom/grid';
-import Icon, { TokenIconNames } from 'components/custom/icon';
 import NumericInput from 'components/custom/numeric-input';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 
 import s from './s.module.scss';
 
@@ -59,7 +59,7 @@ const TokenAmount: React.FC<TokenAmountProps> = props => {
         placeholder={max !== undefined ? `0 (Max ${formatBigValue(bnMaxValue, displayDecimals)})` : ''}
         addonBefore={
           <>
-            {typeof tokenIcon === 'string' && <Icon name={tokenIcon as TokenIconNames} width={36} height={36} />}
+            {typeof tokenIcon === 'string' && <TokenIcon name={tokenIcon as TokenIconNames} size={36} />}
             {typeof tokenIcon === 'object' && tokenIcon}
           </>
         }

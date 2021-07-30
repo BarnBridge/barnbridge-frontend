@@ -1,4 +1,4 @@
-import React, { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
+import { FC, createContext, useCallback, useContext, useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { useContract } from 'web3/components/contractManagerProvider';
 

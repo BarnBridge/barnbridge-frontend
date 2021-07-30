@@ -7,7 +7,6 @@ import { formatToken, shortenAddr } from 'web3/utils';
 import Alert from 'components/antd/alert';
 import ExternalLink from 'components/custom/externalLink';
 import { Form, FormItem, useForm } from 'components/custom/form';
-import Icon, { TokenIconNames } from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Spinner } from 'components/custom/spinner';
 import StatusTag from 'components/custom/status-tag';
@@ -15,6 +14,7 @@ import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
 import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useWallet } from 'wallets/walletProvider';
@@ -234,7 +234,7 @@ const PortfolioDelegate: FC = () => {
                     <Text type="p1" weight="bold" color="primary">
                       {formatToken(bondBalance) ?? '-'}
                     </Text>
-                    <Icon name={projectToken.icon as TokenIconNames} />
+                    <TokenIcon name={projectToken.icon as TokenIconNames} />
                   </div>
                 </div>
                 <div className="flow flow-row row-gap-4">

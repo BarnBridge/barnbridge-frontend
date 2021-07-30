@@ -10,9 +10,9 @@ import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -91,7 +91,7 @@ const VotingHeader: React.FC = () => {
                 })}
               </Text>
             </Tooltip>
-            <Icon name={projectToken.icon!} />
+            <TokenIcon name={projectToken.icon! as TokenIconNames} />
             <Button type="light" disabled={toClaim?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -108,7 +108,7 @@ const VotingHeader: React.FC = () => {
                 {formatToken(bondBalance)}
               </Text>
             </Skeleton>
-            <Icon name={projectToken.icon!} />
+            <TokenIcon name={projectToken.icon! as TokenIconNames} />
           </Grid>
         </Grid>
         <Divider type="vertical" />
