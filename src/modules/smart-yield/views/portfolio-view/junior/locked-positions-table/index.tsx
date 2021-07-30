@@ -8,10 +8,10 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { PoolsSYPool } from 'modules/smart-yield/providers/pools-provider';
@@ -33,10 +33,10 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
 
       return (
         <div className="flex flow-col align-center">
-          <IconBubble
-            name={entity.pool.meta?.icon}
-            bubbleName={projectToken.icon!}
-            secondBubbleName={entity.pool.market?.icon}
+          <TokenIcon
+            name={entity.pool.meta?.icon as TokenIconNames}
+            bubble1Name={projectToken.icon!}
+            bubble2Name={entity.pool.market?.icon as TokenIconNames}
             className="mr-16"
           />
           <div className="flex flow-row">

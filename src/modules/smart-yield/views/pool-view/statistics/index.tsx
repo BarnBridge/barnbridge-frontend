@@ -7,10 +7,9 @@ import { formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -76,12 +75,11 @@ const Statistics: FC<Props> = props => {
           <div className={s.def}>
             <dt>Portfolio balance</dt>
             <dd>
-              <IconBubble
-                name={uToken?.icon}
-                bubbleName={projectToken.icon!}
-                secondBubbleName={poolMarket?.icon.active}
-                width={16}
-                height={16}
+              <TokenIcon
+                name={uToken?.icon as TokenIconNames}
+                bubble1Name={projectToken.icon!}
+                bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                size={16}
                 className="mr-8"
               />
               {formatToken(walletBalance, {
@@ -92,12 +90,11 @@ const Statistics: FC<Props> = props => {
           <div className={s.def}>
             <dt>Staked balance</dt>
             <dd>
-              <IconBubble
-                name={uToken?.icon}
-                bubbleName={projectToken.icon!}
-                secondBubbleName={poolMarket?.icon.active}
-                width={16}
-                height={16}
+              <TokenIcon
+                name={uToken?.icon as TokenIconNames}
+                bubble1Name={projectToken.icon!}
+                bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                size={16}
                 className="mr-8"
               />
               {formatToken(stakedBalance, {
@@ -111,7 +108,7 @@ const Statistics: FC<Props> = props => {
                 <div className={s.def}>
                   <dt>My daily {rewardToken.symbol} reward</dt>
                   <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                     {formatToken(
                       rewardPool.getMyDailyRewardFor(rewardToken.address)?.unscaleBy(rewardToken.decimals),
                     ) ?? '-'}
@@ -121,7 +118,7 @@ const Statistics: FC<Props> = props => {
               <div className={s.def}>
                 <dt>My {rewardToken.symbol} balance</dt>
                 <dd>
-                  <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                  <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                   {formatToken((rewardToken.contract as Erc20Contract).balance, {
                     scale: rewardToken.decimals,
                   }) ?? '-'}
@@ -135,7 +132,7 @@ const Statistics: FC<Props> = props => {
             {rewardTokens.map(rewardToken => (
               <div key={rewardToken.symbol} className={s.footerReward}>
                 <div className="flex mr-16">
-                  <Icon name={rewardToken.icon!} width="24" height="24" className="mr-8" style={{ flexShrink: 0 }} />
+                  <TokenIcon name={rewardToken.icon!} size="24" className="mr-8" style={{ flexShrink: 0 }} />
                   <Tooltip
                     title={
                       <Text type="p2" weight="semibold" color="primary">
@@ -197,7 +194,7 @@ const Statistics: FC<Props> = props => {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
                   </Text>
-                  <Icon name={rewardToken.icon!} width={32} height={32} />
+                  <TokenIcon name={rewardToken.icon!} size={32} />
                 </Tooltip>
               ))}
             </div>

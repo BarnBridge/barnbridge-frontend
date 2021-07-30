@@ -7,11 +7,10 @@ import { formatPercent, formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/walletProvider';
@@ -59,12 +58,11 @@ export const PoolCard: FC<PoolCardProps> = props => {
     <>
       <section className={cn(s.card, className)}>
         <header className={s.header}>
-          <IconBubble
-            name={uToken?.icon}
-            bubbleName={projectToken.icon!}
-            secondBubbleName={poolMarket?.icon.active}
-            width={36}
-            height={36}
+          <TokenIcon
+            name={uToken?.icon as TokenIconNames}
+            bubble1Name={projectToken.icon!}
+            bubble2Name={poolMarket?.icon.active as TokenIconNames}
+            size={36}
             className="mr-16"
           />
           <Text type="p1" weight="semibold">
@@ -93,7 +91,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
               <dt>APR</dt>
               <dd>
                 <AprLabel
-                  icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
+                  icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                   size="large">
                   {formatPercent(apr?.plus(apy ?? 0) ?? 0)}
                 </AprLabel>
@@ -109,7 +107,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       </Hint>
                     </dt>
                     <dd>
-                      <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                       {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
                         scale: rewardToken.decimals,
                       }) ?? '-'}
@@ -131,7 +129,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                     )}
                   </dt>
                   <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                     {(rewardToken === bondToken &&
                       formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
                         scale: rewardToken.decimals,
@@ -149,12 +147,11 @@ export const PoolCard: FC<PoolCardProps> = props => {
             <div className={s.defRow}>
               <dt>Pool balance</dt>
               <dd>
-                <IconBubble
-                  name={uToken?.icon}
-                  bubbleName={projectToken.icon!}
-                  secondBubbleName={poolMarket?.icon.active}
-                  width={16}
-                  height={16}
+                <TokenIcon
+                  name={uToken?.icon as TokenIconNames}
+                  bubble1Name={projectToken.icon!}
+                  bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                  size={16}
                   className="mr-8"
                 />
                 {formatToken(rewardPool.poolSize?.unscaleBy(smartYield.decimals)) ?? '-'}
@@ -168,7 +165,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
               <dt>APR</dt>
               <dd>
                 <AprLabel
-                  icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['static/token-bond']}
+                  icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                   size="large">
                   {formatPercent(apr ?? 0)}
                 </AprLabel>
@@ -185,7 +182,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       </Hint>
                     </dt>
                     <dd>
-                      <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                       {formatToken(rewardPool.getMyDailyRewardFor(rewardToken.address), {
                         scale: rewardToken.decimals,
                       }) ?? '-'}
@@ -195,7 +192,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 <div className={s.defRow}>
                   <dt>My current {rewardToken.symbol} reward</dt>
                   <dd>
-                    <Icon name={rewardToken.icon!} className="mr-8" width="16" height="16" />
+                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
                     {formatToken(rewardPool.getClaimFor(rewardToken.address), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
@@ -206,12 +203,11 @@ export const PoolCard: FC<PoolCardProps> = props => {
             <div className={s.defRow}>
               <dt>Staked balance</dt>
               <dd>
-                <IconBubble
-                  name={uToken?.icon}
-                  bubbleName={projectToken.icon!}
-                  secondBubbleName={poolMarket?.icon.active}
-                  width={16}
-                  height={16}
+                <TokenIcon
+                  name={uToken?.icon as TokenIconNames}
+                  bubble1Name={projectToken.icon!}
+                  bubble2Name={poolMarket?.icon.active as TokenIconNames}
+                  size={16}
                   className="mr-8"
                 />
                 {formatToken(rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(smartYield.decimals)) ?? '-'}
@@ -257,7 +253,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
                   </Text>
-                  <Icon name={rewardToken.icon!} width={32} height={32} />
+                  <TokenIcon name={rewardToken.icon!} size={32} />
                 </Tooltip>
               ))}
             </div>

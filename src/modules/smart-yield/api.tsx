@@ -2,6 +2,7 @@ import { FC, createContext, useContext } from 'react';
 import BigNumber from 'bignumber.js';
 
 import { useConfig } from 'components/providers/configProvider';
+import { TokenIconNames } from 'components/token-icon';
 
 import { InvariantContext } from 'utils/context';
 import { PaginatedResult, queryfy } from 'utils/fetch';
@@ -9,13 +10,13 @@ import { PaginatedResult, queryfy } from 'utils/fetch';
 export type SYMarketMeta = {
   id: string;
   name: string;
-  icon: string;
+  icon: TokenIconNames;
 };
 
 export type SYPoolMeta = {
   id: string;
   name: string;
-  icon: string;
+  icon: TokenIconNames;
   color: string;
 };
 
@@ -33,7 +34,7 @@ export const Markets = new Map<string, SYMarketMeta>([
     {
       id: 'aave/v2',
       name: 'AAVE',
-      icon: `static/aave`,
+      icon: `aave`,
     },
   ],
   [
@@ -41,7 +42,7 @@ export const Markets = new Map<string, SYMarketMeta>([
     {
       id: 'cream/v2',
       name: 'C.R.E.A.M Finance',
-      icon: `cream_finance`,
+      icon: `cream`,
     },
   ],
 ]); /// TODO: remove
@@ -52,7 +53,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     {
       id: 'USDC',
       name: 'USD Coin',
-      icon: 'token-usdc',
+      icon: 'usdc',
       color: 'var(--theme-blue-color)',
     },
   ],
@@ -61,7 +62,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     {
       id: 'DAI',
       name: 'Dai Stablecoin',
-      icon: 'token-dai',
+      icon: 'dai',
       color: 'var(--theme-yellow-color)',
     },
   ],
@@ -70,7 +71,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     {
       id: 'USDT',
       name: 'Tether USD',
-      icon: 'token-usdt',
+      icon: 'usdt',
       color: '#50af95',
     },
   ],
@@ -79,7 +80,7 @@ export const Pools = new Map<string, SYPoolMeta>([
     {
       id: 'GUSD',
       name: 'Gemini dollar',
-      icon: 'token-gusd',
+      icon: 'gusd',
       color: '#00dcfa',
     },
   ],

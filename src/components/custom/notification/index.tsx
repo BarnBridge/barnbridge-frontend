@@ -10,9 +10,9 @@ import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 
-import Icon, { IconNames } from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
+import { Icon, IconNames } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { NotificationType, useNotifications } from 'components/providers/notificationsProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
@@ -56,7 +56,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
   switch (n.notificationType) {
     case 'proposal-created':
       return [
-        'add-file',
+        'file-add',
         colorPairs.blue,
         <>
           <Text type="p2" weight="semibold" color="secondary" className="mb-16">
@@ -71,7 +71,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-activating-soon':
       return [
-        'stopwatch',
+        'timer',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
           Voting on proposal {getProposalLink(n.metadata.proposalId)} starts in {getStrongText('5 minutes')}
@@ -79,7 +79,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-canceled':
       return [
-        'file-deleted',
+        'file-failed',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been cancelled by{' '}
@@ -125,7 +125,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-failed-quorum':
       return [
-        'file-deleted',
+        'file-failed',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has not met quorum and has been rejected
@@ -133,7 +133,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-failed-votes':
       return [
-        'file-deleted',
+        'file-failed',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been rejected with {n.metadata.votedRatio}% votes
@@ -169,7 +169,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-executed':
       return [
-        'file-added',
+        'file-check',
         colorPairs.green,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been executed by{' '}
@@ -178,7 +178,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-expires-soon':
       return [
-        'file',
+        'docs',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} expires in {getStrongText('5 minutes')}
@@ -186,7 +186,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-expired':
       return [
-        'file-deleted',
+        'file-failed',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has expired
@@ -194,7 +194,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'abrogation-proposal-created':
       return [
-        'file-times',
+        'proposal-canceled',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
           Abrogation proposal for proposal {getProposalLink(n.metadata.proposalId)} has been created by{' '}
@@ -204,7 +204,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'proposal-abrogated':
       return [
-        'file-deleted',
+        'file-failed',
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been abrogated
@@ -212,7 +212,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       ];
     case 'delegate-start':
       return [
-        'handshake',
+        'delegated',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
           {getStrongText(
@@ -264,7 +264,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
     default:
       console.log(`Unsupported notification type: ${JSON.stringify(n)}`);
       return [
-        'notification',
+        'bell',
         colorPairs.blue,
         <Text type="p2" weight="semibold" color="secondary">
           {/* @ts-ignore */}
@@ -278,7 +278,7 @@ function getIcon(name: IconNames, colors: [string, string], bubble: boolean) {
   return (
     <IconNotification width={40} height={40} className="mr-16" bubble={bubble}>
       <NotificationIcon rgbVarName={colors[1]}>
-        <Icon name={name} width="24" height="24" style={{ color: `var(${colors[0]})` }} />
+        <Icon name={name} size="24" style={{ color: `var(${colors[0]})` }} />
       </NotificationIcon>
     </IconNotification>
   );
@@ -337,7 +337,7 @@ export const Toast: React.FC<ToastProps> = ({ n, onClose, timeout }) => {
       {getIcon(iconName, colors, false)}
       <div style={{ flexGrow: 1 }}>{content}</div>
       <button type="button" onClick={() => onClose(n.id)} className={s.close}>
-        <Icon name="close-tiny" width="24" height="24" color="inherit" />
+        <Icon name="close" size="24" />
       </button>
     </div>
   );

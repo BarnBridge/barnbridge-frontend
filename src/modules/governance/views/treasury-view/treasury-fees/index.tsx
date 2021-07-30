@@ -13,11 +13,11 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 import { APISYPool, Markets, Pools, useSyAPI } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
@@ -115,7 +115,12 @@ const ActionColumn: React.FC<ActionColumnProps> = props => {
                 Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
                 Treasury. Make sure you are willing to spend the gas to send this transaction!
               </Text>
-              <Divider style={{ margin: '0 -24px', width: 'calc(100% + 48px)' }} />
+              <Divider
+                style={{
+                  margin: '0 -24px',
+                  width: 'calc(100% + 48px)',
+                }}
+              />
             </div>
           )}
         </TxConfirmModal>
@@ -135,7 +140,11 @@ const Columns: ColumnsType<SYPoolEntity> = [
 
       return (
         <div className="flex flow-col align-center">
-          <IconBubble name={meta?.icon} bubbleName={market?.icon} className="mr-16" />
+          <TokenIcon
+            name={meta?.icon as TokenIconNames}
+            bubble1Name={market?.icon as TokenIconNames}
+            className="mr-16"
+          />
           <div className="flex flow-row">
             <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">

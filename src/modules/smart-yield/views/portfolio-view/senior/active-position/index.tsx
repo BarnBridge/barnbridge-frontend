@@ -9,10 +9,10 @@ import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Progress from 'components/antd/progress';
 import Tooltip from 'components/antd/tooltip';
-import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
@@ -125,8 +125,17 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
 
   return (
     <div className="card">
-      <div className="p-24" style={{ display: 'flex', flexWrap: 'wrap' }}>
-        <IconBubble name={pool.meta?.icon} bubbleName={pool.market?.icon} className="mr-16" />
+      <div
+        className="p-24"
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+        }}>
+        <TokenIcon
+          name={pool.meta?.icon as TokenIconNames}
+          bubble1Name={pool.market?.icon as TokenIconNames}
+          className="mr-16"
+        />
         <div>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {pool.underlyingSymbol}

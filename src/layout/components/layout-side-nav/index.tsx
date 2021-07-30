@@ -6,8 +6,9 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon, { IconNames } from 'components/custom/icon';
+import OldIcon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { Icon, IconNames } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';
 import { useGeneral } from 'components/providers/generalProvider';
 
@@ -43,18 +44,18 @@ const LayoutSideNav: React.FC = () => {
       <aside className={cn(s.aside, { [s.expanded]: expanded, [s.open]: navOpen })}>
         <div className={s.logoContainer}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
-            <Icon name="close-circle-outlined" />
+            <Icon name="close" />
           </button>
           <Link to="/" className={s.logo}>
-            <Icon name="bond-square-token" />
-            <Icon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+            <OldIcon name="bond-square-token" />
+            <OldIcon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
           </Link>
         </div>
         <nav className={s.top}>
           {features.faucets && (
             <Tooltip title={displayTooltip && 'Faucets'} placement="right">
               <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
-                <Icon name="building" />
+                <OldIcon name="building" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   Faucets
                 </Text>
@@ -64,7 +65,7 @@ const LayoutSideNav: React.FC = () => {
           {features.yieldFarming && (
             <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
               <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
-                <Icon name="tractor-outlined" />
+                <Icon name="yield-farming" color="icon" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   Yield Farming
                 </Text>
@@ -74,7 +75,7 @@ const LayoutSideNav: React.FC = () => {
           {features.dao && (
             <Tooltip title={displayTooltip && 'Governance'} placement="right">
               <NavLink to="/governance" className={s.button} activeClassName={s.active}>
-                <Icon name="bank-outlined" />
+                <Icon name="governance" color="icon" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   Governance
                 </Text>
@@ -84,7 +85,7 @@ const LayoutSideNav: React.FC = () => {
           {features.smartYield && (
             <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
               <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-                <Icon name="paper-bill-outlined" />
+                <Icon name="smart-yield" color="icon" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   SMART Yield
                 </Text>
@@ -94,7 +95,7 @@ const LayoutSideNav: React.FC = () => {
           {features.smartExposure && (
             <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
               <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-                <Icon name="balance" />
+                <Icon name="smart-exposure" color="icon" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   SMART Exposure
                 </Text>
@@ -104,7 +105,7 @@ const LayoutSideNav: React.FC = () => {
           {features.smartAlpha && (
             <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
               <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
-                <Icon name="paper-alpha-outlined" />
+                <Icon name="smart-alpha" color="icon" />
                 <Text type="p2" weight="semibold" className={s.buttonLabel}>
                   SMART Alpha
                 </Text>
@@ -115,7 +116,7 @@ const LayoutSideNav: React.FC = () => {
         <div className={s.bottom}>
           <Tooltip title={displayTooltip && 'Docs'} placement="right">
             <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
-              <Icon name="docs-outlined" />
+              <Icon name="docs" color="icon" />
               <Text type="p2" weight="semibold" className={s.buttonLabel}>
                 Docs
               </Text>
@@ -124,7 +125,7 @@ const LayoutSideNav: React.FC = () => {
           <ToggleThemeButton displayTooltip={displayTooltip} />
           <Tooltip title={displayTooltip && (expanded ? 'Hide menu' : 'Show menu')} placement="right">
             <button type="button" onClick={handleExpand} className={cn(s.button, 'hidden-mobile hidden-tablet')}>
-              <Icon name="right-arrow-circle-outlined" style={{ transform: expanded ? 'rotate(-180deg)' : 'none' }} />
+              <Icon name={expanded ? 'menu-hide' : 'menu-toggle'} color="icon" />
               <Text type="p2" weight="semibold" className={s.buttonLabel}>
                 Hide menu
               </Text>
@@ -145,19 +146,19 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
   let iconName: IconNames;
   if (selectedTheme === 'light') {
     text = 'Light Theme';
-    iconName = 'sun';
+    iconName = 'light-mode';
   } else if (selectedTheme === 'dark') {
     text = 'Dark Theme';
-    iconName = 'moon';
+    iconName = 'dark-mode';
   } else {
     text = 'Auto Theme (OS)';
-    iconName = 'weather';
+    iconName = 'auto';
   }
 
   return (
     <Tooltip title={displayTooltip && text} placement="right">
       <button type="button" onClick={toggleTheme} className={s.button}>
-        <Icon name={iconName} />
+        <Icon name={iconName} color="icon" />
         <Text type="p2" weight="semibold" className={s.buttonLabel}>
           {text}
         </Text>

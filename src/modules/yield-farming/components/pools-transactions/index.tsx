@@ -7,11 +7,11 @@ import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
 import ExternalLink from 'components/custom/externalLink';
-import Icon, { IconNames } from 'components/custom/icon';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { APIYFPoolActionType, APIYFPoolTransaction, useYfAPI } from 'modules/yield-farming/api';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -58,7 +58,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            <Icon name={knownToken.icon as IconNames} width={40} height={40} />
+            <TokenIcon name={knownToken.icon as TokenIconNames} size={40} />
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {entity.actionType === APIYFPoolActionType.DEPOSIT && 'Stake'}
