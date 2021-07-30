@@ -22,8 +22,8 @@ class SeEPoolPeripheryContract extends Web3Contract {
         createAbiItem('router', [], ['address']),
         // createAbiItem('eTokenForTokenATokenB', ['address', 'address', 'uint256', 'uint256'], ['uint256']),
         // createAbiItem('tokenATokenBForEToken', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
-        createAbiItem('tokenATokenBForTokenA', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
-        createAbiItem('tokenATokenBForTokenB', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
+        // createAbiItem('tokenATokenBForTokenA', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
+        // createAbiItem('tokenATokenBForTokenB', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
         // createAbiItem('amountBForAmountA', ['address', 'address', 'uint256'], ['uint256']),
         // createAbiItem('amountAForAmountB', ['address', 'address', 'uint256'], ['uint256']),
         createAbiItem('minInputAmountAForEToken', ['address', 'address', 'uint256'], ['uint256']),
@@ -81,27 +81,27 @@ class SeEPoolPeripheryContract extends Web3Contract {
   //   }));
   // }
 
-  getTokenATokenBForTokenA(
-    ePoolAddress: string,
-    eTokenAddress: string,
-    totalA: BigNumber,
-  ): Promise<TokenATokenBForETokenResult> {
-    return this.call('tokenATokenBForTokenA', [ePoolAddress, eTokenAddress, totalA]).then(value => ({
-      amountA: new BigNumber(value[0]),
-      amountB: new BigNumber(value[1]),
-    }));
-  }
+  // getTokenATokenBForTokenA(
+  //   ePoolAddress: string,
+  //   eTokenAddress: string,
+  //   totalA: BigNumber,
+  // ): Promise<TokenATokenBForETokenResult> {
+  //   return this.call('tokenATokenBForTokenA', [ePoolAddress, eTokenAddress, totalA]).then(value => ({
+  //     amountA: new BigNumber(value[0]),
+  //     amountB: new BigNumber(value[1]),
+  //   }));
+  // }
 
-  getTokenATokenBForTokenB(
-    ePoolAddress: string,
-    eTokenAddress: string,
-    totalB: BigNumber,
-  ): Promise<TokenATokenBForETokenResult> {
-    return this.call('tokenATokenBForTokenB', [ePoolAddress, eTokenAddress, totalB]).then(value => ({
-      amountA: new BigNumber(value[0]),
-      amountB: new BigNumber(value[1]),
-    }));
-  }
+  // getTokenATokenBForTokenB(
+  //   ePoolAddress: string,
+  //   eTokenAddress: string,
+  //   totalB: BigNumber,
+  // ): Promise<TokenATokenBForETokenResult> {
+  //   return this.call('tokenATokenBForTokenB', [ePoolAddress, eTokenAddress, totalB]).then(value => ({
+  //     amountA: new BigNumber(value[0]),
+  //     amountB: new BigNumber(value[1]),
+  //   }));
+  // }
 
   // getAmountBForAmountA(ePoolAddress: string, eTokenAddress: string, amountA: BigNumber): Promise<BigNumber> {
   //   return this.call('amountBForAmountA', [ePoolAddress, eTokenAddress, amountA]).then(value => BigNumber.from(value));
