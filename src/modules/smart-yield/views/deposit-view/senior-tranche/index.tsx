@@ -16,10 +16,11 @@ import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Spin from 'components/antd/spin';
-import Icon, { TokenIconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import TransactionSummary from 'modules/smart-yield/components/transaction-summary';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
@@ -246,7 +247,7 @@ const SeniorTranche: React.FC = () => {
         <Form.Item label="Amount" rules={[{ required: true, message: 'Required' }]}>
           <TokenAmount
             className="mb-24"
-            before={<Icon name={pool?.meta?.icon as TokenIconNames} />}
+            before={<TokenIcon name={pool?.token?.icon as TokenIconNames} />}
             placeholder={`0 (Max ${maxAmount?.toNumber() ?? 0})`}
             max={maxAmount}
             disabled={state.isSaving}

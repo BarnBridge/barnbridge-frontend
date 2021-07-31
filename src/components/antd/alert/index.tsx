@@ -2,7 +2,7 @@ import React from 'react';
 import AntdAlert, { AlertProps as AntdAlertProps } from 'antd/lib/alert';
 import cn from 'classnames';
 
-import Icon from 'components/custom/icon';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -14,7 +14,7 @@ const Alert: React.FC<AlertProps> = props => {
   const icon = React.useMemo<React.ReactNode>(() => {
     switch (type) {
       case 'info':
-        return <Icon name="info-outlined" />;
+        return <Icon name="info" />;
       default:
         return undefined;
     }

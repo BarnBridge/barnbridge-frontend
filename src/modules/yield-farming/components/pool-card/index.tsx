@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
@@ -11,12 +11,12 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon } from 'components/token-icon';
 import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -82,7 +82,7 @@ const PoolCard: FC<Props> = props => {
       <div className="flex align-center justify-space-between p-24">
         <div className="flex align-center">
           <IconsSet
-            icons={poolMeta?.tokens.map(token => <Icon key={token.symbol} name={token.icon!} />) ?? []}
+            icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon!} />) ?? []}
             className="mr-16"
           />
           <div>
@@ -137,7 +137,7 @@ const PoolCard: FC<Props> = props => {
                 Weekly reward
               </Text>
               <div className="flex align-center">
-                <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
+                <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(epochReward) ?? '-'}
                 </Text>
@@ -181,7 +181,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
+                <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(potentialReward) ?? '-'}
                 </Text>
@@ -286,7 +286,7 @@ const PoolCard: FC<Props> = props => {
                 <Text type="h2" weight="semibold" color="primary">
                   {formatToken(toClaim?.unscaleBy(projectToken.decimals)) ?? '-'}
                 </Text>
-                <Icon name={projectToken.icon!} width={32} height={32} />
+                <TokenIcon name={projectToken.icon!} size={32} />
               </div>
             }
             submitText="Claim"

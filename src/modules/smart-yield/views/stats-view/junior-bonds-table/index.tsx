@@ -7,11 +7,11 @@ import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import IconBubble from 'components/custom/icon-bubble';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { APISYJuniorBonds, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
@@ -23,10 +23,10 @@ const TokenNameColumn: React.FC = () => {
 
   return (
     <div className="flex">
-      <IconBubble
-        name={pool?.meta?.icon}
-        bubbleName={projectToken.icon!}
-        secondBubbleName={pool?.market?.icon}
+      <TokenIcon
+        name={pool?.token?.icon as TokenIconNames}
+        bubble1Name={projectToken.icon!}
+        bubble2Name={pool?.market?.icon.active as TokenIconNames}
         className="mr-16"
       />
       <div className="flex flow-row">

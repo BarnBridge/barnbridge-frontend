@@ -6,7 +6,7 @@ import { getHumanValue } from 'web3/utils';
 import { useConfig } from 'components/providers/configProvider';
 
 import { InvariantContext } from 'utils/context';
-import { PaginatedResult } from 'utils/fetch';
+import { PaginatedResult, UseFetchReturn, queryfy, useFetch } from 'utils/fetch';
 
 export type APIOverviewData = {
   avgLockTimeSeconds: number;
@@ -448,3 +448,82 @@ const DaoAPIProvider: FC = props => {
 };
 
 export default DaoAPIProvider;
+
+export function useFetchTreasuryTokens(): UseFetchReturn<APITreasuryToken[]> {
+  const config = useConfig();
+  const url = new URL(
+    `/api/governance/treasury/tokens?address=${config.contracts.dao?.governance}`,
+    config.api.baseUrl,
+  );
+
+  return useFetch(url, {
+    transform: ({ data }) => data,
+  });
+}
+
+export function useFetchTreasuryHistory(
+  page: number = 1,
+  tokenFilter: string,
+  directionFilter: string,
+): UseFetchReturn<PaginatedResult<APITreasuryHistory>> {
+  const config = useConfig();
+  const query = queryfy({
+    address: config.contracts.dao?.governance,
+    limit: 10,
+    page,
+    tokenAddress: tokenFilter,
+    transactionDirection: directionFilter,
+  });
+
+  const url = new URL(`/api/governance/treasury/transactions?${query}`, config.api.baseUrl);
+
+  return useFetch(url, {
+    transform: ({ data = [], meta }) => ({
+      meta,
+      data: data.map((item: APITreasuryHistory) => ({
+        ...item,
+        amount: Number(item.amount),
+      })),
+    }),
+  });
+}
+
+export type APISYPool = {
+  protocolId: string;
+  controllerAddress: string;
+  modelAddress: string;
+  providerAddress: string;
+  smartYieldAddress: string;
+  oracleAddress: string;
+  juniorBondAddress: string;
+  seniorBondAddress: string;
+  cTokenAddress: string;
+  underlyingAddress: string;
+  underlyingSymbol: string;
+  underlyingDecimals: number;
+  rewardPoolAddress: string;
+  state: {
+    blockNumber: number;
+    blockTimestamp: string;
+    seniorLiquidity: number;
+    juniorLiquidity: number;
+    jTokenPrice: number;
+    seniorApy: number;
+    juniorApy: number;
+    originatorApy: number;
+    originatorNetApy: number;
+    avgSeniorMaturityDays: number;
+    numberOfSeniors: number;
+    numberOfJuniors: number;
+    juniorLiquidityLocked: number;
+  };
+};
+
+export function useFetchSyPools(originator = 'all', baseUrl?: string): UseFetchReturn<APISYPool[]> {
+  const config = useConfig();
+  const url = new URL(`/api/smartyield/pools?originator=${originator}`, baseUrl ?? config.api.baseUrl);
+
+  return useFetch(url, {
+    transform: ({ data }) => data,
+  });
+}

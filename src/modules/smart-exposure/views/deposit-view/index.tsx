@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
+import { Link } from 'components/button';
 import { EnableTokenButton, EnableTokens } from 'components/custom/enable-token';
-import Icon, { IconNames } from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
+import OldIcon from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
 import { TokenAmount, TokenAmountPreview, TokenSelect } from 'components/custom/token-amount-new';
@@ -16,6 +16,7 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { useContract } from 'hooks/useContract';
 import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import SeUniswapRouterContract from 'modules/smart-exposure/contracts/seUniswapRouterContract';
@@ -75,14 +76,18 @@ const DepositView: React.FC = () => {
   return (
     <>
       <div className="flex mb-16">
-        <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-text">
-          <Icon name="arrow-back" color="inherit" className="mr-8" />
+        <Link
+          to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`}
+          variation="text-alt"
+          icon="arrow"
+          iconPosition="left"
+          iconRotate={180}>
           Tranche details
         </Link>
       </div>
       <div className="flex justify-center row-gap-12 col-gap-64 mb-40">
         <div className="flex">
-          <IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={40} className="mr-16" />
+          <TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
               tranche.tokenA.symbol
@@ -313,7 +318,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmount
-        before={<Icon name={tokenAIcon as IconNames} width={24} height={24} />}
+        before={<TokenIcon name={tokenAIcon as TokenIconNames} size={24} />}
         value={tokenAState}
         secondary={formatUSD(BigNumber.from(tokenAState)?.multipliedBy(tranche.tokenA.state.price) ?? 0)}
         onChange={value => {
@@ -325,7 +330,7 @@ const MultipleTokensForm = ({
         className="mb-16"
         errors={tokenAErrors}
       />
-      <Icon
+      <OldIcon
         name="plus-circle"
         width={32}
         height={32}
@@ -341,7 +346,7 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmount
-        before={<Icon name={tokenBIcon as IconNames} width={24} height={24} />}
+        before={<TokenIcon name={tokenBIcon as TokenIconNames} size={24} />}
         value={tokenBState}
         secondary={formatUSD(BigNumber.from(tokenBState)?.multipliedBy(tranche.tokenB.state.price) ?? 0)}
         onChange={value => {
@@ -353,7 +358,7 @@ const MultipleTokensForm = ({
         className="mb-16"
         errors={tokenBErrors}
       />
-      <Icon
+      <OldIcon
         name="down-arrow-circle"
         width={32}
         height={32}
@@ -371,15 +376,20 @@ const MultipleTokensForm = ({
         </span>
       </div>
       <TokenAmountPreview
-        before={<IconsPair icon1={tokenAIcon} icon2={tokenBIcon} size={24} />}
+        before={<TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={24} />}
         value={formatToken(tokenEState?.dividedBy(tranche.sFactorE)) ?? '0'}
         secondary={formatUSD(tokenEState?.dividedBy(tranche.sFactorE).multipliedBy(tranche.state.eTokenPrice))}
         className="mb-32"
       />
       <EnableTokens {...{ tokenAContract, tokenBContract, poolAddress, tranche }} className="mb-32" />
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-back">
-          <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
+        <Link
+          to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`}
+          variation="text-alt"
+          size="small"
+          icon="arrow"
+          iconPosition="left"
+          iconRotate={180}>
           Cancel
         </Link>
         <button type="submit" className="button-primary" disabled={loading || disableSubmit}>
@@ -570,7 +580,7 @@ const SingleTokenForm = ({
         classNameBefore="ph-0"
         errors={tokenErrors}
       />
-      <Icon
+      <OldIcon
         name="down-arrow-circle"
         width={32}
         height={32}
@@ -588,7 +598,7 @@ const SingleTokenForm = ({
             </span>
           </div>
           <TokenAmountPreview
-            before={<Icon name={tokenAIcon as IconNames} width={24} height={24} />}
+            before={<TokenIcon name={tokenAIcon} size={24} />}
             value={tokenAState?.unscaleBy(tranche.tokenA.decimals)?.toString() || '0'}
             secondary={formatUSD(
               tokenAState?.unscaleBy(tranche.tokenA.decimals)?.multipliedBy(tranche.tokenA.state.price) ?? 0,
@@ -603,7 +613,7 @@ const SingleTokenForm = ({
             </span>
           </div>
           <TokenAmountPreview
-            before={<Icon name={tokenBIcon as IconNames} width={24} height={24} />}
+            before={<TokenIcon name={tokenBIcon} size={24} />}
             value={tokenBState?.unscaleBy(tranche.tokenB.decimals)?.toString() || '0'}
             secondary={formatUSD(
               tokenBState?.unscaleBy(tranche.tokenB.decimals)?.multipliedBy(tranche.tokenB.state.price) ?? 0,
@@ -634,8 +644,13 @@ const SingleTokenForm = ({
       ) : null}
 
       <div className="grid flow-col col-gap-32 align-center justify-space-between">
-        <Link to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`} className="button-back">
-          <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
+        <Link
+          to={`/smart-exposure/pools/${poolAddress}/${trancheAddress}`}
+          variation="text-alt"
+          size="small"
+          icon="arrow"
+          iconPosition="left"
+          iconRotate={180}>
           Cancel
         </Link>
         <button type="submit" className="button-primary" disabled={loading || disableSubmit}>

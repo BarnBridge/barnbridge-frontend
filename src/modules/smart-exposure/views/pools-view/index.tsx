@@ -1,19 +1,18 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon, { IconNames } from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
+import Icon from 'components/custom/icon';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
-import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 const PoolsView: React.FC = () => {
@@ -57,9 +56,9 @@ const PoolsView: React.FC = () => {
                 setSelectedPools(newSelection);
                 // setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
               }}>
-              <IconsPair
-                icon1={tokenA?.icon as IconNames}
-                icon2={tokenB?.icon as IconNames}
+              <TokenIconPair
+                name1={tokenA?.icon as TokenIconNames}
+                name2={tokenB?.icon as TokenIconNames}
                 size={40}
                 className="mr-16"
               />
@@ -116,9 +115,9 @@ const PoolsView: React.FC = () => {
           <Fragment key={pool.poolAddress}>
             <div className="card mb-8 p-24 flex wrap align-center col-gap-64 row-gap-16">
               <div className="flex">
-                <IconsPair
-                  icon1={tokenA?.icon as IconNames}
-                  icon2={tokenB?.icon as IconNames}
+                <TokenIconPair
+                  name1={tokenA?.icon as TokenIconNames}
+                  name2={tokenB?.icon as TokenIconNames}
                   size={40}
                   className="mr-16"
                 />

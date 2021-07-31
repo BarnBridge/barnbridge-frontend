@@ -4,11 +4,11 @@ import BigNumber from 'bignumber.js';
 
 import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
 import { TokenAmount, TokenAmountPreview } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIconPair } from 'components/token-icon';
 import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 type ETokenType = '75:25_WBTC_ETH' | '50:50_WBTC_ETH' | '25:75_WBTC_ETH';
@@ -73,7 +73,7 @@ const ChangeTrancheView: React.FC = () => {
           } as React.CSSProperties
         }>
         <div className="flex">
-          <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={40} className="mr-16" />
+          <TokenIconPair name1={tokenA?.icon!} name2={tokenB?.icon!} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
               tokenA?.symbol
@@ -109,7 +109,7 @@ const ChangeTrancheView: React.FC = () => {
           <DropdownList items={tokens.map(token => ({ children: token.name, onClick: () => setSelectedToken(token) }))}>
             {({ ref, setOpen, open }) => (
               <button type="button" ref={ref} onClick={() => setOpen(isOpen => !isOpen)} className="token-select mb-32">
-                <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} className="mr-16" />
+                <TokenIconPair name1={tokenA?.icon!} name2={tokenB?.icon!} size={24} className="mr-16" />
                 <Text type="p1" weight="semibold" color="primary">
                   {selectedToken.name}
                 </Text>
@@ -128,7 +128,7 @@ const ChangeTrancheView: React.FC = () => {
             <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
           </div>
           <TokenAmount
-            before={<IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} />}
+            before={<TokenIconPair name1={tokenA?.icon!} name2={tokenB?.icon!} size={24} />}
             value={tokenState}
             onChange={setTokenState}
             max={BigNumber.ZERO}
@@ -141,7 +141,7 @@ const ChangeTrancheView: React.FC = () => {
             <span className="text-sm fw-semibold color-secondary">50:50_WBTC_ETH amount</span>
           </div>
           <TokenAmountPreview
-            before={<IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={24} />}
+            before={<TokenIconPair name1={tokenA?.icon!} name2={tokenB?.icon!} size={24} />}
             value="2.3116"
             className="mb-32"
           />

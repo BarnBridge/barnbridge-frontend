@@ -33,8 +33,7 @@ export type IconNames =
   | 'plus'
   | 'check'
   | 'close'
-  | 'arrow-right'
-  | 'arrow-left'
+  | 'arrow'
   | 'chevron'
   | 'menu-toggle'
   | 'menu-hide'
@@ -76,38 +75,32 @@ export type IconNames =
   | 'voting-power'
   | 'bonus'
   | 'delegated'
-  | 'external';
+  | 'external'
+  | 'burger';
 
-type IconProps = {
+export type IconProps = {
   name: IconNames;
   size?: number | string;
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'icon';
-  // rotate?: 0 | 90 | 180 | 270;
+  rotate?: 0 | 45 | 90 | 135 | 180 | 225 | 270 | 315;
   className?: string;
   style?: React.CSSProperties;
 };
 
 export const Icon: React.FC<IconProps> = props => {
-  const {
-    name,
-    size = 24,
-    // rotate,
-    color,
-    className,
-    style,
-    ...rest
-  } = props;
+  const { name, size = 24, rotate, color, className, style, ...rest } = props;
 
   return (
     <svg
       className={classNames(s.component, className, {
-        [s[`${color}-color`]]: color,
+        [s[`color-${color}`]]: color,
+        [s[`rotate-${rotate}`]]: rotate,
       })}
       width={size}
       height={size}
       style={style}
       {...rest}>
-      <use xlinkHref={`icons-sprite.svg#icon__${name}`} />
+      <use xlinkHref={`${process.env.PUBLIC_URL}/icons-sprite.svg#icon__${name}`} />
     </svg>
   );
 };

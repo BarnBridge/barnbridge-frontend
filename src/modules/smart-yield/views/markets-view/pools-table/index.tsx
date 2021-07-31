@@ -8,14 +8,14 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon } from 'components/token-icon';
-import { SYMarketMeta, SYPoolMeta } from 'modules/smart-yield/api';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { MarketMeta } from '../../../providers/markets';
 
 type PoolEntity = PoolsSYPool;
 
@@ -44,7 +44,10 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
 
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            <IconBubble name={entity.meta?.icon} bubbleName={entity.market?.icon} />
+            <TokenIcon
+              name={entity.token?.icon as TokenIconNames}
+              bubble1Name={entity.market?.icon.active as TokenIconNames}
+            />
             <div>
               <div className="mb-4 flex align-center">
                 <Text type="p1" weight="semibold" wrap={false} color="primary" className="mr-4">
@@ -80,7 +83,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
                 ) : null}
               </div>
               <Text type="small" weight="semibold" wrap={false}>
-                {entity.meta?.name}
+                {entity.token?.name}
               </Text>
             </div>
           </div>
@@ -201,7 +204,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
                 +{formatPercent(entity.apr?.plus(entity.apy ?? 0) ?? 0)} APR
               </AprLabel>
             ) : entity.apr ? (
-              <AprLabel icons={['static/token-bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
+              <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
             ) : null}
           </div>
         );
@@ -290,7 +293,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
 }
 
 type Props = {
-  activeMarket?: SYMarketMeta;
+  activeMarket?: MarketMeta;
 };
 
 const PoolsTable: React.FC<Props> = props => {

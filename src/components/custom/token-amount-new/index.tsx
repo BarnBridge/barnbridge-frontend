@@ -4,10 +4,11 @@ import cn from 'classnames';
 import classNames from 'classnames';
 
 import { DropdownList } from 'components/custom/dropdown';
-import Icon, { TokenIconNames } from 'components/custom/icon';
 import { Slider } from 'components/custom/slider';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 
 import s from './s.module.scss';
 
@@ -153,7 +154,7 @@ export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, clas
             },
             children: (
               <>
-                <Icon name={getTokenBySymbol(token)?.icon as TokenIconNames} className="mr-8" />
+                <TokenIcon name={getTokenBySymbol(token)?.icon as TokenIconNames} className="mr-8" />
                 {getTokenBySymbol(token)?.name}
               </>
             ),
@@ -168,20 +169,16 @@ export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, clas
           onClick={() => setOpen(isOpen => !isOpen)}
           className={cn(s.tokenAmountSelectToken, className)}
           style={style}>
-          {foundToken ? (
-            <Icon name={foundToken.icon as TokenIconNames} width={24} height={24} className="mr-16" />
-          ) : null}
+          {foundToken ? <TokenIcon name={foundToken.icon as TokenIconNames} size={24} className="mr-16" /> : null}
           <Text type="p1" weight="semibold" color="primary">
             {foundToken?.symbol}
           </Text>
           <Icon
-            name="dropdown"
-            width="24"
-            height="24"
+            name={open ? 'dropdown-active' : 'dropdown'}
+            size="24"
             className="token-select-chevron"
             style={{
               marginLeft: 4,
-              transform: open ? 'rotate(180deg)' : '',
             }}
           />
         </button>

@@ -3,7 +3,6 @@ export type MarketMeta = {
   name: string;
   icon: {
     active: string;
-    inactive: string;
   };
 };
 
@@ -12,7 +11,6 @@ export const CompoundMarket: MarketMeta = {
   name: 'Compound',
   icon: {
     active: 'compound',
-    inactive: 'compound_grayed',
   },
 };
 
@@ -20,8 +18,7 @@ export const AaveMarket: MarketMeta = {
   id: 'aave/v2',
   name: 'AAVE',
   icon: {
-    active: `static/aave`,
-    inactive: `static/aave_grayed`,
+    active: `aave`,
   },
 };
 
@@ -29,8 +26,7 @@ const CreamFinanceMarket: MarketMeta = {
   id: 'cream/v2',
   name: 'C.R.E.A.M Finance',
   icon: {
-    active: `cream_finance`,
-    inactive: `cream_finance_grayed`,
+    active: `cream`,
   },
 };
 
