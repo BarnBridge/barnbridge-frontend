@@ -93,7 +93,4 @@ export const Link: React.FC<LinkProps> = ({
       ) : null}
     </RouterLink>
   );
-  // (
-  //   <RouterLink {...rest}>{children}</RouterLink>
-  // );
 };
