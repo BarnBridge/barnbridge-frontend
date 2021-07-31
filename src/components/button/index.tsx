@@ -56,6 +56,41 @@ export const Button: React.FC<ButtonProps> = ({
 
 type LinkProps = RouterLinkProps & CommonProps;
 
-export const Link: React.FC<LinkProps> = ({ children, variation, size = 'normal', ...rest }) => (
-  <RouterLink {...rest}>{children}</RouterLink>
-);
+export const Link: React.FC<LinkProps> = ({
+  children,
+  variation,
+  size = 'normal',
+  icon,
+  iconPosition = 'only',
+  iconRotate,
+  ...rest
+}) => {
+  let iconSize: 16 | 24;
+  switch (size) {
+    case 'small':
+      iconSize = 16;
+      break;
+    case 'normal':
+      iconSize = 24;
+      break;
+    case 'big':
+      iconSize = 24;
+      break;
+  }
+
+  return (
+    <RouterLink
+      {...rest}
+      className={classNames(s[variation], s[size], {
+        [s.iconOnly]: icon && iconPosition === 'only',
+      })}>
+      {icon && iconPosition === 'left' ? (
+        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginRight: 8 }} />
+      ) : null}
+      {icon && iconPosition === 'only' ? <Icon name={icon} rotate={iconRotate} size={iconSize} /> : children}
+      {icon && iconPosition === 'right' ? (
+        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginLeft: 8 }} />
+      ) : null}
+    </RouterLink>
+  );
+};

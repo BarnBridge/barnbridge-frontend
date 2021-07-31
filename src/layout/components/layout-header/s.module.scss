@@ -5,6 +5,9 @@
   display: flex;
   height: 72px;
   padding: 12px var(--horizontal-padding);
+  position: sticky;
+  top: 0;
+  z-index: 3;
 
   @media (max-width: 768px) {
     padding: 24px;

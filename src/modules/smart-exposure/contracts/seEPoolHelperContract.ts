@@ -15,6 +15,8 @@ class SeEPoolHelperContract extends Web3Contract {
         createAbiItem('tokenAForTokenB', ['address', 'address', 'uint256'], ['uint256']),
         createAbiItem('eTokenForTokenATokenB', ['address', 'address', 'uint256', 'uint256'], ['uint256']),
         createAbiItem('tokenATokenBForEToken', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
+        createAbiItem('tokenATokenBForTokenA', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
+        createAbiItem('tokenATokenBForTokenB', ['address', 'address', 'uint256'], ['uint256', 'uint256']),
         // send
       ],
       address,
@@ -47,6 +49,28 @@ class SeEPoolHelperContract extends Web3Contract {
     amount: BigNumber,
   ): Promise<TokenATokenBForETokenResult> {
     return this.call('tokenATokenBForEToken', [ePoolAddress, eTokenAddress, amount]).then(value => ({
+      amountA: new BigNumber(value[0]),
+      amountB: new BigNumber(value[1]),
+    }));
+  }
+
+  getTokenATokenBForTokenA(
+    ePoolAddress: string,
+    eTokenAddress: string,
+    amount: BigNumber,
+  ): Promise<TokenATokenBForETokenResult> {
+    return this.call('tokenATokenBForTokenA', [ePoolAddress, eTokenAddress, amount]).then(value => ({
+      amountA: new BigNumber(value[0]),
+      amountB: new BigNumber(value[1]),
+    }));
+  }
+
+  getTokenATokenBForTokenB(
+    ePoolAddress: string,
+    eTokenAddress: string,
+    amount: BigNumber,
+  ): Promise<TokenATokenBForETokenResult> {
+    return this.call('tokenATokenBForTokenB', [ePoolAddress, eTokenAddress, amount]).then(value => ({
       amountA: new BigNumber(value[0]),
       amountB: new BigNumber(value[1]),
     }));
