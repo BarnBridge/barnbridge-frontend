@@ -6,8 +6,8 @@ import { formatToken, formatUSD } from 'web3/utils';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIOverviewData, useDaoAPI } from 'modules/governance/api';
@@ -68,7 +68,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                     to purchase coverage
                   </>
                 }>
-                <Icon name="insured" color="green" width={32} height={32} />
+                <Icon name="insured" color="green" size={32} />
               </Tooltip>
             </Grid>
             <Text type="p1" color="secondary">

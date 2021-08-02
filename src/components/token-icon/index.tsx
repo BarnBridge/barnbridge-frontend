@@ -41,7 +41,7 @@ type TokenIconProps = {
   outline?: 'green' | 'purple';
 };
 
-const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai'];
 
 const svgPath = `${process.env.PUBLIC_URL}/token-icons-sprite.svg`;
 

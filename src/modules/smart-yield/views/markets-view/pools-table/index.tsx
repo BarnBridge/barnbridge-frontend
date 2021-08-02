@@ -7,9 +7,9 @@ import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -78,7 +78,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
                         to purchase coverage
                       </>
                     }>
-                    <Icon name="insured" color="green" width={24} height={24} />
+                    <Icon name="insured" color="green" size={24} />
                   </Tooltip>
                 ) : null}
               </div>
