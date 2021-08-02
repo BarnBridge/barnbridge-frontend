@@ -127,21 +127,21 @@ const DepositView: React.FC = () => {
           maxWidth: 640,
         }}>
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
-          Deposit
+          {activeTab === 'deposit' ? 'Deposit' : 'Swap'}
         </Text>
         <Text type="p2" weight="semibold" color="secondary" className="mb-32">
           {activeTab === 'deposit'
             ? 'Build your SMART Exposure position by minting eTokens with both the tokens in the tranche according to the current tranche ratio.'
-            : 'Build your SMART Exposure position by minting a specified amount of eTokens with a single input token. The amount of deposited token you see will have a portion of it swapped for the second token, which is where the slippage and deadline parameters will be used.'}
+            : 'Start building your SMART Exposure position by swapping a specified amount of input token, in order to be able to purchase eTokens. This is where the slippage and deadline parameters will be used.'}
         </Text>
-        {/* <Tabs
+        <Tabs
           tabs={tabs}
           activeKey={activeTab}
           onClick={setActiveTab}
           className="mb-32"
           variation="elastic"
           size="small"
-        /> */}
+        />
         {activeTab === 'deposit' ? (
           <Deposit
             tranche={tranche}

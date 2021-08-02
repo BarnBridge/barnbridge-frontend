@@ -4,9 +4,10 @@ import { format } from 'date-fns';
 import { formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
+import IconOld from 'components/custom/icon';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
@@ -70,7 +71,7 @@ const PoolsView: React.FC = () => {
                   Pools
                 </Text>
               </div>
-              <Icon
+              <IconOld
                 name={isActive && isSelected ? 'checkbox-checked' : 'checkbox'}
                 style={{
                   marginLeft: 24,
@@ -103,7 +104,7 @@ const PoolsView: React.FC = () => {
               to purchase coverage
             </>
           }>
-          <Icon name="insured" color="green" width={32} height={32} />
+          <Icon name="insured" color="green" size={32} />
         </Tooltip>
       </div>
 
