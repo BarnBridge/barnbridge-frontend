@@ -1,18 +1,18 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
 import { format } from 'date-fns';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatUSD } from 'web3/utils';
 
-import Icon, { IconNames } from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
+import Tooltip from 'components/antd/tooltip';
+import Icon from 'components/custom/icon';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { PairsTable } from './table';
 
-import { calculateRebalancingCondition } from 'modules/smart-exposure/utils';
 import { getRelativeTime } from 'utils';
 
 const PoolsView: React.FC = () => {
@@ -56,9 +56,9 @@ const PoolsView: React.FC = () => {
                 setSelectedPools(newSelection);
                 // setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
               }}>
-              <IconsPair
-                icon1={tokenA?.icon as IconNames}
-                icon2={tokenB?.icon as IconNames}
+              <TokenIconPair
+                name1={tokenA?.icon as TokenIconNames}
+                name2={tokenB?.icon as TokenIconNames}
                 size={40}
                 className="mr-16"
               />
@@ -85,9 +85,27 @@ const PoolsView: React.FC = () => {
       <Text type="p1" weight="semibold" color="secondary" className="mb-4">
         Total value locked
       </Text>
-      <Text type="h2" weight="bold" color="primary" className="mb-40">
-        {formatUSD(totalValueLocked)}
-      </Text>
+      <div className="mb-40 flex align-center">
+        <Text type="h2" weight="bold" color="primary" className="mr-8">
+          {formatUSD(totalValueLocked)}
+        </Text>
+        <Tooltip
+          title={
+            <>
+              The BarnBridge SMART Exposure contracts are covered by:
+              <br /> - Bridge Mutual,{' '}
+              <a
+                href="https://app.bridgemutual.io/user/cover/0xdb9A242cfD588507106919051818e771778202e9"
+                rel="noopener noreferrer"
+                target="_blank">
+                click here
+              </a>{' '}
+              to purchase coverage
+            </>
+          }>
+          <Icon name="insured" color="green" width={32} height={32} />
+        </Tooltip>
+      </div>
 
       {poolsToDisplay.map(pool => {
         const tokenA = getTokenBySymbol(pool.tokenA.symbol);
@@ -97,9 +115,9 @@ const PoolsView: React.FC = () => {
           <Fragment key={pool.poolAddress}>
             <div className="card mb-8 p-24 flex wrap align-center col-gap-64 row-gap-16">
               <div className="flex">
-                <IconsPair
-                  icon1={tokenA?.icon as IconNames}
-                  icon2={tokenB?.icon as IconNames}
+                <TokenIconPair
+                  name1={tokenA?.icon as TokenIconNames}
+                  name2={tokenB?.icon as TokenIconNames}
                   size={40}
                   className="mr-16"
                 />

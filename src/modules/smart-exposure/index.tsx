@@ -2,8 +2,8 @@ import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
-import Icon from 'components/custom/icon';
 import { NavTabs } from 'components/custom/tabs';
+import { Icon } from 'components/icon';
 import SeAPIProvider from 'modules/smart-exposure/api';
 import { SEPoolsProvider } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -12,10 +12,10 @@ import { PoolActionsView } from './views/pool-actions-view';
 
 import s from './s.module.scss';
 
-const PoolsView = lazy(() => import('./views/pools-view'));
-const TrancheView = lazy(() => import('./views/tranche-view'));
+const PoolsView = lazy(() => import(/* webpackChunkName: "pools-view" */ './views/pools-view'));
+const TrancheView = lazy(() => import(/* webpackChunkName: "tranche-view" */ './views/tranche-view'));
 
-const PortfolioView = lazy(() => import('./views/portfolio-view'));
+const PortfolioView = lazy(() => import(/* webpackChunkName: "portfolio-view" */ './views/portfolio-view'));
 
 const SmartExposureView: React.FC = () => {
   const wallet = useWallet();
@@ -24,7 +24,7 @@ const SmartExposureView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="finance" className="mr-8" /> Pools
+          <Icon name="pairs" className="mr-8" size={24} /> Pools
         </>
       ),
       to: '/smart-exposure/pools',
@@ -32,7 +32,7 @@ const SmartExposureView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="wallet-outlined" className="mr-8" /> Portfolio
+          <Icon name="wallet" className="mr-8" size={24} /> Portfolio
         </>
       ),
       to: '/smart-exposure/portfolio',

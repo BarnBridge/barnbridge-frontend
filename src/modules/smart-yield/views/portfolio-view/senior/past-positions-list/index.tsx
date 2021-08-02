@@ -8,10 +8,10 @@ import { formatBigValue, formatPercent, formatUSDValue, shortenAddr } from 'web3
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import IconBubble from 'components/custom/icon-bubble';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYSeniorRedeem, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -116,7 +116,11 @@ const PastPositionsList: React.FC<Props> = props => {
           {state.data.map(entity => (
             <div className="card" key={entity.seniorBondId}>
               <div className="card-header flex">
-                <IconBubble name={entity.pool?.meta?.icon} bubbleName={entity.pool?.market?.icon} className="mr-16" />
+                <TokenIcon
+                  name={entity.pool?.token?.icon as TokenIconNames}
+                  bubble1Name={entity.pool?.market?.icon.active as TokenIconNames}
+                  className="mr-16"
+                />
                 <div>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
                     {entity.pool?.underlyingSymbol}

@@ -19,6 +19,7 @@ export type TokenIconNames =
   | 'token-usdc'
   | 'token-usdt'
   | 'token-dai'
+  | 'token-rai'
   | 'token-susd'
   | 'token-gusd'
   | 'static/token-bond'
@@ -136,7 +137,8 @@ export type IconNames =
   | 'internet'
   | 'checkbox-checked'
   | 'checkbox'
-  | 'loader';
+  | 'loader'
+  | 'insured';
 
 export type IconProps = {
   name: IconNames;

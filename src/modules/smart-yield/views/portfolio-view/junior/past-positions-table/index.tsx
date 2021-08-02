@@ -8,10 +8,10 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -31,10 +31,10 @@ const Columns: ColumnsType<TableEntity> = [
 
       return (
         <div className="flex flow-col align-center">
-          <IconBubble
-            name={entity.pool?.meta?.icon}
-            bubbleName={projectToken.icon!}
-            secondBubbleName={entity.pool?.market?.icon}
+          <TokenIcon
+            name={entity.pool?.token?.icon as TokenIconNames}
+            bubble1Name={projectToken.icon!}
+            bubble2Name={entity.pool?.market?.icon.active as TokenIconNames}
             className="mr-16"
           />
           <div className="flex flow-row">

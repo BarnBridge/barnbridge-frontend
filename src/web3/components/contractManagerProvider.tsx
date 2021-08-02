@@ -1,4 +1,4 @@
-import React, { FC, createContext, useContext, useEffect, useRef } from 'react';
+import React, { FC, createContext, useContext, useRef } from 'react';
 import { AbiItem } from 'web3-utils';
 import ContractListener from 'web3/components/contract-listener';
 import Erc20Contract from 'web3/erc20Contract';

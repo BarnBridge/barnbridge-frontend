@@ -6,8 +6,8 @@ import { formatPercent } from 'web3/utils';
 
 // import { DropdownList } from 'components/custom/dropdown';
 import Icon from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIconPair } from 'components/token-icon';
 import { TrancheApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -49,7 +49,7 @@ const TrancheView: React.FC = () => {
       </div>
       <div className="flex align-center mb-40">
         <div className="flex">
-          <IconsPair icon1={tokenA?.icon} icon2={tokenB?.icon} size={40} className="mr-16" />
+          <TokenIconPair name1={tokenA?.icon!} name2={tokenB?.icon!} size={40} className="mr-16" />
           <div>
             <div className="text-p1 fw-semibold color-primary mr-4">
               {`${formatPercent(Number(tranche.tokenARatio))} ${tokenA?.symbol} / ${formatPercent(

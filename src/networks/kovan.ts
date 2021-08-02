@@ -47,6 +47,7 @@ export const KovanConfig: NetworkConfig = {
     susd: '0xED159a31184ADADC5c28CE5D9e4822ea2b0B6ef9',
     gusd: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
     dai: '0xEa8BE82DF1519D4a25E2539bcA0342a1203CD591',
+    rai: '',
     stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
     wmatic: '',
     ausdc: '0xe12AFeC5aa12Cf614678f9bFeeB98cA9Bb95b5B0',
@@ -88,8 +89,8 @@ export const KovanConfig: NetworkConfig = {
       reward: '0xc2d3B609EB967c72AfF4731Ca96375f26926B1F9',
     },
     se: {
-      ePoolPeriphery: '0x117960a3d29a7ea6cb62c18f1300b0d4b714687c',
-      ePoolHelper: '0x240fe3af3c66942f6970b9777992a00055dfff13',
+      ePoolPeriphery: '0x5fa08f7817844e38ee8f54a24b65f6dc1ae23785',
+      ePoolHelper: '0xc1442ac5d2631bd9369b42b35bfe12b88ee8daaf',
     },
   },
 };

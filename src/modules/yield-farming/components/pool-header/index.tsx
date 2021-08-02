@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from 'react';
+import { FC, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
@@ -7,6 +7,7 @@ import Icon from 'components/custom/icon';
 import IconsSet from 'components/custom/icons-set';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenIcon } from 'components/token-icon';
 
 import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
@@ -41,7 +42,7 @@ const PoolHeader: FC = () => {
       <div className="flex align-center mb-40">
         <IconsSet
           icons={poolMeta.tokens.map(token => (
-            <Icon key={token.symbol} name={token.icon!} />
+            <TokenIcon key={token.symbol} name={token.icon!} />
           ))}
           className="mr-16"
         />
@@ -84,7 +85,7 @@ const PoolHeader: FC = () => {
             Weekly rewards
           </Text>
           <div className="flex align-center">
-            <Icon name={projectToken.icon!} width={16} height={16} className="mr-8" />
+            <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
             <Text type="p1" weight="semibold" color="primary">
               {!isEnded ? formatNumber(poolMeta.contract.epochReward) ?? '-' : 0}
             </Text>

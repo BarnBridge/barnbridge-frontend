@@ -1,3 +1,4 @@
+import { IconNames } from 'components/custom/icon';
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 export const DEFAULT_RPC_POOLING_INTERVAL = 12_000;
@@ -36,6 +37,7 @@ export type NetworkConfig = {
     | 'susd'
     | 'gusd'
     | 'dai'
+    | 'rai'
     | 'stkaave'
     | 'wmatic'
     | 'ausdc'
@@ -70,7 +72,7 @@ export type Web3Network = {
   meta: {
     chainId: number;
     name: string;
-    logo: string;
+    logo: IconNames;
   };
   rpc: {
     httpsUrl: string;

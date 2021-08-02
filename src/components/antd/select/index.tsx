@@ -8,8 +8,8 @@ import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
 
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -33,7 +33,7 @@ const Select: React.FC<SelectProps<AntdSelectValue>> = <T extends AntdSelectValu
     <AntdSelect<T>
       className={cn(s.component, className)}
       dropdownClassName={s.dropdown}
-      suffixIcon={loading ? <AntdSpin size="small" /> : <Icon name="dropdown-arrow" />}
+      suffixIcon={loading ? <AntdSpin size="small" /> : <Icon name="dropdown" />}
       optionLabelProp="label"
       getPopupContainer={fixScroll ? trigger => trigger.parentNode : undefined}
       {...selectProps}>

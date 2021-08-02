@@ -138,7 +138,7 @@ export const FauceteerProvider: FC = props => {
                 },
                 {
                   name: 'C.R.E.A.M.',
-                  icon: 'cream_finance',
+                  icon: 'cream',
                 },
               ],
               fauceteer: compFauceteerContract,
@@ -159,7 +159,7 @@ export const FauceteerProvider: FC = props => {
                 },
                 {
                   name: 'C.R.E.A.M.',
-                  icon: 'cream_finance',
+                  icon: 'cream',
                 },
               ],
               fauceteer: compFauceteerContract,
@@ -176,7 +176,7 @@ export const FauceteerProvider: FC = props => {
               markets: [
                 {
                   name: 'AAVE',
-                  icon: 'static/aave',
+                  icon: 'aave',
                 },
               ],
               fauceteer: aaveFauceteerContract,
@@ -193,7 +193,7 @@ export const FauceteerProvider: FC = props => {
               markets: [
                 {
                   name: 'AAVE',
-                  icon: 'static/aave',
+                  icon: 'aave',
                 },
               ],
               fauceteer: aaveFauceteerContract,
@@ -210,7 +210,7 @@ export const FauceteerProvider: FC = props => {
               markets: [
                 {
                   name: 'AAVE',
-                  icon: 'static/aave',
+                  icon: 'aave',
                 },
               ],
               fauceteer: aaveFauceteerContract,

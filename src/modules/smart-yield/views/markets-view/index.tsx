@@ -4,14 +4,16 @@ import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
 import { formatUSD } from 'web3/utils';
 
-import Icon, { IconNames } from 'components/custom/icon';
-import IconBubble from 'components/custom/icon-bubble';
+import Tooltip from 'components/antd/tooltip';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
-import { Markets, SYMarketMeta } from 'modules/smart-yield/api';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
 import { PolygonNetwork } from 'networks/polygon';
+
+import { KnownMarkets, MarketMeta, getKnownMarketById } from '../../providers/markets';
 
 const MarketsView: FC = () => {
   const { activeNetwork } = useNetwork();
@@ -21,11 +23,11 @@ const MarketsView: FC = () => {
     `${activeNetwork.id}#sy-markets-selection`,
   );
 
-  const [selectedMarkets, setSelectedMarkets] = useState<SYMarketMeta[]>([]);
+  const [selectedMarkets, setSelectedMarkets] = useState<MarketMeta[]>([]);
 
   const marketsToDisplay = useMemo(() => {
     if (!selectedMarkets.length) {
-      return Array.from(Markets.values()).filter(market => {
+      return KnownMarkets.filter(market => {
         return poolsCtx.pools.some(pool => pool.protocolId === market.id);
       });
     }
@@ -34,11 +36,10 @@ const MarketsView: FC = () => {
   }, [selectedMarkets, poolsCtx.pools]);
 
   useEffect(() => {
-    const markets = Array.from(Markets.values());
     const activeMarkets = marketsSelection
       ?.split('<#>')
       .map(marketId => {
-        return markets.find(mk => mk.id === marketId)!;
+        return getKnownMarketById(marketId)!;
       })
       .filter(Boolean);
 
@@ -48,64 +49,81 @@ const MarketsView: FC = () => {
   return (
     <>
       <div className="tab-cards mb-64">
-        {Array.from(Markets.values())
-          .filter(market => {
-            return poolsCtx.pools.some(pool => pool.protocolId === market.id);
-          })
-          .map(market => {
-            const isSelected = selectedMarkets.includes(market);
+        {KnownMarkets.filter(market => {
+          return poolsCtx.pools.some(pool => pool.protocolId === market.id);
+        }).map(market => {
+          const isSelected = selectedMarkets.includes(market);
 
-            return (
-              <button
-                key={market.name}
-                type="button"
-                className={cn('tab-card', isSelected && 'active')}
-                onClick={() => {
-                  const newSelection = selectedMarkets.includes(market)
-                    ? selectedMarkets.filter(ps => ps !== market)
-                    : [...selectedMarkets, market];
-                  setSelectedMarkets(newSelection);
-                  setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
-                }}>
-                <IconBubble
-                  name={market.icon as IconNames}
-                  secondBubbleName={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
-                  width={24}
-                  height={24}
-                  className="mr-16"
-                />
-                <Text type="p1" weight="semibold" color="primary">
-                  {market.name}
-                </Text>
-                <Icon
-                  name={isSelected ? 'checkbox-checked' : 'checkbox'}
-                  style={{
-                    marginLeft: 24,
-                    flexShrink: 0,
-                  }}
-                />
-              </button>
-            );
-          })}
+          return (
+            <button
+              key={market.name}
+              type="button"
+              className={cn('tab-card', isSelected && 'active')}
+              onClick={() => {
+                const newSelection = selectedMarkets.includes(market)
+                  ? selectedMarkets.filter(ps => ps !== market)
+                  : [...selectedMarkets, market];
+                setSelectedMarkets(newSelection);
+                setMarketsSelection(newSelection.map(m => m.id).join('<#>'));
+              }}>
+              <TokenIcon
+                name={market.icon.active as TokenIconNames}
+                bubble2Name={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
+                size={24}
+                className="mr-16"
+              />
+              <Text type="p1" weight="semibold" color="primary">
+                {market.name}
+              </Text>
+              <Icon
+                name={isSelected ? 'checkbox-checked' : 'checkbox'}
+                style={{
+                  marginLeft: 24,
+                  flexShrink: 0,
+                }}
+              />
+            </button>
+          );
+        })}
       </div>
       <Text type="p1" weight="semibold" color="secondary" className="mb-4">
         Total value locked
       </Text>
-      <Text type="h2" weight="bold" color="primary" className="mb-40">
-        {formatUSD(poolsCtx.getMarketTVL())}
-      </Text>
+      <div className="mb-40 flex align-center">
+        <Text type="h2" weight="bold" color="primary" className="mr-8">
+          {formatUSD(poolsCtx.getMarketTVL())}
+        </Text>
+        <Tooltip
+          title={
+            <>
+              The BarnBridge SMART Yield contracts are covered by:
+              <br /> - Nexus Mutual,{' '}
+              <a
+                href="https://app.nexusmutual.io/cover/buy/get-quote?address=0x4B8d90D68F26DEF303Dcb6CFc9b63A1aAEC15840"
+                rel="noopener noreferrer"
+                target="_blank">
+                click here
+              </a>{' '}
+              to purchase coverage
+              <br /> - Bridge Mutual,{' '}
+              <a
+                href="https://app.bridgemutual.io/user/cover/0xdb9A242cfD588507106919051818e771778202e9"
+                rel="noopener noreferrer"
+                target="_blank">
+                click here
+              </a>{' '}
+              to purchase coverage
+            </>
+          }>
+          <Icon name="insured" color="green" width={32} height={32} />
+        </Tooltip>
+      </div>
       <AntdSpin spinning={poolsCtx.loading}>
         {marketsToDisplay.map(selectedMarket => (
           <Fragment key={selectedMarket.id}>
             <div className="card mb-8 p-24 flex wrap align-center col-gap-64 row-gap-16">
               <div className="flex">
-                <Icon
-                  name={selectedMarket.icon as IconNames}
-                  width={40}
-                  height={40}
-                  className="mr-16"
-                  color="inherit"
-                />
+                <TokenIcon name={selectedMarket.icon.active as TokenIconNames} size={40} className="mr-16" />
                 <div>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
                     {selectedMarket.name}

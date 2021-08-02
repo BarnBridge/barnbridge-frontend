@@ -3,12 +3,11 @@ import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
-import Icon, { IconNames } from 'components/custom/icon';
-import IconsPair from 'components/custom/icons-pair';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { TransactionApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 export const TransactionsTable = ({
@@ -89,9 +88,9 @@ export const TransactionsTable = ({
         heading: 'Tranche / Transaction',
         render: item => (
           <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
-            <IconsPair
-              icon1={getTokenIconBySymbol(item.tokenA.symbol)}
-              icon2={getTokenIconBySymbol(item.tokenB.symbol)}
+            <TokenIconPair
+              name1={getTokenIconBySymbol(item.tokenA.symbol)}
+              name2={getTokenIconBySymbol(item.tokenB.symbol)}
               size={32}
               className="mr-16"
             />
@@ -111,12 +110,7 @@ export const TransactionsTable = ({
         render: item => (
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
-              <Icon
-                name={getTokenIconBySymbol(item.tokenA.symbol) as IconNames}
-                width={16}
-                height={16}
-                className="mr-4"
-              />
+              <TokenIcon name={getTokenIconBySymbol(item.tokenA.symbol) as TokenIconNames} size={16} className="mr-4" />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
                 {formatToken(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
@@ -134,12 +128,7 @@ export const TransactionsTable = ({
         render: item => (
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
-              <Icon
-                name={getTokenIconBySymbol(item.tokenB.symbol) as IconNames}
-                width={16}
-                height={16}
-                className="mr-4"
-              />
+              <TokenIcon name={getTokenIconBySymbol(item.tokenB.symbol) as TokenIconNames} size={16} className="mr-4" />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
                 {formatToken(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}

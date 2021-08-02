@@ -43,6 +43,7 @@ export const MumbaiConfig: NetworkConfig = {
     susd: '',
     gusd: '',
     dai: '',
+    rai: '',
     stkaave: '',
     wmatic: '',
     ausdc: '0x2271e3Fef9e15046d09E1d78a8FF038c691E9Cf9',

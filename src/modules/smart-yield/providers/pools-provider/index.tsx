@@ -6,22 +6,23 @@ import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract from 'web3/web3Contract';
 
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { TokenType, useTokens } from 'components/providers/tokensProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
-import { APISYPool, Markets, Pools, SYMarketMeta, SYPoolMeta, useSyAPI } from 'modules/smart-yield/api';
+import { APISYPool, useSyAPI } from 'modules/smart-yield/api';
 import TxStatusModal from 'modules/smart-yield/components/tx-status-modal';
 import SYAaveTokenContract from 'modules/smart-yield/contracts/syAaveTokenContract';
 import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
 import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
-import { AaveMarket } from 'modules/smart-yield/providers/markets';
+import { AaveMarket, MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
 
 export type PoolsSYPool = APISYPool & {
-  meta?: SYPoolMeta;
-  market?: SYMarketMeta;
+  token?: TokenType;
+  market?: MarketMeta;
   contracts: {
     smartYield?: SYSmartYieldContract;
     underlying?: Erc20Contract;
@@ -68,6 +69,7 @@ const PoolsProvider: React.FC = props => {
   const wallet = useWallet();
   const { getEtherscanTxUrl } = useWeb3();
   const { getContract } = useContractManager();
+  const { getToken } = useTokens();
   const { getTokenBySymbol, convertTokenIn, convertTokenInUSD, stkAaveToken, ethToken, bondToken } = useKnownTokens();
   const [reload, version] = useReload();
   const [state, setState] = React.useState<State>(InitialState);
@@ -126,8 +128,8 @@ const PoolsProvider: React.FC = props => {
 
             const result: PoolsSYPool = {
               ...pool,
-              meta: Pools.get(pool.underlyingSymbol),
-              market: Markets.get(pool.protocolId),
+              token: getToken(pool.underlyingSymbol),
+              market: getKnownMarketById(pool.protocolId),
               contracts: {
                 smartYield,
                 underlying,

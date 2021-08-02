@@ -7,8 +7,8 @@ import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
-import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
