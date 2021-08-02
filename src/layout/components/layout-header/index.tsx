@@ -67,7 +67,7 @@ const LayoutHeader: React.FC = () => {
           className="button-ghost-monochrome mr-24"
           style={{ padding: '8px 12px 8px 8px' }}
           onClick={() => showNetworkSelect()}>
-          <Icon name={activeNetwork.meta.logo as IconNames} width={24} height={24} className="mr-8" />
+          <Icon name={activeNetwork.meta.logo} width={24} height={24} className="mr-8" />
           <Text type="p2" weight="semibold" color="secondary">
             {activeNetwork.meta.name}
           </Text>

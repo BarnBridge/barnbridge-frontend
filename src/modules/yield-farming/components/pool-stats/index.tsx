@@ -5,8 +5,8 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -81,7 +81,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
                     to purchase coverage
                   </>
                 }>
-                <Icon name="insured" color="green" width={32} height={32} />
+                <Icon name="insured" color="green" size={32} />
               </Tooltip>
             </div>
             <Text type="p1" color="secondary">

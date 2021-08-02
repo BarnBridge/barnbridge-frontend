@@ -5,8 +5,9 @@ import cn from 'classnames';
 import { formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
-import Icon from 'components/custom/icon';
+import IconOld from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
@@ -75,7 +76,7 @@ const MarketsView: FC = () => {
               <Text type="p1" weight="semibold" color="primary">
                 {market.name}
               </Text>
-              <Icon
+              <IconOld
                 name={isSelected ? 'checkbox-checked' : 'checkbox'}
                 style={{
                   marginLeft: 24,
@@ -115,7 +116,7 @@ const MarketsView: FC = () => {
               to purchase coverage
             </>
           }>
-          <Icon name="insured" color="green" width={32} height={32} />
+          <Icon name="insured" color="green" size={32} />
         </Tooltip>
       </div>
       <AntdSpin spinning={poolsCtx.loading}>
