@@ -2,7 +2,6 @@ import { FC, useEffect, useState } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Tabs } from 'components/custom/tabs';
-import SeAPIProvider from 'modules/smart-exposure/api';
 
 import TreasuryFees from './treasury-fees';
 import TreasuryHoldings from './treasury-holdings';
