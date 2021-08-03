@@ -11,11 +11,14 @@ class SeEPoolContract extends Web3Contract {
         createAbiItem('rebalanceInterval', [], ['uint256']),
         createAbiItem('lastRebalance', [], ['uint256']),
         createAbiItem('getRate', [], ['uint256']),
+        createAbiItem('cumulativeFeeA', [], ['uint256']),
+        createAbiItem('cumulativeFeeB', [], ['uint256']),
         createAbiItem('getTranches', [], [new AbiTupleArray(['address', 'uint256', 'uint256', 'uint256', 'uint256'])]),
         createAbiItem('getTranche', ['address'], ['address', 'uint256', 'uint256', 'uint256', 'uint256']),
         // send
         createAbiItem('issueExact', ['address', 'uint256'], ['uint256', 'uint256']),
         createAbiItem('redeemExact', ['address', 'uint256'], ['uint256', 'uint256']),
+        createAbiItem('transferFees', [], ['boolean']),
       ],
       address,
       'ETokenFactory',
@@ -29,6 +32,9 @@ class SeEPoolContract extends Web3Contract {
   rate?: BigNumber;
   tranches?: any;
   tranche?: any;
+
+  cumulativeFeeA?: BigNumber;
+  cumulativeFeeB?: BigNumber;
 
   async loadCommon() {
     try {
@@ -74,6 +80,22 @@ class SeEPoolContract extends Web3Contract {
     }));
   }
 
+  getCumulativeFeeA(): Promise<BigNumber | undefined> {
+    return this.call('cumulativeFeeA', []).then(value => {
+      this.cumulativeFeeA = BigNumber.from(value);
+      this.emit(Web3Contract.UPDATE_DATA);
+      return this.cumulativeFeeA;
+    });
+  }
+
+  getCumulativeFeeB(): Promise<BigNumber | undefined> {
+    return this.call('cumulativeFeeB', []).then(value => {
+      this.cumulativeFeeB = BigNumber.from(value);
+      this.emit(Web3Contract.UPDATE_DATA);
+      return this.cumulativeFeeB;
+    });
+  }
+
   deposit(eTokenAddress: string, amount: BigNumber): Promise<void> {
     if (!this.account) {
       return Promise.reject();
@@ -92,6 +114,21 @@ class SeEPoolContract extends Web3Contract {
     return this.send('redeemExact', [eTokenAddress, amount], {
       from: this.account,
     });
+  }
+
+  transferFees(gasPrice: number): Promise<void> {
+    if (!this.account) {
+      return Promise.reject();
+    }
+
+    return this.send(
+      'transferFees',
+      [],
+      {
+        from: this.account,
+      },
+      gasPrice,
+    );
   }
 }
 

@@ -4,7 +4,7 @@ import { useConfig } from 'components/providers/configProvider';
 import { KnownTokens } from 'components/providers/knownTokensProvider';
 
 import { InvariantContext } from 'utils/context';
-import { processResponse, queryfy } from 'utils/fetch';
+import { UseFetchReturn, processResponse, queryfy, useFetch } from 'utils/fetch';
 
 type PoolTokenApiType = {
   address: string;
@@ -146,7 +146,7 @@ export type PortfolioValueType = {
 };
 
 export type SeAPIType = {
-  fetchPools(): Promise<PoolApiType[]>;
+  fetchPools(baseUrl?: string): Promise<PoolApiType[]>;
   fetchTranches(poolAddress?: string): Promise<TranchesItemApiType[]>;
   fetchTranche(trancheAddress: string): Promise<TrancheApiType>;
   fetchETokenPrice(trancheAddress: string, windowFilter?: string): Promise<ETokenPriceType[]>;
@@ -191,8 +191,8 @@ export function useSeAPI(): SeAPIType {
 const SeAPIProvider: FC = props => {
   const config = useConfig();
 
-  function fetchPools(): Promise<PoolApiType[]> {
-    const url = new URL(`/api/smartexposure/pools`, config.api.baseUrl);
+  function fetchPools(baseUrl?: string): Promise<PoolApiType[]> {
+    const url = new URL(`/api/smartexposure/pools`, baseUrl ?? config.api.baseUrl);
 
     return fetch(url.toString())
       .then(processResponse)
@@ -345,3 +345,12 @@ const SeAPIProvider: FC = props => {
 };
 
 export default SeAPIProvider;
+
+export function useFetchSePools(baseUrl?: string): UseFetchReturn<PoolApiType[]> {
+  const config = useConfig();
+  const url = new URL(`/api/smartexposure/pools`, baseUrl ?? config.api.baseUrl);
+
+  return useFetch(url, {
+    transform: ({ data }) => data,
+  });
+}
