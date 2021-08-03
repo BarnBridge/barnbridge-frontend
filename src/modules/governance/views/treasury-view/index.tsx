@@ -2,6 +2,7 @@ import { FC, useEffect, useState } from 'react';
 import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Tabs } from 'components/custom/tabs';
+import SeAPIProvider from 'modules/smart-exposure/api';
 
 import TreasuryFees from './treasury-fees';
 import TreasuryHoldings from './treasury-holdings';
@@ -57,7 +58,15 @@ const TreasuryView: FC = () => {
       </div>
       <Switch>
         <Route path="/governance/treasury/holdings" exact component={TreasuryHoldings} />
-        <Route path="/governance/treasury/fees" exact component={TreasuryFees} />
+        <Route
+          path="/governance/treasury/fees"
+          exact
+          render={() => (
+            <SeAPIProvider>
+              <TreasuryFees />
+            </SeAPIProvider>
+          )}
+        />
       </Switch>
     </div>
   );

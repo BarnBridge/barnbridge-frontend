@@ -9,15 +9,18 @@ import Divider from 'components/antd/divider';
 import Select from 'components/antd/select';
 import Tooltip from 'components/antd/tooltip';
 import { ExplorerAddressLink } from 'components/custom/externalLink';
-import Icon, { IconNames } from 'components/custom/icon';
+import IconOld, { IconNames } from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { TokenType, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
+import { useFetchSePools } from 'modules/smart-exposure/api';
+import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
 import { APISYPool } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
 import { MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
@@ -27,6 +30,7 @@ import { PolygonHttpsWeb3Provider } from '../../../../../components/providers/we
 import { MainnetNetwork } from '../../../../../networks/mainnet';
 import { PolygonNetwork } from '../../../../../networks/polygon';
 import { useFetchSyPools } from '../../../api';
+import { ExtendedPoolApiType, SESection } from './se-section';
 
 type ExtendedAPISYPool = APISYPool & {
   providerContract: SYProviderContract | undefined;
@@ -52,9 +56,9 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
             <Text type="p1" weight="semibold" color="blue" className="mr-4">
               {entity.underlyingSymbol ?? '-'}
             </Text>
-            <Icon name="arrow-top-right" width={8} height={8} color="blue" />
+            <Icon name="external" size={8} color="blue" />
           </ExplorerAddressLink>
-          <Text type="small" weight="semibold">
+          <Text type="small" weight="semibold" color="secondary">
             {entity.market?.name ?? '-'}
           </Text>
         </div>
@@ -65,7 +69,7 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
     heading: 'Network',
     render: entity => (
       <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-        <Icon name={(!entity.isPolygon ? MainnetNetwork.meta.logo : PolygonNetwork.meta.logo) as IconNames} />
+        <IconOld name={(!entity.isPolygon ? MainnetNetwork.meta.logo : PolygonNetwork.meta.logo) as IconNames} />
         <Text type="p2" weight="semibold" color="secondary">
           {!entity.isPolygon ? 'Ethereum' : 'Polygon'}
         </Text>
@@ -146,7 +150,7 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
                     }) ?? '-'}
                   </Text>
                   <div className="flex align-center justify-center mb-8">
-                    <Icon name="warning-circle-outlined" className="mr-8" />
+                    <IconOld name="warning-circle-outlined" className="mr-8" />
                     <Text type="p2" weight="semibold" align="center" color="red">
                       Warning
                     </Text>
@@ -268,10 +272,6 @@ const TreasuryFees: FC = () => {
     [originatorFilter, tokenFilter],
   );
 
-  const totalFeesUSD = useMemo(() => {
-    return BigNumber.sumEach(dataSource, pool => pool.feesAmountUSD ?? BigNumber.ZERO);
-  }, [dataSource]);
-
   const filteredDataSource = useMemo(() => {
     return (
       dataSource.filter(
@@ -309,6 +309,74 @@ const TreasuryFees: FC = () => {
     setTokenFilter(filters.token);
   }
 
+  const { data: sePoolsMainnet = [], loading: loadingMainnet } = useFetchSePools();
+  const { data: sePoolsPolygon = [], loading: loadingPolygon } = useFetchSePools(PolygonNetwork.config.api.baseUrl);
+
+  const sePools = useMemo(() => {
+    return (
+      sePoolsMainnet.concat(sePoolsPolygon).map(pool => {
+        const isPolygon = Boolean(sePoolsPolygon?.includes(pool));
+        const providerContract = getContract<SeEPoolContract>(pool.poolAddress);
+        const feesAmountTokenA = providerContract?.cumulativeFeeA?.unscaleBy(pool.tokenA.decimals);
+        const feesAmountUSDTokenA = getAmountInUSD(feesAmountTokenA, pool.tokenA.symbol);
+        const feesAmountTokenB = providerContract?.cumulativeFeeB?.unscaleBy(pool.tokenB.decimals);
+        const feesAmountUSDTokenB = getAmountInUSD(feesAmountTokenB, pool.tokenB.symbol);
+
+        return {
+          ...pool,
+          isPolygon,
+          providerContract,
+          feesAmountTokenA,
+          feesAmountUSDTokenA,
+          feesAmountTokenB,
+          feesAmountUSDTokenB,
+        } as ExtendedPoolApiType;
+      }) ?? []
+    );
+  }, [sePoolsMainnet, sePoolsPolygon, version]);
+
+  useEffect(() => {
+    sePoolsMainnet?.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SeEPoolContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.getCumulativeFeeA().catch(Error);
+          contract.getCumulativeFeeB().catch(Error);
+        },
+      });
+    });
+  }, [sePoolsMainnet]);
+
+  useEffect(() => {
+    sePoolsPolygon?.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SeEPoolContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(PolygonHttpsWeb3Provider);
+          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.getCumulativeFeeA().catch(Error);
+          contract.getCumulativeFeeB().catch(Error);
+        },
+      });
+    });
+  }, [sePoolsPolygon]);
+
+  const totalFeesUSDSy = useMemo(() => {
+    return BigNumber.sumEach(dataSource, pool => pool.feesAmountUSD ?? BigNumber.ZERO) ?? 0;
+  }, [dataSource, sePools]);
+
+  const totalFeesUSDSe = useMemo(() => {
+    return (
+      BigNumber.sumEach(
+        sePools,
+        pool => BigNumber.sum(pool.feesAmountUSDTokenA ?? 0, pool.feesAmountUSDTokenB ?? 0) ?? 0,
+      ) ?? BigNumber.ZERO
+    );
+  }, [dataSource, sePools]);
+
+  const totalFeesUSD = useMemo(() => {
+    return BigNumber.sum(totalFeesUSDSy, totalFeesUSDSe);
+  }, [totalFeesUSDSy, totalFeesUSDSe]);
+
   return (
     <>
       <Text type="h2" weight="bold" color="primary" className="mb-4">
@@ -328,7 +396,7 @@ const TreasuryFees: FC = () => {
               width: '40px',
               height: '40px',
             }}>
-            <Icon name="paper-bill-outlined" color="inherit" />
+            <Icon name="smart-yield" />
           </div>
           <div className="flex flow-row row-gap-4 mr-64">
             <Text type="p1" weight="semibold" color="primary">
@@ -343,7 +411,7 @@ const TreasuryFees: FC = () => {
               Total fees accrued
             </Text>
             <Text type="p1" weight="semibold" color="primary">
-              {formatUSD(totalFeesUSD) ?? '-'}
+              {formatUSD(totalFeesUSDSy) ?? '-'}
             </Text>
           </div>
           <TableFilter<TreasuryFilterType>
@@ -354,7 +422,7 @@ const TreasuryFees: FC = () => {
           />
         </div>
       </div>
-      <div className="card">
+      <div className="card mb-32">
         <Table<ExtendedAPISYPool>
           columns={Columns}
           data={filteredDataSource}
@@ -365,6 +433,12 @@ const TreasuryFees: FC = () => {
           // }}
         />
       </div>
+      <SESection
+        pools={sePools}
+        total={totalFeesUSDSe}
+        loadingMainnet={loadingMainnet}
+        loadingPolygon={loadingPolygon}
+      />
       {Listeners}
     </>
   );
