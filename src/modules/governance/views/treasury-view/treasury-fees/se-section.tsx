@@ -126,9 +126,9 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
           await entity.providerContract?.getCumulativeFeeB();
         } catch (e) {
           console.error(e);
+        } finally {
+          setHarvesting(false);
         }
-
-        setHarvesting(false);
       }
 
       return (

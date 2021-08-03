@@ -58,15 +58,7 @@ const TreasuryView: FC = () => {
       </div>
       <Switch>
         <Route path="/governance/treasury/holdings" exact component={TreasuryHoldings} />
-        <Route
-          path="/governance/treasury/fees"
-          exact
-          render={() => (
-            <SeAPIProvider>
-              <TreasuryFees />
-            </SeAPIProvider>
-          )}
-        />
+        <Route path="/governance/treasury/fees" exact component={TreasuryFees} />
       </Switch>
     </div>
   );
