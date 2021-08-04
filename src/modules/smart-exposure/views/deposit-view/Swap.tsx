@@ -204,7 +204,6 @@ export const Swap = ({
         classNameBefore="ph-0"
         errors={tokenErrors}
       />
-      <div>{selectedTokenSwapAmount?.toString()}</div>
       <OldIcon
         name="down-arrow-circle"
         width={32}
