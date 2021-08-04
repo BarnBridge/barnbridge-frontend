@@ -100,7 +100,12 @@ export const Swap = ({
           setTokenBState(amountB);
 
           uniswapRouterContract
-            ?.getAmountsIn(_isTokenA ? amountB : amountA, [tranche.tokenA.address, tranche.tokenB.address])
+            ?.getAmountsIn(
+              _isTokenA ? amountB : amountA,
+              _isTokenA
+                ? [tranche.tokenA.address, tranche.tokenB.address]
+                : [tranche.tokenB.address, tranche.tokenA.address],
+            )
             .then(routerValues => {
               setSelectedTokenSwapAmount(routerValues[_isTokenA ? 0 : 1]);
             })
