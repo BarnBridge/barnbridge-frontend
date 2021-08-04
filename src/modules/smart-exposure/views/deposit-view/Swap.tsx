@@ -60,7 +60,7 @@ export const Swap = ({
     setTokenState('');
     setTokenAState(undefined);
     setTokenBState(undefined);
-    setUniswapRouterContract(undefined);
+    setSelectedTokenSwapAmount(undefined);
   }, [isTokenA]);
 
   useEffect(() => {
@@ -84,7 +84,7 @@ export const Swap = ({
 
   const tokenHandler = useCallback(
     (value: string, _isTokenA: boolean) => {
-      setUniswapRouterContract(undefined);
+      setSelectedTokenSwapAmount(undefined);
       const amount = BigNumber.from(value)?.scaleBy(selectedTokenDecimals);
       if (!amount || !ePoolHelperContract) {
         return;
@@ -157,10 +157,9 @@ export const Swap = ({
       })
       .catch(e => {
         console.error(e);
-      })
-      .finally(() => {
-        setLoading(false);
       });
+
+    setLoading(false);
   };
 
   const tokenMax = selectedTokenContract.balance?.unscaleBy(selectedTokenContract.decimals) ?? BigNumber.ZERO;
