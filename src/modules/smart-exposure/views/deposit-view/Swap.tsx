@@ -57,6 +57,13 @@ export const Swap = ({
   const selectedTokenDecimals = tranche[isTokenA ? 'tokenA' : 'tokenB'].decimals;
 
   useEffect(() => {
+    setTokenState('');
+    setTokenAState(undefined);
+    setTokenBState(undefined);
+    setUniswapRouterContract(undefined);
+  }, [isTokenA]);
+
+  useEffect(() => {
     ePoolPeripheryContract?.getRouter().then(address => {
       const routerContract = getContract(address, () => new SeUniswapRouterContract(address));
       setUniswapRouterContract(routerContract);
@@ -73,11 +80,11 @@ export const Swap = ({
   const tokenBIcon = getTokenIconBySymbol(tranche.tokenB.symbol);
 
   const selectedTokenMax =
-    selectedTokenContract.getBalanceOf(wallet.account)?.unscaleBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].decimals) ??
-    BigNumber.ZERO;
+    selectedTokenContract.getBalanceOf(wallet.account)?.unscaleBy(selectedTokenDecimals) ?? BigNumber.ZERO;
 
   const tokenHandler = useCallback(
     (value: string, _isTokenA: boolean) => {
+      setUniswapRouterContract(undefined);
       const amount = BigNumber.from(value)?.scaleBy(selectedTokenDecimals);
       if (!amount || !ePoolHelperContract) {
         return;
@@ -138,7 +145,7 @@ export const Swap = ({
         amountOut,
         selectedTokenSwapAmount?.multipliedBy(1 + (transactionDetails.slippage ?? 0) / 100).integerValue() ??
           BigNumber.ZERO,
-        [tranche.tokenA.address, tranche.tokenB.address],
+        isTokenA ? [tranche.tokenA.address, tranche.tokenB.address] : [tranche.tokenB.address, tranche.tokenA.address],
         wallet.account,
         deadlineTs,
       )
@@ -183,9 +190,6 @@ export const Swap = ({
     <form onSubmit={handleSubmit}>
       <div className="flex mb-8">
         <span className="text-sm fw-semibold color-secondary">{selectedTokenSymbol} amount</span>
-        {/* <span className="text-sm fw-semibold color-secondary ml-auto">
-          Current ratio: {formatPercent(Number(isTokenA ? tranche.tokenARatio : tranche.tokenBRatio))}
-        </span> */}
       </div>
       <TokenAmount
         before={<TokenSelect value={selectedTokenSymbol} onChange={setSelectedTokenSymbol} tokens={tokens} />}
@@ -194,12 +198,13 @@ export const Swap = ({
           BigNumber.from(tokenState)?.multipliedBy(tranche[isTokenA ? 'tokenA' : 'tokenB'].state.price) ?? 0,
         )}
         onChange={setTokenState}
-        max={selectedTokenMax.toNumber()}
+        max={selectedTokenMax}
         placeholder={`0 (Max ${selectedTokenMax})`}
         className="mb-16"
         classNameBefore="ph-0"
         errors={tokenErrors}
       />
+      <div>{selectedTokenSwapAmount?.toString()}</div>
       <OldIcon
         name="down-arrow-circle"
         width={32}
