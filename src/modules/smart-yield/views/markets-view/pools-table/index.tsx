@@ -2,6 +2,7 @@ import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { NavLink } from 'react-router-dom';
 import { ColumnsType } from 'antd/lib/table/interface';
+import BigNumber from 'bignumber.js';
 import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, getHumanValue } from 'web3/utils';
 
 import Table from 'components/antd/table';
@@ -11,6 +12,7 @@ import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
@@ -93,33 +95,42 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
     {
       title: 'Senior Liquidity',
       sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
-      render: (_, entity) => (
-        <Tooltip
-          title={
-            <>
-              <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                {formatToken(entity.state.seniorLiquidity, {
-                  tokenName: entity.underlyingSymbol,
-                })}
-              </Text>
-              <Text type="small" weight="semibold" color="secondary">
-                {formatUSD(entity.state.seniorLiquidity)}
-              </Text>
-            </>
-          }>
-          <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
-            {formatToken(entity.state.seniorLiquidity, {
-              tokenName: entity.underlyingSymbol,
-              compact: true,
-            })}
-          </Text>
-          <Text type="small" weight="semibold">
-            {formatUSD(entity.state.seniorLiquidity, {
-              compact: true,
-            })}
-          </Text>
-        </Tooltip>
-      ),
+      render: function Render(_, entity) {
+        const { getToken } = useTokens();
+        const token = getToken(entity.underlyingSymbol);
+        const sum =
+          BigNumber.from(entity.state.juniorLiquidity)
+            ?.multipliedBy(token?.price ?? 0)
+            .toString() ?? '0';
+
+        return (
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  {formatToken(entity.state.seniorLiquidity, {
+                    tokenName: entity.underlyingSymbol,
+                  })}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSD(sum)}
+                </Text>
+              </>
+            }>
+            <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
+              {formatToken(entity.state.seniorLiquidity, {
+                tokenName: entity.underlyingSymbol,
+                compact: true,
+              })}
+            </Text>
+            <Text type="small" weight="semibold">
+              {formatUSD(sum, {
+                compact: true,
+              })}
+            </Text>
+          </Tooltip>
+        );
+      },
     },
     {
       title: (
@@ -142,33 +153,42 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
     {
       title: 'Junior Liquidity',
       sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
-      render: (_, entity) => (
-        <Tooltip
-          title={
-            <>
-              <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                {formatToken(entity.state.juniorLiquidity, {
-                  tokenName: entity.underlyingSymbol,
-                })}
-              </Text>
-              <Text type="small" weight="semibold" color="secondary">
-                {formatUSD(entity.state.juniorLiquidity)}
-              </Text>
-            </>
-          }>
-          <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
-            {formatToken(entity.state.juniorLiquidity, {
-              tokenName: entity.underlyingSymbol,
-              compact: true,
-            })}
-          </Text>
-          <Text type="small" weight="semibold">
-            {formatUSD(entity.state.juniorLiquidity, {
-              compact: true,
-            })}
-          </Text>
-        </Tooltip>
-      ),
+      render: function Render(_, entity) {
+        const { getToken } = useTokens();
+        const token = getToken(entity.underlyingSymbol);
+        const sum =
+          BigNumber.from(entity.state.juniorLiquidity)
+            ?.multipliedBy(token?.price ?? 0)
+            .toString() ?? '0';
+
+        return (
+          <Tooltip
+            title={
+              <>
+                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  {formatToken(entity.state.juniorLiquidity, {
+                    tokenName: entity.underlyingSymbol,
+                  })}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatUSD(sum)}
+                </Text>
+              </>
+            }>
+            <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
+              {formatToken(entity.state.juniorLiquidity, {
+                tokenName: entity.underlyingSymbol,
+                compact: true,
+              })}
+            </Text>
+            <Text type="small" weight="semibold">
+              {formatUSD(sum, {
+                compact: true,
+              })}
+            </Text>
+          </Tooltip>
+        );
+      },
     },
     {
       title: (
