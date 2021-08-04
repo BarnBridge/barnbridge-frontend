@@ -16,6 +16,12 @@ $margins: 4, 8, 12, 16, 24, 32, 40, 48, 64;
   .mr-#{$margin}.mr-#{$margin} {
     margin-right: #{$margin}px;
   }
+  .ml-#{$margin}.ml-#{$margin} {
+    margin-left: #{$margin}px;
+  }
+  .mt-#{$margin}.mt-#{$margin} {
+    margin-top: #{$margin}px;
+  }
   .mb-#{$margin}.mb-#{$margin} {
     margin-bottom: #{$margin}px;
   }
