@@ -99,7 +99,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
         const { getToken } = useTokens();
         const token = getToken(entity.underlyingSymbol);
         const sum =
-          BigNumber.from(entity.state.juniorLiquidity)
+          BigNumber.from(entity.state.seniorLiquidity)
             ?.multipliedBy(token?.price ?? 0)
             .toString() ?? '0';
 
