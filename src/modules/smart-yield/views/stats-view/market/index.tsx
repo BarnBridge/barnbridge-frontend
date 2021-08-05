@@ -53,7 +53,7 @@ const MarketDetails: React.FC = () => {
   const { bondToken, stkAaveToken } = useKnownTokens();
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
-  const { getToken } = useTokens();
+  const { getToken, getAmountInUSD } = useTokens();
 
   if (!pool) {
     return null;
@@ -235,7 +235,9 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(BigNumber.from(pool.state.juniorLiquidityLocked))}
+                      {formatUSD(
+                        getAmountInUSD(BigNumber.from(pool.state.juniorLiquidityLocked), pool.underlyingSymbol),
+                      )}
                     </Text>
                   </>
                 }>
