@@ -11,6 +11,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
@@ -174,6 +175,8 @@ const HistoryTable: React.FC = () => {
   const [state, setState] = React.useState<State>(InitialState);
   const [filters, setFilters] = React.useState<HistoryTableFilterValues>(InitialFilters);
 
+  const { getToken } = useTokens();
+
   React.useEffect(() => {
     (async () => {
       if (!wallet.account) {
@@ -224,6 +227,8 @@ const HistoryTable: React.FC = () => {
         let computedAmount: BigNumber | undefined;
 
         if (pool) {
+          const tokenPrice = getToken(pool.underlyingSymbol)?.price ?? 0;
+
           if (
             [
               APISYTxHistoryType.SENIOR_DEPOSIT,
@@ -235,7 +240,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = false;
-            computedAmount = BigNumber.from(item.amount);
+            computedAmount = BigNumber.from(item.amount)?.multipliedBy(tokenPrice);
           }
 
           if (
@@ -251,7 +256,7 @@ const HistoryTable: React.FC = () => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = true;
-            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
+            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice).multipliedBy(tokenPrice);
           }
         }
 

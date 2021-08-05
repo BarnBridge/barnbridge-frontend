@@ -10,6 +10,7 @@ import { AprLabel } from 'components/custom/label';
 import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';
@@ -52,6 +53,7 @@ const MarketDetails: React.FC = () => {
   const { bondToken, stkAaveToken } = useKnownTokens();
   const poolCtx = useSYPool();
   const { pool } = poolCtx;
+  const { getToken, getAmountInUSD } = useTokens();
 
   if (!pool) {
     return null;
@@ -59,6 +61,32 @@ const MarketDetails: React.FC = () => {
 
   const abond = pool.contracts.smartYield.abond;
   const abondDebt = pool.contracts.smartYield.abondDebt;
+
+  const token = getToken(pool.underlyingSymbol);
+  const seniorLiquiditySum =
+    BigNumber.from(pool.state.seniorLiquidity)
+      ?.multipliedBy(token?.price ?? 0)
+      .toString() ?? '0';
+  const juniorLiquiditySum =
+    BigNumber.from(pool.state.juniorLiquidity)
+      ?.multipliedBy(token?.price ?? 0)
+      .toString() ?? '0';
+
+  const abondPrincipalSum =
+    BigNumber.from(abond?.principal)
+      ?.unscaleBy(pool.underlyingDecimals)
+      ?.multipliedBy(token?.price ?? 0)
+      .toString() ?? '0';
+  const abondGainSum =
+    BigNumber.from(abond?.gain)
+      ?.unscaleBy(pool.underlyingDecimals)
+      ?.multipliedBy(token?.price ?? 0)
+      .toString() ?? '0';
+  const abondDebtSum =
+    BigNumber.from(abondDebt)
+      ?.unscaleBy(pool.underlyingDecimals)
+      ?.multipliedBy(token?.price ?? 0)
+      .toString() ?? '0';
 
   return (
     <section className="card">
@@ -81,7 +109,7 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(BigNumber.from(pool.state.seniorLiquidity))}
+                      {formatUSD(seniorLiquiditySum)}
                     </Text>
                   </>
                 }>
@@ -95,9 +123,9 @@ const MarketDetails: React.FC = () => {
                 </div>
 
                 <Text type="small" weight="semibold">
-                  {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                    pool.state.seniorLiquidity,
-                  )}
+                  {formatUSD(seniorLiquiditySum, {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>
@@ -114,7 +142,7 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(BigNumber.from(pool.state.juniorLiquidity))}
+                      {formatUSD(juniorLiquiditySum)}
                     </Text>
                   </>
                 }>
@@ -127,9 +155,9 @@ const MarketDetails: React.FC = () => {
                   </Text>
                 </div>
                 <Text type="small" weight="semibold">
-                  {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                    pool.state.juniorLiquidity,
-                  )}
+                  {formatUSD(juniorLiquiditySum, {
+                    compact: true,
+                  })}
                 </Text>
               </Tooltip>
             </div>
@@ -207,7 +235,9 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(BigNumber.from(pool.state.juniorLiquidityLocked))}
+                      {formatUSD(
+                        getAmountInUSD(BigNumber.from(pool.state.juniorLiquidityLocked), pool.underlyingSymbol),
+                      )}
                     </Text>
                   </>
                 }>
@@ -220,9 +250,7 @@ const MarketDetails: React.FC = () => {
                   </Text>
                 </div>
                 <Text type="small" weight="semibold">
-                  {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                    pool.state.juniorLiquidityLocked,
-                  )}
+                  {formatUSD(getAmountInUSD(BigNumber.from(pool.state.juniorLiquidityLocked), pool.underlyingSymbol))}
                 </Text>
               </Tooltip>
             </div>
@@ -248,7 +276,7 @@ const MarketDetails: React.FC = () => {
                       }) ?? '-'}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals))}
+                      {formatUSD(abondPrincipalSum)}
                     </Text>
                   </>
                 }>
@@ -259,7 +287,7 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abond?.principal.unscaleBy(pool.underlyingDecimals), {
+                  {formatUSD(abondPrincipalSum, {
                     compact: true,
                   })}
                 </Text>
@@ -281,7 +309,7 @@ const MarketDetails: React.FC = () => {
                       }) ?? '-'}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals))}
+                      {formatUSD(abondGainSum)}
                     </Text>
                   </>
                 }>
@@ -292,7 +320,7 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abond?.gain.unscaleBy(pool.underlyingDecimals), {
+                  {formatUSD(abondGainSum, {
                     compact: true,
                   })}
                 </Text>
@@ -329,7 +357,7 @@ const MarketDetails: React.FC = () => {
                       }) ?? '-'}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals))}
+                      {formatUSD(abondDebtSum)}
                     </Text>
                   </>
                 }>
@@ -340,7 +368,7 @@ const MarketDetails: React.FC = () => {
                   }) ?? '-'}
                 </Text>
                 <Text type="small" weight="semibold" color="secondary">
-                  {formatUSD(abondDebt?.unscaleBy(pool.underlyingDecimals), {
+                  {formatUSD(abondDebtSum, {
                     compact: true,
                   })}
                 </Text>
