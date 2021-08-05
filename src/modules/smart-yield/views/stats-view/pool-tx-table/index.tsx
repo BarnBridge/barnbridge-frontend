@@ -13,6 +13,7 @@ import Grid from 'components/custom/grid';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import {
@@ -208,6 +209,8 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
   const syAPI = useSyAPI();
   const [state, setState] = React.useState<State>(InitialState);
 
+  const { getToken } = useTokens();
+
   React.useEffect(() => {
     (async () => {
       if (!pool) {
@@ -251,6 +254,8 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
         let computedAmount: BigNumber | undefined;
 
         if (pool) {
+          const tokenPrice = getToken(pool.underlyingSymbol)?.price ?? 0;
+
           if (
             [
               APISYTxHistoryType.SENIOR_DEPOSIT,
@@ -262,7 +267,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = false;
-            computedAmount = BigNumber.from(item.amount);
+            computedAmount = BigNumber.from(item.amount)?.multipliedBy(tokenPrice);
           }
 
           if (
@@ -278,7 +283,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
             ].includes(item.transactionType as APISYTxHistoryType)
           ) {
             isTokenAmount = true;
-            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice);
+            computedAmount = new BigNumber(item.amount).multipliedBy(pool.state.jTokenPrice).multipliedBy(tokenPrice);
           }
         }
 
