@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import * as Antd from 'antd';
@@ -16,18 +16,18 @@ import DatePicker from 'components/antd/datepicker';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
 import Spin from 'components/antd/spin';
-import Icon from 'components/custom/icon';
+import { Button } from 'components/button';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import TransactionDetails from 'components/custom/transaction-details';
 import { Text } from 'components/custom/typography';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
 import { mergeState } from 'hooks/useMergeState';
 import TransactionSummary from 'modules/smart-yield/components/transaction-summary';
 import TxConfirmModal from 'modules/smart-yield/components/tx-confirm-modal';
 import SYControllerContract from 'modules/smart-yield/contracts/syControllerContract';
 import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
-import { useWallet } from 'wallets/walletProvider';
 
 import { DURATION_1_MONTH, DURATION_1_YEAR, DURATION_3_MONTHS, DURATION_6_MONTHS, getDurationDate } from 'utils/date';
 
@@ -57,7 +57,6 @@ const InitialState: State = {
 
 const SeniorTranche: React.FC = () => {
   const history = useHistory();
-  const wallet = useWallet();
   const poolCtx = useSYPool();
   const { getContract } = useContractManager();
   const [form] = Antd.Form.useForm<FormData>();
@@ -72,6 +71,7 @@ const SeniorTranche: React.FC = () => {
   const [seniorRedeemFee, setSeniorRedeemFee] = React.useState<BigNumber | undefined>();
   const [isApproving, setApproving] = React.useState<boolean>(false);
   const [amount, setAmount] = React.useState('');
+  const { getOrCreateContract, getContract: getContractNew } = useContractFactory();
 
   const uToken = pool?.contracts.underlying;
   const uBalance = uToken?.balance;
@@ -180,17 +180,21 @@ const SeniorTranche: React.FC = () => {
     setBondGain(undefined);
   }, [amount]);
 
+  useEffect(() => {
+    if (pool?.smartYieldAddress) {
+      getOrCreateContract(pool.smartYieldAddress, () => new SYSmartYieldContract(pool.smartYieldAddress));
+    }
+  }, [pool?.smartYieldAddress]);
+
   const getBondGain = useDebounce((pPool: SYPool, pAmount: BigNumber, pMaturityDate: number) => {
-    const smartYieldContract = new SYSmartYieldContract(pPool.smartYieldAddress);
-    smartYieldContract.setProvider(wallet.provider);
-    smartYieldContract.setAccount(wallet.account);
+    const smartYieldContract = getContractNew<SYSmartYieldContract>(pPool.smartYieldAddress);
 
     const decimals = pPool.underlyingDecimals;
     const amount = pAmount?.multipliedBy(10 ** decimals) ?? BigNumber.ZERO;
     const today = startOfDay(new Date());
     const days = differenceInDays(pMaturityDate ?? today, today);
 
-    smartYieldContract.getBondGain(amount, days).then(setBondGain).catch(Error);
+    smartYieldContract?.getBondGain(amount, days).then(setBondGain).catch(Error);
   }, 400);
 
   React.useEffect(() => {
@@ -359,10 +363,16 @@ const SeniorTranche: React.FC = () => {
           symbol={pool?.underlyingSymbol}
         />
         <div className="grid flow-col col-gap-32 align-center justify-space-between">
-          <button type="button" className="button-back" disabled={state.isSaving} onClick={handleCancel}>
-            <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
+          <Button
+            type="button"
+            variation="text-alt"
+            icon="arrow"
+            iconPosition="left"
+            iconRotate={180}
+            disabled={state.isSaving}
+            onClick={handleCancel}>
             Cancel
-          </button>
+          </Button>
           <div className="flex">
             {uAllowed === false && (
               <button type="button" className="button-ghost mr-24" disabled={isApproving} onClick={handleTokenEnable}>
@@ -370,10 +380,9 @@ const SeniorTranche: React.FC = () => {
                 Enable {pool?.underlyingSymbol}
               </button>
             )}
-            <button type="submit" className="button-primary" disabled={formDisabled}>
-              <Spin spinning={state.isSaving} />
+            <Button type="submit" variation="primary" disabled={formDisabled} loading={state.isSaving}>
               Deposit
-            </button>
+            </Button>
           </div>
         </div>
       </Form>
