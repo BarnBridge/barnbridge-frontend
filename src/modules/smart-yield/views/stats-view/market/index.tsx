@@ -250,9 +250,7 @@ const MarketDetails: React.FC = () => {
                   </Text>
                 </div>
                 <Text type="small" weight="semibold">
-                  {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                    pool.state.juniorLiquidityLocked,
-                  )}
+                  {formatUSD(getAmountInUSD(BigNumber.from(pool.state.juniorLiquidityLocked), pool.underlyingSymbol))}
                 </Text>
               </Tooltip>
             </div>
