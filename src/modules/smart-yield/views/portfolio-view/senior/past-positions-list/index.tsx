@@ -10,6 +10,7 @@ import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
@@ -52,6 +53,7 @@ const PastPositionsList: React.FC<Props> = props => {
   const poolsCtx = usePools();
   const syAPI = useSyAPI();
   const { pools } = poolsCtx;
+  const { getToken } = useTokens();
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -143,7 +145,11 @@ const PastPositionsList: React.FC<Props> = props => {
                   </Text>
                 </Tooltip>
                 <Text type="p2" weight="semibold" color="secondary">
-                  {formatUSDValue(entity.underlyingIn)}
+                  {formatUSDValue(
+                    BigNumber.from(entity.underlyingIn)?.multipliedBy(
+                      getToken(entity.pool?.underlyingSymbol)?.price ?? 0,
+                    ),
+                  )}
                 </Text>
               </div>
               <Divider />
@@ -158,7 +164,11 @@ const PastPositionsList: React.FC<Props> = props => {
                   </Text>
                 </Tooltip>
                 <Text type="p2" weight="semibold" color="secondary">
-                  {formatUSDValue(Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee))}
+                  {formatUSDValue(
+                    BigNumber.from(
+                      Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee),
+                    )?.multipliedBy(getToken(entity.pool?.underlyingSymbol)?.price ?? 0),
+                  )}
                 </Text>
               </div>
               <Divider />
