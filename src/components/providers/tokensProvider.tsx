@@ -104,7 +104,7 @@ export const STK_AAVE: BaseTokenType = {
   symbol: Tokens.STK_AAVE,
   name: 'Staked Aave',
   decimals: 18,
-  icon: 'aave',
+  icon: 'stkaave',
 };
 
 export const MATIC: BaseTokenType = {

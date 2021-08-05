@@ -12,6 +12,7 @@ import Tooltip from 'components/antd/tooltip';
 import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
@@ -122,6 +123,8 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const canTransfer = !sBond.liquidated;
   const gainedFee = gained.multipliedBy(seniorRedeemFee?.dividedBy(1e18) ?? BigNumber.ZERO);
   const toGetAmount = deposited.plus(gained).minus(gainedFee);
+  const { getToken } = useTokens();
+  const tokenPrice = getToken(pool.underlyingSymbol)?.price ?? 0;
 
   return (
     <div className="card">
@@ -159,7 +162,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           </Text>
         </Tooltip>
         <Text type="p2" weight="semibold" color="secondary">
-          {formatUSDValue(deposited)}
+          {formatUSDValue(deposited.multipliedBy(tokenPrice))}
         </Text>
       </div>
       <Divider />
@@ -174,7 +177,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           </Text>
         </Tooltip>
         <Text type="p2" weight="semibold" color="secondary">
-          {formatUSDValue(redeemable)}
+          {formatUSDValue(redeemable.multipliedBy(tokenPrice))}
         </Text>
       </div>
       <Divider />
