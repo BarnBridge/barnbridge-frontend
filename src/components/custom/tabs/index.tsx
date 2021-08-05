@@ -49,6 +49,10 @@ export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) 
   );
 };
 
+export const HorizontalMenu: FC<NavTabsProps> = ({ className, ...rest }) => {
+  return <NavTabs {...rest} className={cn(s.horizontalMenu, className)} />;
+};
+
 type TabProps<T> = {
   id: T;
   children: ReactNode;
