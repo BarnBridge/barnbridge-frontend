@@ -82,6 +82,11 @@
   &.yellow-color {
     color: var(--theme-yellow-color);
   }
+
+  &.hasTooltip {
+    text-decoration: underline dotted var(--theme-border-color);
+    text-underline-offset: 4px;
+  }
 }
 
 .hint.hint {

@@ -1,5 +1,6 @@
 import { formatUSD } from 'web3/utils';
 
+import { Button, Link } from 'components/button';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
 // import { Icon } from 'components/icon';
@@ -19,7 +20,7 @@ const MarketsView = () => {
           <Icon name="insured" color="green" size={32} />
         </Tooltip> */}
       </div>
-      <div>
+      <div className="flex flex-wrap">
         <MarketCard />
         <MarketCard />
         <MarketCard />
@@ -31,15 +32,62 @@ export default MarketsView;
 
 const MarketCard = () => {
   return (
-    <div className="card">
-      <div className="flex align-center">
+    <section className="card p-24">
+      <header className="flex align-center">
         <TokenIcon name="weth" size={40} bubble2Name="usd" />
         <div>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="p1" weight="semibold" color="primary" tag="h2">
             wETH-USD
           </Text>
         </div>
-      </div>
-    </div>
+      </header>
+      <dl>
+        <div className="flex">
+          <dt>Epoch senior liquidity</dt>
+          <dd>
+            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
+              {formatUSD('32500000', { compact: true })}
+            </Text>
+          </dd>
+        </div>
+        <div className="flex">
+          <dt>Upside exposure rate</dt>
+          <dd>
+            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
+              {formatUSD('32500000', { compact: true })}
+            </Text>
+          </dd>
+        </div>
+        <div className="flex">
+          <dt>Downside protection rate</dt>
+          <dd>
+            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
+              {formatUSD('32500000', { compact: true })}
+            </Text>
+          </dd>
+        </div>
+        <div className="flex">
+          <dt>Epoch junior liquidity</dt>
+          <dd>
+            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
+              {formatUSD('32500000', { compact: true })}
+            </Text>
+          </dd>
+        </div>
+        <div className="flex">
+          <dt>Epoch ends in</dt>
+          <dd>
+            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
+              {formatUSD('32500000', { compact: true })}
+            </Text>
+          </dd>
+        </div>
+      </dl>
+      <footer>
+        <Link variation="ghost" to="/smart-alpha/markets/2">
+          View details
+        </Link>
+      </footer>
+    </section>
   );
 };

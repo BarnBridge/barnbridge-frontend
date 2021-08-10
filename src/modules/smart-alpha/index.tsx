@@ -7,6 +7,7 @@ import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
 const MarketsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/markets-view'));
+const MarketView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/market-view'));
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -47,6 +48,9 @@ const SmartAlphaView: React.FC = () => {
           <Switch>
             <Route path="/smart-alpha" exact>
               <MarketsView />
+            </Route>
+            <Route path="/smart-alpha/markets/:id" exact>
+              <MarketView />
             </Route>
             <Route path="/smart-alpha/pools">Pools</Route>
             <Route path="/smart-alpha/portfolio" exact>
