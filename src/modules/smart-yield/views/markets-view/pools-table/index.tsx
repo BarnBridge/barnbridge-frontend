@@ -214,15 +214,6 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       render: function Render(_, entity) {
         const { bondToken, stkAaveToken } = useKnownTokens();
 
-        // const rewardTokens = entity ? Array.from(entity.rewardTokens.values()) : [];
-
-        // const hasZeroBondRewardLeft = rewardTokens.find(
-        //   rewardToken =>
-        //     !!(
-        //       rewardToken === bondToken && entity.contracts.rewardPool?.getRewardLeftFor(rewardToken.address)?.isZero()
-        //     ),
-        // );
-
         return (
           <div>
             <Text type="p1" weight="semibold" color="purple">
