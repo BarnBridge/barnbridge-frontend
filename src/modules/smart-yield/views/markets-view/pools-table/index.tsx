@@ -15,6 +15,7 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
+import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
 import { MarketMeta } from '../../../providers/markets';
@@ -213,6 +214,17 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
       render: function Render(_, entity) {
         const { bondToken, stkAaveToken } = useKnownTokens();
+        const { pools } = useRewardPools();
+        const { rewardPool } = entity.contracts;
+
+        const hasZeroBondRewardLeft = pools.find(
+          pool =>
+            pool.rewardPool.address === entity.rewardPoolAddress &&
+            Array.from(pool.rewardTokens.values()).some(
+              rewardToken =>
+                !!(rewardToken === bondToken && rewardPool?.getRewardLeftFor(rewardToken.address)?.isZero()),
+            ),
+        );
 
         return (
           <div>
@@ -221,7 +233,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
             </Text>
             {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
               <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
-                +{formatPercent(entity.apr?.plus(entity.apy ?? 0) ?? 0)} APR
+                +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
               </AprLabel>
             ) : entity.apr ? (
               <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
