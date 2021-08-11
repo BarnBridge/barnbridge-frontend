@@ -1,5 +1,6 @@
 import React, { FC, useState } from 'react';
 import { Link } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
@@ -58,6 +59,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
     rewardToken => !!(rewardToken === bondToken && rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()),
   );
 
+  console.log('apy', pool.meta.underlyingSymbol, apy);
   return (
     <>
       <section className={cn(s.card, className)}>
@@ -97,7 +99,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 <AprLabel
                   icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                   size="large">
-                  {formatPercent(apy?.plus(hasZeroBondRewardLeft ? 0 : apr ?? 0) ?? 0)}
+                  {formatPercent((apy ?? BigNumber.ZERO).plus(hasZeroBondRewardLeft ? 0 : apr ?? 0))}
                 </AprLabel>
               </dd>
             </div>
@@ -173,7 +175,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 <AprLabel
                   icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                   size="large">
-                  {formatPercent(hasZeroBondRewardLeft ? 0 : apr ?? 0)}
+                  {formatPercent((apy ?? BigNumber.ZERO).plus(hasZeroBondRewardLeft ? 0 : apr ?? 0))}
                 </AprLabel>
               </dd>
             </div>
