@@ -59,7 +59,6 @@ export const PoolCard: FC<PoolCardProps> = props => {
     rewardToken => !!(rewardToken === bondToken && rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()),
   );
 
-  console.log('apy', pool.meta.underlyingSymbol, apy);
   return (
     <>
       <section className={cn(s.card, className)}>
