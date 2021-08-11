@@ -108,7 +108,9 @@ const SmartYieldView: React.FC = () => {
               path="/smart-yield/:path(markets|portfolio)"
               render={({ location }) => (
                 <PoolsProvider>
-                  <Route path="/smart-yield/markets" exact component={MarketsView} />
+                  <RewardPoolsProvider>
+                    <Route path="/smart-yield/markets" exact component={MarketsView} />
+                  </RewardPoolsProvider>
                   {wallet.initialized && (
                     <>
                       {wallet.isActive ? (
@@ -140,7 +142,9 @@ const SmartYieldView: React.FC = () => {
             />
             <Route path="/smart-yield/stats" exact>
               <PoolProvider>
-                <StatsView />
+                <RewardPoolsProvider>
+                  <StatsView />
+                </RewardPoolsProvider>
               </PoolProvider>
             </Route>
             {config.features.smartYieldReward && (
