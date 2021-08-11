@@ -215,14 +215,13 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       render: function Render(_, entity) {
         const { bondToken, stkAaveToken } = useKnownTokens();
         const { pools } = useRewardPools();
-        const { rewardPool } = entity.contracts;
 
         const hasZeroBondRewardLeft = pools.find(
           pool =>
             pool.rewardPool.address === entity.rewardPoolAddress &&
             Array.from(pool.rewardTokens.values()).some(
               rewardToken =>
-                !!(rewardToken === bondToken && rewardPool?.getRewardLeftFor(rewardToken.address)?.isZero()),
+                !!(rewardToken === bondToken && pool.rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()),
             ),
         );
 
