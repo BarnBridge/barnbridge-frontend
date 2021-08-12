@@ -1,12 +1,17 @@
-import { formatUSD } from 'web3/utils';
+import { useLocation } from 'react-router-dom';
+import { formatPercent, formatUSD } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
 // import { Icon } from 'components/icon';
 import { TokenIcon } from 'components/token-icon';
+import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
 
-const MarketsView = () => {
+import { getRelativeTime } from 'utils';
+
+const PoolsView = () => {
+  const { data } = useFetchPools();
   return (
     <>
       <Text type="p1" weight="semibold" color="secondary" className="mb-4">
@@ -21,23 +26,24 @@ const MarketsView = () => {
         </Tooltip> */}
       </div>
       <div className="flex flex-wrap">
-        <MarketCard />
-        <MarketCard />
-        <MarketCard />
+        {data?.map(item => (
+          <PoolCard key={item.poolAddress} item={item} />
+        ))}
       </div>
     </>
   );
 };
-export default MarketsView;
+export default PoolsView;
 
-const MarketCard = () => {
+const PoolCard = ({ item }: { item: PoolApiType }) => {
+  const location = useLocation();
   return (
     <section className="card p-24">
       <header className="flex align-center">
         <TokenIcon name="weth" size={40} bubble2Name="usd" />
         <div>
           <Text type="p1" weight="semibold" color="primary" tag="h2">
-            wETH-USD
+            {item.poolName}
           </Text>
         </div>
       </header>
@@ -45,46 +51,46 @@ const MarketCard = () => {
         <div className="flex">
           <dt>Epoch senior liquidity</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
-              {formatUSD('32500000', { compact: true })}
+            <Text type="p1" weight="semibold" tooltip={formatUSD(item.state.seniorLiquidity)}>
+              {formatUSD(item.state.seniorLiquidity, { compact: true })}
             </Text>
           </dd>
         </div>
         <div className="flex">
           <dt>Upside exposure rate</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
-              {formatUSD('32500000', { compact: true })}
+            <Text type="p1" weight="semibold">
+              {formatPercent(Number(item.state.upsideExposureRate))}
             </Text>
           </dd>
         </div>
         <div className="flex">
           <dt>Downside protection rate</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
-              {formatUSD('32500000', { compact: true })}
+            <Text type="p1" weight="semibold">
+              {formatPercent(Number(item.state.downsideProtectionRate))}
             </Text>
           </dd>
         </div>
         <div className="flex">
           <dt>Epoch junior liquidity</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
-              {formatUSD('32500000', { compact: true })}
+            <Text type="p1" weight="semibold" tooltip={formatUSD(item.state.juniorLiquidity)}>
+              {formatUSD(item.state.juniorLiquidity, { compact: true })}
             </Text>
           </dd>
         </div>
         <div className="flex">
           <dt>Epoch ends in</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD('32500000')}>
-              {formatUSD('32500000', { compact: true })}
+            <Text type="p1" weight="semibold">
+              {getRelativeTime(item.epoch1Start / 1000)}
             </Text>
           </dd>
         </div>
       </dl>
       <footer>
-        <Link variation="ghost" to="/smart-alpha/markets/2">
+        <Link variation="ghost" to={`${location.pathname}/${item.poolAddress}`}>
           View details
         </Link>
       </footer>

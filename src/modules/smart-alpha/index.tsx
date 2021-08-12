@@ -6,8 +6,9 @@ import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
-const MarketsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/markets-view'));
-const MarketView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/market-view'));
+const MarketsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/pools-view'));
+const MarketView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/pool-view'));
+const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -16,15 +17,7 @@ const SmartAlphaView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="overview" className="mr-8" size={24} /> Markets
-        </>
-      ),
-      to: '/smart-alpha',
-    },
-    {
-      children: (
-        <>
-          <Icon name="pools" className="mr-8" size={24} /> Pools
+          <Icon name="overview" className="mr-8" size={24} /> Pools
         </>
       ),
       to: '/smart-alpha/pools',
@@ -46,17 +39,19 @@ const SmartAlphaView: React.FC = () => {
       <div className="content-container-fix content-container">
         <Suspense fallback={<Spinner />}>
           <Switch>
-            <Route path="/smart-alpha" exact>
+            <Route path="/smart-alpha/pools" exact>
               <MarketsView />
             </Route>
-            <Route path="/smart-alpha/markets/:id" exact>
+            <Route path="/smart-alpha/pools/:id" exact>
               <MarketView />
             </Route>
-            <Route path="/smart-alpha/pools">Pools</Route>
+            <Route path="/smart-alpha/pools/:id/deposit" exact>
+              <DepositView />
+            </Route>
             <Route path="/smart-alpha/portfolio" exact>
               PortfolioView
             </Route>
-            <Redirect to="/smart-alpha" />
+            <Redirect to="/smart-alpha/pools" />
           </Switch>
         </Suspense>
       </div>

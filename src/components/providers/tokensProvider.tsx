@@ -32,7 +32,7 @@ export type BaseTokenType = {
   symbol: string;
   name: string;
   decimals: number;
-  icon: TokenIconNames | undefined;
+  icon: TokenIconNames;
 };
 
 export const WBTC: BaseTokenType = {
