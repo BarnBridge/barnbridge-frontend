@@ -4,6 +4,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 import { Button, Link } from 'components/button';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
+import { useTokens } from 'components/providers/tokensProvider';
 // import { Icon } from 'components/icon';
 import { TokenIcon } from 'components/token-icon';
 import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
@@ -37,10 +38,14 @@ export default PoolsView;
 
 const PoolCard = ({ item }: { item: PoolApiType }) => {
   const location = useLocation();
+  const { getToken } = useTokens();
+
+  const poolToken = getToken(item.poolToken.symbol);
+
   return (
     <section className="card p-24">
       <header className="flex align-center">
-        <TokenIcon name="weth" size={40} bubble2Name="usd" />
+        <TokenIcon name={poolToken?.icon ?? 'unknown'} size={40} bubble2Name="usd" />
         <div>
           <Text type="p1" weight="semibold" color="primary" tag="h2">
             {item.poolName}
