@@ -213,7 +213,7 @@ const MarketDetails: React.FC = () => {
                 <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
                   +{formatPercent(pool.apy?.plus(hasZeroBondRewardLeft ? 0 : pool.apr ?? 0) ?? 0)} APR
                 </AprLabel>
-              ) : pool.apr ? (
+              ) : !hasZeroBondRewardLeft && pool.apr ? (
                 <AprLabel icons={['bond']}>+{formatPercent(pool.apr ?? 0)} APR</AprLabel>
               ) : null}
             </div>

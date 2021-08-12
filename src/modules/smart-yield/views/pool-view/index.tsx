@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken } from 'web3/utils';
 
@@ -77,7 +78,7 @@ const PoolView: FC = () => {
               <AprLabel
                 icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                 size="large">
-                {formatPercent(apy?.plus(hasZeroBondRewardLeft ? 0 : apr ?? 0) ?? 0)}
+                {formatPercent((apy ?? BigNumber.ZERO).plus(hasZeroBondRewardLeft ? 0 : apr ?? 0))}
               </AprLabel>
             </dd>
           </div>
