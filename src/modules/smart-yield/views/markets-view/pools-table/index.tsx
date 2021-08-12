@@ -234,7 +234,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
               <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
                 +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
               </AprLabel>
-            ) : entity.apr ? (
+            ) : !hasZeroBondRewardLeft && entity.apr ? (
               <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
             ) : null}
           </div>
