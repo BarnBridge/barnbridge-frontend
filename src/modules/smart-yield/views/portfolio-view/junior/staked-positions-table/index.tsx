@@ -119,6 +119,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
       }
 
       const hasZeroBondRewardLeft = entity.rewardPool.getRewardLeftFor(bondToken.address)?.isZero();
+      const apyr = entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0;
 
       return (
         <div>
@@ -126,10 +127,8 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             {formatPercent(pool.state.juniorApy)}
           </Text>
           {entity.rewardPool?.rewardTokensCount! > 1 ? (
-            <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
-              +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
-            </AprLabel>
-          ) : entity.apr ? (
+            <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>+{formatPercent(apyr)} APR</AprLabel>
+          ) : !hasZeroBondRewardLeft && entity.apr ? (
             <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
           ) : null}
         </div>
