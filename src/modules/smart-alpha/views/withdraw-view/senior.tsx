@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import BigNumber from 'bignumber.js';
-import classNames from 'classnames';
 
 import { Alert } from 'components/alert';
 import { Button } from 'components/button';
 import { TokenAmount } from 'components/custom/token-amount-new';
-import { Hint, Text } from 'components/custom/typography';
-import { Icon } from 'components/icon';
+import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { PoolApiType } from 'modules/smart-alpha/api';
@@ -16,6 +14,7 @@ export const SeniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
   const { getToken } = useTokens();
 
   const poolToken = getToken(pool.poolToken.symbol);
+  // const oracleToken = getToken(pool.oracleAssetSymbol);
 
   const tokenMax = new BigNumber(3.21312);
 
@@ -27,12 +26,20 @@ export const SeniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
       <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
         Choose the amount of tokens you want to withdraw from the senior side. Make sure you double check the amounts.
       </Text>
-
       <Text type="small" weight="semibold" color="secondary" className="mb-8">
         bb_swETH-USD amount
       </Text>
       <TokenAmount
-        before={<TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} />}
+        before={
+          <TokenIcon
+            name={poolToken?.icon ?? 'unknown'}
+            bubble1Name="bond"
+            // bubble2Name={oracleToken?.icon ?? 'unknown'}
+            bubble2Name="usd"
+            size={24}
+            outline="green"
+          />
+        }
         value={tokenState}
         onChange={setTokenState}
         slider

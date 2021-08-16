@@ -14,6 +14,7 @@ export const JuniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
   const { getToken } = useTokens();
 
   const poolToken = getToken(pool.poolToken.symbol);
+  // const oracleToken = getToken(pool.oracleAssetSymbol);
 
   const tokenMax = new BigNumber(3.21312);
 
@@ -25,12 +26,20 @@ export const JuniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
       <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
         Choose the amount of tokens you want to withdraw from the junior side. Make sure you double check the amounts.
       </Text>
-
       <Text type="small" weight="semibold" color="secondary" className="mb-8">
         bb_jwETH-USD amount
       </Text>
       <TokenAmount
-        before={<TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} />}
+        before={
+          <TokenIcon
+            name={poolToken?.icon ?? 'unknown'}
+            bubble1Name="bond"
+            // bubble2Name={oracleToken?.icon ?? 'unknown'}
+            bubble2Name="usd"
+            size={24}
+            outline="purple"
+          />
+        }
         value={tokenState}
         onChange={setTokenState}
         slider
@@ -43,10 +52,8 @@ export const JuniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
         Sed elementum nulla sit amet accumsan dapibus. Integer auctor et elit in lobortis. Fusce ex nulla
       </Alert>
 
-      <div className="flex">
-        <Button variation="primary" className="ml-auto">
-          Signal withdraw
-        </Button>
+      <div className="flex justify-end align-center">
+        <Button variation="primary">Signal withdraw</Button>
       </div>
     </div>
   );
