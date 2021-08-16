@@ -6,7 +6,7 @@ import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
-const MarketsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/pools-view'));
+const PoolsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/pools-view'));
 const MarketView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/pool-view'));
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
@@ -41,7 +41,7 @@ const SmartAlphaView: React.FC = () => {
         <Suspense fallback={<Spinner />}>
           <Switch>
             <Route path="/smart-alpha/pools" exact>
-              <MarketsView />
+              <PoolsView />
             </Route>
             <Route path="/smart-alpha/pools/:id" exact>
               <MarketView />
