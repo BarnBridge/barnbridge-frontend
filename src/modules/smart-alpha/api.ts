@@ -1,3 +1,4 @@
+import { PeriodTabsKey } from 'components/custom/tabs';
 import { useConfig } from 'components/providers/configProvider';
 import { Tokens } from 'components/providers/tokensProvider';
 
@@ -57,9 +58,16 @@ type TokenPriceType = {
   seniorTokenPrice: number;
 };
 
-export function useFetchTokenPrice(poolAddress: string): UseFetchReturn<TokenPriceType[]> {
+export function useFetchTokenPrice(
+  poolAddress: string,
+  periodFilter?: PeriodTabsKey,
+): UseFetchReturn<TokenPriceType[]> {
   const config = useConfig();
   const url = new URL(`/api/smartalpha/pools/${poolAddress}/tokens-price-chart`, config.api.baseUrl);
+
+  if (periodFilter) {
+    url.searchParams.set('window', periodFilter);
+  }
 
   return useFetch(url, {
     transform: ({ data }: { data: TokenPriceApiType[] }) =>
@@ -87,9 +95,16 @@ type PoolPerformanceType = {
   juniorWithoutSA: number;
 };
 
-export function useFetchPoolPerformance(poolAddress: string): UseFetchReturn<PoolPerformanceType[]> {
+export function useFetchPoolPerformance(
+  poolAddress: string,
+  periodFilter?: PeriodTabsKey,
+): UseFetchReturn<PoolPerformanceType[]> {
   const config = useConfig();
   const url = new URL(`/api/smartalpha/pools/${poolAddress}/pool-performance-chart`, config.api.baseUrl);
+
+  if (periodFilter) {
+    url.searchParams.set('window', periodFilter);
+  }
 
   return useFetch(url, {
     transform: ({ data }: { data: PoolPerformanceApiType[] }) =>

@@ -11,7 +11,7 @@ import { formatTick } from 'utils/chart';
 
 export const TokensPrice: React.FC<{ poolAddress: string; className?: string }> = ({ poolAddress, className }) => {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
-  const { data = [], loading } = useFetchTokenPrice(poolAddress);
+  const { data = [], loading } = useFetchTokenPrice(poolAddress, periodFilter);
 
   return (
     <div className={classNames('card', className)}>
@@ -27,7 +27,7 @@ export const TokensPrice: React.FC<{ poolAddress: string; className?: string }> 
           data={data ?? []}
           x={{
             key: 'point',
-            format: item => formatTick(item, PeriodTabsKey.month),
+            format: item => formatTick(item, periodFilter),
             itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
           }}
           y={{
