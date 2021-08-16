@@ -12,9 +12,10 @@ interface CommonProps {
   iconPosition?: 'right' | 'left' | 'only';
   iconRotate?: IconProps['rotate'];
   loading?: boolean;
+  className?: string;
 }
 
-export type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & CommonProps;
+export type ButtonProps = CommonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export const Button: React.FC<ButtonProps> = ({
   children,
@@ -24,6 +25,7 @@ export const Button: React.FC<ButtonProps> = ({
   iconPosition = 'only',
   iconRotate,
   loading,
+  className,
   ...rest
 }) => {
   let iconSize: 16 | 24;
@@ -44,9 +46,14 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button
       {...rest}
-      className={classNames(s[variation], s[size], {
-        [s.iconOnly]: icon && iconPosition === 'only',
-      })}>
+      className={classNames(
+        s[variation],
+        s[size],
+        {
+          [s.iconOnly]: icon && iconPosition === 'only',
+        },
+        className,
+      )}>
       {iconToDisplay && iconPosition === 'left' ? (
         <Icon
           name={iconToDisplay}
@@ -85,7 +92,7 @@ export const Button: React.FC<ButtonProps> = ({
   );
 };
 
-type LinkProps = RouterLinkProps & CommonProps;
+export type LinkProps = CommonProps & RouterLinkProps;
 
 export const Link: React.FC<LinkProps> = ({
   children,
@@ -94,6 +101,7 @@ export const Link: React.FC<LinkProps> = ({
   icon,
   iconPosition = 'only',
   iconRotate,
+  className,
   ...rest
 }) => {
   let iconSize: 16 | 24;
@@ -112,9 +120,14 @@ export const Link: React.FC<LinkProps> = ({
   return (
     <RouterLink
       {...rest}
-      className={classNames(s[variation], s[size], {
-        [s.iconOnly]: icon && iconPosition === 'only',
-      })}>
+      className={classNames(
+        s[variation],
+        s[size],
+        {
+          [s.iconOnly]: icon && iconPosition === 'only',
+        },
+        className,
+      )}>
       {icon && iconPosition === 'left' ? (
         <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginRight: 8 }} />
       ) : null}
@@ -123,5 +136,54 @@ export const Link: React.FC<LinkProps> = ({
         <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginLeft: 8 }} />
       ) : null}
     </RouterLink>
+  );
+};
+
+export type ExternalLinkProps = CommonProps & React.AnchorHTMLAttributes<HTMLAnchorElement>;
+
+export const ExternalLink: React.FC<ExternalLinkProps> = ({
+  children,
+  variation,
+  size = 'normal',
+  icon,
+  iconPosition = 'only',
+  iconRotate,
+  className,
+  ...rest
+}) => {
+  let iconSize: 16 | 24;
+  switch (size) {
+    case 'small':
+      iconSize = 16;
+      break;
+    case 'normal':
+      iconSize = 24;
+      break;
+    case 'big':
+      iconSize = 24;
+      break;
+  }
+
+  return (
+    <a
+      rel="noopener noreferrer"
+      target="_blank"
+      {...rest}
+      className={classNames(
+        s[variation],
+        s[size],
+        {
+          [s.iconOnly]: icon && iconPosition === 'only',
+        },
+        className,
+      )}>
+      {icon && iconPosition === 'left' ? (
+        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginRight: 8 }} />
+      ) : null}
+      {icon && iconPosition === 'only' ? <Icon name={icon} rotate={iconRotate} size={iconSize} /> : children}
+      {icon && iconPosition === 'right' ? (
+        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginLeft: 8 }} />
+      ) : null}
+    </a>
   );
 };

@@ -9,11 +9,11 @@ import { TokenIcon } from 'components/token-icon';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import { useWallet } from 'wallets/walletProvider';
 
-import { JuniorDeposit } from './junior';
-import { SelectTranche } from './select';
-import { SeniorDeposit } from './senior';
+import { JuniorWithdraw } from './junior';
+// import { SelectTranche } from './select';
+import { SeniorWithdraw } from './senior';
 
-const DepositView = () => {
+const WithdrawView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const location = useLocation();
   const { data } = useFetchPool(poolAddress);
@@ -105,16 +105,16 @@ const DepositView = () => {
         </div>
         <Suspense fallback={<Spinner />}>
           <Switch>
-            <Route path="/smart-alpha/pools/:id/deposit" exact>
+            {/* <Route path="/smart-alpha/pools/:id/deposit" exact>
               <SelectTranche pool={pool} />
+            </Route> */}
+            <Route path="/smart-alpha/pools/:id/withdraw/senior" exact>
+              <SeniorWithdraw pool={pool} />
             </Route>
-            <Route path="/smart-alpha/pools/:id/deposit/senior" exact>
-              <SeniorDeposit pool={pool} />
+            <Route path="/smart-alpha/pools/:id/withdraw/junior" exact>
+              <JuniorWithdraw pool={pool} />
             </Route>
-            <Route path="/smart-alpha/pools/:id/deposit/junior" exact>
-              <JuniorDeposit pool={pool} />
-            </Route>
-            <Redirect to={`/smart-alpha/pools/${poolAddress}/deposit`} />
+            <Redirect to={`/smart-alpha/pools/${poolAddress}`} />
           </Switch>
         </Suspense>
       </div>
@@ -122,4 +122,4 @@ const DepositView = () => {
   );
 };
 
-export default DepositView;
+export default WithdrawView;

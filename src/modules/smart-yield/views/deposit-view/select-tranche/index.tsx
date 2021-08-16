@@ -7,7 +7,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
-import RadioCard from 'modules/smart-yield/components/radio-card';
+import { RadioCard } from 'components/radio-card';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import s from './s.module.scss';

@@ -78,9 +78,7 @@ export const Hint: React.FC<HintProps> = props => {
         className={cn(s.tooltip, 'text-p2', 'primary-color')}
         overlayStyle={overlayStyle}
         overlayInnerStyle={overlayStyle}>
-        <span>
-          <Icon name="info" size={16} className={s.icon} color="icon" />
-        </span>
+        <Icon name="info" size={16} className={s.icon} color="icon" />
       </Tooltip>
     </div>
   );

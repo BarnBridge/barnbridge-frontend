@@ -9,6 +9,7 @@ import { useWallet } from 'wallets/walletProvider';
 const MarketsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/pools-view'));
 const MarketView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/pool-view'));
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
+const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -45,8 +46,11 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/pools/:id" exact>
               <MarketView />
             </Route>
-            <Route path="/smart-alpha/pools/:id/deposit" exact>
+            <Route path="/smart-alpha/pools/:id/deposit">
               <DepositView />
+            </Route>
+            <Route path="/smart-alpha/pools/:id/withdraw">
+              <WithdrawView />
             </Route>
             <Route path="/smart-alpha/portfolio" exact>
               PortfolioView
