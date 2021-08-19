@@ -1,13 +1,14 @@
-import { Suspense } from 'react';
-import { Redirect, Route, Switch, useLocation, useParams } from 'react-router-dom';
+import { Suspense, useMemo } from 'react';
+import { Redirect, Route, Switch, useParams } from 'react-router-dom';
 
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
 import { useFetchPool } from 'modules/smart-alpha/api';
-import { useWallet } from 'wallets/walletProvider';
+import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 
 import { JuniorDeposit } from './junior';
 import { SelectTranche } from './select';
@@ -15,12 +16,30 @@ import { SeniorDeposit } from './senior';
 
 const DepositView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
-  const location = useLocation();
   const { data } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
-  const wallet = useWallet();
 
   const pool = data?.[0];
+
+  const { getOrCreateContract, Listeners } = useContractFactory();
+
+  const smartAlphaContract = useMemo(() => {
+    if (!pool) {
+      return;
+    }
+
+    return getOrCreateContract(
+      pool.poolAddress,
+      () => {
+        return new SmartAlphaContract(pool.poolAddress);
+      },
+      {
+        afterInit: async contract => {
+          await contract.loadCommon();
+        },
+      },
+    );
+  }, [pool]);
 
   if (!pool) {
     return <Spinner style={{ margin: 'auto' }} />;
@@ -109,15 +128,16 @@ const DepositView = () => {
               <SelectTranche pool={pool} />
             </Route>
             <Route path="/smart-alpha/pools/:id/deposit/senior" exact>
-              <SeniorDeposit pool={pool} />
+              <SeniorDeposit pool={pool} smartAlphaContract={smartAlphaContract} />
             </Route>
             <Route path="/smart-alpha/pools/:id/deposit/junior" exact>
-              <JuniorDeposit pool={pool} />
+              <JuniorDeposit pool={pool} smartAlphaContract={smartAlphaContract} />
             </Route>
             <Redirect to={`/smart-alpha/pools/${poolAddress}/deposit`} />
           </Switch>
         </Suspense>
       </div>
+      {Listeners}
     </>
   );
 };

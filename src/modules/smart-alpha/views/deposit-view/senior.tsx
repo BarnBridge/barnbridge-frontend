@@ -1,24 +1,50 @@
 import { useState } from 'react';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
+import TxConfirmModal from 'web3/components/tx-confirm-modal';
 
 import { Button } from 'components/button';
+import { Spinner } from 'components/custom/spinner';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { PoolApiType } from 'modules/smart-alpha/api';
+import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 
 import s from './s.module.scss';
 
-export const SeniorDeposit = ({ pool }: { pool: PoolApiType }) => {
-  const [tokenState, setTokenState] = useState<string>('');
+type Props = {
+  pool: PoolApiType;
+  smartAlphaContract: SmartAlphaContract | undefined;
+};
+
+export const SeniorDeposit = ({ pool, smartAlphaContract }: Props) => {
   const { getToken } = useTokens();
+  const [tokenState, setTokenState] = useState('');
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [saving, setSaving] = useState(false);
 
   const poolToken = getToken(pool.poolToken.symbol);
 
   const tokenMax = new BigNumber(3.21312);
+
+  async function handleDeposit(gasPrice: number) {
+    setSaving(true);
+
+    try {
+      const amount = BigNumber.from(tokenState)?.scaleBy(pool.poolToken.decimals);
+
+      if (amount) {
+        await smartAlphaContract?.depositSenior(amount, gasPrice);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    setSaving(false);
+  }
 
   return (
     <div className="card p-24">
@@ -61,8 +87,20 @@ export const SeniorDeposit = ({ pool }: { pool: PoolApiType }) => {
       <div className="flex justify-end align-center">
         <Button variation="primary">Enable {pool.poolToken.symbol}</Button>
         <Icon name="chevron" size={16} color="icon" className="ml-12 mr-12" />
-        <Button variation="primary">Deposit</Button>
+        <Button variation="primary" onClick={() => setConfirmModalVisible(true)}>
+          {saving && <Spinner className="mr-8" />}
+          Deposit
+        </Button>
       </div>
+
+      {confirmModalVisible && (
+        <TxConfirmModal
+          title="Confirm deposit"
+          submitText="Confirm deposit"
+          onCancel={() => setConfirmModalVisible(false)}
+          onConfirm={({ gasPrice }) => handleDeposit(gasPrice)}
+        />
+      )}
     </div>
   );
 };
