@@ -24,6 +24,7 @@ interface PropsType<X = number, Y = number> {
       key: string;
       title: string;
       color: 'red' | 'green' | 'blue' | 'yellow' | 'purple';
+      yAxisId?: 'left' | 'right';
     }[];
   };
   className?: string;
@@ -77,6 +78,8 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
     return Array.from({ length: y.items.length }).map(() => nanoid());
   }, [y.items.length]);
 
+  const hasRightYAxis = y.items.some(item => item.yAxisId === 'right');
+
   return (
     <Spin spinning={loading}>
       {data.length === 0 ? (
@@ -107,17 +110,21 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               tickFormatter={x.format}
               ticks={x.ticks}
             />
-            <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} />
+            <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} yAxisId="left" />
+            {hasRightYAxis && (
+              <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="right" yAxisId="right" />
+            )}
 
             {y.items.map((areaItem, idx) => (
               <Area
-                key={idx}
+                key={areaItem.key}
                 name={areaItem.title}
                 dataKey={areaItem.key}
                 type="monotone"
                 fill={`url(#${areaUniqIds[idx]})`}
                 stroke={`var(--theme-${y.items[idx].color}-color)`}
                 strokeWidth={2}
+                yAxisId={areaItem.yAxisId ?? 'left'}
               />
             ))}
             <Tooltip

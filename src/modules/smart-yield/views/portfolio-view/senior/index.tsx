@@ -6,6 +6,7 @@ import { getHumanValue } from 'web3/utils';
 
 import Tabs from 'components/antd/tabs';
 import { Text } from 'components/custom/typography';
+import PortfolioBalance from 'components/portfolio-balance';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
@@ -14,7 +15,6 @@ import SYSmartYieldContract, { SYSeniorBondToken } from 'modules/smart-yield/con
 import ActivePosition from 'modules/smart-yield/views/portfolio-view/senior/active-position';
 import { useWallet } from 'wallets/walletProvider';
 
-import PortfolioBalance from '../../../components/portfolio-balance';
 import { PoolsSYPool, usePools } from '../../../providers/pools-provider';
 import PastPositionsList from './past-positions-list';
 import PositionsFilter, { PositionsFilterValues } from './positions-filter';

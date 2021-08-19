@@ -5,11 +5,12 @@ import classNames from 'classnames';
 import { Button, Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
-import { useTokens } from 'components/providers/tokensProvider';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import { useWallet } from 'wallets/walletProvider';
 
+import { TransactionsTable } from '../../components/transactions';
 import { PoolPerformance } from './pool-performance';
 import { TokensPrice } from './tokens-price';
 
@@ -29,6 +30,7 @@ const PoolView = () => {
   }
 
   const poolToken = getToken(pool.poolToken.symbol);
+  const oracleToken = getAsset(pool.oracleAssetSymbol);
 
   return (
     <>
@@ -39,7 +41,12 @@ const PoolView = () => {
       </div>
       <div className="flex align-center mb-40">
         <div className="flex align-center">
-          <TokenIcon name={poolToken?.icon ?? 'unknown'} size={40} bubble2Name="usd" className="mr-16" />
+          <TokenIcon
+            name={poolToken?.icon ?? 'unknown'}
+            size={40}
+            bubble2Name={oracleToken?.icon ?? 'unknown'}
+            className="mr-16"
+          />
           <div>
             <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
               {pool.poolName}
@@ -236,63 +243,10 @@ const PoolView = () => {
         </section>
       </div>
       <TokensPrice poolAddress={poolAddress} className="mb-32" />
-      <PoolPerformance poolAddress={poolAddress} />
+      <PoolPerformance poolAddress={poolAddress} className="mb-32" />
+      <TransactionsTable poolAddress={poolAddress} />
     </>
   );
 };
 
 export default PoolView;
-
-// const filtersOptions: TableFilterType[] = [
-//   {
-//     name: 'transactionType',
-//     label: 'Transaction type',
-//     defaultValue: '',
-//     itemRender: () => {
-//       const tokenOpts = [
-//         {
-//           value: '',
-//           label: 'All types',
-//         },
-//         {
-//           value: 'DEPOSIT',
-//           label: 'Deposit',
-//         },
-//         {
-//           value: 'WITHDRAW',
-//           label: 'Withdraw',
-//         },
-//       ];
-
-//       return <Select options={tokenOpts} className="full-width" />;
-//     },
-//   },
-// ];
-
-// type FiltersStateType = {
-//   transactionType: TransactionApiType['transactionType'] | '';
-// };
-
-// const initialFiltersState: FiltersStateType = {
-//   transactionType: '',
-// };
-
-// const TransactionHistory: React.FC<{ className?: string }> = ({ className }) => {
-//   const [filtersState, setFiltersState] = useState<FiltersStateType>(initialFiltersState);
-
-//   return (
-//     <div className="card">
-//       <header
-//         className="flex align-center"
-//         style={{
-//           borderBottom: '1px solid var(--theme-border-color)',
-//           padding: '12px 16px 12px 24px',
-//           overflowX: 'auto',
-//         }}>
-//         <div className="text-p1 fw-semibold color-primary mr-8">Transaction history</div>
-//         <TableFilter filters={filtersOptions} value={filtersState} onChange={handleFilterChange} className="ml-auto" />
-//       </header>
-//       <TransactionsTable transactionType={filtersState.transactionType || undefined} />
-//     </div>
-//   );
-// };

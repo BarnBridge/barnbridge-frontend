@@ -218,13 +218,9 @@ export const TransactionsTable = ({
             ...prevFilters,
             page,
           }))
-        }>
-        {({ total, from, to }) => (
-          <>
-            Showing {from} to {to} out of {total} entries
-          </>
-        )}
-      </TableFooter>
+        }
+        text
+      />
     </>
   );
 };
