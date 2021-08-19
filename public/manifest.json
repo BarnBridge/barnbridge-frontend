@@ -5,7 +5,7 @@
   "display": "standalone",
   "theme_color": "#ffffff",
   "background_color": "#ffffff",
-  "iconPath": "/logo.svg",
+  "iconPath": "logo.svg",
   "description": "Risk Tokenizing Protocol",
   "providedBy": {
     "name": "BarnBridge",
