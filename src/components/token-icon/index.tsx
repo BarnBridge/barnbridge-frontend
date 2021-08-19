@@ -71,7 +71,7 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
             cy="50%"
             r="48%"
             fill="none"
-            stroke-width="4%"
+            strokeWidth="4%"
             className={classNames({
               [s[`${outline}-outline`]]: outline,
             })}

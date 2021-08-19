@@ -139,3 +139,25 @@ type PeriodChartTabsProps = Omit<TabsProps<PeriodTabsKey>, 'tabs' | 'variation'>
 export const PeriodChartTabs: React.FC<PeriodChartTabsProps> = props => {
   return <Tabs<PeriodTabsKey> {...props} tabs={periodTabs} variation="elastic" />;
 };
+
+export enum PortfolioPeriodTabsKey {
+  week = '1w',
+  month = '30d',
+}
+
+const portfolioPeriodTabs = [
+  {
+    id: PortfolioPeriodTabsKey.week,
+    children: '1w',
+  },
+  {
+    id: PortfolioPeriodTabsKey.month,
+    children: '1mo',
+  },
+];
+
+type PortfolioPeriodChartTabsProps = Omit<TabsProps<PortfolioPeriodTabsKey>, 'tabs' | 'variation'>;
+
+export const PortfolioPeriodChartTabs: React.FC<PortfolioPeriodChartTabsProps> = props => {
+  return <Tabs<PortfolioPeriodTabsKey> {...props} tabs={portfolioPeriodTabs} variation="elastic" />;
+};

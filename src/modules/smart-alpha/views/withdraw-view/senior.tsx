@@ -5,7 +5,7 @@ import { Alert } from 'components/alert';
 import { Button } from 'components/button';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { useTokens } from 'components/providers/tokensProvider';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { PoolApiType } from 'modules/smart-alpha/api';
 
@@ -14,7 +14,7 @@ export const SeniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
   const { getToken } = useTokens();
 
   const poolToken = getToken(pool.poolToken.symbol);
-  // const oracleToken = getToken(pool.oracleAssetSymbol);
+  const oracleToken = getAsset(pool.oracleAssetSymbol);
 
   const tokenMax = new BigNumber(3.21312);
 
@@ -34,8 +34,7 @@ export const SeniorWithdraw = ({ pool }: { pool: PoolApiType }) => {
           <TokenIcon
             name={poolToken?.icon ?? 'unknown'}
             bubble1Name="bond"
-            // bubble2Name={oracleToken?.icon ?? 'unknown'}
-            bubble2Name="usd"
+            bubble2Name={oracleToken?.icon ?? 'unknown'}
             size={24}
             outline="green"
           />

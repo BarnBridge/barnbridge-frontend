@@ -45,6 +45,19 @@ export const PoolPerformance: React.FC<{ poolAddress: string; className?: string
                 title: 'Junior value (without SMART Alpha)',
                 color: 'yellow',
               },
+
+              // {
+              //   key: 'seniorWithSA',
+              //   title: 'Senior value',
+              //   color: 'green',
+              //   yAxisId: 'right',
+              // },
+              // {
+              //   key: 'seniorWithoutSA',
+              //   title: 'Senior value (without SMART Alpha)',
+              //   color: 'red',
+              //   yAxisId: 'right',
+              // },
             ],
           }}
         />

@@ -7,9 +7,10 @@ import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/pools-view'));
-const MarketView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/pool-view'));
+const PoolView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/pool-view'));
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
+const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view" */ './views/portfolio-view'));
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -44,7 +45,7 @@ const SmartAlphaView: React.FC = () => {
               <PoolsView />
             </Route>
             <Route path="/smart-alpha/pools/:id" exact>
-              <MarketView />
+              <PoolView />
             </Route>
             <Route path="/smart-alpha/pools/:id/deposit">
               <DepositView />
@@ -52,8 +53,8 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/pools/:id/withdraw">
               <WithdrawView />
             </Route>
-            <Route path="/smart-alpha/portfolio" exact>
-              PortfolioView
+            <Route path="/smart-alpha/portfolio">
+              <PortfolioView />
             </Route>
             <Redirect to="/smart-alpha/pools" />
           </Switch>

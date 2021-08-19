@@ -25,6 +25,8 @@ export enum Tokens {
   WMATIC = 'MATIC',
   BOND = 'BOND',
   UNIV2 = 'UNI-V2',
+  BTC = 'BTC',
+  USD = 'USD',
 }
 
 export type BaseTokenType = {
@@ -336,3 +338,26 @@ const TokensProvider: FC = props => {
 };
 
 export default TokensProvider;
+
+type AssetType = {
+  icon: TokenIconNames;
+};
+
+export function getAsset(symbol: string): AssetType | null {
+  switch (symbol) {
+    case 'BTC':
+      return {
+        icon: 'wbtc',
+      };
+    case 'ETH':
+      return {
+        icon: 'eth',
+      };
+    case 'USD':
+      return {
+        icon: 'usd',
+      };
+    default:
+      return null;
+  }
+}

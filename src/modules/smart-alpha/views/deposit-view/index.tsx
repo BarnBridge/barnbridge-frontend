@@ -4,7 +4,7 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom';
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
-import { useTokens } from 'components/providers/tokensProvider';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useFetchPool } from 'modules/smart-alpha/api';
@@ -46,6 +46,7 @@ const DepositView = () => {
   }
 
   const poolToken = getToken(pool.poolToken.symbol);
+  const oracleToken = getAsset(pool.oracleAssetSymbol);
 
   return (
     <>
@@ -76,7 +77,12 @@ const DepositView = () => {
         </div>
         <div className="flex col-gap-64 align-center mb-32">
           <div className="flex align-center">
-            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={40} bubble2Name="usd" className="mr-16" />
+            <TokenIcon
+              name={poolToken?.icon ?? 'unknown'}
+              size={40}
+              bubble2Name={oracleToken?.icon ?? 'unknown'}
+              className="mr-16"
+            />
             <div>
               <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
                 {pool.poolName}

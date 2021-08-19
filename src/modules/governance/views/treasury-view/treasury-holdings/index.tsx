@@ -323,13 +323,13 @@ const TreasuryHoldings: FC = () => {
           total={historyItemsCount}
           current={historyPage}
           pageSize={historyPageSize}
-          onChange={setHistoryPage}>
-          {({ total, from, to }) => (
+          onChange={setHistoryPage}
+          text={({ total, from, to }) => (
             <>
               Showing {from} to {to} out of {total} transactions
             </>
           )}
-        </TableFooter>
+        />
       </div>
     </>
   );

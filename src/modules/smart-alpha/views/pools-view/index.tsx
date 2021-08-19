@@ -6,7 +6,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 import { Button, Link } from 'components/button';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
-import { useTokens } from 'components/providers/tokensProvider';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
 // import { Icon } from 'components/icon';
 import { TokenIcon } from 'components/token-icon';
 import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
@@ -45,13 +45,19 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const { getToken } = useTokens();
 
   const poolToken = getToken(item.poolToken.symbol);
+  const oracleToken = getAsset(item.oracleAssetSymbol);
 
   return (
     <section
       className={classNames(s.poolCard, 'card p-24')}
       style={{ '--pool-card-progress': 30 } as React.CSSProperties}>
       <header className="flex align-center mb-32">
-        <TokenIcon name={poolToken?.icon ?? 'unknown'} size={40} bubble2Name="usd" className="mr-16" />
+        <TokenIcon
+          name={poolToken?.icon ?? 'unknown'}
+          size={40}
+          bubble2Name={oracleToken?.icon ?? 'unknown'}
+          className="mr-16"
+        />
         <div>
           <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
             {item.poolName}
