@@ -82,11 +82,11 @@ const VotingHeader: React.FC = () => {
           </Text>
           <Grid flow="col" gap={16} align="center">
             <Tooltip
-              title={formatToken(toClaim, {
+              title={formatToken(toClaim ?? 0, {
                 decimals: projectToken.decimals,
               })}>
               <Text type="h3" weight="bold" color="primary">
-                {formatToken(toClaim, {
+                {formatToken(toClaim ?? 0, {
                   hasLess: true,
                 })}
               </Text>
