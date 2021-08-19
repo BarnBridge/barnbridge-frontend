@@ -1,5 +1,8 @@
 import { Suspense, useMemo } from 'react';
 import { Redirect, Route, Switch, useParams } from 'react-router-dom';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken } from 'web3/utils';
+import Web3Contract from 'web3/web3Contract';
 
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
@@ -7,6 +10,7 @@ import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 
@@ -16,6 +20,7 @@ import { SeniorDeposit } from './senior';
 
 const DepositView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
+  const [reload] = useReload();
   const { data } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
 
@@ -40,6 +45,26 @@ const DepositView = () => {
       },
     );
   }, [pool]);
+
+  const poolTokenContract = useMemo(() => {
+    if (!pool) {
+      return;
+    }
+
+    return getOrCreateContract(
+      pool.poolToken.address,
+      () => {
+        const contract = new Erc20Contract([], pool.poolToken.address);
+        contract.on(Web3Contract.UPDATE_DATA, reload);
+        return contract;
+      },
+      {
+        afterInit: async contract => {
+          await contract.loadBalance();
+        },
+      },
+    );
+  }, [pool?.poolToken.address]);
 
   if (!pool) {
     return <Spinner style={{ margin: 'auto' }} />;
@@ -98,7 +123,7 @@ const DepositView = () => {
             </Text>
             <div className="flex align-center">
               <Text type="p1" weight="semibold" color="primary" className="mr-4">
-                81.2217
+                {formatToken(poolTokenContract?.getBalanceOf()?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
                 {pool.poolToken.symbol}
@@ -134,10 +159,18 @@ const DepositView = () => {
               <SelectTranche pool={pool} />
             </Route>
             <Route path="/smart-alpha/pools/:id/deposit/senior" exact>
-              <SeniorDeposit pool={pool} smartAlphaContract={smartAlphaContract} />
+              <SeniorDeposit
+                pool={pool}
+                smartAlphaContract={smartAlphaContract}
+                poolTokenContract={poolTokenContract}
+              />
             </Route>
             <Route path="/smart-alpha/pools/:id/deposit/junior" exact>
-              <JuniorDeposit pool={pool} smartAlphaContract={smartAlphaContract} />
+              <JuniorDeposit
+                pool={pool}
+                smartAlphaContract={smartAlphaContract}
+                poolTokenContract={poolTokenContract}
+              />
             </Route>
             <Redirect to={`/smart-alpha/pools/${poolAddress}/deposit`} />
           </Switch>

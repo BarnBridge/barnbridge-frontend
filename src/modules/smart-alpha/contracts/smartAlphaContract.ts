@@ -4,6 +4,9 @@ import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 const ABI: AbiItem[] = [
   // call
+  createAbiItem('epoch', [], ['uint256']),
+  createAbiItem('getCurrentEpoch', [], ['uint256']),
+
   createAbiItem('epochSeniorLiquidity', [], ['uint256']),
   createAbiItem('epochJuniorLiquidity', [], ['uint256']),
   createAbiItem('epochDownsideProtectionRate', [], ['uint256']),
@@ -46,6 +49,9 @@ class SmartAlphaContract extends Web3Contract {
     super(ABI, address, 'Smart Alpha');
   }
 
+  // common
+  epoch: number | undefined;
+  currentEpoch: number | undefined;
   epochSeniorLiquidity: BigNumber | undefined;
   epochJuniorLiquidity: BigNumber | undefined;
   epochDownsideProtectionRate: BigNumber | undefined;
@@ -62,8 +68,93 @@ class SmartAlphaContract extends Web3Contract {
   queuedJuniorsUnderlyingOut: BigNumber | undefined;
   queuedJuniorTokensBurn: BigNumber | undefined;
 
+  // computed
+  get epochTotalLiquidityRate(): BigNumber | undefined {
+    if (!this.epochSeniorLiquidity || !this.epochJuniorLiquidity) {
+      return undefined;
+    }
+
+    return this.epochSeniorLiquidity.plus(this.epochJuniorLiquidity);
+  }
+
+  get epochSeniorLiquidityRate(): number | undefined {
+    if (!this.epochSeniorLiquidity || !this.epochTotalLiquidityRate) {
+      return undefined;
+    }
+
+    return this.epochSeniorLiquidity.div(this.epochTotalLiquidityRate).toNumber();
+  }
+
+  get epochJuniorLiquidityRate(): number | undefined {
+    if (!this.epochJuniorLiquidity || !this.epochTotalLiquidityRate) {
+      return undefined;
+    }
+
+    return this.epochJuniorLiquidity.div(this.epochTotalLiquidityRate).toNumber();
+  }
+
+  get nextEpochSeniorLiquidity(): BigNumber | undefined {
+    if (
+      !this.estimateCurrentSeniorLiquidity ||
+      !this.queuedSeniorsUnderlyingIn ||
+      !this.queuedSeniorsUnderlyingOut ||
+      !this.queuedSeniorTokensBurn ||
+      !this.estimateCurrentSeniorTokenPrice
+    ) {
+      return undefined;
+    }
+
+    return this.estimateCurrentSeniorLiquidity
+      .plus(this.queuedSeniorsUnderlyingIn)
+      .minus(this.queuedSeniorsUnderlyingOut)
+      .minus(this.queuedSeniorTokensBurn.multipliedBy(this.estimateCurrentSeniorTokenPrice));
+  }
+
+  get nextEpochJuniorLiquidity(): BigNumber | undefined {
+    if (
+      !this.estimateCurrentJuniorLiquidity ||
+      !this.queuedJuniorsUnderlyingIn ||
+      !this.queuedJuniorsUnderlyingOut ||
+      !this.queuedJuniorTokensBurn ||
+      !this.estimateCurrentJuniorTokenPrice
+    ) {
+      return undefined;
+    }
+
+    return this.estimateCurrentJuniorLiquidity
+      .plus(this.queuedJuniorsUnderlyingIn)
+      .minus(this.queuedJuniorsUnderlyingOut)
+      .minus(this.queuedJuniorTokensBurn.multipliedBy(this.estimateCurrentJuniorTokenPrice));
+  }
+
+  get nextEpochTotalLiquidityRate(): BigNumber | undefined {
+    if (!this.nextEpochSeniorLiquidity || !this.nextEpochJuniorLiquidity) {
+      return undefined;
+    }
+
+    return this.nextEpochSeniorLiquidity.plus(this.nextEpochJuniorLiquidity);
+  }
+
+  get nextEpochSeniorLiquidityRate(): number | undefined {
+    if (!this.nextEpochSeniorLiquidity || !this.nextEpochTotalLiquidityRate) {
+      return undefined;
+    }
+
+    return this.nextEpochSeniorLiquidity.div(this.nextEpochTotalLiquidityRate).toNumber();
+  }
+
+  get nextEpochJuniorLiquidityRate(): number | undefined {
+    if (!this.nextEpochJuniorLiquidity || !this.nextEpochTotalLiquidityRate) {
+      return undefined;
+    }
+
+    return this.nextEpochJuniorLiquidity.div(this.nextEpochTotalLiquidityRate).toNumber();
+  }
+
   async loadCommon() {
     const [
+      epoch,
+      currentEpoch,
       epochSeniorLiquidity,
       epochJuniorLiquidity,
       epochDownsideProtectionRate,
@@ -80,6 +171,8 @@ class SmartAlphaContract extends Web3Contract {
       queuedJuniorsUnderlyingOut,
       queuedJuniorTokensBurn,
     ] = await this.batch([
+      { method: 'epoch' },
+      { method: 'getCurrentEpoch' },
       { method: 'epochSeniorLiquidity' },
       { method: 'epochJuniorLiquidity' },
       { method: 'epochDownsideProtectionRate' },
@@ -97,6 +190,8 @@ class SmartAlphaContract extends Web3Contract {
       { method: 'queuedJuniorTokensBurn' },
     ]);
 
+    this.epoch = Number(epoch);
+    this.currentEpoch = Number(currentEpoch);
     this.epochSeniorLiquidity = BigNumber.from(epochSeniorLiquidity);
     this.epochJuniorLiquidity = BigNumber.from(epochJuniorLiquidity);
     this.epochDownsideProtectionRate = BigNumber.from(epochDownsideProtectionRate);

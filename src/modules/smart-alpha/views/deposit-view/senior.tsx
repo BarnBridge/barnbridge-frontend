@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken } from 'web3/utils';
 
 import { Button } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
@@ -10,27 +12,60 @@ import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
+import { useReload } from 'hooks/useReload';
 import { PoolApiType } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
 type Props = {
   pool: PoolApiType;
   smartAlphaContract: SmartAlphaContract | undefined;
+  poolTokenContract: Erc20Contract | undefined;
 };
 
-export const SeniorDeposit = ({ pool, smartAlphaContract }: Props) => {
+export const SeniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: Props) => {
+  const wallet = useWallet();
+  const [reload, version] = useReload();
   const { getToken } = useTokens();
+
   const [tokenState, setTokenState] = useState('');
-  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [depositQueueBalance, setDepositQueueBalance] = useState<BigNumber | undefined>();
+  const [enabling, setEnabling] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   const poolToken = getToken(pool.poolToken.symbol);
+  const tokenMax = poolTokenContract?.getBalanceOf()?.unscaleBy(pool.poolToken.decimals);
+  const isPoolTokenEnabled = poolTokenContract?.isAllowedOf(pool.poolAddress);
 
-  const tokenMax = new BigNumber(3.21312);
+  useEffect(() => {
+    if (!wallet.account) {
+      return;
+    }
+
+    poolTokenContract?.loadBalance();
+    poolTokenContract?.loadAllowance(pool.poolAddress);
+    smartAlphaContract?.seniorEntryQueue(wallet.account).then(([epoch, amount]) => {
+      setDepositQueueBalance(amount);
+    });
+  }, [wallet.account, version]);
+
+  async function handlePoolTokenEnable() {
+    setEnabling(true);
+
+    try {
+      await poolTokenContract?.approve(smartAlphaContract?.address, true);
+    } catch (e) {
+      console.error(e);
+    }
+
+    setEnabling(false);
+  }
 
   async function handleDeposit(gasPrice: number) {
+    setConfirmModalVisible(false);
     setSaving(true);
 
     try {
@@ -38,6 +73,8 @@ export const SeniorDeposit = ({ pool, smartAlphaContract }: Props) => {
 
       if (amount) {
         await smartAlphaContract?.depositSenior(amount, gasPrice);
+        setTokenState('');
+        reload();
       }
     } catch (e) {
       console.error(e);
@@ -55,21 +92,26 @@ export const SeniorDeposit = ({ pool, smartAlphaContract }: Props) => {
         Choose the amount of tokens you want to deposit in the senior side. Make sure you double check the amounts.
       </Text>
 
-      <div className={classNames(s.depositBalance, 'mb-32')}>
-        <Hint
-          text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+      {depositQueueBalance?.gt(0) && (
+        <div className={classNames(s.depositBalance, 'mb-32')}>
+          <Hint
+            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
           magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
           consequat."
-          className="mb-4">
-          <Text type="small" weight="semibold" color="secondary">
-            Balance in deposit queue
+            className="mb-4">
+            <Text type="small" weight="semibold" color="secondary">
+              Balance in deposit queue
+            </Text>
+          </Hint>
+          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+            {(smartAlphaContract?.epoch === smartAlphaContract?.currentEpoch &&
+              formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals))) ??
+              '-'}
+            {smartAlphaContract?.epoch! < smartAlphaContract?.currentEpoch! && '0'}
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
           </Text>
-        </Hint>
-        <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-          40.0000
-          <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
-        </Text>
-      </div>
+        </div>
+      )}
 
       <Text type="small" weight="semibold" color="secondary" className="mb-8">
         wETH amount
@@ -85,9 +127,19 @@ export const SeniorDeposit = ({ pool, smartAlphaContract }: Props) => {
       />
 
       <div className="flex justify-end align-center">
-        <Button variation="primary">Enable {pool.poolToken.symbol}</Button>
-        <Icon name="chevron" size={16} color="icon" className="ml-12 mr-12" />
-        <Button variation="primary" onClick={() => setConfirmModalVisible(true)}>
+        {isPoolTokenEnabled === false && (
+          <>
+            <Button variation="primary" disabled={enabling} onClick={handlePoolTokenEnable}>
+              {enabling && <Spinner className="mr-8" />}
+              Enable {pool.poolToken.symbol}
+            </Button>
+            <Icon name="chevron" size={16} color="icon" className="ml-12 mr-12" />
+          </>
+        )}
+        <Button
+          variation="primary"
+          disabled={saving || !isPoolTokenEnabled}
+          onClick={() => setConfirmModalVisible(true)}>
           {saving && <Spinner className="mr-8" />}
           Deposit
         </Button>
