@@ -3,7 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 import classnames from 'classnames';
 
 import Button from 'components/antd/button';
-import Icon, { IconNames } from 'components/custom/icon';
+import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -51,8 +51,8 @@ const LayoutHeader: React.FC = () => {
           <Route path="/yield-farming">Yield Farming</Route>
           <Route path="/governance">Governance</Route>
           <Route path="/smart-yield">SMART Yield</Route>
-          <Route path="/smart-alpha">SMART Alpha</Route>
           <Route path="/smart-exposure">SMART Exposure</Route>
+          <Route path="/smart-alpha">SMART Alpha</Route>
           <Route path="/faucets">Faucets</Route>
           <Route path="*">BarnBridge</Route>
         </Switch>

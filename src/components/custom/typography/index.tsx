@@ -16,29 +16,40 @@ export type TextProps = {
   wrap?: boolean;
   className?: string;
   style?: Partial<CSSStyleDeclaration>;
-  title?: string;
+  tooltip?: string;
 };
 
 export const Text: React.FC<TextProps> = React.memo(props => {
-  const { tag = 'div', type, weight, color, align, ellipsis, wrap, className, children, ...textProps } = props;
+  const { tag = 'div', type, weight, color, align, ellipsis, wrap, className, children, tooltip, ...textProps } = props;
 
-  return React.createElement(
+  const textComponent = React.createElement(
     tag,
     {
-      className: cn(
-        s.text,
-        s[type],
-        weight && s[`weight-${weight}`],
-        color && s[`${color}-color`],
-        align && `text-${align}`,
-        ellipsis && 'text-ellipsis',
-        wrap === true && 'text-wrap',
-        wrap === false && 'text-nowrap',
-        className,
-      ),
+      className: cn(s.text, s[type], className, {
+        [s.hasTooltip]: tooltip,
+        [s[`weight-${weight}`]]: weight,
+        [s[`${color}-color`]]: color,
+        [`text-${align}`]: align,
+        'text-ellipsis': ellipsis,
+        'text-wrap': wrap,
+        'text-nowrap': wrap === false,
+      }),
       ...textProps,
     },
     children,
+  );
+
+  return tooltip ? (
+    <Tooltip
+      title={tooltip}
+      className={cn(s.tooltip, 'text-p2', 'primary-color')}
+      // overlayStyle={overlayStyle}
+      // overlayInnerStyle={overlayStyle}
+    >
+      {textComponent}
+    </Tooltip>
+  ) : (
+    textComponent
   );
 });
 
@@ -67,9 +78,7 @@ export const Hint: React.FC<HintProps> = props => {
         className={cn(s.tooltip, 'text-p2', 'primary-color')}
         overlayStyle={overlayStyle}
         overlayInnerStyle={overlayStyle}>
-        <span>
-          <Icon name="info" size={16} className={s.icon} color="icon" />
-        </span>
+        <Icon name="info" size={16} className={s.icon} color="icon" />
       </Tooltip>
     </div>
   );

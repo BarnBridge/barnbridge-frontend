@@ -1,0 +1,25 @@
+@import 'src/styles/text';
+
+.alert {
+  @include font-p2-semi-bold;
+  padding: 16px 24px;
+  display: flex;
+  border-radius: 4px;
+}
+
+.info {
+  background: rgba(79, 106, 229, 0.04);
+  border: 1px solid rgba(79, 106, 229, 0.32);
+  color: #4f6ae5;
+}
+
+.warning {
+  background: rgba(204, 167, 77, 0.04);
+  border: 1px solid rgba(204, 167, 77, 0.32);
+  color: #cca74d;
+}
+
+.error {
+  background: rgba(204, 167, 77, 0.04);
+  border: 1px solid rgba(204, 167, 77, 0.32);
+}

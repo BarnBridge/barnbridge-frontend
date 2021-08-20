@@ -14,9 +14,9 @@ import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { RadioCard } from 'components/radio-card';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
-import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useWallet } from 'wallets/walletProvider';
 
 import { isValidAddress } from 'utils';

@@ -2,15 +2,13 @@ import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
-import { NavTabs } from 'components/custom/tabs';
+import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import SeAPIProvider from 'modules/smart-exposure/api';
 import { SEPoolsProvider } from 'modules/smart-exposure/providers/se-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
 import { PoolActionsView } from './views/pool-actions-view';
-
-import s from './s.module.scss';
 
 const PoolsView = lazy(() => import(/* webpackChunkName: "pools-view" */ './views/pools-view'));
 const TrancheView = lazy(() => import(/* webpackChunkName: "tranche-view" */ './views/tranche-view'));
@@ -42,7 +40,7 @@ const SmartExposureView: React.FC = () => {
 
   return (
     <>
-      <NavTabs tabs={tabs} className={s.tabs} />
+      <HorizontalMenu tabs={tabs} />
       <div className="content-container-fix content-container">
         <SeAPIProvider>
           <SEPoolsProvider>

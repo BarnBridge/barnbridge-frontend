@@ -69,21 +69,45 @@ type TableFooterType = {
   pageSize: number;
   children?: JSX.Element | (({ total, from, to }: { total: number; from: number; to: number }) => JSX.Element);
   onChange: (page: number) => void;
+  text?: boolean | (({ total, from, to }) => React.ReactNode);
 };
 
-export const TableFooter: React.FC<TableFooterType> = ({ children, total, current, pageSize, onChange }) => {
+export const TableFooter: React.FC<TableFooterType> = ({ children, text, total, current, pageSize, onChange }) => {
+  const generatedText = generateText({ text, total, current, pageSize });
   return (
     <div className="flex p-24">
-      <Text type="p2" weight="semibold" color="secondary">
-        {typeof children === 'function'
-          ? children({
-              total,
-              from: total ? (current - 1) * pageSize + 1 : 0,
-              to: current * pageSize > total ? total : current * pageSize,
-            })
-          : children}
-      </Text>
+      {generatedText ? (
+        <Text type="p2" weight="semibold" color="secondary">
+          {generatedText}
+        </Text>
+      ) : null}
       <Pagination className="ml-auto" total={total} current={current} pageSize={pageSize} onChange={onChange} />
     </div>
   );
 };
+
+function generateText({ text, total, current, pageSize }) {
+  let generatedText: React.ReactNode;
+  if (text) {
+    const from = total ? (current - 1) * pageSize + 1 : 0;
+    const to = current * pageSize > total ? total : current * pageSize;
+
+    if (typeof text === 'function') {
+      generatedText = text({
+        total,
+        from,
+        to,
+      });
+    }
+
+    if (text === true) {
+      generatedText = (
+        <>
+          Showing {from} to {to} out of {total} entries
+        </>
+      );
+    }
+  }
+
+  return generatedText;
+}

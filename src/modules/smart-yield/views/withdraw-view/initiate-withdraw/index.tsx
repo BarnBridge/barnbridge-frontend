@@ -10,8 +10,8 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
+import { RadioCard } from 'components/radio-card';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
 import { getFormattedDuration } from 'utils';

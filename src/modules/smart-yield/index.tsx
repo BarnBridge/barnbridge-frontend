@@ -3,7 +3,7 @@ import { NavLinkProps, Redirect, Route, Switch, useRouteMatch } from 'react-rout
 import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
-import { NavTabs } from 'components/custom/tabs';
+import { HorizontalMenu } from 'components/custom/tabs';
 import { useConfig } from 'components/providers/configProvider';
 import SyAPIProvider from 'modules/smart-yield/api';
 import RewardPoolProvider from 'modules/smart-yield/providers/reward-pool-provider';
@@ -100,7 +100,7 @@ const SmartYieldView: React.FC = () => {
 
   return (
     <SyAPIProvider>
-      <NavTabs tabs={tabs} className={s.tabs} />
+      <HorizontalMenu tabs={tabs} />
       <div className="content-container-fix content-container">
         <Suspense fallback={<AntdSpin />}>
           <Switch>

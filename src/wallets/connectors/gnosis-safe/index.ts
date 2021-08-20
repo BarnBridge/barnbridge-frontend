@@ -15,7 +15,7 @@ class GnosisSafeConnector extends AbstractConnector {
   private _account?: string;
 
   activate(): Promise<ConnectorUpdate> {
-    return GnosisAppsSDK.getSafeInfo().then(safe => {
+    return GnosisAppsSDK.safe.getInfo().then(safe => {
       this._provider = new SafeAppProvider(safe, GnosisAppsSDK);
       this._chainId = this._provider?.chainId;
       this._account = safe.safeAddress;

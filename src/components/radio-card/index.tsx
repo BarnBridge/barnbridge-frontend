@@ -9,7 +9,7 @@ type Props = {
   onClick: (e: any) => void;
 };
 
-const RadioCard: React.FC<Props> = props => {
+export const RadioCard: React.FC<Props> = props => {
   const { children, selected = false, ...rest } = props;
 
   return (
@@ -19,4 +19,6 @@ const RadioCard: React.FC<Props> = props => {
   );
 };
 
-export default RadioCard;
+export const RadioCards: React.FC<{ className?: string }> = ({ className, ...rest }) => (
+  <div className={cn(s.cards, className)} {...rest} />
+);
