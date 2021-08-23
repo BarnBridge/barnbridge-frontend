@@ -91,15 +91,23 @@ const SimulateEpoch = () => {
               <BarChart
                 data={[
                   {
-                    price: -10,
-                    senior: -2.17,
-                    junior: -21.7,
+                    price: -10 / 100,
+                    senior: -2.17 / 100,
+                    junior: -21.7 / 100,
                   },
                 ]}>
                 <YAxis
                   axisLine={false}
                   tickLine={false}
-                  tickFormatter={value => (value ? formatPercent(value) : value)}
+                  tickFormatter={value =>
+                    value
+                      ? new Intl.NumberFormat('en', {
+                          style: 'percent',
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }).format(value)
+                      : value
+                  }
                 />
                 <Bar dataKey="price" fill="var(--theme-red-color)" />
                 <Bar dataKey="senior" fill="var(--theme-green-color)" />
