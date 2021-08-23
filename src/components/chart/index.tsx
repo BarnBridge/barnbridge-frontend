@@ -23,7 +23,7 @@ interface PropsType<X = number, Y = number> {
     items: {
       key: string;
       title: string;
-      color: 'red' | 'green' | 'blue' | 'yellow' | 'purple';
+      color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'grey';
       yAxisId?: 'left' | 'right';
     }[];
   };
@@ -110,7 +110,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               tickFormatter={x.format}
               ticks={x.ticks}
             />
-            <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} yAxisId="left" />
+            <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="left" yAxisId="left" />
             {hasRightYAxis && (
               <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="right" yAxisId="right" />
             )}
@@ -125,14 +125,13 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
                 stroke={`var(--theme-${y.items[idx].color}-color)`}
                 strokeWidth={2}
                 yAxisId={areaItem.yAxisId ?? 'left'}
+                strokeDasharray={areaItem.yAxisId === 'right' ? '3 3' : ''}
               />
             ))}
             <Tooltip
-              // separator=""
               labelFormatter={value => (
                 <div className={s.tooltipTitle}>{value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}</div>
               )}
-              // formatter={(value: number, _: any, { dataKey }: any) => <span style={{ marginLeft: 8 }}>{value}</span>}
               content={ttprops => renderTooltip(ttprops, x.itemFormat, y.itemsFormat)}
             />
             <Legend content={renderLegend} />

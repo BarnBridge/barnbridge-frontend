@@ -1,0 +1,29 @@
+@import 'src/styles/text';
+
+.legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px 24px;
+  margin-top: 16px;
+}
+
+.legendItem {
+  @include font-sm-semi-bold;
+  background: var(--theme-body-color);
+  color: var(--theme-secondary-color);
+  border-radius: 4px;
+  padding: 8px 12px;
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    background-color: var(--dot-color, var(--theme-primary-color));
+    border-radius: 50%;
+    margin-right: 8px;
+  }
+}

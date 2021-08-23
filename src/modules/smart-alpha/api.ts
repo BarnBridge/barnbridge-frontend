@@ -86,6 +86,7 @@ type PoolPerformanceApiType = {
   seniorWithoutSA: string;
   juniorWithSA: string;
   juniorWithoutSA: string;
+  underlyingPrice: string;
 };
 
 type PoolPerformanceType = {
@@ -94,6 +95,7 @@ type PoolPerformanceType = {
   seniorWithoutSA: number;
   juniorWithSA: number;
   juniorWithoutSA: number;
+  underlyingPrice: number;
 };
 
 export function useFetchPoolPerformance(
@@ -109,12 +111,13 @@ export function useFetchPoolPerformance(
 
   return useFetch(url, {
     transform: ({ data }: { data: PoolPerformanceApiType[] }) =>
-      data.map(({ seniorWithSA, seniorWithoutSA, juniorWithSA, juniorWithoutSA, ...rest }) => ({
+      data.map(({ seniorWithSA, seniorWithoutSA, juniorWithSA, juniorWithoutSA, underlyingPrice, ...rest }) => ({
         ...rest,
         seniorWithSA: Number(seniorWithSA),
         seniorWithoutSA: Number(seniorWithoutSA),
         juniorWithSA: Number(juniorWithSA),
         juniorWithoutSA: Number(juniorWithoutSA),
+        underlyingPrice: Number(underlyingPrice),
       })),
   });
 }

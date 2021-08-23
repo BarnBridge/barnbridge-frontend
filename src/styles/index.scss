@@ -91,6 +91,9 @@ body.mobile-menu-open {
   --theme-purple-color-rgb: 162, 110, 227; // purple500
   --theme-purple700-color: #614288;
 
+  --theme-grey-color: #c6c9cc;
+  --theme-grey-color-rgb: 198, 201, 204;
+  --theme-grey200-color: #c6c9cc;
   --theme-grey900-color: #060a0d;
 
   --theme-white-color: #fff;
@@ -136,6 +139,8 @@ body.mobile-menu-open {
 
   --theme-input-background: #202529;
   --theme-input-placeholder: #606268;
+
+  --theme-grey-color: #606268;
 }
 
 :focus:not(:focus-visible) {

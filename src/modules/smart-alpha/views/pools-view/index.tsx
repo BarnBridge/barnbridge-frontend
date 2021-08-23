@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
+import { addSeconds, getUnixTime } from 'date-fns';
 import { formatPercent, formatUSD } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
@@ -9,6 +10,7 @@ import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 // import { Icon } from 'components/icon';
 import { TokenIcon } from 'components/token-icon';
+import { UseLeftTime } from 'hooks/useLeftTime';
 import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
 
 import { getRelativeTime } from 'utils';
@@ -47,10 +49,14 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const poolToken = getToken(item.poolToken.symbol);
   const oracleToken = getAsset(item.oracleAssetSymbol);
 
+  const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
+  const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
+  const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
+
   return (
     <section
       className={classNames(s.poolCard, 'card p-24')}
-      style={{ '--pool-card-progress': 30 } as React.CSSProperties}>
+      style={{ '--pool-card-progress': currentEpochProgressPercent * 100 } as React.CSSProperties}>
       <header className="flex align-center mb-32">
         <TokenIcon
           name={poolToken?.icon ?? 'unknown'}
@@ -71,7 +77,10 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         <div className={s.poolCardDlRow}>
           <dt>Epoch senior liquidity</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD(item.state.seniorLiquidity)}>
+            <Text
+              type="p1"
+              weight="semibold"
+              tooltip={formatUSD(item.state.seniorLiquidity, { decimals: 8, compact: true })}>
               {formatUSD(item.state.seniorLiquidity, { compact: true })}
             </Text>
           </dd>
@@ -95,7 +104,10 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         <div className={s.poolCardDlRow}>
           <dt>Epoch junior liquidity</dt>
           <dd>
-            <Text type="p1" weight="semibold" tooltip={formatUSD(item.state.juniorLiquidity)}>
+            <Text
+              type="p1"
+              weight="semibold"
+              tooltip={formatUSD(item.state.juniorLiquidity, { decimals: 8, compact: true })}>
               {formatUSD(item.state.juniorLiquidity, { compact: true })}
             </Text>
           </dd>
@@ -103,9 +115,13 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         <div className={s.poolCardDlRow}>
           <dt>Epoch ends in</dt>
           <dd>
-            <Text type="p1" weight="semibold">
-              {getRelativeTime(item.epoch1Start / 1000)}
-            </Text>
+            <UseLeftTime delay={1_000} end={0}>
+              {() => (
+                <Text type="p1" weight="semibold">
+                  {getRelativeTime(item.epochDuration - currentEpochProgress)}
+                </Text>
+              )}
+            </UseLeftTime>
           </dd>
         </div>
       </dl>

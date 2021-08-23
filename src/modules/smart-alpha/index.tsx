@@ -11,6 +11,7 @@ const PoolView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './v
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
 const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view" */ './views/portfolio-view'));
+const SimulateEpoch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/simulate-epoch'));
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -55,6 +56,9 @@ const SmartAlphaView: React.FC = () => {
             </Route>
             <Route path="/smart-alpha/portfolio">
               <PortfolioView />
+            </Route>
+            <Route path="/smart-alpha/simulate-epoch">
+              <SimulateEpoch />
             </Route>
             <Redirect to="/smart-alpha/pools" />
           </Switch>
