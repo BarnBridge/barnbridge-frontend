@@ -19,6 +19,8 @@ export type PoolApiType = {
     symbol: Tokens;
   };
   seniorTokenAddress: string;
+  seniorRateModelAddress: string;
+  accountingModelAddress: string;
   state: {
     downsideProtectionRate: string;
     epoch: number;

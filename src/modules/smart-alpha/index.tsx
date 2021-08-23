@@ -6,8 +6,8 @@ import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
-const PoolsView = lazy(() => import(/* webpackChunkName: "sa-markets-view" */ './views/pools-view'));
-const PoolView = lazy(() => import(/* webpackChunkName: "sa-market-view" */ './views/pool-view'));
+const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
+const PoolView = lazy(() => import(/* webpackChunkName: "sa-pool-view" */ './views/pool-view'));
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
 const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view" */ './views/portfolio-view'));
