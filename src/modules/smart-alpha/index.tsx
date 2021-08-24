@@ -12,6 +12,9 @@ const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ 
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
 const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view" */ './views/portfolio-view'));
 const SimulateEpoch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/simulate-epoch'));
+const Launch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/launch'));
+
+const launchDate = new Date('2021-09-01');
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -35,6 +38,14 @@ const SmartAlphaView: React.FC = () => {
       disabled: !wallet.account,
     },
   ];
+
+  if (new Date() < launchDate) {
+    return (
+      <div className="content-container-fix content-container">
+        <Launch launchDate={launchDate} />
+      </div>
+    );
+  }
 
   return (
     <>
