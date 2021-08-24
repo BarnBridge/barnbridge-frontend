@@ -175,7 +175,7 @@ const SimulateEpoch = () => {
     <>
       <Form form={form}>
         <div className="card p-24 flex col-gap-24 flex-grow mb-32">
-          <FormItem name="pricePerf" label="Price performance (%)" className="flex-grow">
+          <FormItem name="pricePerf" label="Price performance (%)" labelProps={{ hint: 'TBD' }} className="flex-grow">
             {({ field }) => (
               <Input
                 placeholder="0"
@@ -187,7 +187,11 @@ const SimulateEpoch = () => {
               />
             )}
           </FormItem>
-          <FormItem name="juniorDominance" label="Junior dominance (%)" className="flex-grow">
+          <FormItem
+            name="juniorDominance"
+            label="Junior dominance (%)"
+            labelProps={{ hint: 'TBD' }}
+            className="flex-grow">
             {({ field }) => (
               <Input
                 placeholder="0"
@@ -201,7 +205,7 @@ const SimulateEpoch = () => {
           </FormItem>
         </div>
       </Form>
-      <div className="flex col-gap-32 flex-grow">
+      <div className={s.cards}>
         <section className="card">
           <header className="card-header">
             <Text type="p1" weight="semibold" color="primary">
@@ -268,7 +272,7 @@ const SimulateEpoch = () => {
             </Text>
           </header>
           <div className="p-24">
-            <ResponsiveContainer width="100%" height={300}>
+            <ResponsiveContainer width={'99%'} height={300}>
               <BarChart
                 data={[
                   {

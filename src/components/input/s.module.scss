@@ -35,9 +35,3 @@
     padding-right: 19px;
   }
 }
-
-.text {
-  @include font-sm-semi-bold;
-  color: var(--theme-secondary-color);
-  margin-bottom: 8px;
-}
