@@ -12,7 +12,7 @@ import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import ChainlinkOracleContract from 'modules/smart-alpha/contracts/chainlinkOracleContract';
-import SeniorRateModelContract from 'modules/smart-alpha/contracts/SeniorRateModelContract';
+import SeniorRateModelContract from 'modules/smart-alpha/contracts/seniorRateModelContract';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -138,7 +138,7 @@ const PoolView = () => {
           </div>
         </div>
         <div className="flex col-gap-24 ml-auto">
-          <Link to={`${location.pathname}/simulate`} variation="ghost" aria-disabled={!wallet.account}>
+          <Link to={`/smart-alpha/simulate-epoch`} variation="ghost" aria-disabled={!wallet.account}>
             Simulate
           </Link>
           <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
@@ -277,7 +277,7 @@ const PoolView = () => {
         <section className={classNames(s.epochCard, s.epochCardSecondary)}>
           <div className={s.epochCardTitleWrap}>
             <Text type="lb2" weight="bold" tag="h3" color="secondary" className={s.epochCardTitle}>
-              EPOCH {smartAlphaContract?.epoch ? smartAlphaContract.epoch + 1 : '-'} - ESTIMATES
+              EPOCH {smartAlphaContract?.currentEpoch ? smartAlphaContract.currentEpoch + 1 : '-'} - ESTIMATES
             </Text>
           </div>
           <header className={classNames(s.epochCardHeader, 'mb-24')}>

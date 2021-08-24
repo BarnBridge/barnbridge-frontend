@@ -190,20 +190,20 @@ export type FormItemRender = {
 export type FormItemProps = {
   name: string;
   label?: string;
-  labelProps?: FieldLabelProps;
+  labelProps?: Omit<FieldLabelProps, 'label'>;
   showError?: boolean;
   children: (field: FormItemRender) => ReactElement;
 };
 
 export function FormItem(props: CP<FormItemProps>) {
-  const { children, name, label, labelProps = {}, showError = true } = props;
+  const { children, name, label, labelProps = {}, showError = true, className } = props;
   const { form } = useContext(InternalContext);
 
   return (
     <ConditionalWrapper
       condition={!!label}
       wrapper={children => (
-        <FieldLabel label={label} {...labelProps}>
+        <FieldLabel label={label} className={className} {...labelProps}>
           {children}
         </FieldLabel>
       )}>
