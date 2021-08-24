@@ -210,11 +210,8 @@ class SmartAlphaContract extends Web3Contract {
     this.emit(Web3Contract.UPDATE_DATA);
   }
 
-  seniorEntryQueue(address: string): Promise<[BigNumber | undefined, BigNumber | undefined]> {
-    return this.call('seniorEntryQueue', [address], {}).then(result => [
-      BigNumber.from(result[0]),
-      BigNumber.from(result[1]),
-    ]);
+  seniorEntryQueue(address: string): Promise<[number, BigNumber | undefined]> {
+    return this.call('seniorEntryQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
   seniorExitQueue(address: string): Promise<[BigNumber | undefined, BigNumber | undefined]> {
@@ -224,11 +221,8 @@ class SmartAlphaContract extends Web3Contract {
     ]);
   }
 
-  juniorEntryQueue(address: string): Promise<[BigNumber | undefined, BigNumber | undefined]> {
-    return this.call('juniorEntryQueue', [address], {}).then(result => [
-      BigNumber.from(result[0]),
-      BigNumber.from(result[1]),
-    ]);
+  juniorEntryQueue(address: string): Promise<[number, BigNumber | undefined]> {
+    return this.call('juniorEntryQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
   juniorExitQueue(address: string): Promise<[BigNumber | undefined, BigNumber | undefined]> {

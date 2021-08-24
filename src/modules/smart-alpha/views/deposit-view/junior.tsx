@@ -10,7 +10,7 @@ import { Spinner } from 'components/custom/spinner';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { useTokens } from 'components/providers/tokensProvider';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 import { PoolApiType } from 'modules/smart-alpha/api';
@@ -31,12 +31,15 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
   const { getToken } = useTokens();
 
   const [tokenState, setTokenState] = useState('');
+  const [epoch, setEpoch] = useState<number | undefined>();
   const [depositQueueBalance, setDepositQueueBalance] = useState<BigNumber | undefined>();
+  const [historyTokenPrice, setHistoryTokenPrice] = useState<BigNumber | undefined>();
   const [enabling, setEnabling] = useState(false);
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   const poolToken = getToken(pool.poolToken.symbol);
+  const oracleToken = getAsset(pool.oracleAssetSymbol);
   const tokenMax = poolTokenContract?.getBalanceOf()?.unscaleBy(pool.poolToken.decimals);
   const isPoolTokenEnabled = poolTokenContract?.isAllowedOf(pool.poolAddress);
 
@@ -48,7 +51,12 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
     poolTokenContract?.loadBalance();
     poolTokenContract?.loadAllowance(pool.poolAddress);
     smartAlphaContract?.juniorEntryQueue(wallet.account).then(([epoch, amount]) => {
+      setEpoch(epoch);
       setDepositQueueBalance(amount);
+
+      smartAlphaContract?.historyEpochJuniorTokenPrice(epoch).then(price => {
+        setHistoryTokenPrice(price);
+      });
     });
   }, [wallet.account, version]);
 
@@ -93,23 +101,43 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
       </Text>
 
       {depositQueueBalance?.gt(0) && (
-        <div className={classNames(s.depositBalance, 'mb-32')}>
-          <Hint
-            text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
+        <div className={classNames(s.depositBalance, 'flex col-gap-32 mb-32')}>
+          <div>
+            <Hint
+              text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
           magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
           consequat."
-            className="mb-4">
-            <Text type="small" weight="semibold" color="secondary">
-              Balance in deposit queue
+              className="mb-4">
+              <Text type="small" weight="semibold" color="secondary">
+                Balance in deposit queue
+              </Text>
+            </Hint>
+            <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+              {(epoch === smartAlphaContract?.currentEpoch &&
+                formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals))) ??
+                '-'}
+              {epoch! < smartAlphaContract?.currentEpoch! && '0'}
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
             </Text>
-          </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-            {(smartAlphaContract?.epoch === smartAlphaContract?.currentEpoch &&
-              formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals))) ??
-              '-'}
-            {smartAlphaContract?.epoch! < smartAlphaContract?.currentEpoch! && '0'}
-            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
-          </Text>
+          </div>
+          {epoch! < smartAlphaContract?.currentEpoch! && (
+            <div>
+              <Text type="small" weight="semibold" color="secondary">
+                Unclaimed junior tokens
+              </Text>
+              <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                {formatToken(depositQueueBalance.div(historyTokenPrice ?? 0)) ?? '-'}
+                <TokenIcon
+                  name={poolToken?.icon ?? 'unknown'}
+                  outline="green"
+                  bubble1Name="bond"
+                  bubble2Name={oracleToken?.icon ?? 'unknown'}
+                  size={16}
+                  className="ml-8"
+                />
+              </Text>
+            </div>
+          )}
         </div>
       )}
 

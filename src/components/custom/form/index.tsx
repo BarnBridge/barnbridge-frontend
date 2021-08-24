@@ -196,14 +196,14 @@ export type FormItemProps = {
 };
 
 export function FormItem(props: CP<FormItemProps>) {
-  const { children, name, label, labelProps = {}, showError = true } = props;
+  const { children, name, label, labelProps = {}, showError = true, className } = props;
   const { form } = useContext(InternalContext);
 
   return (
     <ConditionalWrapper
       condition={!!label}
       wrapper={children => (
-        <FieldLabel label={label} {...labelProps}>
+        <FieldLabel label={label} className={className} {...labelProps}>
           {children}
         </FieldLabel>
       )}>

@@ -5,18 +5,16 @@
   align-items: center;
   justify-content: center;
   gap: 16px 24px;
-  margin-top: 16px;
+  margin-top: 32px;
 }
 
 .legendItem {
-  @include font-sm-semi-bold;
   background: var(--theme-body-color);
-  color: var(--theme-secondary-color);
   border-radius: 4px;
   padding: 8px 12px;
   position: relative;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 
   &::before {
     content: '';
