@@ -1,8 +1,4 @@
-@import 'src/styles/text';
-
 .text {
-  font-weight: normal;
-
   &.weight-semibold {
     font-weight: 600;
   }
@@ -12,47 +8,35 @@
   }
 
   &.h1 {
-    font-size: var(--font-size-h1);
-    line-height: calc(var(--font-size-h1) + 8px);
+    font: var(--font-h1);
   }
 
   &.h2 {
-    font-size: var(--font-size-h2);
-    line-height: calc(var(--font-size-h2) + 8px);
+    font: var(--font-h2);
   }
 
   &.h3 {
-    font-size: var(--font-size-h3);
-    line-height: calc(var(--font-size-h3) + 6px);
+    font: var(--font-h3);
   }
 
   &.p1 {
-    font-size: var(--font-size-p1);
-    line-height: calc(var(--font-size-p1) + 8px);
+    font: var(--font-p1);
   }
 
   &.p2 {
-    font-size: var(--font-size-p2);
-    line-height: calc(var(--font-size-p2) + 10px);
+    font: var(--font-p2);
   }
 
   &.lb1 {
-    font-size: var(--font-size-lb1);
-    letter-spacing: 0.04em;
-    line-height: calc(var(--font-size-lb1) + 10px);
-    text-transform: uppercase;
+    font: var(--font-lb1);
   }
 
   &.lb2 {
-    font-size: var(--font-size-lb2);
-    letter-spacing: 0.04em;
-    line-height: calc(var(--font-size-lb2) + 4px);
-    text-transform: uppercase;
+    font: var(--font-lb2);
   }
 
   &.small {
-    font-size: var(--font-size-sm);
-    line-height: calc(var(--font-size-sm) + 4px);
+    font: var(--font-sm);
   }
 
   &.primary-color {

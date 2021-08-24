@@ -1,7 +1,6 @@
-@import 'src/styles/text';
-
 .component {
-  @include font-p1-semi-bold;
+  font: var(--font-p1);
+  font-weight: 600;
   width: 100%;
   min-height: 64px;
   padding: 20px 24px;

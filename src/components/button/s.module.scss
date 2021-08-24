@@ -1,5 +1,3 @@
-@import 'src/styles/text';
-
 @mixin button-base {
   display: flex;
   flex-direction: row;
@@ -173,7 +171,8 @@
 }
 
 .text {
-  @include font-p2-bold;
+  font: var(--font-p2);
+  font-weight: bold;
   color: var(--theme-red-color);
   border: 0;
   background-color: transparent;
@@ -199,8 +198,8 @@
 }
 
 .text-alt {
-  @include font-p2-bold;
-
+  font: var(--font-p2);
+  font-weight: bold;
   color: var(--theme-secondary-color);
   border: 0;
   background-color: transparent;
@@ -226,8 +225,8 @@
 }
 
 .link {
-  @include font-p2-semi-bold;
-
+  font: var(--font-p2);
+  font-weight: 600;
   color: var(--theme-blue-color);
   background-color: transparent;
   border: 0;

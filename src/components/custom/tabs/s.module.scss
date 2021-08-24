@@ -1,5 +1,3 @@
-@import 'src/styles/text';
-
 .tabs {
   overflow-x: auto;
   display: flex;
@@ -18,7 +16,8 @@
   }
 
   .tab {
-    @include font-p1-semi-bold;
+    font: var(--font-p1);
+    font-weight: 600;
     margin-right: 32px;
     color: var(--theme-secondary-color);
     display: flex;
@@ -120,7 +119,8 @@
   }
 
   .tab {
-    @include font-sm-semi-bold;
+    font: var(--font-sm);
+    font-weight: 600;
     color: var(--theme-secondary-color);
     display: flex;
     align-items: center;
