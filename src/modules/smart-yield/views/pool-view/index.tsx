@@ -1,5 +1,6 @@
 import React, { FC } from 'react';
 import { Link } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken } from 'web3/utils';
 
@@ -29,6 +30,10 @@ const PoolView: FC = () => {
   }
 
   const { rewardPool, smartYield, apr, apy } = pool;
+
+  const hasZeroBondRewardLeft = rewardTokens.find(
+    rewardToken => !!(rewardToken === bondToken && rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()),
+  );
 
   return (
     <div className="container-limit">
@@ -73,7 +78,7 @@ const PoolView: FC = () => {
               <AprLabel
                 icons={pool.meta.poolType === 'MULTI' ? [bondToken.icon!, stkAaveToken.icon!] : ['bond']}
                 size="large">
-                {formatPercent(apr?.plus(apy ?? 0) ?? 0)}
+                {formatPercent((apy ?? BigNumber.ZERO).plus(hasZeroBondRewardLeft ? 0 : apr ?? 0))}
               </AprLabel>
             </dd>
           </div>
@@ -84,9 +89,11 @@ const PoolView: FC = () => {
                   <dt>{rewardToken.symbol} daily rewards</dt>
                   <dd>
                     <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                    {formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
-                      scale: rewardToken.decimals,
-                    }) ?? '-'}
+                    {rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()
+                      ? '0'
+                      : formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
+                          scale: rewardToken.decimals,
+                        }) ?? '-'}
                   </dd>
                 </div>
               ) : null}

@@ -12,6 +12,7 @@ import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
+import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 import { getFormattedDuration } from 'utils';
 
@@ -52,8 +53,9 @@ const MarketDetails: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('market');
   const { bondToken, stkAaveToken } = useKnownTokens();
   const poolCtx = useSYPool();
+  const { pools } = useRewardPools();
   const { pool } = poolCtx;
-  const { getToken } = useTokens();
+  const { getToken, getAmountInUSD } = useTokens();
 
   if (!pool) {
     return null;
@@ -87,6 +89,15 @@ const MarketDetails: React.FC = () => {
       ?.unscaleBy(pool.underlyingDecimals)
       ?.multipliedBy(token?.price ?? 0)
       .toString() ?? '0';
+
+  const hasZeroBondRewardLeft = pools?.find(
+    rPool =>
+      rPool.rewardPool.address === pool.rewardPoolAddress &&
+      Array.from(rPool.rewardTokens.values()).some(
+        rewardToken =>
+          !!(rewardToken === bondToken && rPool.rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()),
+      ),
+  );
 
   return (
     <section className="card">
@@ -200,9 +211,9 @@ const MarketDetails: React.FC = () => {
               </Text>
               {pool.contracts.rewardPool?.rewardTokensCount! > 1 ? (
                 <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
-                  +{formatPercent(pool.apr?.plus(pool.apy ?? 0) ?? 0)} APR
+                  +{formatPercent(pool.apy?.plus(hasZeroBondRewardLeft ? 0 : pool.apr ?? 0) ?? 0)} APR
                 </AprLabel>
-              ) : pool.apr ? (
+              ) : !hasZeroBondRewardLeft && pool.apr ? (
                 <AprLabel icons={['bond']}>+{formatPercent(pool.apr ?? 0)} APR</AprLabel>
               ) : null}
             </div>
@@ -235,7 +246,9 @@ const MarketDetails: React.FC = () => {
                       })}
                     </Text>
                     <Text type="small" weight="semibold" color="secondary">
-                      {formatUSD(BigNumber.from(pool.state.juniorLiquidityLocked))}
+                      {formatUSD(
+                        getAmountInUSD(BigNumber.from(pool.state.juniorLiquidityLocked), pool.underlyingSymbol),
+                      )}
                     </Text>
                   </>
                 }>
@@ -248,9 +261,7 @@ const MarketDetails: React.FC = () => {
                   </Text>
                 </div>
                 <Text type="small" weight="semibold">
-                  {Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(
-                    pool.state.juniorLiquidityLocked,
-                  )}
+                  {formatUSD(getAmountInUSD(BigNumber.from(pool.state.juniorLiquidityLocked), pool.underlyingSymbol))}
                 </Text>
               </Tooltip>
             </div>

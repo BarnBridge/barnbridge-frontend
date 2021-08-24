@@ -10,6 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { APISYJuniorBonds, useSyAPI } from 'modules/smart-yield/api';
@@ -43,7 +44,7 @@ const TokenNameColumn: React.FC = () => {
 
 const DepositedColumn: React.FC<{ entity: TableEntity }> = ({ entity }) => {
   const { pool } = useSYPool();
-  const { convertTokenInUSD } = useKnownTokens();
+  const { getAmountInUSD } = useTokens();
 
   return (
     <>
@@ -57,7 +58,7 @@ const DepositedColumn: React.FC<{ entity: TableEntity }> = ({ entity }) => {
         </Text>
       </Tooltip>
       <Text type="small" weight="semibold" color="secondary">
-        {formatUSD(convertTokenInUSD(entity.depositedAmount, pool?.contracts.smartYield.symbol!)) ?? '-'}
+        {formatUSD(getAmountInUSD(entity.depositedAmount, pool?.contracts.smartYield.symbol!)) ?? '-'}
       </Text>
     </>
   );
