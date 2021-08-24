@@ -190,7 +190,7 @@ export type FormItemRender = {
 export type FormItemProps = {
   name: string;
   label?: string;
-  labelProps?: FieldLabelProps;
+  labelProps?: Omit<FieldLabelProps, 'label'>;
   showError?: boolean;
   children: (field: FormItemRender) => ReactElement;
 };

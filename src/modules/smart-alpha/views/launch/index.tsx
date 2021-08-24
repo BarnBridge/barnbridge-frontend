@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import classNames from 'classnames';
 import { intervalToDuration } from 'date-fns';
 
 import { Text } from 'components/custom/typography';
@@ -10,7 +11,7 @@ import s from './s.module.scss';
 const Launch = ({ launchDate }: { launchDate: Date }) => {
   return (
     <>
-      <div className="flex align-center mb-64">
+      <div className={classNames(s.slogan, 'mb-64')}>
         <div>
           <Text type="h1" weight="bold" color="primary" className="mb-8">
             We are launching soon!
@@ -19,7 +20,7 @@ const Launch = ({ launchDate }: { launchDate: Date }) => {
             You can play with the simulator in the meantime
           </Text>
         </div>
-        <Countdown launchDate={launchDate} />
+        <Countdown launchDate={launchDate} className={s.countdown} />
       </div>
       <SimulateEpoch />
     </>
@@ -28,7 +29,7 @@ const Launch = ({ launchDate }: { launchDate: Date }) => {
 
 export default Launch;
 
-const Countdown = ({ launchDate }: { launchDate: Date }) => {
+const Countdown = ({ launchDate, className }: { launchDate: Date; className?: string }) => {
   const [countdown, setCountdown] = useState(
     intervalToDuration({
       start: new Date(),
@@ -49,7 +50,7 @@ const Countdown = ({ launchDate }: { launchDate: Date }) => {
   }, []);
 
   return (
-    <dl className="flex align-top col-gap-24 ml-auto">
+    <dl className={classNames(className, 'flex align-top col-gap-24')}>
       <div className={s.timeCard}>
         <dd>{countdown.days}</dd>
         <dt>days</dt>

@@ -11,15 +11,12 @@ type InputPropsType = React.InputHTMLAttributes<HTMLInputElement> & {
   before?: React.ReactNode;
 };
 
-export const Input: React.FC<InputPropsType> = ({ children, id, before, className, dimension = 'normal', ...rest }) => {
+export const Input: React.FC<InputPropsType> = ({ id, before, className, dimension = 'normal', ...rest }) => {
   const inputId = useMemo(() => id ?? nanoid(), [id]);
   return (
-    <label htmlFor={inputId} className={className}>
-      {children && <div className={s.text}>{children}</div>}
-      <div className={s.inputWrapper}>
-        {before && <div className={classNames(s.before, s[dimension])}>{before}</div>}
-        <input type="text" id={inputId} className={classNames(s.input, s[dimension])} {...rest} />
-      </div>
+    <label htmlFor={inputId} className={classNames(s.inputWrapper, className)}>
+      {before && <div className={classNames(s.before, s[dimension])}>{before}</div>}
+      <input type="text" id={inputId} className={classNames(s.input, s[dimension])} {...rest} />
     </label>
   );
 };
