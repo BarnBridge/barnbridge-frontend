@@ -10,6 +10,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
@@ -98,37 +99,45 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Underlying out',
     align: 'right',
     sorter: (a, b) => a.underlyingOut.toNumber() - b.underlyingOut.toNumber(),
-    render: (_, entity) => (
-      <>
-        <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.underlyingOut)}
-            {` ${entity.pool?.underlyingSymbol}`}
+    render: function Render(_, entity) {
+      const { getToken } = useTokens();
+      return (
+        <>
+          <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatBigValue(entity.underlyingOut)}
+              {` ${entity.pool?.underlyingSymbol}`}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSDValue(entity.underlyingOut.multipliedBy(getToken(entity.pool?.underlyingSymbol)?.price ?? 0))}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.underlyingOut)}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Forfeits',
     align: 'right',
     sorter: (a, b) => a.forfeits?.toNumber() ?? 0 - b.underlyingOut?.toNumber() ?? 0,
-    render: (_, entity) => (
-      <>
-        <Tooltip title={formatBigValue(entity.forfeits ?? BigNumber.ZERO, entity.pool?.underlyingDecimals)}>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatBigValue(entity.forfeits ?? BigNumber.ZERO)}
-            {` ${entity.pool?.underlyingSymbol}`}
+    render: function Render(_, entity) {
+      const { getToken } = useTokens();
+      return (
+        <>
+          <Tooltip title={formatBigValue(entity.forfeits ?? BigNumber.ZERO, entity.pool?.underlyingDecimals)}>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatBigValue(entity.forfeits ?? BigNumber.ZERO)}
+              {` ${entity.pool?.underlyingSymbol}`}
+            </Text>
+          </Tooltip>
+          <Text type="small" weight="semibold" color="secondary">
+            {formatUSDValue(
+              entity.forfeits.multipliedBy(getToken(entity.pool?.underlyingSymbol)?.price ?? 0) ?? BigNumber.ZERO,
+            )}
           </Text>
-        </Tooltip>
-        <Text type="small" weight="semibold" color="secondary">
-          {formatUSDValue(entity.forfeits ?? BigNumber.ZERO)}
-        </Text>
-      </>
-    ),
+        </>
+      );
+    },
   },
   {
     title: 'Withdraw type',

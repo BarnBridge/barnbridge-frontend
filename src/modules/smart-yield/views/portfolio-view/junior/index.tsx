@@ -281,7 +281,12 @@ const JuniorPortfolioInner: React.FC = () => {
     const uVal = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
     const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.meta.underlyingSymbol);
     // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
-    return sum.plus(valInUSD?.multipliedBy(c.apr ?? 0) ?? 0);
+
+    const hasZeroBondRewardLeft = c.rewardPool.getRewardLeftFor(knownTokensCtx.bondToken.address)?.isZero();
+
+    const apyr = c.apy?.plus(hasZeroBondRewardLeft ? 0 : c.apr ?? 0) ?? 0;
+
+    return sum.plus(valInUSD?.multipliedBy(apyr) ?? 0);
   }, BigNumber.ZERO);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? BigNumber.ZERO).plus(stakedBalance ?? BigNumber.ZERO);

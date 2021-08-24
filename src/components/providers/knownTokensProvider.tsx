@@ -278,7 +278,7 @@ const KnownTokensProvider: FC = props => {
         name: 'Staked AAVE',
         address: config.tokens.stkaave.toLowerCase(),
         decimals: 18,
-        icon: 'aave',
+        icon: 'stkaave',
         priceFeed: config.feeds.stkaave, // stkAAVE -> USD
         pricePath: [],
         contract: stkaaveContract,
