@@ -1,12 +1,11 @@
 import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
+import { addMinutes } from 'date-fns';
 
 import { Spinner } from 'components/custom/spinner';
 import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
-
-// import { isDevelopmentMode, isProductionMode } from 'utils';
 
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
 const PoolView = lazy(() => import(/* webpackChunkName: "sa-pool-view" */ './views/pool-view'));
@@ -16,7 +15,8 @@ const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view"
 const SimulateEpoch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/simulate-epoch'));
 const Launch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/launch'));
 
-const launchDate = new Date('2021-09-01');
+// TODO: set exact date and time
+const launchDate = addMinutes(new Date(), 3);
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -41,13 +41,13 @@ const SmartAlphaView: React.FC = () => {
     },
   ];
 
-  // if (new Date() < launchDate) {
-  //   return (
-  //     <div className="content-container-fix content-container">
-  //       <Launch launchDate={launchDate} />
-  //     </div>
-  //   );
-  // }
+  if (new Date() < launchDate) {
+    return (
+      <div className="content-container-fix content-container">
+        <Launch launchDate={launchDate} />
+      </div>
+    );
+  }
 
   return (
     <>
@@ -55,11 +55,6 @@ const SmartAlphaView: React.FC = () => {
       <div className="content-container-fix content-container">
         <Suspense fallback={<Spinner />}>
           <Switch>
-            {/* {isDevelopmentMode && ( */}
-            <Route path="/smart-alpha" exact>
-              <Launch launchDate={launchDate} />
-            </Route>
-            {/* )} */}
             <Route path="/smart-alpha/pools" exact>
               <PoolsView />
             </Route>
@@ -72,11 +67,11 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/pools/:id/withdraw">
               <WithdrawView />
             </Route>
+            <Route path="/smart-alpha/pools/:id/simulate-epoch">
+              <SimulateEpoch />
+            </Route>
             <Route path="/smart-alpha/portfolio">
               <PortfolioView />
-            </Route>
-            <Route path="/smart-alpha/simulate-epoch">
-              <SimulateEpoch />
             </Route>
             <Redirect to="/smart-alpha/pools" />
           </Switch>

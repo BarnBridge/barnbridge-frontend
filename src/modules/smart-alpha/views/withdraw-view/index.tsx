@@ -16,11 +16,9 @@ import { SeniorWithdraw } from './senior';
 const WithdrawView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const location = useLocation();
-  const { data } = useFetchPool(poolAddress);
+  const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
-
-  const pool = data?.[0];
 
   if (!pool) {
     return <Spinner style={{ margin: 'auto' }} />;

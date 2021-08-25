@@ -25,11 +25,9 @@ import s from './s.module.scss';
 const PoolView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const location = useLocation();
-  const { data } = useFetchPool(poolAddress);
+  const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
-
-  const pool = data?.[0];
 
   const { getOrCreateContract } = useContractFactory();
 
@@ -138,7 +136,7 @@ const PoolView = () => {
           </div>
         </div>
         <div className="flex col-gap-24 ml-auto">
-          <Link to={`/smart-alpha/simulate-epoch`} variation="ghost" aria-disabled={!wallet.account}>
+          <Link to={`${location.pathname}/simulate-epoch`} variation="ghost" aria-disabled={!wallet.account}>
             Simulate
           </Link>
           <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
