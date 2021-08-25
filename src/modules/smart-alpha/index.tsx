@@ -1,6 +1,5 @@
 import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
-import { addMinutes } from 'date-fns';
 
 import { Spinner } from 'components/custom/spinner';
 import { HorizontalMenu } from 'components/custom/tabs';
@@ -15,8 +14,8 @@ const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view"
 const SimulateEpoch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/simulate-epoch'));
 const Launch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/launch'));
 
-// TODO: set exact date and time
-const launchDate = addMinutes(new Date(), 3);
+// TODO: remove part with localStorage
+const launchDate = new Date(localStorage.getItem('sa-launch') ?? '2021-08-25T09:04:26.375Z');
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
