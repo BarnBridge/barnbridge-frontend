@@ -79,11 +79,11 @@ $text-aligns: left, center, right;
   font: var(--font-sm);
 }
 
-.fw-bold {
+.fw-bold.fw-bold {
   font-weight: bold;
 }
 
-.fw-semibold {
+.fw-semibold.fw-semibold {
   font-weight: 600;
 }
 
