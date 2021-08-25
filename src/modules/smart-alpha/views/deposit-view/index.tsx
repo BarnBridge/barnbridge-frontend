@@ -21,10 +21,8 @@ import { SeniorDeposit } from './senior';
 const DepositView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const [reload] = useReload();
-  const { data } = useFetchPool(poolAddress);
+  const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
-
-  const pool = data?.[0];
 
   const { getOrCreateContract, Listeners } = useContractFactory();
 

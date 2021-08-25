@@ -39,13 +39,13 @@ export function useFetchPools(): UseFetchReturn<PoolApiType[]> {
   });
 }
 
-export function useFetchPool(poolAddress: string): UseFetchReturn<PoolApiType[]> {
+export function useFetchPool(poolAddress: string): UseFetchReturn<PoolApiType | null> {
   const config = useConfig();
   const url = new URL(`/api/smartalpha/pools`, config.api.baseUrl);
   url.searchParams.set('poolAddress', poolAddress);
 
   return useFetch(url, {
-    transform: ({ data }) => data,
+    transform: ({ data }) => data?.[0] ?? null,
   });
 }
 
