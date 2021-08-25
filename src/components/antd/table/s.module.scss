@@ -1,5 +1,3 @@
-@import 'src/styles/text';
-
 .component {
   :global(.ant-table-title) {
     padding: 24px;
@@ -12,7 +10,8 @@
   }
 
   :global(.ant-table-thead .ant-table-cell) {
-    @include font-sm-semi-bold;
+    font: var(--font-sm);
+    font-weight: 600;
     padding: 16px 24px;
     background: var(--theme-card-color);
     border-top: 1px solid var(--theme-border-color);
@@ -87,7 +86,8 @@
     border-radius: 0 0 4px 4px;
 
     :global(.ant-pagination-total-text) {
-      @include font-p2-semi-bold;
+      font: var(--font-p2);
+      font-weight: 600;
       width: 100%;
       color: var(--theme-secondary-color);
       display: flex;

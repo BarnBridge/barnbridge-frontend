@@ -1,7 +1,6 @@
-@import 'src/styles/text';
-
 .aprLabel {
-  @include font-sm-semi-bold;
+  font: var(--font-sm);
+  font-weight: 600;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
@@ -11,7 +10,8 @@
   background-color: var(--theme-body-color);
 
   &.aprLabelLarge {
-    @include font-p1-semi-bold;
+    font: var(--font-p1);
+    font-weight: 600;
 
     svg {
       width: 16px !important;

@@ -17,8 +17,7 @@ html {
 body {
   background: var(--theme-body-color);
   color: var(--theme-primary-color);
-  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-block-size: 100%;
@@ -42,6 +41,9 @@ body.mobile-menu-open {
 }
 
 :root {
+  --font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+
   --font-size-h1: 32px;
   --font-size-h2: 24px;
   --font-size-h3: 18px;
@@ -50,6 +52,15 @@ body.mobile-menu-open {
   --font-size-lb1: 14px;
   --font-size-lb2: 12px;
   --font-size-sm: 12px;
+
+  --font-h1: var(--font-size-h1) / 1.25 var(--font-family);
+  --font-h2: var(--font-size-h2) / 1.3333333333 var(--font-family);
+  --font-h3: var(--font-size-h3) / 1.3333333333 var(--font-family);
+  --font-p1: var(--font-size-p1) / 1.5 var(--font-family);
+  --font-p2: var(--font-size-p2) / 1.7142857143 var(--font-family);
+  --font-lb1: var(--font-size-lb1) / 1.7142857143 var(--font-family);
+  --font-lb2: var(--font-size-lb2) / 1.3333333333 var(--font-family);
+  --font-sm: var(--font-size-sm) / 1.3333333333 var(--font-family);
 
   --theme-body-color: #f8f8f9; // grey50
   --theme-card-color: #fff;
@@ -99,19 +110,6 @@ body.mobile-menu-open {
   --theme-white-color: #fff;
 
   --horizontal-padding: 64px;
-}
-
-@media (max-width: 1024px) {
-  :root {
-    --font-size-h1: 24px;
-    --font-size-h2: 18px;
-    --font-size-h3: 14px;
-    --font-size-p1: 12px;
-    --font-size-p2: 11px;
-    --font-size-lb1: 11px;
-    --font-size-lb2: 9px;
-    --font-size-sm: 9px;
-  }
 }
 
 @media (max-width: 768px) {

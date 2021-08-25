@@ -1,7 +1,6 @@
-@import 'src/styles/text';
-
 .alert {
-  @include font-p2-semi-bold;
+  font: var(--font-p2);
+  font-weight: 600;
   padding: 16px 24px;
   display: flex;
   border-radius: 4px;
