@@ -7,7 +7,7 @@ import { Icon } from 'components/icon';
 import s from './s.module.scss';
 
 export type TextProps = {
-  tag?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'label' | 'p' | 'div' | 'span' | 'small' | 'strong';
+  tag?: keyof JSX.IntrinsicElements;
   type: 'h1' | 'h2' | 'h3' | 'p1' | 'p2' | 'lb1' | 'lb2' | 'small';
   weight?: 'semibold' | 'bold';
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'purple' | 'yellow';

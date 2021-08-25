@@ -383,6 +383,26 @@ const PoolView = () => {
           </div>
         </section>
       </div>
+      <div className={classNames(s.epochProgress, 'mb-4')}>
+        <div className={s.epochProgressLineBefore} />
+        <div className="flex align-center">
+          <span className={s.epochProgressCurrent}>135</span>
+          <div className={s.epochProgressLineMiddle} style={{ '--epoch-progress': 70 } as React.CSSProperties} />
+          <span className={s.epochProgressNext}>136</span>
+        </div>
+        <div className={s.epochProgressLineAfter} />
+      </div>
+      <div className="flex align-center mb-32">
+        <Button variation="text" color="red">
+          View previous epochs
+        </Button>
+        <Text type="p2" weight="bold" color="primary" className="ml-auto">
+          2d 4h 35m
+        </Text>
+        <Text type="p2" weight="semibold" color="secondary" className="ml-4">
+          until next epoch
+        </Text>
+      </div>
       <TokensPrice poolAddress={poolAddress} className="mb-32" />
       <PoolPerformance poolAddress={poolAddress} className="mb-32" />
       <TransactionsTable poolAddress={poolAddress} />

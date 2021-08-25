@@ -1,10 +1,10 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import cn from 'classnames';
 import { formatToken } from 'web3/utils';
 
 import Modal, { ModalProps } from 'components/antd/modal';
 import Icon from 'components/custom/icon';
+import { Text } from 'components/custom/typography';
 import { useLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -113,7 +113,9 @@ const VotingDetailedModal: React.FC<VotingDetailedModalProps> = props => {
             <Icon name="stamp-outlined" width={20} height={20} className={s.termIcon} />
             My total voting power
           </dt>
-          <dd className={cn(s.data, s.dataTotal)}>{formatToken(state.leftTotalVotingPower)}</dd>
+          <Text type="h3" weight="bold" tag="dd" className={s.data}>
+            {formatToken(state.leftTotalVotingPower)}
+          </Text>
         </div>
       </dl>
     </Modal>

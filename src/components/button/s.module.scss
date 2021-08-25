@@ -171,7 +171,7 @@
 }
 
 .text {
-  font: var(--font-p2);
+  font: var(--font-sm);
   font-weight: bold;
   color: var(--theme-red-color);
   border: 0;
@@ -182,23 +182,23 @@
   align-items: center;
 
   &:hover {
-    color: var(--theme-primary-color);
+    color: var(--theme-red400-color);
   }
 
   &:active {
-    color: var(--theme-primary-color);
+    color: var(--theme-red600-color);
   }
 
   &:disabled,
   &[disabled],
   &[aria-disabled='true'],
   &.disabled {
-    color: #aaafb3;
+    color: var(--theme-grey300-color);
   }
 }
 
 .text-alt {
-  font: var(--font-p2);
+  font: var(--font-sm);
   font-weight: bold;
   color: var(--theme-secondary-color);
   border: 0;
@@ -220,7 +220,7 @@
   &[disabled],
   &[aria-disabled='true'],
   &.disabled {
-    color: #aaafb3;
+    color: var(--theme-grey300-color);
   }
 }
 
