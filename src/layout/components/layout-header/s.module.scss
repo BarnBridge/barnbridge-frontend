@@ -42,3 +42,59 @@
   background-color: var(--theme-body-color);
   border-radius: 4px;
 }
+
+.actionButton {
+  padding: 7px;
+  background: var(--theme-body-color);
+  border-radius: 4px;
+  border: 0;
+  font: var(--font-p2-semibold);
+  color: var(--theme-secondary-color);
+  display: flex;
+  align-items: center;
+  border: 1px solid var(--theme-body-color);
+
+  &:global(.ant-popover-open) {
+    border-color: var(--theme-border-color);
+  }
+}
+
+.queuedPositions {
+  overflow-y: auto;
+  height: 320px;
+}
+
+.queuedPosition {
+  display: flex;
+  align-items: center;
+  padding: 24px;
+  position: relative;
+
+  &:hover {
+    background: rgba(var(--theme-secondary-color-rgb), 0.04);
+
+    &::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      width: 2px;
+      background: var(--theme-red-color);
+    }
+
+    a {
+      opacity: 1;
+    }
+  }
+
+  &:focus-within {
+    a {
+      opacity: 1;
+    }
+  }
+
+  a {
+    opacity: 0.0001;
+  }
+}

@@ -80,6 +80,11 @@
   overflow-x: auto;
 }
 
+.card-footer {
+  border-top: 1px solid var(--theme-border-color);
+  padding: 24px;
+}
+
 .css-grid {
   --gap: 1rem;
   // --sm-gap: 0.5rem;
