@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Button } from 'components/button';
@@ -8,19 +8,31 @@ import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchPools } from 'modules/smart-alpha/api';
-import { PoolApiType } from 'modules/smart-alpha/api';
+
+function useQuery() {
+  return new URLSearchParams(useLocation().search);
+}
 
 export const PortfolioPositions = () => {
+  const location = useLocation();
+  const history = useHistory();
+  let query = useQuery();
+  console.log({ query });
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
-  const [activePool, setActivePool] = useState<PoolApiType | undefined>();
   const { data } = useFetchPools();
   const { getToken } = useTokens();
 
   useEffect(() => {
     if (data && data.length) {
-      setActivePool(data[0]);
+      history.push({
+        pathname: location.pathname,
+        search: `?poolAddress=${data[0].poolAddress}`,
+      });
     }
   }, [data]);
+
+  const activePoolAddress = query.get('poolAddress');
+  const activePool = data?.find(item => item.poolAddress === activePoolAddress);
 
   if (!data || !activePool) {
     return <Spinner />;
@@ -29,7 +41,7 @@ export const PortfolioPositions = () => {
   return (
     <>
       <Text type="h1" weight="bold" color="primary" className="mb-32">
-        Positions {tranche}
+        Positions
       </Text>
       <div className="flex wrap col-gap-32 row-gap-32 mb-64 sm-mb-32">
         {data?.map(item => {
@@ -37,7 +49,12 @@ export const PortfolioPositions = () => {
           return (
             <button
               key={item.poolAddress}
-              onClick={() => setActivePool(item)}
+              onClick={() => {
+                history.push({
+                  pathname: location.pathname,
+                  search: `?poolAddress=${item.poolAddress}`,
+                });
+              }}
               className={classNames('tab-card', {
                 active: item.poolAddress === activePool?.poolAddress,
               })}>
