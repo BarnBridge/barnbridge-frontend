@@ -17,8 +17,10 @@ import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useNotifications } from 'components/providers/notificationsProvider';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
+import { useFetchQueuePositions } from 'modules/smart-alpha/api';
 import Notifications from 'wallets/components/notifications';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import MetamaskWalletConfig, { MetamaskConnector } from 'wallets/connectors/metamask';
@@ -47,7 +49,11 @@ const LayoutHeader: React.FC = () => {
         </Switch>
       </Text>
       <div className="flex align-center col-gap-16 ml-auto">
-        <PositionsAction />
+        <Switch>
+          <Route path="/smart-alpha">
+            <PositionsAction />
+          </Route>
+        </Switch>
         <AddTokenAction />
         <NetworkAction />
         <NotificationsAction />
@@ -60,49 +66,68 @@ const LayoutHeader: React.FC = () => {
 export default LayoutHeader;
 
 const PositionsAction: React.FC = () => {
+  const { data } = useFetchQueuePositions();
+  const { getToken } = useTokens();
+
+  if (!Array.isArray(data) || !data.length) {
+    return null;
+  }
+
   return (
-    <Switch>
-      <Route path="/smart-alpha">
-        <Popover
-          placement="bottomRight"
-          trigger="click"
-          noPadding
-          content={
-            <div className={cn('card', s.notifications)}>
-              <div className="card-header flex">
-                <Text type="p1" weight="semibold" color="primary">
-                  Queued positions
-                </Text>
-              </div>
-              <ul className={s.queuedPositions}>
-                {Array.from({ length: 12 }).map((_, idx) => (
-                  <li key={idx} className={s.queuedPosition}>
-                    <TokenIcon name="weth" bubble1Name="bond" bubble2Name="usd" size={40} className="mr-16" />
-                    <div className="mr-16">
-                      <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                        wETH-USD
-                      </Text>
-                      <Text type="small" weight="semibold" color="secondary">
-                        Senior exit queue
-                      </Text>
-                    </div>
-                    <Link variation="text" to="/smart-alpha/asd">
-                      View position
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          }>
-          <button type="button" className={s.actionButton}>
-            <SquareBadge color="red" className="mr-8">
-              4
-            </SquareBadge>
-            Queued positions
-          </button>
-        </Popover>
-      </Route>
-    </Switch>
+    <Popover
+      placement="bottomRight"
+      trigger="click"
+      noPadding
+      content={
+        <div className={cn('card', s.notifications)}>
+          <div className="card-header flex">
+            <Text type="p1" weight="semibold" color="primary">
+              Queued positions
+            </Text>
+          </div>
+          <ul className={s.queuedPositions}>
+            {data.map((item, idx) => {
+              const poolToken = getToken(item.poolToken.symbol);
+              const oracleToken = getAsset(item.oracleAssetSymbol);
+
+              return (
+                <li key={idx} className={s.queuedPosition}>
+                  <TokenIcon
+                    name={poolToken?.icon ?? 'unknown'}
+                    bubble2Name={oracleToken?.icon ?? 'unknown'}
+                    size={40}
+                    className="mr-16"
+                  />
+                  <div className="mr-16">
+                    <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                      {item.poolName}
+                    </Text>
+                    <Text type="small" weight="semibold" color="secondary">
+                      {`${item.tranche === 'SENIOR' ? 'Senior' : 'Junior'} ${item.queueType} queue`}
+                    </Text>
+                  </div>
+                  <Link
+                    variation="text"
+                    to={`/smart-alpha/portfolio/${item.tranche === 'SENIOR' ? 'senior' : 'junior'}?poolAddress=${
+                      item.poolAddress
+                    }`}>
+                    View position
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      }>
+      <button type="button" className={s.actionButton}>
+        {data.length ? (
+          <SquareBadge color="red" className="mr-8">
+            {data.length}
+          </SquareBadge>
+        ) : null}
+        Queued positions
+      </button>
+    </Popover>
   );
 };
 

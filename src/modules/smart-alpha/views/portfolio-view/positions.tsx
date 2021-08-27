@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
@@ -12,22 +12,30 @@ import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
-import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
+import { useFetchPools } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
 
 export const PortfolioPositions = () => {
-  const params = useParams<{ tranche: 'senior' | 'junior' }>();
-  const tranche = params.tranche.toLowerCase();
+  const location = useLocation();
+  const history = useHistory();
 
+  const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
   const { data } = useFetchPools();
   const { getToken } = useTokens();
 
-  const [activePool, setActivePool] = useState<PoolApiType | undefined>();
+  const activePool = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    const poolAddress = params.get('poolAddress');
+    return data?.find(item => item.poolAddress === poolAddress);
+  }, [data, location.search]);
 
   useEffect(() => {
     if (data && data.length) {
-      setActivePool(data[0]);
+      history.push({
+        pathname: location.pathname,
+        search: `?poolAddress=${data[0].poolAddress}`,
+      });
     }
   }, [data]);
 
@@ -58,7 +66,7 @@ export const PortfolioPositions = () => {
   return (
     <>
       <Text type="h1" weight="bold" color="primary" className="mb-32">
-        Positions {tranche}
+        Positions
       </Text>
       <div className="flex wrap col-gap-32 row-gap-32 mb-64 sm-mb-32">
         {data?.map(item => {
@@ -68,7 +76,12 @@ export const PortfolioPositions = () => {
           return (
             <button
               key={item.poolAddress}
-              onClick={() => setActivePool(item)}
+              onClick={() => {
+                history.push({
+                  pathname: location.pathname,
+                  search: `?poolAddress=${item.poolAddress}`,
+                });
+              }}
               className={classNames('tab-card', {
                 active: item.poolAddress === activePool?.poolAddress,
               })}>

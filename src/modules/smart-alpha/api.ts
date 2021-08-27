@@ -220,3 +220,30 @@ export function useFetchTransactions({
 
   return useFetch(url);
 }
+
+type QueuePositionApiType = {
+  blockTimestamp: number;
+  oracleAssetSymbol: string;
+  poolAddress: string;
+  poolName: string;
+  poolToken: {
+    address: string;
+    symbol: string;
+    decimals: number;
+  };
+  address: string;
+  decimals: number;
+  symbol: string;
+  queueType: string;
+  tranche: 'SENIOR' | 'JUNIOR';
+};
+
+export function useFetchQueuePositions(): UseFetchReturn<QueuePositionApiType[]> {
+  const config = useConfig();
+  const { account } = useWallet();
+  const url = new URL(`/api/smartalpha/users/${account}/queue-positions`, config.api.baseUrl);
+
+  return useFetch(url, {
+    transform: ({ data }) => data,
+  });
+}
