@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { addSeconds, getUnixTime } from 'date-fns';
 import { formatPercent, formatUSD } from 'web3/utils';
 
-import { Button, Link } from 'components/button';
+import { Link } from 'components/button';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';

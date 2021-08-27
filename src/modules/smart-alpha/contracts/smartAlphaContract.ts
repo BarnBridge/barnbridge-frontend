@@ -12,6 +12,8 @@ const ABI: AbiItem[] = [
   createAbiItem('epochDownsideProtectionRate', [], ['uint256']),
   createAbiItem('epochUpsideExposureRate', [], ['uint256']),
   createAbiItem('epochEntryPrice', [], ['uint256']),
+  createAbiItem('getEpochSeniorTokenPrice', [], ['uint256']),
+  createAbiItem('getEpochJuniorTokenPrice', [], ['uint256']),
 
   createAbiItem('estimateCurrentSeniorLiquidity', [], ['uint256']),
   createAbiItem('estimateCurrentSeniorTokenPrice', [], ['uint256']),
@@ -57,6 +59,8 @@ class SmartAlphaContract extends Web3Contract {
   epochDownsideProtectionRate: BigNumber | undefined;
   epochUpsideExposureRate: BigNumber | undefined;
   epochEntryPrice: BigNumber | undefined;
+  epochSeniorTokenPrice: BigNumber | undefined;
+  epochJuniorTokenPrice: BigNumber | undefined;
   estimateCurrentSeniorLiquidity: BigNumber | undefined;
   estimateCurrentSeniorTokenPrice: BigNumber | undefined;
   queuedSeniorsUnderlyingIn: BigNumber | undefined;
@@ -160,6 +164,8 @@ class SmartAlphaContract extends Web3Contract {
       epochDownsideProtectionRate,
       epochUpsideExposureRate,
       epochEntryPrice,
+      epochSeniorTokenPrice,
+      epochJuniorTokenPrice,
       estimateCurrentSeniorLiquidity,
       estimateCurrentSeniorTokenPrice,
       queuedSeniorsUnderlyingIn,
@@ -178,6 +184,8 @@ class SmartAlphaContract extends Web3Contract {
       { method: 'epochDownsideProtectionRate' },
       { method: 'epochUpsideExposureRate' },
       { method: 'epochEntryPrice' },
+      { method: 'getEpochSeniorTokenPrice' },
+      { method: 'getEpochJuniorTokenPrice' },
       { method: 'estimateCurrentSeniorLiquidity' },
       { method: 'estimateCurrentSeniorTokenPrice' },
       { method: 'queuedSeniorsUnderlyingIn' },
@@ -197,6 +205,8 @@ class SmartAlphaContract extends Web3Contract {
     this.epochDownsideProtectionRate = BigNumber.from(epochDownsideProtectionRate);
     this.epochUpsideExposureRate = BigNumber.from(epochUpsideExposureRate);
     this.epochEntryPrice = BigNumber.from(epochEntryPrice);
+    this.epochSeniorTokenPrice = BigNumber.from(epochSeniorTokenPrice);
+    this.epochJuniorTokenPrice = BigNumber.from(epochJuniorTokenPrice);
     this.estimateCurrentSeniorLiquidity = BigNumber.from(estimateCurrentSeniorLiquidity);
     this.estimateCurrentSeniorTokenPrice = BigNumber.from(estimateCurrentSeniorTokenPrice);
     this.queuedSeniorsUnderlyingIn = BigNumber.from(queuedSeniorsUnderlyingIn);
@@ -214,22 +224,16 @@ class SmartAlphaContract extends Web3Contract {
     return this.call('seniorEntryQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
-  seniorExitQueue(address: string): Promise<[BigNumber | undefined, BigNumber | undefined]> {
-    return this.call('seniorExitQueue', [address], {}).then(result => [
-      BigNumber.from(result[0]),
-      BigNumber.from(result[1]),
-    ]);
+  seniorExitQueue(address: string): Promise<[number, BigNumber | undefined]> {
+    return this.call('seniorExitQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
   juniorEntryQueue(address: string): Promise<[number, BigNumber | undefined]> {
     return this.call('juniorEntryQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
-  juniorExitQueue(address: string): Promise<[BigNumber | undefined, BigNumber | undefined]> {
-    return this.call('juniorExitQueue', [address], {}).then(result => [
-      BigNumber.from(result[0]),
-      BigNumber.from(result[1]),
-    ]);
+  juniorExitQueue(address: string): Promise<[number, BigNumber | undefined]> {
+    return this.call('juniorExitQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
   historyEpochSeniorTokenPrice(epoch: number): Promise<BigNumber | undefined> {

@@ -1,5 +1,5 @@
 import { Suspense } from 'react';
-import { Redirect, Route, Switch, useLocation, useParams } from 'react-router-dom';
+import { Redirect, Route, Switch, useParams } from 'react-router-dom';
 
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
@@ -7,18 +7,13 @@ import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchPool } from 'modules/smart-alpha/api';
-import { useWallet } from 'wallets/walletProvider';
 
-import { JuniorWithdraw } from './junior';
-// import { SelectTranche } from './select';
 import { SeniorWithdraw } from './senior';
 
 const WithdrawView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
-  const location = useLocation();
   const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
-  const wallet = useWallet();
 
   if (!pool) {
     return <Spinner style={{ margin: 'auto' }} />;
@@ -109,14 +104,8 @@ const WithdrawView = () => {
         </div>
         <Suspense fallback={<Spinner />}>
           <Switch>
-            {/* <Route path="/smart-alpha/pools/:id/deposit" exact>
-              <SelectTranche pool={pool} />
-            </Route> */}
             <Route path="/smart-alpha/pools/:id/withdraw/senior" exact>
               <SeniorWithdraw pool={pool} />
-            </Route>
-            <Route path="/smart-alpha/pools/:id/withdraw/junior" exact>
-              <JuniorWithdraw pool={pool} />
             </Route>
             <Redirect to={`/smart-alpha/pools/${poolAddress}`} />
           </Switch>

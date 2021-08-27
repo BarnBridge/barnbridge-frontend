@@ -136,6 +136,18 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
           <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
             <TokenIcon
               name={poolToken?.icon ?? 'unknown'}
+              outline={
+                {
+                  SENIOR_REDEEM_TOKENS: 'purple',
+                  JUNIOR_REDEEM_TOKENS: 'green',
+                }[item.transactionType]
+              }
+              bubble1Name={
+                {
+                  SENIOR_REDEEM_TOKENS: 'bond',
+                  JUNIOR_REDEEM_TOKENS: 'bond',
+                }[item.transactionType]
+              }
               bubble2Name={oracleToken?.icon ?? 'unknown'}
               size={32}
               className="mr-16"
@@ -163,16 +175,25 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     },
     {
       heading: `Amount`,
-      render: item => {
+      render: function Render(item) {
         const isIncome = checkIsIncome(item.transactionType, !!accountAddress);
+        const oracleToken = getAsset(item.oracleAssetSymbol);
 
         return (
           <div style={{ whiteSpace: 'nowrap' }}>
-            <Text type="p1" weight="semibold" color={isIncome ? 'green' : 'red'}>
+            <Text type="p1" weight="semibold" color={isIncome ? 'green' : 'red'} tooltip={formatUSD(item.amountInUSD)}>
               {isIncome ? '+' : '-'} {formatToken(BigNumber.from(item.amount))}
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
-              {formatUSD(BigNumber.from(item.amountInQuoteAsset))}
+            <Text
+              type="small"
+              weight="semibold"
+              color="secondary"
+              tooltip={formatToken(BigNumber.from(item.amountInQuoteAsset), {
+                decimals: oracleToken?.decimals,
+              })}>
+              {formatToken(BigNumber.from(item.amountInQuoteAsset), {
+                tokenName: item.oracleAssetSymbol,
+              })}
             </Text>
           </div>
         );

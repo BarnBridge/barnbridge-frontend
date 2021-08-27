@@ -13,8 +13,6 @@ import PoolProvider from './providers/pool-provider';
 import PoolsProvider from './providers/pools-provider';
 import RewardPoolsProvider from './providers/reward-pools-provider';
 
-import s from './s.module.scss';
-
 const MarketsView = lazy(() => import('./views/markets-view'));
 const StatsView = lazy(() => import('./views/stats-view'));
 const PortfolioView = lazy(() => import('./views/portfolio-view'));

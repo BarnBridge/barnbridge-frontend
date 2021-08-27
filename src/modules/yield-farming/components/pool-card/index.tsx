@@ -42,8 +42,14 @@ const PoolCard: FC<Props> = props => {
   const [claiming, setClaiming] = useState(false);
   const [confirmClaimVisible, setConfirmClaimVisible] = useState(false);
 
-  const { totalEpochs, lastActiveEpoch, epochReward, potentialReward, poolEndDate = 0, toClaim } =
-    poolMeta?.contract ?? {};
+  const {
+    totalEpochs,
+    lastActiveEpoch,
+    epochReward,
+    potentialReward,
+    poolEndDate = 0,
+    toClaim,
+  } = poolMeta?.contract ?? {};
 
   const formattedEndDate = format(
     addMinutes(fromUnixTime(poolEndDate), fromUnixTime(poolEndDate).getTimezoneOffset()),
