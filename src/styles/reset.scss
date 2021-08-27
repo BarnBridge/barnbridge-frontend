@@ -1,6 +1,7 @@
 * {
   box-sizing: border-box;
   margin: unset;
+  padding: unset;
 }
 
 svg,
@@ -21,8 +22,8 @@ p {
 ol,
 ul,
 dl {
-  margin-top: unset;
-  margin-bottom: unset;
+  margin: unset;
+  padding: unset;
 }
 
 dd {

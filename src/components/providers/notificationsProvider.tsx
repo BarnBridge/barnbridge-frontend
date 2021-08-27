@@ -206,9 +206,8 @@ const NotificationsProvider: FC = ({ children }) => {
 
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [toasts, setToasts] = useState<NotificationType[]>([]);
-  const [notificationsReadUntil, setNotificationsReadUntil] = useState<
-    NotificationsContextType['notificationsReadUntil']
-  >(1);
+  const [notificationsReadUntil, setNotificationsReadUntil] =
+    useState<NotificationsContextType['notificationsReadUntil']>(1);
   const [storedReadUntil, setStoredReadUntil, removeStoredReadUntil] = useLocalStorage('bb_notifications_read_until');
 
   const addToast = useCallback((notification: NotificationType) => {

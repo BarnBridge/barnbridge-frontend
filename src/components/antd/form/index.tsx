@@ -69,7 +69,7 @@ export type StaticFormProps = {
   List: React.FC<FormListProps>;
 };
 
-((Form as any) as StaticFormProps).Item = FormItem;
-((Form as any) as StaticFormProps).List = FormList;
+(Form as any as StaticFormProps).Item = FormItem;
+(Form as any as StaticFormProps).List = FormList;
 
 export default Form as React.FC<FormProps> & StaticFormProps;

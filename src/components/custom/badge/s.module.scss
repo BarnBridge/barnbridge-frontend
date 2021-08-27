@@ -43,6 +43,21 @@
   justify-content: center;
   width: 24px;
 
+  &.green {
+    background: var(--theme-green-color);
+    color: var(--theme-white-color);
+  }
+
+  &.red {
+    background: var(--theme-red-color);
+    color: var(--theme-white-color);
+  }
+
+  &.blue {
+    background: var(--theme-blue-color);
+    color: var(--theme-white-color);
+  }
+
   :global(.ant-tabs-tab-active) & {
     background-color: rgba(255, 67, 57, 0.08);
     color: var(--theme-red-color);

@@ -13,10 +13,9 @@ import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { DepositForm } from 'modules/smart-alpha/views/deposit-view/depositForm';
 
-import { JuniorDeposit } from './junior';
 import { SelectTranche } from './select';
-import { SeniorDeposit } from './senior';
 
 const DepositView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
@@ -156,19 +155,8 @@ const DepositView = () => {
             <Route path="/smart-alpha/pools/:id/deposit" exact>
               <SelectTranche pool={pool} />
             </Route>
-            <Route path="/smart-alpha/pools/:id/deposit/senior" exact>
-              <SeniorDeposit
-                pool={pool}
-                smartAlphaContract={smartAlphaContract}
-                poolTokenContract={poolTokenContract}
-              />
-            </Route>
-            <Route path="/smart-alpha/pools/:id/deposit/junior" exact>
-              <JuniorDeposit
-                pool={pool}
-                smartAlphaContract={smartAlphaContract}
-                poolTokenContract={poolTokenContract}
-              />
+            <Route path="/smart-alpha/pools/:id/deposit/:tranche(senior|junior)" exact>
+              <DepositForm pool={pool} smartAlphaContract={smartAlphaContract} poolTokenContract={poolTokenContract} />
             </Route>
             <Redirect to={`/smart-alpha/pools/${poolAddress}/deposit`} />
           </Switch>

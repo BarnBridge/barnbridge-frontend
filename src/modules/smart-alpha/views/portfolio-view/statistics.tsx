@@ -1,6 +1,7 @@
-import AntdSpin from 'antd/lib/spin';
+import { useMemo } from 'react';
 
 import PortfolioBalance from 'components/portfolio-balance';
+import { useFetchPortfolioValue } from 'modules/smart-alpha/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import { TransactionsTable } from '../../components/transactions';
@@ -10,21 +11,31 @@ import s from './s.module.scss';
 
 export const PortfolioStatistics = () => {
   const { account } = useWallet();
+  const { data } = useFetchPortfolioValue();
+
+  const [seniorBalance, juniorBalance, totalBalance] = useMemo(() => {
+    const last = data?.[data?.length - 1];
+
+    if (!last) {
+      return [undefined, undefined, undefined];
+    }
+
+    return [last.seniorValue, last.juniorValue, last.seniorValue + last.juniorValue];
+  }, [data]);
+
   return (
     <>
       <div className={s.portfolioContainer}>
-        {/* <AntdSpin spinning={false}> */}
         <PortfolioBalance
-          total={100_000}
+          total={totalBalance}
           totalHint="This number doesn’t include the gains from the senior bonds that have not yet reached their maturity date."
           aggregated={null}
           aggregatedColor="red"
           data={[
-            ['Senior balance', 30_000, 'var(--theme-green-color)'],
-            ['Junior balance', 70_000, 'var(--theme-purple-color)'],
+            ['Senior balance', seniorBalance, 'var(--theme-green-color)'],
+            ['Junior balance', juniorBalance, 'var(--theme-purple-color)'],
           ]}
         />
-        {/* </AntdSpin> */}
         <PortfolioValue />
       </div>
       <TransactionsTable accountAddress={account} />

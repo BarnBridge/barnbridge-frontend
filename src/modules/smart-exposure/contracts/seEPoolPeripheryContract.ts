@@ -7,11 +7,6 @@ type DeltaResult = {
   rChange: BigNumber;
 };
 
-type TokenATokenBForETokenResult = {
-  amountA: BigNumber;
-  amountB: BigNumber;
-};
-
 class SeEPoolPeripheryContract extends Web3Contract {
   constructor(address: string) {
     super(
