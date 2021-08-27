@@ -1,19 +1,44 @@
-import { Suspense } from 'react';
-import { Redirect, Route, Switch, useParams } from 'react-router-dom';
+import { useMemo } from 'react';
+import { Route, Switch, useParams } from 'react-router-dom';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken } from 'web3/utils';
 
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
 import { useFetchPool } from 'modules/smart-alpha/api';
-
-import { SeniorWithdraw } from './senior';
+import { WithdrawForm } from 'modules/smart-alpha/views/withdraw-view/withdrawForm';
 
 const WithdrawView = () => {
-  const { id: poolAddress } = useParams<{ id: string }>();
+  const { id: poolAddress, tranche } = useParams<{ id: string; tranche: 'senior' | 'junior' }>();
   const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
+
+  const isSenior = tranche === 'senior';
+
+  const { getOrCreateContract } = useContractFactory();
+
+  const tokenContract = useMemo(() => {
+    if (!pool) {
+      return undefined;
+    }
+
+    const address = isSenior ? pool.seniorTokenAddress : pool.juniorTokenAddress;
+    return getOrCreateContract(
+      address,
+      () => {
+        return new Erc20Contract([], address);
+      },
+      {
+        afterInit: async contract => {
+          await Promise.all([contract.loadCommon(), contract.loadBalance()]);
+        },
+      },
+    );
+  }, [pool, isSenior]);
 
   if (!pool) {
     return <Spinner style={{ margin: 'auto' }} />;
@@ -25,30 +50,15 @@ const WithdrawView = () => {
   return (
     <>
       <div className="container-fit">
-        <div className="mb-16">
-          <Switch>
-            <Route path="/smart-alpha/pools/:id/deposit" exact>
-              <Link
-                to={`/smart-alpha/pools/${poolAddress}`}
-                variation="text-alt"
-                icon="arrow"
-                iconPosition="left"
-                iconRotate={180}>
-                Pool details
-              </Link>
-            </Route>
-            <Route path="/smart-alpha/pools/:id/deposit">
-              <Link
-                to={`/smart-alpha/pools/${poolAddress}/deposit`}
-                variation="text-alt"
-                icon="arrow"
-                iconPosition="left"
-                iconRotate={180}>
-                Sides
-              </Link>
-            </Route>
-          </Switch>
-        </div>
+        <Link
+          to={`/smart-alpha/portfolio/${tranche}?poolAddress=${poolAddress}`}
+          variation="text-alt"
+          icon="arrow"
+          iconPosition="left"
+          iconRotate={180}
+          className="mb-16">
+          Portfolio
+        </Link>
         <div className="flex col-gap-64 align-center mb-32">
           <div className="flex align-center">
             <TokenIcon
@@ -72,10 +82,10 @@ const WithdrawView = () => {
             </Text>
             <div className="flex align-center">
               <Text type="p1" weight="semibold" color="primary" className="mr-4">
-                81.2217
+                {formatToken(tokenContract?.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                {pool.poolToken.symbol}
+                {tokenContract?.symbol ?? '-'}
               </Text>
             </div>
           </div>
@@ -102,14 +112,7 @@ const WithdrawView = () => {
             </Route>
           </Switch>
         </div>
-        <Suspense fallback={<Spinner />}>
-          <Switch>
-            <Route path="/smart-alpha/pools/:id/withdraw/senior" exact>
-              <SeniorWithdraw pool={pool} />
-            </Route>
-            <Redirect to={`/smart-alpha/pools/${poolAddress}`} />
-          </Switch>
-        </Suspense>
+        <WithdrawForm pool={pool} tokenContract={tokenContract} />
       </div>
     </>
   );

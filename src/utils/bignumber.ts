@@ -52,3 +52,7 @@ BigNumber.prototype.unscaleBy = function (decimals?: number): BigNumber | undefi
 
   return this.dividedBy(10 ** decimals);
 };
+
+BigNumber.prototype.round = function (): BigNumber {
+  return new BigNumber(this.toPrecision(1, 0));
+};

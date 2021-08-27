@@ -16,6 +16,8 @@ import { useFetchPools } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
 
+import s from './s.module.scss';
+
 export const PortfolioPositions = () => {
   const location = useLocation();
   const history = useHistory();
@@ -24,20 +26,23 @@ export const PortfolioPositions = () => {
   const { data } = useFetchPools();
   const { getToken } = useTokens();
 
-  const activePool = useMemo(() => {
+  const activePoolAddress = useMemo(() => {
     const params = new URLSearchParams(location.search);
-    const poolAddress = params.get('poolAddress');
-    return data?.find(item => item.poolAddress === poolAddress);
-  }, [data, location.search]);
+    return params.get('poolAddress');
+  }, [location.search]);
+
+  const activePool = useMemo(() => {
+    return activePoolAddress ? data?.find(item => item.poolAddress === activePoolAddress) : undefined;
+  }, [data, activePoolAddress]);
 
   useEffect(() => {
-    if (data && data.length) {
+    if (!activePoolAddress && data && data.length) {
       history.push({
         pathname: location.pathname,
         search: `?poolAddress=${data[0].poolAddress}`,
       });
     }
-  }, [data]);
+  }, [activePoolAddress, data]);
 
   const { getOrCreateContract, Listeners } = useContractFactory();
 
@@ -100,8 +105,8 @@ export const PortfolioPositions = () => {
       </div>
       <div className="css-grid" style={{ '--min': '260px' } as React.CSSProperties}>
         <WalletBalance pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
-        <EntryQueue tranche={tranche} smartAlphaContract={smartAlphaContract} />
-        <ExitQueue tranche={tranche} smartAlphaContract={smartAlphaContract} />
+        <EntryQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
+        <ExitQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
       </div>
       {Listeners}
     </>
@@ -156,12 +161,12 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
             {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
           </Text>
           <TokenIcon
-            outline={isSenior ? 'green' : 'purple'}
+            className="mr-16"
             name={poolToken?.icon ?? 'unknown'}
             bubble1Name="bond"
             bubble2Name={oracleToken?.icon}
+            outline={isSenior ? 'green' : 'purple'}
             size={24}
-            className="mr-16"
           />
         </div>
         <Text type="small" weight="semibold" color="secondary" className="mb-24">
@@ -180,20 +185,35 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
   );
 };
 
-const EntryQueue = ({ tranche, smartAlphaContract }) => {
+const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   const wallet = useWallet();
+  const { getToken } = useTokens();
+
+  const poolToken = getToken(pool.poolToken.symbol);
+  const oracleToken = getAsset(pool.oracleAssetSymbol);
+  const isSenior = tranche === 'senior';
 
   const [epoch, setEpoch] = useState<number | undefined>();
   const [amount, setAmount] = useState<BigNumber | undefined>();
+  const [historyTokenPrice, setHistoryTokenPrice] = useState<BigNumber | undefined>();
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
+    setEpoch(undefined);
+    setAmount(undefined);
+
     (tranche === 'senior' ? smartAlphaContract?.seniorEntryQueue : smartAlphaContract?.juniorEntryQueue)
       ?.call(smartAlphaContract, wallet.account)
       .then(([epoch, amount]) => {
         setEpoch(epoch);
         setAmount(amount);
+
+        (isSenior ? smartAlphaContract?.historyEpochSeniorTokenPrice : smartAlphaContract?.historyEpochJuniorTokenPrice)
+          ?.call(smartAlphaContract, epoch)
+          .then(price => {
+            setHistoryTokenPrice(price);
+          });
       });
   }, [tranche, smartAlphaContract]);
 
@@ -213,6 +233,34 @@ const EntryQueue = ({ tranche, smartAlphaContract }) => {
     setSaving(false);
   }
 
+  if (amount === undefined) {
+    return (
+      <section className="card relative">
+        <Spinner className={s.spinner} />
+      </section>
+    );
+  }
+
+  if (amount.eq(0)) {
+    return (
+      <section className="card">
+        <div className="flex flow-row align-center justify-center full-height text-center">
+          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+            Empty entry queue
+          </Text>
+          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+            Your entry queue for {pool.poolName} is currently empty.
+          </Text>
+          <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
+            Deposit wETH
+          </Link>
+        </div>
+      </section>
+    );
+  }
+
+  const redeemable = amount.gt(0) && epoch !== undefined && epoch < smartAlphaContract.currentEpoch;
+
   return (
     <section className="card">
       <header className="card-header">
@@ -230,7 +278,7 @@ const EntryQueue = ({ tranche, smartAlphaContract }) => {
             </dt>
             <dd>
               <Text type="p1" weight="bold" color="primary">
-                23.4412
+                {formatToken(amount.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </dd>
           </div>
@@ -241,8 +289,16 @@ const EntryQueue = ({ tranche, smartAlphaContract }) => {
               </Text>
             </dt>
             <dd>
+              <TokenIcon
+                name={poolToken?.icon ?? 'unknown'}
+                outline={isSenior ? 'green' : 'purple'}
+                bubble1Name="bond"
+                bubble2Name={oracleToken?.icon ?? 'unknown'}
+                size={16}
+                className="ml-8"
+              />
               <Text type="p1" weight="semibold" color="primary">
-                23.4412
+                {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
               </Text>
             </dd>
           </div>
@@ -266,20 +322,20 @@ const EntryQueue = ({ tranche, smartAlphaContract }) => {
             </dt>
             <dd>
               <Text type="p1" weight="semibold" color="primary">
-                2d 4h 30m
+                {redeemable ? 'Redeem now' : '-d -h -m'}
               </Text>
             </dd>
           </div>
         </dl>
         <footer>
           <Button
-            variation="ghost"
+            variation={redeemable ? 'primary' : 'ghost'}
             disabled={saving}
             onClick={() => {
               setConfirmModalVisible(true);
             }}>
             {saving && <Spinner className="mr-8" />}
-            Add to entry queue
+            {redeemable ? 'Redeem tokens' : 'Add to entry queue'}
           </Button>
         </footer>
       </div>
@@ -295,20 +351,35 @@ const EntryQueue = ({ tranche, smartAlphaContract }) => {
   );
 };
 
-const ExitQueue = ({ tranche, smartAlphaContract }) => {
+const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   const wallet = useWallet();
+  const { getToken } = useTokens();
+
+  const poolToken = getToken(pool.poolToken.symbol);
+  const oracleToken = getAsset(pool.oracleAssetSymbol);
+  const isSenior = tranche === 'senior';
 
   const [epoch, setEpoch] = useState<number | undefined>();
   const [amount, setAmount] = useState<BigNumber | undefined>();
+  const [historyTokenPrice, setHistoryTokenPrice] = useState<BigNumber | undefined>();
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
   useEffect(() => {
+    setEpoch(undefined);
+    setAmount(undefined);
+
     (tranche === 'senior' ? smartAlphaContract?.seniorExitQueue : smartAlphaContract?.juniorExitQueue)
       ?.call(smartAlphaContract, wallet.account)
       .then(([epoch, amount]) => {
         setEpoch(epoch);
         setAmount(amount);
+
+        (isSenior ? smartAlphaContract?.historyEpochSeniorTokenPrice : smartAlphaContract?.historyEpochJuniorTokenPrice)
+          ?.call(smartAlphaContract, epoch)
+          .then(price => {
+            setHistoryTokenPrice(price);
+          });
       });
   }, [tranche, smartAlphaContract]);
 
@@ -328,6 +399,31 @@ const ExitQueue = ({ tranche, smartAlphaContract }) => {
     setSaving(false);
   }
 
+  if (amount === undefined) {
+    return (
+      <section className="card relative">
+        <Spinner className={s.spinner} />
+      </section>
+    );
+  }
+
+  if (amount.eq(0)) {
+    return (
+      <section className="card">
+        <div className="flex flow-row align-center justify-center full-height text-center">
+          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+            Empty exit queue
+          </Text>
+          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+            Your exit queue for {pool.poolName} is currently empty.
+          </Text>
+        </div>
+      </section>
+    );
+  }
+
+  const redeemable = amount.gt(0) && epoch !== undefined && epoch < smartAlphaContract.currentEpoch;
+
   return (
     <section className="card">
       <header className="card-header">
@@ -345,7 +441,7 @@ const ExitQueue = ({ tranche, smartAlphaContract }) => {
             </dt>
             <dd>
               <Text type="p1" weight="bold" color="primary">
-                23.4412
+                {formatToken(amount.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </dd>
           </div>
@@ -356,8 +452,16 @@ const ExitQueue = ({ tranche, smartAlphaContract }) => {
               </Text>
             </dt>
             <dd>
+              <TokenIcon
+                name={poolToken?.icon ?? 'unknown'}
+                outline={isSenior ? 'green' : 'purple'}
+                bubble1Name="bond"
+                bubble2Name={oracleToken?.icon ?? 'unknown'}
+                size={16}
+                className="ml-8"
+              />
               <Text type="p1" weight="semibold" color="primary">
-                23.4412
+                {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
               </Text>
             </dd>
           </div>
@@ -381,20 +485,20 @@ const ExitQueue = ({ tranche, smartAlphaContract }) => {
             </dt>
             <dd>
               <Text type="p1" weight="semibold" color="primary">
-                2d 4h 30m
+                {redeemable ? 'Redeem now' : '-d -h -m'}
               </Text>
             </dd>
           </div>
         </dl>
         <footer>
           <Button
-            variation="ghost"
+            variation={redeemable ? 'primary' : 'ghost'}
             disabled={saving}
             onClick={() => {
               setConfirmModalVisible(true);
             }}>
             {saving && <Spinner className="mr-8" />}
-            Add to exit queue
+            {redeemable ? 'Redeem underlying' : 'Add to exit queue'}
           </Button>
         </footer>
       </div>

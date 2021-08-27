@@ -126,6 +126,8 @@ export const Simulate = () => {
 
     return BigNumber.from(pricePerfStr)?.div(100)?.scaleBy(SCALE_DECIMALS);
   }, [pricePerfStr, form.formState.errors.pricePerf]);
+  const entryPrice = useMemo(() => new BigNumber(1).scaleBy(SCALE_DECIMALS)!, []);
+  const currentPrice = useMemo(() => entryPrice.plus(pricePerf ?? 0), [entryPrice, pricePerf]);
 
   const calcProfits = useDebounce(
     (
@@ -138,7 +140,6 @@ export const Simulate = () => {
       setSeniorProfits(undefined);
 
       if (pricePerf && seniorLiquidity) {
-        const entryPrice = new BigNumber(1).scaleBy(SCALE_DECIMALS)!;
         const currentPrice = entryPrice.plus(pricePerf);
 
         if (currentPrice) {
@@ -168,8 +169,25 @@ export const Simulate = () => {
   }, [pricePerf, seniorLiquidity, exposure, protection]);
 
   const pricePerfRate = pricePerf?.unscaleBy(SCALE_DECIMALS)?.toNumber() ?? 0;
-  const seniorProfitsRate = seniorProfits?.unscaleBy(SCALE_DECIMALS)?.toNumber() ?? 0;
-  const juniorProfitsRate = juniorProfits?.unscaleBy(SCALE_DECIMALS)?.toNumber() ?? 0;
+
+  const juniorsEnd = juniorLiquidity?.plus(juniorProfits ?? BigNumber.ZERO).minus(seniorProfits ?? BigNumber.ZERO);
+  const seniorsEnd = seniorLiquidity?.plus(seniorProfits ?? BigNumber.ZERO).minus(juniorProfits ?? BigNumber.ZERO);
+  const juniorValueStart = entryPrice.multipliedBy(juniorLiquidity ?? 0).unscaleBy(SCALE_DECIMALS);
+  const seniorValueStart = entryPrice.multipliedBy(seniorLiquidity ?? 0).unscaleBy(SCALE_DECIMALS);
+  const juniorValueEnd = currentPrice.multipliedBy(juniorsEnd ?? 0).unscaleBy(SCALE_DECIMALS);
+  const seniorValueEnd = currentPrice.multipliedBy(seniorsEnd ?? 0).unscaleBy(SCALE_DECIMALS);
+
+  const seniorProfitsRate =
+    seniorValueEnd
+      ?.minus(seniorValueStart ?? 0)
+      .div(seniorValueStart ?? 0)
+      .toNumber() ?? 0 / 100;
+
+  const juniorProfitsRate =
+    juniorValueEnd
+      ?.minus(juniorValueStart ?? 0)
+      .div(juniorValueStart ?? 0)
+      .toNumber() ?? 0 / 100;
 
   return (
     <>
@@ -246,7 +264,7 @@ export const Simulate = () => {
                 </dt>
                 <dd className="ml-auto">
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatPercent(seniorProfits?.unscaleBy(SCALE_DECIMALS)) ?? '-'}
+                    {formatPercent(seniorProfitsRate) ?? '-'}
                   </Text>
                 </dd>
               </div>
@@ -258,7 +276,7 @@ export const Simulate = () => {
                 </dt>
                 <dd className="ml-auto">
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatPercent(juniorProfits?.unscaleBy(SCALE_DECIMALS)) ?? '-'}
+                    {formatPercent(juniorProfitsRate) ?? '-'}
                   </Text>
                 </dd>
               </div>
