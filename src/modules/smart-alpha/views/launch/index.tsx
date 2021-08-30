@@ -11,7 +11,7 @@ import s from './s.module.scss';
 
 const Launch = ({ launchDate }: { launchDate: Date }) => {
   return (
-    <>
+    <div className="container-limit">
       <div className={classNames(s.slogan, 'mb-64')}>
         <div>
           <Text type="h1" weight="bold" color="primary" className="mb-8">
@@ -24,7 +24,7 @@ const Launch = ({ launchDate }: { launchDate: Date }) => {
         <Countdown launchDate={launchDate} className={s.countdown} />
       </div>
       <Simulate />
-    </>
+    </div>
   );
 };
 

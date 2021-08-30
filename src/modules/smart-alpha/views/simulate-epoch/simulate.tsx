@@ -1,10 +1,12 @@
 import { CSSProperties, useEffect, useMemo, useState } from 'react';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
-import { Bar, BarChart, Legend, ResponsiveContainer, YAxis } from 'recharts';
+import classNames from 'classnames';
+import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, YAxis } from 'recharts';
 import { formatPercent } from 'web3/utils';
 
 import { Form, FormItem, useForm } from 'components/custom/form';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { Input } from 'components/input';
@@ -136,8 +138,8 @@ export const Simulate = () => {
       exposure: BigNumber | undefined,
       protection: BigNumber | undefined,
     ) => {
-      setJuniorProfits(undefined);
-      setSeniorProfits(undefined);
+      // setJuniorProfits(undefined);
+      // setSeniorProfits(undefined);
 
       if (pricePerf && seniorLiquidity) {
         const currentPrice = entryPrice.plus(pricePerf);
@@ -234,8 +236,9 @@ export const Simulate = () => {
             <dl>
               <div className="flex align-center mb-32">
                 <dt className="mr-8">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior downside protection (Absolute %)
+                    <InfoTooltip>TBD</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -246,8 +249,9 @@ export const Simulate = () => {
               </div>
               <div className="flex align-center mb-32">
                 <dt className="mr-8">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior upside exposure (Relative %)
+                    <InfoTooltip>TBD</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -258,8 +262,9 @@ export const Simulate = () => {
               </div>
               <div className="flex align-center mb-32">
                 <dt className="mr-8">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior performance
+                    <InfoTooltip>TBD</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -270,8 +275,9 @@ export const Simulate = () => {
               </div>
               <div className="flex align-center">
                 <dt className="mr-8">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Junior performance
+                    <InfoTooltip>TBD</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -299,10 +305,13 @@ export const Simulate = () => {
                     juniorProfitsRate,
                   },
                 ]}>
+                <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                {/* <CartesianAxis /> */}
                 <YAxis axisLine={false} tickLine={false} tickFormatter={value => formatPercent(value, 0) ?? ''} />
-                <Bar dataKey="pricePerfRate" fill="var(--theme-red-color)" />
-                <Bar dataKey="seniorProfitsRate" fill="var(--theme-green-color)" />
-                <Bar dataKey="juniorProfitsRate" fill="var(--theme-purple-color)" />
+
+                <Bar dataKey="pricePerfRate" fill="var(--theme-red-color)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="seniorProfitsRate" fill="var(--theme-green-color)" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="juniorProfitsRate" fill="var(--theme-purple-color)" radius={[4, 4, 0, 0]} />
                 <Legend
                   content={({ payload }) => {
                     if (!payload) return null;
@@ -315,15 +324,19 @@ export const Simulate = () => {
                             className={s.legendItem}
                             style={{ '--dot-color': entry.color } as CSSProperties}>
                             <div className="flex flow-row">
-                              <Text type="small" weight="semibold" color="secondary">
+                              <Text
+                                type="small"
+                                weight="semibold"
+                                color="secondary"
+                                className={classNames(s.legendTitle, 'mb-4')}>
                                 {entry.value === 'pricePerfRate' && 'Price performance'}
                                 {entry.value === 'seniorProfitsRate' && 'Senior performance'}
                                 {entry.value === 'juniorProfitsRate' && 'Junior performance'}
                               </Text>
                               <Text type="p1" weight="bold" color="primary">
-                                {entry.value === 'pricePerfRate' && formatPercent(pricePerfRate)}
-                                {entry.value === 'seniorProfitsRate' && formatPercent(seniorProfitsRate)}
-                                {entry.value === 'juniorProfitsRate' && formatPercent(juniorProfitsRate)}
+                                {(entry.value === 'pricePerfRate' && formatPercent(pricePerfRate)) ?? '-%'}
+                                {(entry.value === 'seniorProfitsRate' && formatPercent(seniorProfitsRate)) ?? '-%'}
+                                {(entry.value === 'juniorProfitsRate' && formatPercent(juniorProfitsRate)) ?? '-%'}
                               </Text>
                             </div>
                           </span>

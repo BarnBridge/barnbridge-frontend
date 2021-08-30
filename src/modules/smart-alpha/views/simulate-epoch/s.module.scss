@@ -1,6 +1,6 @@
 .cards {
   display: grid;
-  grid-template-columns: 400px 1fr;
+  grid-template-columns: 438px 1fr;
   column-gap: 32px;
   row-gap: 32px;
 
@@ -25,9 +25,12 @@
   background: var(--theme-body-color);
   border-radius: 4px;
   padding: 8px 12px;
+}
+
+.legendTitle {
   position: relative;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
 
   &::before {
     content: '';

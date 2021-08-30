@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
+
 import { PeriodTabsKey, PortfolioPeriodTabsKey } from 'components/custom/tabs';
 import { useConfig } from 'components/providers/configProvider';
 import { Tokens } from 'components/providers/tokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
-import { UseFetchReturn, useFetch } from 'utils/fetch';
+import { UseFetchReturn, executeFetch, useFetch } from 'utils/fetch';
 
 export type PoolApiType = {
   epoch1Start: number;
@@ -238,12 +240,46 @@ type QueuePositionApiType = {
   tranche: 'SENIOR' | 'JUNIOR';
 };
 
-export function useFetchQueuePositions(): UseFetchReturn<QueuePositionApiType[]> {
+export function useFetchQueuePositions(): {
+  data: QueuePositionApiType[] | undefined;
+  loading: boolean;
+  loaded: boolean;
+  error: Error | undefined;
+} {
   const config = useConfig();
   const { account } = useWallet();
-  const url = new URL(`/api/smartalpha/users/${account}/queue-positions`, config.api.baseUrl);
+  const [data, setData] = useState();
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [error, setError] = useState<Error | undefined>();
 
-  return useFetch(url, {
-    transform: ({ data }) => data,
-  });
+  useEffect(() => {
+    if (account) {
+      setLoading(true);
+
+      const url = new URL(`/api/smartalpha/users/${account}/queue-positions`, config.api.baseUrl);
+      executeFetch(url)
+        .then(response => {
+          setData(response);
+          setLoaded(true);
+        })
+        .catch(e => {
+          setError(e);
+          setData(undefined);
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    } else {
+      setData(undefined);
+      setLoaded(false);
+    }
+  }, [account]);
+
+  return {
+    loading,
+    loaded,
+    data,
+    error,
+  };
 }
