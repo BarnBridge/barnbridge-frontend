@@ -240,46 +240,23 @@ type QueuePositionApiType = {
   tranche: 'SENIOR' | 'JUNIOR';
 };
 
-export function useFetchQueuePositions(): {
-  data: QueuePositionApiType[] | undefined;
-  loading: boolean;
-  loaded: boolean;
-  error: Error | undefined;
-} {
+export function useFetchQueuePositions(): UseFetchReturn<QueuePositionApiType[]> {
   const config = useConfig();
   const { account } = useWallet();
-  const [data, setData] = useState();
-  const [loading, setLoading] = useState(false);
-  const [loaded, setLoaded] = useState(false);
-  const [error, setError] = useState<Error | undefined>();
+
+  const fetchReturn = useFetch('', {
+    lazy: true,
+    transform: ({ data }) => data,
+  });
 
   useEffect(() => {
     if (account) {
-      setLoading(true);
-
       const url = new URL(`/api/smartalpha/users/${account}/queue-positions`, config.api.baseUrl);
-      executeFetch(url)
-        .then(response => {
-          setData(response);
-          setLoaded(true);
-        })
-        .catch(e => {
-          setError(e);
-          setData(undefined);
-        })
-        .finally(() => {
-          setLoading(false);
-        });
+      fetchReturn.load(url);
     } else {
-      setData(undefined);
-      setLoaded(false);
+      fetchReturn.reset();
     }
   }, [account]);
 
-  return {
-    loading,
-    loaded,
-    data,
-    error,
-  };
+  return fetchReturn;
 }

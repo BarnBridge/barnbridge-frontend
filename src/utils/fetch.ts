@@ -12,7 +12,8 @@ export type UseFetchReturn<T> = {
   loaded: boolean;
   data: T | undefined;
   error: Error | undefined;
-  load: () => Promise<void>;
+  load: (query?: string | URL) => Promise<void>;
+  reset: () => void;
 };
 
 export type PaginatedResult<T extends any = any> = {
@@ -69,23 +70,33 @@ export function useFetch<T extends any = any>(query: string | URL, options?: Use
       setLoaded(true);
       setData((optionsRef.current?.transform ?? (v => v))(data));
     } catch (e) {
-      setError(e);
+      setError(e as Error);
       setData(undefined);
     }
 
     setLoading(false);
   }, []);
 
-  const load = useCallback(() => {
+  const load = useCallback(
+    (query: string | URL = strQuery) => {
+      setLoaded(false);
+      return fetchData(String(query));
+    },
+    [strQuery],
+  );
+
+  const reset = useCallback(() => {
+    setLoading(false);
     setLoaded(false);
-    return fetchData(strQuery);
-  }, [fetchData, strQuery]);
+    setData(undefined);
+    setError(undefined);
+  }, []);
 
   useEffect(() => {
-    if (optionsRef.current?.lazy !== true || loaded) {
+    if (optionsRef.current?.lazy !== true) {
       fetchData(strQuery).catch(Error);
     }
-  }, [fetchData, strQuery]);
+  }, [strQuery]);
 
   return {
     loading,
@@ -93,6 +104,7 @@ export function useFetch<T extends any = any>(query: string | URL, options?: Use
     data,
     error,
     load,
+    reset,
   };
 }
 

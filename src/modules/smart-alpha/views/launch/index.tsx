@@ -21,7 +21,7 @@ const Launch = ({ launchDate }: { launchDate: Date }) => {
             You can play with the simulator in the meantime
           </Text>
         </div>
-        <Countdown launchDate={launchDate} className={s.countdown} />
+        {/* <Countdown launchDate={launchDate} className={s.countdown} /> */}
       </div>
       <Simulate />
     </div>
