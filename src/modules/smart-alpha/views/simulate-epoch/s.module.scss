@@ -3,6 +3,7 @@
   grid-template-columns: 438px 1fr;
   column-gap: 32px;
   row-gap: 32px;
+  align-items: flex-start;
 
   @media (max-width: 1200px) {
     grid-template-columns: 320px 1fr;
