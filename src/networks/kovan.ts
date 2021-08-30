@@ -4,11 +4,11 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = String(process.env.REACT_APP_KOVAN_INFURA_RPC_KEY);
+const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
 const RPC_HTTPS_URL = `https://kovan.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
-const EXPLORER_KEY = String(process.env.REACT_APP_KOVAN_ETHERSCAN_EXPLORER_KEY);
+const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
 const EXPLORER_URL = 'https://kovan.etherscan.io';
 const EXPLORER_API_URL = 'https://api-kovan.etherscan.io';
 
@@ -35,7 +35,7 @@ export const KovanConfig: NetworkConfig = {
     baseUrl: 'https://dev-v2.api.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
