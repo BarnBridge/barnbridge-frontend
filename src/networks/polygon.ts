@@ -6,11 +6,11 @@ import { isDevelopmentMode } from '../utils';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = String(process.env.REACT_APP_POLYGON_INFURA_RPC_KEY);
+const RPC_KEY = 'ec7bd85d0babc7ec3e63aa71e7544214914fa01c';
 const RPC_HTTPS_URL = `https://rpc-mainnet.maticvigil.com/v1/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://rpc-mainnet.maticvigil.com/ws/v1/${RPC_KEY}`;
 
-const EXPLORER_KEY = String(process.env.REACT_APP_POLYGON_ETHERSCAN_EXPLORER_KEY);
+const EXPLORER_KEY = 'CPRM5D2KD52ZZD2T7HFXE99J3WDSJF4P78';
 const EXPLORER_URL = 'https://polygonscan.com';
 const EXPLORER_API_URL = 'https://api.polygonscan.com';
 
@@ -34,7 +34,7 @@ export const PolygonConfig: NetworkConfig = {
     baseUrl: isDevelopmentMode ? 'https://alpha.polygon.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '',

@@ -1,9 +1,11 @@
+import { useEffect, useState } from 'react';
+
 import { PeriodTabsKey, PortfolioPeriodTabsKey } from 'components/custom/tabs';
 import { useConfig } from 'components/providers/configProvider';
 import { Tokens } from 'components/providers/tokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
-import { UseFetchReturn, useFetch } from 'utils/fetch';
+import { UseFetchReturn, executeFetch, useFetch } from 'utils/fetch';
 
 export type PoolApiType = {
   epoch1Start: number;
@@ -241,9 +243,20 @@ type QueuePositionApiType = {
 export function useFetchQueuePositions(): UseFetchReturn<QueuePositionApiType[]> {
   const config = useConfig();
   const { account } = useWallet();
-  const url = new URL(`/api/smartalpha/users/${account}/queue-positions`, config.api.baseUrl);
 
-  return useFetch(url, {
+  const fetchReturn = useFetch('', {
+    lazy: true,
     transform: ({ data }) => data,
   });
+
+  useEffect(() => {
+    if (account) {
+      const url = new URL(`/api/smartalpha/users/${account}/queue-positions`, config.api.baseUrl);
+      fetchReturn.load(url);
+    } else {
+      fetchReturn.reset();
+    }
+  }, [account]);
+
+  return fetchReturn;
 }

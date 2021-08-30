@@ -21,7 +21,6 @@ import s from './s.module.scss';
 export const PortfolioPositions = () => {
   const location = useLocation();
   const history = useHistory();
-
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
   const { data } = useFetchPools();
   const { getToken } = useTokens();
