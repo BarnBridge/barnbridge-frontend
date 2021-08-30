@@ -195,7 +195,11 @@ export const Simulate = () => {
     <>
       <Form form={form}>
         <div className="card p-24 flex col-gap-24 flex-grow mb-32">
-          <FormItem name="pricePerf" label="Price performance (%)" labelProps={{ hint: 'TBD' }} className="flex-grow">
+          <FormItem
+            name="pricePerf"
+            label="Price performance (%)"
+            labelProps={{ hint: 'How much the underlying asset’s price changed during the epoch' }}
+            className="flex-grow">
             {({ field }) => (
               <Input
                 placeholder="0"
@@ -210,7 +214,7 @@ export const Simulate = () => {
           <FormItem
             name="juniorDominance"
             label="Junior dominance (%)"
-            labelProps={{ hint: 'TBD' }}
+            labelProps={{ hint: 'What percentage of the pool was composed of junior positions' }}
             className="flex-grow">
             {({ field }) => (
               <Input
@@ -238,7 +242,7 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior downside protection (Absolute %)
-                    <InfoTooltip>TBD</InfoTooltip>
+                    <InfoTooltip>Senior positions will only start taking losses beyond this decline</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -251,7 +255,10 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior upside exposure (Relative %)
-                    <InfoTooltip>TBD</InfoTooltip>
+                    <InfoTooltip>
+                      Senior positions will only receive this much of every percentage point gain in the underlying
+                      asset
+                    </InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -264,7 +271,7 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior performance
-                    <InfoTooltip>TBD</InfoTooltip>
+                    <InfoTooltip>Change in the fair price of the senior token at epoch advancement</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -277,7 +284,7 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Junior performance
-                    <InfoTooltip>TBD</InfoTooltip>
+                    <InfoTooltip>Change in the fair price of the junior token at epoch advancement</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
