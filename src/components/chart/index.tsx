@@ -9,7 +9,7 @@ import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import s from './s.module.scss';
 
-interface PropsType<X = number, Y = number> {
+interface PropsType {
   data: Object[];
   x: {
     key: string;
@@ -132,7 +132,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               labelFormatter={value => (
                 <div className={s.tooltipTitle}>{value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}</div>
               )}
-              content={ttprops => renderTooltip(ttprops, x.itemFormat, y.itemsFormat)}
+              content={p => renderTooltip(p, x.itemFormat, y.itemsFormat)}
             />
             <Legend content={renderLegend} />
           </AreaChart>

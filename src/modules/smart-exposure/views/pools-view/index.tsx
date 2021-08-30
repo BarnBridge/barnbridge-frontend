@@ -30,9 +30,10 @@ const PoolsView: React.FC = () => {
 
   const poolsToDisplay = selectedPools.length ? selectedPools : pools;
 
-  const totalValueLocked = useMemo(() => pools.reduce((acc, pool) => acc + Number(pool.state.poolLiquidity), 0), [
-    pools,
-  ]);
+  const totalValueLocked = useMemo(
+    () => pools.reduce((acc, pool) => acc + Number(pool.state.poolLiquidity), 0),
+    [pools],
+  );
 
   return (
     <>

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
@@ -25,10 +26,13 @@ type Props = {
   poolTokenContract: Erc20Contract | undefined;
 };
 
-export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: Props) => {
+export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Props) => {
+  const params = useParams<{ tranche: 'senior' | 'junior' }>();
+  const tranche = params.tranche.toLowerCase();
+
   const wallet = useWallet();
-  const [reload, version] = useReload();
   const { getToken } = useTokens();
+  const [reload, version] = useReload();
 
   const [tokenState, setTokenState] = useState('');
   const [epoch, setEpoch] = useState<number | undefined>();
@@ -38,6 +42,7 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
 
+  const isSenior = tranche === 'senior';
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
   const tokenMax = poolTokenContract?.getBalanceOf()?.unscaleBy(pool.poolToken.decimals);
@@ -50,14 +55,18 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
 
     poolTokenContract?.loadBalance();
     poolTokenContract?.loadAllowance(pool.poolAddress);
-    smartAlphaContract?.juniorEntryQueue(wallet.account).then(([epoch, amount]) => {
-      setEpoch(epoch);
-      setDepositQueueBalance(amount);
+    (isSenior ? smartAlphaContract?.seniorEntryQueue : smartAlphaContract?.juniorEntryQueue)
+      ?.call(smartAlphaContract, wallet.account)
+      .then(([epoch, amount]) => {
+        setEpoch(epoch);
+        setDepositQueueBalance(amount);
 
-      smartAlphaContract?.historyEpochJuniorTokenPrice(epoch).then(price => {
-        setHistoryTokenPrice(price);
+        (isSenior ? smartAlphaContract?.historyEpochSeniorTokenPrice : smartAlphaContract?.historyEpochJuniorTokenPrice)
+          ?.call(smartAlphaContract, epoch)
+          .then(price => {
+            setHistoryTokenPrice(price);
+          });
       });
-    });
   }, [wallet.account, version]);
 
   async function handlePoolTokenEnable() {
@@ -80,7 +89,11 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
       const amount = BigNumber.from(tokenState)?.scaleBy(pool.poolToken.decimals);
 
       if (amount) {
-        await smartAlphaContract?.depositJunior(amount, gasPrice);
+        await (isSenior ? smartAlphaContract?.depositSenior : smartAlphaContract?.depositJunior)?.call(
+          smartAlphaContract,
+          amount,
+          gasPrice,
+        );
         setTokenState('');
         reload();
       }
@@ -94,10 +107,10 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
   return (
     <div className="card p-24">
       <Text type="h3" weight="bold" color="primary" tag="h3" className="mb-16">
-        Junior deposit
+        {isSenior ? 'Senior' : 'Junior'} deposit
       </Text>
       <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
-        Choose the amount of tokens you want to deposit in the junior side. Make sure you double check the amounts.
+        Choose the amount of tokens you want to deposit in the {tranche} side. Make sure you double check the amounts.
       </Text>
 
       {depositQueueBalance?.gt(0) && (
@@ -123,13 +136,13 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
           {epoch! < smartAlphaContract?.currentEpoch! && (
             <div>
               <Text type="small" weight="semibold" color="secondary">
-                Unclaimed junior tokens
+                Unclaimed {tranche} tokens
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(depositQueueBalance.div(historyTokenPrice ?? 0)) ?? '-'}
                 <TokenIcon
                   name={poolToken?.icon ?? 'unknown'}
-                  outline="green"
+                  outline={isSenior ? 'green' : 'purple'}
                   bubble1Name="bond"
                   bubble2Name={oracleToken?.icon ?? 'unknown'}
                   size={16}
@@ -175,8 +188,17 @@ export const JuniorDeposit = ({ pool, smartAlphaContract, poolTokenContract }: P
 
       {confirmModalVisible && (
         <TxConfirmModal
-          title="Confirm deposit"
-          submitText="Confirm deposit"
+          title="Initiate deposit"
+          header={
+            <Text type="p2" weight="semibold" color="secondary">
+              Your balance of{' '}
+              <Text tag="span" type="p2" weight="bold" color="primary">
+                {formatToken(BigNumber.from(tokenState), { decimals: poolToken?.decimals })} {poolToken?.symbol}
+              </Text>{' '}
+              will be added to the deposit queue for the next epoch.
+            </Text>
+          }
+          submitText="Confirm your deposit"
           onCancel={() => setConfirmModalVisible(false)}
           onConfirm={({ gasPrice }) => handleDeposit(gasPrice)}
         />

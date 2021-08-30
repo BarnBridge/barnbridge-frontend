@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
@@ -6,10 +6,7 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 
 import { PortfolioPositions } from './positions';
-// const JuniorPortfolio = lazy(() => import('./junior'));
 import { PortfolioStatistics } from './statistics';
-
-// const SeniorPortfolio = lazy(() => import('./senior'));
 
 const PortfolioView: React.FC = () => {
   return (

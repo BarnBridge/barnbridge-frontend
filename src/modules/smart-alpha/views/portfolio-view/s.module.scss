@@ -9,3 +9,10 @@
     grid-template-columns: 1fr;
   }
 }
+
+
+.spinner {
+  position: absolute;
+  top: calc(50% - 12px);
+  left: calc(50% - 12px);
+}

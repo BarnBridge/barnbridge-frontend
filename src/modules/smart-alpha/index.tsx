@@ -63,7 +63,7 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/pools/:id/deposit">
               <DepositView />
             </Route>
-            <Route path="/smart-alpha/pools/:id/withdraw">
+            <Route path="/smart-alpha/pools/:id/withdraw/:tranche(senior|junior)">
               <WithdrawView />
             </Route>
             <Route path="/smart-alpha/pools/:id/simulate-epoch">
