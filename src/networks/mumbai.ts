@@ -4,11 +4,11 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = String(process.env.REACT_APP_MUMBAI_INFURA_RPC_KEY);
+const RPC_KEY = 'ec7bd85d0babc7ec3e63aa71e7544214914fa01c';
 const RPC_HTTPS_URL = `https://rpc-mumbai.maticvigil.com/v1/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://rpc-mumbai.maticvigil.com/ws/v1/${RPC_KEY}`;
 
-const EXPLORER_KEY = String(process.env.REACT_APP_MUMBAI_ETHERSCAN_EXPLORER_KEY);
+const EXPLORER_KEY = 'CPRM5D2KD52ZZD2T7HFXE99J3WDSJF4P78';
 const EXPLORER_URL = 'https://mumbai.polygonscan.com';
 const EXPLORER_API_URL = 'https://api-testnet.polygonscan.com';
 
@@ -31,7 +31,7 @@ export const MumbaiConfig: NetworkConfig = {
     baseUrl: 'https://mumbai.api.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '',
