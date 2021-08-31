@@ -102,7 +102,7 @@ export const PortfolioPositions = () => {
           );
         })}
       </div>
-      <div className="css-grid" style={{ '--min': '260px' } as React.CSSProperties}>
+      <div className={s.positionsCards}>
         <WalletBalance pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
         <EntryQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
         <ExitQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
@@ -155,12 +155,11 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
         </Text>
       </header>
       <div className="p-24">
-        <div className="flex align-center mr-8">
+        <div className="flex align-center mb-8">
           <Text type="h2" weight="bold" color="primary" className="mr-8">
             {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
           </Text>
           <TokenIcon
-            className="mr-16"
             name={poolToken?.icon ?? 'unknown'}
             bubble1Name="bond"
             bubble2Name={oracleToken?.icon}
@@ -242,18 +241,22 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
 
   if (amount.eq(0)) {
     return (
-      <section className="card">
-        <div className="flex flow-row align-center justify-center full-height text-center">
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
-            Empty entry queue
-          </Text>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            Your entry queue for {pool.poolName} is currently empty.
-          </Text>
-          <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
-            Deposit {pool.poolToken.symbol}
-          </Link>
-        </div>
+      <section
+        className="card p-24"
+        style={{
+          display: 'grid',
+          justifyItems: 'center',
+          alignContent: 'center',
+        }}>
+        <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          Empty entry queue
+        </Text>
+        <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          Your entry queue for {pool.poolName} is currently empty.
+        </Text>
+        <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
+          Deposit {pool.poolToken.symbol}
+        </Link>
       </section>
     );
   }
@@ -269,70 +272,64 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
       </header>
       <div className="p-24">
         <dl>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Underlying in queue
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Underlying in queue
+            </Text>
+            <dd className="flex align-center ml-auto">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} className="mr-8" />
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(amount.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </dd>
           </div>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Redeemable tokens
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Redeemable tokens
+            </Text>
+            <dd className="flex align-center ml-auto">
               <TokenIcon
                 name={poolToken?.icon ?? 'unknown'}
                 outline={isSenior ? 'green' : 'purple'}
                 bubble1Name="bond"
                 bubble2Name={oracleToken?.icon ?? 'unknown'}
-                size={16}
-                className="ml-8"
+                size={24}
+                className="mr-8"
               />
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
               </Text>
             </dd>
           </div>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Entry epoch
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Entry epoch
+            </Text>
+            <dd className="flex align-center ml-auto">
               <Text type="p1" weight="semibold" color="primary">
                 #{epoch ?? '-'}
               </Text>
             </dd>
           </div>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Redeemable in
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Redeemable in
+            </Text>
+            <dd className="flex align-center ml-auto">
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? 'Redeem now' : '-d -h -m'}
               </Text>
             </dd>
           </div>
         </dl>
-        <footer>
+        <footer className="flex">
           <Button
             variation={redeemable ? 'primary' : 'ghost'}
             disabled={saving}
             onClick={() => {
               setConfirmModalVisible(true);
-            }}>
+            }}
+            className="flex-grow">
             {saving && <Spinner className="mr-8" />}
             {redeemable ? 'Redeem tokens' : 'Add to entry queue'}
           </Button>
@@ -408,15 +405,19 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
 
   if (amount.eq(0)) {
     return (
-      <section className="card">
-        <div className="flex flow-row align-center justify-center full-height text-center">
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
-            Empty exit queue
-          </Text>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            Your exit queue for {pool.poolName} is currently empty.
-          </Text>
-        </div>
+      <section
+        className="card p-24"
+        style={{
+          display: 'grid',
+          justifyItems: 'center',
+          alignContent: 'center',
+        }}>
+        <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          Empty exit queue
+        </Text>
+        <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          Your exit queue for {pool.poolName} is currently empty.
+        </Text>
       </section>
     );
   }
@@ -432,70 +433,64 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
       </header>
       <div className="p-24">
         <dl>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Tokens in queue
-              </Text>
-            </dt>
-            <dd>
-              <Text type="p1" weight="bold" color="primary">
-                {formatToken(amount.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-              </Text>
-            </dd>
-          </div>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Redeemable underlying
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Tokens in queue
+            </Text>
+            <dd className="flex align-center ml-auto">
               <TokenIcon
                 name={poolToken?.icon ?? 'unknown'}
                 outline={isSenior ? 'green' : 'purple'}
                 bubble1Name="bond"
                 bubble2Name={oracleToken?.icon ?? 'unknown'}
-                size={16}
-                className="ml-8"
+                size={24}
+                className="mr-8"
               />
+              <Text type="p1" weight="bold" color="primary">
+                {formatToken(amount.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+              </Text>
+            </dd>
+          </div>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Redeemable underlying
+            </Text>
+            <dd className="flex align-center ml-auto">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
               </Text>
             </dd>
           </div>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Entry epoch
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Entry epoch
+            </Text>
+            <dd className="flex align-center ml-auto">
               <Text type="p1" weight="semibold" color="primary">
                 #{epoch ?? '-'}
               </Text>
             </dd>
           </div>
-          <div>
-            <dt>
-              <Text type="small" weight="semibold" color="secondary">
-                Redeemable in
-              </Text>
-            </dt>
-            <dd>
+          <div className="flex align-center mb-24 pr-8">
+            <Text type="small" weight="semibold" color="secondary" tag="dt">
+              Redeemable in
+            </Text>
+            <dd className="flex align-center ml-auto">
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? 'Redeem now' : '-d -h -m'}
               </Text>
             </dd>
           </div>
         </dl>
-        <footer>
+        <footer className="flex">
           <Button
             variation={redeemable ? 'primary' : 'ghost'}
             disabled={saving}
             onClick={() => {
               setConfirmModalVisible(true);
-            }}>
+            }}
+            className="flex-grow">
             {saving && <Spinner className="mr-8" />}
             {redeemable ? 'Redeem underlying' : 'Add to exit queue'}
           </Button>

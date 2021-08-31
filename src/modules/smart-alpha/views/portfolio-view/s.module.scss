@@ -10,6 +10,16 @@
   }
 }
 
+.positionsCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  column-gap: 32px;
+  align-items: start;
+
+  > * {
+    min-height: 250px;
+  }
+}
 
 .spinner {
   position: absolute;
