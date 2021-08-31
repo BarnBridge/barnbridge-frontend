@@ -251,7 +251,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
             Your entry queue for {pool.poolName} is currently empty.
           </Text>
           <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
-            Deposit wETH
+            Deposit {pool.poolToken.symbol}
           </Link>
         </div>
       </section>
