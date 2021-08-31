@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 
+import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
@@ -45,6 +46,16 @@ const SimulateEpoch = () => {
 
   return (
     <>
+      <div className="mb-16">
+        <Link
+          to={`/smart-alpha/pools/${poolAddress}`}
+          variation="text-alt"
+          icon="arrow"
+          iconPosition="left"
+          iconRotate={180}>
+          Pool details
+        </Link>
+      </div>
       <div className="flex align-center mb-40">
         <TokenIcon
           name={poolToken?.icon ?? 'unknown'}

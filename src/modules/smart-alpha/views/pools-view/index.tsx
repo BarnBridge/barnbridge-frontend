@@ -2,9 +2,10 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { addSeconds, getUnixTime } from 'date-fns';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatNumber, formatPercent, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
+import { InfoTooltip } from 'components/custom/tooltip';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
@@ -13,7 +14,7 @@ import { TokenIcon } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
 
-import { getRelativeTime } from 'utils';
+import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
 
@@ -53,11 +54,13 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
   const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
 
+  const juniorLeverage = calcJuniorLeverage(item);
+
   return (
     <section
-      className={classNames(s.poolCard, 'card p-24')}
+      className={classNames(s.poolCard, 'card')}
       style={{ '--pool-card-progress': currentEpochProgressPercent * 100 } as React.CSSProperties}>
-      <header className="flex align-center mb-32">
+      <header className="card-header flex align-center mb-32">
         <TokenIcon
           name={poolToken?.icon ?? 'unknown'}
           size={40}
@@ -72,10 +75,24 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             Epoch {item.state.epoch}
           </Text>
         </div>
+        <div className="ml-auto" style={{ textAlign: 'right' }}>
+          <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
+            Epoch ends in
+          </Text>
+          <UseLeftTime delay={1_000} end={0}>
+            {() => (
+              <Text type="p1" weight="semibold">
+                {getFormattedDuration(item.epochDuration - currentEpochProgress)}
+              </Text>
+            )}
+          </UseLeftTime>
+        </div>
       </header>
-      <dl className="mb-24">
-        <div className={s.poolCardDlRow}>
-          <dt>Epoch senior liquidity</dt>
+      <dl>
+        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+            Epoch senior liquidity
+          </Text>
           <dd>
             <Text
               type="p1"
@@ -85,24 +102,33 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             </Text>
           </dd>
         </div>
-        <div className={s.poolCardDlRow}>
-          <dt>Upside exposure rate</dt>
+        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+            Upside exposure rate
+            <InfoTooltip>TBD</InfoTooltip>
+          </Text>
           <dd>
-            <Text type="p1" weight="semibold">
+            <Text type="p1" weight="semibold" color="green">
               {formatPercent(Number(item.state.upsideExposureRate))}
             </Text>
           </dd>
         </div>
-        <div className={s.poolCardDlRow}>
-          <dt>Downside protection rate</dt>
+        <div className={classNames(s.poolCardDlRow, 'mb-16')}>
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+            Downside protection rate
+            <InfoTooltip>TBD</InfoTooltip>
+          </Text>
           <dd>
-            <Text type="p1" weight="semibold">
+            <Text type="p1" weight="semibold" color="green">
               {formatPercent(Number(item.state.downsideProtectionRate))}
             </Text>
           </dd>
         </div>
-        <div className={s.poolCardDlRow}>
-          <dt>Epoch junior liquidity</dt>
+        <hr className="mb-24" />
+        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+            Epoch junior liquidity
+          </Text>
           <dd>
             <Text
               type="p1"
@@ -112,16 +138,15 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             </Text>
           </dd>
         </div>
-        <div className={s.poolCardDlRow}>
-          <dt>Epoch ends in</dt>
+        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+            Junior leverage
+            <InfoTooltip>TBD</InfoTooltip>
+          </Text>
           <dd>
-            <UseLeftTime delay={1_000} end={0}>
-              {() => (
-                <Text type="p1" weight="semibold">
-                  {getRelativeTime(item.epochDuration - currentEpochProgress)}
-                </Text>
-              )}
-            </UseLeftTime>
+            <Text type="p1" weight="semibold" color="purple">
+              {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`}
+            </Text>
           </dd>
         </div>
       </dl>
@@ -133,3 +158,15 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
     </section>
   );
 };
+
+function calcJuniorLeverage(item) {
+  if (!Number(item.state.seniorLiquidity) || !Number(item.state.juniorLiquidity)) {
+    return null;
+  }
+
+  return (
+    1 +
+    (1 - Number(item.state.upsideExposureRate)) *
+      (Number(item.state.seniorLiquidity) / Number(item.state.juniorLiquidity))
+  );
+}

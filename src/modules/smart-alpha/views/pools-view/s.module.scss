@@ -37,10 +37,9 @@
 
 .poolCardDlRow {
   display: flex;
-
-  &:not(:last-of-type) {
-    margin-bottom: 32px;
-  }
+  align-items: center;
+  padding-left: 24px;
+  padding-right: 24px;
 
   dt {
     margin-right: 8px;
@@ -54,4 +53,5 @@
 
 .poolCardFooter {
   margin-top: auto;
+  padding: 0 24px 24px;
 }
