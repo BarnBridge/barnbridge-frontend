@@ -22,6 +22,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   min-block-size: 100%;
   min-inline-size: 100%;
+  font-feature-settings: 'tnum';
 }
 
 #root {

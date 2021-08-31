@@ -1,7 +1,6 @@
 .tokenAmount {
   // background: var(--theme-body-color);
   border: 1px solid var(--theme-border-color);
-  box-sizing: border-box;
   border-radius: 4px;
   display: flex;
   align-items: stretch;
@@ -62,7 +61,6 @@
 .tokenAmountPreview {
   background: var(--theme-body-color);
   border: 1px solid var(--theme-border-color);
-  box-sizing: border-box;
   border-radius: 4px;
   display: flex;
   align-items: stretch;

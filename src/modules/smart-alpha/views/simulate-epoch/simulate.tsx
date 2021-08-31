@@ -194,7 +194,7 @@ export const Simulate = () => {
   return (
     <>
       <Form form={form}>
-        <div className="card p-24 flex col-gap-24 flex-grow mb-32">
+        <div className="card p-24 flex col-gap-24 flex-grow mb-32 align-start">
           <FormItem
             name="pricePerf"
             label="Price performance (%)"

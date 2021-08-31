@@ -16,6 +16,8 @@
   .burger {
     display: none;
     margin-right: 16px;
+    border: 0;
+    background: transparent;
 
     @media (max-width: 768px) {
       display: flex;

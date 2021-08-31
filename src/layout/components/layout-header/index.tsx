@@ -3,7 +3,6 @@ import { Route, Switch } from 'react-router-dom';
 import cn from 'classnames';
 import { shortenAddr } from 'web3/utils';
 
-import ButtonOld from 'components/antd/button';
 import Popover from 'components/antd/popover';
 import { Button, Link } from 'components/button';
 import { Badge, SquareBadge } from 'components/custom/badge';
@@ -33,9 +32,9 @@ const LayoutHeader: React.FC = () => {
 
   return (
     <header className={s.component}>
-      <ButtonOld type="link" className={s.burger} onClick={() => setNavOpen(prevState => !prevState)}>
+      <button type="button" className={s.burger} onClick={() => setNavOpen(prevState => !prevState)}>
         <IconOld name="burger" />
-      </ButtonOld>
+      </button>
       <IconOld name="bond-square-token" className={s.logo} />
       <Text type="h3" weight="semibold" color="primary" className={s.title}>
         <Switch>

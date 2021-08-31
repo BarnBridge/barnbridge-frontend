@@ -1,7 +1,7 @@
 import React from 'react';
+import classNames from 'classnames';
 import { formatPercent, formatUSDValue } from 'web3/utils';
 
-import Divider from 'components/antd/divider';
 import Progress from 'components/antd/progress';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text, TextProps } from 'components/custom/typography';
@@ -72,31 +72,32 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
           </div>
         )}
       </div>
-      <Divider />
-      <Progress
-        className={s.progress}
-        strokeLinecap="square"
-        percent={progress}
-        strokeWidth={8}
-        trailColor={value2 !== undefined && value2 > 0 ? color2 : undefined}
-        strokeColor={color1}
-      />
-      <div className="p-24 flexbox-grid flow-col gap-16">
-        <div className={s.dataColumn} style={{ '--color': color1 } as React.CSSProperties}>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            {label1}
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatUSDValue(value1)}
-          </Text>
-        </div>
-        <div className={s.dataColumn} style={{ '--color': color2 } as React.CSSProperties}>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
-            {label2}
-          </Text>
-          <Text type="p1" weight="semibold" color="primary">
-            {formatUSDValue(value2)}
-          </Text>
+      <div className="card-footer">
+        <Progress
+          className={s.progress}
+          strokeLinecap="square"
+          percent={progress}
+          strokeWidth={8}
+          trailColor={value2 !== undefined && value2 > 0 ? color2 : undefined}
+          strokeColor={color1}
+        />
+        <div className="mt-24 flex align-top">
+          <div className={classNames(s.dataColumn, 'flex-grow')} style={{ '--color': color1 } as React.CSSProperties}>
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              {label1}
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatUSDValue(value1)}
+            </Text>
+          </div>
+          <div className={classNames(s.dataColumn, 'flex-grow')} style={{ '--color': color2 } as React.CSSProperties}>
+            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              {label2}
+            </Text>
+            <Text type="p1" weight="semibold" color="primary">
+              {formatUSDValue(value2)}
+            </Text>
+          </div>
         </div>
       </div>
     </div>
