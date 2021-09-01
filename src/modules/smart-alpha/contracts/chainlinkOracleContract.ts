@@ -8,11 +8,11 @@ const ABI: AbiItem[] = [
 ];
 
 class ChainlinkOracleContract extends Web3Contract {
+  price: BigNumber | undefined;
+
   constructor(address: string) {
     super(ABI, address, 'SA Chainlink Oracle');
   }
-
-  price: BigNumber | undefined;
 
   async loadCommon() {
     const [price] = await this.batch([{ method: 'getPrice' }]);

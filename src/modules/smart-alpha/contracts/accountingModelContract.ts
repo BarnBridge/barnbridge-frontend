@@ -9,11 +9,11 @@ const ABI: AbiItem[] = [
 ];
 
 class AccountingModelContract extends Web3Contract {
+  price: BigNumber | undefined;
+
   constructor(address: string) {
     super(ABI, address, 'SA Chainlink Oracle');
   }
-
-  price: BigNumber | undefined;
 
   calcJuniorProfits(
     entryPrice: BigNumber,

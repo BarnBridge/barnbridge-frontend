@@ -8,11 +8,11 @@ const ABI: AbiItem[] = [
 ];
 
 class SeniorRateModelContract extends Web3Contract {
+  price: BigNumber | undefined;
+
   constructor(address: string) {
     super(ABI, address, 'SA Chainlink Oracle');
   }
-
-  price: BigNumber | undefined;
 
   getRates(
     juniorLiquidity: BigNumber,
