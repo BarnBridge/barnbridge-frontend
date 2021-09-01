@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { PeriodTabsKey, PortfolioPeriodTabsKey } from 'components/custom/tabs';
 import { useConfig } from 'components/providers/configProvider';
 import { Tokens } from 'components/providers/tokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
-import { UseFetchReturn, executeFetch, useFetch } from 'utils/fetch';
+import { UseFetchReturn, useFetch } from 'utils/fetch';
 
 export type PoolApiType = {
   epoch1Start: number;
