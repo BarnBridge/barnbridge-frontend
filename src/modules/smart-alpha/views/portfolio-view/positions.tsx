@@ -102,7 +102,7 @@ export const PortfolioPositions = () => {
           );
         })}
       </div>
-      <div className="css-grid" style={{ '--min': '260px' } as React.CSSProperties}>
+      <div className={s.positionsCards}>
         <WalletBalance pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
         <EntryQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
         <ExitQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
@@ -155,12 +155,11 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
         </Text>
       </header>
       <div className="p-24">
-        <div className="flex align-center mr-8">
+        <div className="flex align-center mb-8">
           <Text type="h2" weight="bold" color="primary" className="mr-8">
             {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
           </Text>
           <TokenIcon
-            className="mr-16"
             name={poolToken?.icon ?? 'unknown'}
             bubble1Name="bond"
             bubble2Name={oracleToken?.icon}
@@ -248,18 +247,22 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
 
   if (amount.eq(0)) {
     return (
-      <section className="card">
-        <div className="flex flow-row align-center justify-center full-height text-center">
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
-            Empty entry queue
-          </Text>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
-            Your entry queue for {pool.poolName} is currently empty.
-          </Text>
-          <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
-            Deposit {pool.poolToken.symbol}
-          </Link>
-        </div>
+      <section
+        className="card p-24"
+        style={{
+          display: 'grid',
+          justifyItems: 'center',
+          alignContent: 'center',
+        }}>
+        <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          Empty entry queue
+        </Text>
+        <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          Your entry queue for {pool.poolName} is currently empty.
+        </Text>
+        <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
+          Deposit {pool.poolToken.symbol}
+        </Link>
       </section>
     );
   }
@@ -330,7 +333,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
             </dd>
           </div>
         </dl>
-        <footer>
+        <footer className="flex">
           <Button
             variation={redeemable ? 'primary' : 'ghost'}
             className="full-width"
@@ -424,15 +427,19 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
 
   if (amount.eq(0)) {
     return (
-      <section className="card">
-        <div className="flex flow-row align-center justify-center full-height text-center">
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
-            Empty exit queue
-          </Text>
-          <Text type="small" weight="semibold" color="secondary" className="mb-24">
-            Your exit queue for {pool.poolName} is currently empty.
-          </Text>
-        </div>
+      <section
+        className="card p-24"
+        style={{
+          display: 'grid',
+          justifyItems: 'center',
+          alignContent: 'center',
+        }}>
+        <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          Empty exit queue
+        </Text>
+        <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          Your exit queue for {pool.poolName} is currently empty.
+        </Text>
       </section>
     );
   }
@@ -503,7 +510,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
             </dd>
           </div>
         </dl>
-        <footer>
+        <footer className="flex">
           <Button
             variation={redeemable ? 'primary' : 'ghost'}
             className="full-width"
