@@ -260,3 +260,58 @@ export function useFetchQueuePositions(): UseFetchReturn<QueuePositionApiType[]>
 
   return fetchReturn;
 }
+
+export type EpochApiType = {
+  id: number;
+  seniorLiquidity: string;
+  juniorLiquidity: string;
+  upsideExposureRate: string;
+  downsideProtectionRate: string;
+  startDate: number;
+  endDate: number;
+  entryPrice: string;
+  juniorProfits: string;
+  seniorProfits: string;
+  juniorTokenPriceStart: string;
+  seniorTokenPriceStart: string;
+};
+
+export type PreviousEpochsApiType = {
+  poolAddress: string;
+  poolName: string;
+  poolToken: {
+    address: string;
+    symbol: Tokens;
+    decimals: 18;
+  };
+  oracleAssetSymbol: Tokens;
+  epochs: EpochApiType[];
+};
+
+export function useFetchPreviousEpochs({
+  page,
+  limit,
+  poolAddress,
+}: {
+  page: number;
+  limit: number;
+  poolAddress?: string;
+}): UseFetchReturn<{ data: PreviousEpochsApiType; meta: { count: number } }> {
+  const config = useConfig();
+
+  const url = new URL(`/api/smartalpha/pools/${poolAddress}/previous-epochs`, config.api.baseUrl);
+
+  if (poolAddress) {
+    url.searchParams.set('poolAddress', poolAddress);
+  }
+
+  if (page) {
+    url.searchParams.set('page', String(page));
+  }
+
+  if (limit) {
+    url.searchParams.set('limit', String(limit));
+  }
+
+  return useFetch(url);
+}
