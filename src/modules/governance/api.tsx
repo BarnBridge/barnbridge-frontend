@@ -128,9 +128,9 @@ export type APIAbrogationVoteEntity = {
 };
 
 export type APITreasuryToken = {
-  tokenAddress: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
+  address: string;
+  symbol: string;
+  decimals: number;
 };
 
 export type APITreasuryHistory = {
