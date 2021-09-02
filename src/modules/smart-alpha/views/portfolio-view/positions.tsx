@@ -174,7 +174,10 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
           })}
         </Text>
         <footer>
-          <Link variation="primary" to={`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`}>
+          <Link
+            variation="primary"
+            aria-disabled={!tokenContract.balance?.gt(0)}
+            to={`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`}>
             Signal withdraw
           </Link>
         </footer>
@@ -186,6 +189,7 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
 const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   const wallet = useWallet();
   const { getToken } = useTokens();
+  const history = useHistory();
 
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
@@ -196,6 +200,8 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   const [historyTokenPrice, setHistoryTokenPrice] = useState<BigNumber | undefined>();
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+
+  const redeemable = amount?.gt(0) && epoch !== undefined && epoch < smartAlphaContract.currentEpoch;
 
   useEffect(() => {
     setEpoch(undefined);
@@ -261,8 +267,6 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
     );
   }
 
-  const redeemable = amount.gt(0) && epoch !== undefined && epoch < smartAlphaContract.currentEpoch;
-
   return (
     <section className="card">
       <header className="card-header">
@@ -272,28 +276,31 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
       </header>
       <div className="p-24">
         <dl>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Underlying in queue
-            </Text>
-            <dd className="flex align-center ml-auto">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} className="mr-8" />
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Underlying in queue
+              </Text>
+            </dt>
+            <dd className="flex align-center">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} className="mr-8" />
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(amount.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </dd>
           </div>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Redeemable tokens
-            </Text>
-            <dd className="flex align-center ml-auto">
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Redeemable tokens
+              </Text>
+            </dt>
+            <dd className="flex align-center">
               <TokenIcon
                 name={poolToken?.icon ?? 'unknown'}
-                outline={isSenior ? 'green' : 'purple'}
                 bubble1Name="bond"
                 bubble2Name={oracleToken?.icon ?? 'unknown'}
-                size={24}
+                outline={isSenior ? 'green' : 'purple'}
                 className="mr-8"
               />
               <Text type="p1" weight="semibold" color="primary">
@@ -301,21 +308,25 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
               </Text>
             </dd>
           </div>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Entry epoch
-            </Text>
-            <dd className="flex align-center ml-auto">
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Entry epoch
+              </Text>
+            </dt>
+            <dd>
               <Text type="p1" weight="semibold" color="primary">
                 #{epoch ?? '-'}
               </Text>
             </dd>
           </div>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Redeemable in
-            </Text>
-            <dd className="flex align-center ml-auto">
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Redeemable in
+              </Text>
+            </dt>
+            <dd>
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? 'Redeem now' : '-d -h -m'}
               </Text>
@@ -325,11 +336,15 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
         <footer className="flex">
           <Button
             variation={redeemable ? 'primary' : 'ghost'}
+            className="full-width"
             disabled={saving}
             onClick={() => {
-              setConfirmModalVisible(true);
-            }}
-            className="flex-grow">
+              if (!redeemable) {
+                history.push(`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`);
+              } else {
+                setConfirmModalVisible(true);
+              }
+            }}>
             {saving && <Spinner className="mr-8" />}
             {redeemable ? 'Redeem tokens' : 'Add to entry queue'}
           </Button>
@@ -337,8 +352,8 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
       </div>
       {confirmModalVisible && (
         <TxConfirmModal
-          title="Redeem your tokens"
-          submitText="Redeem tokens"
+          title="Redeem tokens"
+          submitText="Confirm redeem your tokens"
           onCancel={() => setConfirmModalVisible(false)}
           onConfirm={({ gasPrice }) => handleEnterQueue(gasPrice)}
         />
@@ -350,6 +365,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
 const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   const wallet = useWallet();
   const { getToken } = useTokens();
+  const history = useHistory();
 
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
@@ -360,6 +376,8 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   const [historyTokenPrice, setHistoryTokenPrice] = useState<BigNumber | undefined>();
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+
+  const redeemable = amount?.gt(0) && epoch !== undefined && epoch < smartAlphaContract.currentEpoch;
 
   useEffect(() => {
     setEpoch(undefined);
@@ -384,10 +402,14 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
     setSaving(true);
 
     try {
-      await (tranche === 'senior'
-        ? smartAlphaContract?.redeemSeniorUnderlying
-        : smartAlphaContract?.redeemJuniorUnderlying
-      )?.call(smartAlphaContract, BigNumber.ZERO, gasPrice);
+      if (redeemable) {
+        await (tranche === 'senior'
+          ? smartAlphaContract?.redeemSeniorUnderlying
+          : smartAlphaContract?.redeemJuniorUnderlying
+        )?.call(smartAlphaContract, BigNumber.ZERO, gasPrice);
+      } else {
+        ///
+      }
     } catch (e) {
       console.error(e);
     }
@@ -422,8 +444,6 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
     );
   }
 
-  const redeemable = amount.gt(0) && epoch !== undefined && epoch < smartAlphaContract.currentEpoch;
-
   return (
     <section className="card">
       <header className="card-header">
@@ -433,17 +453,18 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
       </header>
       <div className="p-24">
         <dl>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Tokens in queue
-            </Text>
-            <dd className="flex align-center ml-auto">
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Tokens in queue
+              </Text>
+            </dt>
+            <dd className="flex align-center">
               <TokenIcon
                 name={poolToken?.icon ?? 'unknown'}
-                outline={isSenior ? 'green' : 'purple'}
                 bubble1Name="bond"
                 bubble2Name={oracleToken?.icon ?? 'unknown'}
-                size={24}
+                outline={isSenior ? 'green' : 'purple'}
                 className="mr-8"
               />
               <Text type="p1" weight="bold" color="primary">
@@ -451,32 +472,38 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
               </Text>
             </dd>
           </div>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Redeemable underlying
-            </Text>
-            <dd className="flex align-center ml-auto">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} className="mr-8" />
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Redeemable underlying
+              </Text>
+            </dt>
+            <dd className="flex align-center">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
               </Text>
             </dd>
           </div>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Entry epoch
-            </Text>
-            <dd className="flex align-center ml-auto">
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Entry epoch
+              </Text>
+            </dt>
+            <dd>
               <Text type="p1" weight="semibold" color="primary">
                 #{epoch ?? '-'}
               </Text>
             </dd>
           </div>
-          <div className="flex align-center mb-24 pr-8">
-            <Text type="small" weight="semibold" color="secondary" tag="dt">
-              Redeemable in
-            </Text>
-            <dd className="flex align-center ml-auto">
+          <div className="flex align-center justify-space-between mb-24">
+            <dt>
+              <Text type="small" weight="semibold" color="secondary">
+                Redeemable in
+              </Text>
+            </dt>
+            <dd>
               <Text type="p1" weight="semibold" color="primary">
                 {redeemable ? 'Redeem now' : '-d -h -m'}
               </Text>
@@ -486,11 +513,15 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
         <footer className="flex">
           <Button
             variation={redeemable ? 'primary' : 'ghost'}
+            className="full-width"
             disabled={saving}
             onClick={() => {
-              setConfirmModalVisible(true);
-            }}
-            className="flex-grow">
+              if (!redeemable) {
+                history.push(`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`);
+              } else {
+                setConfirmModalVisible(true);
+              }
+            }}>
             {saving && <Spinner className="mr-8" />}
             {redeemable ? 'Redeem underlying' : 'Add to exit queue'}
           </Button>
@@ -498,8 +529,8 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
       </div>
       {confirmModalVisible && (
         <TxConfirmModal
-          title="Confirm exit queue"
-          submitText="Confirm exit queue"
+          title="Redeem underlying"
+          submitText="Confirm redeem your underlying"
           onCancel={() => setConfirmModalVisible(false)}
           onConfirm={({ gasPrice }) => handleExitQueue(gasPrice)}
         />

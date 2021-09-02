@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { FC, ReactNode, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import useInterval from '@rooks/use-interval';
 
 import { useGeneral } from 'components/providers/generalProvider';
+import { useReload } from 'hooks/useReload';
 
 export type UseLeftTimeOptions = {
-  end: number | Date;
+  end?: number | Date;
   delay?: number;
   onStart?: (left: number) => void;
   onStop?: (left: number) => void;
@@ -22,21 +23,24 @@ export type UseLeftTimeReturn = {
 };
 
 export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
-  const optsRef = React.useRef(options);
+  const optsRef = useRef(options);
   optsRef.current = options;
 
-  const [isStarted, setStarted] = React.useState(false);
-  const [isRunning, setRunning] = React.useState(false);
+  const [isStarted, setStarted] = useState(false);
+  const [isRunning, setRunning] = useState(false);
 
-  const getLeftTime = React.useCallback(() => {
+  const getLeftTime = useCallback(() => {
+    if (!optsRef.current.end) {
+      return undefined;
+    }
+
     return Math.max(optsRef.current.end.valueOf() - Date.now(), 0);
   }, []);
 
   const [startInterval, stopInterval] = useInterval(
     () => {
       const leftTime = getLeftTime();
-
-      optsRef.current.onTick?.(leftTime);
+      optsRef.current.onTick?.(leftTime ?? 0);
 
       if (leftTime === 0) {
         setStarted(false);
@@ -48,11 +52,11 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
     false,
   );
 
-  React.useEffect(() => {
-    if (Date.now() < options.end) {
+  useEffect(() => {
+    if (!options.end || Date.now() < options.end) {
       setStarted(true);
       startInterval();
-      optsRef.current.onStart?.(getLeftTime());
+      optsRef.current.onStart?.(getLeftTime() ?? 0);
     }
 
     return () => {
@@ -61,7 +65,7 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
     };
   }, [options.end]);
 
-  return React.useMemo(() => {
+  return useMemo(() => {
     return {
       isStarted,
       isRunning,
@@ -69,13 +73,13 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
         setStarted(true);
         setRunning(true);
         startInterval();
-        optsRef.current.onStart?.(getLeftTime());
+        optsRef.current.onStart?.(getLeftTime() ?? 0);
       },
       stop: () => {
         setRunning(false);
         setStarted(false);
         stopInterval();
-        optsRef.current.onStop?.(getLeftTime());
+        optsRef.current.onStop?.(getLeftTime() ?? 0);
       },
       pause: () => {
         setRunning(false);
@@ -90,30 +94,34 @@ export function useLeftTime(options: UseLeftTimeOptions): UseLeftTimeReturn {
 }
 
 export type UseLeftTimeProps = UseLeftTimeOptions & {
-  children: (leftTime: number) => React.ReactNode;
+  children: (leftTime: number) => ReactNode;
 };
 
-export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
+export const UseLeftTime: FC<UseLeftTimeProps> = props => {
   const { windowState } = useGeneral();
-  const [leftTime, setLeftTime] = React.useState<number>(0);
+  const [reload] = useReload();
+  const leftTimeRef = useRef<number | undefined>();
 
   const { isStarted, isRunning, pause, resume } = useLeftTime({
     ...props,
     onStart: value => {
-      setLeftTime(value);
+      leftTimeRef.current = value;
+      reload();
       props.onStart?.(value);
     },
     onStop: value => {
-      setLeftTime(value);
+      leftTimeRef.current = value;
+      reload();
       props.onStop?.(value);
     },
     onTick: value => {
-      setLeftTime(value);
+      leftTimeRef.current = value;
+      reload();
       props.onTick?.(value);
     },
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!isStarted) {
       return;
     }
@@ -127,5 +135,5 @@ export const UseLeftTime: React.FC<UseLeftTimeProps> = props => {
     }
   }, [windowState.isVisible, isStarted, isRunning]);
 
-  return <>{props.children(leftTime)}</>;
+  return <>{props.children(leftTimeRef.current ?? 0)}</>;
 };

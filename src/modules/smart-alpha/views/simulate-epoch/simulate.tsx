@@ -66,7 +66,6 @@ export const Simulate = () => {
       pricePerf: {
         rules: {
           min: -100,
-          max: 100,
           decimals: (value: string) => {
             return (BigNumber.from(value)?.decimalPlaces() ?? Number.POSITIVE_INFINITY) < SCALE_DECIMALS;
           },
