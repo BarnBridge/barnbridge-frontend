@@ -303,9 +303,23 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
                 outline={isSenior ? 'green' : 'purple'}
                 className="mr-8"
               />
-              <Text type="p1" weight="semibold" color="primary">
-                {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
-              </Text>
+              {redeemable ? (
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(amount.div(historyTokenPrice ?? 0))}
+                </Text>
+              ) : (
+                <Text
+                  type="p1"
+                  weight="semibold"
+                  color="secondary"
+                  tooltip={`Because entry queue conditions may change if other users add or remove ${
+                    poolToken?.symbol
+                  }, the amount of ${
+                    isSenior ? 'senior' : 'junior'
+                  } tokens you will be able to redeem when the next epoch starts may differ. This value will become fixed whenever the new epoch starts and all queued deposits are executed.`}>
+                  ???
+                </Text>
+              )}
             </dd>
           </div>
           <div className="flex align-center justify-space-between mb-24">
@@ -480,9 +494,19 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
             </dt>
             <dd className="flex align-center">
               <TokenIcon name={poolToken?.icon ?? 'unknown'} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {redeemable ? formatToken(amount.div(historyTokenPrice ?? 0)) : '???'}
-              </Text>
+              {redeemable ? (
+                <Text type="p1" weight="semibold" color="primary">
+                  {formatToken(amount.div(historyTokenPrice ?? 0))}
+                </Text>
+              ) : (
+                <Text
+                  type="p1"
+                  weight="semibold"
+                  color="secondary"
+                  tooltip={`Because exit queue conditions may change if other users add or remove either senior or junior tokens, the amount of ${poolToken?.symbol} you will be able to redeem when the next epoch starts may differ. This value will become fixed whenever the new epoch starts, and all queued withdrawals are executed.`}>
+                  ???
+                </Text>
+              )}
             </dd>
           </div>
           <div className="flex align-center justify-space-between mb-24">

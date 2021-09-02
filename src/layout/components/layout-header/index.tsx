@@ -238,7 +238,7 @@ const WalletAction: React.FC = () => {
                 <Text type="p1" color="secondary" className="mr-16">
                   Status
                 </Text>
-                <Badge color="green" size="small" className="ml-auto">
+                <Badge color="green" className="ml-auto">
                   Connecting
                 </Badge>
               </div>
@@ -297,7 +297,7 @@ const WalletAction: React.FC = () => {
               <Text type="p1" color="secondary" className="mr-16">
                 Status
               </Text>
-              <Badge color="green" size="small" className="ml-auto">
+              <Badge color="green" className="ml-auto">
                 Connected
               </Badge>
             </div>

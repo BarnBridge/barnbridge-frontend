@@ -241,7 +241,7 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior performance
-                    <InfoTooltip>Change in the fair price of the senior token at epoch advancement</InfoTooltip>
+                    <InfoTooltip>Change in the fair price of the senior token over the course of the epoch</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -254,7 +254,9 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior downside protection (Absolute %)
-                    <InfoTooltip>Senior positions will only start taking losses beyond this decline</InfoTooltip>
+                    <InfoTooltip>
+                      How much the underlying asset can decline before a senior position takes on losses.
+                    </InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -268,8 +270,8 @@ export const Simulate = () => {
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior upside exposure (Relative %)
                     <InfoTooltip>
-                      Senior positions will only receive this much of every percentage point gain in the underlying
-                      asset
+                      How much of every 1% move to the upside in the underlying asset a senior position will have
+                      exposure to.
                     </InfoTooltip>
                   </Text>
                 </dt>
@@ -284,7 +286,7 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Junior performance
-                    <InfoTooltip>Change in the fair price of the junior token at epoch advancement</InfoTooltip>
+                    <InfoTooltip>Change in the fair price of the junior token over the course of the epoch</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -297,7 +299,10 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Upside leverage
-                    <InfoTooltip>TBD</InfoTooltip>
+                    <InfoTooltip>
+                      How much of every 1% move to the upside in the underlying asset a senior position will have
+                      exposure to.
+                    </InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -310,7 +315,10 @@ export const Simulate = () => {
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Downside leverage
-                    <InfoTooltip>TBD</InfoTooltip>
+                    <InfoTooltip>
+                      How much of every 1% move to the downside in the underlying asset a junior position will have
+                      exposure to.
+                    </InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">

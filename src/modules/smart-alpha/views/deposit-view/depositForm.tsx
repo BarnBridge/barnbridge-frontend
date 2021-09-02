@@ -6,6 +6,7 @@ import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
 
+import { Alert } from 'components/alert';
 import { Button } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { TokenAmount } from 'components/custom/token-amount-new';
@@ -117,9 +118,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         <div className={classNames(s.depositBalance, 'flex col-gap-32 mb-32')}>
           <div>
             <Hint
-              text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat."
+              text={`This amount of ${poolToken?.symbol} is already in the deposit queue and will be considered towards your overall position in the next epoch.`}
               className="mb-4">
               <Text type="small" weight="semibold" color="secondary">
                 Balance in deposit queue
@@ -135,9 +134,13 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
           </div>
           {epoch! < smartAlphaContract?.currentEpoch! && (
             <div>
-              <Text type="small" weight="semibold" color="secondary">
-                Unclaimed {tranche} tokens
-              </Text>
+              <Hint
+                text={`This amount of junior/senior tokens is available to be redeemed from your deposits made in either the ongoing or previous epochs. It will be automatically redeemed if you add more ${poolToken?.symbol} to the deposit queue.`}
+                className="mb-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Unclaimed {tranche} tokens
+                </Text>
+              </Hint>
               <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(depositQueueBalance.div(historyTokenPrice ?? 0)) ?? '-'}
                 <TokenIcon
@@ -166,6 +169,11 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         placeholder={`0 (Max ${tokenMax ?? 0})`}
         className="mb-32"
       />
+
+      <Alert type="info" className="mb-32">
+        Deposits made during an epoch will be added to the deposit queue and will count toward your position in the next
+        epoch.
+      </Alert>
 
       <div className="flex justify-end align-center">
         {isPoolTokenEnabled === false && (
