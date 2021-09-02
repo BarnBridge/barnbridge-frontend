@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
+import { formatNumber, formatPercent } from 'web3/utils';
 
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
@@ -8,7 +9,13 @@ import { Tokens, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { EpochApiType, useFetchPreviousEpochs } from 'modules/smart-alpha/api';
 
-const getColumns = (poolTokenSymbol?: Tokens): ColumnType<EpochApiType>[] => [
+const getColumns = ({
+  poolTokenSymbol,
+  oracleAssetSymbol,
+}: {
+  poolTokenSymbol?: Tokens;
+  oracleAssetSymbol?: Tokens;
+}): ColumnType<EpochApiType>[] => [
   {
     heading: 'Epoch number',
     render: item => (
@@ -32,50 +39,71 @@ const getColumns = (poolTokenSymbol?: Tokens): ColumnType<EpochApiType>[] => [
     ),
   },
   {
-    heading: `Junior leverage`,
-    render: item => (
-      <Text type="p2" weight="semibold" color="green" className="text-nowrap">
-        TBD
-      </Text>
-    ),
+    heading: `Upside/Downside Junior leverages`,
+    align: 'right',
+    render: item => {
+      const upsideLeverage =
+        1 + ((1 - Number(item.upsideExposureRate)) * Number(item.seniorLiquidity)) / Number(item.juniorLiquidity);
+
+      return (
+        <div className="text-nowrap">
+          <Text type="p2" weight="semibold" color="purple" className="mb-4">
+            {formatNumber(upsideLeverage || 1, { decimals: 2 })}x
+          </Text>
+          <Text type="p2" weight="semibold" color="purple">
+            TBD
+          </Text>
+        </div>
+      );
+    },
   },
   {
-    heading: `Upside/Downside Rates`,
+    heading: `Upside/Downside Senior rates`,
+    align: 'right',
     render: item => (
       <div className="text-nowrap">
-        <Text type="p2" weight="semibold" className="mb-4">
-          {item.upsideExposureRate}
+        <Text type="p2" weight="semibold" color="green" className="mb-4">
+          {formatPercent(Number(item.upsideExposureRate))}
         </Text>
-        <Text type="p2" weight="semibold">
-          {item.downsideProtectionRate}
+        <Text type="p2" weight="semibold" color="green">
+          {formatPercent(Number(item.downsideProtectionRate))}
         </Text>
       </div>
     ),
   },
   {
     heading: `${poolTokenSymbol} epoch entry price`,
-    render: item => (
-      <Text type="p2" weight="semibold" className="text-nowrap">
-        {item.entryPrice}
-      </Text>
-    ),
+    align: 'right',
+    render: function Render(item) {
+      return (
+        <div className="flex justify-end align-center col-gap-4">
+          <Text type="p2" weight="semibold" className="text-nowrap" tooltip={item.entryPrice}>
+            {formatNumber(Number(item.entryPrice), { decimals: 4 })}
+          </Text>
+          <Text type="p2" weight="semibold" className="text-nowrap">
+            {oracleAssetSymbol}
+          </Text>
+        </div>
+      );
+    },
   },
   {
     heading: 'Senior/Junior Liquidity',
+    align: 'right',
     render: function Render(item) {
       const { getToken } = useTokens();
       const poolToken = getToken(poolTokenSymbol);
       return (
         <div className="text-nowrap">
-          <div className="flex align-center mb-4">
-            <Text type="p2" weight="semibold" className="mr-4">
-              {item.seniorLiquidity}
+          <div className="flex justify-end align-center mb-4">
+            <Text type="p2" weight="semibold" className="mr-4" tooltip={item.seniorLiquidity}>
+              {formatNumber(Number(item.seniorLiquidity), { decimals: 4 })}
             </Text>
             <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
           </div>
-          <div className="flex align-center">
-            <Text type="p2" weight="semibold" className="mr-4">
-              {item.juniorLiquidity}
+          <div className="flex justify-end align-center">
+            <Text type="p2" weight="semibold" className="mr-4" tooltip={item.juniorLiquidity}>
+              {formatNumber(Number(item.juniorLiquidity), { decimals: 4 })}
             </Text>
             <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
           </div>
@@ -85,32 +113,57 @@ const getColumns = (poolTokenSymbol?: Tokens): ColumnType<EpochApiType>[] => [
   },
   {
     heading: 'Senior/Junior Profits',
-    render: item => (
-      <div className="text-nowrap">
-        <Text type="p2" weight="semibold" className="mb-4">
-          {item.juniorProfits}
-        </Text>
-        <Text type="p2" weight="semibold">
-          {item.seniorProfits}
-        </Text>
-      </div>
-    ),
+    align: 'right',
+    render: function Render(item) {
+      const { getToken } = useTokens();
+      const poolToken = getToken(poolTokenSymbol);
+
+      return (
+        <div className="text-nowrap">
+          <div className="flex justify-end align-center">
+            <Text type="p2" weight="semibold" className="mr-4" tooltip={item.juniorProfits}>
+              {formatNumber(Number(item.juniorProfits), { decimals: 4 })}
+            </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+          </div>
+          <div className="flex justify-end align-center">
+            <Text type="p2" weight="semibold" className="mr-4" tooltip={item.seniorProfits}>
+              {formatNumber(Number(item.seniorProfits), { decimals: 4 })}
+            </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+          </div>
+        </div>
+      );
+    },
   },
   {
     heading: 'Junior/Senior Token price start',
-    render: item => (
-      <div className="text-nowrap">
-        <Text type="p2" weight="semibold" className="mb-4">
-          {item.juniorTokenPriceStart}
-        </Text>
-        <Text type="p2" weight="semibold">
-          {item.seniorTokenPriceStart}
-        </Text>
-      </div>
-    ),
+    align: 'right',
+    render: function Render(item) {
+      const { getToken } = useTokens();
+      const poolToken = getToken(poolTokenSymbol);
+
+      return (
+        <div className="text-nowrap">
+          <div className="flex justify-end align-center">
+            <Text type="p2" weight="semibold" className="mr-4" tooltip={item.juniorTokenPriceStart}>
+              {formatNumber(Number(item.juniorTokenPriceStart), { decimals: 4 })}
+            </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+          </div>
+          <div className="flex justify-end align-center">
+            <Text type="p2" weight="semibold" className="mr-4" tooltip={item.seniorTokenPriceStart}>
+              {formatNumber(Number(item.seniorTokenPriceStart), { decimals: 4 })}
+            </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+          </div>
+        </div>
+      );
+    },
   },
   {
     heading: 'Start date/End date',
+    align: 'right',
     render: item => {
       const startDate = new Date(item.startDate * 1000);
       const endDate = new Date(item.endDate * 1000);
@@ -136,7 +189,7 @@ export const PreviousEpochs = () => {
     pageSize: number;
   }>({
     page: 1,
-    pageSize: 5,
+    pageSize: 4,
   });
 
   const { data, loading } = useFetchPreviousEpochs({
@@ -153,7 +206,10 @@ export const PreviousEpochs = () => {
         </Text>
       </header>
       <Table<EpochApiType>
-        columns={getColumns(data?.data.poolToken.symbol)}
+        columns={getColumns({
+          poolTokenSymbol: data?.data.poolToken.symbol,
+          oracleAssetSymbol: data?.data.oracleAssetSymbol,
+        })}
         data={data?.data.epochs || []}
         loading={loading}
       />
