@@ -79,7 +79,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
             Epoch ends in
           </Text>
-          <UseLeftTime delay={1_000} end={0}>
+          <UseLeftTime delay={1_000}>
             {() => (
               <Text type="p1" weight="semibold">
                 {getFormattedDuration(item.epochDuration - currentEpochProgress)}

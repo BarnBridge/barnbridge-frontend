@@ -11,6 +11,7 @@ import { Modal } from 'components/modal';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
+import { UseLeftTime } from 'hooks/useLeftTime';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import ChainlinkOracleContract from 'modules/smart-alpha/contracts/chainlinkOracleContract';
 import SeniorRateModelContract from 'modules/smart-alpha/contracts/seniorRateModelContract';
@@ -21,6 +22,8 @@ import { TransactionsTable } from '../../components/transactions';
 import { PoolPerformance } from './pool-performance';
 import { PreviousEpochs } from './previous-epochs';
 import { TokensPrice } from './tokens-price';
+
+import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
 
@@ -389,9 +392,11 @@ const PoolView = () => {
       <div className={classNames(s.epochProgress, 'mb-4')}>
         <div className={s.epochProgressLineBefore} />
         <div className="flex align-center">
-          <span className={s.epochProgressCurrent}>135</span>
+          <span className={s.epochProgressCurrent}>{smartAlphaContract?.epoch ?? '-'}</span>
           <div className={s.epochProgressLineMiddle} style={{ '--epoch-progress': 70 } as React.CSSProperties} />
-          <span className={s.epochProgressNext}>136</span>
+          <span className={s.epochProgressNext}>
+            {smartAlphaContract?.currentEpoch ? smartAlphaContract?.currentEpoch + 1 : '-'}
+          </span>
         </div>
         <div className={s.epochProgressLineAfter} />
       </div>
@@ -399,9 +404,13 @@ const PoolView = () => {
         <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>
-        <Text type="p2" weight="bold" color="primary" className="ml-auto">
-          2d 4h 35m
-        </Text>
+        <UseLeftTime delay={1_000}>
+          {() => (
+            <Text type="p2" weight="bold" color="primary" className="ml-auto">
+              {getFormattedDuration(smartAlphaContract?.tillNextEpoch)}
+            </Text>
+          )}
+        </UseLeftTime>
         <Text type="p2" weight="semibold" color="secondary" className="ml-4">
           until next epoch
         </Text>

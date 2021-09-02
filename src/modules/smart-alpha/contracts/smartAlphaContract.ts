@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import getUnixTime from 'date-fns/getUnixTime';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
@@ -6,6 +7,8 @@ const ABI: AbiItem[] = [
   // call
   createAbiItem('epoch', [], ['uint256']),
   createAbiItem('getCurrentEpoch', [], ['uint256']),
+  createAbiItem('epoch1Start', [], ['uint256']),
+  createAbiItem('epochDuration', [], ['uint256']),
 
   createAbiItem('epochSeniorLiquidity', [], ['uint256']),
   createAbiItem('epochJuniorLiquidity', [], ['uint256']),
@@ -49,13 +52,11 @@ const ABI: AbiItem[] = [
 const SMART_ALPHA_DECIMALS = 18;
 
 class SmartAlphaContract extends Web3Contract {
-  constructor(address: string) {
-    super(ABI, address, 'Smart Alpha');
-  }
-
   // common
   epoch: number | undefined;
   currentEpoch: number | undefined;
+  epoch1Start: number | undefined;
+  epochDuration: number | undefined;
   epochSeniorLiquidity: BigNumber | undefined;
   epochJuniorLiquidity: BigNumber | undefined;
   epochDownsideProtectionRate: BigNumber | undefined;
@@ -74,7 +75,22 @@ class SmartAlphaContract extends Web3Contract {
   queuedJuniorsUnderlyingOut: BigNumber | undefined;
   queuedJuniorTokensBurn: BigNumber | undefined;
 
+  constructor(address: string) {
+    super(ABI, address, 'Smart Alpha');
+  }
+
   // computed
+  get tillNextEpoch(): number | undefined {
+    if (this.currentEpoch === undefined || this.epochDuration === undefined || this.epoch1Start === undefined) {
+      return undefined;
+    }
+
+    const nextEpochStart = this.epoch1Start + this.currentEpoch * this.epochDuration;
+    const now = getUnixTime(Date.now());
+
+    return now < nextEpochStart ? nextEpochStart - now : 0;
+  }
+
   get epochTotalLiquidityRate(): BigNumber | undefined {
     if (!this.epochSeniorLiquidity || !this.epochJuniorLiquidity) {
       return undefined;
@@ -167,6 +183,8 @@ class SmartAlphaContract extends Web3Contract {
     const [
       epoch,
       currentEpoch,
+      epoch1Start,
+      epochDuration,
       epochSeniorLiquidity,
       epochJuniorLiquidity,
       epochDownsideProtectionRate,
@@ -187,6 +205,8 @@ class SmartAlphaContract extends Web3Contract {
     ] = await this.batch([
       { method: 'epoch' },
       { method: 'getCurrentEpoch' },
+      { method: 'epoch1Start' },
+      { method: 'epochDuration' },
       { method: 'epochSeniorLiquidity' },
       { method: 'epochJuniorLiquidity' },
       { method: 'epochDownsideProtectionRate' },
@@ -208,6 +228,8 @@ class SmartAlphaContract extends Web3Contract {
 
     this.epoch = Number(epoch);
     this.currentEpoch = Number(currentEpoch);
+    this.epoch1Start = Number(epoch1Start);
+    this.epochDuration = Number(epochDuration);
     this.epochSeniorLiquidity = BigNumber.from(epochSeniorLiquidity);
     this.epochJuniorLiquidity = BigNumber.from(epochJuniorLiquidity);
     this.epochDownsideProtectionRate = BigNumber.from(epochDownsideProtectionRate);
