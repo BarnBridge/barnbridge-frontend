@@ -1,18 +1,14 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
-import { ExternalLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
+import { Tokens, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { EpochApiType, useFetchPreviousEpochs } from 'modules/smart-alpha/api';
 
-const columns: ColumnType<EpochApiType>[] = [
+const getColumns = (poolTokenSymbol?: Tokens): ColumnType<EpochApiType>[] => [
   {
     heading: 'Epoch number',
     render: item => (
@@ -48,44 +44,54 @@ const columns: ColumnType<EpochApiType>[] = [
     render: item => (
       <div className="text-nowrap">
         <Text type="p2" weight="semibold" className="mb-4">
-          TBD
+          {item.upsideExposureRate}
         </Text>
         <Text type="p2" weight="semibold">
-          TBD
+          {item.downsideProtectionRate}
         </Text>
       </div>
     ),
   },
   {
-    heading: 'wETH epoch entry price',
+    heading: `${poolTokenSymbol} epoch entry price`,
     render: item => (
       <Text type="p2" weight="semibold" className="text-nowrap">
-        TBD
+        {item.entryPrice}
       </Text>
     ),
   },
   {
     heading: 'Senior/Junior Liquidity',
-    render: item => (
-      <div className="text-nowrap">
-        <Text type="p2" weight="semibold" className="mb-4">
-          TBD
-        </Text>
-        <Text type="p2" weight="semibold">
-          TBD
-        </Text>
-      </div>
-    ),
+    render: function Render(item) {
+      const { getToken } = useTokens();
+      const poolToken = getToken(poolTokenSymbol);
+      return (
+        <div className="text-nowrap">
+          <div className="flex align-center mb-4">
+            <Text type="p2" weight="semibold" className="mr-4">
+              {item.seniorLiquidity}
+            </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+          </div>
+          <div className="flex align-center">
+            <Text type="p2" weight="semibold" className="mr-4">
+              {item.juniorLiquidity}
+            </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+          </div>
+        </div>
+      );
+    },
   },
   {
     heading: 'Senior/Junior Profits',
     render: item => (
       <div className="text-nowrap">
         <Text type="p2" weight="semibold" className="mb-4">
-          TBD
+          {item.juniorProfits}
         </Text>
         <Text type="p2" weight="semibold">
-          TBD
+          {item.seniorProfits}
         </Text>
       </div>
     ),
@@ -95,10 +101,10 @@ const columns: ColumnType<EpochApiType>[] = [
     render: item => (
       <div className="text-nowrap">
         <Text type="p2" weight="semibold" className="mb-4">
-          TBD
+          {item.juniorTokenPriceStart}
         </Text>
         <Text type="p2" weight="semibold">
-          TBD
+          {item.seniorTokenPriceStart}
         </Text>
       </div>
     ),
@@ -130,7 +136,7 @@ export const PreviousEpochs = () => {
     pageSize: number;
   }>({
     page: 1,
-    pageSize: 10,
+    pageSize: 5,
   });
 
   const { data, loading } = useFetchPreviousEpochs({
@@ -146,7 +152,11 @@ export const PreviousEpochs = () => {
           Transaction history
         </Text>
       </header>
-      <Table<EpochApiType> columns={columns} data={data?.data.epochs || []} loading={loading} />
+      <Table<EpochApiType>
+        columns={getColumns(data?.data.poolToken.symbol)}
+        data={data?.data.epochs || []}
+        loading={loading}
+      />
       <TableFooter
         total={data?.meta.count ?? 0}
         current={filters.page}
