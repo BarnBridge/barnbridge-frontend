@@ -7,6 +7,7 @@ import { formatPercent, formatUSD } from 'web3/utils';
 import { Button, Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
+import { Modal } from 'components/modal';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
@@ -19,6 +20,7 @@ import { useWallet } from 'wallets/walletProvider';
 
 import { TransactionsTable } from '../../components/transactions';
 import { PoolPerformance } from './pool-performance';
+import { PreviousEpochs } from './previous-epochs';
 import { TokensPrice } from './tokens-price';
 
 import { getFormattedDuration } from 'utils';
@@ -31,6 +33,7 @@ const PoolView = () => {
   const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
+  const [previousEpochVisible, setPreviousEpochVisible] = useState<boolean>(false);
 
   const { getOrCreateContract } = useContractFactory();
 
@@ -398,7 +401,7 @@ const PoolView = () => {
         <div className={s.epochProgressLineAfter} />
       </div>
       <div className="flex align-center mb-32">
-        <Button variation="text" color="red">
+        <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>
         <UseLeftTime delay={1_000}>
@@ -415,6 +418,31 @@ const PoolView = () => {
       <TokensPrice poolAddress={poolAddress} className="mb-32" />
       <PoolPerformance poolAddress={poolAddress} className="mb-32" />
       <TransactionsTable poolAddress={poolAddress} />
+      {previousEpochVisible && (
+        <Modal
+          heading={
+            <div className="flex align-center">
+              <TokenIcon
+                name={poolToken?.icon ?? 'unknown'}
+                size={40}
+                bubble2Name={oracleToken?.icon ?? 'unknown'}
+                className="mr-16"
+              />
+              <div>
+                <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+                  Previous epochs
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {pool.poolName}
+                </Text>
+              </div>
+            </div>
+          }
+          closeHandler={() => setPreviousEpochVisible(false)}
+          fullscreen>
+          <PreviousEpochs />
+        </Modal>
+      )}
     </>
   );
 };

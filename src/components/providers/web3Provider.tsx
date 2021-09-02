@@ -4,8 +4,8 @@ import { AbiItem } from 'web3-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
 import Icon from 'components/custom/icon';
-import { Modal } from 'components/custom/modal';
 import { Text } from 'components/custom/typography';
+import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetNetwork } from 'networks/mainnet';
