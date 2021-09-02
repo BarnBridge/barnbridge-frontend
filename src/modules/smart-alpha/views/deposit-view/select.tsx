@@ -18,8 +18,8 @@ export const SelectTranche = ({ pool }: { pool: PoolApiType }) => {
         Select your preferred side
       </Text>
       <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
-        You can choose between fixed, or variable interest. Be aware of the risk involved and read the warnings before
-        going further
+        You can choose between senior or junior positions. Be aware of the risk involved and read the warnings before
+        going further.
       </Text>
       <RadioCards className="mb-32">
         <RadioCard selected={tranche === 'senior'} onClick={() => setTranche('senior')}>
@@ -36,11 +36,18 @@ export const SelectTranche = ({ pool }: { pool: PoolApiType }) => {
         </RadioCard>
       </RadioCards>
 
-      {tranche ? (
+      {tranche === 'senior' ? (
         <Alert type="warning" className="mb-32">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat.
+          Senior positions offer dampened exposure to the underlying asset's price volatility. Because the position's
+          upside exposure is limited and its downside is protected, it will experience low volatility relative to the
+          underlying asset.
+        </Alert>
+      ) : null}
+      {tranche === 'junior' ? (
+        <Alert type="warning" className="mb-32">
+          Junior positions offer leveraged exposure to the underlying asset's price volatility. The junior positions
+          have amplified exposure to both upside and downside price volatility. Upside and downside leverage are NOT
+          symmetrical and both will vary week-to-week.
         </Alert>
       ) : null}
 

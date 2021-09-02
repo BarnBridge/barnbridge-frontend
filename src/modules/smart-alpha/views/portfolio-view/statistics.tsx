@@ -28,7 +28,7 @@ export const PortfolioStatistics = () => {
       <div className={s.portfolioContainer}>
         <PortfolioBalance
           total={totalBalance}
-          totalHint="This number doesn’t include the gains from the senior bonds that have not yet reached their maturity date."
+          totalHint="This figure shows the USD-denominated value of the junior and senior tokens in your wallet. It does not include any assets currently within either of the deposit or withdrawal queues."
           aggregated={null}
           aggregatedColor="red"
           data={[

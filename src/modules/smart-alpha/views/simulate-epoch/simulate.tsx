@@ -1,10 +1,11 @@
-import { CSSProperties, useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import useDebounce from '@rooks/use-debounce';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, YAxis } from 'recharts';
 import { formatPercent } from 'web3/utils';
 
+import { Button } from 'components/button';
 import { Form, FormItem, useForm } from 'components/custom/form';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
@@ -87,7 +88,11 @@ export const Simulate = () => {
         },
       },
     },
-    onSubmit: () => undefined,
+    onSubmit: () => {
+      calcRates(juniorLiquidity, seniorLiquidity);
+
+      calcProfits(pricePerf, seniorLiquidity, exposure, protection);
+    },
   });
 
   const [pricePerfStr, juniorDominanceStr] = form.watch(['pricePerf', 'juniorDominance']);
@@ -116,10 +121,6 @@ export const Simulate = () => {
     }
   }, 400);
 
-  useEffect(() => {
-    calcRates(juniorLiquidity, seniorLiquidity);
-  }, [juniorLiquidity, seniorLiquidity]);
-
   const pricePerf = useMemo(() => {
     if (form.formState.errors.pricePerf) {
       return undefined;
@@ -137,8 +138,8 @@ export const Simulate = () => {
       exposure: BigNumber | undefined,
       protection: BigNumber | undefined,
     ) => {
-      // setJuniorProfits(undefined);
-      // setSeniorProfits(undefined);
+      setJuniorProfits(undefined);
+      setSeniorProfits(undefined);
 
       if (pricePerf && seniorLiquidity) {
         const currentPrice = entryPrice.plus(pricePerf);
@@ -164,10 +165,6 @@ export const Simulate = () => {
     },
     400,
   );
-
-  useEffect(() => {
-    calcProfits(pricePerf, seniorLiquidity, exposure, protection);
-  }, [pricePerf, seniorLiquidity, exposure, protection]);
 
   const pricePerfRate = pricePerf?.unscaleBy(SCALE_DECIMALS)?.toNumber() ?? 0;
 
@@ -226,6 +223,9 @@ export const Simulate = () => {
               />
             )}
           </FormItem>
+          <Button variation="primary" className="mt-24" size="big">
+            Simulate
+          </Button>
         </div>
       </Form>
       <div className={s.cards}>
@@ -235,13 +235,28 @@ export const Simulate = () => {
               Epoch outcomes (before fees)
             </Text>
           </header>
-          <div className="p-24">
+          <div className="pv-24">
             <dl>
-              <div className="flex align-center mb-32">
+              <div className="flex align-center mb-24 ph-24">
+                <dt className="mr-8">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    Senior performance
+                    <InfoTooltip>Change in the fair price of the senior token over the course of the epoch</InfoTooltip>
+                  </Text>
+                </dt>
+                <dd className="ml-auto">
+                  <Text type="p1" weight="semibold" color="primary">
+                    {formatPercent(seniorProfitsRate) ?? '-'}
+                  </Text>
+                </dd>
+              </div>
+              <div className="flex align-center mb-24 ph-24">
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior downside protection (Absolute %)
-                    <InfoTooltip>Senior positions will only start taking losses beyond this decline</InfoTooltip>
+                    <InfoTooltip>
+                      How much the underlying asset can decline before a senior position takes on losses.
+                    </InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
@@ -250,13 +265,13 @@ export const Simulate = () => {
                   </Text>
                 </dd>
               </div>
-              <div className="flex align-center mb-32">
+              <div className="flex align-center mb-24 ph-24">
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Senior upside exposure (Relative %)
                     <InfoTooltip>
-                      Senior positions will only receive this much of every percentage point gain in the underlying
-                      asset
+                      How much of every 1% move to the upside in the underlying asset a senior position will have
+                      exposure to.
                     </InfoTooltip>
                   </Text>
                 </dt>
@@ -266,29 +281,49 @@ export const Simulate = () => {
                   </Text>
                 </dd>
               </div>
-              <div className="flex align-center mb-32">
-                <dt className="mr-8">
-                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
-                    Senior performance
-                    <InfoTooltip>Change in the fair price of the senior token at epoch advancement</InfoTooltip>
-                  </Text>
-                </dt>
-                <dd className="ml-auto">
-                  <Text type="p1" weight="semibold" color="primary">
-                    {formatPercent(seniorProfitsRate) ?? '-'}
-                  </Text>
-                </dd>
-              </div>
-              <div className="flex align-center">
+              <hr className="mb-24" />
+              <div className="flex align-center mb-24 ph-24">
                 <dt className="mr-8">
                   <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                     Junior performance
-                    <InfoTooltip>Change in the fair price of the junior token at epoch advancement</InfoTooltip>
+                    <InfoTooltip>Change in the fair price of the junior token over the course of the epoch</InfoTooltip>
                   </Text>
                 </dt>
                 <dd className="ml-auto">
                   <Text type="p1" weight="semibold" color="primary">
                     {formatPercent(juniorProfitsRate) ?? '-'}
+                  </Text>
+                </dd>
+              </div>
+              <div className="flex align-center mb-24 ph-24">
+                <dt className="mr-8">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    Upside leverage
+                    <InfoTooltip>
+                      How much of every 1% move to the upside in the underlying asset a senior position will have
+                      exposure to.
+                    </InfoTooltip>
+                  </Text>
+                </dt>
+                <dd className="ml-auto">
+                  <Text type="p1" weight="semibold" color="primary">
+                    0x
+                  </Text>
+                </dd>
+              </div>
+              <div className="flex align-center ph-24">
+                <dt className="mr-8">
+                  <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    Downside leverage
+                    <InfoTooltip>
+                      How much of every 1% move to the downside in the underlying asset a junior position will have
+                      exposure to.
+                    </InfoTooltip>
+                  </Text>
+                </dt>
+                <dd className="ml-auto">
+                  <Text type="p1" weight="semibold" color="primary">
+                    0x
                   </Text>
                 </dd>
               </div>
@@ -328,7 +363,7 @@ export const Simulate = () => {
                           <span
                             key={idx}
                             className={s.legendItem}
-                            style={{ '--dot-color': entry.color } as CSSProperties}>
+                            style={{ '--dot-color': entry.color } as React.CSSProperties}>
                             <div className="flex flow-row">
                               <Text
                                 type="small"

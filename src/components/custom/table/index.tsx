@@ -9,6 +9,7 @@ import s from './s.module.scss';
 export type ColumnType<T> = {
   heading: React.ReactNode;
   render: (item: T) => React.ReactElement;
+  align?: 'center' | 'right';
 };
 
 type Props<T> = {
@@ -30,16 +31,18 @@ export const Table = <T extends Record<string, any>>({ columns, data, loading, r
         })}>
         <thead>
           <tr>
-            {columns.map((col, dataIdx) => (
-              <th key={dataIdx}>{col.heading}</th>
+            {columns.map(({ heading, align }, dataIdx) => (
+              <th key={dataIdx} className={align ? `text-${align}` : undefined}>
+                {heading}
+              </th>
             ))}
           </tr>
         </thead>
         <tbody>
           {data.map((item, itemIdx) => (
             <tr key={rowKey?.(item) ?? itemIdx}>
-              {columns.map(({ render: Render }, dataIdx) => (
-                <td key={dataIdx}>
+              {columns.map(({ render: Render, align }, dataIdx) => (
+                <td key={dataIdx} className={align ? `text-${align}` : undefined}>
                   <Render {...item} />
                 </td>
               ))}

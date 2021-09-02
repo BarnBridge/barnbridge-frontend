@@ -5,7 +5,9 @@ import classNames from 'classnames';
 import { formatPercent, formatUSD } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
+import { Badge } from 'components/custom/badge';
 import { Spinner } from 'components/custom/spinner';
+import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
@@ -159,123 +161,173 @@ const PoolView = () => {
           </div>
           <header className={classNames(s.epochCardHeader, 'mb-24')}>
             <div className={s.epochCardHeaderItem}>
-              <Text type="h3" weight="bold" color="primary" className="mb-4">
-                {formatPercent(smartAlphaContract?.epochUpsideExposureRate?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-              </Text>
-              <Text type="small" weight="semibold" color="secondary">
-                Upside exposure rate
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  TBD
+                </Text>
+                <Badge color="purple" size="small">
+                  Junior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                Upside leverage
+                <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
               </Text>
             </div>
             <div className={s.epochCardHeaderItem}>
-              <Text type="h3" weight="bold" color="primary" className="mb-4">
-                {formatPercent(smartAlphaContract?.epochDownsideProtectionRate?.unscaleBy(pool.poolToken.decimals)) ??
-                  '-'}
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  TBD
+                </Text>
+                <Badge color="purple" size="small">
+                  Junior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                Downside leverage
+                <InfoTooltip>Junior positions will have their downsides amplified by this much</InfoTooltip>
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
+            </div>
+            <div className={s.epochCardHeaderItem}>
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  {formatPercent(smartAlphaContract?.epochUpsideExposureRate?.unscaleBy(pool.poolToken.decimals)) ??
+                    '-'}
+                </Text>
+                <Badge color="green" size="small">
+                  Senior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                Upside exposure rate
+                <InfoTooltip>
+                  How much of every 1% move to the upside in the underlying asset a senior position will have exposure
+                  to.
+                </InfoTooltip>
+              </Text>
+            </div>
+            <div className={s.epochCardHeaderItem}>
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  {formatPercent(smartAlphaContract?.epochDownsideProtectionRate?.unscaleBy(pool.poolToken.decimals)) ??
+                    '-'}
+                </Text>
+                <Badge color="green" size="small">
+                  Senior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside protection rate
+                <InfoTooltip>
+                  How much the underlying asset can decline before a senior position takes on losses.
+                </InfoTooltip>
               </Text>
             </div>
           </header>
-          <dl>
-            <div className={s.epochCardDlRow}>
-              <dt>
-                <Text type="small" weight="semibold" color="secondary">
-                  wETH epoch entry price
-                </Text>
-              </dt>
-              <dd>
-                <Text
-                  type="p1"
-                  weight="semibold"
-                  color="primary"
-                  tooltip={formatUSD(smartAlphaContract?.epochEntryPrice?.unscaleBy(pool.poolToken.decimals), {
-                    decimals: pool.poolToken.decimals,
-                    compact: true,
-                  })}>
-                  {formatUSD(smartAlphaContract?.epochEntryPrice?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                </Text>
-              </dd>
-            </div>
-            <div className={s.epochCardDlRow}>
-              <dt className="flex align-center">
-                <Text type="small" weight="semibold" color="secondary">
-                  Senior liquidity
-                </Text>
-                <span
-                  className="middle-dot color-border ml-8"
-                  style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}
-                />
-              </dt>
-              <dd className="flex align-center">
-                <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-                <Text
-                  type="p1"
-                  weight="semibold"
-                  color="primary"
-                  tooltip={formatUSD(
-                    smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
-                      BigNumber.from(pool.state.seniorLiquidity),
-                    {
+          <div className="ph-24 pb-16">
+            <dl>
+              <div className={s.epochCardDlRow}>
+                <dt>
+                  <Text type="small" weight="semibold" color="secondary">
+                    wETH epoch entry price
+                  </Text>
+                </dt>
+                <dd>
+                  <Text
+                    type="p1"
+                    weight="semibold"
+                    color="primary"
+                    tooltip={formatUSD(smartAlphaContract?.epochEntryPrice?.unscaleBy(pool.poolToken.decimals), {
                       decimals: pool.poolToken.decimals,
                       compact: true,
-                    },
-                  )}>
-                  {formatUSD(
-                    smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
-                      BigNumber.from(pool.state.seniorLiquidity),
-                  ) ?? '-'}
-                </Text>
-              </dd>
+                    })}>
+                    {formatUSD(smartAlphaContract?.epochEntryPrice?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                  </Text>
+                </dd>
+              </div>
+              <div className={s.epochCardDlRow}>
+                <dt className="flex align-center">
+                  <Text type="small" weight="semibold" color="secondary">
+                    Senior liquidity
+                  </Text>
+                  <span
+                    className="middle-dot color-border ml-8"
+                    style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}
+                  />
+                </dt>
+                <dd className="flex align-center">
+                  <Text
+                    type="p1"
+                    weight="semibold"
+                    color="primary"
+                    tooltip={formatUSD(
+                      smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
+                        BigNumber.from(pool.state.seniorLiquidity),
+                      {
+                        decimals: pool.poolToken.decimals,
+                        compact: true,
+                      },
+                    )}
+                    className="mr-8">
+                    {formatUSD(
+                      smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
+                        BigNumber.from(pool.state.seniorLiquidity),
+                    ) ?? '-'}
+                  </Text>
+                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                </dd>
+              </div>
+              <div className={s.epochCardDlRow}>
+                <dt className="flex align-center">
+                  <Text type="small" weight="semibold" color="secondary">
+                    Junior liquidity
+                  </Text>
+                  <span
+                    className="middle-dot color-border ml-8"
+                    style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}
+                  />
+                </dt>
+                <dd className="flex align-center">
+                  <Text
+                    type="p1"
+                    weight="semibold"
+                    color="primary"
+                    tooltip={formatUSD(
+                      smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
+                        BigNumber.from(pool.state.juniorLiquidity),
+                      {
+                        decimals: pool.poolToken.decimals,
+                        compact: true,
+                      },
+                    )}
+                    className="mr-8">
+                    {formatUSD(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                  </Text>
+                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                </dd>
+              </div>
+            </dl>
+            <div
+              className={classNames(s.progress, 'mb-8')}
+              style={
+                {
+                  '--pool-epoch-tranche-percentage': (smartAlphaContract?.epochSeniorLiquidityRate ?? 0) * 100,
+                } as React.CSSProperties
+              }
+            />
+            <div className="flex align-center">
+              <Text type="small" weight="semibold" color="green">
+                {formatPercent(smartAlphaContract?.epochSeniorLiquidityRate) ?? '-'}
+              </Text>
+              <Text type="small" weight="semibold" color="purple" className="ml-auto">
+                {formatPercent(smartAlphaContract?.epochJuniorLiquidityRate) ?? '-'}
+              </Text>
             </div>
-            <div className={s.epochCardDlRow}>
-              <dt className="flex align-center">
-                <Text type="small" weight="semibold" color="secondary">
-                  Junior liquidity
-                </Text>
-                <span
-                  className="middle-dot color-border ml-8"
-                  style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}
-                />
-              </dt>
-              <dd className="flex align-center">
-                <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-                <Text
-                  type="p1"
-                  weight="semibold"
-                  color="primary"
-                  tooltip={formatUSD(
-                    smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
-                      BigNumber.from(pool.state.juniorLiquidity),
-                    {
-                      decimals: pool.poolToken.decimals,
-                      compact: true,
-                    },
-                  )}>
-                  {formatUSD(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                </Text>
-              </dd>
+            <div className="flex justify-center mt-8">
+              <Button variation="text" color="red">
+                View queue state
+              </Button>
             </div>
-          </dl>
-          <div
-            className={classNames(s.progress, 'mb-8')}
-            style={
-              {
-                '--pool-epoch-tranche-percentage': (smartAlphaContract?.epochSeniorLiquidityRate ?? 0) * 100,
-              } as React.CSSProperties
-            }
-          />
-          <div className="flex align-center">
-            <Text type="small" weight="semibold" color="green">
-              {formatPercent(smartAlphaContract?.epochSeniorLiquidityRate) ?? '-'}
-            </Text>
-            <Text type="small" weight="semibold" color="purple" className="ml-auto">
-              {formatPercent(smartAlphaContract?.epochJuniorLiquidityRate) ?? '-'}
-            </Text>
-          </div>
-          <div className="flex justify-center mt-8">
-            <Button variation="text" color="red">
-              View queue state
-            </Button>
           </div>
         </section>
         <section className={classNames(s.epochCard, s.epochCardSecondary)}>
@@ -286,106 +338,161 @@ const PoolView = () => {
           </div>
           <header className={classNames(s.epochCardHeader, 'mb-24')}>
             <div className={s.epochCardHeaderItem}>
-              <Text type="h3" weight="bold" color="primary" className="mb-4">
-                {formatPercent(nextEpochUpsideExposureRate?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-              </Text>
-              <Text type="small" weight="semibold" color="secondary">
-                Upside exposure rate
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  TBD
+                </Text>
+                <Badge color="purple" size="small">
+                  Junior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                Upside leverage
+                <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
               </Text>
             </div>
             <div className={s.epochCardHeaderItem}>
-              <Text type="h3" weight="bold" color="primary" className="mb-4">
-                {formatPercent(nextEpochDownsideProtectionRate?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  TBD
+                </Text>
+                <Badge color="purple" size="small">
+                  Junior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                Downside leverage
+                <InfoTooltip>Junior positions will have their downsides amplified by this much</InfoTooltip>
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
+            </div>
+            <div className={s.epochCardHeaderItem}>
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  {formatPercent(nextEpochUpsideExposureRate?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                </Text>
+                <Badge color="green" size="small">
+                  Senior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                Upside exposure rate
+                <InfoTooltip>
+                  How much of every 1% move to the upside in the underlying asset a senior position will have exposure
+                  to.
+                </InfoTooltip>
+              </Text>
+            </div>
+            <div className={s.epochCardHeaderItem}>
+              <div className="flex align-center col-gap-8">
+                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                  {formatPercent(nextEpochDownsideProtectionRate?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                </Text>
+                <Badge color="green" size="small">
+                  Senior
+                </Badge>
+              </div>
+              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside protection rate
+                <InfoTooltip>
+                  How much the underlying asset can decline before a senior position takes on losses.
+                </InfoTooltip>
               </Text>
             </div>
           </header>
-          <dl>
-            <div className={s.epochCardDlRow}>
-              <dt>
-                <Text type="small" weight="semibold" color="secondary">
-                  wETH epoch entry price
-                </Text>
-              </dt>
-              <dd>
-                <Text
-                  type="p1"
-                  weight="semibold"
-                  color="primary"
-                  tooltip={formatUSD(chainlinkOracleContract?.price?.unscaleBy(pool.poolToken.decimals), {
-                    decimals: pool.poolToken.decimals,
-                    compact: true,
-                  })}>
-                  {formatUSD(chainlinkOracleContract?.price?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                </Text>
-              </dd>
+          <div className="ph-24 pb-16">
+            <dl>
+              <div className={s.epochCardDlRow}>
+                <dt>
+                  <Text type="small" weight="semibold" color="secondary">
+                    wETH epoch entry price
+                  </Text>
+                </dt>
+                <dd>
+                  <Text
+                    type="p1"
+                    weight="semibold"
+                    color="primary"
+                    tooltip={formatUSD(chainlinkOracleContract?.price?.unscaleBy(pool.poolToken.decimals), {
+                      decimals: pool.poolToken.decimals,
+                      compact: true,
+                    })}>
+                    {formatUSD(chainlinkOracleContract?.price?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                  </Text>
+                </dd>
+              </div>
+              <div className={s.epochCardDlRow}>
+                <dt className="flex align-center">
+                  <Text type="small" weight="semibold" color="secondary">
+                    Senior liquidity
+                  </Text>
+                  <span
+                    className="middle-dot color-border ml-8"
+                    style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}
+                  />
+                </dt>
+                <dd className="flex align-center">
+                  <Text
+                    type="p1"
+                    weight="semibold"
+                    color="primary"
+                    tooltip={formatUSD(
+                      smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals),
+                      {
+                        decimals: pool.poolToken.decimals,
+                        compact: true,
+                      },
+                    )}
+                    className="mr-8">
+                    {formatUSD(smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                  </Text>
+                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                </dd>
+              </div>
+              <div className={s.epochCardDlRow}>
+                <dt className="flex align-center">
+                  <Text type="small" weight="semibold" color="secondary">
+                    Junior liquidity
+                  </Text>
+                  <span
+                    className="middle-dot color-border ml-8"
+                    style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}
+                  />
+                </dt>
+                <dd className="flex align-center">
+                  <Text
+                    type="p1"
+                    weight="semibold"
+                    color="primary"
+                    tooltip={formatUSD(
+                      smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals),
+                      {
+                        decimals: pool.poolToken.decimals,
+                        compact: true,
+                      },
+                    )}
+                    className="mr-8">
+                    {formatUSD(smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                  </Text>
+                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                </dd>
+              </div>
+            </dl>
+            <div
+              className={classNames(s.progress, 'mb-8')}
+              style={
+                {
+                  '--pool-epoch-tranche-percentage': (smartAlphaContract?.nextEpochSeniorLiquidityRate ?? 0) * 100,
+                } as React.CSSProperties
+              }
+            />
+            <div className="flex align-center">
+              <Text type="small" weight="semibold" color="green">
+                {formatPercent(smartAlphaContract?.nextEpochSeniorLiquidityRate) ?? '-'}
+              </Text>
+              <Text type="small" weight="semibold" color="purple" className="ml-auto">
+                {formatPercent(smartAlphaContract?.nextEpochJuniorLiquidityRate) ?? '-'}
+              </Text>
             </div>
-            <div className={s.epochCardDlRow}>
-              <dt className="flex align-center">
-                <Text type="small" weight="semibold" color="secondary">
-                  Senior liquidity
-                </Text>
-                <span
-                  className="middle-dot color-border ml-8"
-                  style={{ '--dot-color': 'var(--theme-green-color)' } as React.CSSProperties}
-                />
-              </dt>
-              <dd className="flex align-center">
-                <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-                <Text
-                  type="p1"
-                  weight="semibold"
-                  color="primary"
-                  tooltip={formatUSD(smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
-                    decimals: pool.poolToken.decimals,
-                    compact: true,
-                  })}>
-                  {formatUSD(smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                </Text>
-              </dd>
-            </div>
-            <div className={s.epochCardDlRow}>
-              <dt className="flex align-center">
-                <Text type="small" weight="semibold" color="secondary">
-                  Junior liquidity
-                </Text>
-                <span
-                  className="middle-dot color-border ml-8"
-                  style={{ '--dot-color': 'var(--theme-purple-color)' } as React.CSSProperties}
-                />
-              </dt>
-              <dd className="flex align-center">
-                <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-                <Text
-                  type="p1"
-                  weight="semibold"
-                  color="primary"
-                  tooltip={formatUSD(smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
-                    decimals: pool.poolToken.decimals,
-                    compact: true,
-                  })}>
-                  {formatUSD(smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                </Text>
-              </dd>
-            </div>
-          </dl>
-          <div
-            className={classNames(s.progress, 'mb-8')}
-            style={
-              {
-                '--pool-epoch-tranche-percentage': (smartAlphaContract?.nextEpochSeniorLiquidityRate ?? 0) * 100,
-              } as React.CSSProperties
-            }
-          />
-          <div className="flex align-center">
-            <Text type="small" weight="semibold" color="green">
-              {formatPercent(smartAlphaContract?.nextEpochSeniorLiquidityRate) ?? '-'}
-            </Text>
-            <Text type="small" weight="semibold" color="purple" className="ml-auto">
-              {formatPercent(smartAlphaContract?.nextEpochJuniorLiquidityRate) ?? '-'}
-            </Text>
           </div>
         </section>
       </div>

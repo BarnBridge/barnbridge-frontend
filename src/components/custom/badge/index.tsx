@@ -5,7 +5,7 @@ import s from './s.module.scss';
 
 type BadgeProps = {
   className?: string;
-  color?: 'green' | 'blue' | 'red' | 'grey';
+  color?: 'green' | 'blue' | 'red' | 'grey' | 'purple';
   size?: 'small' | 'medium';
 };
 

@@ -105,7 +105,9 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Upside exposure rate
-            <InfoTooltip>TBD</InfoTooltip>
+            <InfoTooltip>
+              Senior positions will only receive this much of every percentage point gain in the underlying asset
+            </InfoTooltip>
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="green">
@@ -116,7 +118,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         <div className={classNames(s.poolCardDlRow, 'mb-16')}>
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Downside protection rate
-            <InfoTooltip>TBD</InfoTooltip>
+            <InfoTooltip>Senior positions will only start taking losses beyond this decline</InfoTooltip>
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="green">
@@ -140,12 +142,25 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         </div>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
-            Junior leverage
-            <InfoTooltip>TBD</InfoTooltip>
+            Upside leverage
+            <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`}
+              {/* {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`} */}
+              TBD
+            </Text>
+          </dd>
+        </div>
+        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+            Downside leverage
+            <InfoTooltip>Junior positions will have their downsides amplified by this much</InfoTooltip>
+          </Text>
+          <dd>
+            <Text type="p1" weight="semibold" color="purple">
+              {/* {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`} */}
+              TBD
             </Text>
           </dd>
         </div>

@@ -123,9 +123,7 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
         <div className={classNames(s.depositBalance, 'flex col-gap-32 mb-32')}>
           <div>
             <Hint
-              text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-          magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-          consequat."
+              text="This amount of junior/senior tokens is already in the withdrawal queue and will be subtracted from your overall position in the next epoch."
               className="mb-4">
               <Text type="small" weight="semibold" color="secondary">
                 Balance in withdraw queue
@@ -148,9 +146,13 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
           </div>
           {epoch! < smartAlphaContract?.currentEpoch! && (
             <div>
-              <Text type="small" weight="semibold" color="secondary">
-                Unclaimed {tranche} tokens
-              </Text>
+              <Hint
+                text={`This amount of ${poolToken?.icon} is available to be redeemed from withdrawals made in previous epochs. It will be automatically redeemed if you add more junior/senior tokens to the withdrawal queue.`}
+                className="mb-4">
+                <Text type="small" weight="semibold" color="secondary">
+                  Unclaimed {tranche} tokens
+                </Text>
+              </Hint>
               <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(withdrawQueueBalance.div(historyTokenPrice ?? 0)) ?? '-'}
                 <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
@@ -182,7 +184,8 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
       />
 
       <Alert type="info" className="mb-32">
-        Sed elementum nulla sit amet accumsan dapibus. Integer auctor et elit in lobortis. Fusce ex nulla
+        Withdrawals made during an epoch will be added to the withdrawal queue and subtracted from your overall position
+        in the next epoch.
       </Alert>
 
       <div className="flex justify-end align-center">
