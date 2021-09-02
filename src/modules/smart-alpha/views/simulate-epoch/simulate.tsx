@@ -97,55 +97,44 @@ export const Simulate = () => {
       let seniorProfitsRate: number | undefined;
       let juniorProfitsRate: number | undefined;
 
-      const juniorLiquidity = BigNumber.from(values.juniorDominance)?.div(100)?.scaleBy(SCALE_DECIMALS);
-      const seniorLiquidity = juniorLiquidity
-        ? new BigNumber(1).scaleBy(SCALE_DECIMALS)?.minus(juniorLiquidity)
-        : undefined;
+      const juniorLiquidity = BigNumber.from(values.juniorDominance)?.div(100).scaleBy(SCALE_DECIMALS);
+      const seniorLiquidity = juniorLiquidity?.minus(new BigNumber(1).scaleBy(SCALE_DECIMALS)!).multipliedBy(-1);
+      const pricePerformance = BigNumber.from(values.pricePerf)?.div(100).scaleBy(SCALE_DECIMALS);
 
-      if (seniorRateModelContract && juniorLiquidity && seniorLiquidity) {
+      if (seniorRateModelContract && seniorLiquidity && juniorLiquidity && pricePerformance) {
         try {
           [exposure, protection] = await seniorRateModelContract.getRates(juniorLiquidity, seniorLiquidity);
-        } catch {
-          //
-        }
+        } catch {}
 
-        const pricePerf = BigNumber.from(values.pricePerf)?.div(100)?.scaleBy(SCALE_DECIMALS);
+        if (protection && exposure) {
+          if (accountingModelContract && seniorLiquidity && juniorLiquidity && pricePerformance) {
+            const entryPrice = new BigNumber(1).scaleBy(SCALE_DECIMALS)!;
+            const currentPrice = entryPrice.plus(pricePerformance);
 
-        if (accountingModelContract && pricePerf && seniorLiquidity) {
-          const entryPrice = new BigNumber(1).scaleBy(SCALE_DECIMALS)!;
-          const currentPrice = entryPrice.plus(pricePerf);
-
-          if (currentPrice && protection && exposure) {
             try {
               const [seniorProfits, juniorProfits] = await Promise.all([
                 accountingModelContract.calcSeniorProfits(entryPrice, currentPrice, protection, seniorLiquidity),
                 accountingModelContract.calcJuniorProfits(entryPrice, currentPrice, exposure, seniorLiquidity),
               ]);
 
-              pricePerfRate = pricePerf.unscaleBy(SCALE_DECIMALS)!.toNumber();
+              if (seniorProfits && juniorProfits) {
+                pricePerfRate = pricePerformance.unscaleBy(SCALE_DECIMALS)!.toNumber();
 
-              const seniorEnd = seniorLiquidity.plus(seniorProfits ?? 0).minus(juniorProfits ?? 0);
-              const seniorValueStart = entryPrice.multipliedBy(seniorLiquidity ?? 0).unscaleBy(SCALE_DECIMALS);
-              const seniorValueEnd = currentPrice.multipliedBy(seniorEnd ?? 0).unscaleBy(SCALE_DECIMALS);
+                const seniorEnd = seniorLiquidity.plus(seniorProfits).minus(juniorProfits);
+                const seniorValueStart = entryPrice.multipliedBy(seniorLiquidity).unscaleBy(SCALE_DECIMALS)!;
+                const seniorValueEnd = currentPrice.multipliedBy(seniorEnd).unscaleBy(SCALE_DECIMALS)!;
+                seniorProfitsRate = !seniorValueStart.eq(0)
+                  ? seniorValueEnd.minus(seniorValueStart).div(seniorValueStart).div(100).toNumber()
+                  : 0;
 
-              seniorProfitsRate =
-                seniorValueEnd
-                  ?.minus(seniorValueStart ?? 0)
-                  .div(seniorValueStart ?? 0)
-                  .toNumber() ?? 0 / 100;
-
-              const juniorEnd = juniorLiquidity.plus(juniorProfits ?? 0).minus(seniorProfits ?? 0);
-              const juniorValueStart = entryPrice.multipliedBy(juniorLiquidity ?? 0).unscaleBy(SCALE_DECIMALS);
-              const juniorValueEnd = currentPrice.multipliedBy(juniorEnd ?? 0).unscaleBy(SCALE_DECIMALS);
-
-              juniorProfitsRate =
-                juniorValueEnd
-                  ?.minus(juniorValueStart ?? 0)
-                  .div(juniorValueStart ?? 0)
-                  .toNumber() ?? 0 / 100;
-            } catch {
-              //
-            }
+                const juniorEnd = juniorLiquidity.plus(juniorProfits).minus(seniorProfits);
+                const juniorValueStart = entryPrice.multipliedBy(juniorLiquidity).unscaleBy(SCALE_DECIMALS)!;
+                const juniorValueEnd = currentPrice.multipliedBy(juniorEnd).unscaleBy(SCALE_DECIMALS)!;
+                juniorProfitsRate = !juniorValueStart.eq(0)
+                  ? juniorValueEnd.minus(juniorValueStart).div(juniorValueStart).div(100).toNumber()
+                  : 0;
+              }
+            } catch {}
           }
         }
       }
