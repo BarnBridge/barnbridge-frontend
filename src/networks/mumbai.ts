@@ -31,7 +31,7 @@ export const MumbaiConfig: NetworkConfig = {
     baseUrl: 'https://mumbai.api.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '',

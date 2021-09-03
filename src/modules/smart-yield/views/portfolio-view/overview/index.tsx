@@ -2,9 +2,9 @@ import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import last from 'lodash/last';
 
+import PortfolioBalance from 'components/portfolio-balance';
 import { mergeState } from 'hooks/useMergeState';
 import { useSyAPI } from 'modules/smart-yield/api';
-import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import { useWallet } from 'wallets/walletProvider';
 

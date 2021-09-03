@@ -28,7 +28,7 @@ const CoinbaseWalletConfig: BaseWalletConfig = {
     connector?.close();
   },
   onError(error: Error): Error | undefined {
-    const { code } = (error as any) as { code: number };
+    const { code } = error as any as { code: number };
 
     if (code === 4001) {
       // USER_DENIED_REQUEST_ACCOUNTS

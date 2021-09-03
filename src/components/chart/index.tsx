@@ -3,14 +3,19 @@ import { format } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 
+import Spin from 'components/antd/spin';
+import { Text } from 'components/custom/typography';
+import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
+
 import s from './s.module.scss';
 
-interface PropsType<X = number, Y = number> {
+interface PropsType {
   data: Object[];
   x: {
     key: string;
     format?: (item: any) => string;
     itemFormat?: (item: any) => string;
+    ticks?: number[];
   };
   y: {
     format?: (item: any) => string;
@@ -18,10 +23,12 @@ interface PropsType<X = number, Y = number> {
     items: {
       key: string;
       title: string;
-      color: 'red' | 'green' | 'blue' | 'yellow' | 'purple';
+      color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'grey';
+      yAxisId?: 'left' | 'right';
     }[];
   };
   className?: string;
+  loading?: boolean;
 }
 
 const renderTooltip = (
@@ -66,47 +73,71 @@ const renderLegend = ({ payload }: any) => {
   );
 };
 
-export const Chart: React.FC<PropsType> = ({ data, x, y, className }) => {
+export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = false }) => {
   const areaUniqIds = useMemo(() => {
     return Array.from({ length: y.items.length }).map(() => nanoid());
   }, [y.items.length]);
 
-  return (
-    <ResponsiveContainer width="100%" height={300} className={className}>
-      <AreaChart data={data}>
-        <defs>
-          {areaUniqIds.map((areaId, idx) => (
-            <linearGradient key={areaId} id={areaId} gradientTransform="rotate(180)">
-              <stop offset="0%" stopColor={`rgba(var(--theme-${y.items[idx].color}-color-rgb), 0.08)`} />
-              <stop offset="100%" stopColor={`rgba(var(--theme-${y.items[idx].color}-color-rgb), 0)`} />
-            </linearGradient>
-          ))}
-        </defs>
-        <CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
-        <XAxis dataKey={x.key} axisLine={false} tickLine={false} tickFormatter={x.format} />
-        <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} />
+  const hasRightYAxis = y.items.some(item => item.yAxisId === 'right');
 
-        {y.items.map((areaItem, idx) => (
-          <Area
-            key={idx}
-            name={areaItem.title}
-            dataKey={areaItem.key}
-            type="monotone"
-            fill={`url(#${areaUniqIds[idx]})`}
-            stroke={`var(--theme-${y.items[idx].color}-color)`}
-            strokeWidth={2}
-          />
-        ))}
-        <Tooltip
-          // separator=""
-          labelFormatter={value => (
-            <div className={s.tooltipTitle}>{value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}</div>
-          )}
-          // formatter={(value: number, _: any, { dataKey }: any) => <span style={{ marginLeft: 8 }}>{value}</span>}
-          content={ttprops => renderTooltip(ttprops, x.itemFormat, y.itemsFormat)}
-        />
-        <Legend content={renderLegend} />
-      </AreaChart>
-    </ResponsiveContainer>
+  return (
+    <Spin spinning={loading}>
+      {data.length === 0 ? (
+        <div className="flex flow-row row-gap-24 align-center justify-center pv-48">
+          <EmptyChartSvg />
+          <Text type="p1" color="secondary">
+            Not enough data to plot a graph
+          </Text>
+        </div>
+      ) : (
+        <ResponsiveContainer width="100%" height={300} className={className}>
+          <AreaChart data={data}>
+            <defs>
+              {areaUniqIds.map((areaId, idx) => (
+                <linearGradient key={areaId} id={areaId} gradientTransform="rotate(180)">
+                  <stop offset="0%" stopColor={`rgba(var(--theme-${y.items[idx].color}-color-rgb), 0.08)`} />
+                  <stop offset="100%" stopColor={`rgba(var(--theme-${y.items[idx].color}-color-rgb), 0)`} />
+                </linearGradient>
+              ))}
+            </defs>
+            <CartesianGrid vertical={false} strokeDasharray="3 0" stroke="var(--theme-border-color)" />
+            <XAxis
+              dataKey={x.key}
+              axisLine={false}
+              tickLine={false}
+              tickMargin={8}
+              minTickGap={0}
+              tickFormatter={x.format}
+              ticks={x.ticks}
+            />
+            <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="left" yAxisId="left" />
+            {hasRightYAxis && (
+              <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="right" yAxisId="right" />
+            )}
+
+            {y.items.map((areaItem, idx) => (
+              <Area
+                key={areaItem.key}
+                name={areaItem.title}
+                dataKey={areaItem.key}
+                type="monotone"
+                fill={`url(#${areaUniqIds[idx]})`}
+                stroke={`var(--theme-${y.items[idx].color}-color)`}
+                strokeWidth={2}
+                yAxisId={areaItem.yAxisId ?? 'left'}
+                strokeDasharray={areaItem.yAxisId === 'right' ? '3 3' : ''}
+              />
+            ))}
+            <Tooltip
+              labelFormatter={value => (
+                <div className={s.tooltipTitle}>{value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}</div>
+              )}
+              content={p => renderTooltip(p, x.itemFormat, y.itemsFormat)}
+            />
+            <Legend content={renderLegend} />
+          </AreaChart>
+        </ResponsiveContainer>
+      )}
+    </Spin>
   );
 };

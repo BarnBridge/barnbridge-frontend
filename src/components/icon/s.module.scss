@@ -1,4 +1,6 @@
 .component {
+  flex-shrink: 0;
+
   &.color-icon {
     color: var(--theme-icon-color);
   }

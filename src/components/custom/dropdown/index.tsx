@@ -68,7 +68,7 @@ export const Dropdown: React.FC<DropdownProps> = ({ content, children, options }
       if (popperEl) {
         nodes.push(popperEl);
       }
-      outyInstance = outy(nodes, [('click' as unknown) as MouseEvent, ('touchstart' as unknown) as TouchEvent], () =>
+      outyInstance = outy(nodes, ['click' as unknown as MouseEvent, 'touchstart' as unknown as TouchEvent], () =>
         setOpen(false),
       );
     }

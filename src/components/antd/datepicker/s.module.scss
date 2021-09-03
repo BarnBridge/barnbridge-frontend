@@ -1,5 +1,3 @@
-@import 'src/styles/text';
-
 .component:global(.ant-picker) {
   width: 100%;
   height: 48px;
@@ -33,7 +31,8 @@
 
   :global(.ant-picker-input) {
     input {
-      @include font-p1-semi-bold;
+      font: var(--font-p1);
+      font-weight: 600;
       color: var(--theme-primary-color);
 
       &::placeholder {

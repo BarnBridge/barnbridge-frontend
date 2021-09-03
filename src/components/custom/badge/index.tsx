@@ -5,7 +5,7 @@ import s from './s.module.scss';
 
 type BadgeProps = {
   className?: string;
-  color?: 'green' | 'blue' | 'red' | 'grey';
+  color?: 'green' | 'blue' | 'red' | 'grey' | 'purple';
   size?: 'small' | 'medium';
 };
 
@@ -21,13 +21,14 @@ export const Badge: React.FC<BadgeProps> = ({ color, size, children, className, 
 
 type SquareBadgeProps = {
   className?: string;
+  color?: 'green' | 'blue' | 'red' | 'grey';
 };
 
-export const SquareBadge: React.FC<SquareBadgeProps> = ({ children, className, ...rest }) => {
+export const SquareBadge: React.FC<SquareBadgeProps> = ({ children, className, color, ...rest }) => {
   if (!children) return null;
 
   return (
-    <div className={cn(s.squareBadge, className)} {...rest}>
+    <div className={cn(s.squareBadge, s[color ?? ''], className)} {...rest}>
       {children}
     </div>
   );

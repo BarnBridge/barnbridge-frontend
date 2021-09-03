@@ -1,9 +1,6 @@
-@import 'src/styles/text';
-
 .tokenAmount {
   // background: var(--theme-body-color);
   border: 1px solid var(--theme-border-color);
-  box-sizing: border-box;
   border-radius: 4px;
   display: flex;
   align-items: stretch;
@@ -64,7 +61,6 @@
 .tokenAmountPreview {
   background: var(--theme-body-color);
   border: 1px solid var(--theme-border-color);
-  box-sizing: border-box;
   border-radius: 4px;
   display: flex;
   align-items: stretch;
@@ -137,7 +133,8 @@
 }
 
 .tokenSelectListButton {
-  @include font-p2-semi-bold;
+  font: var(--font-p2);
+  font-weight: 600;
   background-color: transparent;
   border: 0;
   padding: 12px;

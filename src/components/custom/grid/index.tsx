@@ -41,12 +41,9 @@ const Grid: React.FC<GridProps> = props => {
 
   const [rowGap = 0, columnGap = rowGap] = ([] as number[]).concat(gap ?? 0);
 
-  const [
-    paddingTop,
-    paddingRight = paddingTop,
-    paddingBottom = paddingTop,
-    paddingLeft = paddingRight,
-  ] = ([] as number[]).concat(padding ?? 0);
+  const [paddingTop, paddingRight = paddingTop, paddingBottom = paddingTop, paddingLeft = paddingRight] = (
+    [] as number[]
+  ).concat(padding ?? 0);
 
   return (
     <div

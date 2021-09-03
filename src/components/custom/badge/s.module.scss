@@ -1,11 +1,10 @@
-@import 'src/styles/text';
-
 .badge {
-  @include font-lb2-bold;
+  font: var(--font-p2);
+  font-weight: bold;
   display: inline-flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 8px 24px;
+  padding: 0 12px;
   background: rgba(var(--theme-secondary-color-rgb), 0.08);
   color: var(--theme-secondary-color);
   border-radius: 32px;
@@ -26,14 +25,27 @@
     color: var(--theme-blue-color);
   }
 
+  &.purple {
+    background: rgba(var(--theme-purple-color-rgb), 0.08);
+    color: var(--theme-purple-color);
+  }
+
+  &.large {
+    font: var(--font-lb2);
+    font-weight: bold;
+    padding: 8px 24px;
+  }
+
   &.small {
-    @include font-p2-bold;
-    padding: 0 12px;
+    font: var(--font-sm);
+    font-weight: bold;
+    padding: 0 10px;
   }
 }
 
 .squareBadge {
-  @include font-sm-semi-bold;
+  font: var(--font-sm);
+  font-weight: 600;
   align-items: center;
   background: rgba(113, 121, 128, 0.08);
   border-radius: 4px;
@@ -41,6 +53,26 @@
   height: 24px;
   justify-content: center;
   width: 24px;
+
+  &.green {
+    background: var(--theme-green-color);
+    color: var(--theme-white-color);
+  }
+
+  &.red {
+    background: var(--theme-red-color);
+    color: var(--theme-white-color);
+  }
+
+  &.blue {
+    background: var(--theme-blue-color);
+    color: var(--theme-white-color);
+  }
+
+  &.purple {
+    background: var(--theme-purple-color);
+    color: var(--theme-white-color);
+  }
 
   :global(.ant-tabs-tab-active) & {
     background-color: rgba(255, 67, 57, 0.08);

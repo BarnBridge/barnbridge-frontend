@@ -30,7 +30,7 @@ export const GoerliConfig: NetworkConfig = {
     baseUrl: 'https://goerli.api.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '',

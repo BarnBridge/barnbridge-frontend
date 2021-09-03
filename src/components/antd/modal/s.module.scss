@@ -1,5 +1,3 @@
-@import 'src/styles/text';
-
 .component {
   :global(.ant-modal-content) {
     box-shadow: 0 16px 32px rgba(19, 32, 43, 0.4), 0 0 0.5px rgba(6, 10, 13, 0.4);
@@ -26,7 +24,8 @@
     border-bottom: 1px solid var(--theme-border-color);
 
     :global(.ant-modal-title) {
-      @include font-p1-semi-bold;
+      font: var(--font-p1);
+      font-weight: 600;
       color: var(--theme-primary-color);
     }
   }

@@ -30,7 +30,6 @@ const PortfolioWithdraw: FC = () => {
   const bondBalance = projectTokenContract.balance?.unscaleBy(projectToken.decimals);
 
   const isLocked = (userLockedUntil ?? 0) * 1_000 > Date.now();
-  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
 
   const form = useForm<FormType>({
     validationScheme: {

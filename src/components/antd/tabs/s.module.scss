@@ -1,5 +1,3 @@
-@import 'src/styles/text';
-
 .tabs {
   > :global(.ant-tabs-nav) {
     margin: 0;
@@ -15,7 +13,8 @@
       > :global(.ant-tabs-nav-list) {
         > :global(.ant-tabs-tab) {
           > :global(.ant-tabs-tab-btn) {
-            @include font-p1-semi-bold;
+            font: var(--font-p1);
+            font-weight: 600;
             display: flex;
             flex-direction: row;
             column-gap: 8px;

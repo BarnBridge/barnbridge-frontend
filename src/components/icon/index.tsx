@@ -75,6 +75,7 @@ export type IconNames =
   | 'voting-power'
   | 'bonus'
   | 'delegated'
+  | 'percentage'
   | 'external'
   | 'burger';
 

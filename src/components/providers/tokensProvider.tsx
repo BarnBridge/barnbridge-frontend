@@ -25,6 +25,8 @@ export enum Tokens {
   WMATIC = 'MATIC',
   BOND = 'BOND',
   UNIV2 = 'UNI-V2',
+  BTC = 'BTC',
+  USD = 'USD',
 }
 
 export type BaseTokenType = {
@@ -32,7 +34,7 @@ export type BaseTokenType = {
   symbol: string;
   name: string;
   decimals: number;
-  icon: TokenIconNames | undefined;
+  icon: TokenIconNames;
 };
 
 export const WBTC: BaseTokenType = {
@@ -311,21 +313,22 @@ const TokensProvider: FC = props => {
     return symbol ? tokensRef.current.get(symbol) : undefined;
   }, []);
 
-  const getAmountInUSD = useCallback((amount: BigNumber | undefined, source: string | undefined):
-    | BigNumber
-    | undefined => {
-    if (!amount || !source) {
-      return undefined;
-    }
+  const getAmountInUSD = useCallback(
+    (amount: BigNumber | undefined, source: string | undefined): BigNumber | undefined => {
+      if (!amount || !source) {
+        return undefined;
+      }
 
-    const token = getToken(source);
+      const token = getToken(source);
 
-    if (!token || !token.price) {
-      return undefined;
-    }
+      if (!token || !token.price) {
+        return undefined;
+      }
 
-    return amount.multipliedBy(token.price);
-  }, []);
+      return amount.multipliedBy(token.price);
+    },
+    [],
+  );
 
   const value: TokensContextType = {
     getToken,
@@ -336,3 +339,38 @@ const TokensProvider: FC = props => {
 };
 
 export default TokensProvider;
+
+type AssetType = {
+  icon: TokenIconNames;
+  decimals: number;
+};
+
+export function getAsset(symbol: string): AssetType | null {
+  switch (symbol) {
+    case 'BTC':
+      return {
+        icon: 'wbtc',
+        decimals: WBTC.decimals,
+      };
+    case 'ETH':
+      return {
+        icon: 'eth',
+        decimals: WETH.decimals,
+      };
+    case 'USD':
+      return {
+        icon: 'usd',
+        decimals: 2,
+      };
+    default:
+      return null;
+  }
+}
+
+export function isEthAsset(symbol: string) {
+  return symbol.toUpperCase() === 'ETH';
+}
+
+export function isUsdAsset(symbol: string) {
+  return symbol.toUpperCase() === 'USD';
+}
