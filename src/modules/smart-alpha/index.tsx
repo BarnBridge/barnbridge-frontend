@@ -6,6 +6,8 @@ import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
+import { isProductionMode } from 'utils';
+
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
 const PoolView = lazy(() => import(/* webpackChunkName: "sa-pool-view" */ './views/pool-view'));
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
@@ -40,8 +42,7 @@ const SmartAlphaView: React.FC = () => {
     },
   ];
 
-  // if (new Date() < launchDate) {
-  if (1 === 1) {
+  if (new Date() < launchDate || isProductionMode) {
     return (
       <div className="content-container-fix content-container">
         <Launch launchDate={launchDate} />

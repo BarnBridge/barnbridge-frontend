@@ -25,6 +25,8 @@ import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import MetamaskWalletConfig, { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
 
+import { isProductionMode } from 'utils';
+
 import s from './s.module.scss';
 
 const LayoutHeader: React.FC = () => {
@@ -48,11 +50,13 @@ const LayoutHeader: React.FC = () => {
         </Switch>
       </Text>
       <div className="flex align-center col-gap-16 ml-auto">
-        {/*<Switch>*/}
-        {/*  <Route path="/smart-alpha">*/}
-        {/*    <PositionsAction />*/}
-        {/*  </Route>*/}
-        {/*</Switch>*/}
+        {!isProductionMode && (
+          <Switch>
+            <Route path="/smart-alpha">
+              <PositionsAction />
+            </Route>
+          </Switch>
+        )}
         <AddTokenAction />
         <NetworkAction />
         <NotificationsAction />

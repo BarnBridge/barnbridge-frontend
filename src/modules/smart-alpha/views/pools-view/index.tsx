@@ -1,8 +1,9 @@
 import React from 'react';
 import { useLocation } from 'react-router-dom';
+import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { addSeconds, getUnixTime } from 'date-fns';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
 import { InfoTooltip } from 'components/custom/tooltip';
@@ -80,11 +81,16 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             Epoch ends in
           </Text>
           <UseLeftTime delay={1_000}>
-            {() => (
-              <Text type="p1" weight="semibold">
-                {getFormattedDuration(item.epochDuration - currentEpochProgress)}
-              </Text>
-            )}
+            {() => {
+              const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
+              const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
+
+              return (
+                <Text type="p1" weight="semibold">
+                  {getFormattedDuration(item.epochDuration - currentEpochProgress)}
+                </Text>
+              );
+            }}
           </UseLeftTime>
         </div>
       </header>
@@ -93,13 +99,26 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Epoch senior liquidity
           </Text>
-          <dd>
+          <dd className="flex align-center">
             <Text
               type="p1"
               weight="semibold"
-              tooltip={formatUSD(item.state.seniorLiquidity, { decimals: 8, compact: true })}>
-              {formatUSD(item.state.seniorLiquidity, { compact: true })}
+              tooltip={
+                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                  <span>
+                    {formatToken(item.state.seniorLiquidity, {
+                      tokenName: poolToken?.symbol,
+                      decimals: poolToken?.decimals,
+                    })}
+                  </span>
+                  <span>
+                    {formatUSD(BigNumber.from(item.state.seniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
+                  </span>
+                </Text>
+              }>
+              {formatToken(item.state.seniorLiquidity, { compact: true })}
             </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} className="ml-8" />
           </dd>
         </div>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
@@ -131,13 +150,26 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Epoch junior liquidity
           </Text>
-          <dd>
+          <dd className="flex align-center">
             <Text
               type="p1"
               weight="semibold"
-              tooltip={formatUSD(item.state.juniorLiquidity, { decimals: 8, compact: true })}>
-              {formatUSD(item.state.juniorLiquidity, { compact: true })}
+              tooltip={
+                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                  <span>
+                    {formatToken(item.state.juniorLiquidity, {
+                      tokenName: poolToken?.symbol,
+                      decimals: poolToken?.decimals,
+                    })}
+                  </span>
+                  <span>
+                    {formatUSD(BigNumber.from(item.state.juniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
+                  </span>
+                </Text>
+              }>
+              {formatToken(item.state.juniorLiquidity, { compact: true })}
             </Text>
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} className="ml-8" />
           </dd>
         </div>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
@@ -155,7 +187,13 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Downside leverage
-            <InfoTooltip>Junior positions will have their downsides amplified by this much</InfoTooltip>
+            <InfoTooltip>
+              How much of every 1% move to the downside in the underlying asset a junior position will have exposure to.
+              <br />
+              <br />
+              The downside leverage is only applicable until senior downside protection is fully covered, and junior
+              losses are fully realized.
+            </InfoTooltip>
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">

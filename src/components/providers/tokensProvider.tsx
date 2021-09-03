@@ -366,3 +366,11 @@ export function getAsset(symbol: string): AssetType | null {
       return null;
   }
 }
+
+export function isEthAsset(symbol: string) {
+  return symbol.toUpperCase() === 'ETH';
+}
+
+export function isUsdAsset(symbol: string) {
+  return symbol.toUpperCase() === 'USD';
+}

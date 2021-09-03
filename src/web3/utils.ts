@@ -76,7 +76,10 @@ type FormatTokenOptions = {
   hasLess?: boolean;
 };
 
-export function formatToken(value: number | BigNumber | undefined, options?: FormatTokenOptions): string | undefined {
+export function formatToken(
+  value: number | BigNumber | string | undefined,
+  options?: FormatTokenOptions,
+): string | undefined {
   if (value === undefined || value === null || Number.isNaN(value)) {
     return undefined;
   }

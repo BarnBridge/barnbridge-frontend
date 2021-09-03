@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
@@ -16,7 +16,7 @@ export type TextProps = {
   wrap?: boolean;
   className?: string;
   style?: Partial<CSSStyleDeclaration>;
-  tooltip?: string;
+  tooltip?: ReactNode;
 };
 
 export const Text: React.FC<TextProps> = React.memo(props => {
