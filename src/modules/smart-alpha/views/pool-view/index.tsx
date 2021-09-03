@@ -185,7 +185,14 @@ const PoolView = () => {
               </div>
               <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside leverage
-                <InfoTooltip>Junior positions will have their downsides amplified by this much</InfoTooltip>
+                <InfoTooltip>
+                  How much of every 1% move to the downside in the underlying asset a junior position will have exposure
+                  to.
+                  <br />
+                  <br />
+                  The downside leverage is only applicable until senior downside protection is fully covered, and junior
+                  losses are fully realized.
+                </InfoTooltip>
               </Text>
             </div>
             <div className={s.epochCardHeaderItem}>
@@ -361,7 +368,14 @@ const PoolView = () => {
               </div>
               <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside leverage
-                <InfoTooltip>Junior positions will have their downsides amplified by this much</InfoTooltip>
+                <InfoTooltip>
+                  How much of every 1% move to the downside in the underlying asset a junior position will have exposure
+                  to.
+                  <br />
+                  <br />
+                  The downside leverage is only applicable until senior downside protection is fully covered, and junior
+                  losses are fully realized.
+                </InfoTooltip>
               </Text>
             </div>
             <div className={s.epochCardHeaderItem}>

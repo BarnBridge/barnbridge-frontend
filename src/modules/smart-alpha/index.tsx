@@ -40,8 +40,8 @@ const SmartAlphaView: React.FC = () => {
     },
   ];
 
-  // if (new Date() < launchDate) {
-  if (1 === 1) {
+  if (new Date() < launchDate) {
+    // if (1 === 1) {
     return (
       <div className="content-container-fix content-container">
         <Launch launchDate={launchDate} />
