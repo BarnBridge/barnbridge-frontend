@@ -80,11 +80,16 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             Epoch ends in
           </Text>
           <UseLeftTime delay={1_000}>
-            {() => (
-              <Text type="p1" weight="semibold">
-                {getFormattedDuration(item.epochDuration - currentEpochProgress)}
-              </Text>
-            )}
+            {() => {
+              const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
+              const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
+
+              return (
+                <Text type="p1" weight="semibold">
+                  {getFormattedDuration(item.epochDuration - currentEpochProgress)}
+                </Text>
+              );
+            }}
           </UseLeftTime>
         </div>
       </header>
