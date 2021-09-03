@@ -2,7 +2,7 @@ import React from 'react';
 import { useLocation } from 'react-router-dom';
 import classNames from 'classnames';
 import { addSeconds, getUnixTime } from 'date-fns';
-import { formatNumber, formatPercent, formatUSD } from 'web3/utils';
+import { formatPercent, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
 import { InfoTooltip } from 'components/custom/tooltip';
@@ -54,7 +54,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
   const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
 
-  const juniorLeverage = calcJuniorLeverage(item);
+  // const juniorLeverage = calcJuniorLeverage(item);
 
   return (
     <section
@@ -174,14 +174,14 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   );
 };
 
-function calcJuniorLeverage(item) {
-  if (!Number(item.state.seniorLiquidity) || !Number(item.state.juniorLiquidity)) {
-    return null;
-  }
+// function calcJuniorLeverage(item) {
+//   if (!Number(item.state.seniorLiquidity) || !Number(item.state.juniorLiquidity)) {
+//     return null;
+//   }
 
-  return (
-    1 +
-    (1 - Number(item.state.upsideExposureRate)) *
-      (Number(item.state.seniorLiquidity) / Number(item.state.juniorLiquidity))
-  );
-}
+//   return (
+//     1 +
+//     (1 - Number(item.state.upsideExposureRate)) *
+//       (Number(item.state.seniorLiquidity) / Number(item.state.juniorLiquidity))
+//   );
+// }
