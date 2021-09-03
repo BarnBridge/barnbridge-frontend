@@ -48,11 +48,11 @@ const LayoutHeader: React.FC = () => {
         </Switch>
       </Text>
       <div className="flex align-center col-gap-16 ml-auto">
-        <Switch>
-          <Route path="/smart-alpha">
-            <PositionsAction />
-          </Route>
-        </Switch>
+        {/*<Switch>*/}
+        {/*  <Route path="/smart-alpha">*/}
+        {/*    <PositionsAction />*/}
+        {/*  </Route>*/}
+        {/*</Switch>*/}
         <AddTokenAction />
         <NetworkAction />
         <NotificationsAction />
