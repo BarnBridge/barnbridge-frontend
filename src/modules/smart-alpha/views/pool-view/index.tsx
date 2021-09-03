@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
