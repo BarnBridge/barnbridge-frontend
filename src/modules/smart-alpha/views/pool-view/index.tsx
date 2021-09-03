@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { formatPercent, formatUSD } from 'web3/utils';
+import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
@@ -120,7 +120,7 @@ const PoolView = () => {
   const oracleToken = getAsset(pool.oracleAssetSymbol);
 
   return (
-    <>
+    <div className="container-limit">
       <div className="mb-16">
         <Link to="/smart-alpha" variation="text-alt" icon="arrow" iconPosition="left" iconRotate={180}>
           Pools
@@ -229,7 +229,7 @@ const PoolView = () => {
               <div className={s.epochCardDlRow}>
                 <dt>
                   <Text type="small" weight="semibold" color="secondary">
-                    wETH epoch entry price
+                    {pool.poolToken.symbol} epoch entry price
                   </Text>
                 </dt>
                 <dd>
@@ -260,18 +260,18 @@ const PoolView = () => {
                     type="p1"
                     weight="semibold"
                     color="primary"
-                    tooltip={formatUSD(
+                    tooltip={formatToken(
+                      smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
+                        BigNumber.from(pool.state.seniorLiquidity),
+                    )}
+                    className="mr-8">
+                    {formatToken(
                       smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
                         BigNumber.from(pool.state.seniorLiquidity),
                       {
                         decimals: pool.poolToken.decimals,
                         compact: true,
                       },
-                    )}
-                    className="mr-8">
-                    {formatUSD(
-                      smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
-                        BigNumber.from(pool.state.seniorLiquidity),
                     ) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
@@ -292,16 +292,15 @@ const PoolView = () => {
                     type="p1"
                     weight="semibold"
                     color="primary"
-                    tooltip={formatUSD(
+                    tooltip={formatToken(
                       smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
                         BigNumber.from(pool.state.juniorLiquidity),
-                      {
-                        decimals: pool.poolToken.decimals,
-                        compact: true,
-                      },
                     )}
                     className="mr-8">
-                    {formatUSD(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                    {formatToken(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
+                      decimals: pool.poolToken.decimals,
+                      compact: true,
+                    }) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
                 </dd>
@@ -404,7 +403,7 @@ const PoolView = () => {
               <div className={s.epochCardDlRow}>
                 <dt>
                   <Text type="small" weight="semibold" color="secondary">
-                    wETH epoch entry price
+                    {pool.poolToken.symbol} epoch entry price
                   </Text>
                 </dt>
                 <dd>
@@ -435,15 +434,14 @@ const PoolView = () => {
                     type="p1"
                     weight="semibold"
                     color="primary"
-                    tooltip={formatUSD(
+                    tooltip={formatToken(
                       smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals),
-                      {
-                        decimals: pool.poolToken.decimals,
-                        compact: true,
-                      },
                     )}
                     className="mr-8">
-                    {formatUSD(smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                    {formatToken(smartAlphaContract?.nextEpochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
+                      decimals: pool.poolToken.decimals,
+                      compact: true,
+                    }) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
                 </dd>
@@ -463,15 +461,14 @@ const PoolView = () => {
                     type="p1"
                     weight="semibold"
                     color="primary"
-                    tooltip={formatUSD(
+                    tooltip={formatToken(
                       smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals),
-                      {
-                        decimals: pool.poolToken.decimals,
-                        compact: true,
-                      },
                     )}
                     className="mr-8">
-                    {formatUSD(smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                    {formatToken(smartAlphaContract?.nextEpochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
+                      decimals: pool.poolToken.decimals,
+                      compact: true,
+                    }) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
                 </dd>
@@ -522,7 +519,7 @@ const PoolView = () => {
           until next epoch
         </Text>
       </div>
-      <TokensPrice poolAddress={poolAddress} className="mb-32" />
+      <TokensPrice poolAddress={poolAddress} tokenSymbol={pool.poolToken.symbol} className="mb-32" />
       <PoolPerformance poolAddress={poolAddress} className="mb-32" />
       <TransactionsTable poolAddress={poolAddress} />
       {previousEpochVisible && (
@@ -550,7 +547,7 @@ const PoolView = () => {
           <PreviousEpochs />
         </Modal>
       )}
-    </>
+    </div>
   );
 };
 

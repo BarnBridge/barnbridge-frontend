@@ -202,7 +202,7 @@ export const PreviousEpochs = () => {
     <section className="card">
       <header className="card-header flex align-center pv-12">
         <Text type="p1" weight="semibold">
-          Transaction history
+          All previous epochs
         </Text>
       </header>
       <Table<EpochApiType>

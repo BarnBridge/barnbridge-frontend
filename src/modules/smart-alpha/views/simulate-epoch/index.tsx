@@ -45,7 +45,7 @@ const SimulateEpoch = () => {
   const oracleToken = getAsset(pool.oracleAssetSymbol);
 
   return (
-    <>
+    <div className="container-limit">
       <div className="mb-16">
         <Link
           to={`/smart-alpha/pools/${poolAddress}`}
@@ -73,7 +73,7 @@ const SimulateEpoch = () => {
         </div>
       </div>
       <Simulate />
-    </>
+    </div>
   );
 };
 

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import { format } from 'date-fns';
+import { formatNumber } from 'web3/utils';
 
 import { Chart } from 'components/chart';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
@@ -9,7 +10,11 @@ import { useFetchTokenPrice } from 'modules/smart-alpha/api';
 
 import { formatTick } from 'utils/chart';
 
-export const TokensPrice: React.FC<{ poolAddress: string; className?: string }> = ({ poolAddress, className }) => {
+export const TokensPrice: React.FC<{ poolAddress: string; tokenSymbol: string; className?: string }> = ({
+  poolAddress,
+  tokenSymbol,
+  className,
+}) => {
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const { data = [], loading } = useFetchTokenPrice(poolAddress, periodFilter);
 
@@ -31,9 +36,8 @@ export const TokensPrice: React.FC<{ poolAddress: string; className?: string }> 
             itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
           }}
           y={{
-            format: value =>
-              Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value),
-            itemsFormat: value => Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(value),
+            format: value => `${Intl.NumberFormat('en', { notation: 'compact' }).format(value)} ${tokenSymbol}`,
+            itemsFormat: value => `${Intl.NumberFormat('en').format(value)} ${tokenSymbol}`,
             items: [
               {
                 key: 'seniorTokenPrice',

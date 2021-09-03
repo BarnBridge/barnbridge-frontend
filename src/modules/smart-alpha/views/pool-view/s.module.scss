@@ -78,14 +78,11 @@
 .epochCardHeader {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  // gap: 24px;
   padding-top: 16px;
 }
 
 .epochCardHeaderItem {
-  // border-radius: 4px;
   border-bottom: 1px solid var(--theme-border-color);
-  // background: var(--theme-body-color);
   padding: 24px;
 
   &:nth-of-type(odd) {
@@ -155,7 +152,7 @@
     border-radius: 4px;
     background-color: var(--theme-border-color);
     box-shadow: -8px 0 0 0 var(--theme-border-color), 0 0 0 0 var(--theme-border-color),
-    8px 0 0 0 var(--theme-border-color);
+      8px 0 0 0 var(--theme-border-color);
   }
 
   &::after {
