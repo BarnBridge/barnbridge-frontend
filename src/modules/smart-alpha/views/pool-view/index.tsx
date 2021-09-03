@@ -144,7 +144,7 @@ const PoolView = () => {
           </div>
         </div>
         <div className="flex col-gap-24 ml-auto">
-          <Link to={`${location.pathname}/simulate-epoch`} variation="ghost" aria-disabled={!wallet.account}>
+          <Link to={`${location.pathname}/simulate-epoch`} variation="ghost">
             Simulate
           </Link>
           <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
