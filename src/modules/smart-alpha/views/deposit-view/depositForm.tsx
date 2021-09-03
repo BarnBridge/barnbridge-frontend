@@ -187,7 +187,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         )}
         <Button
           variation="primary"
-          disabled={saving || !isPoolTokenEnabled}
+          disabled={saving || !isPoolTokenEnabled || !tokenState}
           onClick={() => setConfirmModalVisible(true)}>
           {saving && <Spinner className="mr-8" />}
           Deposit

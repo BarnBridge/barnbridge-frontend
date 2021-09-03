@@ -1,5 +1,5 @@
 import React, { Suspense } from 'react';
-import { NavLink, Redirect, Route, Switch } from 'react-router-dom';
+import { NavLink, Redirect, Route, Switch, useLocation } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
 import Icon from 'components/custom/icon';
@@ -9,6 +9,8 @@ import { PortfolioPositions } from './positions';
 import { PortfolioStatistics } from './statistics';
 
 const PortfolioView: React.FC = () => {
+  const location = useLocation();
+
   return (
     <>
       <div className="tab-cards mb-64 sm-mb-32">
@@ -23,7 +25,13 @@ const PortfolioView: React.FC = () => {
             </Text>
           </div>
         </NavLink>
-        <NavLink to="/smart-alpha/portfolio/senior" className="tab-card" activeClassName="active">
+        <NavLink
+          to={{
+            pathname: '/smart-alpha/portfolio/senior',
+            search: location.search,
+          }}
+          className="tab-card"
+          activeClassName="active">
           <Icon name="senior_tranche_simplified" width={53} height={40} className="mr-16" />
           <div>
             <Text type="p1" weight="semibold" color="primary">
@@ -34,7 +42,13 @@ const PortfolioView: React.FC = () => {
             </Text>
           </div>
         </NavLink>
-        <NavLink to="/smart-alpha/portfolio/junior" className="tab-card" activeClassName="active">
+        <NavLink
+          to={{
+            pathname: '/smart-alpha/portfolio/junior',
+            search: location.search,
+          }}
+          className="tab-card"
+          activeClassName="active">
           <Icon name="junior_tranche_simplified" width={53} height={40} className="mr-16" />
           <div>
             <Text type="p1" weight="semibold" color="primary">

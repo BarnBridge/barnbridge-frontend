@@ -49,7 +49,7 @@ const ABI: AbiItem[] = [
   createAbiItem('redeemSeniorUnderlying', [], []),
 ];
 
-const SMART_ALPHA_DECIMALS = 18;
+export const SMART_ALPHA_DECIMALS = 18;
 
 class SmartAlphaContract extends Web3Contract {
   // common
