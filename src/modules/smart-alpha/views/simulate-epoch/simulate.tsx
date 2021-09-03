@@ -323,6 +323,10 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                       <InfoTooltip>
                         How much of every 1% move to the downside in the underlying asset a junior position will have
                         exposure to.
+                        <br />
+                        <br />
+                        The downside leverage is only applicable until senior downside protection is fully covered, and
+                        junior losses are fully realized.
                       </InfoTooltip>
                     </Text>
                   </dt>
