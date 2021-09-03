@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { FC, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, YAxis } from 'recharts';
@@ -12,8 +12,9 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { Input } from 'components/input';
+import { KovanHttpsWeb3Provider } from 'components/providers/web3Provider';
 import { useContractFactory } from 'hooks/useContract';
-import { useFetchPools } from 'modules/smart-alpha/api';
+import { PoolApiType } from 'modules/smart-alpha/api';
 import AccountingModelContract from 'modules/smart-alpha/contracts/accountingModelContract';
 import SeniorRateModelContract from 'modules/smart-alpha/contracts/seniorRateModelContract';
 
@@ -21,42 +22,64 @@ import s from './s.module.scss';
 
 const SCALE_DECIMALS = 18;
 
+type Props = {
+  pool?: PoolApiType;
+};
+
 type FormType = {
   pricePerf: string;
   juniorDominance: string;
 };
 
-export const Simulate = () => {
+const SENIOR_RATE_MODEL_ADDRESS = '0x5e42beeBbD5Be0C5Dc0F5B7d0350Da5053D041b0';
+const ACCOUNTING_MODEL_ADDRESS = '0x978989400fd9ee1f317ca08e764198f63f5acb16';
+
+export const Simulate: FC<Props> = ({ pool }: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [protection, setProtection] = useState<BigNumber | undefined>();
   const [exposure, setExposure] = useState<BigNumber | undefined>();
   const [pricePerfRate, setPricePerfRate] = useState<number | undefined>();
   const [seniorProfitsRate, setSeniorProfitsRate] = useState<number | undefined>();
   const [juniorProfitsRate, setJuniorProfitsRate] = useState<number | undefined>();
-
-  const pools = useFetchPools();
-  const pool = pools.data?.[0];
+  const [upsideLeverage, setUpsideLeverage] = useState<BigNumber | undefined>();
+  const [downsideLeverage, setDownsideLeverage] = useState<BigNumber | undefined>();
 
   const { getOrCreateContract } = useContractFactory();
 
   const seniorRateModelContract = useMemo(() => {
-    if (!pool) {
-      return;
-    }
+    // if (!pool) {
+    //   return;
+    // }
 
-    return getOrCreateContract(pool.seniorRateModelAddress, () => {
-      return new SeniorRateModelContract(pool.seniorRateModelAddress);
-    });
+    return getOrCreateContract(
+      pool?.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS,
+      () => {
+        return new SeniorRateModelContract(pool?.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS);
+      },
+      {
+        afterInit: contract => {
+          contract.setCallProvider(KovanHttpsWeb3Provider); /// TODO: Remove with SA release
+        },
+      },
+    );
   }, [pool]);
 
   const accountingModelContract = useMemo(() => {
-    if (!pool) {
-      return;
-    }
+    // if (!pool) {
+    //   return;
+    // }
 
-    return getOrCreateContract(pool.accountingModelAddress, () => {
-      return new AccountingModelContract(pool.accountingModelAddress);
-    });
+    return getOrCreateContract(
+      pool?.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS,
+      () => {
+        return new AccountingModelContract(pool?.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS);
+      },
+      {
+        afterInit: contract => {
+          contract.setCallProvider(KovanHttpsWeb3Provider); /// TODO: Remove with SA release
+        },
+      },
+    );
   }, [pool]);
 
   const form = useForm<FormType>({
@@ -96,6 +119,8 @@ export const Simulate = () => {
       let pricePerfRate: number | undefined;
       let seniorProfitsRate: number | undefined;
       let juniorProfitsRate: number | undefined;
+      let upsideLeverage: BigNumber | undefined;
+      let downsideLeverage: BigNumber | undefined;
 
       const juniorLiquidity = BigNumber.from(values.juniorDominance)?.div(100).scaleBy(SCALE_DECIMALS);
       const seniorLiquidity = juniorLiquidity?.minus(new BigNumber(1).scaleBy(SCALE_DECIMALS)!).multipliedBy(-1);
@@ -124,17 +149,26 @@ export const Simulate = () => {
                 const seniorValueStart = entryPrice.multipliedBy(seniorLiquidity).unscaleBy(SCALE_DECIMALS)!;
                 const seniorValueEnd = currentPrice.multipliedBy(seniorEnd).unscaleBy(SCALE_DECIMALS)!;
                 seniorProfitsRate = !seniorValueStart.eq(0)
-                  ? seniorValueEnd.minus(seniorValueStart).div(seniorValueStart).div(100).toNumber()
+                  ? seniorValueEnd.minus(seniorValueStart).div(seniorValueStart).toNumber()
                   : 0;
 
                 const juniorEnd = juniorLiquidity.plus(juniorProfits).minus(seniorProfits);
                 const juniorValueStart = entryPrice.multipliedBy(juniorLiquidity).unscaleBy(SCALE_DECIMALS)!;
                 const juniorValueEnd = currentPrice.multipliedBy(juniorEnd).unscaleBy(SCALE_DECIMALS)!;
                 juniorProfitsRate = !juniorValueStart.eq(0)
-                  ? juniorValueEnd.minus(juniorValueStart).div(juniorValueStart).div(100).toNumber()
+                  ? juniorValueEnd.minus(juniorValueStart).div(juniorValueStart).toNumber()
                   : 0;
               }
             } catch {}
+
+            if (!juniorLiquidity.eq(0)) {
+              upsideLeverage = seniorLiquidity
+                .div(juniorLiquidity)
+                .multipliedBy(new BigNumber(1).minus(exposure.unscaleBy(SCALE_DECIMALS)!))
+                .plus(1);
+
+              downsideLeverage = seniorLiquidity.div(juniorLiquidity).plus(1);
+            }
           }
         }
       }
@@ -144,6 +178,8 @@ export const Simulate = () => {
       setPricePerfRate(pricePerfRate);
       setSeniorProfitsRate(seniorProfitsRate);
       setJuniorProfitsRate(juniorProfitsRate);
+      setUpsideLeverage(upsideLeverage);
+      setDownsideLeverage(downsideLeverage);
       setLoading(false);
     },
   });
@@ -276,7 +312,7 @@ export const Simulate = () => {
                   </dt>
                   <dd className="ml-auto">
                     <Text type="p1" weight="semibold" color="primary">
-                      0x
+                      {upsideLeverage ? `${upsideLeverage.toFormat(2)}x` : '-'}
                     </Text>
                   </dd>
                 </div>
@@ -292,7 +328,7 @@ export const Simulate = () => {
                   </dt>
                   <dd className="ml-auto">
                     <Text type="p1" weight="semibold" color="primary">
-                      0x
+                      {downsideLeverage ? `${downsideLeverage.toFormat(2)}x` : '-'}
                     </Text>
                   </dd>
                 </div>

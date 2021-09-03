@@ -9,12 +9,13 @@ import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { KovanConfig } from 'networks/kovan';
 
 import { Simulate } from './simulate';
 
 const SimulateEpoch = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
-  const { data: pool } = useFetchPool(poolAddress);
+  const { data: pool } = useFetchPool(poolAddress, KovanConfig.api.baseUrl);
   const { getToken } = useTokens();
 
   const { getOrCreateContract } = useContractFactory();
@@ -72,7 +73,7 @@ const SimulateEpoch = () => {
           </Text>
         </div>
       </div>
-      <Simulate />
+      <Simulate pool={pool} />
     </div>
   );
 };
