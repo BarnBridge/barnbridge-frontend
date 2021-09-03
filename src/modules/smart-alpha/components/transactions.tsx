@@ -136,12 +136,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
           <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
             <TokenIcon
               name={poolToken?.icon ?? 'unknown'}
-              outline={
-                {
-                  SENIOR_REDEEM_TOKENS: 'purple',
-                  JUNIOR_REDEEM_TOKENS: 'green',
-                }[item.transactionType]
-              }
+              outline={item.tranche === 'SENIOR' ? 'green' : 'purple'}
               bubble1Name={
                 {
                   SENIOR_REDEEM_TOKENS: 'bond',
