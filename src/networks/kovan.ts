@@ -92,6 +92,9 @@ export const KovanConfig: NetworkConfig = {
       ePoolPeriphery: '0x5fa08f7817844e38ee8f54a24b65f6dc1ae23785',
       ePoolHelper: '0xc1442ac5d2631bd9369b42b35bfe12b88ee8daaf',
     },
+    sa: {
+      loupe: '0xA408F3f26ebe1768512c9977108633CEF84c17a7',
+    },
   },
 };
 
