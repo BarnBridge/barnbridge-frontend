@@ -79,7 +79,6 @@ const PoolView = () => {
     }
 
     loupeContract.getEstimateNextEpoch(smartAlphaContract.address).then(result => {
-      console.log('RESULT', result);
       setNextEpochEstimates(result);
     });
   }, [smartAlphaContract, loupeContract]);
