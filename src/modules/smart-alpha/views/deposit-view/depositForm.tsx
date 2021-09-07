@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -12,10 +12,13 @@ import { Spinner } from 'components/custom/spinner';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
+import { useConfig } from 'components/providers/configProvider';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
 import { PoolApiType } from 'modules/smart-alpha/api';
+import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -31,14 +34,14 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
   const params = useParams<{ tranche: 'senior' | 'junior' }>();
   const tranche = params.tranche.toLowerCase();
 
+  const { contracts } = useConfig();
   const wallet = useWallet();
   const { getToken } = useTokens();
   const [reload, version] = useReload();
 
   const [tokenState, setTokenState] = useState('');
-  const [epoch, setEpoch] = useState<number | undefined>();
   const [depositQueueBalance, setDepositQueueBalance] = useState<BigNumber | undefined>();
-  const [historyTokenPrice, setHistoryTokenPrice] = useState<BigNumber | undefined>();
+  const [unclaimedTokens, setUnclaimedTokens] = useState<BigNumber | undefined>();
   const [enabling, setEnabling] = useState(false);
   const [saving, setSaving] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
@@ -49,6 +52,20 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
   const tokenMax = poolTokenContract?.getBalanceOf()?.unscaleBy(pool.poolToken.decimals);
   const isPoolTokenEnabled = poolTokenContract?.isAllowedOf(pool.poolAddress);
 
+  const { getOrCreateContract } = useContractFactory();
+
+  const loupeContract = useMemo<LoupeContract | undefined>(() => {
+    const loupeAddress = contracts.sa?.loupe;
+
+    if (!loupeAddress) {
+      return undefined;
+    }
+
+    return getOrCreateContract(loupeAddress, () => {
+      return new LoupeContract(loupeAddress);
+    });
+  }, [contracts.sa?.loupe]);
+
   useEffect(() => {
     if (!wallet.account) {
       return;
@@ -56,17 +73,17 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
 
     poolTokenContract?.loadBalance();
     poolTokenContract?.loadAllowance(pool.poolAddress);
+
     (isSenior ? smartAlphaContract?.seniorEntryQueue : smartAlphaContract?.juniorEntryQueue)
       ?.call(smartAlphaContract, wallet.account)
       .then(([epoch, amount]) => {
-        setEpoch(epoch);
         setDepositQueueBalance(amount);
+      });
 
-        (isSenior ? smartAlphaContract?.historyEpochSeniorTokenPrice : smartAlphaContract?.historyEpochJuniorTokenPrice)
-          ?.call(smartAlphaContract, epoch)
-          .then(price => {
-            setHistoryTokenPrice(price);
-          });
+    (isSenior ? loupeContract?.getUserRedeemableSeniorTokens : loupeContract?.getUserRedeemableJuniorTokens)
+      ?.call(loupeContract, smartAlphaContract?.address!, wallet.account)
+      .then(amount => {
+        setUnclaimedTokens(amount);
       });
   }, [wallet.account, version]);
 
@@ -114,48 +131,41 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         Choose the amount of tokens you want to deposit in the {tranche} side. Make sure you double check the amounts.
       </Text>
 
-      {depositQueueBalance?.gt(0) && (
-        <div className={classNames(s.depositBalance, 'flex col-gap-32 mb-32')}>
-          <div>
-            <Hint
-              text={`This amount of ${poolToken?.symbol} is already in the deposit queue and will be considered towards your overall position in the next epoch.`}
-              className="mb-4">
-              <Text type="small" weight="semibold" color="secondary">
-                Balance in deposit queue
-              </Text>
-            </Hint>
-            <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-              {(epoch === smartAlphaContract?.currentEpoch &&
-                formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals))) ??
-                '-'}
-              {epoch! < smartAlphaContract?.currentEpoch! && '0'}
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+      <div className={classNames(s.depositBalance, 'flex col-gap-32 mb-32')}>
+        <div>
+          <Hint
+            text={`This amount of ${poolToken?.symbol} is already in the deposit queue and will be considered towards your overall position in the next epoch.`}
+            className="mb-4">
+            <Text type="small" weight="semibold" color="secondary">
+              Balance in deposit queue
             </Text>
-          </div>
-          {epoch! < smartAlphaContract?.currentEpoch! && (
-            <div>
-              <Hint
-                text={`This amount of junior/senior tokens is available to be redeemed from your deposits made in either the ongoing or previous epochs. It will be automatically redeemed if you add more ${poolToken?.symbol} to the deposit queue.`}
-                className="mb-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Unclaimed {tranche} tokens
-                </Text>
-              </Hint>
-              <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                {formatToken(depositQueueBalance.div(historyTokenPrice ?? 0)) ?? '-'}
-                <TokenIcon
-                  name={poolToken?.icon ?? 'unknown'}
-                  outline={isSenior ? 'green' : 'purple'}
-                  bubble1Name="bond"
-                  bubble2Name={oracleToken?.icon ?? 'unknown'}
-                  size={16}
-                  className="ml-8"
-                />
-              </Text>
-            </div>
-          )}
+          </Hint>
+          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+            {formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+          </Text>
         </div>
-      )}
+        <div>
+          <Hint
+            text={`This amount of junior/senior tokens is available to be redeemed from your deposits made in either the ongoing or previous epochs. It will be automatically redeemed if you add more ${poolToken?.symbol} to the deposit queue.`}
+            className="mb-4">
+            <Text type="small" weight="semibold" color="secondary">
+              Unclaimed {tranche} tokens
+            </Text>
+          </Hint>
+          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+            {formatToken(unclaimedTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+            <TokenIcon
+              className="ml-8"
+              name={poolToken?.icon ?? 'unknown'}
+              outline={isSenior ? 'green' : 'purple'}
+              bubble1Name="bond"
+              bubble2Name={oracleToken?.icon ?? 'unknown'}
+              size={16}
+            />
+          </Text>
+        </div>
+      </div>
 
       <Text type="small" weight="semibold" color="secondary" className="mb-8">
         wETH amount
@@ -198,13 +208,41 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         <TxConfirmModal
           title="Initiate deposit"
           header={
-            <Text type="p2" weight="semibold" color="secondary">
-              Your balance of{' '}
-              <Text tag="span" type="p2" weight="bold" color="primary">
-                {formatToken(BigNumber.from(tokenState), { decimals: poolToken?.decimals })} {poolToken?.symbol}
-              </Text>{' '}
-              will be added to the deposit queue for the next epoch.
-            </Text>
+            <div className="flex flow-row row-gap-16">
+              <Text type="p2" weight="semibold" color="secondary">
+                Your balance of{' '}
+                <Text tag="span" type="p2" weight="bold" color="primary">
+                  {formatToken(BigNumber.from(tokenState), { decimals: poolToken?.decimals })} {poolToken?.symbol}
+                </Text>{' '}
+                will be added to the deposit queue for the next epoch.
+              </Text>
+              <div className="container-box flex flow-col col-gap-32">
+                <div className="flex flow-row">
+                  <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                    Deposited amount
+                  </Text>
+                  <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                    {formatToken(BigNumber.from(tokenState)) ?? '-'}
+                    <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+                  </Text>
+                </div>
+                <div className="flex flow-row">
+                  <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                    Redeemable unclaimed tokens
+                  </Text>
+                  <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                    {formatToken(unclaimedTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+                    <TokenIcon
+                      name={poolToken?.icon ?? 'unknown'}
+                      bubble1Name="bond"
+                      bubble2Name={oracleToken?.icon ?? 'unknown'}
+                      outline={isSenior ? 'green' : 'purple'}
+                      className="ml-8"
+                    />
+                  </Text>
+                </div>
+              </div>
+            </div>
           }
           submitText="Confirm your deposit"
           onCancel={() => setConfirmModalVisible(false)}

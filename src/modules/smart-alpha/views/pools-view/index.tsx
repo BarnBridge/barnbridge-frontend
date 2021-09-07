@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -21,6 +21,16 @@ import s from './s.module.scss';
 
 const PoolsView = () => {
   const { data } = useFetchPools();
+  const { getAmountInUSD, version: tokenVersion } = useTokens();
+
+  const totalLockedInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      const totalLiquidity = new BigNumber(item.state.seniorLiquidity).plus(new BigNumber(item.state.juniorLiquidity));
+      const amountInUsd = getAmountInUSD(totalLiquidity, item.poolToken.symbol);
+      return amountInUsd ? sum.plus(amountInUsd) : sum;
+    }, BigNumber.ZERO);
+  }, [data, tokenVersion]);
+
   return (
     <>
       <Text type="p1" weight="semibold" color="secondary" className="mb-4">
@@ -28,7 +38,7 @@ const PoolsView = () => {
       </Text>
       <div className="mb-40 flex align-center">
         <Text type="h2" weight="bold" color="primary" className="mr-8">
-          {formatUSD(123)}
+          {formatUSD(totalLockedInUsd) ?? '-'}
         </Text>
         {/* <Tooltip title={<>TBD</>}>
           <Icon name="insured" color="green" size={32} />

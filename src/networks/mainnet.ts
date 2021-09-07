@@ -94,6 +94,9 @@ export const MainnetConfig: NetworkConfig = {
       ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
       ePoolHelper: '0x8a63822d8c1be5590bbf72fb58e69285a776a5df',
     },
+    sa: {
+      loupe: '',
+    },
   },
 };
 

@@ -140,6 +140,7 @@ export type TokenType = BaseTokenType & {
 };
 
 export type TokensContextType = {
+  version: number;
   getToken(symbol?: string): TokenType | undefined;
   getAmountInUSD(amount: BigNumber | undefined, source: string | undefined): BigNumber | undefined;
 };
@@ -267,7 +268,7 @@ const ALL_TOKENS: BaseTokenType[] = [WBTC, WETH, USDC, USDT, SUSD, GUSD, DAI, RA
 const TokensProvider: FC = props => {
   const { children } = props;
 
-  const [reload] = useReload();
+  const [reload, version] = useReload();
   const tokensRef = useRef<Map<string, TokenType>>(new Map());
 
   useEffect(() => {
@@ -331,6 +332,7 @@ const TokensProvider: FC = props => {
   );
 
   const value: TokensContextType = {
+    version,
     getToken,
     getAmountInUSD,
   };
