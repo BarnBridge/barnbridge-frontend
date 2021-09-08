@@ -68,8 +68,10 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
   const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
   const exposure = new BigNumber(item.state.upsideExposureRate);
-  const upsideLeverage = seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1);
-  const downsideLeverage = seniorLiquidity.div(juniorLiquidity).plus(1);
+  const upsideLeverage = juniorLiquidity.gt(0)
+    ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
+    : BigNumber.ZERO;
+  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : BigNumber.ZERO;
 
   return (
     <section

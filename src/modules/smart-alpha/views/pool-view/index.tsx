@@ -106,6 +106,10 @@ const PoolView = () => {
       return undefined;
     }
 
+    if (nextEpochEstimates[0].eq(0)) {
+      return BigNumber.ZERO;
+    }
+
     return nextEpochEstimates[1]
       .div(nextEpochEstimates[0])
       .multipliedBy(new BigNumber(1).minus(nextEpochEstimates[2].unscaleBy(SMART_ALPHA_DECIMALS)!))
@@ -115,6 +119,10 @@ const PoolView = () => {
   const nextEpochDownsideLeverage = useMemo(() => {
     if (!nextEpochEstimates[0] || !nextEpochEstimates[1]) {
       return undefined;
+    }
+
+    if (nextEpochEstimates[0].eq(0)) {
+      return BigNumber.ZERO;
     }
 
     return nextEpochEstimates[1].div(nextEpochEstimates[0]).plus(1);
