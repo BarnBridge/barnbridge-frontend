@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Route, Switch } from 'react-router-dom';
 import cn from 'classnames';
@@ -71,6 +72,7 @@ export default LayoutHeader;
 const PositionsAction: React.FC = () => {
   const { data } = useFetchQueuePositions();
   const { getToken } = useTokens();
+  const [visible, setVisible] = useState(false);
 
   if (!Array.isArray(data) || !data.length) {
     return null;
@@ -81,6 +83,8 @@ const PositionsAction: React.FC = () => {
       placement="bottomRight"
       trigger="click"
       noPadding
+      visible={visible}
+      onVisibleChange={setVisible}
       content={
         <div className={cn('card', s.notifications)}>
           <div className="card-header flex">
@@ -113,7 +117,8 @@ const PositionsAction: React.FC = () => {
                     variation="text"
                     to={`/smart-alpha/portfolio/${item.tranche === 'SENIOR' ? 'senior' : 'junior'}?poolAddress=${
                       item.poolAddress
-                    }`}>
+                    }`}
+                    onClick={() => setVisible(false)}>
                     View position
                   </Link>
                 </li>

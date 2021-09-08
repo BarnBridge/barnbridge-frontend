@@ -25,13 +25,13 @@ export const SelectTranche = ({ pool }: { pool: PoolApiType }) => {
         <RadioCard selected={tranche === 'senior'} onClick={() => setTranche('senior')}>
           <Icon name="senior_tranche" width={64} height={64} className="mb-24" />
           <Text type="p1" weight="semibold" color="primary" className="mb-8">
-            Fixed APY
+            Senior side
           </Text>
         </RadioCard>
         <RadioCard selected={tranche === 'junior'} onClick={() => setTranche('junior')}>
           <Icon name="junior_tranche" width={64} height={64} className="mb-24" />
           <Text type="p1" weight="semibold" color="primary" className="mb-8">
-            Variable APY
+            Junior side
           </Text>
         </RadioCard>
       </RadioCards>

@@ -25,6 +25,14 @@ $margins: 4, 8, 12, 16, 24, 32, 40, 48, 64;
   .mb-#{$margin}.mb-#{$margin} {
     margin-bottom: #{$margin}px;
   }
+  .mv-#{$margin}.mv-#{$margin} {
+    margin-top: #{$margin}px;
+    margin-bottom: #{$margin}px;
+  }
+  .mh-#{$margin}.mh-#{$margin} {
+    margin-left: #{$margin}px;
+    margin-right: #{$margin}px;
+  }
 }
 
 @media (max-width: 768px) {
