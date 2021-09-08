@@ -595,7 +595,10 @@ const PoolView = () => {
       <div className={classNames(s.epochProgress, 'mb-4')}>
         <div className={s.epochProgressLineBefore} />
         <div className="flex align-center">
-          <span className={s.epochProgressCurrent}>{smartAlphaContract?.epoch ?? '-'}</span>
+          <span className={classNames(s.epochProgressCurrent, 'flex align-center')}>
+            {smartAlphaContract?.epoch ?? '-'}
+            <div className={classNames(s.epochSpinner, 'ml-4')} />
+          </span>
           <div className={s.epochProgressLineMiddle} style={{ '--epoch-progress': 70 } as React.CSSProperties} />
           <span className={s.epochProgressNext}>
             {smartAlphaContract?.currentEpoch ? smartAlphaContract?.currentEpoch + 1 : '-'}
