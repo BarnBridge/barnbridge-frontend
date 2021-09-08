@@ -69,8 +69,6 @@ export function useFetch<T extends any = any>(query: string | URL, options?: Use
 
       setLoaded(true);
       setData((optionsRef.current?.transform ?? (v => v))(data));
-
-      return (optionsRef.current?.transform ?? (v => v))(data);
     } catch (e) {
       setError(e as Error);
       setData(undefined);

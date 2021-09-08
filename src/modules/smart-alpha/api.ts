@@ -343,15 +343,7 @@ export function useFetchPreviousEpochs({
       const fetchedData = await executeFetch(String(url));
 
       setLoaded(true);
-      // if (direction) {
-      //   setData(prevData => [
-      //     ...(direction === 'up' ? fetchedData.data : []),
-      //     ...(prevData ?? []),
-      //     ...(direction === 'down' ? fetchedData.data : []),
-      //   ]);
-      // } else {
       setData(fetchedData.data);
-      // }
       setHasNewer(fetchedData.meta.hasNewer);
       setHasOlder(fetchedData.meta.hasOlder);
     } catch (e) {
