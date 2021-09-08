@@ -201,7 +201,7 @@
 .epochProgressCurrent {
   color: var(--theme-white-color);
   background-color: var(--theme-red-color);
-  padding: 4px 12px;
+  padding: 4px 4px 4px 12px;
   border-radius: 12px;
   font: var(--font-sm-bold);
   position: relative;
@@ -238,5 +238,36 @@
     height: 8px;
     border-radius: 8px;
     background-color: var(--theme-border-color);
+  }
+}
+
+.epochSpinner {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+
+  background: conic-gradient(from 180deg at 50% 50%, rgba(255, 255, 255, 0) 0deg, #fff 360deg);
+  animation: rotating 2s linear infinite;
+
+  &::after {
+    content: '';
+    border-radius: 50%;
+    width: 12px;
+    height: 12px;
+    background: var(--theme-red-color);
+  }
+}
+
+@keyframes rotating {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
   }
 }

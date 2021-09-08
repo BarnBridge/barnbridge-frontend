@@ -3,6 +3,7 @@
   border-radius: 4px;
   display: flex;
   background-color: var(--theme-card-color);
+  position: relative;
 }
 
 .input {
@@ -15,6 +16,14 @@
 
   &.large {
     padding: 19px 20px;
+  }
+
+  &.inputSearch {
+    padding-left: 44px;
+  }
+
+  &::placeholder {
+    color: var(--theme-icon-color);
   }
 }
 
@@ -33,4 +42,11 @@
     padding-left: 19px;
     padding-right: 19px;
   }
+}
+
+.searchIcon {
+  position: absolute;
+  top: 50%;
+  left: 16px;
+  transform: translateY(-50%);
 }

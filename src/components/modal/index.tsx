@@ -16,13 +16,13 @@ type Props = {
 };
 
 export const Modal: React.FC<Props> = ({ children, heading, closeHandler, fullscreen = false }) => {
-  const keyboardHandler = (event: KeyboardEvent) => {
-    if (closeHandler && event.key === 'Escape') {
-      closeHandler();
-    }
-  };
-
   useEffect(() => {
+    const keyboardHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeHandler?.();
+      }
+    };
+
     document.addEventListener('keydown', keyboardHandler, false);
 
     if (rootNode) {

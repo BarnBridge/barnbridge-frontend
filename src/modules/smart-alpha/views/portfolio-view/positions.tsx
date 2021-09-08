@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -15,9 +15,10 @@ import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useReload } from 'hooks/useReload';
 import { useFetchPools } from 'modules/smart-alpha/api';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
-import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
 
 import { getFormattedDuration } from 'utils';
@@ -142,10 +143,11 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
   }, [pool, isSenior]);
 
   const tokenAmountInQuoteAsset = useMemo(() => {
+    const entryPriceDecimals = smartAlphaContract?.getEntryPriceDecimals(pool.oracleAssetSymbol);
     const price = (
       isSenior ? smartAlphaContract.epochSeniorTokenPrice : smartAlphaContract.epochJuniorTokenPrice
-    )?.unscaleBy(poolToken?.decimals);
-    const entryPrice = smartAlphaContract.epochEntryPrice?.unscaleBy(oracleToken?.decimals);
+    )?.unscaleBy(SMART_ALPHA_DECIMALS);
+    const entryPrice = smartAlphaContract.epochEntryPrice?.unscaleBy(entryPriceDecimals);
     return tokenContract.balance?.unscaleBy(poolToken?.decimals)?.multipliedBy(price).multipliedBy(entryPrice);
   }, [
     smartAlphaContract.epochSeniorTokenPrice,
@@ -193,11 +195,12 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
 };
 
 const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
-  const wallet = useWallet();
-  const { getToken } = useTokens();
   const history = useHistory();
   const config = useConfig();
+  const wallet = useWallet();
+  const { getToken } = useTokens();
   const { getOrCreateContract } = useContractFactory();
+  const [reload, version] = useReload();
 
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
@@ -207,7 +210,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   const [underlyingInQueue, setUnderlyingInQueue] = useState<BigNumber | undefined>();
   const [redeemableTokens, setRedeemableTokens] = useState<BigNumber | undefined>();
   const [saving, setSaving] = useState(false);
-  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [confirmRedeemTokensModal, setConfirmRedeemTokensModal] = useState(false);
 
   const loupeContract = useMemo<LoupeContract | undefined>(() => {
     const loupeAddress = config.contracts.sa?.loupe;
@@ -244,22 +247,22 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
           setRedeemableTokens(amount);
         });
     }
-  }, [isSenior, wallet.account, smartAlphaContract, loupeContract]);
+  }, [isSenior, wallet.account, smartAlphaContract, loupeContract, version]);
 
-  async function handleEnterQueue(gasPrice: number) {
-    setConfirmModalVisible(false);
+  async function handleRedeemTokens(gasPrice: number) {
+    setConfirmRedeemTokensModal(false);
     setSaving(true);
 
     try {
       await (isSenior ? smartAlphaContract?.redeemSeniorTokens : smartAlphaContract?.redeemJuniorTokens)?.call(
         smartAlphaContract,
-        BigNumber.ZERO,
         gasPrice,
       );
     } catch (e) {
       console.error(e);
     }
 
+    reload();
     setSaving(false);
   }
 
@@ -279,6 +282,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
           display: 'grid',
           justifyItems: 'center',
           alignContent: 'center',
+          textAlign: 'center',
         }}>
         <Text type="p1" weight="semibold" color="primary" className="mb-8">
           Empty entry queue
@@ -397,15 +401,16 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
               if (!redeemableTokens?.gt(0)) {
                 history.push(`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`);
               } else {
-                setConfirmModalVisible(true);
+                setConfirmRedeemTokensModal(true);
               }
-            }}>
-            {saving && <Spinner className="mr-8" />}
+            }}
+            loading={saving}
+            iconPosition="left">
             {redeemableTokens?.gt(0) ? 'Redeem tokens' : 'Add to entry queue'}
           </Button>
         </footer>
       </div>
-      {confirmModalVisible && (
+      {confirmRedeemTokensModal && (
         <TxConfirmModal
           title="Redeem tokens"
           header={
@@ -426,8 +431,8 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
             </div>
           }
           submitText="Confirm redeem your tokens"
-          onCancel={() => setConfirmModalVisible(false)}
-          onConfirm={({ gasPrice }) => handleEnterQueue(gasPrice)}
+          onCancel={() => setConfirmRedeemTokensModal(false)}
+          onConfirm={({ gasPrice }) => handleRedeemTokens(gasPrice)}
         />
       )}
     </section>
@@ -435,11 +440,12 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
 };
 
 const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
-  const wallet = useWallet();
-  const { getToken } = useTokens();
   const history = useHistory();
   const config = useConfig();
+  const wallet = useWallet();
+  const { getToken } = useTokens();
   const { getOrCreateContract } = useContractFactory();
+  const [reload, version] = useReload();
 
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
@@ -449,7 +455,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   const [tokensInQueue, setTokensInQueue] = useState<BigNumber | undefined>();
   const [redeemableUnderlying, setRedeemableUnderlying] = useState<BigNumber | undefined>();
   const [saving, setSaving] = useState(false);
-  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [confirmRedeemUnderlyingModal, setConfirmRedeemUnderlyingModal] = useState(false);
 
   const loupeContract = useMemo<LoupeContract | undefined>(() => {
     const loupeAddress = config.contracts.sa?.loupe;
@@ -486,22 +492,22 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
           setRedeemableUnderlying(amount);
         });
     }
-  }, [isSenior, wallet.account, smartAlphaContract, loupeContract]);
+  }, [isSenior, wallet.account, smartAlphaContract, loupeContract, version]);
 
-  async function handleExitQueue(gasPrice: number) {
-    setConfirmModalVisible(false);
+  async function handleRedeemUnderlying(gasPrice: number) {
+    setConfirmRedeemUnderlyingModal(false);
     setSaving(true);
 
     try {
       await (isSenior ? smartAlphaContract?.redeemSeniorUnderlying : smartAlphaContract?.redeemJuniorUnderlying)?.call(
         smartAlphaContract,
-        BigNumber.ZERO,
         gasPrice,
       );
     } catch (e) {
       console.error(e);
     }
 
+    reload();
     setSaving(false);
   }
 
@@ -521,6 +527,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
           display: 'grid',
           justifyItems: 'center',
           alignContent: 'center',
+          textAlign: 'center',
         }}>
         <Text type="p1" weight="semibold" color="primary" className="mb-8">
           Empty exit queue
@@ -632,15 +639,16 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
               if (!redeemableUnderlying?.gt(0)) {
                 history.push(`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`);
               } else {
-                setConfirmModalVisible(true);
+                setConfirmRedeemUnderlyingModal(true);
               }
-            }}>
-            {saving && <Spinner className="mr-8" />}
+            }}
+            loading={saving}
+            iconPosition="left">
             {redeemableUnderlying?.gt(0) ? 'Redeem underlying' : 'Add to exit queue'}
           </Button>
         </footer>
       </div>
-      {confirmModalVisible && (
+      {confirmRedeemUnderlyingModal && (
         <TxConfirmModal
           title="Redeem underlying"
           header={
@@ -655,8 +663,8 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
             </div>
           }
           submitText="Confirm redeem your underlying"
-          onCancel={() => setConfirmModalVisible(false)}
-          onConfirm={({ gasPrice }) => handleExitQueue(gasPrice)}
+          onCancel={() => setConfirmRedeemUnderlyingModal(false)}
+          onConfirm={({ gasPrice }) => handleRedeemUnderlying(gasPrice)}
         />
       )}
     </section>
