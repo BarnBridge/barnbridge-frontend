@@ -110,6 +110,10 @@ class SmartAlphaContract extends Web3Contract {
       return undefined;
     }
 
+    if (this.epochJuniorLiquidity.eq(0)) {
+      return BigNumber.ZERO;
+    }
+
     return this.epochSeniorLiquidity
       .div(this.epochJuniorLiquidity)
       .multipliedBy(new BigNumber(1).minus(this.epochUpsideExposureRate.unscaleBy(SMART_ALPHA_DECIMALS)!))
@@ -120,6 +124,10 @@ class SmartAlphaContract extends Web3Contract {
   get epochDownsideLeverage(): BigNumber | undefined {
     if (!this.epochSeniorLiquidity || !this.epochJuniorLiquidity) {
       return undefined;
+    }
+
+    if (this.epochJuniorLiquidity.eq(0)) {
+      return BigNumber.ZERO;
     }
 
     return this.epochSeniorLiquidity.div(this.epochJuniorLiquidity).plus(1).scaleBy(SMART_ALPHA_DECIMALS);
