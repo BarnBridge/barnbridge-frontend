@@ -34,7 +34,7 @@ export const MainnetConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha.api.barnbridge.com' : 'https://api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-v2.api.barnbridge.com' : 'https://api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,
