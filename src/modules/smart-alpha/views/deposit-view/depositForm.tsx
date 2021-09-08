@@ -147,7 +147,11 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         </div>
         <div>
           <Hint
-            text={`This amount of junior/senior tokens is available to be redeemed from your deposits made in either the ongoing or previous epochs. It will be automatically redeemed if you add more ${poolToken?.symbol} to the deposit queue.`}
+            text={`This amount of ${
+              isSenior ? 'senior' : 'junior'
+            } tokens is available to be redeemed from your deposits made in either the ongoing or previous epochs. It will be automatically redeemed if you add more ${
+              poolToken?.symbol
+            } to the deposit queue.`}
             className="mb-4">
             <Text type="small" weight="semibold" color="secondary">
               Unclaimed {tranche} tokens
