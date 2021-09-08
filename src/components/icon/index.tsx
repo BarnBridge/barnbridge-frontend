@@ -77,7 +77,8 @@ export type IconNames =
   | 'delegated'
   | 'percentage'
   | 'external'
-  | 'burger';
+  | 'burger'
+  | 'search';
 
 export type IconProps = {
   name: IconNames;

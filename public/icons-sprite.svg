@@ -316,4 +316,8 @@
 	<symbol id="icon__burger" fill="none" viewBox="0 0 24 25">
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.2 6.012h17.6M3.2 12.015h17.6M3.2 18.418h17.6" />
 	</symbol>
+	<symbol id="icon__search" fill="none" viewBox="0 0 16 16">
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M7.466 13.867a6.4 6.4 0 100-12.8 6.4 6.4 0 000 12.8z" clip-rule="evenodd" />
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M14.4 14.4L12 12" />
+	</symbol>
 </svg>

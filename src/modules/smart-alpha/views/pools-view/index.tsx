@@ -221,15 +221,3 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
     </section>
   );
 };
-
-// function calcJuniorLeverage(item) {
-//   if (!Number(item.state.seniorLiquidity) || !Number(item.state.juniorLiquidity)) {
-//     return null;
-//   }
-
-//   return (
-//     1 +
-//     (1 - Number(item.state.upsideExposureRate)) *
-//       (Number(item.state.seniorLiquidity) / Number(item.state.juniorLiquidity))
-//   );
-// }

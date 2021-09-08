@@ -622,7 +622,7 @@ const PoolView = () => {
           }
           closeHandler={() => setPreviousEpochVisible(false)}
           fullscreen>
-          <PreviousEpochs />
+          <PreviousEpochs poolTokenSymbol={pool.poolToken.symbol} />
         </Modal>
       )}
     </div>

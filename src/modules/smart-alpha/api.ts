@@ -1,11 +1,11 @@
-import { useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { PeriodTabsKey, PortfolioPeriodTabsKey } from 'components/custom/tabs';
 import { useConfig } from 'components/providers/configProvider';
 import { Tokens } from 'components/providers/tokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
-import { UseFetchReturn, useFetch } from 'utils/fetch';
+import { UseFetchReturn, executeFetch, useFetch } from 'utils/fetch';
 
 export type PoolApiType = {
   epoch1Start: number;
@@ -276,42 +276,115 @@ export type EpochApiType = {
   seniorTokenPriceStart: string;
 };
 
-export type PreviousEpochsApiType = {
-  poolAddress: string;
-  poolName: string;
-  poolToken: {
-    address: string;
-    symbol: Tokens;
-    decimals: 18;
-  };
-  oracleAssetSymbol: Tokens;
-  epochs: EpochApiType[];
-};
+// export type PreviousEpochsApiType = {
+//   poolAddress: string;
+//   poolName: string;
+//   poolToken: {
+//     address: string;
+//     symbol: Tokens;
+//     decimals: 18;
+//   };
+//   oracleAssetSymbol: Tokens;
+//   epochs: EpochApiType[];
+// };
 
 export function useFetchPreviousEpochs({
-  page,
+  // page,
   limit,
   poolAddress,
 }: {
-  page: number;
+  // page: number;
   limit: number;
   poolAddress?: string;
-}): UseFetchReturn<{ data: PreviousEpochsApiType; meta: { count: number } }> {
+}): {
+  data: EpochApiType[] | undefined;
+  loading: boolean;
+  loaded: boolean;
+  error: Error | undefined;
+  load: (cursor: string) => void;
+  loadNewer: Function;
+  loadOlder: Function;
+  hasNewer: boolean;
+  hasOlder: boolean;
+} {
+  // : UseFetchReturn<{ data: PreviousEpochsApiType; meta: { count: number } }>
+
   const config = useConfig();
+  // const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const [data, setData] = useState<EpochApiType[] | undefined>();
+  const [hasNewer, setHasNewer] = useState<boolean>(false);
+  const [hasOlder, setHasOlder] = useState<boolean>(false);
+  const [error, setError] = useState<Error | undefined>();
 
-  const url = new URL(`/api/smartalpha/pools/${poolAddress}/previous-epochs`, config.api.baseUrl);
+  const fetchData = async ({ direction, cursor }: { direction?: 'up' | 'down'; cursor: string | undefined }) => {
+    setLoading(true);
 
-  if (poolAddress) {
-    url.searchParams.set('poolAddress', poolAddress);
-  }
+    const url = new URL(`/api/smartalpha/pools/${poolAddress}/previous-epochs`, config.api.baseUrl);
 
-  if (page) {
-    url.searchParams.set('page', String(page));
-  }
+    if (poolAddress) {
+      url.searchParams.set('poolAddress', poolAddress);
+    }
 
-  if (limit) {
-    url.searchParams.set('limit', String(limit));
-  }
+    if (direction) {
+      url.searchParams.set('direction', direction);
+    }
 
-  return useFetch(url);
+    if (cursor) {
+      url.searchParams.set('cursor', cursor);
+    }
+
+    if (limit) {
+      url.searchParams.set('limit', String(limit));
+    }
+
+    try {
+      const fetchedData = await executeFetch(String(url));
+
+      setLoaded(true);
+      // if (direction) {
+      //   setData(prevData => [
+      //     ...(direction === 'up' ? fetchedData.data : []),
+      //     ...(prevData ?? []),
+      //     ...(direction === 'down' ? fetchedData.data : []),
+      //   ]);
+      // } else {
+      setData(fetchedData.data);
+      // }
+      setHasNewer(fetchedData.meta.hasNewer);
+      setHasOlder(fetchedData.meta.hasOlder);
+    } catch (e) {
+      setError(e as Error);
+      setData(undefined);
+    }
+
+    setLoading(false);
+  };
+
+  const loadNewer = () => {
+    const cursor = data?.[0]?.id;
+    fetchData({ direction: 'up', cursor: typeof cursor === 'number' ? String(cursor + 1) : cursor });
+  };
+
+  const loadOlder = () => {
+    const cursor = data?.[data?.length - 1]?.id;
+    fetchData({ direction: 'down', cursor: typeof cursor === 'number' ? String(cursor - 1) : cursor });
+  };
+
+  const load = (cursor: string) => {
+    fetchData({ cursor });
+  };
+
+  return {
+    data,
+    hasNewer,
+    hasOlder,
+    loaded,
+    loading,
+    error,
+    load,
+    loadNewer,
+    loadOlder,
+  };
 }
