@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { addSeconds, getUnixTime } from 'date-fns';
-import { formatPercent, formatToken, formatUSD } from 'web3/utils';
+import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
 import { InfoTooltip } from 'components/custom/tooltip';
@@ -65,7 +65,11 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
   const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
 
-  // const juniorLeverage = calcJuniorLeverage(item);
+  const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
+  const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
+  const exposure = new BigNumber(item.state.upsideExposureRate);
+  const upsideLeverage = seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1);
+  const downsideLeverage = seniorLiquidity.div(juniorLiquidity).plus(1);
 
   return (
     <section
@@ -189,8 +193,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {/* {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`} */}
-              TBD
+              {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
             </Text>
           </dd>
         </div>
@@ -207,8 +210,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {/* {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`} */}
-              TBD
+              {downsideLeverage ? `${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
           </dd>
         </div>

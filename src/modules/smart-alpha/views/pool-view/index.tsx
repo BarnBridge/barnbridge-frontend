@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { formatPercent, formatToken, formatUSD } from 'web3/utils';
+import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
@@ -11,7 +11,7 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
-import { getAsset, isEthAsset, isUsdAsset, useTokens } from 'components/providers/tokensProvider';
+import { getAsset, isUsdAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -36,6 +36,7 @@ const PoolView = () => {
   const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
+  const [queueStateVisible, setQueueStateVisible] = useState<boolean>(false);
   const [previousEpochVisible, setPreviousEpochVisible] = useState<boolean>(false);
 
   const { getOrCreateContract } = useContractFactory();
@@ -53,7 +54,6 @@ const PoolView = () => {
       {
         afterInit: async contract => {
           await contract.loadCommon();
-          console.log('SA', contract, pool);
         },
       },
     );
@@ -101,6 +101,25 @@ const PoolView = () => {
     return nextEpochEstimates[0]?.div(totalLiquidity).toNumber();
   }, [nextEpochEstimates]);
 
+  const nextEpochUpsideLeverage = useMemo(() => {
+    if (!nextEpochEstimates[0] || !nextEpochEstimates[1] || !nextEpochEstimates[2]) {
+      return undefined;
+    }
+
+    return nextEpochEstimates[1]
+      .div(nextEpochEstimates[0])
+      .multipliedBy(new BigNumber(1).minus(nextEpochEstimates[2].unscaleBy(SMART_ALPHA_DECIMALS)!))
+      .plus(1);
+  }, [nextEpochEstimates]);
+
+  const nextEpochDownsideLeverage = useMemo(() => {
+    if (!nextEpochEstimates[0] || !nextEpochEstimates[1]) {
+      return undefined;
+    }
+
+    return nextEpochEstimates[1].div(nextEpochEstimates[0]).plus(1);
+  }, [nextEpochEstimates]);
+
   if (!pool) {
     return <Spinner style={{ margin: 'auto' }} />;
   }
@@ -108,7 +127,9 @@ const PoolView = () => {
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
 
-  const priceScaleDecimals = isEthAsset(pool.oracleAssetSymbol) ? 18 : 8; // TODO: review
+  const entryPriceDecimals = smartAlphaContract?.getEntryPriceDecimals(pool.oracleAssetSymbol);
+  const upsideLeverage = smartAlphaContract?.epochUpsideLeverage?.unscaleBy(SMART_ALPHA_DECIMALS);
+  const downsideLeverage = smartAlphaContract?.epochDownsideLeverage?.unscaleBy(SMART_ALPHA_DECIMALS);
 
   return (
     <div className="container-limit">
@@ -154,7 +175,7 @@ const PoolView = () => {
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
                 <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  TBD
+                  {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
                   Junior
@@ -168,7 +189,7 @@ const PoolView = () => {
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
                 <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  TBD
+                  {downsideLeverage ? `${formatNumber(downsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
                   Junior
@@ -234,13 +255,13 @@ const PoolView = () => {
                     type="p1"
                     weight="semibold"
                     color="primary"
-                    tooltip={formatToken(smartAlphaContract?.epochEntryPrice?.unscaleBy(priceScaleDecimals), {
+                    tooltip={formatToken(smartAlphaContract?.epochEntryPrice?.unscaleBy(entryPriceDecimals), {
                       tokenName: pool.oracleAssetSymbol,
-                      decimals: priceScaleDecimals,
+                      decimals: entryPriceDecimals,
                     })}>
                     {(isUsdAsset(pool.oracleAssetSymbol)
-                      ? formatUSD(smartAlphaContract?.epochEntryPrice?.unscaleBy(priceScaleDecimals))
-                      : formatToken(smartAlphaContract?.epochEntryPrice?.unscaleBy(priceScaleDecimals))) ?? '-'}
+                      ? formatUSD(smartAlphaContract?.epochEntryPrice?.unscaleBy(entryPriceDecimals))
+                      : formatToken(smartAlphaContract?.epochEntryPrice?.unscaleBy(entryPriceDecimals))) ?? '-'}
                   </Text>
                   {!isUsdAsset(pool.oracleAssetSymbol) && (
                     <TokenIcon name={oracleToken?.icon ?? 'unknown'} size={16} className="ml-8" />
@@ -361,7 +382,7 @@ const PoolView = () => {
               </Text>
             </div>
             <div className="flex justify-center mt-8">
-              <Button variation="text" color="red">
+              <Button variation="text" color="red" onClick={() => setQueueStateVisible(true)}>
                 View queue state
               </Button>
             </div>
@@ -377,7 +398,7 @@ const PoolView = () => {
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
                 <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  TBD
+                  {nextEpochUpsideLeverage ? `${formatNumber(nextEpochUpsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
                   Junior
@@ -391,7 +412,7 @@ const PoolView = () => {
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
                 <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  TBD
+                  {nextEpochDownsideLeverage ? `${formatNumber(nextEpochDownsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
                   Junior
@@ -456,13 +477,13 @@ const PoolView = () => {
                     type="p1"
                     weight="semibold"
                     color="primary"
-                    tooltip={formatToken(nextEpochEstimates[4]?.unscaleBy(priceScaleDecimals), {
+                    tooltip={formatToken(nextEpochEstimates[4]?.unscaleBy(entryPriceDecimals), {
                       tokenName: pool.oracleAssetSymbol,
-                      decimals: priceScaleDecimals,
+                      decimals: entryPriceDecimals,
                     })}>
                     {(isUsdAsset(pool.oracleAssetSymbol)
-                      ? formatUSD(nextEpochEstimates[4]?.unscaleBy(priceScaleDecimals))
-                      : formatToken(nextEpochEstimates[4]?.unscaleBy(priceScaleDecimals))) ?? '-'}
+                      ? formatUSD(nextEpochEstimates[4]?.unscaleBy(entryPriceDecimals))
+                      : formatToken(nextEpochEstimates[4]?.unscaleBy(entryPriceDecimals))) ?? '-'}
                   </Text>
                   {!isUsdAsset(pool.oracleAssetSymbol) && (
                     <TokenIcon name={oracleToken?.icon ?? 'unknown'} size={16} className="ml-8" />
@@ -586,7 +607,7 @@ const PoolView = () => {
         <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>
-        <UseLeftTime delay={1_000}>
+        <UseLeftTime delay={1_000} onEnd={() => window.location.reload()}>
           {() => (
             <Text type="p2" weight="bold" color="primary" className="ml-auto">
               {getFormattedDuration(smartAlphaContract?.tillNextEpoch)}
@@ -600,6 +621,103 @@ const PoolView = () => {
       <TokensPrice poolAddress={poolAddress} tokenSymbol={pool.poolToken.symbol} className="mb-32" />
       <PoolPerformance poolAddress={poolAddress} className="mb-32" />
       <TransactionsTable poolAddress={poolAddress} />
+      {queueStateVisible && (
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Queue state
+            </Text>
+          }
+          closeHandler={() => setQueueStateVisible(false)}>
+          <dl
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'auto min-content',
+              rowGap: 32,
+            }}>
+            <dt>
+              <Text type="p2" weight="semibold" color="secondary">
+                Juniors underlying in
+              </Text>
+            </dt>
+            <dd className="flex justify-end align-center">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </dd>
+            <dt>
+              <Text type="p2" weight="semibold" color="secondary">
+                Juniors underlying out
+              </Text>
+            </dt>
+            <dd className="flex justify-end align-center">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </dd>
+            <dt>
+              <Text type="p2" weight="semibold" color="secondary">
+                Junior tokens burn
+              </Text>
+            </dt>
+            <dd className="flex justify-end align-center">
+              <TokenIcon
+                name={poolToken?.icon ?? 'unknown'}
+                bubble1Name="bond"
+                bubble2Name={oracleToken?.icon}
+                outline="purple"
+                size={16}
+                className="mr-8"
+              />
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(smartAlphaContract?.queuedJuniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </dd>
+            <dt>
+              <Text type="p2" weight="semibold" color="secondary">
+                Seniors underlying in
+              </Text>
+            </dt>
+            <dd className="flex justify-end align-center">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </dd>
+            <dt>
+              <Text type="p2" weight="semibold" color="secondary">
+                Seniors underlying out
+              </Text>
+            </dt>
+            <dd className="flex justify-end align-center">
+              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </dd>
+            <dt>
+              <Text type="p2" weight="semibold" color="secondary">
+                Senior tokens burn
+              </Text>
+            </dt>
+            <dd className="flex justify-end align-center">
+              <TokenIcon
+                name={poolToken?.icon ?? 'unknown'}
+                bubble1Name="bond"
+                bubble2Name={oracleToken?.icon}
+                outline="green"
+                size={16}
+                className="mr-8"
+              />
+              <Text type="p1" weight="semibold" color="primary">
+                {formatToken(smartAlphaContract?.queuedSeniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </dd>
+          </dl>
+        </Modal>
+      )}
       {previousEpochVisible && (
         <Modal
           heading={
