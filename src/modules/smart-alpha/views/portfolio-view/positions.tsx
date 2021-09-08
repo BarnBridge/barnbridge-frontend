@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -399,8 +399,9 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
               } else {
                 setConfirmModalVisible(true);
               }
-            }}>
-            {saving && <Spinner className="mr-8" />}
+            }}
+            loading={saving}
+            iconPosition="left">
             {redeemableTokens?.gt(0) ? 'Redeem tokens' : 'Add to entry queue'}
           </Button>
         </footer>
@@ -634,8 +635,9 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
               } else {
                 setConfirmModalVisible(true);
               }
-            }}>
-            {saving && <Spinner className="mr-8" />}
+            }}
+            loading={saving}
+            iconPosition="left">
             {redeemableUnderlying?.gt(0) ? 'Redeem underlying' : 'Add to exit queue'}
           </Button>
         </footer>
