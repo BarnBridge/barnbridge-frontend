@@ -630,7 +630,7 @@ const PoolView = () => {
         </Text>
       </div>
       <TokensPrice poolAddress={poolAddress} tokenSymbol={pool.poolToken.symbol} className="mb-32" />
-      <PoolPerformance poolAddress={poolAddress} className="mb-32" />
+      <PoolPerformance poolAddress={poolAddress} oracleAssetSymbol={pool.oracleAssetSymbol} className="mb-32" />
       <TransactionsTable poolAddress={poolAddress} />
       {queueStateVisible && (
         <Modal

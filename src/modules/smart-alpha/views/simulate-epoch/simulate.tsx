@@ -22,7 +22,7 @@ import { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaCo
 import s from './s.module.scss';
 
 type Props = {
-  pool?: PoolApiType;
+  pool: PoolApiType;
 };
 
 type FormType = {
@@ -46,39 +46,15 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
   const { getOrCreateContract } = useContractFactory();
 
   const seniorRateModelContract = useMemo(() => {
-    // if (!pool) {
-    //   return;
-    // }
-
-    return getOrCreateContract(
-      pool?.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS,
-      () => {
-        return new SeniorRateModelContract(pool?.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS);
-      },
-      {
-        afterInit: contract => {
-          contract.setCallProvider(KovanHttpsWeb3Provider); /// TODO: Remove with SA release
-        },
-      },
-    );
+    return getOrCreateContract(pool.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS, () => {
+      return new SeniorRateModelContract(pool.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS);
+    });
   }, [pool]);
 
   const accountingModelContract = useMemo(() => {
-    // if (!pool) {
-    //   return;
-    // }
-
-    return getOrCreateContract(
-      pool?.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS,
-      () => {
-        return new AccountingModelContract(pool?.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS);
-      },
-      {
-        afterInit: contract => {
-          contract.setCallProvider(KovanHttpsWeb3Provider); /// TODO: Remove with SA release
-        },
-      },
-    );
+    return getOrCreateContract(pool.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS, () => {
+      return new AccountingModelContract(pool.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS);
+    });
   }, [pool]);
 
   const form = useForm<FormType>({

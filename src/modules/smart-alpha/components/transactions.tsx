@@ -136,14 +136,42 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
           <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
             <TokenIcon
               name={poolToken?.icon ?? 'unknown'}
-              outline={item.tranche === 'SENIOR' ? 'green' : 'purple'}
-              bubble1Name={
+              outline={
                 {
-                  SENIOR_REDEEM_TOKENS: 'bond',
-                  JUNIOR_REDEEM_TOKENS: 'bond',
+                  JUNIOR_EXIT: 'purple',
+                  JUNIOR_REDEEM_TOKENS: 'purple',
+                  JTOKEN_SEND: 'purple',
+                  JTOKEN_RECEIVE: 'purple',
+                  SENIOR_EXIT: 'green',
+                  SENIOR_REDEEM_TOKENS: 'green',
+                  STOKEN_SEND: 'green',
+                  STOKEN_RECEIVE: 'green',
                 }[item.transactionType]
               }
-              bubble2Name={oracleToken?.icon ?? 'unknown'}
+              bubble1Name={
+                {
+                  JUNIOR_EXIT: 'bond',
+                  JUNIOR_REDEEM_TOKENS: 'bond',
+                  JTOKEN_SEND: 'bond',
+                  JTOKEN_RECEIVE: 'bond',
+                  SENIOR_EXIT: 'bond',
+                  SENIOR_REDEEM_TOKENS: 'bond',
+                  STOKEN_SEND: 'bond',
+                  STOKEN_RECEIVE: 'bond',
+                }[item.transactionType]
+              }
+              bubble2Name={
+                {
+                  JUNIOR_EXIT: oracleToken?.icon ?? 'unknown',
+                  JUNIOR_REDEEM_TOKENS: oracleToken?.icon ?? 'unknown',
+                  JTOKEN_SEND: oracleToken?.icon ?? 'unknown',
+                  JTOKEN_RECEIVE: oracleToken?.icon ?? 'unknown',
+                  SENIOR_EXIT: oracleToken?.icon ?? 'unknown',
+                  SENIOR_REDEEM_TOKENS: oracleToken?.icon ?? 'unknown',
+                  STOKEN_SEND: oracleToken?.icon ?? 'unknown',
+                  STOKEN_RECEIVE: oracleToken?.icon ?? 'unknown',
+                }[item.transactionType]
+              }
               size={32}
               className="mr-16"
             />
@@ -155,7 +183,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
       },
     },
     {
-      heading: `Tranche / transaction`,
+      heading: `Side / transaction`,
       render: item => (
         <div style={{ whiteSpace: 'nowrap' }}>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
