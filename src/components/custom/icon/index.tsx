@@ -96,6 +96,8 @@ export type IconNames =
   | 'circle-minus-outlined'
   | 'senior_tranche'
   | 'junior_tranche'
+  | 'senior-side'
+  | 'junior-side'
   | 'senior_tranche_simplified'
   | 'junior_tranche_simplified'
   | 'withdrawal_regular'

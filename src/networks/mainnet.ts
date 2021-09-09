@@ -34,7 +34,7 @@ export const MainnetConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha.api.barnbridge.com' : 'https://api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-v2.api.barnbridge.com' : 'https://api-v2.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,
@@ -93,6 +93,9 @@ export const MainnetConfig: NetworkConfig = {
     se: {
       ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
       ePoolHelper: '0x8a63822d8c1be5590bbf72fb58e69285a776a5df',
+    },
+    sa: {
+      loupe: '0xb7D7E8F3526187e065bc674b19E0BBa42B569f6d',
     },
   },
 };

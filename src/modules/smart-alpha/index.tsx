@@ -6,18 +6,12 @@ import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import { useWallet } from 'wallets/walletProvider';
 
-import { isProductionMode } from 'utils';
-
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
 const PoolView = lazy(() => import(/* webpackChunkName: "sa-pool-view" */ './views/pool-view'));
 const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
 const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view" */ './views/portfolio-view'));
 const SimulateEpoch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/simulate-epoch'));
-const Launch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/launch'));
-
-// TODO: remove part with localStorage
-const launchDate = new Date(localStorage.getItem('sa-launch') ?? '2021-08-25T09:04:26.375Z');
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
@@ -41,14 +35,6 @@ const SmartAlphaView: React.FC = () => {
       disabled: !wallet.account,
     },
   ];
-
-  if (new Date() < launchDate || isProductionMode) {
-    return (
-      <div className="content-container-fix content-container">
-        <Launch launchDate={launchDate} />
-      </div>
-    );
-  }
 
   return (
     <>

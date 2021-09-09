@@ -4,31 +4,11 @@ import classNames from 'classnames';
 import { intervalToDuration } from 'date-fns';
 
 import { Text } from 'components/custom/typography';
+import { useFetchPools } from 'modules/smart-alpha/api';
 
 import { Simulate } from '../simulate-epoch/simulate';
 
 import s from './s.module.scss';
-
-const Launch = ({ launchDate }: { launchDate: Date }) => {
-  return (
-    <div className="container-limit">
-      <div className={classNames(s.slogan, 'mb-64')}>
-        <div>
-          <Text type="h1" weight="bold" color="primary" className="mb-8">
-            We are launching soon!
-          </Text>
-          <Text type="p2" weight="semibold" color="secondary">
-            You can play with the simulator in the meantime
-          </Text>
-        </div>
-        {/* <Countdown launchDate={launchDate} className={s.countdown} /> */}
-      </div>
-      <Simulate />
-    </div>
-  );
-};
-
-export default Launch;
 
 const Countdown = ({ launchDate, className }: { launchDate: Date; className?: string }) => {
   const history = useHistory();
@@ -79,3 +59,26 @@ const Countdown = ({ launchDate, className }: { launchDate: Date; className?: st
     </dl>
   );
 };
+
+const Launch = ({ launchDate }: { launchDate: Date }) => {
+  const { data: pools } = useFetchPools();
+
+  return (
+    <div className="container-limit">
+      <div className={classNames(s.slogan, 'mb-64')}>
+        <div>
+          <Text type="h1" weight="bold" color="primary" className="mb-8">
+            We are launching soon!
+          </Text>
+          <Text type="p2" weight="semibold" color="secondary">
+            You can play with the simulator in the meantime
+          </Text>
+        </div>
+        <Countdown launchDate={launchDate} className={s.countdown} />
+      </div>
+      {Array.isArray(pools) && pools.length ? <Simulate pool={pools[0]} /> : null}
+    </div>
+  );
+};
+
+export default Launch;

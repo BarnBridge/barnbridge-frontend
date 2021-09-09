@@ -12,18 +12,16 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { Input } from 'components/input';
-import { KovanHttpsWeb3Provider } from 'components/providers/web3Provider';
 import { useContractFactory } from 'hooks/useContract';
 import { PoolApiType } from 'modules/smart-alpha/api';
 import AccountingModelContract from 'modules/smart-alpha/contracts/accountingModelContract';
 import SeniorRateModelContract from 'modules/smart-alpha/contracts/seniorRateModelContract';
+import { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 
 import s from './s.module.scss';
 
-const SCALE_DECIMALS = 18;
-
 type Props = {
-  pool?: PoolApiType;
+  pool: PoolApiType;
 };
 
 type FormType = {
@@ -47,39 +45,15 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
   const { getOrCreateContract } = useContractFactory();
 
   const seniorRateModelContract = useMemo(() => {
-    // if (!pool) {
-    //   return;
-    // }
-
-    return getOrCreateContract(
-      pool?.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS,
-      () => {
-        return new SeniorRateModelContract(pool?.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS);
-      },
-      {
-        afterInit: contract => {
-          contract.setCallProvider(KovanHttpsWeb3Provider); /// TODO: Remove with SA release
-        },
-      },
-    );
+    return getOrCreateContract(pool.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS, () => {
+      return new SeniorRateModelContract(pool.seniorRateModelAddress ?? SENIOR_RATE_MODEL_ADDRESS);
+    });
   }, [pool]);
 
   const accountingModelContract = useMemo(() => {
-    // if (!pool) {
-    //   return;
-    // }
-
-    return getOrCreateContract(
-      pool?.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS,
-      () => {
-        return new AccountingModelContract(pool?.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS);
-      },
-      {
-        afterInit: contract => {
-          contract.setCallProvider(KovanHttpsWeb3Provider); /// TODO: Remove with SA release
-        },
-      },
-    );
+    return getOrCreateContract(pool.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS, () => {
+      return new AccountingModelContract(pool.accountingModelAddress ?? ACCOUNTING_MODEL_ADDRESS);
+    });
   }, [pool]);
 
   const form = useForm<FormType>({
@@ -92,11 +66,11 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
         rules: {
           min: -100,
           decimals: (value: string) => {
-            return (BigNumber.from(value)?.decimalPlaces() ?? Number.POSITIVE_INFINITY) < SCALE_DECIMALS;
+            return (BigNumber.from(value)?.decimalPlaces() ?? Number.POSITIVE_INFINITY) < SMART_ALPHA_DECIMALS;
           },
         },
         messages: {
-          decimals: `Maximum ${SCALE_DECIMALS} decimals allowed`,
+          decimals: `Maximum ${SMART_ALPHA_DECIMALS} decimals allowed`,
         },
       },
       juniorDominance: {
@@ -104,11 +78,11 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
           min: 0,
           max: 100,
           decimals: (value: string) => {
-            return (BigNumber.from(value)?.decimalPlaces() ?? Number.POSITIVE_INFINITY) < SCALE_DECIMALS;
+            return (BigNumber.from(value)?.decimalPlaces() ?? Number.POSITIVE_INFINITY) < SMART_ALPHA_DECIMALS;
           },
         },
         messages: {
-          decimals: `Maximum ${SCALE_DECIMALS} decimals allowed`,
+          decimals: `Maximum ${SMART_ALPHA_DECIMALS} decimals allowed`,
         },
       },
     },
@@ -122,9 +96,9 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
       let upsideLeverage: BigNumber | undefined;
       let downsideLeverage: BigNumber | undefined;
 
-      const juniorLiquidity = BigNumber.from(values.juniorDominance)?.div(100).scaleBy(SCALE_DECIMALS);
-      const seniorLiquidity = juniorLiquidity?.minus(new BigNumber(1).scaleBy(SCALE_DECIMALS)!).multipliedBy(-1);
-      const pricePerformance = BigNumber.from(values.pricePerf)?.div(100).scaleBy(SCALE_DECIMALS);
+      const juniorLiquidity = BigNumber.from(values.juniorDominance)?.div(100).scaleBy(SMART_ALPHA_DECIMALS);
+      const seniorLiquidity = juniorLiquidity?.minus(new BigNumber(1).scaleBy(SMART_ALPHA_DECIMALS)!).multipliedBy(-1);
+      const pricePerformance = BigNumber.from(values.pricePerf)?.div(100).scaleBy(SMART_ALPHA_DECIMALS);
 
       if (seniorRateModelContract && seniorLiquidity && juniorLiquidity && pricePerformance) {
         try {
@@ -133,7 +107,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
 
         if (protection && exposure) {
           if (accountingModelContract && seniorLiquidity && juniorLiquidity && pricePerformance) {
-            const entryPrice = new BigNumber(1).scaleBy(SCALE_DECIMALS)!;
+            const entryPrice = new BigNumber(1).scaleBy(SMART_ALPHA_DECIMALS)!;
             const currentPrice = entryPrice.plus(pricePerformance);
 
             try {
@@ -143,18 +117,18 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
               ]);
 
               if (seniorProfits && juniorProfits) {
-                pricePerfRate = pricePerformance.unscaleBy(SCALE_DECIMALS)!.toNumber();
+                pricePerfRate = pricePerformance.unscaleBy(SMART_ALPHA_DECIMALS)!.toNumber();
 
                 const seniorEnd = seniorLiquidity.plus(seniorProfits).minus(juniorProfits);
-                const seniorValueStart = entryPrice.multipliedBy(seniorLiquidity).unscaleBy(SCALE_DECIMALS)!;
-                const seniorValueEnd = currentPrice.multipliedBy(seniorEnd).unscaleBy(SCALE_DECIMALS)!;
+                const seniorValueStart = entryPrice.multipliedBy(seniorLiquidity).unscaleBy(SMART_ALPHA_DECIMALS)!;
+                const seniorValueEnd = currentPrice.multipliedBy(seniorEnd).unscaleBy(SMART_ALPHA_DECIMALS)!;
                 seniorProfitsRate = !seniorValueStart.eq(0)
                   ? seniorValueEnd.minus(seniorValueStart).div(seniorValueStart).toNumber()
                   : 0;
 
                 const juniorEnd = juniorLiquidity.plus(juniorProfits).minus(seniorProfits);
-                const juniorValueStart = entryPrice.multipliedBy(juniorLiquidity).unscaleBy(SCALE_DECIMALS)!;
-                const juniorValueEnd = currentPrice.multipliedBy(juniorEnd).unscaleBy(SCALE_DECIMALS)!;
+                const juniorValueStart = entryPrice.multipliedBy(juniorLiquidity).unscaleBy(SMART_ALPHA_DECIMALS)!;
+                const juniorValueEnd = currentPrice.multipliedBy(juniorEnd).unscaleBy(SMART_ALPHA_DECIMALS)!;
                 juniorProfitsRate = !juniorValueStart.eq(0)
                   ? juniorValueEnd.minus(juniorValueStart).div(juniorValueStart).toNumber()
                   : 0;
@@ -164,7 +138,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
             if (!juniorLiquidity.eq(0)) {
               upsideLeverage = seniorLiquidity
                 .div(juniorLiquidity)
-                .multipliedBy(new BigNumber(1).minus(exposure.unscaleBy(SCALE_DECIMALS)!))
+                .multipliedBy(new BigNumber(1).minus(exposure.unscaleBy(SMART_ALPHA_DECIMALS)!))
                 .plus(1);
 
               downsideLeverage = seniorLiquidity.div(juniorLiquidity).plus(1);
@@ -264,7 +238,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                   </dt>
                   <dd className="ml-auto">
                     <Text type="p1" weight="bold" color="primary">
-                      {formatPercent(protection?.unscaleBy(SCALE_DECIMALS)) ?? '-'}
+                      {formatPercent(protection?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
                     </Text>
                   </dd>
                 </div>
@@ -280,7 +254,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                   </dt>
                   <dd className="ml-auto">
                     <Text type="p1" weight="semibold" color="primary">
-                      {formatPercent(exposure?.unscaleBy(SCALE_DECIMALS)) ?? '-'}
+                      {formatPercent(exposure?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
                     </Text>
                   </dd>
                 </div>

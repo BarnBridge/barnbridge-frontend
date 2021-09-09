@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { addSeconds, getUnixTime } from 'date-fns';
-import { formatPercent, formatToken, formatUSD } from 'web3/utils';
+import { getUnixTime } from 'date-fns';
+import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
 import { InfoTooltip } from 'components/custom/tooltip';
@@ -21,18 +21,54 @@ import s from './s.module.scss';
 
 const PoolsView = () => {
   const { data } = useFetchPools();
+
+  const epochTVL = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.epochJuniorTVL).plus(item.tvl.epochSeniorTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
+
+  const entryQueueTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorEntryQueueTVL).plus(item.tvl.seniorEntryQueueTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
+
+  const exitedTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorExitedTVL).plus(item.tvl.seniorExitedTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
+
   return (
     <>
-      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
-        Total value locked
-      </Text>
-      <div className="mb-40 flex align-center">
-        <Text type="h2" weight="bold" color="primary" className="mr-8">
-          {formatUSD(123)}
-        </Text>
-        {/* <Tooltip title={<>TBD</>}>
-          <Icon name="insured" color="green" size={32} />
-        </Tooltip> */}
+      <div className="flex flow-col col-gap-32 mb-32">
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Epoch TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(epochTVL) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Entry Queue TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(entryQueueTVLInUsd) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Exited TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(exitedTVLInUsd) ?? '-'}
+          </Text>
+        </div>
       </div>
       <div className={s.cards}>
         {data?.map(item => (
@@ -51,16 +87,41 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const poolToken = getToken(item.poolToken.symbol);
   const oracleToken = getAsset(item.oracleAssetSymbol);
 
-  const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
-  const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
-  const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
+  const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
+  const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
+  const exposure = new BigNumber(item.state.upsideExposureRate);
+  const upsideLeverage = juniorLiquidity.gt(0)
+    ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
+    : new BigNumber(1);
+  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
 
-  // const juniorLeverage = calcJuniorLeverage(item);
+  function getCurrentEpoch() {
+    const now = getUnixTime(Date.now());
+    if (now < item.epoch1Start) {
+      return 0;
+    }
+
+    return (now - item.epoch1Start) / item.epochDuration + 1;
+  }
+
+  function tillNextEpoch(): number {
+    const now = getUnixTime(Date.now());
+
+    const currentEpoch = getCurrentEpoch();
+
+    const nextEpochStart = item.epoch1Start + currentEpoch * item.epochDuration;
+
+    return now < nextEpochStart ? nextEpochStart - now : 0;
+  }
+
+  const tne = tillNextEpoch();
 
   return (
     <section
       className={classNames(s.poolCard, 'card')}
-      style={{ '--pool-card-progress': currentEpochProgressPercent * 100 } as React.CSSProperties}>
+      style={
+        { '--pool-card-progress': ((item.epochDuration - tne) / item.epochDuration) * 100 } as React.CSSProperties
+      }>
       <header className="card-header flex align-center mb-32">
         <TokenIcon
           name={poolToken?.icon ?? 'unknown'}
@@ -82,12 +143,11 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <UseLeftTime delay={1_000}>
             {() => {
-              const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
-              const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
+              const tne = tillNextEpoch();
 
               return (
                 <Text type="p1" weight="semibold">
-                  {getFormattedDuration(item.epochDuration - currentEpochProgress)}
+                  {getFormattedDuration(tne)}
                 </Text>
               );
             }}
@@ -179,8 +239,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {/* {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`} */}
-              TBD
+              {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
             </Text>
           </dd>
         </div>
@@ -197,8 +256,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {/* {juniorLeverage ? `${formatNumber(juniorLeverage)}x` : `1x`} */}
-              TBD
+              {downsideLeverage ? `${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
           </dd>
         </div>
@@ -211,15 +269,3 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
     </section>
   );
 };
-
-// function calcJuniorLeverage(item) {
-//   if (!Number(item.state.seniorLiquidity) || !Number(item.state.juniorLiquidity)) {
-//     return null;
-//   }
-
-//   return (
-//     1 +
-//     (1 - Number(item.state.upsideExposureRate)) *
-//       (Number(item.state.seniorLiquidity) / Number(item.state.juniorLiquidity))
-//   );
-// }

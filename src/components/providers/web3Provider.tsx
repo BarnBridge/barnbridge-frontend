@@ -10,10 +10,9 @@ import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
+import { PolygonNetwork } from 'networks/polygon';
 import { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
-
-import { PolygonNetwork } from '../../networks/polygon';
 
 import { InvariantContext } from 'utils/context';
 

@@ -32,10 +32,10 @@ const PortfolioView: React.FC = () => {
           }}
           className="tab-card"
           activeClassName="active">
-          <Icon name="senior_tranche_simplified" width={53} height={40} className="mr-16" />
+          <Icon name="senior-side" width={53} height={40} className="mr-16" />
           <div>
             <Text type="p1" weight="semibold" color="primary">
-              Senior tranche
+              Senior side
             </Text>
             <Text type="small" weight="semibold" color="secondary">
               Positions
@@ -49,10 +49,10 @@ const PortfolioView: React.FC = () => {
           }}
           className="tab-card"
           activeClassName="active">
-          <Icon name="junior_tranche_simplified" width={53} height={40} className="mr-16" />
+          <Icon name="junior-side" width={53} height={40} className="mr-16" />
           <div>
             <Text type="p1" weight="semibold" color="primary">
-              Junior tranche
+              Junior side
             </Text>
             <Text type="small" weight="semibold" color="secondary">
               Positions
