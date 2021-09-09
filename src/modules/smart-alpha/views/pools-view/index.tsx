@@ -21,28 +21,54 @@ import s from './s.module.scss';
 
 const PoolsView = () => {
   const { data } = useFetchPools();
-  const { getAmountInUSD, version: tokenVersion } = useTokens();
 
-  const totalLockedInUsd = useMemo(() => {
+  const epochTVL = useMemo(() => {
     return data?.reduce((sum, item) => {
-      const totalLiquidity = new BigNumber(item.state.seniorLiquidity).plus(new BigNumber(item.state.juniorLiquidity));
-      const amountInUsd = getAmountInUSD(totalLiquidity, item.poolToken.symbol);
-      return amountInUsd ? sum.plus(amountInUsd) : sum;
+      return sum.plus(item.tvl.epochJuniorTVL).plus(item.tvl.epochSeniorTVL);
     }, BigNumber.ZERO);
-  }, [data, tokenVersion]);
+  }, [data]);
+
+  const entryQueueTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorEntryQueueTVL).plus(item.tvl.seniorEntryQueueTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
+
+  const exitQueueTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorExitedTVL).plus(item.tvl.seniorExitedTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
 
   return (
     <>
-      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
-        Total value locked
-      </Text>
-      <div className="mb-40 flex align-center">
-        <Text type="h2" weight="bold" color="primary" className="mr-8">
-          {formatUSD(totalLockedInUsd) ?? '-'}
-        </Text>
-        {/* <Tooltip title={<>TBD</>}>
-          <Icon name="insured" color="green" size={32} />
-        </Tooltip> */}
+      <div className="flex flow-col col-gap-32 mb-32">
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Epoch TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(epochTVL) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Entry Queue TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(entryQueueTVLInUsd) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Exit Queue TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(exitQueueTVLInUsd) ?? '-'}
+          </Text>
+        </div>
       </div>
       <div className={s.cards}>
         {data?.map(item => (
