@@ -107,7 +107,7 @@ const PoolView = () => {
     }
 
     if (nextEpochEstimates[0].eq(0)) {
-      return BigNumber.ZERO;
+      return new BigNumber(1);
     }
 
     return nextEpochEstimates[1]
@@ -122,7 +122,7 @@ const PoolView = () => {
     }
 
     if (nextEpochEstimates[0].eq(0)) {
-      return BigNumber.ZERO;
+      return new BigNumber(1);
     }
 
     return nextEpochEstimates[1].div(nextEpochEstimates[0]).plus(1);
