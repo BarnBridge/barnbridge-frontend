@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { addSeconds, getUnixTime } from 'date-fns';
+import { getUnixTime } from 'date-fns';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
@@ -60,10 +60,6 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
 
   const poolToken = getToken(item.poolToken.symbol);
   const oracleToken = getAsset(item.oracleAssetSymbol);
-
-  const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
-  const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
-  const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
 
   const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
   const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
