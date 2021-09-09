@@ -111,7 +111,7 @@ class SmartAlphaContract extends Web3Contract {
     }
 
     if (this.epochJuniorLiquidity.eq(0)) {
-      return new BigNumber(1);
+      return new BigNumber(1).scaleBy(SMART_ALPHA_DECIMALS);
     }
 
     return this.epochSeniorLiquidity
@@ -127,7 +127,7 @@ class SmartAlphaContract extends Web3Contract {
     }
 
     if (this.epochJuniorLiquidity.eq(0)) {
-      return new BigNumber(1);
+      return new BigNumber(1).scaleBy(SMART_ALPHA_DECIMALS);
     }
 
     return this.epochSeniorLiquidity.div(this.epochJuniorLiquidity).plus(1).scaleBy(SMART_ALPHA_DECIMALS);
