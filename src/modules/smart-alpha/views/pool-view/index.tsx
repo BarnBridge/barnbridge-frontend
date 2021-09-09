@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useParams } from 'react-router-dom';
+import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
@@ -15,6 +15,7 @@ import { getAsset, isUsdAsset, useTokens } from 'components/providers/tokensProv
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
@@ -31,11 +32,13 @@ import s from './s.module.scss';
 
 const PoolView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
+  const history = useHistory();
   const location = useLocation();
   const config = useConfig();
-  const { data: pool } = useFetchPool(poolAddress);
+  const { data: pool, loaded } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
+  const [reload] = useReload();
   const [queueStateVisible, setQueueStateVisible] = useState<boolean>(false);
   const [previousEpochVisible, setPreviousEpochVisible] = useState<boolean>(false);
 
@@ -53,6 +56,7 @@ const PoolView = () => {
       },
       {
         afterInit: async contract => {
+          contract.onUpdateData(reload);
           await contract.loadCommon();
         },
       },
@@ -129,6 +133,10 @@ const PoolView = () => {
   }, [nextEpochEstimates]);
 
   if (!pool) {
+    if (loaded) {
+      history.push('/smart-alpha/pools');
+    }
+
     return <Spinner style={{ margin: 'auto' }} />;
   }
 
@@ -399,7 +407,8 @@ const PoolView = () => {
         <section className={classNames(s.epochCard, s.epochCardSecondary)}>
           <div className={s.epochCardTitleWrap}>
             <Text type="lb2" weight="bold" tag="h3" color="secondary" className={s.epochCardTitle}>
-              EPOCH {smartAlphaContract?.currentEpoch ? smartAlphaContract.currentEpoch + 1 : '-'} - ESTIMATES
+              EPOCH {smartAlphaContract?.currentEpoch !== undefined ? smartAlphaContract?.currentEpoch + 1 : '-'} -
+              ESTIMATES
             </Text>
           </div>
           <header className={classNames(s.epochCardHeader, 'mb-24')}>
@@ -609,7 +618,7 @@ const PoolView = () => {
           </span>
           <div className={s.epochProgressLineMiddle} style={{ '--epoch-progress': 70 } as React.CSSProperties} />
           <span className={s.epochProgressNext}>
-            {smartAlphaContract?.currentEpoch ? smartAlphaContract?.currentEpoch + 1 : '-'}
+            {smartAlphaContract?.currentEpoch !== undefined ? smartAlphaContract?.currentEpoch + 1 : '-'}
           </span>
         </div>
         <div className={s.epochProgressLineAfter} />

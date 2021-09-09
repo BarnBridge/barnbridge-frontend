@@ -37,6 +37,7 @@ const DepositView = () => {
       },
       {
         afterInit: async contract => {
+          contract.onUpdateData(reload);
           await contract.loadCommon();
         },
       },
