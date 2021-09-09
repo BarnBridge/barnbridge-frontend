@@ -327,7 +327,7 @@ const PoolView = () => {
                         BigNumber.from(pool.state.seniorLiquidity),
                       {
                         decimals: pool.poolToken.decimals,
-                        compact: true,
+                        // compact: true,
                       },
                     ) ?? '-'}
                   </Text>
@@ -374,7 +374,7 @@ const PoolView = () => {
                     className="mr-8">
                     {formatToken(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
                       decimals: pool.poolToken.decimals,
-                      compact: true,
+                      // compact: true,
                     }) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
@@ -542,7 +542,7 @@ const PoolView = () => {
                     className="mr-8">
                     {formatToken(nextEpochEstimates[1]?.unscaleBy(pool.poolToken.decimals), {
                       decimals: pool.poolToken.decimals,
-                      compact: true,
+                      // compact: true,
                     }) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
@@ -583,7 +583,7 @@ const PoolView = () => {
                     className="mr-8">
                     {formatToken(nextEpochEstimates[0]?.unscaleBy(pool.poolToken.decimals), {
                       decimals: pool.poolToken.decimals,
-                      compact: true,
+                      // compact: true,
                     }) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
@@ -662,8 +662,17 @@ const PoolView = () => {
             </dt>
             <dd className="flex justify-end align-center">
               <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(poolToken?.decimals), {
+                    decimals: poolToken?.decimals,
+                    tokenName: poolToken?.symbol,
+                  }) ?? '-'
+                }>
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(poolToken?.decimals)) ?? '-'}
               </Text>
             </dd>
             <dt>
@@ -673,8 +682,17 @@ const PoolView = () => {
             </dt>
             <dd className="flex justify-end align-center">
               <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(poolToken?.decimals), {
+                    decimals: poolToken?.decimals,
+                    tokenName: poolToken?.symbol,
+                  }) ?? '-'
+                }>
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(poolToken?.decimals)) ?? '-'}
               </Text>
             </dd>
             <dt>
@@ -691,7 +709,16 @@ const PoolView = () => {
                 size={16}
                 className="mr-8"
               />
-              <Text type="p1" weight="semibold" color="primary">
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedJuniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS), {
+                    decimals: SMART_ALPHA_DECIMALS,
+                    tokenName: `junior_${pool.poolName}`,
+                  }) ?? '-'
+                }>
                 {formatToken(smartAlphaContract?.queuedJuniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
               </Text>
             </dd>
@@ -702,8 +729,17 @@ const PoolView = () => {
             </dt>
             <dd className="flex justify-end align-center">
               <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(poolToken?.decimals), {
+                    decimals: poolToken?.decimals,
+                    tokenName: poolToken?.symbol,
+                  }) ?? '-'
+                }>
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(poolToken?.decimals)) ?? '-'}
               </Text>
             </dd>
             <dt>
@@ -713,8 +749,17 @@ const PoolView = () => {
             </dt>
             <dd className="flex justify-end align-center">
               <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(poolToken?.decimals), {
+                    decimals: poolToken?.decimals,
+                    tokenName: poolToken?.symbol,
+                  }) ?? '-'
+                }>
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(poolToken?.decimals)) ?? '-'}
               </Text>
             </dd>
             <dt>
@@ -731,7 +776,16 @@ const PoolView = () => {
                 size={16}
                 className="mr-8"
               />
-              <Text type="p1" weight="semibold" color="primary">
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedSeniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS), {
+                    decimals: SMART_ALPHA_DECIMALS,
+                    tokenName: `senior_${pool.poolName}`,
+                  }) ?? '-'
+                }>
                 {formatToken(smartAlphaContract?.queuedSeniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
               </Text>
             </dd>
