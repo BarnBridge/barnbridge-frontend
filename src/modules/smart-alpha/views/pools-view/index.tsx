@@ -70,13 +70,36 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const exposure = new BigNumber(item.state.upsideExposureRate);
   const upsideLeverage = juniorLiquidity.gt(0)
     ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
-    : BigNumber.ZERO;
-  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : BigNumber.ZERO;
+    : new BigNumber(1);
+  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
+
+  function getCurrentEpoch() {
+    const now = getUnixTime(Date.now());
+    if (now < item.epoch1Start) {
+      return 0;
+    }
+
+    return (now - item.epoch1Start) / item.epochDuration + 1;
+  }
+
+  function tillNextEpoch(): number {
+    const now = getUnixTime(Date.now());
+
+    const currentEpoch = getCurrentEpoch();
+
+    const nextEpochStart = item.epoch1Start + currentEpoch * item.epochDuration;
+
+    return now < nextEpochStart ? nextEpochStart - now : 0;
+  }
+
+  const tne = tillNextEpoch();
 
   return (
     <section
       className={classNames(s.poolCard, 'card')}
-      style={{ '--pool-card-progress': currentEpochProgressPercent * 100 } as React.CSSProperties}>
+      style={
+        { '--pool-card-progress': ((item.epochDuration - tne) / item.epochDuration) * 100 } as React.CSSProperties
+      }>
       <header className="card-header flex align-center mb-32">
         <TokenIcon
           name={poolToken?.icon ?? 'unknown'}
@@ -98,12 +121,11 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <UseLeftTime delay={1_000}>
             {() => {
-              const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
-              const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
+              const tne = tillNextEpoch();
 
               return (
                 <Text type="p1" weight="semibold">
-                  {getFormattedDuration(item.epochDuration - currentEpochProgress)}
+                  {getFormattedDuration(tne)}
                 </Text>
               );
             }}

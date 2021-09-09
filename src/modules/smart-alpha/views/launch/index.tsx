@@ -4,12 +4,14 @@ import classNames from 'classnames';
 import { intervalToDuration } from 'date-fns';
 
 import { Text } from 'components/custom/typography';
+import { useFetchPools } from 'modules/smart-alpha/api';
 
 import { Simulate } from '../simulate-epoch/simulate';
 
 import s from './s.module.scss';
 
 const Launch = ({ launchDate }: { launchDate: Date }) => {
+  const { data: pools } = useFetchPools();
   return (
     <div className="container-limit">
       <div className={classNames(s.slogan, 'mb-64')}>
@@ -23,7 +25,7 @@ const Launch = ({ launchDate }: { launchDate: Date }) => {
         </div>
         {/* <Countdown launchDate={launchDate} className={s.countdown} /> */}
       </div>
-      <Simulate />
+      {Array.isArray(pools) && pools.length ? <Simulate pool={pools[0]} /> : null}
     </div>
   );
 };

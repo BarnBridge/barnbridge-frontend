@@ -2,6 +2,7 @@ import { useMemo } from 'react';
 import { format } from 'date-fns';
 import { nanoid } from 'nanoid';
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { AxisDomain } from 'recharts/types/util/types';
 
 import Spin from 'components/antd/spin';
 import { Text } from 'components/custom/typography';
@@ -26,6 +27,8 @@ interface PropsType {
       color: 'red' | 'green' | 'blue' | 'yellow' | 'purple' | 'grey';
       yAxisId?: 'left' | 'right';
     }[];
+    domain?: AxisDomain;
+    domainRight?: AxisDomain;
   };
   className?: string;
   loading?: boolean;
@@ -110,9 +113,23 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               tickFormatter={x.format}
               ticks={x.ticks}
             />
-            <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="left" yAxisId="left" />
+            <YAxis
+              axisLine={false}
+              tickLine={false}
+              tickFormatter={y.format}
+              orientation="left"
+              yAxisId="left"
+              domain={y.domain}
+            />
             {hasRightYAxis && (
-              <YAxis axisLine={false} tickLine={false} tickFormatter={y.format} orientation="right" yAxisId="right" />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                tickFormatter={y.format}
+                orientation="right"
+                yAxisId="right"
+                domain={y.domainRight}
+              />
             )}
 
             {y.items.map((areaItem, idx) => (

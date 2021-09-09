@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import { format } from 'date-fns';
+import { formatToken, formatUSD } from 'web3/utils';
 
 import { Chart } from 'components/chart';
 import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
@@ -25,7 +26,11 @@ const trancheTabs = [
   },
 ];
 
-export const PoolPerformance: React.FC<{ poolAddress: string; className?: string }> = ({ poolAddress, className }) => {
+export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol: string; className?: string }> = ({
+  poolAddress,
+  oracleAssetSymbol,
+  className,
+}) => {
   const [trancheFilter, setTrancheFilter] = useState<TrancheFilterTypeKey>(TrancheFilterTypeKey.senior);
   const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
   const { data = [], loading } = useFetchPoolPerformance(poolAddress, periodFilter);
@@ -57,8 +62,13 @@ export const PoolPerformance: React.FC<{ poolAddress: string; className?: string
           }}
           y={{
             format: value =>
-              Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value),
-            itemsFormat: value => Intl.NumberFormat('en', { style: 'currency', currency: 'USD' }).format(value),
+              `${
+                formatToken(value, {
+                  compact: true,
+                }) ?? value
+              } ${oracleAssetSymbol}`,
+            itemsFormat: value => `${formatToken(value) ?? value} ${oracleAssetSymbol}`,
+            domain: ['dataMin', 'dataMax'],
             items:
               trancheFilter === TrancheFilterTypeKey.senior
                 ? [
