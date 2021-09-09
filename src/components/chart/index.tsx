@@ -8,10 +8,6 @@ import Spin from 'components/antd/spin';
 import { Text } from 'components/custom/typography';
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
-import Spin from 'components/antd/spin';
-import { Text } from 'components/custom/typography';
-import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
-
 import s from './s.module.scss';
 
 interface PropsType {
