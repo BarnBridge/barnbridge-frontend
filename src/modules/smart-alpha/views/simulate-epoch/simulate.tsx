@@ -12,7 +12,6 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { Input } from 'components/input';
-import { KovanHttpsWeb3Provider } from 'components/providers/web3Provider';
 import { useContractFactory } from 'hooks/useContract';
 import { PoolApiType } from 'modules/smart-alpha/api';
 import AccountingModelContract from 'modules/smart-alpha/contracts/accountingModelContract';

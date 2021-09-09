@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 
+import { Alert } from 'components/alert';
 import PortfolioBalance from 'components/portfolio-balance';
 import { useFetchPortfolioValue } from 'modules/smart-alpha/api';
 import { useWallet } from 'wallets/walletProvider';
@@ -35,6 +36,13 @@ export const PortfolioStatistics = () => {
             ['Senior balance', seniorBalance, 'var(--theme-green-color)'],
             ['Junior balance', juniorBalance, 'var(--theme-purple-color)'],
           ]}
+          footer={
+            <Alert
+              type="info"
+              title="Queued balances are not considered towards your portfolio balance"
+              className="mt-32"
+            />
+          }
         />
         <PortfolioValue />
       </div>
