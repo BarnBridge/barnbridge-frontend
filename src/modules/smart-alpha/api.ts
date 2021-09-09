@@ -32,18 +32,18 @@ export type PoolApiType = {
   };
 };
 
-export function useFetchPools(baseUrl?: string): UseFetchReturn<PoolApiType[]> {
+export function useFetchPools(): UseFetchReturn<PoolApiType[]> {
   const config = useConfig();
-  const url = new URL(`/api/smartalpha/pools`, baseUrl ?? config.api.baseUrl);
+  const url = new URL(`/api/smartalpha/pools`, config.api.baseUrl);
 
   return useFetch(url, {
     transform: ({ data }) => data,
   });
 }
 
-export function useFetchPool(poolAddress: string, baseUrl?: string): UseFetchReturn<PoolApiType | null> {
+export function useFetchPool(poolAddress: string): UseFetchReturn<PoolApiType | null> {
   const config = useConfig();
-  const url = new URL(`/api/smartalpha/pools`, baseUrl ?? config.api.baseUrl);
+  const url = new URL(`/api/smartalpha/pools`, config.api.baseUrl);
   url.searchParams.set('poolAddress', poolAddress);
 
   return useFetch(url, {

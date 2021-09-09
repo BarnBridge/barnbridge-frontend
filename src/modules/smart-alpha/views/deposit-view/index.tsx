@@ -131,7 +131,7 @@ const DepositView = () => {
             <Route path="/smart-alpha/pools/:id/deposit/senior">
               <div>
                 <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                  Tranche
+                  Side
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="mr-4">
                   Senior
@@ -141,7 +141,7 @@ const DepositView = () => {
             <Route path="/smart-alpha/pools/:id/deposit/junior">
               <div>
                 <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                  Tranche
+                  Side
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="mr-4">
                   Junior
