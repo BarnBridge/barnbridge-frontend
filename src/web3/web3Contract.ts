@@ -158,8 +158,8 @@ class Web3Contract {
     this.name = name ?? address;
 
     const web3 = new Web3();
-    this._callContract = new web3.eth.Contract(abi, address) as EthContract;
-    this._sendContract = new web3.eth.Contract(abi, address) as EthContract;
+    this._callContract = new web3.eth.Contract(abi, address) as unknown as EthContract;
+    this._sendContract = new web3.eth.Contract(abi, address) as unknown as EthContract;
   }
 
   /// GETTERS
