@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import classNames from 'classnames';
 import { formatPercent, formatUSDValue } from 'web3/utils';
 
@@ -17,6 +17,7 @@ type Props = {
   aggregatedText?: React.ReactNode;
   aggregatedColor: TextProps['color'];
   data: [[string, number | undefined, string], [string, number | undefined, string]];
+  footer?: ReactNode;
 };
 
 const PortfolioBalance: React.FC<Props> = (props: Props) => {
@@ -28,6 +29,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     aggregatedColor,
     aggregatedText,
     data: [[label1, value1, color1], [label2, value2, color2]],
+    footer,
   } = props;
 
   const { projectToken, getTokenBySymbol } = useKnownTokens();
@@ -99,6 +101,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
             </Text>
           </div>
         </div>
+        {footer}
       </div>
     </div>
   );

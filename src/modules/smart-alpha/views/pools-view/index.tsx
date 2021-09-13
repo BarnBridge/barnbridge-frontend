@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { addSeconds, getUnixTime } from 'date-fns';
+import { getUnixTime } from 'date-fns';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
@@ -21,28 +21,54 @@ import s from './s.module.scss';
 
 const PoolsView = () => {
   const { data } = useFetchPools();
-  const { getAmountInUSD, version: tokenVersion } = useTokens();
 
-  const totalLockedInUsd = useMemo(() => {
+  const epochTVL = useMemo(() => {
     return data?.reduce((sum, item) => {
-      const totalLiquidity = new BigNumber(item.state.seniorLiquidity).plus(new BigNumber(item.state.juniorLiquidity));
-      const amountInUsd = getAmountInUSD(totalLiquidity, item.poolToken.symbol);
-      return amountInUsd ? sum.plus(amountInUsd) : sum;
+      return sum.plus(item.tvl.epochJuniorTVL).plus(item.tvl.epochSeniorTVL);
     }, BigNumber.ZERO);
-  }, [data, tokenVersion]);
+  }, [data]);
+
+  const entryQueueTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorEntryQueueTVL).plus(item.tvl.seniorEntryQueueTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
+
+  const exitedTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorExitedTVL).plus(item.tvl.seniorExitedTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
 
   return (
     <>
-      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
-        Total value locked
-      </Text>
-      <div className="mb-40 flex align-center">
-        <Text type="h2" weight="bold" color="primary" className="mr-8">
-          {formatUSD(totalLockedInUsd) ?? '-'}
-        </Text>
-        {/* <Tooltip title={<>TBD</>}>
-          <Icon name="insured" color="green" size={32} />
-        </Tooltip> */}
+      <div className="flex flow-col col-gap-32 mb-32">
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Epoch TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(epochTVL) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Entry Queue TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(entryQueueTVLInUsd) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Exited TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(exitedTVLInUsd) ?? '-'}
+          </Text>
+        </div>
       </div>
       <div className={s.cards}>
         {data?.map(item => (
@@ -61,17 +87,13 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   const poolToken = getToken(item.poolToken.symbol);
   const oracleToken = getAsset(item.oracleAssetSymbol);
 
-  const secondsFromEpoch1 = addSeconds(new Date(), item.epoch1Start * -1);
-  const currentEpochProgress = getUnixTime(secondsFromEpoch1) % item.epochDuration;
-  const currentEpochProgressPercent = currentEpochProgress / item.epochDuration;
-
   const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
   const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
   const exposure = new BigNumber(item.state.upsideExposureRate);
   const upsideLeverage = juniorLiquidity.gt(0)
     ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
-    : BigNumber.ZERO;
-  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : BigNumber.ZERO;
+    : new BigNumber(1);
+  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
 
   function getCurrentEpoch() {
     const now = getUnixTime(Date.now());

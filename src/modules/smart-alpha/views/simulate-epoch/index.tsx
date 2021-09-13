@@ -7,6 +7,7 @@ import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 
@@ -16,6 +17,7 @@ const SimulateEpoch = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const { data: pool } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
+  const [reload] = useReload();
 
   const { getOrCreateContract } = useContractFactory();
 
@@ -31,6 +33,7 @@ const SimulateEpoch = () => {
       },
       {
         afterInit: async contract => {
+          contract.onUpdateData(reload);
           await contract.loadCommon();
         },
       },

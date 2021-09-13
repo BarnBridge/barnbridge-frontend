@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import classNames from 'classnames';
 import { format } from 'date-fns';
-import { formatToken, formatUSD } from 'web3/utils';
+import { formatToken } from 'web3/utils';
 
 import { Chart } from 'components/chart';
 import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';

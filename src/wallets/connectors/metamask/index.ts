@@ -1,5 +1,6 @@
 import { AbstractConnector } from '@web3-react/abstract-connector';
 import { InjectedConnector } from '@web3-react/injected-connector';
+import { notification } from 'antd';
 
 import MetamaskLogoDark from 'resources/svg/wallets/metamask-logo-dark.svg';
 import MetamaskLogo from 'resources/svg/wallets/metamask-logo.svg';
@@ -66,6 +67,18 @@ export class MetamaskConnector extends InjectedConnector {
   }
 }
 
+function handleErrors(error: MetamaskError) {
+  switch (error?.code) {
+    case -32602:
+      notification.error({
+        message: error?.message,
+      });
+      break;
+    default:
+      break;
+  }
+}
+
 const MetamaskWalletConfig: BaseWalletConfig = {
   id: 'metamask',
   logo: [MetamaskLogo, MetamaskLogoDark],
@@ -75,9 +88,22 @@ const MetamaskWalletConfig: BaseWalletConfig = {
       supportedChainIds: [network.meta.chainId],
     });
   },
+  onConnect(connector: AbstractConnector, args?: Record<string, any>) {
+    connector?.getProvider().then(provider => {
+      provider.addListener('send::error', handleErrors);
+    });
+  },
+  onDisconnect(connector?: AbstractConnector) {
+    connector?.getProvider().then(provider => {
+      provider.removeListener('send::error', handleErrors);
+    });
+  },
   onError(error: MetamaskError): Error | undefined {
-    if (error.code === -32002) {
-      return new Error('MetaMask is already processing. Please verify MetaMask extension.');
+    switch (error?.code) {
+      case -32002:
+        return new Error('MetaMask is already processing. Please verify MetaMask extension.');
+      default:
+        break;
     }
 
     return undefined;

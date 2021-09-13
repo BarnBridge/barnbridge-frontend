@@ -30,6 +30,14 @@ export type PoolApiType = {
     seniorLiquidity: string;
     upsideExposureRate: string;
   };
+  tvl: {
+    epochJuniorTVL: string;
+    epochSeniorTVL: string;
+    juniorEntryQueueTVL: string;
+    seniorEntryQueueTVL: string;
+    juniorExitedTVL: string;
+    seniorExitedTVL: string;
+  };
 };
 
 export function useFetchPools(): UseFetchReturn<PoolApiType[]> {

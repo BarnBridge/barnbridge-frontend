@@ -31,6 +31,7 @@ export const PortfolioPositions = () => {
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
   const { data } = useFetchPools();
   const { getToken } = useTokens();
+  const [reload] = useReload();
 
   const activePoolAddress = useMemo(() => {
     const params = new URLSearchParams(location.search);
@@ -64,6 +65,7 @@ export const PortfolioPositions = () => {
       },
       {
         afterInit: async contract => {
+          contract.onUpdateData(reload);
           await contract.loadCommon();
         },
       },
