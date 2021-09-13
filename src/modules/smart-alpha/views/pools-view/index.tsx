@@ -97,18 +97,17 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
 
   function getCurrentEpoch() {
     const now = getUnixTime(Date.now());
+
     if (now < item.epoch1Start) {
       return 0;
     }
 
-    return (now - item.epoch1Start) / item.epochDuration + 1;
+    return Math.floor((now - item.epoch1Start) / item.epochDuration + 1);
   }
 
   function tillNextEpoch(): number {
     const now = getUnixTime(Date.now());
-
     const currentEpoch = getCurrentEpoch();
-
     const nextEpochStart = item.epoch1Start + currentEpoch * item.epochDuration;
 
     return now < nextEpochStart ? nextEpochStart - now : 0;
@@ -144,7 +143,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           <UseLeftTime delay={1_000}>
             {() => {
               const tne = tillNextEpoch();
-
+              console.log(tne);
               return (
                 <Text type="p1" weight="semibold">
                   {getFormattedDuration(tne)}
