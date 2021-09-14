@@ -325,10 +325,6 @@ const PoolView = () => {
                     {formatToken(
                       smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
                         BigNumber.from(pool.state.seniorLiquidity),
-                      {
-                        decimals: pool.poolToken.decimals,
-                        // compact: true,
-                      },
                     ) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
@@ -372,10 +368,7 @@ const PoolView = () => {
                       </Text>
                     }
                     className="mr-8">
-                    {formatToken(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals), {
-                      decimals: pool.poolToken.decimals,
-                      // compact: true,
-                    }) ?? '-'}
+                    {formatToken(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
                 </dd>
@@ -540,10 +533,7 @@ const PoolView = () => {
                       </Text>
                     }
                     className="mr-8">
-                    {formatToken(nextEpochEstimates[1]?.unscaleBy(pool.poolToken.decimals), {
-                      decimals: pool.poolToken.decimals,
-                      // compact: true,
-                    }) ?? '-'}
+                    {formatToken(nextEpochEstimates[1]?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
                 </dd>
@@ -581,10 +571,7 @@ const PoolView = () => {
                       </Text>
                     }
                     className="mr-8">
-                    {formatToken(nextEpochEstimates[0]?.unscaleBy(pool.poolToken.decimals), {
-                      decimals: pool.poolToken.decimals,
-                      // compact: true,
-                    }) ?? '-'}
+                    {formatToken(nextEpochEstimates[0]?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                   </Text>
                   <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
                 </dd>
@@ -616,7 +603,21 @@ const PoolView = () => {
             {smartAlphaContract?.epoch ?? '-'}
             <div className={classNames(s.epochSpinner, 'ml-4')} />
           </span>
-          <div className={s.epochProgressLineMiddle} style={{ '--epoch-progress': 70 } as React.CSSProperties} />
+          <UseLeftTime delay={1_000}>
+            {() => (
+              <div
+                className={s.epochProgressLineMiddle}
+                style={
+                  {
+                    '--epoch-progress':
+                      (((smartAlphaContract?.epochDuration ?? 0) - (smartAlphaContract?.tillNextEpoch ?? 0)) /
+                        (smartAlphaContract?.epochDuration ?? 0)) *
+                      100,
+                  } as React.CSSProperties
+                }
+              />
+            )}
+          </UseLeftTime>
           <span className={s.epochProgressNext}>
             {smartAlphaContract?.currentEpoch !== undefined ? smartAlphaContract?.currentEpoch + 1 : '-'}
           </span>
