@@ -143,7 +143,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           <UseLeftTime delay={1_000}>
             {() => {
               const tne = tillNextEpoch();
-              console.log(tne);
+
               return (
                 <Text type="p1" weight="semibold">
                   {getFormattedDuration(tne)}
