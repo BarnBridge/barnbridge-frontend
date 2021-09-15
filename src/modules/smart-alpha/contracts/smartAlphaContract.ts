@@ -27,6 +27,8 @@ const ABI: AbiItem[] = [
   createAbiItem('queuedSeniorsUnderlyingOut', [], ['uint256']),
   createAbiItem('queuedSeniorTokensBurn', [], ['uint256']),
 
+  createAbiItem('feesAccrued', [], ['uint256']),
+
   createAbiItem('seniorEntryQueue', ['address'], ['uint256', 'uint256']),
   createAbiItem('seniorExitQueue', ['address'], ['uint256', 'uint256']),
   createAbiItem('juniorEntryQueue', ['address'], ['uint256', 'uint256']),
@@ -41,6 +43,7 @@ const ABI: AbiItem[] = [
   createAbiItem('exitSenior', ['uint256'], []),
   createAbiItem('redeemSeniorTokens', [], []),
   createAbiItem('redeemSeniorUnderlying', [], []),
+  createAbiItem('transferFees', [], []),
 ];
 
 export const SMART_ALPHA_DECIMALS = 18;
@@ -64,6 +67,7 @@ class SmartAlphaContract extends Web3Contract {
   queuedSeniorsUnderlyingIn: BigNumber | undefined;
   queuedSeniorsUnderlyingOut: BigNumber | undefined;
   queuedSeniorTokensBurn: BigNumber | undefined;
+  feesAccrued: BigNumber | undefined;
 
   constructor(address: string) {
     super(ABI, address, 'Smart Alpha');
@@ -212,6 +216,14 @@ class SmartAlphaContract extends Web3Contract {
     return this.call('juniorExitQueue', [address], {}).then(result => [Number(result[0]), BigNumber.from(result[1])]);
   }
 
+  getFeesAccrued(): Promise<BigNumber | undefined> {
+    return this.call('feesAccrued', [], {}).then(result => {
+      this.feesAccrued = BigNumber.from(result);
+      this.emit(Web3Contract.UPDATE_DATA);
+      return this.feesAccrued;
+    });
+  }
+
   async depositJunior(amount: BigNumber, gasPrice?: number): Promise<void> {
     await this.send('depositJunior', [amount], {}, gasPrice);
   }
@@ -242,6 +254,10 @@ class SmartAlphaContract extends Web3Contract {
 
   async redeemSeniorUnderlying(gasPrice?: number): Promise<void> {
     await this.send('redeemSeniorUnderlying', [], {}, gasPrice);
+  }
+
+  async transferFees(gasPrice?: number): Promise<void> {
+    await this.send('transferFees', [], {}, gasPrice);
   }
 }
 
