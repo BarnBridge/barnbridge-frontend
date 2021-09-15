@@ -52,6 +52,7 @@ const Columns: ColumnType<ExtendedAPISYPool>[] = [
         <TokenIcon
           name={entity.token?.icon as TokenIconNames}
           bubble1Name={entity.market?.icon.active as TokenIconNames}
+          size={32}
           className="mr-16"
         />
         <div className="flex flow-row">
@@ -186,7 +187,9 @@ type TreasuryFilterType = {
 const TreasuryFees: FC = () => {
   const [originatorFilter, setOriginatorFilter] = useState('all');
   const [tokenFilter, setTokenFilter] = useState('all');
-  const [reload, version] = useReload();
+  const [reloadSy, versionSy] = useReload();
+  const [reloadSe, versionSe] = useReload();
+  const [reloadSa, versionSa] = useReload();
 
   const { getAmountInUSD, getToken } = useTokens();
   const { getOrCreateContract, getContract, Listeners } = useContractFactory();
@@ -215,7 +218,7 @@ const TreasuryFees: FC = () => {
         } as ExtendedAPISYPool;
       }) ?? []
     );
-  }, [getAmountInUSD, getContract, syPools, syPolygonPools, version]);
+  }, [getAmountInUSD, getContract, syPools, syPolygonPools, versionSy]);
 
   const filters = useMemo(
     () =>
@@ -288,7 +291,7 @@ const TreasuryFees: FC = () => {
     syPools?.forEach(pool => {
       getOrCreateContract(pool.providerAddress, () => new SYProviderContract(pool.providerAddress), {
         afterInit: contract => {
-          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.on(Web3Contract.UPDATE_DATA, reloadSy);
           contract.loadUnderlyingFees().catch(Error);
         },
       });
@@ -300,7 +303,7 @@ const TreasuryFees: FC = () => {
       getOrCreateContract(pool.providerAddress, () => new SYProviderContract(pool.providerAddress), {
         afterInit: contract => {
           contract.setCallProvider(PolygonHttpsWeb3Provider);
-          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.on(Web3Contract.UPDATE_DATA, reloadSy);
           contract.loadUnderlyingFees().catch(Error);
         },
       });
@@ -336,13 +339,13 @@ const TreasuryFees: FC = () => {
         } as SeExtendedPoolApiType;
       }) ?? []
     );
-  }, [sePoolsMainnet, sePoolsPolygon, version]);
+  }, [sePoolsMainnet, sePoolsPolygon, versionSe]);
 
   useEffect(() => {
     sePoolsMainnet?.forEach(pool => {
       getOrCreateContract(pool.poolAddress, () => new SeEPoolContract(pool.poolAddress), {
         afterInit: contract => {
-          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.on(Web3Contract.UPDATE_DATA, reloadSe);
           contract.getCumulativeFeeA().catch(Error);
           contract.getCumulativeFeeB().catch(Error);
         },
@@ -355,7 +358,7 @@ const TreasuryFees: FC = () => {
       getOrCreateContract(pool.poolAddress, () => new SeEPoolContract(pool.poolAddress), {
         afterInit: contract => {
           contract.setCallProvider(PolygonHttpsWeb3Provider);
-          contract.on(Web3Contract.UPDATE_DATA, reload);
+          contract.on(Web3Contract.UPDATE_DATA, reloadSe);
           contract.getCumulativeFeeA().catch(Error);
           contract.getCumulativeFeeB().catch(Error);
         },
@@ -365,6 +368,7 @@ const TreasuryFees: FC = () => {
 
   const { data: saPoolsMainnet = [], loading: saLoadingMainnet } = useFetchSaPools();
   const { data: saPoolsPolygon = [], loading: saLoadingPolygon } = useFetchSaPools(PolygonNetwork.config.api.baseUrl);
+
   const saPools = useMemo(() => {
     return (
       saPoolsMainnet.concat(saPoolsPolygon).map(pool => {
@@ -382,7 +386,30 @@ const TreasuryFees: FC = () => {
         } as SaExtendedPoolApiType;
       }) ?? []
     );
-  }, [saPoolsMainnet, saPoolsPolygon, version]);
+  }, [saPoolsMainnet, saPoolsPolygon, versionSa]);
+
+  useEffect(() => {
+    saPoolsMainnet?.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.on(Web3Contract.UPDATE_DATA, reloadSa);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [saPoolsMainnet]);
+
+  useEffect(() => {
+    saPoolsPolygon?.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(PolygonHttpsWeb3Provider);
+          contract.on(Web3Contract.UPDATE_DATA, reloadSa);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [saPoolsPolygon]);
 
   const totalFeesUSDSy = useMemo(() => {
     return BigNumber.sumEach(dataSource, pool => pool.feesAmountUSD ?? BigNumber.ZERO) ?? 0;
