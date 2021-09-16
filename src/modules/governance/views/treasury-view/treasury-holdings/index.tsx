@@ -158,8 +158,8 @@ const TreasuryHoldings: FC = () => {
   const historyItemsCount = historyResult?.meta.count ?? 0;
 
   const tokensSource = useMemo(() => {
-    const tokens = treasuryTokens
-      ?.map<ExtendedAPITreasuryToken | undefined>(treasuryToken => {
+    const tokens = (treasuryTokens ?? [])
+      .map<ExtendedAPITreasuryToken | undefined>(treasuryToken => {
         const token = getToken(treasuryToken.symbol);
 
         if (!token) {
