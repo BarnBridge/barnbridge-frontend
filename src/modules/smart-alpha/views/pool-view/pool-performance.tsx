@@ -68,7 +68,10 @@ export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol:
                 }) ?? value
               } ${oracleAssetSymbol}`,
             itemsFormat: value => `${formatToken(value) ?? value} ${oracleAssetSymbol}`,
-            domain: ['dataMin', 'dataMax'],
+            domain: [
+              (dataMin, domain = [dataMin, dataMin]) => dataMin - (domain[1] - dataMin) * 0.1,
+              (dataMax, domain = [dataMax, dataMax]) => dataMax + (dataMax - domain[0]) * 0.1,
+            ],
             items:
               trancheFilter === TrancheFilterTypeKey.senior
                 ? [
