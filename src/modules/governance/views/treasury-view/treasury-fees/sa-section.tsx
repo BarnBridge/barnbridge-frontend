@@ -14,33 +14,36 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon, TokenIconPair } from 'components/token-icon';
-import { PoolApiType } from 'modules/smart-exposure/api';
-import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
+import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { TokenIcon } from 'components/token-icon';
+import { PoolApiType } from 'modules/smart-alpha/api';
+import SaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { MainnetNetwork } from 'networks/mainnet';
+import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
-import { MainnetNetwork } from '../../../../../networks/mainnet';
-import { PolygonNetwork } from '../../../../../networks/polygon';
-
 export type ExtendedPoolApiType = PoolApiType & {
-  providerContract: SeEPoolContract | undefined;
+  providerContract: SaContract | undefined;
   isPolygon: boolean;
-  feesAmountTokenA: BigNumber | undefined;
-  feesAmountUSDTokenA: BigNumber | undefined;
-  feesAmountTokenB: BigNumber | undefined;
-  feesAmountUSDTokenB: BigNumber | undefined;
+  feesAmountToken: BigNumber | undefined;
+  feesAmountUSDToken: BigNumber | undefined;
 };
 
 const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: <div>Token Name</div>,
     render: function Render(entity) {
-      const { getTokenIconBySymbol } = useKnownTokens();
-      const tokenAIcon = getTokenIconBySymbol(entity.tokenA.symbol);
-      const tokenBIcon = getTokenIconBySymbol(entity.tokenB.symbol);
+      const { getToken } = useTokens();
+      const token = getToken(entity.poolToken.symbol);
+      const oracle = getAsset(entity.oracleAssetSymbol);
       return (
         <div className="flex flow-col align-center">
-          <TokenIconPair name1={tokenAIcon} name2={tokenBIcon} className="mr-16" />
+          <TokenIcon
+            name={token?.icon ?? 'unknown'}
+            bubble2Name={oracle?.icon ?? 'unknown'}
+            size={32}
+            className="mr-16"
+          />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">
@@ -49,7 +52,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
               <Icon name="external" size={8} color="blue" />
             </ExplorerAddressLink>
             <Text type="small" weight="semibold" color="secondary">
-              {entity.tokenA.symbol} – {entity.tokenB.symbol}
+              {entity.poolToken.symbol}
             </Text>
           </div>
         </div>
@@ -70,34 +73,17 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     },
   },
   {
-    heading: <div className="text-right">Token A amount</div>,
+    heading: <div className="text-right">Token amount</div>,
     render: entity => {
       return (
         <div className="text-right">
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.feesAmountTokenA ?? BigNumber.ZERO, {
+            {formatToken(entity.feesAmountToken ?? BigNumber.ZERO, {
               compact: true,
             }) ?? '-'}
           </Text>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(entity.feesAmountUSDTokenA) ?? '-'}
-          </Text>
-        </div>
-      );
-    },
-  },
-  {
-    heading: <div className="text-right">Token B amount</div>,
-    render: entity => {
-      return (
-        <div className="text-right">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.feesAmountTokenB ?? BigNumber.ZERO, {
-              compact: true,
-            }) ?? '-'}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(entity.feesAmountUSDTokenB) ?? '-'}
+            {formatUSD(entity.feesAmountUSDToken) ?? '-'}
           </Text>
         </div>
       );
@@ -106,7 +92,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: '',
     render: function Render(entity: ExtendedPoolApiType) {
-      const { feesAmountTokenA, feesAmountTokenB, isPolygon } = entity;
+      const { feesAmountToken, isPolygon } = entity;
 
       const wallet = useWallet();
       const { getTokenIconBySymbol } = useKnownTokens();
@@ -122,8 +108,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
 
         try {
           await entity.providerContract?.transferFees(args.gasPrice);
-          await entity.providerContract?.getCumulativeFeeA();
-          await entity.providerContract?.getCumulativeFeeB();
+          await entity.providerContract?.getFeesAccrued();
         } catch (e) {
           console.error(e);
         } finally {
@@ -136,7 +121,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
           <button
             type="button"
             className="button-ghost ml-auto"
-            disabled={!feesAmountTokenA?.gt(BigNumber.ZERO) || !feesAmountTokenB?.gt(BigNumber.ZERO) || harvesting}
+            disabled={!feesAmountToken?.gt(BigNumber.ZERO) || harvesting}
             onClick={() => setConfirmVisible(true)}>
             {harvesting && <Spinner className="mr-8" />}
             Transfer fees
@@ -152,20 +137,11 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                   <div className="container-box flex align-center col-gap-32 mb-32">
                     <div>
                       <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                        {entity.tokenA.symbol} fee
+                        {entity.poolToken.symbol} fee
                       </Text>
                       <Text type="p1" weight="bold" color="primary" className="flex align-center">
-                        {formatToken(feesAmountTokenA) ?? '-'}
-                        <TokenIcon name={getTokenIconBySymbol(entity.tokenA.symbol)} size={24} className="ml-8" />
-                      </Text>
-                    </div>
-                    <div>
-                      <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                        {entity.tokenB.symbol} fee
-                      </Text>
-                      <Text type="p1" weight="bold" color="primary" className="flex align-center">
-                        {formatToken(feesAmountTokenB) ?? '-'}
-                        <TokenIcon name={getTokenIconBySymbol(entity.tokenB.symbol)} size={24} className="ml-8" />
+                        {formatToken(feesAmountToken) ?? '-'}
+                        <TokenIcon name={getTokenIconBySymbol(entity.poolToken.symbol)} size={24} className="ml-8" />
                       </Text>
                     </div>
                   </div>
@@ -199,7 +175,7 @@ type TreasuryFilterType = {
   pool: string;
 };
 
-export const SESection = ({
+export const SASection = ({
   pools,
   total,
   loadingMainnet,
@@ -274,7 +250,7 @@ export const SESection = ({
           </div>
           <div className="flex flow-row row-gap-4 mr-64">
             <Text type="p1" weight="semibold" color="primary">
-              SMART Exposure
+              SMART Alpha
             </Text>
             <Text type="small" weight="semibold" color="secondary">
               Fees
