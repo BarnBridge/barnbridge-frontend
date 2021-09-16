@@ -40,9 +40,9 @@ export type PoolApiType = {
   };
 };
 
-export function useFetchPools(): UseFetchReturn<PoolApiType[]> {
+export function useFetchPools(baseUrl?: string): UseFetchReturn<PoolApiType[]> {
   const config = useConfig();
-  const url = new URL(`/api/smartalpha/pools`, config.api.baseUrl);
+  const url = new URL(`/api/smartalpha/pools`, baseUrl ?? config.api.baseUrl);
 
   return useFetch(url, {
     transform: ({ data }) => data,
