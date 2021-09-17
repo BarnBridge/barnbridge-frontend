@@ -16,9 +16,11 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { TokenType, useTokens } from 'components/providers/tokensProvider';
+import { PolygonHttpsWeb3Provider } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
+import { useFetchSyPools } from 'modules/governance/api';
 import { useFetchPools as useFetchSaPools } from 'modules/smart-alpha/api';
 import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useFetchSePools } from 'modules/smart-exposure/api';
@@ -26,12 +28,10 @@ import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
 import { APISYPool } from 'modules/smart-yield/api';
 import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
 import { MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
+import { MainnetNetwork } from 'networks/mainnet';
+import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
-import { PolygonHttpsWeb3Provider } from '../../../../../components/providers/web3Provider';
-import { MainnetNetwork } from '../../../../../networks/mainnet';
-import { PolygonNetwork } from '../../../../../networks/polygon';
-import { useFetchSyPools } from '../../../api';
 import { SASection, ExtendedPoolApiType as SaExtendedPoolApiType } from './sa-section';
 import { SESection, ExtendedPoolApiType as SeExtendedPoolApiType } from './se-section';
 
@@ -319,26 +319,24 @@ const TreasuryFees: FC = () => {
   const { data: sePoolsPolygon = [], loading: loadingPolygon } = useFetchSePools(PolygonNetwork.config.api.baseUrl);
 
   const sePools = useMemo(() => {
-    return (
-      sePoolsMainnet.concat(sePoolsPolygon).map(pool => {
-        const isPolygon = Boolean(sePoolsPolygon?.includes(pool));
-        const providerContract = getContract<SeEPoolContract>(pool.poolAddress);
-        const feesAmountTokenA = providerContract?.cumulativeFeeA?.unscaleBy(pool.tokenA.decimals);
-        const feesAmountUSDTokenA = getAmountInUSD(feesAmountTokenA, pool.tokenA.symbol);
-        const feesAmountTokenB = providerContract?.cumulativeFeeB?.unscaleBy(pool.tokenB.decimals);
-        const feesAmountUSDTokenB = getAmountInUSD(feesAmountTokenB, pool.tokenB.symbol);
+    return (sePoolsMainnet ?? []).concat(sePoolsPolygon ?? []).map(pool => {
+      const isPolygon = Boolean(sePoolsPolygon?.includes(pool));
+      const providerContract = getContract<SeEPoolContract>(pool.poolAddress);
+      const feesAmountTokenA = providerContract?.cumulativeFeeA?.unscaleBy(pool.tokenA.decimals);
+      const feesAmountUSDTokenA = getAmountInUSD(feesAmountTokenA, pool.tokenA.symbol);
+      const feesAmountTokenB = providerContract?.cumulativeFeeB?.unscaleBy(pool.tokenB.decimals);
+      const feesAmountUSDTokenB = getAmountInUSD(feesAmountTokenB, pool.tokenB.symbol);
 
-        return {
-          ...pool,
-          isPolygon,
-          providerContract,
-          feesAmountTokenA,
-          feesAmountUSDTokenA,
-          feesAmountTokenB,
-          feesAmountUSDTokenB,
-        } as SeExtendedPoolApiType;
-      }) ?? []
-    );
+      return {
+        ...pool,
+        isPolygon,
+        providerContract,
+        feesAmountTokenA,
+        feesAmountUSDTokenA,
+        feesAmountTokenB,
+        feesAmountUSDTokenB,
+      } as SeExtendedPoolApiType;
+    });
   }, [sePoolsMainnet, sePoolsPolygon, versionSe]);
 
   useEffect(() => {
@@ -370,22 +368,20 @@ const TreasuryFees: FC = () => {
   const { data: saPoolsPolygon = [], loading: saLoadingPolygon } = useFetchSaPools(PolygonNetwork.config.api.baseUrl);
 
   const saPools = useMemo(() => {
-    return (
-      saPoolsMainnet.concat(saPoolsPolygon).map(pool => {
-        const isPolygon = Boolean(saPoolsPolygon?.includes(pool));
-        const providerContract = getContract<SmartAlphaContract>(pool.poolAddress);
-        const feesAmountToken = providerContract?.feesAccrued?.unscaleBy(pool.poolToken.decimals);
-        const feesAmountUSDToken = getAmountInUSD(feesAmountToken, pool.poolToken.symbol);
+    return (saPoolsMainnet ?? []).concat(saPoolsPolygon ?? []).map(pool => {
+      const isPolygon = Boolean(saPoolsPolygon?.includes(pool));
+      const providerContract = getContract<SmartAlphaContract>(pool.poolAddress);
+      const feesAmountToken = providerContract?.feesAccrued?.unscaleBy(pool.poolToken.decimals);
+      const feesAmountUSDToken = getAmountInUSD(feesAmountToken, pool.poolToken.symbol);
 
-        return {
-          ...pool,
-          isPolygon,
-          providerContract,
-          feesAmountToken,
-          feesAmountUSDToken,
-        } as SaExtendedPoolApiType;
-      }) ?? []
-    );
+      return {
+        ...pool,
+        isPolygon,
+        providerContract,
+        feesAmountToken,
+        feesAmountUSDToken,
+      } as SaExtendedPoolApiType;
+    });
   }, [saPoolsMainnet, saPoolsPolygon, versionSa]);
 
   useEffect(() => {

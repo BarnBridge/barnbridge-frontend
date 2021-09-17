@@ -1,8 +1,10 @@
-import { useMemo } from 'react';
+import { Component, useMemo, useRef } from 'react';
 import { format } from 'date-fns';
+import { isFunction } from 'lodash';
 import { nanoid } from 'nanoid';
 import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
-import { AxisDomain } from 'recharts/types/util/types';
+import { CategoricalChartProps, CategoricalChartState } from 'recharts/types/chart/generateCategoricalChart';
+import { AxisDomain, AxisDomainItem } from 'recharts/types/util/types';
 
 import Spin from 'components/antd/spin';
 import { Text } from 'components/custom/typography';
@@ -83,6 +85,28 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
 
   const hasRightYAxis = y.items.some(item => item.yAxisId === 'right');
 
+  const chartRef = useRef<Component<CategoricalChartProps, CategoricalChartState>>();
+
+  const yDomainLeft = useMemo(() => {
+    if (!chartRef.current || !y.domain || !Array.isArray(y.domain)) {
+      return y.domain;
+    }
+
+    const [min, max] = y.domain;
+    const { yAxisMap } = chartRef.current.state as CategoricalChartState;
+
+    if (!isFunction(min) || !isFunction(max) || !yAxisMap || !yAxisMap.left) {
+      return y.domain;
+    }
+
+    const { domain = [] } = yAxisMap.left;
+
+    return [
+      dataMin => min(dataMin, domain ?? [dataMin, dataMin]),
+      dataMax => max(dataMax, domain ?? [dataMax, dataMax]),
+    ] as [AxisDomainItem, AxisDomainItem];
+  }, [chartRef.current, y.domain]);
+
   return (
     <Spin spinning={loading}>
       {data.length === 0 ? (
@@ -94,7 +118,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
         </div>
       ) : (
         <ResponsiveContainer width="100%" height={300} className={className}>
-          <AreaChart data={data}>
+          <AreaChart ref={chartRef as any} data={data}>
             <defs>
               {areaUniqIds.map((areaId, idx) => (
                 <linearGradient key={areaId} id={areaId} gradientTransform="rotate(180)">
@@ -119,7 +143,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               tickFormatter={y.format}
               orientation="left"
               yAxisId="left"
-              domain={y.domain}
+              domain={yDomainLeft}
             />
             {hasRightYAxis && (
               <YAxis
