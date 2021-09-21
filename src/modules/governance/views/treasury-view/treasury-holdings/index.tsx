@@ -7,7 +7,7 @@ import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
 import Tooltip from 'components/antd/tooltip';
-import { ExplorerAddressLink } from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/custom/externalLink';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
@@ -62,11 +62,11 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
   {
     heading: 'Transaction Hash',
     render: entity => (
-      <ExplorerAddressLink address={entity.transactionHash}>
+      <ExplorerTxLink address={entity.transactionHash}>
         <Text type="p1" weight="semibold" color="blue">
           {shortenAddr(entity.transactionHash)}
         </Text>
-      </ExplorerAddressLink>
+      </ExplorerTxLink>
     ),
   },
   {

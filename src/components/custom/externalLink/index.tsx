@@ -31,4 +31,20 @@ export const ExplorerAddressLink: FC<ExplorerAddressLinkProps> = props => {
   );
 };
 
+type ExplorerTxLinkProps = ExternalLinkProps & {
+  address: string;
+};
+
+export const ExplorerTxLink: FC<ExplorerTxLinkProps> = props => {
+  const { children, address, ...rest } = props;
+
+  const { getEtherscanTxUrl } = useWeb3();
+
+  return (
+    <ExternalLink href={getEtherscanTxUrl(address)} {...rest}>
+      {children}
+    </ExternalLink>
+  );
+};
+
 export default ExternalLink;
