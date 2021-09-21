@@ -34,7 +34,7 @@ export const PortfolioStatistics = () => {
       <div className={s.portfolioContainer}>
         <PortfolioBalance
           total={totalBalance}
-          totalHint="This figure shows the USD-denominated value of the junior and senior tokens in your wallet. It does not include any assets currently within either of the deposit or withdrawal queues."
+          totalHint="This figure shows the USD-denominated value of the junior and senior tokens in your wallet."
           aggregated={null}
           aggregatedColor="red"
           data={[
