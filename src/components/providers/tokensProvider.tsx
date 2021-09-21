@@ -27,6 +27,10 @@ export enum Tokens {
   UNIV2 = 'UNI-V2',
   BTC = 'BTC',
   USD = 'USD',
+  XSUSHI = 'xsushi',
+  LINK = 'link',
+  UNI = 'uni',
+  FEI = 'fei',
 }
 
 export type BaseTokenType = {
@@ -131,6 +135,38 @@ export const UNIV2: BaseTokenType = {
   name: 'Uniswap V2',
   decimals: 18,
   icon: 'uniswap',
+};
+
+export const XSUSHI: BaseTokenType = {
+  address: '0x8798249c2e607446efb7ad49ec89dd1865ff4272',
+  symbol: Tokens.XSUSHI,
+  name: 'xSUSHI',
+  decimals: 18,
+  icon: 'xsushi',
+};
+
+export const LINK: BaseTokenType = {
+  address: '0x514910771af9ca656af840dff83e8264ecf986ca',
+  symbol: Tokens.LINK,
+  name: 'Chainlink',
+  decimals: 18,
+  icon: 'link',
+};
+
+export const UNI: BaseTokenType = {
+  address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+  symbol: Tokens.UNI,
+  name: 'Uniswap',
+  decimals: 18,
+  icon: 'uni',
+};
+
+export const FEI: BaseTokenType = {
+  address: '0x956f47f50a910163d8bf957cf5846d573e7f87ca',
+  symbol: Tokens.FEI,
+  name: 'Fei Protocol',
+  decimals: 18,
+  icon: 'fei',
 };
 
 export const ProjectToken: BaseTokenType = BOND;
@@ -263,7 +299,24 @@ async function getPriceFor(symbol: string): Promise<BigNumber | undefined> {
   }
 }
 
-const ALL_TOKENS: BaseTokenType[] = [WBTC, WETH, USDC, USDT, SUSD, GUSD, DAI, RAI, STK_AAVE, MATIC, BOND, UNIV2];
+const ALL_TOKENS: BaseTokenType[] = [
+  WBTC,
+  WETH,
+  USDC,
+  USDT,
+  SUSD,
+  GUSD,
+  DAI,
+  RAI,
+  STK_AAVE,
+  MATIC,
+  BOND,
+  UNIV2,
+  XSUSHI,
+  LINK,
+  UNI,
+  FEI,
+];
 
 const TokensProvider: FC = props => {
   const { children } = props;

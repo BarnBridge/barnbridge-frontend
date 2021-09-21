@@ -29,6 +29,10 @@ export type TokenIconNames =
   | 'usd'
   | 'uniswap'
   | 'wmatic'
+  | 'xsushi'
+  | 'link'
+  | 'uni'
+  | 'fei'
   | 'all';
 
 type TokenIconProps = {
@@ -41,7 +45,7 @@ type TokenIconProps = {
   outline?: 'green' | 'purple';
 };
 
-const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai', 'xsushi'];
 
 const svgPath = `${process.env.PUBLIC_URL}/token-icons-sprite.svg`;
 
