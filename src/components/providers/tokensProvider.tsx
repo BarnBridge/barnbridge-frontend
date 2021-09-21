@@ -22,11 +22,15 @@ export enum Tokens {
   DAI = 'DAI',
   RAI = 'RAI',
   STK_AAVE = 'stkAAVE',
-  WMATIC = 'MATIC',
+  WMATIC = 'WMATIC',
   BOND = 'BOND',
   UNIV2 = 'UNI-V2',
   BTC = 'BTC',
   USD = 'USD',
+  XSUSHI = 'xSUSHI',
+  LINK = 'LINK',
+  UNI = 'UNI',
+  FEI = 'FEI',
 }
 
 export type BaseTokenType = {
@@ -133,6 +137,38 @@ export const UNIV2: BaseTokenType = {
   icon: 'uniswap',
 };
 
+export const XSUSHI: BaseTokenType = {
+  address: '0x8798249c2e607446efb7ad49ec89dd1865ff4272',
+  symbol: Tokens.XSUSHI,
+  name: 'xSUSHI',
+  decimals: 18,
+  icon: 'xsushi',
+};
+
+export const LINK: BaseTokenType = {
+  address: '0x514910771af9ca656af840dff83e8264ecf986ca',
+  symbol: Tokens.LINK,
+  name: 'Chainlink',
+  decimals: 18,
+  icon: 'link',
+};
+
+export const UNI: BaseTokenType = {
+  address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+  symbol: Tokens.UNI,
+  name: 'Uniswap',
+  decimals: 18,
+  icon: 'uni',
+};
+
+export const FEI: BaseTokenType = {
+  address: '0x956f47f50a910163d8bf957cf5846d573e7f87ca',
+  symbol: Tokens.FEI,
+  name: 'Fei Protocol',
+  decimals: 18,
+  icon: 'fei',
+};
+
 export const ProjectToken: BaseTokenType = BOND;
 
 export type TokenType = BaseTokenType & {
@@ -197,6 +233,18 @@ async function getRaiPrice(): Promise<BigNumber | undefined> {
   return BigNumber.from(result['rai'].usd);
 }
 
+async function getXSushiPrice(): Promise<BigNumber | undefined> {
+  const query = queryfy({
+    ids: ['xsushi'],
+    vs_currencies: 'usd',
+  });
+
+  const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
+  const result = await fetch(String(url)).then(response => response.json());
+
+  return BigNumber.from(result['xsushi'].usd);
+}
+
 async function getBondPrice(poolAddress: string): Promise<BigNumber | undefined> {
   const contract = new Erc20Contract(UNISWAP_V2_BOND_USDC_ABI, poolAddress);
   contract.setCallProvider(MainnetHttpsWeb3Provider);
@@ -250,10 +298,18 @@ async function getPriceFor(symbol: string): Promise<BigNumber | undefined> {
       return getChainlinkFeedPrice('0x547a514d5e3769680ce22b2361c10ea13619e8a9'); // Chainlink: STK_AAVE/USD
     case Tokens.WMATIC:
       return getChainlinkFeedPrice('0x7bac85a8a13a4bcd8abb3eb7d6b4d632c5a57676'); // Chainlink: MATIC/USD
+    case Tokens.LINK:
+      return getChainlinkFeedPrice('0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c'); // Chainlink: LINK/USD
+    case Tokens.UNI:
+      return getChainlinkFeedPrice('0x553303d460EE0afB37EdFf9bE42922D8FF63220e'); // Chainlink: UNI/USD
+    case Tokens.FEI:
+      return getChainlinkFeedPrice('0x31e0a88fecB6eC0a411DBe0e9E76391498296EE9'); // Chainlink: FEI/USD
     case Tokens.GUSD:
       return getGusdPrice(); // Coingecko API: GUSD/USD
     case Tokens.RAI:
       return getRaiPrice(); // Coingecko API: RAI/USD
+    case Tokens.XSUSHI:
+      return getXSushiPrice(); // Coingecko API: XSUSHI/USD
     case Tokens.BOND:
       return getBondPrice('0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244'); // UNISWAP V2: BOND/USDC
     case Tokens.UNIV2:
@@ -263,7 +319,24 @@ async function getPriceFor(symbol: string): Promise<BigNumber | undefined> {
   }
 }
 
-const ALL_TOKENS: BaseTokenType[] = [WBTC, WETH, USDC, USDT, SUSD, GUSD, DAI, RAI, STK_AAVE, MATIC, BOND, UNIV2];
+const ALL_TOKENS: BaseTokenType[] = [
+  WBTC,
+  WETH,
+  USDC,
+  USDT,
+  SUSD,
+  GUSD,
+  DAI,
+  RAI,
+  STK_AAVE,
+  MATIC,
+  BOND,
+  UNIV2,
+  XSUSHI,
+  LINK,
+  UNI,
+  FEI,
+];
 
 const TokensProvider: FC = props => {
   const { children } = props;
