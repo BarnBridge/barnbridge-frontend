@@ -81,6 +81,9 @@ export const PolygonConfig: NetworkConfig = {
       ePoolPeriphery: '0xb9556a673f2e01333570e68d95dDd17d92A0511A',
       ePoolHelper: '0x32f8E7FB11432263E545faA368a6a1f8eFB58314',
     },
+    sa: {
+      loupe: '0x6CBEBcb4705bb4aFB602D926864DD228ad4F1aa1',
+    },
   },
 };
 
