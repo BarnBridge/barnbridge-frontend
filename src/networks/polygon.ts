@@ -22,6 +22,7 @@ export const PolygonConfig: NetworkConfig = {
     smartYield: true,
     smartYieldReward: true,
     smartExposure: true,
+    smartAlpha: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -31,7 +32,7 @@ export const PolygonConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha.polygon.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-poly-v2.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,
