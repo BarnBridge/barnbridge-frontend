@@ -1,6 +1,5 @@
-import { useMemo } from 'react';
+import React, { useMemo } from 'react';
 
-import { Alert } from 'components/alert';
 import PortfolioBalance from 'components/portfolio-balance';
 import { useFetchPortfolioValue } from 'modules/smart-alpha/api';
 import { useWallet } from 'wallets/walletProvider';
@@ -14,14 +13,20 @@ export const PortfolioStatistics = () => {
   const { account } = useWallet();
   const { data } = useFetchPortfolioValue();
 
-  const [seniorBalance, juniorBalance, totalBalance] = useMemo(() => {
+  const [seniorBalance, juniorBalance, entryQueueValue, exitQueueValue, totalBalance] = useMemo(() => {
     const last = data?.[data?.length - 1];
 
     if (!last) {
       return [undefined, undefined, undefined];
     }
 
-    return [last.seniorValue, last.juniorValue, last.seniorValue + last.juniorValue];
+    return [
+      last.seniorValue,
+      last.juniorValue,
+      last.entryQueueValue,
+      last.exitQueueValue,
+      last.seniorValue + last.juniorValue + last.entryQueueValue + last.exitQueueValue,
+    ];
   }, [data]);
 
   return (
@@ -36,13 +41,10 @@ export const PortfolioStatistics = () => {
             ['Senior balance', seniorBalance, 'var(--theme-green-color)'],
             ['Junior balance', juniorBalance, 'var(--theme-purple-color)'],
           ]}
-          footer={
-            <Alert
-              type="info"
-              title="Queued balances are not considered towards your portfolio balance"
-              className="mt-32"
-            />
-          }
+          secondaryData={[
+            ['Entry Queue', entryQueueValue, '#4F6AE5'],
+            ['Exit Queue', exitQueueValue, '#B9C3F5'],
+          ]}
         />
         <PortfolioValue />
       </div>

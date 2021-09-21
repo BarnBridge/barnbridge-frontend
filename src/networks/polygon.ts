@@ -32,7 +32,7 @@ export const PolygonConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha-poly-v2.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-poly-v2.api.barnbridge.com' : 'https://prod-poly-v2.api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,
