@@ -138,12 +138,16 @@ type PortfolioValueApiType = {
   point: string;
   juniorValue: string;
   seniorValue: string;
+  entryQueueValue: string;
+  exitQueueValue: string;
 };
 
 type PortfolioValueType = {
   point: string;
   juniorValue: number;
   seniorValue: number;
+  entryQueueValue: number;
+  exitQueueValue: number;
 };
 
 export function useFetchPortfolioValue(periodFilter?: PortfolioPeriodTabsKey): UseFetchReturn<PortfolioValueType[]> {
@@ -157,10 +161,12 @@ export function useFetchPortfolioValue(periodFilter?: PortfolioPeriodTabsKey): U
 
   return useFetch(url, {
     transform: ({ data }: { data: PortfolioValueApiType[] }) =>
-      data.map(({ juniorValue, seniorValue, ...rest }) => ({
+      data.map(({ juniorValue, seniorValue, entryQueueValue, exitQueueValue, ...rest }) => ({
         ...rest,
         juniorValue: Number(juniorValue),
         seniorValue: Number(seniorValue),
+        entryQueueValue: Number(entryQueueValue),
+        exitQueueValue: Number(exitQueueValue),
       })),
   });
 }

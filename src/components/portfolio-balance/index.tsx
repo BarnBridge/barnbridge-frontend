@@ -17,6 +17,7 @@ type Props = {
   aggregatedText?: React.ReactNode;
   aggregatedColor: TextProps['color'];
   data: [[string, number | undefined, string], [string, number | undefined, string]];
+  secondaryData?: [[string, number | undefined, string], [string, number | undefined, string]];
   footer?: ReactNode;
 };
 
@@ -29,6 +30,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
     aggregatedColor,
     aggregatedText,
     data: [[label1, value1, color1], [label2, value2, color2]],
+    secondaryData,
     footer,
   } = props;
 
@@ -83,7 +85,7 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
           trailColor={value2 !== undefined && value2 > 0 ? color2 : undefined}
           strokeColor={color1}
         />
-        <div className="mt-24 flex align-top">
+        <div className="flex flow-col align-top mt-24">
           <div className={classNames(s.dataColumn, 'flex-grow')} style={{ '--color': color1 } as React.CSSProperties}>
             <Text type="small" weight="semibold" color="secondary" className="mb-4">
               {label1}
@@ -101,6 +103,46 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
             </Text>
           </div>
         </div>
+        {secondaryData &&
+          (() => {
+            const [[label3, value3, color3], [label4, value4, color4]] = secondaryData;
+            const progress = ((value3 ?? 0) * 100) / ((value3 ?? 0) + (value4 ?? 0));
+
+            return (
+              <div className="flex flow-row mt-24">
+                <Progress
+                  className={s.progress}
+                  strokeLinecap="square"
+                  percent={progress}
+                  strokeWidth={8}
+                  trailColor={value4 !== undefined && value4 > 0 ? color4 : undefined}
+                  strokeColor={color3}
+                />
+                <div className="flex flow-col align-top mt-24">
+                  <div
+                    className={classNames(s.dataColumn, 'flex-grow')}
+                    style={{ '--color': color3 } as React.CSSProperties}>
+                    <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                      {label3}
+                    </Text>
+                    <Text type="p1" weight="semibold" color="primary">
+                      {formatUSDValue(value3)}
+                    </Text>
+                  </div>
+                  <div
+                    className={classNames(s.dataColumn, 'flex-grow')}
+                    style={{ '--color': color4 } as React.CSSProperties}>
+                    <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                      {label4}
+                    </Text>
+                    <Text type="p1" weight="semibold" color="primary">
+                      {formatUSDValue(value4)}
+                    </Text>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         {footer}
       </div>
     </div>

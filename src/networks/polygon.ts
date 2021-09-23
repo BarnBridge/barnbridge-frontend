@@ -32,7 +32,7 @@ export const PolygonConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha-poly-v2.api.barnbridge.com' : 'https://polygon.api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-poly-v2.api.barnbridge.com' : 'https://prod-poly-v2.api.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,
@@ -80,6 +80,9 @@ export const PolygonConfig: NetworkConfig = {
     se: {
       ePoolPeriphery: '0xb9556a673f2e01333570e68d95dDd17d92A0511A',
       ePoolHelper: '0x32f8E7FB11432263E545faA368a6a1f8eFB58314',
+    },
+    sa: {
+      loupe: '0x6CBEBcb4705bb4aFB602D926864DD228ad4F1aa1',
     },
   },
 };
