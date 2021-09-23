@@ -322,8 +322,8 @@ export function useFetchPreviousEpochs({
   const [loading, setLoading] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [data, setData] = useState<EpochApiType[] | undefined>();
-  const [hasNewer, setHasNewer] = useState<boolean>(false);
-  const [hasOlder, setHasOlder] = useState<boolean>(false);
+  const [hasNewer, setHasNewer] = useState<boolean>(true);
+  const [hasOlder, setHasOlder] = useState<boolean>(true);
   const [error, setError] = useState<Error | undefined>();
 
   const fetchData = async ({ direction, cursor }: { direction?: 'up' | 'down'; cursor: string | undefined }) => {
@@ -351,9 +351,25 @@ export function useFetchPreviousEpochs({
       const fetchedData = await executeFetch(String(url));
 
       setLoaded(true);
-      setData(fetchedData.data);
-      setHasNewer(fetchedData.meta.hasNewer);
-      setHasOlder(fetchedData.meta.hasOlder);
+
+      if (direction) {
+        setData(prevData => [
+          ...(direction === 'up' ? fetchedData.data : []),
+          ...(prevData ?? []),
+          ...(direction === 'down' ? fetchedData.data : []),
+        ]);
+        if (!fetchedData.meta.hasNewer) {
+          setHasNewer(fetchedData.meta.hasNewer);
+        }
+
+        if (!fetchedData.meta.hasOlder) {
+          setHasOlder(fetchedData.meta.hasOlder);
+        }
+      } else {
+        setData(fetchedData.data);
+        setHasNewer(fetchedData.meta.hasNewer);
+        setHasOlder(fetchedData.meta.hasOlder);
+      }
     } catch (e) {
       setError(e as Error);
       setData(undefined);
