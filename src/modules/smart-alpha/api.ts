@@ -92,6 +92,11 @@ export function useFetchTokenPrice(
   });
 }
 
+export enum EpochFilterTypeKey {
+  current = 'current',
+  last = 'last',
+}
+
 type PoolPerformanceApiType = {
   point: string;
   seniorWithSA: string;
@@ -112,7 +117,7 @@ type PoolPerformanceType = {
 
 export function useFetchPoolPerformance(
   poolAddress: string,
-  periodFilter?: PeriodTabsKey,
+  periodFilter?: EpochFilterTypeKey,
 ): UseFetchReturn<PoolPerformanceType[]> {
   const config = useConfig();
   const url = new URL(`/api/smartalpha/pools/${poolAddress}/pool-performance-chart`, config.api.baseUrl);
