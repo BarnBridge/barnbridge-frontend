@@ -14,9 +14,9 @@ export const PortfolioValue: React.FC = () => {
 
   const transformedData = useMemo(() => {
     if (Array.isArray(data)) {
-      return data.map(({ juniorValue, seniorValue, ...rest }) => ({
+      return data.map(({ juniorValue, seniorValue, entryQueueValue, exitQueueValue, ...rest }) => ({
         ...rest,
-        value: juniorValue + seniorValue,
+        value: juniorValue + seniorValue + entryQueueValue + exitQueueValue,
       }));
     }
 
