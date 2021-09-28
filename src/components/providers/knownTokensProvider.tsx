@@ -11,7 +11,6 @@ import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
-import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -388,7 +387,7 @@ const KnownTokensProvider: FC = props => {
         }
       }
 
-      if (network.activeNetwork === PolygonNetwork || network.activeNetwork === MumbaiNetwork) {
+      if (network.activeNetwork === PolygonNetwork) {
         switch (fSymbol) {
           case 'bb_cmUSDC':
             fSymbol = KnownTokens.bbcUSDC;
@@ -706,13 +705,13 @@ const KnownTokensProvider: FC = props => {
   }, [getBondPrice, getFeedPrice, getJATokenPrice, getJTokenPrice, getTokenBySymbol, getUniV2Price, reload, tokens]);
 
   useEffect(() => {
-    if (projectToken) {
+    if (projectToken?.contract) {
       (projectToken.contract as Erc20Contract).loadCommon().catch(Error);
     }
   }, [projectToken]);
 
   useEffect(() => {
-    if (projectToken && wallet.account) {
+    if (projectToken?.contract && wallet.account) {
       (projectToken.contract as Erc20Contract).loadBalance().then(reload);
     }
   }, [projectToken, reload, wallet.account]);
