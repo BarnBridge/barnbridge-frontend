@@ -13,6 +13,21 @@ import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { TransactionApiType, useFetchTransactions } from 'modules/smart-alpha/api';
 
+const transactionTypeLabelMap = {
+  JUNIOR_ENTRY: 'Junior entry',
+  JUNIOR_REDEEM_TOKENS: 'Junior redeem tokens',
+  JUNIOR_EXIT: 'Junior exit',
+  JUNIOR_REDEEM_UNDERLYING: 'Junior redeem underlying',
+  SENIOR_ENTRY: 'Senior entry',
+  SENIOR_REDEEM_TOKENS: 'Senior redeem tokens',
+  SENIOR_EXIT: 'Senior exit',
+  SENIOR_REDEEM_UNDERLYING: 'Senior redeem underlying',
+  JTOKEN_SEND: 'Jtoken send',
+  JTOKEN_RECEIVE: 'Jtoken receive',
+  STOKEN_SEND: 'Stoken send',
+  STOKEN_RECEIVE: 'Stoken receive',
+};
+
 const filtersOptions: TableFilterType[] = [
   {
     name: 'transactionType',
@@ -24,14 +39,7 @@ const filtersOptions: TableFilterType[] = [
           value: '',
           label: 'All types',
         },
-        {
-          value: 'SENIOR_ENTRY',
-          label: 'Senior Entry',
-        },
-        {
-          value: 'JUNIOR_ENTRY',
-          label: 'Junior Entry',
-        },
+        ...Object.entries(transactionTypeLabelMap).map(([value, label]) => ({ value, label })),
       ];
 
       return <Select options={tokenOpts} className="full-width" />;
@@ -105,21 +113,6 @@ export const TransactionsTable = ({
       />
     </section>
   );
-};
-
-const transactionTypeLabelMap = {
-  JUNIOR_ENTRY: 'Junior entry',
-  JUNIOR_REDEEM_TOKENS: 'Junior redeem tokens',
-  JUNIOR_EXIT: 'Junior exit',
-  JUNIOR_REDEEM_UNDERLYING: 'Junior redeem underlying',
-  SENIOR_ENTRY: 'Senior entry',
-  SENIOR_REDEEM_TOKENS: 'Senior redeem tokens',
-  SENIOR_EXIT: 'Senior exit',
-  SENIOR_REDEEM_UNDERLYING: 'Senior redeem underlying',
-  JTOKEN_SEND: 'Jtoken send',
-  JTOKEN_RECEIVE: 'Jtoken receive',
-  STOKEN_SEND: 'Stoken send',
-  STOKEN_RECEIVE: 'Stoken receive',
 };
 
 function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {

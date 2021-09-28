@@ -161,7 +161,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
   return (
     <>
       <Form form={form}>
-        <div className="card p-24 flex col-gap-24 flex-grow mb-32 align-start">
+        <div className="card p-24 flex wrap col-gap-24 row-gap-16 flex-grow mb-32 align-end">
           <FormItem
             name="pricePerf"
             label="Price performance (%)"
@@ -196,7 +196,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
               />
             )}
           </FormItem>
-          <Button variation="primary" className="mt-24" size="big">
+          <Button variation="primary" size="big">
             {loading && <Spinner className="mr-8" />}
             Simulate
           </Button>

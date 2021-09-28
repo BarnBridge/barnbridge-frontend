@@ -83,6 +83,8 @@ const Epoch = ({
   const poolToken = getToken(poolTokenSymbol);
   const upsideLeverage =
     1 + ((1 - Number(item.upsideExposureRate)) * Number(item.seniorLiquidity)) / Number(item.juniorLiquidity);
+  const downsideLeverage =
+    Number(item.juniorLiquidity) > 0 ? Number(item.seniorLiquidity) / Number(item.juniorLiquidity) + 1 : 1;
 
   return (
     <section
@@ -143,8 +145,7 @@ const Epoch = ({
               Downside leverage
             </Text>
             <Text type="p2" weight="semibold" color="purple">
-              {/* {formatNumber(upsideLeverage || 1, { decimals: 2 })}x */}
-              TBD
+              {formatNumber(downsideLeverage, { decimals: 2 })}x
             </Text>
           </div>
           <div>

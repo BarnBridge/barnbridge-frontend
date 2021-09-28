@@ -42,7 +42,7 @@ const PoolsView = () => {
 
   return (
     <>
-      <div className="flex flow-col col-gap-32 mb-32">
+      <div className="flex flow-col wrap col-gap-32 row-gap-16 mb-32">
         <div className="card p-24" style={{ minWidth: '200px' }}>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Epoch TVL

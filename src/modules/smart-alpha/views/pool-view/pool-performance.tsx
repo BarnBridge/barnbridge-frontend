@@ -4,11 +4,9 @@ import { format } from 'date-fns';
 import { formatToken } from 'web3/utils';
 
 import { Chart } from 'components/chart';
-import { PeriodChartTabs, PeriodTabsKey, Tabs } from 'components/custom/tabs';
+import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
-import { useFetchPoolPerformance } from 'modules/smart-alpha/api';
-
-import { formatTick } from 'utils/chart';
+import { EpochFilterTypeKey, useFetchPoolPerformance } from 'modules/smart-alpha/api';
 
 export enum TrancheFilterTypeKey {
   senior = 'senior',
@@ -26,14 +24,25 @@ const trancheTabs = [
   },
 ];
 
+const epochTabs = [
+  {
+    id: EpochFilterTypeKey.current,
+    children: 'Current epoch',
+  },
+  {
+    id: EpochFilterTypeKey.last,
+    children: 'Last epoch',
+  },
+];
+
 export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol: string; className?: string }> = ({
   poolAddress,
   oracleAssetSymbol,
   className,
 }) => {
   const [trancheFilter, setTrancheFilter] = useState<TrancheFilterTypeKey>(TrancheFilterTypeKey.senior);
-  const [periodFilter, setPeriodFilter] = useState<PeriodTabsKey>(PeriodTabsKey.day);
-  const { data = [], loading } = useFetchPoolPerformance(poolAddress, periodFilter);
+  const [epochFilter, setEpochFilter] = useState<EpochFilterTypeKey>(EpochFilterTypeKey.current);
+  const { data = [], loading } = useFetchPoolPerformance(poolAddress, epochFilter);
 
   return (
     <div className={classNames('card', className)}>
@@ -49,7 +58,13 @@ export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol:
           size="small"
           className="ml-auto mr-16"
         />
-        <PeriodChartTabs activeKey={periodFilter} onClick={setPeriodFilter} size="small" />
+        <Tabs<EpochFilterTypeKey>
+          tabs={epochTabs}
+          activeKey={epochFilter}
+          onClick={setEpochFilter}
+          variation="elastic"
+          size="small"
+        />
       </div>
       <div className="p-24">
         <Chart
@@ -57,7 +72,7 @@ export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol:
           data={data ?? []}
           x={{
             key: 'point',
-            format: item => formatTick(item, periodFilter),
+            format: item => format(new Date(item), 'EEE HH:mm'),
             itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
           }}
           y={{

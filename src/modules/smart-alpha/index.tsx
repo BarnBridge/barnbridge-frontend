@@ -1,4 +1,5 @@
 import React, { Suspense, lazy } from 'react';
+import { isMobile } from 'react-device-detect';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { Spinner } from 'components/custom/spinner';
@@ -25,15 +26,19 @@ const SmartAlphaView: React.FC = () => {
       ),
       to: '/smart-alpha/pools',
     },
-    {
-      children: (
-        <>
-          <Icon name="wallet" className="mr-8" size={24} /> Portfolio
-        </>
-      ),
-      to: '/smart-alpha/portfolio',
-      disabled: !wallet.account,
-    },
+    ...(isMobile
+      ? []
+      : [
+          {
+            children: (
+              <>
+                <Icon name="wallet" className="mr-8" size={24} /> Portfolio
+              </>
+            ),
+            to: '/smart-alpha/portfolio',
+            disabled: !wallet.account,
+          },
+        ]),
   ];
 
   return (
