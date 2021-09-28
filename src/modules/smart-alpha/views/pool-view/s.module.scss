@@ -21,6 +21,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 32px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .epochCard {
@@ -79,6 +83,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   padding-top: 16px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .epochCardHeaderItem {
@@ -109,6 +117,10 @@
   grid-template-columns: 24% 1fr 24%;
   align-items: center;
   padding-top: 16px;
+
+  @media (max-width: 1024px) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .epochProgressLineBefore {
@@ -135,6 +147,10 @@
     height: 4px;
     border-radius: 4px;
     background-color: var(--theme-red-color);
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
   }
 }
 
@@ -163,6 +179,10 @@
     height: 100%;
     border-radius: 4px;
     background-color: var(--theme-border-color);
+  }
+
+  @media (max-width: 1024px) {
+    display: none;
   }
 }
 

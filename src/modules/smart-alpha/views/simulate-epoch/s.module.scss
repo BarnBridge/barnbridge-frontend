@@ -16,10 +16,15 @@
 
 .legend {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   gap: 16px 24px;
   margin-top: 32px;
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    justify-content: flex-start;
+  }
 }
 
 .legendItem {
@@ -40,5 +45,6 @@
     background-color: var(--dot-color, var(--theme-primary-color));
     border-radius: 50%;
     margin-right: 8px;
+    flex-shrink: 0;
   }
 }

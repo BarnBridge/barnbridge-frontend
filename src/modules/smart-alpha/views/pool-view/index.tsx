@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { isMobile } from 'react-device-detect';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -154,8 +155,8 @@ const PoolView = () => {
           Pools
         </Link>
       </div>
-      <div className="flex align-center mb-40">
-        <div className="flex align-center">
+      <div className="flex wrap col-gap-16 row-gap-16 align-center mb-40">
+        <div className="flex flex-grow align-center">
           <TokenIcon
             name={poolToken?.icon ?? 'unknown'}
             size={40}
@@ -171,13 +172,15 @@ const PoolView = () => {
             </Text>
           </div>
         </div>
-        <div className="flex col-gap-24 ml-auto">
+        <div className="flex col-gap-24">
           <Link to={`${location.pathname}/simulate-epoch`} variation="ghost">
             Simulate
           </Link>
-          <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
-            Deposit
-          </Link>
+          {!isMobile ? (
+            <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
+              Deposit
+            </Link>
+          ) : null}
         </div>
       </div>
       <div className={classNames(s.cards, 'mb-12')}>
@@ -624,7 +627,7 @@ const PoolView = () => {
         </div>
         <div className={s.epochProgressLineAfter} />
       </div>
-      <div className="flex align-center mb-32">
+      <div className="flex align-center row-gap-8 mb-32">
         <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>

@@ -78,13 +78,13 @@ type TableFooterType = {
 export const TableFooter: React.FC<TableFooterType> = ({ children, text, total, current, pageSize, onChange }) => {
   const generatedText = generateText({ text, total, current, pageSize });
   return (
-    <div className="flex p-24">
+    <div className={classNames(s.tableFooter, 'p-24')}>
       {generatedText ? (
         <Text type="p2" weight="semibold" color="secondary">
           {generatedText}
         </Text>
       ) : null}
-      <Pagination className="ml-auto" total={total} current={current} pageSize={pageSize} onChange={onChange} />
+      <Pagination total={total} current={current} pageSize={pageSize} onChange={onChange} />
     </div>
   );
 };
