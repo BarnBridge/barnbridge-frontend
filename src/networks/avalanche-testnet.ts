@@ -15,7 +15,6 @@ export const AvalancheDevConfig: NetworkConfig = {
   title: 'BarnBridge Avalanche',
   features: {
     smartAlpha: true,
-    gasFees: false,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
