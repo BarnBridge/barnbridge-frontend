@@ -27,7 +27,7 @@
 
   @media (max-width: 768px) {
     left: -100%;
-    position: absolute;
+    position: fixed;
     width: 275px !important;
     z-index: 10;
 
@@ -136,7 +136,7 @@
   bottom: 0;
   height: 100%;
   left: 0;
-  position: absolute;
+  position: fixed;
   right: 0;
   top: 0;
   visibility: hidden;
