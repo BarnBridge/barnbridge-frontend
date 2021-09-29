@@ -14,6 +14,7 @@ export type NetworkConfig = {
     smartAlpha?: boolean;
     faucets?: boolean;
     gasFees?: boolean;
+    addBondToken?: boolean;
   };
   wallets: {
     portisId: string;
