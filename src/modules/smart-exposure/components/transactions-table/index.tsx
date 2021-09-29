@@ -14,10 +14,12 @@ export const TransactionsTable = ({
   transactionType,
   accountAddress,
   poolAddress,
+  eTokenAddress,
 }: {
   transactionType?: TransactionApiType['transactionType'];
   accountAddress?: string;
   poolAddress?: string;
+  eTokenAddress?: string;
 }) => {
   const { getTokenIconBySymbol } = useKnownTokens();
   const seAPI = useSeAPI();
@@ -29,6 +31,7 @@ export const TransactionsTable = ({
     pageSize: number;
     accountAddress?: string;
     poolAddress?: string;
+    eTokenAddress?: string;
     transactionType?: TransactionApiType['transactionType'];
   }>({
     total: 0,
@@ -36,6 +39,7 @@ export const TransactionsTable = ({
     pageSize: 10,
     accountAddress,
     poolAddress,
+    eTokenAddress,
     transactionType,
   });
 
@@ -45,6 +49,7 @@ export const TransactionsTable = ({
       page: 1,
       accountAddress,
       poolAddress,
+      eTokenAddress,
       transactionType,
     }));
   }, [accountAddress, poolAddress, transactionType]);
@@ -58,6 +63,7 @@ export const TransactionsTable = ({
         limit: filters.pageSize,
         accountAddress: filters.accountAddress,
         poolAddress: filters.poolAddress,
+        eTokenAddress: filters.eTokenAddress,
         transactionType: filters.transactionType,
       })
       .then(result => {
