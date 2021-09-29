@@ -72,7 +72,7 @@ const PortfolioWithdraw: FC = () => {
 
   const canSubmit = formState.isDirty && !isSubmitting && !isLocked;
 
-  async function doWithdraw(amount: BigNumber, gasPrice: number) {
+  async function doWithdraw(amount: BigNumber, gasPrice?: number) {
     setSubmitting(true);
 
     try {
@@ -93,7 +93,7 @@ const PortfolioWithdraw: FC = () => {
     setConfirmModalVisible(false);
   }
 
-  async function handleConfirm(gasPrice: number) {
+  async function handleConfirm(gasPrice?: number) {
     if (!bnAmount) {
       return;
     }

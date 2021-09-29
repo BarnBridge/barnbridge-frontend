@@ -18,6 +18,7 @@ export const GoerliConfig: NetworkConfig = {
   title: 'BarnBridge Goerli',
   features: {
     dao: true,
+    gasFees: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',

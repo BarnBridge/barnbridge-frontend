@@ -101,7 +101,7 @@ const PortfolioDeposit: FC = () => {
     setEnabling(false);
   }
 
-  async function doDeposit(amount: BigNumber, gasPrice: number) {
+  async function doDeposit(amount: BigNumber, gasPrice?: number) {
     setSubmitting(true);
 
     try {
@@ -122,7 +122,7 @@ const PortfolioDeposit: FC = () => {
     setConfirmModalVisible(false);
   }
 
-  async function handleConfirm(gasPrice: number) {
+  async function handleConfirm(gasPrice?: number) {
     if (!bnAmount) {
       return;
     }

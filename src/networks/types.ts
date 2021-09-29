@@ -13,6 +13,7 @@ export type NetworkConfig = {
     smartExposure?: boolean;
     smartAlpha?: boolean;
     faucets?: boolean;
+    gasFees?: boolean;
   };
   wallets: {
     portisId: string;

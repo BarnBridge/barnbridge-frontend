@@ -23,6 +23,7 @@ export const KovanConfig: NetworkConfig = {
     smartYieldReward: true,
     smartExposure: true,
     smartAlpha: true,
+    gasFees: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
