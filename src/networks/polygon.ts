@@ -24,6 +24,7 @@ export const PolygonConfig: NetworkConfig = {
     smartExposure: true,
     smartAlpha: true,
     gasFees: true,
+    addBondToken: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
