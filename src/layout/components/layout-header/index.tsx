@@ -32,6 +32,7 @@ import s from './s.module.scss';
 
 const LayoutHeader: React.FC = () => {
   const { setNavOpen } = useGeneral();
+  const { activeNetwork } = useNetwork();
 
   return (
     <header className={s.component}>
@@ -59,7 +60,7 @@ const LayoutHeader: React.FC = () => {
               </Route>
             </Switch>
           )}
-          <AddTokenAction />
+          {activeNetwork.config.features.addBondToken && <AddTokenAction />}
           <NetworkAction />
           <NotificationsAction />
           <WalletAction />
