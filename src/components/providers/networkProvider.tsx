@@ -1,10 +1,10 @@
 import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSessionStorage } from 'react-use-storage';
 
+import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
 import { GoerliNetwork } from 'networks/goerli';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
-import { MumbaiNetwork } from 'networks/mumbai';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
@@ -30,7 +30,7 @@ export function useNetwork(): NetworkType {
 
 const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
-    return [KovanNetwork, MumbaiNetwork, GoerliNetwork, MainnetNetwork, PolygonNetwork, TestnetNetwork];
+    return [KovanNetwork, GoerliNetwork, MainnetNetwork, PolygonNetwork, TestnetNetwork, AvalancheTestnetNetwork];
   }
 
   if (isProductionMode) {

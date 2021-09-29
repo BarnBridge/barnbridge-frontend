@@ -1,7 +1,8 @@
-import { FC, ReactNode, useCallback, useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
+import classNames from 'classnames';
 
-import Icon from '../icon';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -9,20 +10,19 @@ const rootNode = document.querySelector('#root');
 const modalsNode = document.querySelector('#modal-root');
 
 type Props = {
-  heading?: ReactNode;
+  heading?: React.ReactNode;
   closeHandler: Function;
+  fullscreen?: boolean;
 };
 
-export const Modal: FC<Props> = ({ children, heading, closeHandler }) => {
-  const closeHandlerRef = useRef(closeHandler);
-
-  const keyboardHandler = useCallback(event => {
-    if (closeHandlerRef.current && event.key === 'Escape') {
-      closeHandlerRef.current();
-    }
-  }, []);
-
+export const Modal: React.FC<Props> = ({ children, heading, closeHandler, fullscreen = false }) => {
   useEffect(() => {
+    const keyboardHandler = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        closeHandler?.();
+      }
+    };
+
     document.addEventListener('keydown', keyboardHandler, false);
 
     if (rootNode) {
@@ -30,28 +30,31 @@ export const Modal: FC<Props> = ({ children, heading, closeHandler }) => {
       rootNode.setAttribute('aria-hidden', 'true');
     }
 
+    document.body.style.overflow = 'hidden';
+
     return () => {
       document.removeEventListener('keydown', keyboardHandler, false);
+      document.body.style.overflow = '';
 
       if (rootNode) {
         rootNode.removeAttribute('inert');
         rootNode.removeAttribute('aria-hidden');
       }
     };
-  }, [keyboardHandler]);
+  }, []);
 
   if (!modalsNode) return null;
 
   return createPortal(
     <section className={s.dialog}>
-      <div className={s.inner}>
+      <div className={classNames(s.inner, { [s.fullscreen]: fullscreen })}>
         <header className={s.header}>
           <div className={s.heading}>{heading}</div>
-          <button className={s.closeButton} onClick={() => closeHandler()}>
-            <Icon name="close-tiny" width={24} height={24} color="inherit" />
+          <button className={classNames(s.closeButton, { [s.fullscreen]: fullscreen })} onClick={() => closeHandler()}>
+            <Icon name="close" size={fullscreen ? 32 : 24} />
           </button>
         </header>
-        <div className={s.content}>{children}</div>
+        <div className={classNames(s.content, { [s.fullscreen]: fullscreen })}>{children}</div>
       </div>
     </section>,
     modalsNode,

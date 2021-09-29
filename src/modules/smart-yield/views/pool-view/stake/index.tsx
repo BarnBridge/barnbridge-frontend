@@ -84,10 +84,10 @@ const StakeForm: FC = () => {
   }
 
   function handleConfirm({ gasPrice }: ConfirmTxModalArgs): Promise<void> {
-    return formCtx.handleSubmit(values => handleSubmit(gasPrice, values).then(() => formCtx.setValue('amount', '0')))();
+    return formCtx.handleSubmit(values => handleSubmit(values, gasPrice).then(() => formCtx.setValue('amount', '0')))();
   }
 
-  async function handleSubmit(gasPrice: number, values: StakeFormValues) {
+  async function handleSubmit(values: StakeFormValues, gasPrice?: number) {
     const bnAmount = BigNumber.from(values.amount);
 
     if (!bnAmount) {
@@ -244,7 +244,7 @@ const UnstakeForm: FC = () => {
     return formCtx.handleSubmit(values => handleSubmit(values, gasPrice).then(() => formCtx.setValue('amount', '0')))();
   }
 
-  async function handleSubmit(values: StakeFormValues, gasPrice: number) {
+  async function handleSubmit(values: StakeFormValues, gasPrice?: number) {
     const bnAmount = BigNumber.from(values.amount);
 
     if (!bnAmount) {

@@ -12,10 +12,10 @@ import { SquareBadge } from 'components/custom/badge';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
+import PortfolioBalance from 'components/portfolio-balance';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
-import PortfolioBalance from 'modules/smart-yield/components/portfolio-balance';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'modules/smart-yield/components/tx-confirm-modal';
 import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
@@ -281,7 +281,12 @@ const JuniorPortfolioInner: React.FC = () => {
     const uVal = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
     const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.meta.underlyingSymbol);
     // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
-    return sum.plus(valInUSD?.multipliedBy(c.apr ?? 0) ?? 0);
+
+    const hasZeroBondRewardLeft = c.rewardPool.getRewardLeftFor(knownTokensCtx.bondToken.address)?.isZero();
+
+    const apyr = c.apy?.plus(hasZeroBondRewardLeft ? 0 : c.apr ?? 0) ?? 0;
+
+    return sum.plus(valInUSD?.multipliedBy(apyr) ?? 0);
   }, BigNumber.ZERO);
 
   const totalBalance = activeBalance?.plus(lockedBalance ?? BigNumber.ZERO).plus(stakedBalance ?? BigNumber.ZERO);

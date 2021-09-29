@@ -23,6 +23,8 @@ export const KovanConfig: NetworkConfig = {
     smartYieldReward: true,
     smartExposure: true,
     smartAlpha: true,
+    gasFees: true,
+    addBondToken: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -32,10 +34,10 @@ export const KovanConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://dev.api.barnbridge.com',
+    baseUrl: 'https://dev-v2.api.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
@@ -91,6 +93,9 @@ export const KovanConfig: NetworkConfig = {
     se: {
       ePoolPeriphery: '0x5fa08f7817844e38ee8f54a24b65f6dc1ae23785',
       ePoolHelper: '0xc1442ac5d2631bd9369b42b35bfe12b88ee8daaf',
+    },
+    sa: {
+      loupe: '0xA408F3f26ebe1768512c9977108633CEF84c17a7',
     },
   },
 };

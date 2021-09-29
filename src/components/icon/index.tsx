@@ -75,8 +75,10 @@ export type IconNames =
   | 'voting-power'
   | 'bonus'
   | 'delegated'
+  | 'percentage'
   | 'external'
-  | 'burger';
+  | 'burger'
+  | 'search';
 
 export type IconProps = {
   name: IconNames;

@@ -40,7 +40,7 @@ export default class Erc20Contract extends Web3Contract {
     return this.getBalanceOf(this.account);
   }
 
-  getBalanceOf(address?: string): BigNumber | undefined {
+  getBalanceOf(address: string | undefined = this.account): BigNumber | undefined {
     return address ? this.balances.get(address) : undefined;
   }
 

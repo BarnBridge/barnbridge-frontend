@@ -14,9 +14,9 @@ import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
+import { RadioCard } from 'components/radio-card';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
-import RadioCard from 'modules/smart-yield/components/radio-card';
 import { useWallet } from 'wallets/walletProvider';
 
 import { isValidAddress } from 'utils';
@@ -113,7 +113,7 @@ const PortfolioDelegate: FC = () => {
 
   const canSubmit = formState.isDirty && !isSubmitting && stakedBalance.gt(BigNumber.ZERO);
 
-  async function doDelegate(type: string, address: string, gasPrice: number) {
+  async function doDelegate(type: string, address: string, gasPrice?: number) {
     setSubmitting(true);
 
     try {
@@ -135,7 +135,7 @@ const PortfolioDelegate: FC = () => {
     setConfirmModalVisible(false);
   }
 
-  async function handleConfirm(gasPrice: number) {
+  async function handleConfirm(gasPrice?: number) {
     setConfirmModalVisible(false);
     await doDelegate(votingType, delegateAddress, gasPrice);
   }

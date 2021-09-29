@@ -306,10 +306,18 @@
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M8.041 4.4l-6.13-.677a1 1 0 00-1.11.994v9.435c0 .936.323 1.841.965 2.522 2.055 2.184 6.93 6.781 9.984 4.926M15.2 15.2l2.989 2.62c.623.547.703 1.49.18 2.134v0a1.544 1.544 0 01-2.217.187L12.801 17.2" />
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M12.8 17.2l2.027 1.774c.652.57.73 1.558.175 2.224v0a1.597 1.597 0 01-2.224.224L10 19.2" />
 	</symbol>
+	<symbol id="icon__percentage" fill="none" viewBox="0 0 24 24">
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M6.462 9.923a3.462 3.462 0 100-6.923 3.462 3.462 0 000 6.923zM17.54 21a3.462 3.462 0 100-6.923 3.462 3.462 0 000 6.923z" clip-rule="evenodd" />
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.693 20.308L19.616 4.385" />
+	</symbol>
 	<symbol id="icon__external" fill="none" viewBox="0 0 8 8">
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.732 1.067h3.2v3.2M6.933 1.067L2 6" />
 	</symbol>
 	<symbol id="icon__burger" fill="none" viewBox="0 0 24 25">
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M3.2 6.012h17.6M3.2 12.015h17.6M3.2 18.418h17.6" />
+	</symbol>
+	<symbol id="icon__search" fill="none" viewBox="0 0 16 16">
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M7.466 13.867a6.4 6.4 0 100-12.8 6.4 6.4 0 000 12.8z" clip-rule="evenodd" />
+		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M14.4 14.4L12 12" />
 	</symbol>
 </svg>

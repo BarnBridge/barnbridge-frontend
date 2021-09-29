@@ -60,11 +60,10 @@ export function formatPercent(value: number | BigNumber | undefined, decimals: n
 
   const rate = BigNumber.isBigNumber(value) ? value.toNumber() : value;
 
-  return (
-    Intl.NumberFormat('en', {
-      maximumFractionDigits: decimals,
-    }).format(rate * 100) + '%'
-  );
+  return Intl.NumberFormat('en', {
+    style: 'percent',
+    maximumFractionDigits: decimals,
+  }).format(rate);
 }
 
 type FormatTokenOptions = {
@@ -77,7 +76,10 @@ type FormatTokenOptions = {
   hasLess?: boolean;
 };
 
-export function formatToken(value: number | BigNumber | undefined, options?: FormatTokenOptions): string | undefined {
+export function formatToken(
+  value: number | BigNumber | string | undefined,
+  options?: FormatTokenOptions,
+): string | undefined {
   if (value === undefined || value === null || Number.isNaN(value)) {
     return undefined;
   }

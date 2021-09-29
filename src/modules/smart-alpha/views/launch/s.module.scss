@@ -1,0 +1,42 @@
+.slogan {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  align-items: center;
+  column-gap: 32px;
+  row-gap: 32px;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.countdown {
+  margin-left: auto;
+
+  @media (max-width: 1200px) {
+    margin-left: unset;
+  }
+}
+
+.timeCard {
+  background-color: var(--theme-card-color);
+  box-shadow: 0 32px 64px -16px rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  width: 120px;
+  height: 120px;
+  display: grid;
+  place-content: center;
+  text-align: center;
+
+  dt {
+    font: var(--font-sm);
+    font-weight: bold;
+  }
+
+  dd {
+    font-weight: 800;
+    font-size: 48px;
+    line-height: 56px;
+    color: var(--theme-red-color);
+  }
+}

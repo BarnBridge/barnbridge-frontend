@@ -1,4 +1,3 @@
-@import 'src/styles/text';
 @import 'src/styles/colors';
 
 :root .component {
@@ -121,7 +120,8 @@
 }
 
 .component:global(.ant-btn) {
-  @include font-p2-bold;
+  font: var(--font-p2);
+  font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -132,13 +132,15 @@
   text-align: center;
 
   &:global(.ant-btn-lg) {
-    @include font-p1-bold;
+    font: var(--font-p1);
+    font-weight: bold;
     height: 64px;
     padding: 20px;
   }
 
   &:global(.ant-btn-sm) {
-    @include font-sm-bold;
+    font: var(--font-sm);
+    font-weight: bold;
     height: 34px;
     padding: 9px;
   }

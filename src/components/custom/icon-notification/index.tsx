@@ -26,7 +26,14 @@ const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
   const id = React.useMemo(() => nanoid(), []);
 
   return (
-    <svg role="none" style={{ width, height, ...style }} {...rest}>
+    <svg
+      role="none"
+      style={{
+        width,
+        height,
+        ...style,
+      }}
+      {...rest}>
       <mask id={id}>
         <rect width={width} height={height} fill="white" />
         <circle

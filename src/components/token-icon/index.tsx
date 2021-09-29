@@ -29,6 +29,10 @@ export type TokenIconNames =
   | 'usd'
   | 'uniswap'
   | 'wmatic'
+  | 'xsushi'
+  | 'link'
+  | 'uni'
+  | 'fei'
   | 'all';
 
 type TokenIconProps = {
@@ -41,7 +45,7 @@ type TokenIconProps = {
   outline?: 'green' | 'purple';
 };
 
-const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai', 'xsushi'];
 
 const svgPath = `${process.env.PUBLIC_URL}/token-icons-sprite.svg`;
 
@@ -54,12 +58,12 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
     <svg className={classNames(s.tokenIcon, className)} width={size} height={size} style={style} {...rest}>
       <mask id={id}>
         <circle cx="50%" cy="50%" r="50%" fill="white" />
-        {bubble1Name && <circle cx="77.5%" cy="22.5%" r="25%" fill="black" />}
-        {bubble2Name && <circle cx="77.5%" cy="77.5%" r="25%" fill="black" />}
+        {bubble1Name && <circle cx="80%" cy="20%" r="25%" fill="black" />}
+        {bubble2Name && <circle cx="80%" cy="80%" r="25%" fill="black" />}
       </mask>
       <mask id={`${id}-outline`}>
         <circle cx="50%" cy="50%" r="50%" fill="black" />
-        <circle cx="50%" cy="50%" r="44%" fill="white" />
+        <circle cx="50%" cy="50%" r="42%" fill="white" />
       </mask>
       <g mask={bubble1Name || bubble2Name ? `url(#${id})` : ''}>
         <g mask={outline ? `url(#${id}-outline)` : ''}>
@@ -69,9 +73,9 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
           <circle
             cx="50%"
             cy="50%"
-            r="50%"
+            r="48%"
             fill="none"
-            stroke-width="4%"
+            strokeWidth="4%"
             className={classNames({
               [s[`${outline}-outline`]]: outline,
             })}
@@ -82,19 +86,19 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
       {bubble1Name && (
         <use
           xlinkHref={`${staticNames.includes(bubble1Name) ? '' : svgPath}#icon__${bubble1Name}`}
-          width="45%"
-          height="45%"
-          x="55%"
+          width="40%"
+          height="40%"
+          x="60%"
           y="0"
         />
       )}
       {bubble2Name && (
         <use
           xlinkHref={`${staticNames.includes(bubble2Name) ? '' : svgPath}#icon__${bubble2Name}`}
-          width="45%"
-          height="45%"
-          x="55%"
-          y="55%"
+          width="40%"
+          height="40%"
+          x="60%"
+          y="60%"
         />
       )}
     </svg>

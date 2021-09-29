@@ -30,7 +30,6 @@ const PortfolioWithdraw: FC = () => {
   const bondBalance = projectTokenContract.balance?.unscaleBy(projectToken.decimals);
 
   const isLocked = (userLockedUntil ?? 0) * 1_000 > Date.now();
-  const hasStakedBalance = stakedBalance?.gt(BigNumber.ZERO);
 
   const form = useForm<FormType>({
     validationScheme: {
@@ -73,7 +72,7 @@ const PortfolioWithdraw: FC = () => {
 
   const canSubmit = formState.isDirty && !isSubmitting && !isLocked;
 
-  async function doWithdraw(amount: BigNumber, gasPrice: number) {
+  async function doWithdraw(amount: BigNumber, gasPrice?: number) {
     setSubmitting(true);
 
     try {
@@ -94,7 +93,7 @@ const PortfolioWithdraw: FC = () => {
     setConfirmModalVisible(false);
   }
 
-  async function handleConfirm(gasPrice: number) {
+  async function handleConfirm(gasPrice?: number) {
     if (!bnAmount) {
       return;
     }

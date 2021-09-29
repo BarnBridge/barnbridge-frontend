@@ -25,6 +25,8 @@ export const MainnetConfig: NetworkConfig = {
     smartYieldReward: true,
     smartExposure: true,
     smartAlpha: true,
+    gasFees: true,
+    addBondToken: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -34,10 +36,10 @@ export const MainnetConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha.api.barnbridge.com' : 'https://api.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-v2.api.barnbridge.com' : 'https://api-v2.barnbridge.com',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
@@ -93,6 +95,9 @@ export const MainnetConfig: NetworkConfig = {
     se: {
       ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
       ePoolHelper: '0x8a63822d8c1be5590bbf72fb58e69285a776a5df',
+    },
+    sa: {
+      loupe: '0xb7D7E8F3526187e065bc674b19E0BBa42B569f6d',
     },
   },
 };

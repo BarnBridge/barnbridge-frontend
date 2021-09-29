@@ -13,6 +13,8 @@ export type NetworkConfig = {
     smartExposure?: boolean;
     smartAlpha?: boolean;
     faucets?: boolean;
+    gasFees?: boolean;
+    addBondToken?: boolean;
   };
   wallets: {
     portisId: string;
@@ -60,6 +62,7 @@ export type NetworkConfig = {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
     dao?: Record<'governance' | 'barn' | 'reward', string>;
     se?: Record<'ePoolPeriphery' | 'ePoolHelper', string>;
+    sa?: Record<'loupe', string>;
     faucets?: Record<
       'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai',
       string
@@ -80,7 +83,7 @@ export type Web3Network = {
     poolingInterval: number;
   };
   explorer: {
-    name: 'Etherscan' | 'Polygonscan';
+    name: 'Etherscan' | 'Polygonscan' | 'Avalanche Explorer';
     key: string;
     url: string;
     apiUrl: string;

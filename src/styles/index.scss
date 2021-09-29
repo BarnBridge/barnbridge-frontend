@@ -1,4 +1,5 @@
 @import 'antd.css';
+@import 'reset';
 @import 'flex';
 @import 'grid';
 @import 'box';
@@ -16,32 +17,12 @@ html {
 body {
   background: var(--theme-body-color);
   color: var(--theme-primary-color);
-  font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
-    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   min-block-size: 100%;
   min-inline-size: 100%;
-}
-
-* {
-  box-sizing: border-box;
-  margin: unset;
-}
-
-svg,
-svg * {
-  transition: none !important;
-}
-
-h1,
-h2,
-h3 {
-  margin-bottom: 0;
-}
-
-p {
-  margin-bottom: 0;
+  font-feature-settings: 'tnum';
 }
 
 #root {
@@ -61,6 +42,9 @@ body.mobile-menu-open {
 }
 
 :root {
+  --font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+
   --font-size-h1: 32px;
   --font-size-h2: 24px;
   --font-size-h3: 18px;
@@ -69,6 +53,31 @@ body.mobile-menu-open {
   --font-size-lb1: 14px;
   --font-size-lb2: 12px;
   --font-size-sm: 12px;
+
+  --font-h1: var(--font-size-h1) / 1.25 var(--font-family);
+  // --font-h1-bold: bold var(--font-h1);
+  // --font-h1-semibold: 600 var(--font-h1);
+  --font-h2: var(--font-size-h2) / 1.3333333333 var(--font-family);
+  // --font-h2-bold: bold var(--font-h2);
+  // --font-h2-semibold: 600 var(--font-h2);
+  --font-h3: var(--font-size-h3) / 1.3333333333 var(--font-family);
+  // --font-h3-bold: bold var(--font-h3);
+  // --font-h3-semibold: 600 var(--font-h3);
+  --font-p1: var(--font-size-p1) / 1.5 var(--font-family);
+  // --font-p1-bold: bold var(--font-p1);
+  // --font-p1-semibold: 600 var(--font-p1);
+  --font-p2: var(--font-size-p2) / 1.7142857143 var(--font-family);
+  // --font-p2-bold: bold var(--font-p2);
+  --font-p2-semibold: 600 var(--font-p2);
+  --font-lb1: var(--font-size-lb1) / 1.7142857143 var(--font-family);
+  // --font-lb1-bold: bold var(--font-lb1);
+  // --font-lb1-semibold: 600 var(--font-lb1);
+  --font-lb2: var(--font-size-lb2) / 1.3333333333 var(--font-family);
+  // --font-lb2-bold: bold var(--font-lb2);
+  // --font-lb2-semibold: 600 var(--font-lb2);
+  --font-sm: var(--font-size-sm) / 1.3333333333 var(--font-family);
+  --font-sm-bold: bold var(--font-sm);
+  --font-sm-semibold: 600 var(--font-sm);
 
   --theme-body-color: #f8f8f9; // grey50
   --theme-card-color: #fff;
@@ -92,6 +101,8 @@ body.mobile-menu-open {
   --theme-input-placeholder: #aaafb3;
 
   --theme-red-color: #ff4339; // red500
+  --theme-red400-color: #ff6961;
+  --theme-red600-color: #cc362e;
   --theme-red-color-rgb: 255, 67, 57; // red500
 
   --theme-green-color: #00d395; // green500
@@ -110,24 +121,15 @@ body.mobile-menu-open {
   --theme-purple-color-rgb: 162, 110, 227; // purple500
   --theme-purple700-color: #614288;
 
+  --theme-grey-color: #c6c9cc;
+  --theme-grey-color-rgb: 198, 201, 204;
+  --theme-grey200-color: #c6c9cc;
+  --theme-grey300-color: #aaafb3;
   --theme-grey900-color: #060a0d;
 
   --theme-white-color: #fff;
 
   --horizontal-padding: 64px;
-}
-
-@media (max-width: 1024px) {
-  :root {
-    --font-size-h1: 24px;
-    --font-size-h2: 18px;
-    --font-size-h3: 14px;
-    --font-size-p1: 12px;
-    --font-size-p2: 11px;
-    --font-size-lb1: 11px;
-    --font-size-lb2: 9px;
-    --font-size-sm: 9px;
-  }
 }
 
 @media (max-width: 768px) {
@@ -155,6 +157,8 @@ body.mobile-menu-open {
 
   --theme-input-background: #202529;
   --theme-input-placeholder: #606268;
+
+  --theme-grey-color: #606268;
 }
 
 :focus:not(:focus-visible) {
@@ -169,6 +173,10 @@ button {
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+#root[inert] {
+  filter: blur(2px);
 }
 
 #notifications-root {

@@ -7,7 +7,7 @@ import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
 import Tooltip from 'components/antd/tooltip';
-import { ExplorerAddressLink } from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/custom/externalLink';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
@@ -62,11 +62,11 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
   {
     heading: 'Transaction Hash',
     render: entity => (
-      <ExplorerAddressLink address={entity.transactionHash}>
+      <ExplorerTxLink address={entity.transactionHash}>
         <Text type="p1" weight="semibold" color="blue">
           {shortenAddr(entity.transactionHash)}
         </Text>
-      </ExplorerAddressLink>
+      </ExplorerTxLink>
     ),
   },
   {
@@ -158,19 +158,19 @@ const TreasuryHoldings: FC = () => {
   const historyItemsCount = historyResult?.meta.count ?? 0;
 
   const tokensSource = useMemo(() => {
-    const tokens = treasuryTokens
-      ?.map<ExtendedAPITreasuryToken | undefined>(treasuryToken => {
-        const token = getToken(treasuryToken.tokenSymbol);
+    const tokens = (treasuryTokens ?? [])
+      .map<ExtendedAPITreasuryToken | undefined>(treasuryToken => {
+        const token = getToken(treasuryToken.symbol);
 
         if (!token) {
           return undefined;
         }
 
-        const tokenContract = getContract<Erc20Contract>(treasuryToken.tokenAddress);
+        const tokenContract = getContract<Erc20Contract>(treasuryToken.address);
         const balanceAmount = tokenContract
           ?.getBalanceOf(config.contracts.dao?.governance)
-          ?.unscaleBy(treasuryToken.tokenDecimals);
-        const balanceAmountUSD = getAmountInUSD(balanceAmount, treasuryToken.tokenSymbol);
+          ?.unscaleBy(treasuryToken.decimals);
+        const balanceAmountUSD = getAmountInUSD(balanceAmount, treasuryToken.symbol);
 
         return {
           ...treasuryToken,
@@ -220,8 +220,8 @@ const TreasuryHoldings: FC = () => {
               label: 'All tokens',
             },
             ...tokensSource.map(token => ({
-              value: token.tokenAddress,
-              label: token.token?.name ?? token.tokenSymbol,
+              value: token.address,
+              label: token.token?.name ?? token.symbol,
             })),
           ];
 
@@ -256,7 +256,7 @@ const TreasuryHoldings: FC = () => {
 
   useEffect(() => {
     treasuryTokens?.forEach(token => {
-      getOrCreateContract(token.tokenAddress, () => new Erc20Contract([], token.tokenAddress), {
+      getOrCreateContract(token.address, () => new Erc20Contract([], token.address), {
         afterInit: contract => {
           contract.on(Web3Contract.UPDATE_DATA, reload);
           contract.loadCommon().catch(Error);
@@ -282,11 +282,11 @@ const TreasuryHoldings: FC = () => {
       </Text>
       <div className="grid gap-16 mb-32" style={{ gridTemplateColumns: 'repeat(3, 1fr)' } as CSSProperties}>
         {tokensSource.map(item => (
-          <div key={item.tokenAddress} className="card flex flow-col col-gap-12 align-center p-24">
+          <div key={item.address} className="card flex flow-col col-gap-12 align-center p-24">
             <TokenIcon name={(item.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" size={32} />
             <div className="flex flow-row row-gap-4">
               <Text type="p1" weight="semibold" color="primary">
-                {item.tokenSymbol ?? '-'}
+                {item.symbol ?? '-'}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
                 {item.token?.name ?? '-'}
@@ -323,13 +323,13 @@ const TreasuryHoldings: FC = () => {
           total={historyItemsCount}
           current={historyPage}
           pageSize={historyPageSize}
-          onChange={setHistoryPage}>
-          {({ total, from, to }) => (
+          onChange={setHistoryPage}
+          text={({ total, from, to }) => (
             <>
               Showing {from} to {to} out of {total} transactions
             </>
           )}
-        </TableFooter>
+        />
       </div>
     </>
   );

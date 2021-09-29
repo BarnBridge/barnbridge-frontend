@@ -20,6 +20,8 @@ export const TestnetConfig: NetworkConfig = {
     dao: true,
     faucets: true,
     smartYield: true,
+    gasFees: true,
+    addBondToken: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -32,7 +34,7 @@ export const TestnetConfig: NetworkConfig = {
     baseUrl: 'https://testnet.api.barnbridge.com/',
   },
   dao: {
-    activationThreshold: 400000,
+    activationThreshold: 400_000,
   },
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',

@@ -48,7 +48,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
               </Text>
               <Icon name="external" size={8} color="blue" />
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold">
+            <Text type="small" weight="semibold" color="secondary">
               {entity.tokenA.symbol} – {entity.tokenB.symbol}
             </Text>
           </div>
@@ -204,11 +204,13 @@ export const SESection = ({
   total,
   loadingMainnet,
   loadingPolygon,
+  className,
 }: {
   pools: ExtendedPoolApiType[];
   total: BigNumber;
   loadingMainnet: boolean;
   loadingPolygon: boolean;
+  className?: string;
 }) => {
   const [poolFilter, setPoolFilter] = useState('all');
 
@@ -256,7 +258,7 @@ export const SESection = ({
   }, [pools, poolFilter]);
 
   return (
-    <>
+    <div className={className}>
       <div className="card mb-8">
         <div className="card-header flex flow-col align-center pv-12">
           <div
@@ -305,6 +307,6 @@ export const SESection = ({
           // }}
         />
       </div>
-    </>
+    </div>
   );
 };

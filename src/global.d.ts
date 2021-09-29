@@ -14,6 +14,8 @@ declare module 'bignumber.js' {
     scaleBy(decimals?: number): BigNumber | undefined;
 
     unscaleBy(decimals?: number): BigNumber | undefined;
+
+    round(): BigNumber;
   }
 }
 
