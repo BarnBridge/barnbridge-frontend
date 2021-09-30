@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { addSeconds, getUnixTime } from 'date-fns';
 import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
@@ -21,6 +20,7 @@ import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
 
+import { tillNextEpoch } from 'modules/smart-alpha/utils';
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
@@ -379,12 +379,11 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
                 ) : (
                   <UseLeftTime delay={1_000}>
                     {() => {
-                      const secondsFromEpoch1 = addSeconds(new Date(), smartAlphaContract.epoch1Start * -1);
-                      const currentEpochProgress = getUnixTime(secondsFromEpoch1) % smartAlphaContract.epochDuration;
+                      const tne = tillNextEpoch(pool);
 
                       return (
                         <Text type="p1" weight="semibold">
-                          {getFormattedDuration(smartAlphaContract.epochDuration - currentEpochProgress)}
+                          {getFormattedDuration(tne)}
                         </Text>
                       );
                     }}
@@ -617,12 +616,11 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
                 ) : (
                   <UseLeftTime delay={1_000}>
                     {() => {
-                      const secondsFromEpoch1 = addSeconds(new Date(), smartAlphaContract.epoch1Start * -1);
-                      const currentEpochProgress = getUnixTime(secondsFromEpoch1) % smartAlphaContract.epochDuration;
+                      const tne = tillNextEpoch(pool);
 
                       return (
                         <Text type="p1" weight="semibold">
-                          {getFormattedDuration(smartAlphaContract.epochDuration - currentEpochProgress)}
+                          {getFormattedDuration(tne)}
                         </Text>
                       );
                     }}
