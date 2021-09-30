@@ -221,19 +221,19 @@ class SYRewardPoolContract extends Web3Contract {
     return this.claims.get(rewardTokenAddress);
   }
 
-  async sendClaimAll(gasPrice: number): Promise<void> {
+  async sendClaimAll(gasPrice?: number): Promise<void> {
     await this.send(this._isMulti ? 'claim_allTokens' : 'claim', [], {}, gasPrice);
   }
 
-  async sendDeposit(amount: BigNumber, gasPrice: number): Promise<void> {
+  async sendDeposit(amount: BigNumber, gasPrice?: number): Promise<void> {
     await this.send('deposit', [amount], {}, gasPrice);
   }
 
-  async sendWithdraw(amount: BigNumber, gasPrice: number): Promise<void> {
+  async sendWithdraw(amount: BigNumber, gasPrice?: number): Promise<void> {
     await this.send('withdraw', [amount], {}, gasPrice);
   }
 
-  async sendWithdrawAndClaim(amount: BigNumber, gasPrice: number): Promise<void> {
+  async sendWithdrawAndClaim(amount: BigNumber, gasPrice?: number): Promise<void> {
     await this.send('withdrawAndClaim', [amount], {}, gasPrice);
   }
 }

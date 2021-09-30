@@ -35,7 +35,7 @@ class SYProviderContract extends Web3Contract {
     });
   }
 
-  transferFeesSend(gasPrice: number): Promise<void> {
+  transferFeesSend(gasPrice?: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }

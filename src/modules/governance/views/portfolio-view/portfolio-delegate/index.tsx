@@ -113,7 +113,7 @@ const PortfolioDelegate: FC = () => {
 
   const canSubmit = formState.isDirty && !isSubmitting && stakedBalance.gt(BigNumber.ZERO);
 
-  async function doDelegate(type: string, address: string, gasPrice: number) {
+  async function doDelegate(type: string, address: string, gasPrice?: number) {
     setSubmitting(true);
 
     try {
@@ -135,7 +135,7 @@ const PortfolioDelegate: FC = () => {
     setConfirmModalVisible(false);
   }
 
-  async function handleConfirm(gasPrice: number) {
+  async function handleConfirm(gasPrice?: number) {
     setConfirmModalVisible(false);
     await doDelegate(votingType, delegateAddress, gasPrice);
   }

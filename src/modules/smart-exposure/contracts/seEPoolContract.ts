@@ -116,7 +116,7 @@ class SeEPoolContract extends Web3Contract {
     });
   }
 
-  transferFees(gasPrice: number): Promise<void> {
+  transferFees(gasPrice?: number): Promise<void> {
     if (!this.account) {
       return Promise.reject();
     }

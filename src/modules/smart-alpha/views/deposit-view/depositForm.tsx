@@ -99,7 +99,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
     setEnabling(false);
   }
 
-  async function handleDeposit(gasPrice: number) {
+  async function handleDeposit(gasPrice?: number) {
     setConfirmModalVisible(false);
     setSaving(true);
 

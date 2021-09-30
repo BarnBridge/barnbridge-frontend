@@ -14,10 +14,12 @@ export const TransactionsTable = ({
   transactionType,
   accountAddress,
   poolAddress,
+  eTokenAddress,
 }: {
   transactionType?: TransactionApiType['transactionType'];
   accountAddress?: string;
   poolAddress?: string;
+  eTokenAddress?: string;
 }) => {
   const { getTokenIconBySymbol } = useKnownTokens();
   const seAPI = useSeAPI();
@@ -29,6 +31,7 @@ export const TransactionsTable = ({
     pageSize: number;
     accountAddress?: string;
     poolAddress?: string;
+    eTokenAddress?: string;
     transactionType?: TransactionApiType['transactionType'];
   }>({
     total: 0,
@@ -36,6 +39,7 @@ export const TransactionsTable = ({
     pageSize: 10,
     accountAddress,
     poolAddress,
+    eTokenAddress,
     transactionType,
   });
 
@@ -45,6 +49,7 @@ export const TransactionsTable = ({
       page: 1,
       accountAddress,
       poolAddress,
+      eTokenAddress,
       transactionType,
     }));
   }, [accountAddress, poolAddress, transactionType]);
@@ -58,6 +63,7 @@ export const TransactionsTable = ({
         limit: filters.pageSize,
         accountAddress: filters.accountAddress,
         poolAddress: filters.poolAddress,
+        eTokenAddress: filters.eTokenAddress,
         transactionType: filters.transactionType,
       })
       .then(result => {
@@ -112,7 +118,7 @@ export const TransactionsTable = ({
             <div className="flex align-center mb-4">
               <TokenIcon name={getTokenIconBySymbol(item.tokenA.symbol) as TokenIconNames} size={16} className="mr-4" />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
-                {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
+                {item.transactionType === 'DEPOSIT' ? '-' : '+'}
                 {formatToken(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
               </Text>
             </div>
@@ -130,7 +136,7 @@ export const TransactionsTable = ({
             <div className="flex align-center mb-4">
               <TokenIcon name={getTokenIconBySymbol(item.tokenB.symbol) as TokenIconNames} size={16} className="mr-4" />
               <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
-                {item.transactionType === 'DEPOSIT' ? '-' : '+'}{' '}
+                {item.transactionType === 'DEPOSIT' ? '-' : '+'}
                 {formatToken(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}
               </Text>
             </div>
@@ -144,7 +150,7 @@ export const TransactionsTable = ({
         heading: 'Pool token amount',
         render: item => (
           <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'green' : 'red'}>
-            {item.transactionType === 'DEPOSIT' ? '+' : '-'}{' '}
+            {item.transactionType === 'DEPOSIT' ? '+' : '-'}
             {formatToken(BigNumber.from(item.amountEToken)?.dividedBy(item.sFactorE))}
           </Text>
         ),
