@@ -9,8 +9,8 @@ import WarningProvider from 'components/providers/warning-provider';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
+import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
-import { GoerliNetwork } from 'networks/goerli';
 
 import s from './s.module.scss';
 
@@ -52,8 +52,9 @@ const LayoutView: React.FC = () => {
                       )}
                     />
                   )}
-                  {activeNetwork === GoerliNetwork && <Redirect to="/governance" />}
-                  {activeNetwork === AvalancheTestnetNetwork && <Redirect to="/smart-alpha" />}
+                  {(activeNetwork === AvalancheNetwork || activeNetwork === AvalancheTestnetNetwork) && (
+                    <Redirect to="/smart-alpha" />
+                  )}
                   <Redirect from="/" to="/smart-yield" />
                 </Switch>
               </Suspense>

@@ -56,7 +56,6 @@ export type IconNames =
   | ThemeIconNames
   | 'mainnet-logo'
   | 'testnet-logo'
-  | 'goerli-logo'
   | 'polygon-logo'
   | 'avalanche-logo'
   | 'right-arrow-circle-outlined'
