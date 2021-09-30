@@ -32,6 +32,7 @@ import s from './s.module.scss';
 
 const LayoutHeader: React.FC = () => {
   const { setNavOpen } = useGeneral();
+  const { activeNetwork } = useNetwork();
 
   return (
     <header className={s.component}>
@@ -50,19 +51,21 @@ const LayoutHeader: React.FC = () => {
           <Route path="*">BarnBridge</Route>
         </Switch>
       </Text>
-      <div className="flex align-center col-gap-16 ml-auto">
-        {!isProductionMode && (
-          <Switch>
-            <Route path="/smart-alpha">
-              <PositionsAction />
-            </Route>
-          </Switch>
-        )}
-        <AddTokenAction />
-        <NetworkAction />
-        <NotificationsAction />
-        <WalletAction />
-      </div>
+      {!isMobile ? (
+        <div className="flex align-center col-gap-16 ml-auto">
+          {!isProductionMode && (
+            <Switch>
+              <Route path="/smart-alpha">
+                <PositionsAction />
+              </Route>
+            </Switch>
+          )}
+          {activeNetwork.config.features.addBondToken && <AddTokenAction />}
+          <NetworkAction />
+          <NotificationsAction />
+          <WalletAction />
+        </div>
+      ) : null}
     </header>
   );
 };

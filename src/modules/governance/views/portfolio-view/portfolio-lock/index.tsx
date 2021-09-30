@@ -118,7 +118,7 @@ const PortfolioLock: FC = () => {
 
   const canSubmit = formState.isDirty && !isSubmitting;
 
-  async function doLock(lockUntil: Date | undefined, gasPrice: number) {
+  async function doLock(lockUntil: Date | undefined, gasPrice?: number) {
     setSubmitting(true);
 
     try {
@@ -141,7 +141,7 @@ const PortfolioLock: FC = () => {
     setConfirmModalVisible(false);
   }
 
-  async function handleConfirm(gasPrice: number) {
+  async function handleConfirm(gasPrice?: number) {
     setConfirmModalVisible(false);
     await doLock(lockEndDate, gasPrice);
   }

@@ -11,6 +11,16 @@
   }
 }
 
+.tableFooter {
+  display: grid;
+  grid-template-columns: 1fr max-content;
+  gap: 16px;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
 .spinner {
   position: absolute;
   top: 50%;

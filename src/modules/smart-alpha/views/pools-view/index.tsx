@@ -2,7 +2,6 @@ import React, { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
-import { getUnixTime } from 'date-fns';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import { Link } from 'components/button';
@@ -15,6 +14,7 @@ import { TokenIcon } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
 
+import { tillNextEpoch } from 'modules/smart-alpha/utils';
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
@@ -42,7 +42,7 @@ const PoolsView = () => {
 
   return (
     <>
-      <div className="flex flow-col col-gap-32 mb-32">
+      <div className="flex flow-col wrap col-gap-32 row-gap-16 mb-32">
         <div className="card p-24" style={{ minWidth: '200px' }}>
           <Text type="small" weight="semibold" color="secondary" className="mb-4">
             Epoch TVL
@@ -95,25 +95,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
     : new BigNumber(1);
   const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
 
-  function getCurrentEpoch() {
-    const now = getUnixTime(Date.now());
-
-    if (now < item.epoch1Start) {
-      return 0;
-    }
-
-    return Math.floor((now - item.epoch1Start) / item.epochDuration + 1);
-  }
-
-  function tillNextEpoch(): number {
-    const now = getUnixTime(Date.now());
-    const currentEpoch = getCurrentEpoch();
-    const nextEpochStart = item.epoch1Start + currentEpoch * item.epochDuration;
-
-    return now < nextEpochStart ? nextEpochStart - now : 0;
-  }
-
-  const tne = tillNextEpoch();
+  const tne = tillNextEpoch(item);
 
   return (
     <section
@@ -142,7 +124,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <UseLeftTime delay={1_000}>
             {() => {
-              const tne = tillNextEpoch();
+              const tne = tillNextEpoch(item);
 
               return (
                 <Text type="p1" weight="semibold">

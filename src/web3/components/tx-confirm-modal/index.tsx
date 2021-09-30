@@ -7,13 +7,14 @@ import Form from 'components/antd/form';
 import Modal, { ModalProps } from 'components/antd/modal';
 import GasFeeList from 'components/custom/gas-fee-list';
 import Grid from 'components/custom/grid';
+import { useNetwork } from 'components/providers/networkProvider';
 
 import { useIsUnmount } from '../../../hooks/useIsUnmount';
 
 import s from './s.module.scss';
 
 export type ConfirmTxModalArgs = {
-  gasPrice: number;
+  gasPrice?: number;
 };
 
 type FormValues = {
@@ -37,6 +38,7 @@ type Props = ModalProps & {
 const TxConfirmModal: React.FC<Props> = props => {
   const { header, submitText, children, onConfirm, ...modalProps } = props;
 
+  const { activeNetwork } = useNetwork();
   const [form] = Antd.Form.useForm<FormValues>();
   const [submitting, setSubmitting] = React.useState<boolean>(false);
 
@@ -45,16 +47,12 @@ const TxConfirmModal: React.FC<Props> = props => {
   async function handleSubmit(values: FormValues) {
     const { gasPrice } = values;
 
-    if (!gasPrice) {
-      return;
-    }
-
     setSubmitting(true);
 
     try {
       await onConfirm({
         ...values,
-        gasPrice: gasPrice.value,
+        gasPrice: gasPrice?.value,
       });
       props.onCancel?.();
     } catch {}
@@ -76,9 +74,11 @@ const TxConfirmModal: React.FC<Props> = props => {
         <Grid flow="row" gap={32}>
           {children?.({ form, submitting })}
 
-          <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
-            <GasFeeList disabled={submitting} />
-          </Form.Item>
+          {activeNetwork.config.features.gasFees && (
+            <Form.Item name="gasPrice" label="Gas Fee (Gwei)" rules={[{ required: true, message: 'Required' }]}>
+              <GasFeeList disabled={submitting} />
+            </Form.Item>
+          )}
 
           <Button htmlType="submit" type="primary" loading={submitting}>
             {submitText}
