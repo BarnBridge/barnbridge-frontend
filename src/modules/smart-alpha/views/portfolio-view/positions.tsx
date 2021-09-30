@@ -251,7 +251,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
     }
   }, [isSenior, wallet.account, smartAlphaContract, loupeContract, version]);
 
-  async function handleRedeemTokens(gasPrice: number) {
+  async function handleRedeemTokens(gasPrice?: number) {
     setConfirmRedeemTokensModal(false);
     setSaving(true);
 
@@ -496,7 +496,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
     }
   }, [isSenior, wallet.account, smartAlphaContract, loupeContract, version]);
 
-  async function handleRedeemUnderlying(gasPrice: number) {
+  async function handleRedeemUnderlying(gasPrice?: number) {
     setConfirmRedeemUnderlyingModal(false);
     setSaving(true);
 

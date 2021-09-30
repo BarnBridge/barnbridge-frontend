@@ -98,7 +98,7 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
       });
   }, [wallet.account, version]);
 
-  async function handleWithdraw(gasPrice: number) {
+  async function handleWithdraw(gasPrice?: number) {
     setConfirmModalVisible(false);
     setSaving(true);
 
