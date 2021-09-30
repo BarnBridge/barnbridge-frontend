@@ -61,7 +61,10 @@ export const TransactionsView = ({ tranche }: { tranche: TrancheApiType }) => {
         <div className="text-p1 fw-semibold color-primary mr-8">Transaction history</div>
         <TableFilter filters={filtersOptions} value={filtersState} onChange={handleFilterChange} className="ml-auto" />
       </header>
-      <TransactionsTable transactionType={filtersState.transactionType || undefined} />
+      <TransactionsTable
+        transactionType={filtersState.transactionType || undefined}
+        eTokenAddress={tranche.eTokenAddress}
+      />
     </div>
   );
 };

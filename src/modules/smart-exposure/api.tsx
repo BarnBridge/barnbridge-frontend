@@ -157,12 +157,14 @@ export type SeAPIType = {
     limit,
     accountAddress,
     poolAddress,
+    eTokenAddress,
     transactionType,
   }: {
     page: number;
     limit: number;
     accountAddress?: string;
     poolAddress?: string;
+    eTokenAddress?: string;
     transactionType?: TransactionApiType['transactionType'];
   }): Promise<{
     data: TransactionApiType[];
@@ -276,12 +278,14 @@ const SeAPIProvider: FC = props => {
     limit,
     accountAddress,
     poolAddress,
+    eTokenAddress,
     transactionType,
   }: {
     page: number;
     limit: number;
     accountAddress?: string;
     poolAddress?: string;
+    eTokenAddress?: string;
     transactionType?: TransactionApiType['transactionType'];
   }): Promise<{
     data: TransactionApiType[];
@@ -292,6 +296,7 @@ const SeAPIProvider: FC = props => {
       limit,
       accountAddress,
       poolAddress,
+      eTokenAddress,
       transactionType,
     });
 
