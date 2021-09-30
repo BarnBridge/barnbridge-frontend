@@ -2,17 +2,19 @@ import { toHex } from 'web3-utils';
 
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
+import { isDevelopmentMode } from 'utils';
+
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_HTTPS_URL = `https://api.avax-test.network/ext/bc/C/rpc`;
-const RPC_WSS_URL = `wss://api.avax-test.network/ext/bc/C/ws`;
+const RPC_HTTPS_URL = 'https://api.avax.network/ext/bc/C/rpc';
+const RPC_WSS_URL = 'wss://api.avax.network/ext/bc/C/ws';
 
-const EXPLORER_URL = 'https://cchain.explorer.avax-test.network';
+const EXPLORER_URL = 'https://cchain.explorer.avax.network';
 
-export const AVALANCHE_TEST_CHAIN_ID = 43113;
+export const AVALANCHE_CHAIN_ID = 43114;
 
-export const AvalancheDevConfig: NetworkConfig = {
-  title: 'BarnBridge Avalanche',
+export const AvalancheConfig: NetworkConfig = {
+  title: isDevelopmentMode ? 'BarnBridge Alpha Avalanche' : 'BarnBridge Avalanche',
   features: {
     smartAlpha: true,
     gasFees: false,
@@ -25,7 +27,9 @@ export const AvalancheDevConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://dev-avalanche.api.barnbridge.com',
+    baseUrl: isDevelopmentMode
+      ? 'https://alpha-avalanche.api.barnbridge.com'
+      : 'https://prod-avalanche.api.barnbridge.com',
   },
   tokens: {
     wbtc: '',
@@ -68,14 +72,14 @@ export const AvalancheDevConfig: NetworkConfig = {
   },
   contracts: {
     sa: {
-      loupe: '0x73097d9EAA1dD8d89BC2AcfE56F11957c6BfBCc1',
+      loupe: '0x0bA62a21274D10FFA2bCA465c05361A47BD67263',
     },
   },
 };
 
 export const AvalancheMetamaskChain: MetamaskAddEthereumChain = {
-  chainId: toHex(AVALANCHE_TEST_CHAIN_ID),
-  chainName: 'Avalanche FUJI C-Chain',
+  chainId: toHex(AVALANCHE_CHAIN_ID),
+  chainName: 'Avalanche C-Chain',
   nativeCurrency: {
     name: 'Avalanche',
     symbol: 'AVAX',
@@ -85,11 +89,11 @@ export const AvalancheMetamaskChain: MetamaskAddEthereumChain = {
   blockExplorerUrls: [EXPLORER_URL],
 };
 
-export const AvalancheTestnetNetwork: Web3Network = {
+export const AvalancheNetwork: Web3Network = {
   id: 'avalanche',
   meta: {
-    chainId: AVALANCHE_TEST_CHAIN_ID,
-    name: 'Avalanche Testnet (Fuji)',
+    chainId: AVALANCHE_CHAIN_ID,
+    name: isDevelopmentMode ? 'Avalanche Mainnet (Alpha)' : 'Avalanche Mainnet',
     logo: 'avalanche-logo',
   },
   rpc: {
@@ -104,5 +108,5 @@ export const AvalancheTestnetNetwork: Web3Network = {
     apiUrl: '',
   },
   metamaskChain: AvalancheMetamaskChain,
-  config: AvalancheDevConfig,
+  config: AvalancheConfig,
 };
