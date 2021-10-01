@@ -5,8 +5,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { Spinner } from 'components/custom/spinner';
 import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
-import RewardPoolProvider from 'modules/smart-yield/providers/reward-pool-provider';
-import RewardPoolsProvider from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
@@ -78,14 +76,10 @@ const SmartAlphaView: React.FC = () => {
               <PortfolioView />
             </Route>
             <Route path="/smart-alpha/kpi-options">
-              <RewardPoolsProvider>
-                <KPIOptionsView />
-              </RewardPoolsProvider>
+              <KPIOptionsView />
             </Route>
             <Route path="/smart-alpha/kpi-option">
-              <RewardPoolProvider>
-                <KPIOptionView />
-              </RewardPoolProvider>
+              <KPIOptionView />
             </Route>
             <Redirect to="/smart-alpha/pools" />
           </Switch>

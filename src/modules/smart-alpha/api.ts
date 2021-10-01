@@ -415,3 +415,27 @@ export function useFetchPreviousEpochs({
     loadOlder,
   };
 }
+
+export type KpiOptionType = {
+  poolType: string;
+  poolAddress: string;
+  poolToken: {
+    address: string;
+    symbol: string;
+    decimals: number;
+  };
+  rewardTokens: {
+    address: string;
+    symbol: string;
+    decimals: number;
+  }[];
+};
+
+export function useFetchKpiOptions(): UseFetchReturn<KpiOptionType[]> {
+  const config = useConfig();
+  const url = new URL(`/api/smartalpha/rewards/pools`, config.api.baseUrl);
+
+  return useFetch(url, {
+    transform: ({ data }: { data: KpiOptionType[] }) => data,
+  });
+}
