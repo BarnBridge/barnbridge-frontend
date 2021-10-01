@@ -35,3 +35,28 @@
     background: var(--theme-body-color);
   }
 }
+
+.dropdown {
+  border: 1px solid var(--theme-border-color);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  width: 100%;
+  background-color: var(--theme-card-color);
+
+  &.large {
+    height: 64px;
+    padding: 0 24px;
+  }
+}
+
+.dropdownChevron {
+  color: var(--theme-icon-color);
+  margin-left: auto;
+
+  button:hover & {
+    color: var(--theme-icon-hover-color);
+  }
+}

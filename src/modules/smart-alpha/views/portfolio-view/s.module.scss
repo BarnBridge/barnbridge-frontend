@@ -21,6 +21,27 @@
   }
 }
 
+.positionsWalletSecondaryValues {
+  display: flex;
+  align-items: center;
+  background-color: var(--theme-body-color);
+  padding: 8px 16px;
+  border-radius: 55px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.positionsWalletSecondaryValue {
+  display: flex;
+  align-items: center;
+
+  &:not(:last-of-type) {
+    border-right: 2px solid var(--theme-border-color);
+    padding-right: 16px;
+    margin-right: 16px;
+  }
+}
+
 .spinner {
   position: absolute;
   top: calc(50% - 12px);
