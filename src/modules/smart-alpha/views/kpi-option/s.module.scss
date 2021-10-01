@@ -1,0 +1,60 @@
+.headerTerms {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 80px;
+  row-gap: 32px;
+  margin: 0;
+
+  :global(.no-flexbox-gap) & {
+    margin: -16px -40px;
+  }
+}
+
+.headerTermRow {
+  :global(.no-flexbox-gap) & {
+    margin: 16px 40px;
+  }
+
+  dt {
+    font: var(--font-sm);
+    font-weight: 600;
+    color: var(--theme-secondary-color);
+    margin-bottom: 8px;
+  }
+
+  dd {
+    font: var(--font-p1);
+    font-weight: 600;
+    margin: 0;
+    color: var(--theme-primary-color);
+    display: flex;
+    align-items: center;
+  }
+}
+
+.stakeStatisticsContainer {
+  display: flex;
+  align-items: stretch;
+  margin-bottom: 32px;
+  gap: 32px;
+
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.stake {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+}
+
+.statistics {
+  max-width: 384px;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    max-width: none;
+  }
+}
