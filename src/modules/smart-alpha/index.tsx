@@ -46,7 +46,7 @@ const SmartAlphaView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="overview" className="mr-8" size={24} /> KPI Options
+          <Icon name="pools" className="mr-8" size={24} /> KPI Options
         </>
       ),
       to: '/smart-alpha/kpi-options',

@@ -42,7 +42,7 @@ type TokenIconProps = {
   size?: number | string;
   className?: string;
   style?: React.CSSProperties;
-  outline?: 'green' | 'purple';
+  outline?: 'green' | 'purple' | ['green', 'purple'] | ['purple', 'green'];
 };
 
 const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai', 'xsushi'];
@@ -70,16 +70,14 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
           <use xlinkHref={`${staticNames.includes(name) ? '' : svgPath}#icon__${name}`} />
         </g>
         {outline ? (
-          <circle
-            cx="50%"
-            cy="50%"
-            r="48%"
-            fill="none"
-            strokeWidth="4%"
-            className={classNames({
-              [s[`${outline}-outline`]]: outline,
-            })}
-          />
+          <>
+            <defs>
+              <linearGradient id={`${id}-gradient`} gradientTransform="rotate(90)">
+                {getOutlineColor(outline)}
+              </linearGradient>
+            </defs>
+            <circle cx="50%" cy="50%" r="48%" fill="none" strokeWidth="4%" stroke={`url(#${id}-gradient)`} />
+          </>
         ) : null}
       </g>
 
@@ -104,6 +102,26 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
     </svg>
   );
 };
+
+function getOutlineColor(outline: TokenIconProps['outline']) {
+  if (Array.isArray(outline)) {
+    return (
+      <>
+        <stop offset="0%" stop-color={`var(--theme-${outline[0]}-color)`} />
+        <stop offset="50%" stop-color={`var(--theme-${outline[0]}-color)`} />
+        <stop offset="50%" stop-color={`var(--theme-${outline[1]}-color)`} />
+        <stop offset="100%" stop-color={`var(--theme-${outline[1]}-color)`} />
+      </>
+    );
+  }
+
+  return (
+    <>
+      <stop offset="0%" stop-color={`var(--theme-${outline}-color)`} />
+      <stop offset="100%" stop-color={`var(--theme-${outline}-color)`} />
+    </>
+  );
+}
 
 export type TokenPairProps = {
   name1: TokenIconNames;
