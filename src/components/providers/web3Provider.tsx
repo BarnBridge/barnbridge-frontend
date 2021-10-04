@@ -57,6 +57,10 @@ const Web3Provider: FC = props => {
   }, [activeNetwork]);
 
   const wssWeb3 = useMemo(() => {
+    if (!activeNetwork.rpc.wssUrl) {
+      return undefined;
+    }
+
     const provider = new Web3.providers.WebsocketProvider(activeNetwork.rpc.wssUrl);
     return new Web3(provider);
   }, [activeNetwork]);
@@ -136,7 +140,7 @@ const Web3Provider: FC = props => {
   );
 
   useEffect(() => {
-    if (!windowState.isVisible) {
+    if (!windowState.isVisible || !wssWeb3) {
       return undefined;
     }
 
