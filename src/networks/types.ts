@@ -83,7 +83,7 @@ export type Web3Network = {
     poolingInterval: number;
   };
   explorer: {
-    name: 'Etherscan' | 'Polygonscan' | 'Avalanche Explorer';
+    name: string;
     key: string;
     url: string;
     apiUrl: string;

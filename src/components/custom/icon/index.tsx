@@ -58,6 +58,7 @@ export type IconNames =
   | 'testnet-logo'
   | 'polygon-logo'
   | 'avalanche-logo'
+  | 'binance-logo'
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'

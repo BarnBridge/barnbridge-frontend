@@ -4,15 +4,15 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_HTTPS_URL = `https://api.avax-test.network/ext/bc/C/rpc`;
-const RPC_WSS_URL = `wss://api.avax-test.network/ext/bc/C/ws`;
+const RPC_HTTPS_URL = `https://data-seed-prebsc-2-s1.binance.org:8545`;
+const RPC_WSS_URL = ``;
 
-const EXPLORER_URL = 'https://cchain.explorer.avax-test.network';
+const EXPLORER_URL = 'https://testnet.bscscan.com';
 
-export const AVALANCHE_TEST_CHAIN_ID = 43113;
+export const BINANCE_TEST_CHAIN_ID = 97;
 
-export const AvalancheDevConfig: NetworkConfig = {
-  title: 'BarnBridge Avalanche',
+export const BinanceDevConfig: NetworkConfig = {
+  title: 'BarnBridge Binance',
   features: {
     smartAlpha: true,
     gasFees: false,
@@ -25,7 +25,7 @@ export const AvalancheDevConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://dev-avalanche.api.barnbridge.com',
+    baseUrl: 'https://dev-bsc.api.barnbridge.com',
   },
   tokens: {
     wbtc: '',
@@ -68,29 +68,29 @@ export const AvalancheDevConfig: NetworkConfig = {
   },
   contracts: {
     sa: {
-      loupe: '0x73097d9EAA1dD8d89BC2AcfE56F11957c6BfBCc1',
+      loupe: '0x144aBD818dCa6CbDB2aC11AB17dD803BDe39812d',
     },
   },
 };
 
-export const AvalancheMetamaskChain: MetamaskAddEthereumChain = {
-  chainId: toHex(AVALANCHE_TEST_CHAIN_ID),
-  chainName: 'Avalanche FUJI C-Chain',
+export const BinanceMetamaskChain: MetamaskAddEthereumChain = {
+  chainId: toHex(BINANCE_TEST_CHAIN_ID),
+  chainName: 'Binance Smart Chain Testnet',
   nativeCurrency: {
-    name: 'Avalanche',
-    symbol: 'AVAX',
+    name: 'Binance Coin',
+    symbol: 'BNB',
     decimals: 18,
   },
   rpcUrls: [RPC_HTTPS_URL],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
-export const AvalancheTestnetNetwork: Web3Network = {
-  id: 'avalanche-testnet',
+export const BinanceTestnetNetwork: Web3Network = {
+  id: 'binance-testnet',
   meta: {
-    chainId: AVALANCHE_TEST_CHAIN_ID,
-    name: 'Avalanche Testnet (Fuji)',
-    logo: 'avalanche-logo',
+    chainId: BINANCE_TEST_CHAIN_ID,
+    name: 'BSC Testnet',
+    logo: 'binance-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
@@ -98,11 +98,11 @@ export const AvalancheTestnetNetwork: Web3Network = {
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
-    name: 'Avalanche Explorer',
+    name: 'Binance Explorer',
     key: '',
     url: EXPLORER_URL,
     apiUrl: '',
   },
-  metamaskChain: AvalancheMetamaskChain,
-  config: AvalancheDevConfig,
+  metamaskChain: BinanceMetamaskChain,
+  config: BinanceDevConfig,
 };
