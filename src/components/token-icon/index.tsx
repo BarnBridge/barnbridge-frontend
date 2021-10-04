@@ -29,6 +29,7 @@ export type TokenIconNames =
   | 'usd'
   | 'uniswap'
   | 'wmatic'
+  | 'wavax'
   | 'xsushi'
   | 'link'
   | 'uni'

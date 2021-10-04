@@ -4,8 +4,11 @@ import { AbiItem } from 'web3-utils';
 import Erc20Contract from 'web3/erc20Contract';
 import { createAbiItem } from 'web3/web3Contract';
 
+import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
+import { AvalancheNetwork } from 'networks/avalanche';
+import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
 
 import { MainnetHttpsWeb3Provider } from './web3Provider';
 
@@ -23,6 +26,7 @@ export enum Tokens {
   RAI = 'RAI',
   STK_AAVE = 'stkAAVE',
   WMATIC = 'WMATIC',
+  WAVAX = 'WAVAX',
   BOND = 'BOND',
   UNIV2 = 'UNI-V2',
   BTC = 'BTC',
@@ -31,6 +35,7 @@ export enum Tokens {
   LINK = 'LINK',
   UNI = 'UNI',
   FEI = 'FEI',
+  AAVE = 'AAVE',
 }
 
 export type BaseTokenType = {
@@ -105,6 +110,14 @@ export const RAI: BaseTokenType = {
   icon: 'rai',
 };
 
+export const AAVE: BaseTokenType = {
+  address: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
+  symbol: Tokens.AAVE,
+  name: 'Aave',
+  decimals: 18,
+  icon: 'aave',
+};
+
 export const STK_AAVE: BaseTokenType = {
   address: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
   symbol: Tokens.STK_AAVE,
@@ -116,9 +129,17 @@ export const STK_AAVE: BaseTokenType = {
 export const MATIC: BaseTokenType = {
   address: '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
   symbol: Tokens.WMATIC,
-  name: 'Matic Token',
+  name: 'Polygon (MATIC)',
   decimals: 18,
   icon: 'wmatic',
+};
+
+export const WAVAX: BaseTokenType = {
+  address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+  symbol: Tokens.WAVAX,
+  name: 'Avalanche',
+  decimals: 18,
+  icon: 'wavax',
 };
 
 export const BOND: BaseTokenType = {
@@ -294,10 +315,13 @@ async function getPriceFor(symbol: string): Promise<BigNumber | undefined> {
       return getChainlinkFeedPrice('0xad35bd71b9afe6e4bdc266b345c198eadef9ad94'); // Chainlink: sUSD/USD
     case Tokens.DAI:
       return getChainlinkFeedPrice('0xaed0c38402a5d19df6e4c03f4e2dced6e29c1ee9'); // Chainlink: DAI/USD
+    case Tokens.AAVE:
     case Tokens.STK_AAVE:
-      return getChainlinkFeedPrice('0x547a514d5e3769680ce22b2361c10ea13619e8a9'); // Chainlink: STK_AAVE/USD
+      return getChainlinkFeedPrice('0x547a514d5e3769680ce22b2361c10ea13619e8a9'); // Chainlink: AAVE/USD
     case Tokens.WMATIC:
       return getChainlinkFeedPrice('0x7bac85a8a13a4bcd8abb3eb7d6b4d632c5a57676'); // Chainlink: MATIC/USD
+    case Tokens.WAVAX:
+      return getChainlinkFeedPrice('0xFF3EEb22B5E3dE6e705b44749C2559d704923FD7'); // Chainlink: AVAX/USD
     case Tokens.LINK:
       return getChainlinkFeedPrice('0x2c1d072e956AFFC0D435Cb7AC38EF18d24d9127c'); // Chainlink: LINK/USD
     case Tokens.UNI:
@@ -328,8 +352,10 @@ const ALL_TOKENS: BaseTokenType[] = [
   GUSD,
   DAI,
   RAI,
+  AAVE,
   STK_AAVE,
   MATIC,
+  WAVAX,
   BOND,
   UNIV2,
   XSUSHI,
@@ -341,6 +367,7 @@ const ALL_TOKENS: BaseTokenType[] = [
 const TokensProvider: FC = props => {
   const { children } = props;
 
+  const { activeNetwork } = useNetwork();
   const [reload, version] = useReload();
   const tokensRef = useRef<Map<string, TokenType>>(new Map());
 
@@ -384,6 +411,10 @@ const TokensProvider: FC = props => {
   }, []);
 
   const getToken = useCallback((symbol: string | undefined): TokenType | undefined => {
+    if (activeNetwork === AvalancheNetwork || activeNetwork === AvalancheTestnetNetwork) {
+      symbol = symbol?.replace('.e', '');
+    }
+
     return symbol ? tokensRef.current.get(symbol) : undefined;
   }, []);
 
