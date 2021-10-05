@@ -365,7 +365,9 @@ const TreasuryFees: FC = () => {
   }, [sePoolsPolygon]);
 
   const { data: saPoolsMainnet = [], loading: saLoadingMainnet } = useFetchSaPools();
-  const { data: saPoolsPolygon = [], loading: saLoadingPolygon } = useFetchSaPools(PolygonNetwork.config.api.baseUrl);
+  const { data: saPoolsPolygon = [], loading: saLoadingPolygon } = useFetchSaPools({
+    baseUrl: PolygonNetwork.config.api.baseUrl,
+  });
 
   const saPools = useMemo(() => {
     return (saPoolsMainnet ?? []).concat(saPoolsPolygon ?? []).map(pool => {

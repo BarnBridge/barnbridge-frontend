@@ -31,7 +31,8 @@ export const PortfolioPositions = () => {
   const location = useLocation();
   const history = useHistory();
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
-  const { data } = useFetchPools();
+  const { account } = useWallet();
+  const { data } = useFetchPools({ userAddress: account });
   const { getToken } = useTokens();
   const [reload] = useReload();
 
@@ -76,35 +77,39 @@ export const PortfolioPositions = () => {
 
   const tranches = useMemo(() => {
     return (
-      data?.map(item => {
-        const poolToken = getToken(item.poolToken.symbol);
-        const oracleToken = getAsset(item.oracleAssetSymbol);
+      data
+        ?.sort((a, b) => (a.userHasActivePosition === b.userHasActivePosition ? 0 : a.userHasActivePosition ? -1 : 1))
+        .map(item => {
+          const poolToken = getToken(item.poolToken.symbol);
+          const oracleToken = getAsset(item.oracleAssetSymbol);
 
-        return {
-          children: (
-            <div className="flex flex-grow align-center">
-              <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
-                bubble2Name={oracleToken?.icon}
-                size={32}
-                className="mr-16"
-              />
-              <Text type="p2" weight="semibold" color="primary">
-                {activePool?.poolName}
-              </Text>
-              {/* <Badge color="red" size="small" className="ml-auto">
-                Staked
-              </Badge> */}
-            </div>
-          ),
-          onClick: () => {
-            history.push({
-              pathname: location.pathname,
-              search: `?poolAddress=${item.poolAddress}`,
-            });
-          },
-        };
-      }) ?? []
+          return {
+            children: (
+              <div className="flex flex-grow align-center">
+                <TokenIcon
+                  name={poolToken?.icon ?? 'unknown'}
+                  bubble2Name={oracleToken?.icon}
+                  size={32}
+                  className="mr-16"
+                />
+                <Text type="p2" weight="semibold" color="primary">
+                  {item.poolName}
+                </Text>
+                {item.userHasActivePosition ? (
+                  <Badge color="red" size="small" className="ml-auto">
+                    Staked
+                  </Badge>
+                ) : null}
+              </div>
+            ),
+            onClick: () => {
+              history.push({
+                pathname: location.pathname,
+                search: `?poolAddress=${item.poolAddress}`,
+              });
+            },
+          };
+        }) ?? []
     );
   }, [data]);
 
@@ -125,9 +130,11 @@ export const PortfolioPositions = () => {
         <Text type="p2" weight="semibold" color="primary">
           {activePool.poolName}
         </Text>
-        {/* <Badge color="red" size="small" className="ml-auto">
-          Staked
-        </Badge> */}
+        {activePool.userHasActivePosition ? (
+          <Badge color="red" size="small" className="ml-auto">
+            Staked
+          </Badge>
+        ) : null}
       </Dropdown>
       <div className={s.positionsCards}>
         <WalletBalance pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />

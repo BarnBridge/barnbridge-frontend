@@ -38,11 +38,22 @@ export type PoolApiType = {
     juniorExitedTVL: string;
     seniorExitedTVL: string;
   };
+  userHasActivePosition?: boolean;
 };
 
-export function useFetchPools(baseUrl?: string): UseFetchReturn<PoolApiType[]> {
+export function useFetchPools({
+  userAddress,
+  baseUrl,
+}: {
+  userAddress?: string;
+  baseUrl?: string;
+} = {}): UseFetchReturn<PoolApiType[]> {
   const config = useConfig();
   const url = new URL(`/api/smartalpha/pools`, baseUrl ?? config.api.baseUrl);
+
+  if (userAddress) {
+    url.searchParams.set('userAddress', userAddress);
+  }
 
   return useFetch(url, {
     transform: ({ data }) => data,
