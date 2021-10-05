@@ -4,7 +4,7 @@ import AntdSpin from 'antd/lib/spin';
 import { useFetchKpiOptions } from 'modules/smart-alpha/api';
 import { KpiOptionCard } from 'modules/smart-alpha/views/kpi-options/kpi-option-card';
 
-const PoolsView: FC = () => {
+const KpiOptionsView: FC = () => {
   const { loading, data: kpiOptions } = useFetchKpiOptions();
 
   return (
@@ -16,4 +16,4 @@ const PoolsView: FC = () => {
   );
 };
 
-export default PoolsView;
+export default KpiOptionsView;

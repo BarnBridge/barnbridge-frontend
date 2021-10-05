@@ -5,7 +5,7 @@ import { useConfig } from 'components/providers/configProvider';
 import { Tokens } from 'components/providers/tokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
-import { UseFetchReturn, executeFetch, useFetch } from 'utils/fetch';
+import { PaginatedResult, UseFetchReturn, executeFetch, useFetch } from 'utils/fetch';
 
 export type PoolApiType = {
   epoch1Start: number;
@@ -438,4 +438,55 @@ export function useFetchKpiOptions(): UseFetchReturn<KpiOptionType[]> {
   return useFetch(url, {
     transform: ({ data }: { data: KpiOptionType[] }) => data,
   });
+}
+
+export function useFetchKpiOption(poolAddress: string): UseFetchReturn<KpiOptionType | undefined> {
+  const config = useConfig();
+  const url = new URL('/api/smartalpha/rewards/pools', config.api.baseUrl);
+
+  if (poolAddress) {
+    url.searchParams.set('poolAddress', poolAddress);
+  }
+
+  return useFetch(url, {
+    transform: ({ data }: { data: KpiOptionType[] }) => (Array.isArray(data) ? data[0] : undefined),
+  });
+}
+
+export type KpiTransactionType = {
+  userAddress: string;
+  transactionType: string;
+  amount: string;
+  blockTimestamp: number;
+  blockNumber: number;
+  transactionHash: string;
+};
+
+export function useFetchKpiOptionTransactions(
+  poolAddress: string,
+  page = 1,
+  limit = 10,
+  userAddress: string = 'all',
+  transactionType: string = 'all',
+): UseFetchReturn<PaginatedResult<KpiTransactionType>> {
+  const config = useConfig();
+  const url = new URL(`/api/smartalpha/rewards/pools/${poolAddress}/transactions`, config.api.baseUrl);
+
+  if (page) {
+    url.searchParams.set('page', String(page));
+  }
+
+  if (limit) {
+    url.searchParams.set('limit', String(limit));
+  }
+
+  if (userAddress) {
+    url.searchParams.set('userAddress', userAddress);
+  }
+
+  if (transactionType) {
+    url.searchParams.set('transactionType', transactionType);
+  }
+
+  return useFetch(url, { lazy: true });
 }

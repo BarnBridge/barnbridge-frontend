@@ -212,7 +212,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
           </dl>
         )}
         <footer className={s.footer}>
-          <Link className="button-primary full-width" to={`/smart-alpha/kpi-option`}>
+          <Link className="button-primary full-width" to={`/smart-alpha/kpi-options/${kpiOption.poolAddress}`}>
             View pool
           </Link>
           {walletCtx.isActive && activeTab === 'my' && (

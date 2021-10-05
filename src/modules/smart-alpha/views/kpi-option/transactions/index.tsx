@@ -1,78 +1,37 @@
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { SelectValue } from 'antd/lib/select';
-import { ColumnsType } from 'antd/lib/table/interface';
+import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
-import Table from 'components/antd/table';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/custom/externalLink';
+import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
-import { useReload } from 'hooks/useReload';
-import {
-  APISYRewardPoolTransaction,
-  APISYRewardTxHistoryType,
-  RewardHistoryShortTypes,
-  useSyAPI,
-} from 'modules/smart-yield/api';
-import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { TokenIcon } from 'components/token-icon';
+import { KpiOptionType, KpiTransactionType, useFetchKpiOptionTransactions } from 'modules/smart-alpha/api';
+import { APISYRewardTxHistoryType, RewardHistoryShortTypes } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
-type TableEntity = APISYRewardPoolTransaction;
-
-type State = {
-  transactions: TableEntity[];
-  total: number;
-  page: number;
-  pageSize: number;
-  loading: boolean;
-  filters: {
-    type: string;
-  };
-};
-
-const InitialState: State = {
-  transactions: [],
-  total: 0,
-  page: 1,
-  pageSize: 10,
-  loading: false,
-  filters: {
-    type: 'all',
-  },
-};
-
-function getColumns(isAll: boolean): ColumnsType<TableEntity> {
+function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTransactionType>[] {
   return [
     {
-      title: 'Transaction',
-      width: '25%',
-      render: function TransactionRender(_, entity) {
-        const { projectToken } = useKnownTokens();
-        const rpCtx = useRewardPool();
-        const { market: poolMarket, uToken, pool } = rpCtx;
-        const { smartYield } = pool!;
-
+      heading: 'Transaction',
+      render: entity => {
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            <TokenIcon
-              name={uToken?.icon as TokenIconNames}
-              bubble1Name={projectToken.icon!}
-              bubble2Name={poolMarket?.icon.active as TokenIconNames}
-            />
+            <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" />
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
               </Text>
               <Text type="small" weight="semibold" wrap={false}>
-                {smartYield.symbol}
+                {kpiOption.poolToken.symbol}
               </Text>
             </div>
           </div>
@@ -80,29 +39,26 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       },
     },
     {
-      title: 'Amount',
-      width: '25%',
-      render: function TransactionRender(_, entity) {
+      heading: 'Amount',
+      render: function TransactionRender(entity) {
         const { convertTokenInUSD } = useKnownTokens();
-        const rpCtx = useRewardPool();
-        const { pool } = rpCtx;
-        const { smartYield } = pool!;
         const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
-        const amountInUSD = convertTokenInUSD(entity.amount, smartYield.symbol!);
+        const amount = BigNumber.from(entity.amount);
+        const amountInUSD = convertTokenInUSD(amount, kpiOption.poolToken.symbol!);
 
         return (
           <>
             <Tooltip
               placement="bottomLeft"
               title={
-                formatToken(entity.amount, {
-                  decimals: smartYield.decimals,
+                formatToken(amount, {
+                  decimals: kpiOption.poolToken.decimals,
                 }) ?? '-'
               }>
               <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
                 {isStake ? '+' : '-'}
-                {formatToken(entity.amount, {
-                  tokenName: smartYield.symbol,
+                {formatToken(amount, {
+                  tokenName: kpiOption.poolToken.symbol,
                 }) ?? '-'}
               </Text>
             </Tooltip>
@@ -113,158 +69,103 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
         );
       },
     },
-    isAll
-      ? {
-          title: 'Address',
-          dataIndex: 'from',
-          width: '25%',
-          render: function Render(_, entity) {
-            const { getEtherscanAddressUrl } = useWeb3();
-
-            return (
-              <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
+    ...(isAll
+      ? [
+          {
+            heading: 'Address',
+            render: entity => (
+              <ExplorerAddressLink address={entity.userAddress} className="link-blue">
                 <Text type="p1" weight="semibold">
                   {shortenAddr(entity.userAddress)}
                 </Text>
-              </ExternalLink>
-            );
+              </ExplorerAddressLink>
+            ),
           },
-        }
-      : {},
+        ]
+      : []),
     {
-      title: 'Transaction hash/timestamp',
-      width: '25%',
-      render: function Render(_, entity) {
-        const { getEtherscanTxUrl } = useWeb3();
-
-        return (
-          <>
-            <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
-              <Text type="p1" weight="semibold">
-                {shortenAddr(entity.transactionHash)}
-              </Text>
-            </ExternalLink>
-            <Text type="small" weight="semibold" color="secondary">
-              {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+      heading: 'Transaction hash/timestamp',
+      render: entity => (
+        <>
+          <ExplorerTxLink address={entity.transactionHash} className="link-blue mb-4">
+            <Text type="p1" weight="semibold">
+              {shortenAddr(entity.transactionHash)}
             </Text>
-          </>
-        );
-      },
+          </ExplorerTxLink>
+          <Text type="small" weight="semibold" color="secondary">
+            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+          </Text>
+        </>
+      ),
     },
   ];
 }
 
-const Transactions: FC = () => {
+const Transactions: FC<{ poolAddress: string; kpiOption: KpiOptionType; version: number }> = ({
+  poolAddress,
+  kpiOption,
+  version,
+}) => {
   const wallet = useWallet();
-  const rewardPool = useRewardPool();
-  const syAPI = useSyAPI();
 
-  const [reload, version] = useReload();
-  const [state, setState] = React.useState<State>(InitialState);
-  const [activeTab, setActiveTab] = React.useState(wallet.isActive ? 'own' : 'all');
+  const limit = 10;
+  const [page, setPage] = useState(1);
+  const [activeTab, setActiveTab] = useState(wallet.isActive ? 'own' : 'all');
+  const [transactionType, setTransactionType] = useState('all');
 
-  const txOpts = React.useMemo<SelectOption[]>(() => {
+  const { data, loading, load } = useFetchKpiOptionTransactions(
+    poolAddress,
+    page,
+    limit,
+    activeTab === 'own' ? wallet.account : 'all',
+    transactionType,
+  );
+
+  useEffect(() => {
+    load().catch(Error);
+  }, [version]);
+
+  const kpiTransactions = data?.data;
+  const totalTransactions = data?.meta.count ?? 0;
+
+  const txOpts = useMemo<SelectOption[]>(() => {
     return [
       {
-        label: 'All pool transactions',
+        label: 'All transactions',
         value: 'all',
       },
-      ...Array.from(RewardHistoryShortTypes).map(([value, label]) => ({ label, value })),
+      {
+        label: 'Deposit',
+        value: 'deposit',
+      },
+      {
+        label: 'Withdraw',
+        value: 'withdraw',
+      },
     ];
   }, []);
 
-  React.useEffect(() => {
-    setState(prevState => ({
-      ...prevState,
-      page: 1,
-      filters: {
-        ...prevState.filters,
-        type: 'all',
-      },
-    }));
+  useEffect(() => {
+    setPage(1);
+    setTransactionType('all');
   }, [activeTab]);
 
-  React.useEffect(() => {
-    function onPoolTx() {
-      if (activeTab === 'own') {
-        reload();
-      }
-    }
-
-    rewardPool.pool?.rewardPool.on('tx:success', onPoolTx);
-
-    return () => {
-      rewardPool.pool?.rewardPool.off('tx:success', onPoolTx);
-    };
-  }, [rewardPool.pool]);
-
-  React.useEffect(() => {
-    if (!rewardPool.pool) {
-      return;
-    }
-
-    const { meta } = rewardPool.pool;
-
-    setState(prevState => ({
-      ...prevState,
-      loading: true,
-      total: 0,
-    }));
-
-    (async () => {
-      try {
-        const {
-          data: transactions,
-          meta: { count },
-        } = await syAPI.fetchSYRewardPoolTransactions(
-          meta.poolAddress,
-          state.page,
-          state.pageSize,
-          activeTab === 'own' ? wallet.account : 'all',
-          state.filters.type,
-        );
-
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          transactions: transactions,
-          total: count,
-        }));
-      } catch {
-        setState(prevState => ({
-          ...prevState,
-          loading: false,
-          transactions: [],
-        }));
-      }
-    })();
-  }, [rewardPool.pool, wallet, activeTab, state.page, state.pageSize, state.filters, version]);
-
-  React.useEffect(() => {
+  useEffect(() => {
     setActiveTab(wallet.isActive ? 'own' : 'all');
   }, [wallet.isActive]);
 
   function handleTypeFilterChange(value: SelectValue) {
-    setState(prevState => ({
-      ...prevState,
-      page: 1,
-      filters: {
-        ...prevState.filters,
-        type: String(value),
-      },
-    }));
+    setPage(1);
+    setTransactionType(String(value));
   }
 
   function handlePageChange(page: number) {
-    setState(prevState => ({
-      ...prevState,
-      page,
-    }));
+    setPage(page);
   }
 
-  const tableColumns = React.useMemo(() => {
-    return getColumns(activeTab === 'all');
-  }, [activeTab]);
+  const tableColumns = useMemo(() => {
+    return getColumns(kpiOption, activeTab === 'all');
+  }, [kpiOption, activeTab]);
 
   return (
     <div className="card mb-32">
@@ -273,37 +174,28 @@ const Transactions: FC = () => {
         activeKey={activeTab}
         onChange={setActiveTab}
         tabBarExtraContent={
-          <Select
-            className="full-width"
-            options={txOpts}
-            value={state.filters.type}
-            onChange={handleTypeFilterChange}
-          />
+          <Select className="full-width" options={txOpts} value={transactionType} onChange={handleTypeFilterChange} />
         }>
         {wallet.isActive && <Tabs.Tab key="own" tab="My transactions" />}
         <Tabs.Tab key="all" tab="All transactions" />
       </Tabs>
 
-      <Table<TableEntity>
+      <Table<KpiTransactionType>
         columns={tableColumns}
-        dataSource={state.transactions}
-        loading={state.loading}
-        rowKey="transactionHash"
-        pagination={{
-          total: state.total,
-          current: state.page,
-          pageSize: state.pageSize,
-          position: ['bottomRight'],
-          showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
-              Showing {from} to {to} out of {total} transactions
-            </Text>
-          ),
-          onChange: handlePageChange,
-        }}
-        scroll={{
-          x: true,
-        }}
+        data={kpiTransactions ?? []}
+        rowKey={item => item.transactionHash}
+        loading={loading}
+      />
+      <TableFooter
+        total={totalTransactions}
+        current={page}
+        pageSize={limit}
+        onChange={handlePageChange}
+        text={({ total, from, to }) => (
+          <>
+            Showing {from} to {to} out of {total} transactions
+          </>
+        )}
       />
     </div>
   );

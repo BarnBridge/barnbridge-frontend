@@ -75,10 +75,10 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/portfolio">
               <PortfolioView />
             </Route>
-            <Route path="/smart-alpha/kpi-options">
+            <Route path="/smart-alpha/kpi-options" exact>
               <KPIOptionsView />
             </Route>
-            <Route path="/smart-alpha/kpi-option">
+            <Route path="/smart-alpha/kpi-options/:id" exact>
               <KPIOptionView />
             </Route>
             <Redirect to="/smart-alpha/pools" />

@@ -3,6 +3,7 @@ import { Controller, useForm } from 'react-hook-form';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
+import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
@@ -12,9 +13,12 @@ import { VFormValidationResolver } from 'components/custom/form';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
-import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { useWeb3Contract } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
+import { KpiOptionType } from 'modules/smart-alpha/api';
+import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
@@ -23,18 +27,19 @@ type StakeFormValues = {
   amount: string;
 };
 
-const StakeForm: FC = () => {
+type StakeFormProps = {
+  kpiOption: KpiOptionType;
+  kpiContract: KpiRewardPoolContract;
+  poolTokenContract: Erc20Contract;
+};
+
+const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContract }) => {
   const walletCtx = useWallet();
-  const rewardPoolCtx = useRewardPool();
-  const { projectToken } = useKnownTokens();
 
   const [enabling, setEnabled] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
 
-  const { pool, market: poolMarket, uToken } = rewardPoolCtx;
-
-  const walletBalance = pool?.smartYield.balance;
-  const maxAmountUnscaled = walletBalance?.unscaleBy(pool?.smartYield.decimals);
+  const maxAmountUnscaled = poolTokenContract.balance?.unscaleBy(kpiOption.poolToken.decimals);
 
   const formCtx = useForm<StakeFormValues>({
     defaultValues: {
@@ -60,12 +65,7 @@ const StakeForm: FC = () => {
     },
   });
 
-  if (!pool) {
-    return null;
-  }
-
-  const { smartYield, rewardPool } = pool;
-  const notAllowed = smartYield.isAllowedOf(rewardPool.address) === false;
+  const notAllowed = poolTokenContract.isAllowedOf(kpiOption.poolAddress) === false;
   const amount = formCtx.watch('amount');
   const bnAmount = BigNumber.from(amount);
   const formDisabled = formCtx.formState.isSubmitting || enabling;
@@ -75,7 +75,7 @@ const StakeForm: FC = () => {
     setEnabled(true);
 
     try {
-      await smartYield.approve(rewardPool.address, true);
+      await poolTokenContract.approve(kpiOption.poolAddress, true);
     } catch (e) {
       console.error('StakeForm:handleEnable', e);
     }
@@ -97,13 +97,16 @@ const StakeForm: FC = () => {
     showConfirm(false);
 
     try {
-      const amount = bnAmount.scaleBy(smartYield.decimals);
+      const amount = bnAmount.scaleBy(kpiOption.poolToken.decimals);
 
       if (amount) {
-        await rewardPool.sendDeposit(amount, gasPrice);
-        rewardPool.loadCommon().catch(Error);
-        smartYield.loadBalance().catch(Error);
-        rewardPool.loadBalanceFor(walletCtx.account!).catch(Error);
+        await kpiContract.sendDeposit(amount, gasPrice);
+        kpiContract.loadCommon().catch(Error);
+
+        if (walletCtx.account) {
+          poolTokenContract.loadBalance(walletCtx.account).catch(Error);
+          kpiContract.loadBalanceFor(walletCtx.account).catch(Error);
+        }
         formCtx.reset();
       }
     } catch (e) {
@@ -126,17 +129,11 @@ const StakeForm: FC = () => {
                 {...field}
                 className="mb-12"
                 before={
-                  <TokenIcon
-                    name={uToken?.icon as TokenIconNames}
-                    bubble1Name={projectToken.icon}
-                    bubble2Name={poolMarket?.icon.active as TokenIconNames}
-                    size={32}
-                    className="mr-8"
-                  />
+                  <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
                 }
                 disabled={formDisabled}
                 max={maxAmountUnscaled}
-                decimals={smartYield.decimals}
+                decimals={kpiOption.poolToken.decimals}
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
@@ -151,7 +148,7 @@ const StakeForm: FC = () => {
           {walletCtx.isActive && notAllowed && (
             <button type="button" className="button-primary mr-16" disabled={enabling} onClick={handleEnable}>
               {enabling && <Spin spinning />}
-              Enable {smartYield.symbol}
+              Enable {kpiOption.poolToken.symbol}
             </button>
           )}
 
@@ -170,13 +167,7 @@ const StakeForm: FC = () => {
               <Text type="h2" weight="semibold" color="primary">
                 {formatToken(bnAmount) ?? '-'}
               </Text>
-              <TokenIcon
-                name={uToken?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon}
-                bubble2Name={poolMarket?.icon.active as TokenIconNames}
-                size={32}
-                className="mr-8"
-              />
+              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
             </div>
           }
           submitText="Stake"
@@ -192,18 +183,20 @@ type UnstakeFormValues = {
   amount: string;
 };
 
-const UnstakeForm: FC = () => {
+type UnstakeFormProps = {
+  kpiOption: KpiOptionType;
+  kpiContract: KpiRewardPoolContract;
+  poolTokenContract: Erc20Contract;
+};
+
+const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenContract }) => {
   const walletCtx = useWallet();
-  const rewardPoolCtx = useRewardPool();
-  const { projectToken } = useKnownTokens();
+  const { getTokenBySymbol } = useKnownTokens();
 
   const [isClaimUnstake, setClaimUnstake] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
 
-  const { pool, market: poolMarket, uToken } = rewardPoolCtx;
-
-  const stakedBalance = pool?.rewardPool.getBalanceFor(walletCtx.account!);
-  const maxAmountUnscaled = stakedBalance?.unscaleBy(pool?.smartYield.decimals);
+  const maxAmountUnscaled = poolTokenContract.balance?.unscaleBy(kpiOption.poolToken.decimals);
 
   const formCtx = useForm<UnstakeFormValues>({
     defaultValues: {
@@ -229,12 +222,6 @@ const UnstakeForm: FC = () => {
     },
   });
 
-  if (!pool) {
-    return null;
-  }
-
-  const { smartYield, rewardPool } = pool;
-  const rewardTokens = Array.from(pool.rewardTokens.values());
   const amount = formCtx.watch('amount');
   const bnAmount = BigNumber.from(amount);
   const formDisabled = formCtx.formState.isSubmitting;
@@ -254,17 +241,22 @@ const UnstakeForm: FC = () => {
     showConfirm(false);
 
     try {
-      const amount = bnAmount.scaleBy(smartYield.decimals);
+      const amount = bnAmount.scaleBy(kpiOption.poolToken.decimals);
 
       if (amount) {
         if (isClaimUnstake) {
-          await rewardPool.sendWithdrawAndClaim(amount, gasPrice);
+          await kpiContract.sendWithdrawAndClaim(amount, gasPrice);
         } else {
-          await rewardPool.sendWithdraw(amount, gasPrice);
+          await kpiContract.sendWithdraw(amount, gasPrice);
         }
-        rewardPool.loadCommon().catch(Error);
-        smartYield.loadBalance().catch(Error);
-        rewardPool.loadBalanceFor(walletCtx.account!).catch(Error);
+
+        kpiContract.loadCommon().catch(Error);
+
+        if (walletCtx.account) {
+          poolTokenContract.loadBalance(walletCtx.account).catch(Error);
+          kpiContract.loadBalanceFor(walletCtx.account).catch(Error);
+        }
+
         formCtx.reset();
       }
     } catch (e) {
@@ -287,17 +279,11 @@ const UnstakeForm: FC = () => {
                 {...field}
                 className="mb-12"
                 before={
-                  <TokenIcon
-                    name={uToken?.icon as TokenIconNames}
-                    bubble1Name={projectToken.icon}
-                    bubble2Name={poolMarket?.icon.active as TokenIconNames}
-                    size={32}
-                    className="mr-8"
-                  />
+                  <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
                 }
                 disabled={formDisabled}
                 max={maxAmountUnscaled}
-                decimals={smartYield.decimals}
+                decimals={kpiOption.poolToken.decimals}
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
@@ -347,13 +333,7 @@ const UnstakeForm: FC = () => {
                   <Text type="h2" weight="semibold" color="primary">
                     {formatToken(bnAmount) ?? '-'}
                   </Text>
-                  <TokenIcon
-                    name={uToken?.icon as TokenIconNames}
-                    bubble1Name={projectToken.icon!}
-                    bubble2Name={poolMarket?.icon.active as TokenIconNames}
-                    size={32}
-                    className="mr-8"
-                  />
+                  <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
                 </div>
               </div>
 
@@ -362,19 +342,19 @@ const UnstakeForm: FC = () => {
                   <Text type="p1" weight="semibold" color="secondary">
                     Claim
                   </Text>
-                  {rewardTokens.map(rewardToken => {
-                    const toClaim = rewardPool.getClaimFor(rewardToken.address);
+                  {kpiOption.rewardTokens.map(token => {
+                    const rewardToken = getTokenBySymbol(token.symbol);
 
-                    return (
-                      <div className="flex col-gap-8 align-center justify-center">
+                    return rewardToken ? (
+                      <div key={rewardToken.symbol} className="flex col-gap-8 align-center justify-center">
                         <Text type="h2" weight="semibold" color="primary">
-                          {formatToken(toClaim, {
+                          {formatToken(kpiContract.getClaimFor(rewardToken.address), {
                             scale: rewardToken.decimals,
                           }) ?? '-'}
                         </Text>
-                        <TokenIcon name={rewardToken.icon!} size={32} />
+                        <TokenIcon name={rewardToken.icon} size={32} />
                       </div>
-                    );
+                    ) : null;
                   })}
                 </div>
               )}
@@ -389,24 +369,38 @@ const UnstakeForm: FC = () => {
   );
 };
 
-const Stake: FCx = props => {
-  const { className } = props;
+type StakeProps = {
+  kpiOption: KpiOptionType;
+  kpiContract: KpiRewardPoolContract;
+};
 
+const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract }) => {
   const walletCtx = useWallet();
-  const [activeTab, setActiveTab] = useState('stake');
   const { convertTokenInUSD } = useKnownTokens();
+  const [reload] = useReload();
 
-  const rewardPoolCtx = useRewardPool();
-  const { pool } = rewardPoolCtx;
+  const [activeTab, setActiveTab] = useState('stake');
 
-  if (!pool) {
-    return null;
-  }
+  const poolTokenContract = useWeb3Contract(
+    () => {
+      return new Erc20Contract([], kpiOption.poolToken.address);
+    },
+    {
+      afterInit: contract => {
+        contract.onUpdateData(reload);
+        contract.loadAllowance(kpiOption.poolAddress);
 
-  const { smartYield, rewardPool } = pool;
+        if (walletCtx.account) {
+          contract.loadBalance(walletCtx.account);
+        }
+      },
+    },
+  );
 
-  const walletBalance = smartYield.balance?.unscaleBy(smartYield.decimals);
-  const stakedBalance = rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(smartYield.decimals);
+  const walletBalance = poolTokenContract.balance?.unscaleBy(kpiOption.poolToken.decimals);
+  const stakedBalance = walletCtx.account
+    ? kpiContract.getBalanceFor(walletCtx.account)?.unscaleBy(kpiOption.poolToken.decimals)
+    : undefined;
 
   return (
     <div className={cn('card', className)}>
@@ -420,10 +414,10 @@ const Stake: FCx = props => {
             <Text type="small" weight="semibold" color="secondary" className="mb-8">
               Staked balance
             </Text>
-            <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, smartYield.symbol!)) ?? '-'}>
+            <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, kpiOption.poolToken.symbol)) ?? '-'}>
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(stakedBalance, {
-                  decimals: smartYield.decimals,
+                  decimals: kpiOption.poolToken.decimals,
                 }) ?? '-'}
               </Text>
             </Tooltip>
@@ -432,18 +426,22 @@ const Stake: FCx = props => {
             <Text type="small" weight="semibold" color="secondary" className="mb-8">
               Wallet balance
             </Text>
-            <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, smartYield.symbol!)) ?? '-'}>
+            <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, kpiOption.poolToken.symbol)) ?? '-'}>
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(walletBalance, {
-                  decimals: smartYield.decimals,
+                  decimals: kpiOption.poolToken.decimals,
                 }) ?? '-'}
               </Text>
             </Tooltip>
           </div>
         </div>
 
-        {activeTab === 'stake' && <StakeForm />}
-        {activeTab === 'unstake' && <UnstakeForm />}
+        {activeTab === 'stake' && (
+          <StakeForm kpiOption={kpiOption} kpiContract={kpiContract} poolTokenContract={poolTokenContract} />
+        )}
+        {activeTab === 'unstake' && (
+          <UnstakeForm kpiOption={kpiOption} kpiContract={kpiContract} poolTokenContract={poolTokenContract} />
+        )}
       </div>
     </div>
   );
