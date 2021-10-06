@@ -107,6 +107,7 @@ export const TestnetMetamaskChain: MetamaskAddEthereumChain = {
 
 export const TestnetNetwork: Web3Network = {
   id: 'testnet',
+  type: 'Ethereum',
   meta: {
     chainId: TESTNET_CHAIN_ID,
     name: 'Ethereum Testnet (Kovan)',

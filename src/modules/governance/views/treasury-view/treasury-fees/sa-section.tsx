@@ -13,20 +13,20 @@ import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { PoolApiType } from 'modules/smart-alpha/api';
 import SaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { MainnetNetwork } from 'networks/mainnet';
-import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
+
+import { Web3Network } from 'networks/types';
 
 export type ExtendedPoolApiType = PoolApiType & {
   providerContract: SaContract | undefined;
-  isPolygon: boolean;
   feesAmountToken: BigNumber | undefined;
   feesAmountUSDToken: BigNumber | undefined;
+  network: Web3Network;
 };
 
 const columns: ColumnType<ExtendedPoolApiType>[] = [
@@ -34,16 +34,12 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     heading: <div>Token Name</div>,
     render: function Render(entity) {
       const { getToken } = useTokens();
-      const token = getToken(entity.poolToken.symbol);
+      const token = getToken(entity.poolToken.symbol, entity.network);
       const oracle = getAsset(entity.oracleAssetSymbol);
+
       return (
         <div className="flex flow-col align-center">
-          <TokenIcon
-            name={token?.icon ?? 'unknown'}
-            bubble2Name={oracle?.icon ?? 'unknown'}
-            size={32}
-            className="mr-16"
-          />
+          <TokenIcon name={token?.icon} bubble2Name={oracle?.icon} size={32} className="mr-16" />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">
@@ -64,9 +60,9 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-          <IconOld name={!entity.isPolygon ? MainnetNetwork.meta.logo : PolygonNetwork.meta.logo} />
+          <IconOld name={entity.network.meta.logo} />
           <Text type="p2" weight="semibold" color="secondary">
-            {!entity.isPolygon ? 'Ethereum' : 'Polygon'}
+            {entity.network.type}
           </Text>
         </div>
       );
@@ -92,14 +88,14 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: '',
     render: function Render(entity: ExtendedPoolApiType) {
-      const { feesAmountToken, isPolygon } = entity;
+      const { feesAmountToken, network } = entity;
 
       const wallet = useWallet();
-      const { getTokenIconBySymbol } = useKnownTokens();
+      const { getToken } = useTokens();
       const [confirmVisible, setConfirmVisible] = useState(false);
       const [harvesting, setHarvesting] = useState(false);
 
-      if (!wallet.isActive || isPolygon) {
+      if (!wallet.isActive || network !== MainnetNetwork) {
         return <></>;
       }
 
@@ -141,7 +137,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                       </Text>
                       <Text type="p1" weight="bold" color="primary" className="flex align-center">
                         {formatToken(feesAmountToken) ?? '-'}
-                        <TokenIcon name={getTokenIconBySymbol(entity.poolToken.symbol)} size={24} className="ml-8" />
+                        <TokenIcon name={getToken(entity.poolToken.symbol)?.icon} size={24} className="ml-8" />
                       </Text>
                     </div>
                   </div>
@@ -178,14 +174,12 @@ type TreasuryFilterType = {
 export const SASection = ({
   pools,
   total,
-  loadingMainnet,
-  loadingPolygon,
+  loading,
   className,
 }: {
   pools: ExtendedPoolApiType[];
   total: BigNumber;
-  loadingMainnet: boolean;
-  loadingPolygon: boolean;
+  loading: boolean;
   className?: string;
 }) => {
   const [poolFilter, setPoolFilter] = useState('all');
@@ -277,7 +271,7 @@ export const SASection = ({
           columns={columns}
           data={filteredDataSource}
           rowKey={row => row.poolAddress}
-          loading={loadingMainnet || loadingPolygon}
+          loading={loading}
           // locale={{
           //   emptyText: 'No accrued fees', // TODO: Add support of empty result to Table component
           // }}

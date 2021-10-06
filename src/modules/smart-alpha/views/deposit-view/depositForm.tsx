@@ -134,7 +134,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
       <div className={classNames(s.depositBalance, 'flex col-gap-32 mb-32')}>
         <div>
           <Hint
-            text={`This amount of ${poolToken?.symbol} is already in the deposit queue and will be considered towards your overall position in the next epoch.`}
+            text={`This amount of ${pool.poolToken.symbol} is already in the deposit queue and will be considered towards your overall position in the next epoch.`}
             className="mb-4">
             <Text type="small" weight="semibold" color="secondary">
               Balance in deposit queue
@@ -142,7 +142,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
           </Hint>
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+            <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
           </Text>
         </div>
         <div>
@@ -150,7 +150,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
             text={`This amount of ${
               isSenior ? 'senior' : 'junior'
             } tokens is available to be redeemed from your deposits made in either the ongoing or previous epochs. It will be automatically redeemed if you add more ${
-              poolToken?.symbol
+              pool.poolToken.symbol
             } to the deposit queue.`}
             className="mb-4">
             <Text type="small" weight="semibold" color="secondary">
@@ -161,10 +161,10 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
             {formatToken(unclaimedTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
             <TokenIcon
               className="ml-8"
-              name={poolToken?.icon ?? 'unknown'}
+              name={poolToken?.icon}
               outline={isSenior ? 'green' : 'purple'}
               bubble1Name="bond"
-              bubble2Name={oracleToken?.icon ?? 'unknown'}
+              bubble2Name={oracleToken?.icon}
               size={16}
             />
           </Text>
@@ -175,7 +175,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         wETH amount
       </Text>
       <TokenAmount
-        before={<TokenIcon name={poolToken?.icon ?? 'unknown'} size={24} />}
+        before={<TokenIcon name={poolToken?.icon} size={24} />}
         value={tokenState}
         onChange={setTokenState}
         slider
@@ -216,7 +216,8 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
               <Text type="p2" weight="semibold" color="secondary">
                 Your balance of{' '}
                 <Text tag="span" type="p2" weight="bold" color="primary">
-                  {formatToken(BigNumber.from(tokenState), { decimals: poolToken?.decimals })} {poolToken?.symbol}
+                  {formatToken(BigNumber.from(tokenState), { decimals: pool.poolToken.decimals })}{' '}
+                  {pool.poolToken.symbol}
                 </Text>{' '}
                 will be added to the deposit queue for the next epoch.
               </Text>
@@ -227,7 +228,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
                   </Text>
                   <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(BigNumber.from(tokenState)) ?? '-'}
-                    <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+                    <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
                   </Text>
                 </div>
                 <div className="flex flow-row">
@@ -237,9 +238,9 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
                   <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(unclaimedTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                     <TokenIcon
-                      name={poolToken?.icon ?? 'unknown'}
+                      name={poolToken?.icon}
                       bubble1Name="bond"
-                      bubble2Name={oracleToken?.icon ?? 'unknown'}
+                      bubble2Name={oracleToken?.icon}
                       outline={isSenior ? 'green' : 'purple'}
                       className="ml-8"
                     />

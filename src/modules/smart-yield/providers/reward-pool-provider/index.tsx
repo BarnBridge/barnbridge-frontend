@@ -76,9 +76,12 @@ const RewardPoolProvider: FC = props => {
   useEffect(() => {
     if (walletCtx.account) {
       pool?.loadUserData();
-      pool?.smartYield.loadAllowance(pool?.rewardPool.address);
+
+      if (pool?.rewardPool.address && pool?.smartYield.account) {
+        pool?.smartYield.loadAllowance(pool?.rewardPool.address);
+      }
     }
-  }, [pool, walletCtx.account]);
+  }, [pool, walletCtx.account, pool?.smartYield.account]);
 
   const value = {
     market,

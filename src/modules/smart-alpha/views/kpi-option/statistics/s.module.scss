@@ -1,0 +1,49 @@
+.statistics {
+  display: flex;
+  flex-direction: column;
+}
+
+.defs {
+  margin: 0;
+  padding: 24px;
+}
+
+.def {
+  display: flex;
+  align-items: center;
+  margin-bottom: 24px;
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
+
+  dt {
+    font: var(--font-sm);
+    font-weight: 600;
+    color: var(--theme-secondary-color);
+  }
+
+  dd {
+    font: var(--font-p1);
+    font-weight: 600;
+    color: var(--theme-primary-color);
+    margin: 0 0 0 auto;
+    display: flex;
+    align-items: center;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  background-color: var(--theme-body-color);
+  border-radius: 4px;
+  margin: auto 4px 4px;
+  padding: 16px;
+}
+
+.footerReward {
+  display: flex;
+  align-items: center;
+  margin-bottom: 4px;
+}

@@ -44,6 +44,7 @@ const ABI: AbiItem[] = [
   createAbiItem('redeemSeniorTokens', [], []),
   createAbiItem('redeemSeniorUnderlying', [], []),
   createAbiItem('transferFees', [], []),
+  createAbiItem('advanceEpoch', [], []),
 ];
 
 export const SMART_ALPHA_DECIMALS = 18;
@@ -258,6 +259,10 @@ class SmartAlphaContract extends Web3Contract {
 
   async transferFees(gasPrice?: number): Promise<void> {
     await this.send('transferFees', [], {}, gasPrice);
+  }
+
+  async advanceEpoch(): Promise<void> {
+    await this.send('advanceEpoch', [], {});
   }
 }
 

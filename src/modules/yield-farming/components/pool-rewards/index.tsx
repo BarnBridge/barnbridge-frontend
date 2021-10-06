@@ -50,7 +50,7 @@ const PoolRewards: FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatToken(totalToClaim?.unscaleBy(projectToken.decimals))}
             </Text>
-            <TokenIcon name={projectToken.icon!} />
+            <TokenIcon name={projectToken.icon} />
             {walletCtx.isActive && (
               <button
                 type="button"
@@ -72,7 +72,7 @@ const PoolRewards: FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatToken(bondContract.balance?.unscaleBy(projectToken.decimals)) ?? '-'}
             </Text>
-            <TokenIcon name={projectToken.icon!} />
+            <TokenIcon name={projectToken.icon} />
           </div>
         </div>
         <div className="v-divider" />
@@ -86,7 +86,7 @@ const PoolRewards: FC = () => {
             <Text type="h3" weight="bold" color="primary">
               {formatToken(totalPotentialReward) ?? '-'}
             </Text>
-            <TokenIcon name={projectToken.icon!} />
+            <TokenIcon name={projectToken.icon} />
           </div>
         </div>
       </div>

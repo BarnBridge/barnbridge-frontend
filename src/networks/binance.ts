@@ -6,7 +6,7 @@ import { isDevelopmentMode } from 'utils';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_HTTPS_URL = `https://bsc-dataseed1.binance.org`;
+const RPC_HTTPS_URL = `https://bsc-dataseed1.ninicoin.io`;
 const RPC_WSS_URL = ``;
 
 const EXPLORER_URL = 'https://bscscan.com';
@@ -27,7 +27,7 @@ export const BinanceDevConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? '' : '',
+    baseUrl: isDevelopmentMode ? 'https://alpha-bsc.api.barnbridge.com' : 'https://prod-bsc.api.barnbridge.com',
   },
   tokens: {
     wbtc: '',
@@ -70,7 +70,7 @@ export const BinanceDevConfig: NetworkConfig = {
   },
   contracts: {
     sa: {
-      loupe: '',
+      loupe: '0x525fbAa28220027e65785D6fa67595Df6a6F4C28',
     },
   },
 };
@@ -89,6 +89,7 @@ export const BinanceMetamaskChain: MetamaskAddEthereumChain = {
 
 export const BinanceNetwork: Web3Network = {
   id: 'binance',
+  type: 'Binance',
   meta: {
     chainId: BINANCE_CHAIN_ID,
     name: isDevelopmentMode ? 'BSC Mainnet (Alpha)' : 'BSC Mainnet',

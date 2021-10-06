@@ -116,6 +116,7 @@ export const MainnetMetamaskChain: MetamaskAddEthereumChain = {
 
 export const MainnetNetwork: Web3Network = {
   id: 'mainnet',
+  type: 'Ethereum',
   meta: {
     chainId: MAINNET_CHAIN_ID,
     name: isDevelopmentMode ? 'Ethereum Mainnet (Alpha)' : 'Ethereum Mainnet',

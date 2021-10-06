@@ -77,7 +77,7 @@ const Statistics: FC<Props> = props => {
             <dd>
               <TokenIcon
                 name={uToken?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon!}
+                bubble1Name={projectToken.icon}
                 bubble2Name={poolMarket?.icon.active as TokenIconNames}
                 size={16}
                 className="mr-8"
@@ -92,7 +92,7 @@ const Statistics: FC<Props> = props => {
             <dd>
               <TokenIcon
                 name={uToken?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon!}
+                bubble1Name={projectToken.icon}
                 bubble2Name={poolMarket?.icon.active as TokenIconNames}
                 size={16}
                 className="mr-8"
@@ -108,7 +108,7 @@ const Statistics: FC<Props> = props => {
                 <div className={s.def}>
                   <dt>My daily {rewardToken.symbol} reward</dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                    <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                     {formatToken(
                       rewardPool.getMyDailyRewardFor(rewardToken.address)?.unscaleBy(rewardToken.decimals),
                     ) ?? '-'}
@@ -118,7 +118,7 @@ const Statistics: FC<Props> = props => {
               <div className={s.def}>
                 <dt>My {rewardToken.symbol} balance</dt>
                 <dd>
-                  <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                  <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                   {formatToken((rewardToken.contract as Erc20Contract).balance, {
                     scale: rewardToken.decimals,
                   }) ?? '-'}
@@ -132,7 +132,7 @@ const Statistics: FC<Props> = props => {
             {rewardTokens.map(rewardToken => (
               <div key={rewardToken.symbol} className={s.footerReward}>
                 <div className="flex mr-16">
-                  <TokenIcon name={rewardToken.icon!} size="24" className="mr-8" style={{ flexShrink: 0 }} />
+                  <TokenIcon name={rewardToken.icon} size="24" className="mr-8" style={{ flexShrink: 0 }} />
                   <Tooltip
                     title={
                       <Text type="p2" weight="semibold" color="primary">
@@ -194,7 +194,7 @@ const Statistics: FC<Props> = props => {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
                   </Text>
-                  <TokenIcon name={rewardToken.icon!} size={32} />
+                  <TokenIcon name={rewardToken.icon} size={32} />
                 </Tooltip>
               ))}
             </div>

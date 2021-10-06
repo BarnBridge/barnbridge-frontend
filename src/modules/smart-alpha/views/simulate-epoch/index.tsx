@@ -60,12 +60,7 @@ const SimulateEpoch = () => {
         </Link>
       </div>
       <div className="flex align-center mb-40">
-        <TokenIcon
-          name={poolToken?.icon ?? 'unknown'}
-          size={40}
-          bubble2Name={oracleToken?.icon ?? 'unknown'}
-          className="mr-16"
-        />
+        <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
         <div>
           <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
             {pool.poolName}
