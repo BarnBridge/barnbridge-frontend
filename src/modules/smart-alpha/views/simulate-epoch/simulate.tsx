@@ -306,7 +306,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                   </dt>
                   <dd className="ml-auto">
                     <Text type="p1" weight="semibold" color="primary">
-                      {downsideLeverage ? `${downsideLeverage.toFormat(2)}x` : '-'}
+                      {downsideLeverage ? `≤${downsideLeverage.toFormat(2)}x` : '-'}
                     </Text>
                   </dd>
                 </div>

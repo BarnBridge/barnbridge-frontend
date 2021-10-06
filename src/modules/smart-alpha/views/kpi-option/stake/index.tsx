@@ -19,6 +19,8 @@ import { KpiOptionType } from 'modules/smart-alpha/api';
 import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
 
+import { getKpiOptionTokenIconNames } from 'modules/smart-alpha/utils';
+
 import s from './s.module.scss';
 
 type StakeFormValues = {
@@ -112,6 +114,8 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
     }
   }
 
+  const [tokenName, tokenBubble1Name, tokenBubble2Name] = getKpiOptionTokenIconNames(kpiOption.poolToken.symbol);
+
   return (
     <>
       <form className="flex flow-row full-height">
@@ -127,7 +131,14 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
                 {...field}
                 className="mb-12"
                 before={
-                  <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
+                  <TokenIcon
+                    name={tokenName}
+                    bubble1Name={tokenBubble1Name}
+                    bubble2Name={tokenBubble2Name}
+                    outline={['purple', 'green']}
+                    size={32}
+                    className="mr-8"
+                  />
                 }
                 disabled={formDisabled}
                 max={maxAmountUnscaled}
@@ -165,7 +176,14 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
               <Text type="h2" weight="semibold" color="primary">
                 {formatToken(bnAmount) ?? '-'}
               </Text>
-              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
+              <TokenIcon
+                name={tokenName}
+                bubble1Name={tokenBubble1Name}
+                bubble2Name={tokenBubble2Name}
+                outline={['purple', 'green']}
+                size={32}
+                className="mr-8"
+              />
             </div>
           }
           submitText="Stake"
@@ -189,7 +207,6 @@ type UnstakeFormProps = {
 
 const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenContract }) => {
   const walletCtx = useWallet();
-  const { getToken } = useTokens();
 
   const [isClaimUnstake, setClaimUnstake] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
@@ -262,6 +279,8 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
     }
   }
 
+  const [tokenName, tokenBubble1Name, tokenBubble2Name] = getKpiOptionTokenIconNames(kpiOption.poolToken.symbol);
+
   return (
     <>
       <form className="flex flow-row full-height">
@@ -277,7 +296,14 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
                 {...field}
                 className="mb-12"
                 before={
-                  <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
+                  <TokenIcon
+                    name={tokenName}
+                    bubble1Name={tokenBubble1Name}
+                    bubble2Name={tokenBubble2Name}
+                    outline={['purple', 'green']}
+                    size={32}
+                    className="mr-8"
+                  />
                 }
                 disabled={formDisabled}
                 max={maxAmountUnscaled}
@@ -331,7 +357,14 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
                   <Text type="h2" weight="semibold" color="primary">
                     {formatToken(bnAmount) ?? '-'}
                   </Text>
-                  <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={32} className="mr-8" />
+                  <TokenIcon
+                    name={tokenName}
+                    bubble1Name={tokenBubble1Name}
+                    bubble2Name={tokenBubble2Name}
+                    outline={['purple', 'green']}
+                    size={32}
+                    className="mr-8"
+                  />
                 </div>
               </div>
 
@@ -340,16 +373,25 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
                   <Text type="p1" weight="semibold" color="secondary">
                     Claim
                   </Text>
-                  {kpiOption.rewardTokens.map(token => (
-                    <div key={token.symbol} className="flex col-gap-8 align-center justify-center">
-                      <Text type="h2" weight="semibold" color="primary">
-                        {formatToken(kpiContract.getClaimFor(token.address), {
-                          scale: token.decimals,
-                        }) ?? '-'}
-                      </Text>
-                      <TokenIcon name={getToken(token.symbol)?.icon} size={32} />
-                    </div>
-                  ))}
+                  {kpiOption.rewardTokens.map(token => {
+                    const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] =
+                      getKpiOptionTokenIconNames(token.symbol);
+                    return (
+                      <div key={token.symbol} className="flex col-gap-8 align-center justify-center">
+                        <Text type="h2" weight="semibold" color="primary">
+                          {formatToken(kpiContract.getClaimFor(token.address), {
+                            scale: token.decimals,
+                          }) ?? '-'}
+                        </Text>
+                        <TokenIcon
+                          name={rewardTokenName}
+                          bubble1Name={rewardTokenBubble1Name}
+                          bubble2Name={rewardTokenBubble2Name}
+                          size={32}
+                        />
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </div>

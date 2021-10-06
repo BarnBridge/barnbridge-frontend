@@ -203,7 +203,7 @@ const PoolView = () => {
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
                 <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  {downsideLeverage ? `${formatNumber(downsideLeverage)}x` : `-`}
+                  {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
                   Junior
@@ -420,7 +420,7 @@ const PoolView = () => {
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
                 <Text type="h3" weight="bold" color="primary" className="mb-4">
-                  {nextEpochDownsideLeverage ? `${formatNumber(nextEpochDownsideLeverage)}x` : `-`}
+                  {nextEpochDownsideLeverage ? `≤${formatNumber(nextEpochDownsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
                   Junior
