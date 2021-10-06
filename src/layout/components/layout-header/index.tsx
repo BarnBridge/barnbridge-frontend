@@ -102,12 +102,7 @@ const PositionsAction: React.FC = () => {
 
               return (
                 <li key={idx} className={s.queuedPosition}>
-                  <TokenIcon
-                    name={poolToken?.icon ?? 'unknown'}
-                    bubble2Name={oracleToken?.icon ?? 'unknown'}
-                    size={40}
-                    className="mr-16"
-                  />
+                  <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={40} className="mr-16" />
                   <div className="mr-16">
                     <Text type="p1" weight="semibold" color="primary" className="mb-4">
                       {item.poolName}

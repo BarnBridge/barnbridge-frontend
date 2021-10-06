@@ -109,7 +109,7 @@ const AggregatedPoolCard: FCx = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <TokenIcon name={bondToken.icon!} size={16} className="mr-8" />
+                <TokenIcon name={bondToken.icon} size={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(totalDailyRewards.get(bondToken.address)) ?? '-'}
                 </Text>
@@ -142,7 +142,7 @@ const AggregatedPoolCard: FCx = props => {
                   My potential {rewardToken.symbol} reward
                 </Text>
                 <div className="flex align-center">
-                  <TokenIcon name={rewardToken.icon!} size={16} className="mr-8" />
+                  <TokenIcon name={rewardToken.icon} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
                     {formatToken(totalPotentialRewards.get(rewardToken.address)) ?? '-'}
                   </Text>

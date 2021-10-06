@@ -499,5 +499,5 @@ export function useFetchKpiOptionTransactions(
     url.searchParams.set('transactionType', transactionType);
   }
 
-  return useFetch(url, { lazy: true });
+  return useFetch(url);
 }

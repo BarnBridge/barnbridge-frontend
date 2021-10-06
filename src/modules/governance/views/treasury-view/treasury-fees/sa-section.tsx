@@ -38,12 +38,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
       const oracle = getAsset(entity.oracleAssetSymbol);
       return (
         <div className="flex flow-col align-center">
-          <TokenIcon
-            name={token?.icon ?? 'unknown'}
-            bubble2Name={oracle?.icon ?? 'unknown'}
-            size={32}
-            className="mr-16"
-          />
+          <TokenIcon name={token?.icon} bubble2Name={oracle?.icon} size={32} className="mr-16" />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">

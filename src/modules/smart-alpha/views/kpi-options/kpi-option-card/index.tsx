@@ -8,7 +8,8 @@ import { formatToken } from 'web3/utils';
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import { Hint, Text } from 'components/custom/typography';
-import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { KnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useWeb3Contract } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
@@ -26,7 +27,7 @@ export type KpiOptionCardProps = {
 export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
   const { className, kpiOption } = props;
 
-  const { getTokenBySymbol } = useKnownTokens();
+  const { getToken } = useTokens();
   const walletCtx = useWallet();
   const [reload] = useReload();
 
@@ -103,59 +104,55 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
         </div>
         {activeTab === 'pool' && (
           <dl>
-            {kpiOption.rewardTokens.map(token => {
-              const rewardToken = getTokenBySymbol(token.symbol);
-
-              return rewardToken ? (
-                <React.Fragment key={rewardToken.symbol}>
-                  {rewardToken.symbol === KnownTokens.BOND ? (
-                    <div className={s.defRow}>
-                      <dt>
-                        <Hint text={`This number shows the $${rewardToken.symbol} token rewards distributed per day.`}>
-                          {rewardToken.symbol} daily rewards
-                        </Hint>
-                      </dt>
-                      <dd>
-                        <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                        {kpiRewardPoolContract.getRewardLeftFor(rewardToken.address)?.isZero()
-                          ? '0'
-                          : formatToken(kpiRewardPoolContract.getDailyRewardFor(rewardToken.address), {
-                              scale: rewardToken.decimals,
-                            }) ?? '-'}
-                      </dd>
-                    </div>
-                  ) : null}
+            {kpiOption.rewardTokens.map(token => (
+              <React.Fragment key={token.symbol}>
+                {token.symbol === KnownTokens.BOND ? (
                   <div className={s.defRow}>
                     <dt>
-                      {rewardToken.symbol === KnownTokens.BOND && (
-                        <Hint text={`This number shows the $${rewardToken.symbol} token rewards remaining.`}>
-                          {rewardToken.symbol} rewards left
-                        </Hint>
-                      )}
-                      {/*{rewardToken === stkAaveToken && (*/}
-                      {/*  <Hint*/}
-                      {/*    text={`This number shows the ${stkAaveToken.symbol} amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>*/}
-                      {/*    {rewardToken.symbol} rewards balance*/}
-                      {/*  </Hint>*/}
-                      {/*)}*/}
+                      <Hint text={`This number shows the $${token.symbol} token rewards distributed per day.`}>
+                        {token.symbol} daily rewards
+                      </Hint>
                     </dt>
                     <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                      {(rewardToken.symbol === KnownTokens.BOND &&
-                        formatToken(kpiRewardPoolContract.getRewardLeftFor(rewardToken.address), {
-                          scale: rewardToken.decimals,
-                        })) ??
-                        '-'}
-                      {/*{rewardToken === stkAaveToken &&*/}
-                      {/*  (formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {*/}
-                      {/*    scale: rewardToken.decimals,*/}
-                      {/*  }) ??*/}
-                      {/*    '-')}*/}
+                      <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                      {kpiRewardPoolContract.getRewardLeftFor(token.address)?.isZero()
+                        ? '0'
+                        : formatToken(kpiRewardPoolContract.getDailyRewardFor(token.address), {
+                            scale: token.decimals,
+                          }) ?? '-'}
                     </dd>
                   </div>
-                </React.Fragment>
-              ) : null;
-            })}
+                ) : null}
+                <div className={s.defRow}>
+                  <dt>
+                    {token.symbol === KnownTokens.BOND && (
+                      <Hint text={`This number shows the $${token.symbol} token rewards remaining.`}>
+                        {token.symbol} rewards left
+                      </Hint>
+                    )}
+                    {/*{rewardToken === stkAaveToken && (*/}
+                    {/*  <Hint*/}
+                    {/*    text={`This number shows the ${stkAaveToken.symbol} amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>*/}
+                    {/*    {rewardToken.symbol} rewards balance*/}
+                    {/*  </Hint>*/}
+                    {/*)}*/}
+                  </dt>
+                  <dd>
+                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                    {(token.symbol === KnownTokens.BOND &&
+                      formatToken(kpiRewardPoolContract.getRewardLeftFor(token.address), {
+                        scale: token.decimals,
+                      })) ??
+                      '-'}
+                    {/*{rewardToken === stkAaveToken &&*/}
+                    {/*  (formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {*/}
+                    {/*    scale: rewardToken.decimals,*/}
+                    {/*  }) ??*/}
+                    {/*    '-')}*/}
+                  </dd>
+                </div>
+              </React.Fragment>
+            ))}
             <div className={s.defRow}>
               <dt>Balancer tokens</dt>
               <dd>
@@ -167,39 +164,35 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
         )}
         {activeTab === 'my' && walletCtx.isActive && (
           <dl>
-            {kpiOption.rewardTokens.map(token => {
-              const rewardToken = getTokenBySymbol(token.symbol);
-
-              return rewardToken ? (
-                <React.Fragment key={rewardToken.address}>
-                  {rewardToken.symbol === KnownTokens.BOND ? (
-                    <div className={s.defRow}>
-                      <dt>
-                        <Hint
-                          text={`This number shows the $${rewardToken.symbol} rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.`}>
-                          My daily {rewardToken.symbol} reward
-                        </Hint>
-                      </dt>
-                      <dd>
-                        <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                        {formatToken(kpiRewardPoolContract.getMyDailyRewardFor(rewardToken.address), {
-                          scale: rewardToken.decimals,
-                        }) ?? '-'}
-                      </dd>
-                    </div>
-                  ) : null}
+            {kpiOption.rewardTokens.map(token => (
+              <React.Fragment key={token.address}>
+                {token.symbol === KnownTokens.BOND ? (
                   <div className={s.defRow}>
-                    <dt>My current {rewardToken.symbol} reward</dt>
+                    <dt>
+                      <Hint
+                        text={`This number shows the $${token.symbol} rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.`}>
+                        My daily {token.symbol} reward
+                      </Hint>
+                    </dt>
                     <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                      {formatToken(kpiRewardPoolContract.getClaimFor(rewardToken.address), {
-                        scale: rewardToken.decimals,
+                      <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                      {formatToken(kpiRewardPoolContract.getMyDailyRewardFor(token.address), {
+                        scale: token.decimals,
                       }) ?? '-'}
                     </dd>
                   </div>
-                </React.Fragment>
-              ) : null;
-            })}
+                ) : null}
+                <div className={s.defRow}>
+                  <dt>My current {token.symbol} reward</dt>
+                  <dd>
+                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                    {formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
+                      scale: token.decimals,
+                    }) ?? '-'}
+                  </dd>
+                </div>
+              </React.Fragment>
+            ))}
             <div className={s.defRow}>
               <dt>Staked balance</dt>
               <dd>
@@ -232,30 +225,26 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
           title="Confirm your claim"
           header={
             <div className="flex justify-center">
-              {kpiOption.rewardTokens.map(token => {
-                const rewardToken = getTokenBySymbol(token.symbol);
-
-                return rewardToken ? (
-                  <Tooltip
-                    key={rewardToken.symbol}
-                    className="flex col-gap-8 align-center justify-center mr-16"
-                    title={
-                      formatToken(kpiRewardPoolContract.getClaimFor(rewardToken.address), {
-                        decimals: rewardToken.decimals,
-                        scale: rewardToken.decimals,
-                        tokenName: rewardToken.symbol,
-                      }) ?? '-'
-                    }>
-                    <Text type="h2" weight="semibold" color="primary">
-                      {formatToken(kpiRewardPoolContract.getClaimFor(rewardToken.address), {
-                        compact: true,
-                        scale: rewardToken.decimals,
-                      }) ?? '-'}
-                    </Text>
-                    <TokenIcon name={rewardToken.icon!} size={32} />
-                  </Tooltip>
-                ) : null;
-              })}
+              {kpiOption.rewardTokens.map(token => (
+                <Tooltip
+                  key={token.symbol}
+                  className="flex col-gap-8 align-center justify-center mr-16"
+                  title={
+                    formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
+                      decimals: token.decimals,
+                      scale: token.decimals,
+                      tokenName: token.symbol,
+                    }) ?? '-'
+                  }>
+                  <Text type="h2" weight="semibold" color="primary">
+                    {formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
+                      compact: true,
+                      scale: token.decimals,
+                    }) ?? '-'}
+                  </Text>
+                  <TokenIcon name={getToken(token.symbol)?.icon} size={32} />
+                </Tooltip>
+              ))}
             </div>
           }
           submitText="Claim"

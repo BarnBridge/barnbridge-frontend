@@ -46,7 +46,7 @@ const PoolView: FC = () => {
       <div className="flex align-center mb-32">
         <TokenIcon
           name={uToken?.icon as TokenIconNames}
-          bubble1Name={projectToken.icon!}
+          bubble1Name={projectToken.icon}
           bubble2Name={poolMarket?.icon.active as TokenIconNames}
           size={36}
           className="mr-16"
@@ -62,7 +62,7 @@ const PoolView: FC = () => {
             <dd>
               <TokenIcon
                 name={uToken?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon!}
+                bubble1Name={projectToken.icon}
                 bubble2Name={poolMarket?.icon.active as TokenIconNames}
                 size={16}
                 className="mr-8"
@@ -88,7 +88,7 @@ const PoolView: FC = () => {
                 <div className={s.headerTermRow}>
                   <dt>{rewardToken.symbol} daily rewards</dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                    <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                     {rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()
                       ? '0'
                       : formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
@@ -101,7 +101,7 @@ const PoolView: FC = () => {
                 <div className={s.headerTermRow}>
                   <dt>{rewardToken.symbol} rewards left</dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                    <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                     {formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
@@ -111,7 +111,7 @@ const PoolView: FC = () => {
                 <div className={s.headerTermRow}>
                   <dt>{rewardToken.symbol} rewards balance</dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                    <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                     {formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}

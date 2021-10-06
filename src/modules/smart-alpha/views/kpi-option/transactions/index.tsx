@@ -10,10 +10,9 @@ import Tooltip from 'components/antd/tooltip';
 import { ExplorerAddressLink, ExplorerTxLink } from 'components/custom/externalLink';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { KpiOptionType, KpiTransactionType, useFetchKpiOptionTransactions } from 'modules/smart-alpha/api';
-import { APISYRewardTxHistoryType, RewardHistoryShortTypes } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
@@ -28,7 +27,7 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
             <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" />
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
-                {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
+                {entity.transactionType}
               </Text>
               <Text type="small" weight="semibold" wrap={false}>
                 {kpiOption.poolToken.symbol}
@@ -41,10 +40,10 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
     {
       heading: 'Amount',
       render: function TransactionRender(entity) {
-        const { convertTokenInUSD } = useKnownTokens();
-        const isStake = entity.transactionType === APISYRewardTxHistoryType.JUNIOR_STAKE;
+        const { getAmountInUSD } = useTokens();
+        const isStake = entity.transactionType === 'DEPOSIT';
         const amount = BigNumber.from(entity.amount);
-        const amountInUSD = convertTokenInUSD(amount, kpiOption.poolToken.symbol!);
+        const amountInUSD = getAmountInUSD(amount, kpiOption.poolToken.symbol!);
 
         return (
           <>
@@ -122,7 +121,10 @@ const Transactions: FC<{ poolAddress: string; kpiOption: KpiOptionType; version:
   );
 
   useEffect(() => {
-    load().catch(Error);
+    if (version > 0) {
+      console.log('-----LOAD');
+      load().catch(Error);
+    }
   }, [version]);
 
   const kpiTransactions = data?.data;

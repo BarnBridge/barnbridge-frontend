@@ -1,4 +1,4 @@
-import React, { FC, useState } from 'react';
+import React, { useState } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
@@ -8,41 +8,50 @@ import { formatToken } from 'web3/utils';
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
-import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
+import { KnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
+import { TokenIcon } from 'components/token-icon';
+import { FCx } from 'components/types.tx';
+import { KpiOptionType } from 'modules/smart-alpha/api';
+import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
 
 import s from './s.module.scss';
 
-type Props = {
-  className?: string;
+type StatisticsProps = {
+  kpiOption: KpiOptionType;
+  kpiContract: KpiRewardPoolContract;
+  poolTokenContract: Erc20Contract;
+  rewardContracts: Erc20Contract[];
 };
 
-const Statistics: FC<Props> = props => {
-  const { className } = props;
+const Statistics: FCx<StatisticsProps> = ({
+  className,
+  kpiOption,
+  kpiContract,
+  poolTokenContract,
+  rewardContracts,
+}) => {
   const walletCtx = useWallet();
-  const rewardPoolCtx = useRewardPool();
-  const { projectToken } = useKnownTokens();
-  const pool = rewardPoolCtx.pool!;
+  const { getToken } = useTokens();
 
-  const { market: poolMarket, uToken } = rewardPoolCtx;
-  const { smartYield, rewardPool } = pool;
-  const rewardTokens = Array.from(pool.rewardTokens.values());
-  const walletBalance = smartYield.balance;
-  const stakedBalance = rewardPool.getBalanceFor(walletCtx.account!);
+  const walletBalance = poolTokenContract.balance;
+  const stakedBalance = walletCtx.account ? kpiContract.getBalanceFor(walletCtx.account) : undefined;
+
   const [confirmClaimVisible, setConfirmClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
 
-  const totalToClaim = rewardTokens.reduce((sum, rewardToken) => {
-    const toClaim = rewardPool.getClaimFor(rewardToken.address);
+  const totalToClaim = kpiOption.rewardTokens.reduce((sum, rewardToken) => {
+    const toClaim = kpiContract.getClaimFor(rewardToken.address);
     return sum.plus(toClaim ?? BigNumber.ZERO);
   }, BigNumber.ZERO);
 
   const canClaim = totalToClaim.gt(BigNumber.ZERO);
 
   function handleClaim() {
-    pool.loadClaims();
+    kpiOption.rewardTokens.forEach(token => {
+      kpiContract.loadClaimFor(token.address);
+    });
     setConfirmClaim(true);
   }
 
@@ -51,10 +60,10 @@ const Statistics: FC<Props> = props => {
     setClaiming(true);
 
     try {
-      await rewardPool.sendClaimAll(args.gasPrice);
+      await kpiContract.sendClaimAll(args.gasPrice);
 
-      rewardTokens.forEach(rewardToken => {
-        (rewardToken.contract as Erc20Contract).loadBalance().catch(Error);
+      rewardContracts.forEach(rewardContract => {
+        rewardContract.loadBalance();
       });
     } catch (e) {
       console.error(e);
@@ -75,52 +84,38 @@ const Statistics: FC<Props> = props => {
           <div className={s.def}>
             <dt>Portfolio balance</dt>
             <dd>
-              <TokenIcon
-                name={uToken?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon!}
-                bubble2Name={poolMarket?.icon.active as TokenIconNames}
-                size={16}
-                className="mr-8"
-              />
+              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
               {formatToken(walletBalance, {
-                scale: smartYield.decimals,
+                scale: kpiOption.poolToken.decimals,
               }) ?? '-'}
             </dd>
           </div>
           <div className={s.def}>
             <dt>Staked balance</dt>
             <dd>
-              <TokenIcon
-                name={uToken?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon!}
-                bubble2Name={poolMarket?.icon.active as TokenIconNames}
-                size={16}
-                className="mr-8"
-              />
+              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
               {formatToken(stakedBalance, {
-                scale: smartYield.decimals,
+                scale: kpiOption.poolToken.decimals,
               }) ?? '-'}
             </dd>
           </div>
-          {rewardTokens.map(rewardToken => (
-            <React.Fragment key={rewardToken.address}>
-              {rewardToken.symbol === KnownTokens.BOND ? (
+          {kpiOption.rewardTokens.map(token => (
+            <React.Fragment key={token.address}>
+              {token.symbol === KnownTokens.BOND ? (
                 <div className={s.def}>
-                  <dt>My daily {rewardToken.symbol} reward</dt>
+                  <dt>My daily {token.symbol} reward</dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                    {formatToken(
-                      rewardPool.getMyDailyRewardFor(rewardToken.address)?.unscaleBy(rewardToken.decimals),
-                    ) ?? '-'}
+                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                    {formatToken(kpiContract.getMyDailyRewardFor(token.address)?.unscaleBy(token.decimals)) ?? '-'}
                   </dd>
                 </div>
               ) : null}
               <div className={s.def}>
-                <dt>My {rewardToken.symbol} balance</dt>
+                <dt>My {token.symbol} balance</dt>
                 <dd>
-                  <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                  {formatToken((rewardToken.contract as Erc20Contract).balance, {
-                    scale: rewardToken.decimals,
+                  <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                  {formatToken(rewardContracts.find(rc => rc.address === token.address)?.balance, {
+                    scale: token.decimals,
                   }) ?? '-'}
                 </dd>
               </div>
@@ -129,17 +124,17 @@ const Statistics: FC<Props> = props => {
         </dl>
         <footer className={s.footer}>
           <div>
-            {rewardTokens.map(rewardToken => (
-              <div key={rewardToken.symbol} className={s.footerReward}>
+            {kpiOption.rewardTokens.map(token => (
+              <div key={token.symbol} className={s.footerReward}>
                 <div className="flex mr-16">
-                  <TokenIcon name={rewardToken.icon!} size="24" className="mr-8" style={{ flexShrink: 0 }} />
+                  <TokenIcon name={getToken(token.symbol)?.icon} size="24" className="mr-8" style={{ flexShrink: 0 }} />
                   <Tooltip
                     title={
                       <Text type="p2" weight="semibold" color="primary">
-                        {formatToken(rewardPool.getClaimFor(rewardToken.address), {
-                          decimals: rewardToken.decimals,
-                          scale: rewardToken.decimals,
-                          tokenName: rewardToken.symbol,
+                        {formatToken(kpiContract.getClaimFor(token.address), {
+                          decimals: token.decimals,
+                          scale: token.decimals,
+                          tokenName: token.symbol,
                         }) ?? '-'}
                       </Text>
                     }>
@@ -149,9 +144,9 @@ const Statistics: FC<Props> = props => {
                       color="primary"
                       className="text-ellipsis"
                       style={{ maxWidth: '120px' }}>
-                      {formatToken(rewardPool.getClaimFor(rewardToken.address), {
+                      {formatToken(kpiContract.getClaimFor(token.address), {
                         compact: true,
-                        scale: rewardToken.decimals,
+                        scale: token.decimals,
                       }) ?? '-'}
                     </Text>
                   </Tooltip>
@@ -159,7 +154,7 @@ const Statistics: FC<Props> = props => {
               </div>
             ))}
             <Text type="small" weight="semibold" color="secondary">
-              My current reward{rewardTokens.length! > 1 ? 's' : ''}
+              My current reward{kpiOption.rewardTokens.length! > 1 ? 's' : ''}
             </Text>
           </div>
           <button
@@ -177,24 +172,24 @@ const Statistics: FC<Props> = props => {
           title="Confirm your claim"
           header={
             <div className="flex justify-center">
-              {rewardTokens.map(rewardToken => (
+              {kpiOption.rewardTokens.map(token => (
                 <Tooltip
-                  key={rewardToken.symbol}
+                  key={token.symbol}
                   className="flex col-gap-8 align-center justify-center mr-16"
                   title={
-                    formatToken(rewardPool.getClaimFor(rewardToken.address), {
-                      decimals: rewardToken.decimals,
-                      scale: rewardToken.decimals,
-                      tokenName: rewardToken.symbol,
+                    formatToken(kpiContract.getClaimFor(token.address), {
+                      decimals: token.decimals,
+                      scale: token.decimals,
+                      tokenName: token.symbol,
                     }) ?? '-'
                   }>
                   <Text type="h2" weight="semibold" color="primary">
-                    {formatToken(rewardPool.getClaimFor(rewardToken.address), {
+                    {formatToken(kpiContract.getClaimFor(token.address), {
                       compact: true,
-                      scale: rewardToken.decimals,
+                      scale: token.decimals,
                     }) ?? '-'}
                   </Text>
-                  <TokenIcon name={rewardToken.icon!} size={32} />
+                  <TokenIcon name={getToken(token.symbol)?.icon} size={32} />
                 </Tooltip>
               ))}
             </div>

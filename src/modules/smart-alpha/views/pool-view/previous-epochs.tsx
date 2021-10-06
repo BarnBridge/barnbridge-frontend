@@ -115,7 +115,7 @@ const Epoch = ({
               <Text type="p2" weight="semibold" className="mr-4" tooltip={item.seniorLiquidity}>
                 {formatNumber(Number(item.seniorLiquidity), { decimals: 4 })}
               </Text>
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+              <TokenIcon name={poolToken?.icon} size={16} />
             </div>
           </div>
           <div>
@@ -126,7 +126,7 @@ const Epoch = ({
               <Text type="p2" weight="semibold" className="mr-4" tooltip={item.juniorLiquidity}>
                 {formatNumber(Number(item.juniorLiquidity), { decimals: 4 })}
               </Text>
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+              <TokenIcon name={poolToken?.icon} size={16} />
             </div>
           </div>
         </div>

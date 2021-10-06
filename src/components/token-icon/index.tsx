@@ -54,7 +54,7 @@ export const TokenIcon: React.FC<TokenIconProps> = props => {
   const { name = 'unknown', size = 24, className, style, bubble1Name, bubble2Name, outline, ...rest } = props;
 
   const bubble1NameDefined = props.hasOwnProperty('bubble1Name') ? bubble1Name ?? 'unknown' : undefined;
-  const bubble2NameDefined = props.hasOwnProperty('bubble2Name') ? bubble1Name ?? 'unknown' : undefined;
+  const bubble2NameDefined = props.hasOwnProperty('bubble2Name') ? bubble2Name ?? 'unknown' : undefined;
 
   const id = useMemo(nanoid, []);
 
@@ -128,8 +128,8 @@ function getOutlineColor(outline: TokenIconProps['outline']) {
 }
 
 export type TokenPairProps = {
-  name1: TokenIconNames;
-  name2: TokenIconNames;
+  name1: TokenIconNames | undefined;
+  name2: TokenIconNames | undefined;
   size?: number;
   gap?: number;
   className?: string;
@@ -137,12 +137,8 @@ export type TokenPairProps = {
 };
 
 export const TokenIconPair: React.FC<TokenPairProps> = props => {
-  const { name1, name2, size = 40, gap = 2, className, style } = props;
+  const { name1 = 'unknown', name2 = 'unknown', size = 40, gap = 2, className, style } = props;
   const id = useMemo(nanoid, []);
-
-  if (!name1 || !name2) {
-    return null;
-  }
 
   const iconSize = size * 0.75;
   const iconIndent = size - iconSize;

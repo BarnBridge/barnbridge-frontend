@@ -6,15 +6,17 @@ import { formatToken } from 'web3/utils';
 import Icon from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
-import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { KnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
-import { useFetchKpiOption } from 'modules/smart-alpha/api';
-import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
 
+import { useFetchKpiOption } from '../../api';
+import KpiRewardPoolContract from '../../contracts/kpiRewardPoolContract';
 import Stake from './stake';
+import Statistics from './statistics';
 import Transactions from './transactions';
 
 import s from './s.module.scss';
@@ -26,7 +28,7 @@ const KpiOptionView: FC = () => {
   const [reload] = useReload();
   const [reloadTxs, version] = useReload();
   const walletCtx = useWallet();
-  const { getTokenBySymbol } = useKnownTokens();
+  const { getToken } = useTokens();
   const { getOrCreateContract } = useContractFactory();
 
   if (loading) {
@@ -37,7 +39,7 @@ const KpiOptionView: FC = () => {
     return loaded ? <Redirect to="/smart-alpha/kpi-options" /> : null;
   }
 
-  const kpiRewardPoolContract = getOrCreateContract(
+  const kpiContract = getOrCreateContract(
     kpiOption.poolAddress,
     () => {
       return new KpiRewardPoolContract(kpiOption.poolAddress, kpiOption.poolType === 'MULTI');
@@ -67,6 +69,31 @@ const KpiOptionView: FC = () => {
     },
   );
 
+  const poolTokenContract = getOrCreateContract(
+    kpiOption.poolToken.address,
+    () => {
+      return new Erc20Contract([], kpiOption.poolToken.address);
+    },
+    {
+      afterInit: contract => {
+        contract.onUpdateData(reload);
+        contract.loadAllowance(kpiOption.poolAddress);
+
+        if (walletCtx.account) {
+          contract.loadBalance(walletCtx.account);
+        }
+      },
+    },
+  );
+
+  const rewardContracts = kpiOption.rewardTokens.map(token => {
+    return getOrCreateContract(token.address, () => new Erc20Contract([], token.address), {
+      afterInit: contract => {
+        contract.loadBalance();
+      },
+    });
+  });
+
   return (
     <div className="container-limit">
       <div className="mb-16">
@@ -87,59 +114,66 @@ const KpiOptionView: FC = () => {
             <dt>Balancer tokens</dt>
             <dd>
               <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
-              {formatToken(kpiRewardPoolContract.poolSize?.unscaleBy(kpiOption.poolToken.decimals)) ?? '-'}
+              {formatToken(kpiContract.poolSize?.unscaleBy(kpiOption.poolToken.decimals)) ?? '-'}
             </dd>
           </div>
-          {kpiOption.rewardTokens.map(token => {
-            const rewardToken = getTokenBySymbol(token.symbol);
-
-            return rewardToken ? (
-              <React.Fragment key={rewardToken.symbol}>
-                {rewardToken.symbol === KnownTokens.BOND ? (
-                  <div className={s.headerTermRow}>
-                    <dt>{rewardToken.symbol} daily rewards</dt>
-                    <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                      {kpiRewardPoolContract.getRewardLeftFor(rewardToken.address)?.isZero()
-                        ? '0'
-                        : formatToken(kpiRewardPoolContract.getDailyRewardFor(rewardToken.address), {
-                            scale: rewardToken.decimals,
-                          }) ?? '-'}
-                    </dd>
-                  </div>
-                ) : null}
-                {rewardToken.symbol === KnownTokens.BOND ? (
-                  <div className={s.headerTermRow}>
-                    <dt>{rewardToken.symbol} rewards left</dt>
-                    <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                      {(rewardToken.symbol === KnownTokens.BOND &&
-                        formatToken(kpiRewardPoolContract.getRewardLeftFor(rewardToken.address), {
-                          scale: rewardToken.decimals,
-                        })) ??
-                        '-'}
-                    </dd>
-                  </div>
-                ) : (
-                  <div className={s.headerTermRow}>
-                    <dt>{rewardToken.symbol} rewards balance</dt>
-                    <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
-                      {formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(kpiOption.poolAddress), {
-                        scale: rewardToken.decimals,
-                      }) ?? '-'}
-                    </dd>
-                  </div>
-                )}
-              </React.Fragment>
-            ) : null;
-          })}
+          {kpiOption.rewardTokens.map(token => (
+            <React.Fragment key={token.symbol}>
+              {token.symbol === KnownTokens.BOND ? (
+                <div className={s.headerTermRow}>
+                  <dt>{token.symbol} daily rewards</dt>
+                  <dd>
+                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                    {kpiContract.getRewardLeftFor(token.address)?.isZero()
+                      ? '0'
+                      : formatToken(kpiContract.getDailyRewardFor(token.address), {
+                          scale: token.decimals,
+                        }) ?? '-'}
+                  </dd>
+                </div>
+              ) : null}
+              {token.symbol === KnownTokens.BOND ? (
+                <div className={s.headerTermRow}>
+                  <dt>{token.symbol} rewards left</dt>
+                  <dd>
+                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                    {(token.symbol === KnownTokens.BOND &&
+                      formatToken(kpiContract.getRewardLeftFor(token.address), {
+                        scale: token.decimals,
+                      })) ??
+                      '-'}
+                  </dd>
+                </div>
+              ) : (
+                <div className={s.headerTermRow}>
+                  <dt>{token.symbol} rewards balance</dt>
+                  <dd>
+                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
+                    {/*{formatToken((token.contract as Erc20Contract).getBalanceOf(kpiOption.poolAddress), {*/}
+                    {/*  scale: token.decimals,*/}
+                    {/*}) ?? '-'}*/}
+                  </dd>
+                </div>
+              )}
+            </React.Fragment>
+          ))}
         </dl>
       </div>
       {walletCtx.isActive && (
         <div className={s.stakeStatisticsContainer}>
-          <Stake className={s.stake} kpiOption={kpiOption} kpiContract={kpiRewardPoolContract} />
-          {/*<Statistics className={s.statistics} />*/}
+          <Stake
+            className={s.stake}
+            kpiOption={kpiOption}
+            kpiContract={kpiContract}
+            poolTokenContract={poolTokenContract}
+          />
+          <Statistics
+            className={s.statistics}
+            kpiOption={kpiOption}
+            kpiContract={kpiContract}
+            poolTokenContract={poolTokenContract}
+            rewardContracts={rewardContracts}
+          />
         </div>
       )}
       <Transactions poolAddress={poolAddress} kpiOption={kpiOption} version={version} />

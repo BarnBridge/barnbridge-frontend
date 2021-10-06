@@ -12,11 +12,9 @@ import Tooltip from 'components/antd/tooltip';
 import { VFormValidationResolver } from 'components/custom/form';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
-import { useWeb3Contract } from 'hooks/useContract';
-import { useReload } from 'hooks/useReload';
 import { KpiOptionType } from 'modules/smart-alpha/api';
 import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
@@ -191,7 +189,7 @@ type UnstakeFormProps = {
 
 const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenContract }) => {
   const walletCtx = useWallet();
-  const { getTokenBySymbol } = useKnownTokens();
+  const { getToken } = useTokens();
 
   const [isClaimUnstake, setClaimUnstake] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
@@ -342,20 +340,16 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
                   <Text type="p1" weight="semibold" color="secondary">
                     Claim
                   </Text>
-                  {kpiOption.rewardTokens.map(token => {
-                    const rewardToken = getTokenBySymbol(token.symbol);
-
-                    return rewardToken ? (
-                      <div key={rewardToken.symbol} className="flex col-gap-8 align-center justify-center">
-                        <Text type="h2" weight="semibold" color="primary">
-                          {formatToken(kpiContract.getClaimFor(rewardToken.address), {
-                            scale: rewardToken.decimals,
-                          }) ?? '-'}
-                        </Text>
-                        <TokenIcon name={rewardToken.icon} size={32} />
-                      </div>
-                    ) : null;
-                  })}
+                  {kpiOption.rewardTokens.map(token => (
+                    <div key={token.symbol} className="flex col-gap-8 align-center justify-center">
+                      <Text type="h2" weight="semibold" color="primary">
+                        {formatToken(kpiContract.getClaimFor(token.address), {
+                          scale: token.decimals,
+                        }) ?? '-'}
+                      </Text>
+                      <TokenIcon name={getToken(token.symbol)?.icon} size={32} />
+                    </div>
+                  ))}
                 </div>
               )}
             </div>
@@ -372,35 +366,17 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
 type StakeProps = {
   kpiOption: KpiOptionType;
   kpiContract: KpiRewardPoolContract;
+  poolTokenContract: Erc20Contract;
 };
 
-const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract }) => {
+const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract, poolTokenContract }) => {
   const walletCtx = useWallet();
-  const { convertTokenInUSD } = useKnownTokens();
-  const [reload] = useReload();
+  const { getAmountInUSD } = useTokens();
 
   const [activeTab, setActiveTab] = useState('stake');
 
-  const poolTokenContract = useWeb3Contract(
-    () => {
-      return new Erc20Contract([], kpiOption.poolToken.address);
-    },
-    {
-      afterInit: contract => {
-        contract.onUpdateData(reload);
-        contract.loadAllowance(kpiOption.poolAddress);
-
-        if (walletCtx.account) {
-          contract.loadBalance(walletCtx.account);
-        }
-      },
-    },
-  );
-
-  const walletBalance = poolTokenContract.balance?.unscaleBy(kpiOption.poolToken.decimals);
-  const stakedBalance = walletCtx.account
-    ? kpiContract.getBalanceFor(walletCtx.account)?.unscaleBy(kpiOption.poolToken.decimals)
-    : undefined;
+  const walletBalance = poolTokenContract.balance;
+  const stakedBalance = walletCtx.account ? kpiContract.getBalanceFor(walletCtx.account) : undefined;
 
   return (
     <div className={cn('card', className)}>
@@ -414,10 +390,16 @@ const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract }) => {
             <Text type="small" weight="semibold" color="secondary" className="mb-8">
               Staked balance
             </Text>
-            <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, kpiOption.poolToken.symbol)) ?? '-'}>
+            <Tooltip
+              title={
+                formatUSD(
+                  getAmountInUSD(stakedBalance?.unscaleBy(kpiOption.poolToken.decimals), kpiOption.poolToken.symbol),
+                ) ?? '-'
+              }>
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(stakedBalance, {
                   decimals: kpiOption.poolToken.decimals,
+                  scale: kpiOption.poolToken.decimals,
                 }) ?? '-'}
               </Text>
             </Tooltip>
@@ -426,10 +408,16 @@ const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract }) => {
             <Text type="small" weight="semibold" color="secondary" className="mb-8">
               Wallet balance
             </Text>
-            <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, kpiOption.poolToken.symbol)) ?? '-'}>
+            <Tooltip
+              title={
+                formatUSD(
+                  getAmountInUSD(walletBalance?.unscaleBy(kpiOption.poolToken.decimals), kpiOption.poolToken.symbol),
+                ) ?? '-'
+              }>
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(walletBalance, {
                   decimals: kpiOption.poolToken.decimals,
+                  scale: kpiOption.poolToken.decimals,
                 }) ?? '-'}
               </Text>
             </Tooltip>

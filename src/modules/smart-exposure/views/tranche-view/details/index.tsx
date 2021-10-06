@@ -60,8 +60,8 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Target ratio
           </Text>
           <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
-            <TokenIcon name={tokenA?.icon!} size={16} /> {formatPercent(Number(tranche.tokenARatio))}
-            <span className="ph-4">:</span> <TokenIcon name={tokenB?.icon!} size={16} />{' '}
+            <TokenIcon name={tokenA?.icon} size={16} /> {formatPercent(Number(tranche.tokenARatio))}
+            <span className="ph-4">:</span> <TokenIcon name={tokenB?.icon} size={16} />{' '}
             {formatPercent(Number(tranche.tokenBRatio))}
           </Text>
         </div>
@@ -70,8 +70,8 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
             Current ratio
           </Text>
           <Text type="p1" weight="semibold" color="primary" className=" flex align-center col-gap-4">
-            <TokenIcon name={tokenA?.icon!} size={16} /> {formatPercent(Number(tranche.state.tokenACurrentRatio))}{' '}
-            <span className="ph-4">:</span> <TokenIcon name={tokenB?.icon!} size={16} />{' '}
+            <TokenIcon name={tokenA?.icon} size={16} /> {formatPercent(Number(tranche.state.tokenACurrentRatio))}{' '}
+            <span className="ph-4">:</span> <TokenIcon name={tokenB?.icon} size={16} />{' '}
             {formatPercent(Number(tranche.state.tokenBCurrentRatio))}
           </Text>
         </div>
