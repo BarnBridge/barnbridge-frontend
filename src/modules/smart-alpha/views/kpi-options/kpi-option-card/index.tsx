@@ -81,7 +81,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
     <>
       <section className={cn(s.card, className)}>
         <header className={s.header}>
-          <TokenIcon name="bond" bubble1Name="bond" bubble2Name="bond" size={36} className="mr-16" />
+          <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={36} className="mr-16" />
           <Text type="p1" weight="semibold">
             {kpiOption.poolToken.symbol}
           </Text>
@@ -156,7 +156,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
             <div className={s.defRow}>
               <dt>Balancer tokens</dt>
               <dd>
-                <TokenIcon name="bond" bubble1Name="bond" bubble2Name="bond" size={16} className="mr-8" />
+                <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
                 {formatToken(kpiRewardPoolContract.poolSize?.unscaleBy(kpiOption.poolToken.decimals)) ?? '-'}
               </dd>
             </div>

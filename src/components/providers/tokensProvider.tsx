@@ -15,6 +15,8 @@ import { MainnetHttpsWeb3Provider } from './web3Provider';
 import { InvariantContext } from 'utils/context';
 import { queryfy } from 'utils/fetch';
 
+import { Web3Network } from 'networks/types';
+
 export enum Tokens {
   WBTC = 'WBTC',
   WETH = 'WETH',
@@ -203,8 +205,12 @@ export type TokenType = BaseTokenType & {
 
 export type TokensContextType = {
   version: number;
-  getToken(symbol?: string): TokenType | undefined;
-  getAmountInUSD(amount: BigNumber | undefined, source: string | undefined): BigNumber | undefined;
+  getToken(symbol?: string, network?: Web3Network): TokenType | undefined;
+  getAmountInUSD(
+    amount: BigNumber | undefined,
+    source: string | undefined,
+    network?: Web3Network,
+  ): BigNumber | undefined;
 };
 
 const Context = createContext<TokensContextType>(InvariantContext('TokensProvider'));
@@ -415,8 +421,8 @@ const TokensProvider: FC = props => {
     })();
   }, []);
 
-  const getToken = useCallback((symbol: string | undefined): TokenType | undefined => {
-    if (activeNetwork === AvalancheNetwork || activeNetwork === AvalancheTestnetNetwork) {
+  const getToken = useCallback((symbol: string | undefined, network?: Web3Network): TokenType | undefined => {
+    if ([activeNetwork, network].some(n => n === AvalancheNetwork || n === AvalancheTestnetNetwork)) {
       symbol = symbol?.replace('.e', '');
     }
 
@@ -424,12 +430,12 @@ const TokensProvider: FC = props => {
   }, []);
 
   const getAmountInUSD = useCallback(
-    (amount: BigNumber | undefined, source: string | undefined): BigNumber | undefined => {
+    (amount: BigNumber | undefined, source: string | undefined, network?: Web3Network): BigNumber | undefined => {
       if (!amount || !source) {
         return undefined;
       }
 
-      const token = getToken(source);
+      const token = getToken(source, network);
 
       if (!token || !token.price) {
         return undefined;

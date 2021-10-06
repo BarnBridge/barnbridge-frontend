@@ -72,6 +72,7 @@ export type NetworkConfig = {
 
 export type Web3Network = {
   id: string;
+  type: string;
   meta: {
     chainId: number;
     name: string;

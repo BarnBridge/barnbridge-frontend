@@ -87,6 +87,7 @@ export const AvalancheMetamaskChain: MetamaskAddEthereumChain = {
 
 export const AvalancheTestnetNetwork: Web3Network = {
   id: 'avalanche-testnet',
+  type: 'Avalanche',
   meta: {
     chainId: AVALANCHE_TEST_CHAIN_ID,
     name: 'Avalanche Testnet (Fuji)',

@@ -114,6 +114,7 @@ export const KovanMetamaskChain: MetamaskAddEthereumChain = {
 
 export const KovanNetwork: Web3Network = {
   id: 'kovan',
+  type: 'Ethereum',
   meta: {
     chainId: KOVAN_CHAIN_ID,
     name: 'Ethereum Dev (Kovan)',

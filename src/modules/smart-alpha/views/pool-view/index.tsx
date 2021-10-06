@@ -622,20 +622,34 @@ const PoolView = () => {
         </div>
         <div className={s.epochProgressLineAfter} />
       </div>
-      <div className="flex align-center row-gap-8 mb-32">
+      <div className="flex align-center justify-space-between row-gap-8 mb-32">
         <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>
-        <UseLeftTime delay={1_000} onEnd={() => window.location.reload()}>
-          {() => (
-            <Text type="p2" weight="bold" color="primary" className="ml-auto">
-              {getFormattedDuration(smartAlphaContract?.tillNextEpoch)}
-            </Text>
-          )}
+        <UseLeftTime delay={1_000}>
+          {() => {
+            const tillNextEpoch = smartAlphaContract?.tillNextEpoch;
+
+            if (tillNextEpoch === undefined) {
+              return null;
+            }
+
+            return tillNextEpoch > 0 ? (
+              <>
+                <Text type="p2" weight="bold" color="primary" className="ml-auto">
+                  {getFormattedDuration(tillNextEpoch)}
+                </Text>
+                <Text type="p2" weight="semibold" color="secondary" className="ml-4">
+                  until next epoch
+                </Text>
+              </>
+            ) : (
+              <Button variation="text" color="red" onClick={() => smartAlphaContract?.advanceEpoch()}>
+                Advance epoch
+              </Button>
+            );
+          }}
         </UseLeftTime>
-        <Text type="p2" weight="semibold" color="secondary" className="ml-4">
-          until next epoch
-        </Text>
       </div>
       <TokensPrice poolAddress={poolAddress} tokenSymbol={pool.poolToken.symbol} className="mb-32" />
       <PoolPerformance poolAddress={poolAddress} oracleAssetSymbol={pool.oracleAssetSymbol} className="mb-32" />
