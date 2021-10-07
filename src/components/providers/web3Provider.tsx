@@ -9,6 +9,7 @@ import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { AvalancheNetwork } from 'networks/avalanche';
+import { BinanceNetwork } from 'networks/binance';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
@@ -20,6 +21,7 @@ import { InvariantContext } from 'utils/context';
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(MainnetNetwork.rpc.httpsUrl);
 export const PolygonHttpsWeb3Provider = new Web3.providers.HttpProvider(PolygonNetwork.rpc.httpsUrl);
 export const AvalancheHttpsWeb3Provider = new Web3.providers.HttpProvider(AvalancheNetwork.rpc.httpsUrl);
+export const BinanceHttpsWeb3Provider = new Web3.providers.HttpProvider(BinanceNetwork.rpc.httpsUrl);
 export const KovanHttpsWeb3Provider = new Web3.providers.HttpProvider(KovanNetwork.rpc.httpsUrl);
 
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;

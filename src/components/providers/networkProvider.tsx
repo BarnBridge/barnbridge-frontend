@@ -45,7 +45,7 @@ const networks: Web3Network[] = (() => {
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, TestnetNetwork];
+    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, TestnetNetwork];
   }
 
   return [];
