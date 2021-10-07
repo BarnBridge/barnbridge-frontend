@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import uniqBy from 'lodash/uniqBy';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
@@ -13,11 +13,15 @@ import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
+import { MainnetHttpsWeb3Provider, PolygonHttpsWeb3Provider } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconPair } from 'components/token-icon';
-import { PoolApiType } from 'modules/smart-exposure/api';
+import { useContractFactory } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
+import { PoolApiType, useFetchSePools } from 'modules/smart-exposure/api';
 import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
 import { MainnetNetwork } from 'networks/mainnet';
+import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
 import { Web3Network } from 'networks/types';
@@ -35,12 +39,13 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: <div>Token Name</div>,
     render: function Render(entity) {
-      const { getTokenIconBySymbol } = useKnownTokens();
-      const tokenAIcon = getTokenIconBySymbol(entity.tokenA.symbol);
-      const tokenBIcon = getTokenIconBySymbol(entity.tokenB.symbol);
+      const { getToken } = useTokens();
+      const tokenAIcon = getToken(entity.tokenA.symbol);
+      const tokenBIcon = getToken(entity.tokenB.symbol);
+
       return (
         <div className="flex flow-col align-center">
-          <TokenIconPair name1={tokenAIcon} name2={tokenBIcon} className="mr-16" />
+          <TokenIconPair name1={tokenAIcon?.icon} name2={tokenBIcon?.icon} className="mr-16" />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">
@@ -74,8 +79,16 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="text-right">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.feesAmountTokenA ?? BigNumber.ZERO, {
+          <Text
+            type="p1"
+            weight="semibold"
+            color="primary"
+            className="mb-4"
+            tooltip={formatToken(entity.feesAmountTokenA, {
+              decimals: entity.tokenA.decimals,
+              tokenName: entity.tokenA.symbol,
+            })}>
+            {formatToken(entity.feesAmountTokenA, {
               compact: true,
             }) ?? '-'}
           </Text>
@@ -91,8 +104,16 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="text-right">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.feesAmountTokenB ?? BigNumber.ZERO, {
+          <Text
+            type="p1"
+            weight="semibold"
+            color="primary"
+            className="mb-4"
+            tooltip={formatToken(entity.feesAmountTokenB, {
+              decimals: entity.tokenB.decimals,
+              tokenName: entity.tokenB.symbol,
+            })}>
+            {formatToken(entity.feesAmountTokenB, {
               compact: true,
             }) ?? '-'}
           </Text>
@@ -106,14 +127,15 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: '',
     render: function Render(entity: ExtendedPoolApiType) {
-      const { feesAmountTokenA, feesAmountTokenB, network } = entity;
+      const { network, feesAmountTokenA, feesAmountTokenB } = entity;
 
       const wallet = useWallet();
-      const { getTokenIconBySymbol } = useKnownTokens();
+      const { getToken } = useTokens();
+
       const [confirmVisible, setConfirmVisible] = useState(false);
       const [harvesting, setHarvesting] = useState(false);
 
-      if (!wallet.isActive || network !== MainnetNetwork) {
+      if (network !== MainnetNetwork || !wallet.isActive) {
         return <></>;
       }
 
@@ -131,12 +153,14 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
         }
       }
 
+      const disabled = !feesAmountTokenA?.gt(0) || !feesAmountTokenB?.gt(0) || harvesting;
+
       return (
         <>
           <button
             type="button"
             className="button-ghost ml-auto"
-            disabled={!feesAmountTokenA?.gt(BigNumber.ZERO) || !feesAmountTokenB?.gt(BigNumber.ZERO) || harvesting}
+            disabled={disabled}
             onClick={() => setConfirmVisible(true)}>
             {harvesting && <Spinner className="mr-8" />}
             Transfer fees
@@ -156,7 +180,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                       </Text>
                       <Text type="p1" weight="bold" color="primary" className="flex align-center">
                         {formatToken(feesAmountTokenA) ?? '-'}
-                        <TokenIcon name={getTokenIconBySymbol(entity.tokenA.symbol)} size={24} className="ml-8" />
+                        <TokenIcon name={getToken(entity.tokenA.symbol)?.icon} size={24} className="ml-8" />
                       </Text>
                     </div>
                     <div>
@@ -165,7 +189,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                       </Text>
                       <Text type="p1" weight="bold" color="primary" className="flex align-center">
                         {formatToken(feesAmountTokenB) ?? '-'}
-                        <TokenIcon name={getTokenIconBySymbol(entity.tokenB.symbol)} size={24} className="ml-8" />
+                        <TokenIcon name={getToken(entity.tokenB.symbol)?.icon} size={24} className="ml-8" />
                       </Text>
                     </div>
                   </div>
@@ -198,6 +222,78 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
 type TreasuryFilterType = {
   pool: string;
 };
+
+export function useSEData(): [ExtendedPoolApiType[], BigNumber, boolean, ReactElement | null] {
+  const [reload, version] = useReload();
+
+  const { getAmountInUSD } = useTokens();
+  const { getOrCreateContract, getContract, Listeners } = useContractFactory();
+
+  const { data: poolsMainnet = [], loading: loadingMainnet } = useFetchSePools(MainnetNetwork.config.api.baseUrl);
+  const { data: poolsPolygon = [], loading: loadingPolygon } = useFetchSePools(PolygonNetwork.config.api.baseUrl);
+
+  const pools = useMemo(() => {
+    function mapPool(pool: PoolApiType, network: Web3Network): ExtendedPoolApiType {
+      const providerContract = getContract<SeEPoolContract>(pool.poolAddress);
+      const feesAmountTokenA = providerContract?.cumulativeFeeA?.unscaleBy(pool.tokenA.decimals);
+      const feesAmountUSDTokenA = getAmountInUSD(feesAmountTokenA, pool.tokenA.symbol);
+      const feesAmountTokenB = providerContract?.cumulativeFeeB?.unscaleBy(pool.tokenB.decimals);
+      const feesAmountUSDTokenB = getAmountInUSD(feesAmountTokenB, pool.tokenB.symbol);
+
+      return {
+        ...pool,
+        network,
+        providerContract,
+        feesAmountTokenA,
+        feesAmountUSDTokenA,
+        feesAmountTokenB,
+        feesAmountUSDTokenB,
+      };
+    }
+
+    return [
+      ...poolsMainnet.map(pool => mapPool(pool, MainnetNetwork)),
+      ...poolsPolygon.map(pool => mapPool(pool, PolygonNetwork)),
+    ];
+  }, [poolsMainnet, poolsPolygon, version]);
+
+  const total = useMemo(
+    () =>
+      BigNumber.sumEach(
+        pools,
+        pool => BigNumber.sum(pool.feesAmountUSDTokenA ?? 0, pool.feesAmountUSDTokenB ?? 0) ?? 0,
+      ) ?? BigNumber.ZERO,
+    [pools],
+  );
+
+  useEffect(() => {
+    poolsMainnet.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SeEPoolContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(MainnetHttpsWeb3Provider);
+          contract.onUpdateData(reload);
+          contract.getCumulativeFeeA().catch(Error);
+          contract.getCumulativeFeeB().catch(Error);
+        },
+      });
+    });
+  }, [poolsMainnet]);
+
+  useEffect(() => {
+    poolsPolygon?.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SeEPoolContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(PolygonHttpsWeb3Provider);
+          contract.onUpdateData(reload);
+          contract.getCumulativeFeeA().catch(Error);
+          contract.getCumulativeFeeB().catch(Error);
+        },
+      });
+    });
+  }, [poolsPolygon]);
+
+  return [pools, total, loadingMainnet || loadingPolygon, Listeners];
+}
 
 export const SESection = ({
   pools,

@@ -17,7 +17,7 @@ import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
-import { useFetchPools } from 'modules/smart-alpha/api';
+import { useFetchSaPools } from 'modules/smart-alpha/api';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
@@ -32,7 +32,7 @@ export const PortfolioPositions = () => {
   const history = useHistory();
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
   const { account } = useWallet();
-  const { data } = useFetchPools({ userAddress: account });
+  const { data } = useFetchSaPools({ userAddress: account });
   const { getToken } = useTokens();
   const [reload] = useReload();
 
@@ -195,12 +195,12 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
         />
       </div>
       <div className={classNames(s.positionsWalletSecondaryValues, 'mb-32')}>
-        <div className={s.positionsWalletSecondaryValue}>
+        {/*<div className={s.positionsWalletSecondaryValue}>
           <Text type="small" weight="semibold" color="secondary">
-            TBD
+            {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
           </Text>
           <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
-        </div>
+        </div>*/}
         <div className={s.positionsWalletSecondaryValue}>
           <Text type="small" weight="semibold" color="secondary">
             {formatToken(tokenAmountInQuoteAsset, {

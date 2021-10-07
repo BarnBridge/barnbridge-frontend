@@ -13,96 +13,88 @@ import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
-import {
-  AvalancheHttpsWeb3Provider,
-  BinanceHttpsWeb3Provider,
-  MainnetHttpsWeb3Provider,
-  PolygonHttpsWeb3Provider,
-} from 'components/providers/web3Provider';
-import { TokenIcon } from 'components/token-icon';
+import { TokenType, useTokens } from 'components/providers/tokensProvider';
+import { MainnetHttpsWeb3Provider, PolygonHttpsWeb3Provider } from 'components/providers/web3Provider';
+import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
-import { PoolApiType, useFetchSaPools } from 'modules/smart-alpha/api';
-import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
-import { AvalancheNetwork } from 'networks/avalanche';
-import { BinanceNetwork } from 'networks/binance';
+import { APISYPool, useFetchSyPools } from 'modules/smart-yield/api';
+import SYProviderContract from 'modules/smart-yield/contracts/syProviderContract';
+import { MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
 import { Web3Network } from 'networks/types';
 
-export type ExtendedPoolApiType = PoolApiType & {
-  saContract: SmartAlphaContract | undefined;
+type ExtendedPoolApiType = APISYPool & {
+  providerContract: SYProviderContract | undefined;
   feesAmountToken: BigNumber | undefined;
   feesAmountUSDToken: BigNumber | undefined;
+  market: MarketMeta | undefined;
+  token: TokenType | undefined;
   network: Web3Network;
 };
 
 const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: <div>Token Name</div>,
-    render: function Render(entity) {
-      const { getToken } = useTokens();
-      const token = getToken(entity.poolToken.symbol, entity.network);
-      const oracle = getAsset(entity.oracleAssetSymbol);
-
-      return (
-        <div className="flex flow-col align-center">
-          <TokenIcon name={token?.icon} bubble2Name={oracle?.icon} size={32} className="mr-16" />
-          <div className="flex flow-row">
-            <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
-                {entity.poolName ?? '-'}
-              </Text>
-              <Icon name="external" size={8} color="blue" />
-            </ExplorerAddressLink>
-            <Text type="small" weight="semibold" color="secondary">
-              {entity.poolToken.symbol}
+    render: entity => (
+      <div className="flex flow-col align-center">
+        <TokenIcon
+          name={entity.token?.icon as TokenIconNames}
+          bubble1Name={entity.market?.icon.active as TokenIconNames}
+          size={32}
+          className="mr-16"
+        />
+        <div className="flex flow-row">
+          <ExplorerAddressLink address={entity.smartYieldAddress} className="flex flow-col mb-4">
+            <Text type="p1" weight="semibold" color="blue" className="mr-4">
+              {entity.underlyingSymbol ?? '-'}
             </Text>
-          </div>
+            <Icon name="external" size={8} color="blue" />
+          </ExplorerAddressLink>
+          <Text type="small" weight="semibold" color="secondary">
+            {entity.market?.name ?? '-'}
+          </Text>
         </div>
-      );
-    },
+      </div>
+    ),
   },
   {
     heading: 'Network',
-    render: entity => {
-      return (
-        <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-          <IconOld name={entity.network.meta.logo} />
-          <Text type="p2" weight="semibold" color="secondary">
-            {entity.network.type}
-          </Text>
-        </div>
-      );
-    },
+    render: entity => (
+      <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
+        <IconOld name={entity.network.meta.logo} />
+        <Text type="p2" weight="semibold" color="secondary">
+          {entity.network.type}
+        </Text>
+      </div>
+    ),
   },
   {
-    heading: <div className="text-right">Token amount</div>,
-    render: entity => {
-      return (
-        <div className="text-right">
-          <Text
-            type="p1"
-            weight="semibold"
-            color="primary"
-            className="mb-4"
-            tooltip={formatToken(entity.feesAmountToken, {
-              decimals: entity.poolToken.decimals,
-              tokenName: entity.poolToken.symbol,
-            })}>
-            {formatToken(entity.feesAmountToken, {
-              compact: true,
-            }) ?? '-'}
-          </Text>
-          <Text type="small" weight="semibold" color="secondary">
-            {formatUSD(entity.feesAmountUSDToken) ?? '-'}
-          </Text>
-        </div>
-      );
-    },
+    heading: <div className="text-right">Amount</div>,
+    align: 'right',
+    render: entity => (
+      <>
+        <Text
+          type="p1"
+          weight="semibold"
+          color="primary"
+          className="mb-4"
+          tooltip={formatToken(entity.feesAmountToken, {
+            decimals: entity.underlyingDecimals,
+            tokenName: entity.underlyingSymbol,
+          })}>
+          {formatToken(entity.feesAmountToken, {
+            compact: true,
+          }) ?? '-'}
+        </Text>
+        <Text type="small" weight="semibold" color="secondary">
+          {formatUSD(entity.feesAmountUSDToken) ?? '-'}
+        </Text>
+      </>
+    ),
   },
   {
     heading: '',
@@ -110,7 +102,6 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
       const { network, feesAmountToken } = entity;
 
       const wallet = useWallet();
-      const { getToken } = useTokens();
 
       const [confirmVisible, setConfirmVisible] = useState(false);
       const [harvesting, setHarvesting] = useState(false);
@@ -123,13 +114,13 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
         setHarvesting(true);
 
         try {
-          await entity.saContract?.transferFees(args.gasPrice);
-          await entity.saContract?.getFeesAccrued();
+          await entity.providerContract?.transferFeesSend(args.gasPrice);
+          await entity.providerContract?.loadUnderlyingFees();
         } catch (e) {
           console.error(e);
-        } finally {
-          setHarvesting(false);
         }
+
+        setHarvesting(false);
       }
 
       const disabled = !feesAmountToken?.gt(0) || harvesting;
@@ -152,17 +143,12 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
               onConfirm={harvest}>
               {() => (
                 <div>
-                  <div className="container-box flex align-center col-gap-32 mb-32">
-                    <div>
-                      <Text type="small" weight="semibold" color="secondary" className="mb-4">
-                        {entity.poolToken.symbol} fee
-                      </Text>
-                      <Text type="p1" weight="bold" color="primary" className="flex align-center">
-                        {formatToken(feesAmountToken) ?? '-'}
-                        <TokenIcon name={getToken(entity.poolToken.symbol)?.icon} size={24} className="ml-8" />
-                      </Text>
-                    </div>
-                  </div>
+                  <Text type="h2" weight="bold" align="center" color="primary" className="mb-16">
+                    {formatToken(feesAmountToken, {
+                      compact: true,
+                      tokenName: entity.underlyingSymbol,
+                    }) ?? '-'}
+                  </Text>
                   <div className="flex align-center justify-center mb-8">
                     <IconOld name="warning-circle-outlined" className="mr-8" />
                     <Text type="p2" weight="semibold" align="center" color="red">
@@ -191,57 +177,58 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
 
 type TreasuryFilterType = {
   pool: string;
+  token: string;
 };
 
-export function useSAData(): [ExtendedPoolApiType[], BigNumber, boolean, ReactElement | null] {
+export function useSYData(): [ExtendedPoolApiType[], BigNumber, boolean, ReactElement | null] {
   const [reload, version] = useReload();
 
-  const { getAmountInUSD } = useTokens();
+  const { getAmountInUSD, getToken } = useTokens();
   const { getOrCreateContract, getContract, Listeners } = useContractFactory();
 
-  const { data: poolsMainnet = [], loading: loadingMainnet } = useFetchSaPools({
+  const { data: poolsMainnet = [], loading: loadingMainnet } = useFetchSyPools({
     baseUrl: MainnetNetwork.config.api.baseUrl,
   });
-  const { data: poolsPolygon = [], loading: loadingPolygon } = useFetchSaPools({
+  const { data: poolsPolygon = [], loading: loadingPolygon } = useFetchSyPools({
     baseUrl: PolygonNetwork.config.api.baseUrl,
-  });
-  const { data: poolsAvalanche = [], loading: loadingAvalanche } = useFetchSaPools({
-    baseUrl: AvalancheNetwork.config.api.baseUrl,
-  });
-  const { data: poolsBinance = [], loading: loadingBinance } = useFetchSaPools({
-    baseUrl: BinanceNetwork.config.api.baseUrl,
   });
 
   const pools = useMemo(() => {
-    function mapPool(pool: PoolApiType, network: Web3Network): ExtendedPoolApiType {
-      const saContract = getContract<SmartAlphaContract>(pool.poolAddress);
-      const feesAmountToken = saContract?.feesAccrued?.unscaleBy(pool.poolToken.decimals);
-      const feesAmountUSDToken = getAmountInUSD(feesAmountToken, pool.poolToken.symbol, network);
+    function mapPool(pool: APISYPool, network: Web3Network): ExtendedPoolApiType {
+      const providerContract = getContract<SYProviderContract>(pool.providerAddress);
+      const feesAmountToken = providerContract?.underlyingFees?.unscaleBy(pool.underlyingDecimals);
+      const feesAmountUSDToken = getAmountInUSD(feesAmountToken, pool.underlyingSymbol);
+      const market = getKnownMarketById(pool.protocolId);
+      const token = getToken(pool.underlyingSymbol);
 
       return {
         ...pool,
-        network,
-        saContract,
+        providerContract,
         feesAmountToken,
         feesAmountUSDToken,
+        market,
+        token,
+        network,
       };
     }
 
     return [
       ...poolsMainnet.map(pool => mapPool(pool, MainnetNetwork)),
       ...poolsPolygon.map(pool => mapPool(pool, PolygonNetwork)),
-      ...poolsAvalanche.map(pool => mapPool(pool, AvalancheNetwork)),
-      ...poolsBinance.map(pool => mapPool(pool, BinanceNetwork)),
     ];
-  }, [poolsMainnet, poolsPolygon, poolsAvalanche, poolsBinance, version]);
+  }, [poolsMainnet, poolsPolygon, version]);
+
+  const total = useMemo(() => {
+    return BigNumber.sumEach(pools, pool => pool.feesAmountUSDToken ?? BigNumber.ZERO) ?? BigNumber.ZERO;
+  }, [pools]);
 
   useEffect(() => {
     poolsMainnet.forEach(pool => {
-      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+      getOrCreateContract(pool.providerAddress, () => new SYProviderContract(pool.providerAddress), {
         afterInit: contract => {
           contract.setCallProvider(MainnetHttpsWeb3Provider);
           contract.onUpdateData(reload);
-          contract.getFeesAccrued().catch(Error);
+          contract.loadUnderlyingFees().catch(Error);
         },
       });
     });
@@ -249,48 +236,20 @@ export function useSAData(): [ExtendedPoolApiType[], BigNumber, boolean, ReactEl
 
   useEffect(() => {
     poolsPolygon.forEach(pool => {
-      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+      getOrCreateContract(pool.providerAddress, () => new SYProviderContract(pool.providerAddress), {
         afterInit: contract => {
           contract.setCallProvider(PolygonHttpsWeb3Provider);
           contract.onUpdateData(reload);
-          contract.getFeesAccrued().catch(Error);
+          contract.loadUnderlyingFees().catch(Error);
         },
       });
     });
   }, [poolsPolygon]);
 
-  useEffect(() => {
-    poolsAvalanche.forEach(pool => {
-      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
-        afterInit: contract => {
-          contract.setCallProvider(AvalancheHttpsWeb3Provider);
-          contract.onUpdateData(reload);
-          contract.getFeesAccrued().catch(Error);
-        },
-      });
-    });
-  }, [poolsAvalanche]);
-
-  useEffect(() => {
-    poolsBinance.forEach(pool => {
-      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
-        afterInit: contract => {
-          contract.setCallProvider(BinanceHttpsWeb3Provider);
-          contract.onUpdateData(reload);
-          contract.getFeesAccrued().catch(Error);
-        },
-      });
-    });
-  }, [poolsBinance]);
-
-  const total = useMemo(() => {
-    return BigNumber.sumEach(pools, pool => pool.feesAmountUSDToken ?? BigNumber.ZERO) ?? BigNumber.ZERO;
-  }, [pools]);
-
-  return [pools, total, loadingMainnet || loadingPolygon || loadingAvalanche || loadingBinance, Listeners];
+  return [pools, total, loadingMainnet || loadingPolygon, Listeners];
 }
 
-export const SASection = ({
+export const SYSection = ({
   pools,
   total,
   loading,
@@ -302,6 +261,7 @@ export const SASection = ({
   className?: string;
 }) => {
   const [poolFilter, setPoolFilter] = useState('all');
+  const [tokenFilter, setTokenFilter] = useState('all');
 
   const filters = useMemo(
     () =>
@@ -318,8 +278,30 @@ export const SASection = ({
               },
               ...uniqBy(
                 pools.map(item => ({
-                  value: item.poolName,
-                  label: item.poolName,
+                  value: item.protocolId,
+                  label: item.protocolId,
+                })),
+                'value',
+              ),
+            ];
+
+            return <Select options={tokenOpts} className="full-width" />;
+          },
+        },
+        {
+          name: 'token',
+          label: 'Token address',
+          defaultValue: 'all',
+          itemRender: () => {
+            const tokenOpts = [
+              {
+                value: 'all',
+                label: 'All tokens',
+              },
+              ...uniqBy(
+                pools.map(item => ({
+                  value: item.underlyingSymbol,
+                  label: item.token?.name ?? item.underlyingSymbol,
                 })),
                 'value',
               ),
@@ -334,17 +316,23 @@ export const SASection = ({
   const filterValue = useMemo<TreasuryFilterType>(
     () => ({
       pool: poolFilter,
+      token: tokenFilter,
     }),
-    [poolFilter],
+    [poolFilter, tokenFilter],
   );
 
   function handleFilterChange(filters: TreasuryFilterType) {
     setPoolFilter(filters.pool);
+    setTokenFilter(filters.token);
   }
 
   const filteredDataSource = useMemo(() => {
-    return pools.filter(pool => ['all', pool.poolName].includes(poolFilter)) ?? [];
-  }, [pools, poolFilter]);
+    return (
+      pools.filter(
+        pool => ['all', pool.protocolId].includes(poolFilter) && ['all', pool.underlyingSymbol].includes(tokenFilter),
+      ) ?? []
+    );
+  }, [pools, poolFilter, tokenFilter]);
 
   return (
     <div className={className}>
@@ -359,11 +347,11 @@ export const SASection = ({
               width: '40px',
               height: '40px',
             }}>
-            <Icon name="smart-exposure" />
+            <Icon name="smart-yield" />
           </div>
           <div className="flex flow-row row-gap-4 mr-64">
             <Text type="p1" weight="semibold" color="primary">
-              SMART Alpha
+              SMART Yield
             </Text>
             <Text type="small" weight="semibold" color="secondary">
               Fees
@@ -389,7 +377,7 @@ export const SASection = ({
         <Table<ExtendedPoolApiType>
           columns={columns}
           data={filteredDataSource}
-          rowKey={row => row.poolAddress}
+          rowKey={row => row.smartYieldAddress}
           loading={loading}
           // locale={{
           //   emptyText: 'No accrued fees', // TODO: Add support of empty result to Table component

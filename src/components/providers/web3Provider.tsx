@@ -1,5 +1,6 @@
 import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import Web3 from 'web3';
+import { HttpProvider } from 'web3-core';
 import { AbiItem } from 'web3-utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
@@ -10,7 +11,6 @@ import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { AvalancheNetwork } from 'networks/avalanche';
 import { BinanceNetwork } from 'networks/binance';
-import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
 import { MetamaskConnector } from 'wallets/connectors/metamask';
@@ -22,7 +22,13 @@ export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(MainnetN
 export const PolygonHttpsWeb3Provider = new Web3.providers.HttpProvider(PolygonNetwork.rpc.httpsUrl);
 export const AvalancheHttpsWeb3Provider = new Web3.providers.HttpProvider(AvalancheNetwork.rpc.httpsUrl);
 export const BinanceHttpsWeb3Provider = new Web3.providers.HttpProvider(BinanceNetwork.rpc.httpsUrl);
-export const KovanHttpsWeb3Provider = new Web3.providers.HttpProvider(KovanNetwork.rpc.httpsUrl);
+
+const CacheHttpsWeb3Provider: Record<string, HttpProvider> = {
+  [MainnetNetwork.rpc.httpsUrl]: MainnetHttpsWeb3Provider,
+  [PolygonNetwork.rpc.httpsUrl]: PolygonHttpsWeb3Provider,
+  [AvalancheNetwork.rpc.httpsUrl]: AvalancheHttpsWeb3Provider,
+  [BinanceNetwork.rpc.httpsUrl]: BinanceHttpsWeb3Provider,
+};
 
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;
 
@@ -56,7 +62,13 @@ const Web3Provider: FC = props => {
   const [networkSelectVisible, showNetworkSelect] = useState(false);
 
   const httpsWeb3 = useMemo(() => {
-    const provider = new Web3.providers.HttpProvider(activeNetwork.rpc.httpsUrl);
+    let provider = CacheHttpsWeb3Provider[activeNetwork.rpc.httpsUrl];
+
+    if (!provider) {
+      provider = new Web3.providers.HttpProvider(activeNetwork.rpc.httpsUrl);
+      CacheHttpsWeb3Provider[activeNetwork.rpc.httpsUrl] = provider;
+    }
+
     return new Web3(provider);
   }, [activeNetwork]);
 

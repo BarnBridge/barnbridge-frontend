@@ -81,16 +81,16 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/portfolio">
               <PortfolioView />
             </Route>
-            {activeNetwork.config.features.smartAlphaKPIOptions ? (
-              <>
-                <Route path="/smart-alpha/kpi-options" exact>
-                  <KPIOptionsView />
-                </Route>
-                <Route path="/smart-alpha/kpi-options/:id" exact>
-                  <KPIOptionView />
-                </Route>
-              </>
-            ) : null}
+            {activeNetwork.config.features.smartAlphaKPIOptions && (
+              <Route path="/smart-alpha/kpi-options" exact>
+                <KPIOptionsView />
+              </Route>
+            )}
+            {activeNetwork.config.features.smartAlphaKPIOptions && (
+              <Route path="/smart-alpha/kpi-options/:id" exact>
+                <KPIOptionView />
+              </Route>
+            )}
             <Redirect to="/smart-alpha/pools" />
           </Switch>
         </Suspense>

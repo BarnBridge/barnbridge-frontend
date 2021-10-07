@@ -8,7 +8,7 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue } from 'web3/utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
+import { PolygonHttpsWeb3Provider, WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
 
 export class AbiTuple {
   items: string[] = [];
@@ -97,7 +97,7 @@ export type Web3SendMeta = {
 type EthContract = Contract & Eth;
 
 class BatchRequestManager {
-  static requests: Map<any, Method[]> = new Map();
+  static requests: Map<any, { busy: boolean; collected: Method[] }> = new Map();
 
   static addRequest(source: EthContract, request: Method) {
     const { currentProvider } = source;
@@ -106,16 +106,19 @@ class BatchRequestManager {
       return;
     }
 
-    const { requests } = BatchRequestManager;
+    const { requests } = this;
 
-    let collected = requests.get(currentProvider);
+    let state = requests.get(currentProvider);
 
-    if (!collected) {
-      collected = [];
-      requests.set(currentProvider, collected);
+    if (!state) {
+      state = {
+        busy: false,
+        collected: [],
+      };
+      requests.set(currentProvider, state);
     }
 
-    collected.push(request);
+    state.collected.push(request);
 
     this.run();
   }
@@ -123,14 +126,37 @@ class BatchRequestManager {
   static run = debounce(() => {
     const { requests } = BatchRequestManager;
 
-    requests.forEach((methods, provider) => {
+    requests.forEach(async (state, provider) => {
+      if (state.busy) {
+        return;
+      }
+
       const web3 = new Web3(provider);
-      const batch = new web3.BatchRequest();
 
-      methods.forEach(method => batch.add(method));
-      batch.execute();
+      let extractCount = 0;
+      let delay = 0;
 
-      requests.delete(provider);
+      if (provider === PolygonHttpsWeb3Provider) {
+        extractCount = 20;
+        delay = 250;
+      }
+
+      state.busy = true;
+
+      while (state.collected.length > 0) {
+        const toExtract = extractCount > 0 ? extractCount : state.collected.length;
+        const items = state.collected.splice(0, toExtract);
+
+        const batch = new web3.BatchRequest();
+        items.forEach(method => batch.add(method));
+        await batch.execute();
+
+        if (delay > 0) {
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+      }
+
+      state.busy = false;
     });
   }, 250);
 }

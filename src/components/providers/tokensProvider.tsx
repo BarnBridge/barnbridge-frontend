@@ -11,8 +11,10 @@ import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
 import { BinanceNetwork } from 'networks/binance';
 import { BinanceTestnetNetwork } from 'networks/binance-testnet';
+import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
+import { TestnetNetwork } from 'networks/testnet';
 
 import {
   AvalancheHttpsWeb3Provider,
@@ -317,7 +319,7 @@ async function getUniV2Price(poolAddress: string): Promise<BigNumber | undefined
 }
 
 async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork): Promise<BigNumber | undefined> {
-  if (network === MainnetNetwork) {
+  if (network === MainnetNetwork || network === KovanNetwork || network === TestnetNetwork) {
     switch (symbol.toUpperCase()) {
       case 'BTC':
       case 'WBTC':
@@ -494,73 +496,6 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
   return undefined;
 }
 
-function getTokenInfo(symbol: string, network: Web3Network = MainnetNetwork): TokenType | undefined {
-  if (network === MainnetNetwork) {
-    switch (symbol.toUpperCase()) {
-      case 'BTC':
-      case 'WBTC':
-        return WBTC;
-      case 'ETH':
-      case 'WETH':
-        return WETH;
-      case 'USDC':
-        return USDC;
-      case 'USDT':
-        return USDT;
-      case 'SUSD':
-        return SUSD;
-      case 'DAI':
-        return DAI;
-      case 'AAVE':
-      case 'STKAAVE':
-        return AAVE;
-      case 'MATIC':
-      case 'WMATIC':
-        return MATIC;
-      case 'AVAX':
-      case 'WAVAX':
-        return WAVAX;
-      case 'LINK':
-        return LINK;
-      case 'UNI':
-        return UNI;
-      case 'FEI':
-        return FEI;
-      case 'BNB':
-        return BNB;
-      case 'GUSD':
-        return GUSD;
-      case 'RAI':
-        return RAI;
-      case 'XSUSHI':
-        return XSUSHI;
-      case 'BOND':
-        return BOND;
-      case 'UNI-V2':
-        return UNIV2;
-      default:
-        return undefined;
-    }
-  } else if (network === PolygonNetwork) {
-    switch (symbol.toUpperCase()) {
-      default:
-        return getTokenInfo(symbol, MainnetNetwork);
-    }
-  } else if (network === AvalancheNetwork || network === AvalancheTestnetNetwork) {
-    switch (symbol.toUpperCase()) {
-      default:
-        return getTokenInfo(symbol, MainnetNetwork);
-    }
-  } else if (network === BinanceNetwork || network === BinanceTestnetNetwork) {
-    switch (symbol.toUpperCase()) {
-      default:
-        return getTokenInfo(symbol, MainnetNetwork);
-    }
-  }
-
-  return undefined;
-}
-
 const ALL_TOKENS: BaseTokenType[] = [
   WBTC,
   WETH,
@@ -630,39 +565,42 @@ const TokensProvider: FC = props => {
     })();
   }, []);
 
-  const getToken = useCallback((symbol: string | undefined, network?: Web3Network): TokenType | undefined => {
-    if (network === AvalancheNetwork || network === AvalancheTestnetNetwork) {
-      switch (symbol?.toUpperCase()) {
-        case 'WBTC.E':
-          symbol = Tokens.WBTC;
-          break;
-        case 'WETH.E':
-          symbol = Tokens.WETH;
-          break;
-        case 'AAVE.E':
-          symbol = Tokens.AAVE;
-          break;
-        default:
-          break;
+  const getToken = useCallback(
+    (symbol: string | undefined, network: Web3Network = activeNetwork): TokenType | undefined => {
+      if (network === AvalancheNetwork || network === AvalancheTestnetNetwork) {
+        switch (symbol?.toUpperCase()) {
+          case 'WBTC.E':
+            symbol = Tokens.WBTC;
+            break;
+          case 'WETH.E':
+            symbol = Tokens.WETH;
+            break;
+          case 'AAVE.E':
+            symbol = Tokens.AAVE;
+            break;
+          default:
+            break;
+        }
+      } else if (network === BinanceNetwork || network === BinanceTestnetNetwork) {
+        switch (symbol?.toUpperCase()) {
+          case 'BTCB':
+            symbol = Tokens.WBTC;
+            break;
+          case 'ETH':
+            symbol = Tokens.WETH;
+            break;
+          case 'WBNB':
+            symbol = Tokens.BNB;
+            break;
+          default:
+            break;
+        }
       }
-    } else if (network === BinanceNetwork || network === BinanceTestnetNetwork) {
-      switch (symbol?.toUpperCase()) {
-        case 'BTCB':
-          symbol = Tokens.WBTC;
-          break;
-        case 'ETH':
-          symbol = Tokens.WETH;
-          break;
-        case 'WBNB':
-          symbol = Tokens.BNB;
-          break;
-        default:
-          break;
-      }
-    }
 
-    return symbol ? tokensRef.current.get(symbol.toUpperCase()) : undefined;
-  }, []);
+      return symbol ? tokensRef.current.get(symbol.toUpperCase()) : undefined;
+    },
+    [],
+  );
 
   const getAmountInUSD = useCallback(
     (amount: BigNumber | undefined, source: string | undefined, network?: Web3Network): BigNumber | undefined => {

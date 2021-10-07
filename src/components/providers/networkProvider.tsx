@@ -34,13 +34,13 @@ const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
     return [
       KovanNetwork,
+      TestnetNetwork,
       MainnetNetwork,
       PolygonNetwork,
-      AvalancheNetwork,
-      BinanceNetwork,
-      TestnetNetwork,
       AvalancheTestnetNetwork,
+      AvalancheNetwork,
       BinanceTestnetNetwork,
+      BinanceNetwork,
     ];
   }
 
