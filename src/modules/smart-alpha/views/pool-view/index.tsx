@@ -25,6 +25,7 @@ import { useWallet } from 'wallets/walletProvider';
 import { TransactionsTable } from '../../components/transactions';
 import { PoolPerformance } from './pool-performance';
 import { PreviousEpochs } from './previous-epochs';
+import { QueueState } from './queue-state';
 import { TokensPrice } from './tokens-price';
 
 import { getFormattedDuration } from 'utils';
@@ -653,147 +654,7 @@ const PoolView = () => {
             </Text>
           }
           closeHandler={() => setQueueStateVisible(false)}>
-          <dl
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'auto min-content',
-              rowGap: 32,
-            }}>
-            <dt>
-              <Text type="p2" weight="semibold" color="secondary">
-                Juniors underlying in
-              </Text>
-            </dt>
-            <dd className="flex justify-end align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(poolToken?.decimals)) ?? '-'}
-              </Text>
-            </dd>
-            <dt>
-              <Text type="p2" weight="semibold" color="secondary">
-                Juniors underlying out
-              </Text>
-            </dt>
-            <dd className="flex justify-end align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(poolToken?.decimals)) ?? '-'}
-              </Text>
-            </dd>
-            <dt>
-              <Text type="p2" weight="semibold" color="secondary">
-                Junior tokens burn
-              </Text>
-            </dt>
-            <dd className="flex justify-end align-center">
-              <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
-                bubble1Name="bond"
-                bubble2Name={oracleToken?.icon}
-                outline="purple"
-                size={16}
-                className="mr-8"
-              />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedJuniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS), {
-                    decimals: SMART_ALPHA_DECIMALS,
-                    tokenName: `junior_${pool.poolName}`,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedJuniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
-              </Text>
-            </dd>
-            <dt>
-              <Text type="p2" weight="semibold" color="secondary">
-                Seniors underlying in
-              </Text>
-            </dt>
-            <dd className="flex justify-end align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(poolToken?.decimals)) ?? '-'}
-              </Text>
-            </dd>
-            <dt>
-              <Text type="p2" weight="semibold" color="secondary">
-                Seniors underlying out
-              </Text>
-            </dt>
-            <dd className="flex justify-end align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(poolToken?.decimals)) ?? '-'}
-              </Text>
-            </dd>
-            <dt>
-              <Text type="p2" weight="semibold" color="secondary">
-                Senior tokens burn
-              </Text>
-            </dt>
-            <dd className="flex justify-end align-center">
-              <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
-                bubble1Name="bond"
-                bubble2Name={oracleToken?.icon}
-                outline="green"
-                size={16}
-                className="mr-8"
-              />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedSeniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS), {
-                    decimals: SMART_ALPHA_DECIMALS,
-                    tokenName: `senior_${pool.poolName}`,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedSeniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
-              </Text>
-            </dd>
-          </dl>
+          <QueueState pool={pool} smartAlphaContract={smartAlphaContract} />
         </Modal>
       )}
       {previousEpochVisible && (
