@@ -15,6 +15,7 @@ export type NetworkConfig = {
     faucets?: boolean;
     gasFees?: boolean;
     addBondToken?: boolean;
+    smartAlphaKPIOptions?: boolean;
   };
   wallets: {
     portisId: string;
