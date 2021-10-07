@@ -34,6 +34,8 @@ export type TokenIconNames =
   | 'link'
   | 'uni'
   | 'fei'
+  | 'balancer'
+  | 'uma'
   | 'all';
 
 type TokenIconProps = {
@@ -111,18 +113,18 @@ function getOutlineColor(outline: TokenIconProps['outline']) {
   if (Array.isArray(outline)) {
     return (
       <>
-        <stop offset="0%" stop-color={`var(--theme-${outline[0]}-color)`} />
-        <stop offset="50%" stop-color={`var(--theme-${outline[0]}-color)`} />
-        <stop offset="50%" stop-color={`var(--theme-${outline[1]}-color)`} />
-        <stop offset="100%" stop-color={`var(--theme-${outline[1]}-color)`} />
+        <stop offset="0%" stopColor={`var(--theme-${outline[0]}-color)`} />
+        <stop offset="50%" stopColor={`var(--theme-${outline[0]}-color)`} />
+        <stop offset="50%" stopColor={`var(--theme-${outline[1]}-color)`} />
+        <stop offset="100%" stopColor={`var(--theme-${outline[1]}-color)`} />
       </>
     );
   }
 
   return (
     <>
-      <stop offset="0%" stop-color={`var(--theme-${outline}-color)`} />
-      <stop offset="100%" stop-color={`var(--theme-${outline}-color)`} />
+      <stop offset="0%" stopColor={`var(--theme-${outline}-color)`} />
+      <stop offset="100%" stopColor={`var(--theme-${outline}-color)`} />
     </>
   );
 }

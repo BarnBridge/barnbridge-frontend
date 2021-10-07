@@ -7,7 +7,6 @@ import Icon from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { KnownTokens } from 'components/providers/knownTokensProvider';
-import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
@@ -19,6 +18,8 @@ import Stake from './stake';
 import Statistics from './statistics';
 import Transactions from './transactions';
 
+import { getKpiOptionTokenIconNames } from 'modules/smart-alpha/utils';
+
 import s from './s.module.scss';
 
 const KpiOptionView: FC = () => {
@@ -28,7 +29,6 @@ const KpiOptionView: FC = () => {
   const [reload] = useReload();
   const [reloadTxs, version] = useReload();
   const walletCtx = useWallet();
-  const { getToken } = useTokens();
   const { getOrCreateContract } = useContractFactory();
 
   if (loading) {
@@ -94,6 +94,8 @@ const KpiOptionView: FC = () => {
     });
   });
 
+  const [tokenName, tokenBubble1Name, tokenBubble2Name] = getKpiOptionTokenIconNames(kpiOption.poolToken.symbol);
+
   return (
     <div className="container-limit">
       <div className="mb-16">
@@ -103,7 +105,14 @@ const KpiOptionView: FC = () => {
         </Link>
       </div>
       <div className="flex align-center mb-32">
-        <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={36} className="mr-16" />
+        <TokenIcon
+          name={tokenName}
+          bubble1Name={tokenBubble1Name}
+          bubble2Name={tokenBubble2Name}
+          outline={['purple', 'green']}
+          size={36}
+          className="mr-16"
+        />
         <Text type="p1" weight="semibold" color="primary">
           {kpiOption.poolToken.symbol}
         </Text>
@@ -113,50 +122,80 @@ const KpiOptionView: FC = () => {
           <div className={s.headerTermRow}>
             <dt>Balancer tokens</dt>
             <dd>
-              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
+              <TokenIcon
+                name={tokenName}
+                bubble1Name={tokenBubble1Name}
+                bubble2Name={tokenBubble2Name}
+                outline={['purple', 'green']}
+                size={16}
+                className="mr-8"
+              />
               {formatToken(kpiContract.poolSize?.unscaleBy(kpiOption.poolToken.decimals)) ?? '-'}
             </dd>
           </div>
-          {kpiOption.rewardTokens.map(token => (
-            <React.Fragment key={token.symbol}>
-              {token.symbol === KnownTokens.BOND ? (
-                <div className={s.headerTermRow}>
-                  <dt>{token.symbol} daily rewards</dt>
-                  <dd>
-                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                    {kpiContract.getRewardLeftFor(token.address)?.isZero()
-                      ? '0'
-                      : formatToken(kpiContract.getDailyRewardFor(token.address), {
+          {kpiOption.rewardTokens.map(token => {
+            const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
+              token.symbol,
+            );
+            return (
+              <React.Fragment key={token.symbol}>
+                {token.symbol === KnownTokens.BOND ? (
+                  <div className={s.headerTermRow}>
+                    <dt>{token.symbol} daily rewards</dt>
+                    <dd>
+                      <TokenIcon
+                        name={rewardTokenName}
+                        bubble1Name={rewardTokenBubble1Name}
+                        bubble2Name={rewardTokenBubble2Name}
+                        className="mr-8"
+                        size="16"
+                      />
+                      {kpiContract.getRewardLeftFor(token.address)?.isZero()
+                        ? '0'
+                        : formatToken(kpiContract.getDailyRewardFor(token.address), {
+                            scale: token.decimals,
+                          }) ?? '-'}
+                    </dd>
+                  </div>
+                ) : null}
+                {token.symbol === KnownTokens.BOND ? (
+                  <div className={s.headerTermRow}>
+                    <dt>{token.symbol} rewards left</dt>
+                    <dd>
+                      <TokenIcon
+                        name={rewardTokenName}
+                        bubble1Name={rewardTokenBubble1Name}
+                        bubble2Name={rewardTokenBubble2Name}
+                        className="mr-8"
+                        size="16"
+                      />
+                      {(token.symbol === KnownTokens.BOND &&
+                        formatToken(kpiContract.getRewardLeftFor(token.address), {
                           scale: token.decimals,
-                        }) ?? '-'}
-                  </dd>
-                </div>
-              ) : null}
-              {token.symbol === KnownTokens.BOND ? (
-                <div className={s.headerTermRow}>
-                  <dt>{token.symbol} rewards left</dt>
-                  <dd>
-                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                    {(token.symbol === KnownTokens.BOND &&
-                      formatToken(kpiContract.getRewardLeftFor(token.address), {
-                        scale: token.decimals,
-                      })) ??
-                      '-'}
-                  </dd>
-                </div>
-              ) : (
-                <div className={s.headerTermRow}>
-                  <dt>{token.symbol} rewards balance</dt>
-                  <dd>
-                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                    {/*{formatToken((token.contract as Erc20Contract).getBalanceOf(kpiOption.poolAddress), {*/}
-                    {/*  scale: token.decimals,*/}
-                    {/*}) ?? '-'}*/}
-                  </dd>
-                </div>
-              )}
-            </React.Fragment>
-          ))}
+                        })) ??
+                        '-'}
+                    </dd>
+                  </div>
+                ) : (
+                  <div className={s.headerTermRow}>
+                    <dt>{token.symbol} rewards balance</dt>
+                    <dd>
+                      <TokenIcon
+                        name={rewardTokenName}
+                        bubble1Name={rewardTokenBubble1Name}
+                        bubble2Name={rewardTokenBubble2Name}
+                        className="mr-8"
+                        size="16"
+                      />
+                      {/*{formatToken((token.contract as Erc20Contract).getBalanceOf(kpiOption.poolAddress), {*/}
+                      {/*  scale: token.decimals,*/}
+                      {/*}) ?? '-'}*/}
+                    </dd>
+                  </div>
+                )}
+              </React.Fragment>
+            );
+          })}
         </dl>
       </div>
       {walletCtx.isActive && (

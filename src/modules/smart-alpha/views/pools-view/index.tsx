@@ -232,7 +232,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {downsideLeverage ? `${formatNumber(downsideLeverage)}x` : `-`}
+              {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
           </dd>
         </div>

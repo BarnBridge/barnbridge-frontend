@@ -15,6 +15,8 @@ import { TokenIcon } from 'components/token-icon';
 import { KpiOptionType, KpiTransactionType, useFetchKpiOptionTransactions } from 'modules/smart-alpha/api';
 import { useWallet } from 'wallets/walletProvider';
 
+import { getKpiOptionTokenIconNames } from 'modules/smart-alpha/utils';
+
 import s from './s.module.scss';
 
 function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTransactionType>[] {
@@ -22,9 +24,16 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
     {
       heading: 'Transaction',
       render: entity => {
+        const [tokenName, tokenBubble1Name, tokenBubble2Name] = getKpiOptionTokenIconNames(kpiOption.poolToken.symbol);
+
         return (
           <div className="flex flow-col col-gap-16 align-center">
-            <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" />
+            <TokenIcon
+              name={tokenName}
+              bubble1Name={tokenBubble1Name}
+              bubble2Name={tokenBubble2Name}
+              outline={['purple', 'green']}
+            />
             <div>
               <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {entity.transactionType}
