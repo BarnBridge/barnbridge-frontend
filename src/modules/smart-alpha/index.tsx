@@ -5,6 +5,7 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 import { Spinner } from 'components/custom/spinner';
 import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
+import { useNetwork } from 'components/providers/networkProvider';
 import { useWallet } from 'wallets/walletProvider';
 
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
@@ -18,6 +19,7 @@ const KPIOptionView = lazy(() => import(/* webpackChunkName: "sa-kpi-option-view
 
 const SmartAlphaView: React.FC = () => {
   const wallet = useWallet();
+  const { activeNetwork } = useNetwork();
 
   const tabs = [
     {
@@ -41,14 +43,18 @@ const SmartAlphaView: React.FC = () => {
             disabled: !wallet.account,
           },
         ]),
-    {
-      children: (
-        <>
-          <Icon name="pools" className="mr-8" size={24} /> KPI Options
-        </>
-      ),
-      to: '/smart-alpha/kpi-options',
-    },
+    ...(activeNetwork.config.features.smartAlphaKPIOptions
+      ? [
+          {
+            children: (
+              <>
+                <Icon name="pools" className="mr-8" size={24} /> KPI Options
+              </>
+            ),
+            to: '/smart-alpha/kpi-options',
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -75,12 +81,16 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/portfolio">
               <PortfolioView />
             </Route>
-            <Route path="/smart-alpha/kpi-options" exact>
-              <KPIOptionsView />
-            </Route>
-            <Route path="/smart-alpha/kpi-options/:id" exact>
-              <KPIOptionView />
-            </Route>
+            {activeNetwork.config.features.smartAlphaKPIOptions && (
+              <Route path="/smart-alpha/kpi-options" exact>
+                <KPIOptionsView />
+              </Route>
+            )}
+            {activeNetwork.config.features.smartAlphaKPIOptions && (
+              <Route path="/smart-alpha/kpi-options/:id" exact>
+                <KPIOptionView />
+              </Route>
+            )}
             <Redirect to="/smart-alpha/pools" />
           </Switch>
         </Suspense>

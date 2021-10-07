@@ -34,6 +34,10 @@ export type TokenIconNames =
   | 'link'
   | 'uni'
   | 'fei'
+  | 'bnb'
+  | 'cake'
+  | 'balancer'
+  | 'uma'
   | 'all';
 
 type TokenIconProps = {

@@ -12,7 +12,7 @@ import { getAsset, useTokens } from 'components/providers/tokensProvider';
 // import { Icon } from 'components/icon';
 import { TokenIcon } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import { PoolApiType, useFetchPools } from 'modules/smart-alpha/api';
+import { PoolApiType, useFetchSaPools } from 'modules/smart-alpha/api';
 
 import { tillNextEpoch } from 'modules/smart-alpha/utils';
 import { getFormattedDuration } from 'utils';
@@ -20,7 +20,7 @@ import { getFormattedDuration } from 'utils';
 import s from './s.module.scss';
 
 const PoolsView = () => {
-  const { data } = useFetchPools();
+  const { data } = useFetchSaPools();
 
   const epochTVL = useMemo(() => {
     return data?.reduce((sum, item) => {
@@ -232,7 +232,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="purple">
-              {downsideLeverage ? `${formatNumber(downsideLeverage)}x` : `-`}
+              {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
           </dd>
         </div>

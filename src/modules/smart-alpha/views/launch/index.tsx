@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { intervalToDuration } from 'date-fns';
 
 import { Text } from 'components/custom/typography';
-import { useFetchPools } from 'modules/smart-alpha/api';
+import { useFetchSaPools } from 'modules/smart-alpha/api';
 
 import { Simulate } from '../simulate-epoch/simulate';
 
@@ -61,7 +61,7 @@ const Countdown = ({ launchDate, className }: { launchDate: Date; className?: st
 };
 
 const Launch = ({ launchDate }: { launchDate: Date }) => {
-  const { data: pools } = useFetchPools();
+  const { data: pools } = useFetchSaPools();
 
   return (
     <div className="container-limit">

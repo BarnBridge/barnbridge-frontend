@@ -27,6 +27,7 @@ export const MainnetConfig: NetworkConfig = {
     smartAlpha: true,
     gasFees: true,
     addBondToken: true,
+    smartAlphaKPIOptions: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',

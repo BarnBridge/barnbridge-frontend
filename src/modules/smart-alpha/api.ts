@@ -41,7 +41,7 @@ export type PoolApiType = {
   userHasActivePosition?: boolean;
 };
 
-export function useFetchPools({
+export function useFetchSaPools({
   userAddress,
   baseUrl,
 }: {

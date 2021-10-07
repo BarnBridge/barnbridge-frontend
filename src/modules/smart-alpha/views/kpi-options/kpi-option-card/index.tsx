@@ -9,13 +9,14 @@ import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import { Hint, Text } from 'components/custom/typography';
 import { KnownTokens } from 'components/providers/knownTokensProvider';
-import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useWeb3Contract } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
 import { KpiOptionType } from 'modules/smart-alpha/api';
 import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
+
+import { getKpiOptionTokenIconNames } from 'modules/smart-alpha/utils';
 
 import s from './s.module.scss';
 
@@ -27,7 +28,6 @@ export type KpiOptionCardProps = {
 export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
   const { className, kpiOption } = props;
 
-  const { getToken } = useTokens();
   const walletCtx = useWallet();
   const [reload] = useReload();
 
@@ -77,11 +77,20 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
     setClaiming(false);
   };
 
+  const [tokenName, tokenBubble1Name, tokenBubble2Name] = getKpiOptionTokenIconNames(kpiOption.poolToken.symbol);
+
   return (
     <>
       <section className={cn(s.card, className)}>
         <header className={s.header}>
-          <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={36} className="mr-16" />
+          <TokenIcon
+            name={tokenName}
+            bubble1Name={tokenBubble1Name}
+            bubble2Name={tokenBubble2Name}
+            outline={['purple', 'green']}
+            size={36}
+            className="mr-16"
+          />
           <Text type="p1" weight="semibold">
             {kpiOption.poolToken.symbol}
           </Text>
@@ -104,59 +113,83 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
         </div>
         {activeTab === 'pool' && (
           <dl>
-            {kpiOption.rewardTokens.map(token => (
-              <React.Fragment key={token.symbol}>
-                {token.symbol === KnownTokens.BOND ? (
+            {kpiOption.rewardTokens.map(token => {
+              const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
+                token.symbol,
+              );
+              return (
+                <React.Fragment key={token.symbol}>
+                  {token.symbol === KnownTokens.BOND ? (
+                    <div className={s.defRow}>
+                      <dt>
+                        <Hint text={`This number shows the $${token.symbol} token rewards distributed per day.`}>
+                          {token.symbol} daily rewards
+                        </Hint>
+                      </dt>
+                      <dd>
+                        <TokenIcon
+                          name={rewardTokenName}
+                          bubble1Name={rewardTokenBubble1Name}
+                          bubble2Name={rewardTokenBubble2Name}
+                          className="mr-8"
+                          size="16"
+                        />
+                        {kpiRewardPoolContract.getRewardLeftFor(token.address)?.isZero()
+                          ? '0'
+                          : formatToken(kpiRewardPoolContract.getDailyRewardFor(token.address), {
+                              scale: token.decimals,
+                            }) ?? '-'}
+                      </dd>
+                    </div>
+                  ) : null}
                   <div className={s.defRow}>
                     <dt>
-                      <Hint text={`This number shows the $${token.symbol} token rewards distributed per day.`}>
-                        {token.symbol} daily rewards
-                      </Hint>
+                      {token.symbol === KnownTokens.BOND && (
+                        <Hint text={`This number shows the $${token.symbol} token rewards remaining.`}>
+                          {token.symbol} rewards left
+                        </Hint>
+                      )}
+                      {/*{rewardToken === stkAaveToken && (*/}
+                      {/*  <Hint*/}
+                      {/*    text={`This number shows the ${stkAaveToken.symbol} amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>*/}
+                      {/*    {rewardToken.symbol} rewards balance*/}
+                      {/*  </Hint>*/}
+                      {/*)}*/}
                     </dt>
                     <dd>
-                      <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                      {kpiRewardPoolContract.getRewardLeftFor(token.address)?.isZero()
-                        ? '0'
-                        : formatToken(kpiRewardPoolContract.getDailyRewardFor(token.address), {
-                            scale: token.decimals,
-                          }) ?? '-'}
+                      <TokenIcon
+                        name={rewardTokenName}
+                        bubble1Name={rewardTokenBubble1Name}
+                        bubble2Name={rewardTokenBubble2Name}
+                        className="mr-8"
+                        size="16"
+                      />
+                      {(token.symbol === KnownTokens.BOND &&
+                        formatToken(kpiRewardPoolContract.getRewardLeftFor(token.address), {
+                          scale: token.decimals,
+                        })) ??
+                        '-'}
+                      {/*{rewardToken === stkAaveToken &&*/}
+                      {/*  (formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {*/}
+                      {/*    scale: rewardToken.decimals,*/}
+                      {/*  }) ??*/}
+                      {/*    '-')}*/}
                     </dd>
                   </div>
-                ) : null}
-                <div className={s.defRow}>
-                  <dt>
-                    {token.symbol === KnownTokens.BOND && (
-                      <Hint text={`This number shows the $${token.symbol} token rewards remaining.`}>
-                        {token.symbol} rewards left
-                      </Hint>
-                    )}
-                    {/*{rewardToken === stkAaveToken && (*/}
-                    {/*  <Hint*/}
-                    {/*    text={`This number shows the ${stkAaveToken.symbol} amount currently accrued by the pool. This amount is claimable, pro-rata, by the current pool participants. Any future deposits will only have a claim on rewards that accrue after that date.`}>*/}
-                    {/*    {rewardToken.symbol} rewards balance*/}
-                    {/*  </Hint>*/}
-                    {/*)}*/}
-                  </dt>
-                  <dd>
-                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                    {(token.symbol === KnownTokens.BOND &&
-                      formatToken(kpiRewardPoolContract.getRewardLeftFor(token.address), {
-                        scale: token.decimals,
-                      })) ??
-                      '-'}
-                    {/*{rewardToken === stkAaveToken &&*/}
-                    {/*  (formatToken((rewardToken.contract as Erc20Contract).getBalanceOf(pool?.meta.poolAddress), {*/}
-                    {/*    scale: rewardToken.decimals,*/}
-                    {/*  }) ??*/}
-                    {/*    '-')}*/}
-                  </dd>
-                </div>
-              </React.Fragment>
-            ))}
+                </React.Fragment>
+              );
+            })}
             <div className={s.defRow}>
               <dt>Balancer tokens</dt>
               <dd>
-                <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
+                <TokenIcon
+                  name={tokenName}
+                  bubble1Name={tokenBubble1Name}
+                  bubble2Name={tokenBubble2Name}
+                  outline={['purple', 'green']}
+                  size={16}
+                  className="mr-8"
+                />
                 {formatToken(kpiRewardPoolContract.poolSize?.unscaleBy(kpiOption.poolToken.decimals)) ?? '-'}
               </dd>
             </div>
@@ -164,39 +197,64 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
         )}
         {activeTab === 'my' && walletCtx.isActive && (
           <dl>
-            {kpiOption.rewardTokens.map(token => (
-              <React.Fragment key={token.address}>
-                {token.symbol === KnownTokens.BOND ? (
+            {kpiOption.rewardTokens.map(token => {
+              const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
+                token.symbol,
+              );
+
+              return (
+                <React.Fragment key={token.address}>
+                  {token.symbol === KnownTokens.BOND ? (
+                    <div className={s.defRow}>
+                      <dt>
+                        <Hint
+                          text={`This number shows the $${token.symbol} rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.`}>
+                          My daily {token.symbol} reward
+                        </Hint>
+                      </dt>
+                      <dd>
+                        <TokenIcon
+                          name={rewardTokenName}
+                          bubble1Name={rewardTokenBubble1Name}
+                          bubble2Name={rewardTokenBubble2Name}
+                          className="mr-8"
+                          size="16"
+                        />
+                        {formatToken(kpiRewardPoolContract.getMyDailyRewardFor(token.address), {
+                          scale: token.decimals,
+                        }) ?? '-'}
+                      </dd>
+                    </div>
+                  ) : null}
                   <div className={s.defRow}>
-                    <dt>
-                      <Hint
-                        text={`This number shows the $${token.symbol} rewards you would potentially be able to harvest daily, but is subject to change - in case more users deposit, or you withdraw some of your stake.`}>
-                        My daily {token.symbol} reward
-                      </Hint>
-                    </dt>
+                    <dt>My current {token.symbol} reward</dt>
                     <dd>
-                      <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                      {formatToken(kpiRewardPoolContract.getMyDailyRewardFor(token.address), {
+                      <TokenIcon
+                        name={rewardTokenName}
+                        bubble1Name={rewardTokenBubble1Name}
+                        bubble2Name={rewardTokenBubble2Name}
+                        className="mr-8"
+                        size="16"
+                      />
+                      {formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
                         scale: token.decimals,
                       }) ?? '-'}
                     </dd>
                   </div>
-                ) : null}
-                <div className={s.defRow}>
-                  <dt>My current {token.symbol} reward</dt>
-                  <dd>
-                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                    {formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
-                      scale: token.decimals,
-                    }) ?? '-'}
-                  </dd>
-                </div>
-              </React.Fragment>
-            ))}
+                </React.Fragment>
+              );
+            })}
             <div className={s.defRow}>
               <dt>Staked balance</dt>
               <dd>
-                <TokenIcon name="bond" bubble1Name="bond" bubble2Name="bond" size={16} className="mr-8" />
+                <TokenIcon
+                  name={tokenName}
+                  bubble1Name={tokenBubble1Name}
+                  bubble2Name={tokenBubble2Name}
+                  outline={['purple', 'green']}
+                  size={16}
+                  className="mr-8"
+                />
                 {formatToken(
                   kpiRewardPoolContract.getBalanceFor(walletCtx.account!)?.unscaleBy(kpiOption.poolToken.decimals),
                 ) ?? '-'}
@@ -225,26 +283,37 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
           title="Confirm your claim"
           header={
             <div className="flex justify-center">
-              {kpiOption.rewardTokens.map(token => (
-                <Tooltip
-                  key={token.symbol}
-                  className="flex col-gap-8 align-center justify-center mr-16"
-                  title={
-                    formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
-                      decimals: token.decimals,
-                      scale: token.decimals,
-                      tokenName: token.symbol,
-                    }) ?? '-'
-                  }>
-                  <Text type="h2" weight="semibold" color="primary">
-                    {formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
-                      compact: true,
-                      scale: token.decimals,
-                    }) ?? '-'}
-                  </Text>
-                  <TokenIcon name={getToken(token.symbol)?.icon} size={32} />
-                </Tooltip>
-              ))}
+              {kpiOption.rewardTokens.map(token => {
+                const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
+                  token.symbol,
+                );
+
+                return (
+                  <Tooltip
+                    key={token.symbol}
+                    className="flex col-gap-8 align-center justify-center mr-16"
+                    title={
+                      formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
+                        decimals: token.decimals,
+                        scale: token.decimals,
+                        tokenName: token.symbol,
+                      }) ?? '-'
+                    }>
+                    <Text type="h2" weight="semibold" color="primary">
+                      {formatToken(kpiRewardPoolContract.getClaimFor(token.address), {
+                        compact: true,
+                        scale: token.decimals,
+                      }) ?? '-'}
+                    </Text>
+                    <TokenIcon
+                      name={rewardTokenName}
+                      bubble1Name={rewardTokenBubble1Name}
+                      bubble2Name={rewardTokenBubble2Name}
+                      size={32}
+                    />
+                  </Tooltip>
+                );
+              })}
             </div>
           }
           submitText="Claim"

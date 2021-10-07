@@ -9,12 +9,13 @@ import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
 import { KnownTokens } from 'components/providers/knownTokensProvider';
-import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
 import { KpiOptionType } from 'modules/smart-alpha/api';
 import KpiRewardPoolContract from 'modules/smart-alpha/contracts/kpiRewardPoolContract';
 import { useWallet } from 'wallets/walletProvider';
+
+import { getKpiOptionTokenIconNames } from 'modules/smart-alpha/utils';
 
 import s from './s.module.scss';
 
@@ -33,7 +34,6 @@ const Statistics: FCx<StatisticsProps> = ({
   rewardContracts,
 }) => {
   const walletCtx = useWallet();
-  const { getToken } = useTokens();
 
   const walletBalance = poolTokenContract.balance;
   const stakedBalance = walletCtx.account ? kpiContract.getBalanceFor(walletCtx.account) : undefined;
@@ -72,6 +72,8 @@ const Statistics: FCx<StatisticsProps> = ({
     setClaiming(false);
   };
 
+  const [tokenName, tokenBubble1Name, tokenBubble2Name] = getKpiOptionTokenIconNames(kpiOption.poolToken.symbol);
+
   return (
     <>
       <section className={cn('card', s.statistics, className)}>
@@ -84,7 +86,14 @@ const Statistics: FCx<StatisticsProps> = ({
           <div className={s.def}>
             <dt>Portfolio balance</dt>
             <dd>
-              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
+              <TokenIcon
+                name={tokenName}
+                bubble1Name={tokenBubble1Name}
+                bubble2Name={tokenBubble2Name}
+                outline={['purple', 'green']}
+                size={16}
+                className="mr-8"
+              />
               {formatToken(walletBalance, {
                 scale: kpiOption.poolToken.decimals,
               }) ?? '-'}
@@ -93,66 +102,102 @@ const Statistics: FCx<StatisticsProps> = ({
           <div className={s.def}>
             <dt>Staked balance</dt>
             <dd>
-              <TokenIcon name="unknown" bubble1Name="unknown" bubble2Name="unknown" size={16} className="mr-8" />
+              <TokenIcon
+                name={tokenName}
+                bubble1Name={tokenBubble1Name}
+                bubble2Name={tokenBubble2Name}
+                outline={['purple', 'green']}
+                size={16}
+                className="mr-8"
+              />
               {formatToken(stakedBalance, {
                 scale: kpiOption.poolToken.decimals,
               }) ?? '-'}
             </dd>
           </div>
-          {kpiOption.rewardTokens.map(token => (
-            <React.Fragment key={token.address}>
-              {token.symbol === KnownTokens.BOND ? (
+          {kpiOption.rewardTokens.map(token => {
+            const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
+              token.symbol,
+            );
+            return (
+              <React.Fragment key={token.address}>
+                {token.symbol === KnownTokens.BOND ? (
+                  <div className={s.def}>
+                    <dt>My daily {token.symbol} reward</dt>
+                    <dd>
+                      <TokenIcon
+                        name={rewardTokenName}
+                        bubble1Name={rewardTokenBubble1Name}
+                        bubble2Name={rewardTokenBubble2Name}
+                        className="mr-8"
+                        size="16"
+                      />
+                      {formatToken(kpiContract.getMyDailyRewardFor(token.address)?.unscaleBy(token.decimals)) ?? '-'}
+                    </dd>
+                  </div>
+                ) : null}
                 <div className={s.def}>
-                  <dt>My daily {token.symbol} reward</dt>
+                  <dt>My {token.symbol} balance</dt>
                   <dd>
-                    <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                    {formatToken(kpiContract.getMyDailyRewardFor(token.address)?.unscaleBy(token.decimals)) ?? '-'}
+                    <TokenIcon
+                      name={rewardTokenName}
+                      bubble1Name={rewardTokenBubble1Name}
+                      bubble2Name={rewardTokenBubble2Name}
+                      className="mr-8"
+                      size="16"
+                    />
+                    {formatToken(rewardContracts.find(rc => rc.address === token.address)?.balance, {
+                      scale: token.decimals,
+                    }) ?? '-'}
                   </dd>
                 </div>
-              ) : null}
-              <div className={s.def}>
-                <dt>My {token.symbol} balance</dt>
-                <dd>
-                  <TokenIcon name={getToken(token.symbol)?.icon} className="mr-8" size="16" />
-                  {formatToken(rewardContracts.find(rc => rc.address === token.address)?.balance, {
-                    scale: token.decimals,
-                  }) ?? '-'}
-                </dd>
-              </div>
-            </React.Fragment>
-          ))}
+              </React.Fragment>
+            );
+          })}
         </dl>
         <footer className={s.footer}>
           <div>
-            {kpiOption.rewardTokens.map(token => (
-              <div key={token.symbol} className={s.footerReward}>
-                <div className="flex mr-16">
-                  <TokenIcon name={getToken(token.symbol)?.icon} size="24" className="mr-8" style={{ flexShrink: 0 }} />
-                  <Tooltip
-                    title={
-                      <Text type="p2" weight="semibold" color="primary">
+            {kpiOption.rewardTokens.map(token => {
+              const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
+                token.symbol,
+              );
+              return (
+                <div key={token.symbol} className={s.footerReward}>
+                  <div className="flex mr-16">
+                    <TokenIcon
+                      name={rewardTokenName}
+                      bubble1Name={rewardTokenBubble1Name}
+                      bubble2Name={rewardTokenBubble2Name}
+                      size="24"
+                      className="mr-8"
+                      style={{ flexShrink: 0 }}
+                    />
+                    <Tooltip
+                      title={
+                        <Text type="p2" weight="semibold" color="primary">
+                          {formatToken(kpiContract.getClaimFor(token.address), {
+                            decimals: token.decimals,
+                            scale: token.decimals,
+                            tokenName: token.symbol,
+                          }) ?? '-'}
+                        </Text>
+                      }>
+                      <Text
+                        type="h3"
+                        weight="bold"
+                        color="primary"
+                        className="text-ellipsis"
+                        style={{ maxWidth: '120px' }}>
                         {formatToken(kpiContract.getClaimFor(token.address), {
-                          decimals: token.decimals,
+                          compact: true,
                           scale: token.decimals,
-                          tokenName: token.symbol,
                         }) ?? '-'}
                       </Text>
-                    }>
-                    <Text
-                      type="h3"
-                      weight="bold"
-                      color="primary"
-                      className="text-ellipsis"
-                      style={{ maxWidth: '120px' }}>
-                      {formatToken(kpiContract.getClaimFor(token.address), {
-                        compact: true,
-                        scale: token.decimals,
-                      }) ?? '-'}
-                    </Text>
-                  </Tooltip>
+                    </Tooltip>
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
             <Text type="small" weight="semibold" color="secondary">
               My current reward{kpiOption.rewardTokens.length! > 1 ? 's' : ''}
             </Text>
@@ -189,7 +234,13 @@ const Statistics: FCx<StatisticsProps> = ({
                       scale: token.decimals,
                     }) ?? '-'}
                   </Text>
-                  <TokenIcon name={getToken(token.symbol)?.icon} size={32} />
+                  <TokenIcon
+                    name={tokenName}
+                    bubble1Name={tokenBubble1Name}
+                    bubble2Name={tokenBubble2Name}
+                    outline={['purple', 'green']}
+                    size={32}
+                  />
                 </Tooltip>
               ))}
             </div>

@@ -145,7 +145,7 @@ const Epoch = ({
               Downside leverage
             </Text>
             <Text type="p2" weight="semibold" color="purple">
-              {formatNumber(downsideLeverage, { decimals: 2 })}x
+              ≤{formatNumber(downsideLeverage, { decimals: 2 })}x
             </Text>
           </div>
           <div>
