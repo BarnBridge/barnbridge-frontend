@@ -16,7 +16,11 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { TokenType, useTokens } from 'components/providers/tokensProvider';
-import { AvalancheHttpsWeb3Provider, PolygonHttpsWeb3Provider } from 'components/providers/web3Provider';
+import {
+  AvalancheHttpsWeb3Provider,
+  BinanceHttpsWeb3Provider,
+  PolygonHttpsWeb3Provider,
+} from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
@@ -452,6 +456,18 @@ const TreasuryFees: FC = () => {
       });
     });
   }, [saPoolsAvalanche]);
+
+  useEffect(() => {
+    saPoolsBinance?.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(BinanceHttpsWeb3Provider);
+          contract.on(Web3Contract.UPDATE_DATA, reloadSa);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [saPoolsBinance]);
 
   const totalFeesUSDSy = useMemo(() => {
     return BigNumber.sumEach(dataSource, pool => pool.feesAmountUSD ?? BigNumber.ZERO) ?? 0;

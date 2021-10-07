@@ -47,6 +47,7 @@ export enum Tokens {
   UNI = 'UNI',
   FEI = 'FEI',
   BNB = 'BNB',
+  CAKE = 'CAKE',
   AAVE = 'AAVE',
 }
 
@@ -209,6 +210,13 @@ const BNB: BaseTokenType = {
   icon: 'bnb',
 };
 
+const CAKE: BaseTokenType = {
+  symbol: Tokens.CAKE,
+  name: 'PancakeSwap',
+  decimals: 18,
+  icon: 'cake',
+};
+
 export const ProjectToken: BaseTokenType & {
   address: string;
 } = {
@@ -261,40 +269,16 @@ async function getChainlinkFeedPrice(
   return latestAnswer?.unscaleBy(decimals);
 }
 
-async function getGusdPrice(): Promise<BigNumber | undefined> {
+async function getGeckoPrice(symbol): Promise<BigNumber | undefined> {
   const query = queryfy({
-    ids: ['gemini-dollar'],
+    ids: [symbol],
     vs_currencies: 'usd',
   });
 
   const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
   const result = await fetch(String(url)).then(response => response.json());
 
-  return BigNumber.from(result['gemini-dollar'].usd);
-}
-
-async function getRaiPrice(): Promise<BigNumber | undefined> {
-  const query = queryfy({
-    ids: ['rai'],
-    vs_currencies: 'usd',
-  });
-
-  const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
-  const result = await fetch(String(url)).then(response => response.json());
-
-  return BigNumber.from(result['rai'].usd);
-}
-
-async function getXSushiPrice(): Promise<BigNumber | undefined> {
-  const query = queryfy({
-    ids: ['xsushi'],
-    vs_currencies: 'usd',
-  });
-
-  const url = new URL(`/api/v3/simple/price?${query}`, 'https://api.coingecko.com');
-  const result = await fetch(String(url)).then(response => response.json());
-
-  return BigNumber.from(result['xsushi'].usd);
+  return BigNumber.from(result[symbol].usd);
 }
 
 async function getBondPrice(poolAddress: string): Promise<BigNumber | undefined> {
@@ -381,13 +365,16 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
         return getChainlinkFeedPrice('0x14e613ac84a31f709eadbdf89c6cc390fdc9540a', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
-        return getGusdPrice();
+        return getGeckoPrice('gemini-dollar');
       case 'RAI':
         // Coingecko API: RAI/USD
-        return getRaiPrice();
+        return getGeckoPrice('rai');
+      case 'CAKE':
+        // Coingecko API: CAKE/USD
+        return getGeckoPrice('pancakeswap-token');
       case 'XSUSHI':
         // Coingecko API: XSUSHI/USD
-        return getXSushiPrice();
+        return getGeckoPrice('xsushi');
       case 'BOND':
         // UNISWAP V2: BOND/USDC
         return getBondPrice('0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244');
@@ -476,6 +463,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'BNB':
         // Chainlink: BNB/USD
         return getChainlinkFeedPrice('0x0567f2323251f0aab15c8dfb1967e4e8a7d42aee', BinanceHttpsWeb3Provider);
+      case 'CAKE':
+        // Chainlink: CAKE/USD
+        return getChainlinkFeedPrice('0xb6064ed41d4f67e353768aa239ca86f4f73665a1', BinanceHttpsWeb3Provider);
       case 'LINK':
         // Chainlink: LINK/USD
         return getChainlinkFeedPrice('0xca236e327f629f9fc2c30a4e95775ebf0b89fac8', BinanceHttpsWeb3Provider);
@@ -589,6 +579,8 @@ const ALL_TOKENS: BaseTokenType[] = [
   XSUSHI,
   LINK,
   UNI,
+  BNB,
+  CAKE,
   FEI,
 ];
 
@@ -606,7 +598,7 @@ const TokensProvider: FC = props => {
           ...token,
         };
 
-        tokensRef.current.set(newToken.symbol, newToken);
+        tokensRef.current.set(token.symbol.toUpperCase(), newToken);
         newToken.price = await getPriceFor(token.symbol, activeNetwork);
         reload();
       } catch (e) {
@@ -639,11 +631,37 @@ const TokensProvider: FC = props => {
   }, []);
 
   const getToken = useCallback((symbol: string | undefined, network?: Web3Network): TokenType | undefined => {
-    if ([activeNetwork, network].some(n => n === AvalancheNetwork || n === AvalancheTestnetNetwork)) {
-      symbol = symbol?.replace('.e', '');
+    if (network === AvalancheNetwork || network === AvalancheTestnetNetwork) {
+      switch (symbol?.toUpperCase()) {
+        case 'WBTC.E':
+          symbol = Tokens.WBTC;
+          break;
+        case 'WETH.E':
+          symbol = Tokens.WETH;
+          break;
+        case 'AAVE.E':
+          symbol = Tokens.AAVE;
+          break;
+        default:
+          break;
+      }
+    } else if (network === BinanceNetwork || network === BinanceTestnetNetwork) {
+      switch (symbol?.toUpperCase()) {
+        case 'BTCB':
+          symbol = Tokens.WBTC;
+          break;
+        case 'ETH':
+          symbol = Tokens.WETH;
+          break;
+        case 'WBNB':
+          symbol = Tokens.BNB;
+          break;
+        default:
+          break;
+      }
     }
 
-    return symbol ? tokensRef.current.get(symbol) : undefined;
+    return symbol ? tokensRef.current.get(symbol.toUpperCase()) : undefined;
   }, []);
 
   const getAmountInUSD = useCallback(
