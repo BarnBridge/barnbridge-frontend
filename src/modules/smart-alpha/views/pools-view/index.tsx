@@ -104,12 +104,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
         { '--pool-card-progress': ((item.epochDuration - tne) / item.epochDuration) * 100 } as React.CSSProperties
       }>
       <header className="card-header flex align-center mb-32">
-        <TokenIcon
-          name={poolToken?.icon ?? 'unknown'}
-          size={40}
-          bubble2Name={oracleToken?.icon ?? 'unknown'}
-          className="mr-16"
-        />
+        <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
         <div>
           <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
             {item.poolName}
@@ -148,8 +143,8 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
                 <Text type="p2" color="primary" className="flex flow-row row-gap-4">
                   <span>
                     {formatToken(item.state.seniorLiquidity, {
-                      tokenName: poolToken?.symbol,
-                      decimals: poolToken?.decimals,
+                      tokenName: item.poolToken.symbol,
+                      decimals: item.poolToken.decimals,
                     })}
                   </span>
                   <span>
@@ -159,7 +154,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
               }>
               {formatToken(item.state.seniorLiquidity, { compact: true })}
             </Text>
-            <TokenIcon name={poolToken?.icon ?? 'unknown'} className="ml-8" />
+            <TokenIcon name={poolToken?.icon} className="ml-8" />
           </dd>
         </div>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
@@ -199,8 +194,8 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
                 <Text type="p2" color="primary" className="flex flow-row row-gap-4">
                   <span>
                     {formatToken(item.state.juniorLiquidity, {
-                      tokenName: poolToken?.symbol,
-                      decimals: poolToken?.decimals,
+                      tokenName: item.poolToken.symbol,
+                      decimals: item.poolToken.decimals,
                     })}
                   </span>
                   <span>
@@ -210,7 +205,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
               }>
               {formatToken(item.state.juniorLiquidity, { compact: true })}
             </Text>
-            <TokenIcon name={poolToken?.icon ?? 'unknown'} className="ml-8" />
+            <TokenIcon name={poolToken?.icon} className="ml-8" />
           </dd>
         </div>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>

@@ -91,6 +91,7 @@ export const AvalancheMetamaskChain: MetamaskAddEthereumChain = {
 
 export const AvalancheNetwork: Web3Network = {
   id: 'avalanche',
+  type: 'Avalanche',
   meta: {
     chainId: AVALANCHE_CHAIN_ID,
     name: isDevelopmentMode ? 'Avalanche Mainnet (Alpha)' : 'Avalanche Mainnet',

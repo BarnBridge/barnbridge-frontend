@@ -17,18 +17,18 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconPair } from 'components/token-icon';
 import { PoolApiType } from 'modules/smart-exposure/api';
 import SeEPoolContract from 'modules/smart-exposure/contracts/seEPoolContract';
+import { MainnetNetwork } from 'networks/mainnet';
 import { useWallet } from 'wallets/walletProvider';
 
-import { MainnetNetwork } from '../../../../../networks/mainnet';
-import { PolygonNetwork } from '../../../../../networks/polygon';
+import { Web3Network } from 'networks/types';
 
 export type ExtendedPoolApiType = PoolApiType & {
   providerContract: SeEPoolContract | undefined;
-  isPolygon: boolean;
   feesAmountTokenA: BigNumber | undefined;
   feesAmountUSDTokenA: BigNumber | undefined;
   feesAmountTokenB: BigNumber | undefined;
   feesAmountUSDTokenB: BigNumber | undefined;
+  network: Web3Network;
 };
 
 const columns: ColumnType<ExtendedPoolApiType>[] = [
@@ -61,9 +61,9 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-          <IconOld name={!entity.isPolygon ? MainnetNetwork.meta.logo : PolygonNetwork.meta.logo} />
+          <IconOld name={entity.network.meta.logo} />
           <Text type="p2" weight="semibold" color="secondary">
-            {!entity.isPolygon ? 'Ethereum' : 'Polygon'}
+            {entity.network.type}
           </Text>
         </div>
       );
@@ -106,14 +106,14 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: '',
     render: function Render(entity: ExtendedPoolApiType) {
-      const { feesAmountTokenA, feesAmountTokenB, isPolygon } = entity;
+      const { feesAmountTokenA, feesAmountTokenB, network } = entity;
 
       const wallet = useWallet();
       const { getTokenIconBySymbol } = useKnownTokens();
       const [confirmVisible, setConfirmVisible] = useState(false);
       const [harvesting, setHarvesting] = useState(false);
 
-      if (!wallet.isActive || isPolygon) {
+      if (!wallet.isActive || network !== MainnetNetwork) {
         return <></>;
       }
 
@@ -202,14 +202,12 @@ type TreasuryFilterType = {
 export const SESection = ({
   pools,
   total,
-  loadingMainnet,
-  loadingPolygon,
+  loading,
   className,
 }: {
   pools: ExtendedPoolApiType[];
   total: BigNumber;
-  loadingMainnet: boolean;
-  loadingPolygon: boolean;
+  loading: boolean;
   className?: string;
 }) => {
   const [poolFilter, setPoolFilter] = useState('all');
@@ -301,7 +299,7 @@ export const SESection = ({
           columns={columns}
           data={filteredDataSource}
           rowKey={row => row.poolAddress}
-          loading={loadingMainnet || loadingPolygon}
+          loading={loading}
           // locale={{
           //   emptyText: 'No accrued fees', // TODO: Add support of empty result to Table component
           // }}

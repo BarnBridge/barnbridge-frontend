@@ -27,18 +27,18 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
               Juniors underlying
             </Text>
             <div className="flex align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
               <Text
                 type="p1"
                 weight="semibold"
                 color="primary"
                 tooltip={
-                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
+                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(pool.poolToken.decimals), {
+                    decimals: pool.poolToken.decimals,
+                    tokenName: pool.poolToken.symbol,
                   }) ?? '-'
                 }>
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(poolToken?.decimals)) ?? '-'}
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingIn?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -47,18 +47,18 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
               Seniors underlying
             </Text>
             <div className="flex align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
               <Text
                 type="p1"
                 weight="semibold"
                 color="primary"
                 tooltip={
-                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
+                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(pool.poolToken.decimals), {
+                    decimals: pool.poolToken.decimals,
+                    tokenName: pool.poolToken.symbol,
                   }) ?? '-'
                 }>
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(poolToken?.decimals)) ?? '-'}
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingIn?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -76,18 +76,18 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
               Junior tokens
             </Text>
             <div className="flex align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
               <Text
                 type="p1"
                 weight="semibold"
                 color="primary"
                 tooltip={
-                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
+                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals), {
+                    decimals: pool.poolToken.decimals,
+                    tokenName: pool.poolToken.symbol,
                   }) ?? '-'
                 }>
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(poolToken?.decimals)) ?? '-'}
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -96,18 +96,18 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
               Senior tokens
             </Text>
             <div className="flex align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="mr-8" />
+              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
               <Text
                 type="p1"
                 weight="semibold"
                 color="primary"
                 tooltip={
-                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(poolToken?.decimals), {
-                    decimals: poolToken?.decimals,
-                    tokenName: poolToken?.symbol,
+                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals), {
+                    decimals: pool.poolToken.decimals,
+                    tokenName: pool.poolToken.symbol,
                   }) ?? '-'
                 }>
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(poolToken?.decimals)) ?? '-'}
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
@@ -126,7 +126,7 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
             </Text>
             <div className="flex align-center">
               <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
+                name={poolToken?.icon}
                 bubble1Name="bond"
                 bubble2Name={oracleToken?.icon}
                 outline="purple"
@@ -153,7 +153,7 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
             </Text>
             <div className="flex align-center">
               <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
+                name={poolToken?.icon}
                 bubble1Name="bond"
                 bubble2Name={oracleToken?.icon}
                 outline="green"

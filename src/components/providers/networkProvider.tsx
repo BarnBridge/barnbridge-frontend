@@ -3,6 +3,7 @@ import { useSessionStorage } from 'react-use-storage';
 
 import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
+import { BinanceNetwork } from 'networks/binance';
 import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
@@ -36,7 +37,7 @@ const networks: Web3Network[] = (() => {
       MainnetNetwork,
       PolygonNetwork,
       AvalancheNetwork,
-      // BinanceNetwork,
+      BinanceNetwork,
       TestnetNetwork,
       AvalancheTestnetNetwork,
       BinanceTestnetNetwork,

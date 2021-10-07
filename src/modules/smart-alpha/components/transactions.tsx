@@ -128,7 +128,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
         return (
           <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
             <TokenIcon
-              name={poolToken?.icon ?? 'unknown'}
+              name={poolToken?.icon}
               outline={
                 {
                   JUNIOR_EXIT: 'purple',
@@ -155,14 +155,14 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
               }
               bubble2Name={
                 {
-                  JUNIOR_EXIT: oracleToken?.icon ?? 'unknown',
-                  JUNIOR_REDEEM_TOKENS: oracleToken?.icon ?? 'unknown',
-                  JTOKEN_SEND: oracleToken?.icon ?? 'unknown',
-                  JTOKEN_RECEIVE: oracleToken?.icon ?? 'unknown',
-                  SENIOR_EXIT: oracleToken?.icon ?? 'unknown',
-                  SENIOR_REDEEM_TOKENS: oracleToken?.icon ?? 'unknown',
-                  STOKEN_SEND: oracleToken?.icon ?? 'unknown',
-                  STOKEN_RECEIVE: oracleToken?.icon ?? 'unknown',
+                  JUNIOR_EXIT: oracleToken?.icon,
+                  JUNIOR_REDEEM_TOKENS: oracleToken?.icon,
+                  JTOKEN_SEND: oracleToken?.icon,
+                  JTOKEN_RECEIVE: oracleToken?.icon,
+                  SENIOR_EXIT: oracleToken?.icon,
+                  SENIOR_REDEEM_TOKENS: oracleToken?.icon,
+                  STOKEN_SEND: oracleToken?.icon,
+                  STOKEN_RECEIVE: oracleToken?.icon,
                 }[item.transactionType]
               }
               size={32}

@@ -87,6 +87,7 @@ export const BinanceMetamaskChain: MetamaskAddEthereumChain = {
 
 export const BinanceTestnetNetwork: Web3Network = {
   id: 'binance-testnet',
+  type: 'Binance',
   meta: {
     chainId: BINANCE_TEST_CHAIN_ID,
     name: 'BSC Testnet',

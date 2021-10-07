@@ -158,12 +158,7 @@ const PoolView = () => {
       </div>
       <div className="flex wrap col-gap-16 row-gap-16 align-center mb-40">
         <div className="flex flex-grow align-center">
-          <TokenIcon
-            name={poolToken?.icon ?? 'unknown'}
-            size={40}
-            bubble2Name={oracleToken?.icon ?? 'unknown'}
-            className="mr-16"
-          />
+          <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
           <div>
             <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
               {pool.poolName}
@@ -284,7 +279,7 @@ const PoolView = () => {
                       : formatToken(smartAlphaContract?.epochEntryPrice?.unscaleBy(entryPriceDecimals))) ?? '-'}
                   </Text>
                   {!isUsdAsset(pool.oracleAssetSymbol) && (
-                    <TokenIcon name={oracleToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+                    <TokenIcon name={oracleToken?.icon} size={16} className="ml-8" />
                   )}
                 </dd>
               </div>
@@ -310,8 +305,8 @@ const PoolView = () => {
                             smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
                               BigNumber.from(pool.state.seniorLiquidity),
                             {
-                              tokenName: poolToken?.symbol,
-                              decimals: poolToken?.decimals,
+                              tokenName: pool.poolToken.symbol,
+                              decimals: pool.poolToken.decimals,
                             },
                           )}
                         </span>
@@ -331,7 +326,7 @@ const PoolView = () => {
                         BigNumber.from(pool.state.seniorLiquidity),
                     ) ?? '-'}
                   </Text>
-                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                  <TokenIcon name={poolToken?.icon} size={16} />
                 </dd>
               </div>
               <div className={s.epochCardDlRow}>
@@ -356,8 +351,8 @@ const PoolView = () => {
                             smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
                               BigNumber.from(pool.state.juniorLiquidity),
                             {
-                              tokenName: poolToken?.symbol,
-                              decimals: poolToken?.decimals,
+                              tokenName: pool.poolToken.symbol,
+                              decimals: pool.poolToken.decimals,
                             },
                           )}
                         </span>
@@ -374,7 +369,7 @@ const PoolView = () => {
                     className="mr-8">
                     {formatToken(smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                   </Text>
-                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                  <TokenIcon name={poolToken?.icon} size={16} />
                 </dd>
               </div>
             </dl>
@@ -500,7 +495,7 @@ const PoolView = () => {
                       : formatToken(nextEpochEstimates[4]?.unscaleBy(entryPriceDecimals))) ?? '-'}
                   </Text>
                   {!isUsdAsset(pool.oracleAssetSymbol) && (
-                    <TokenIcon name={oracleToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+                    <TokenIcon name={oracleToken?.icon} size={16} className="ml-8" />
                   )}
                 </dd>
               </div>
@@ -523,8 +518,8 @@ const PoolView = () => {
                       <Text type="p2" color="primary" className="flex flow-row row-gap-4">
                         <span>
                           {formatToken(nextEpochEstimates[1]?.unscaleBy(pool.poolToken.decimals), {
-                            tokenName: poolToken?.symbol,
-                            decimals: poolToken?.decimals,
+                            tokenName: pool.poolToken.symbol,
+                            decimals: pool.poolToken.decimals,
                           })}
                         </span>
                         <span>
@@ -539,7 +534,7 @@ const PoolView = () => {
                     className="mr-8">
                     {formatToken(nextEpochEstimates[1]?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                   </Text>
-                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                  <TokenIcon name={poolToken?.icon} size={16} />
                 </dd>
               </div>
               <div className={s.epochCardDlRow}>
@@ -561,8 +556,8 @@ const PoolView = () => {
                       <Text type="p2" color="primary" className="flex flow-row row-gap-4">
                         <span>
                           {formatToken(nextEpochEstimates[0]?.unscaleBy(pool.poolToken.decimals), {
-                            tokenName: poolToken?.symbol,
-                            decimals: poolToken?.decimals,
+                            tokenName: pool.poolToken.symbol,
+                            decimals: pool.poolToken.decimals,
                           })}
                         </span>
                         <span>
@@ -577,7 +572,7 @@ const PoolView = () => {
                     className="mr-8">
                     {formatToken(nextEpochEstimates[0]?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                   </Text>
-                  <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+                  <TokenIcon name={poolToken?.icon} size={16} />
                 </dd>
               </div>
             </dl>
@@ -628,20 +623,34 @@ const PoolView = () => {
         </div>
         <div className={s.epochProgressLineAfter} />
       </div>
-      <div className="flex align-center row-gap-8 mb-32">
+      <div className="flex align-center justify-space-between row-gap-8 mb-32">
         <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>
-        <UseLeftTime delay={1_000} onEnd={() => window.location.reload()}>
-          {() => (
-            <Text type="p2" weight="bold" color="primary" className="ml-auto">
-              {getFormattedDuration(smartAlphaContract?.tillNextEpoch)}
-            </Text>
-          )}
+        <UseLeftTime delay={1_000}>
+          {() => {
+            const tillNextEpoch = smartAlphaContract?.tillNextEpoch;
+
+            if (tillNextEpoch === undefined) {
+              return null;
+            }
+
+            return tillNextEpoch > 0 ? (
+              <>
+                <Text type="p2" weight="bold" color="primary" className="ml-auto">
+                  {getFormattedDuration(tillNextEpoch)}
+                </Text>
+                <Text type="p2" weight="semibold" color="secondary" className="ml-4">
+                  until next epoch
+                </Text>
+              </>
+            ) : (
+              <Button variation="text" color="red" onClick={() => smartAlphaContract?.advanceEpoch()}>
+                Advance epoch
+              </Button>
+            );
+          }}
         </UseLeftTime>
-        <Text type="p2" weight="semibold" color="secondary" className="ml-4">
-          until next epoch
-        </Text>
       </div>
       <TokensPrice poolAddress={poolAddress} tokenSymbol={pool.poolToken.symbol} className="mb-32" />
       <PoolPerformance poolAddress={poolAddress} oracleAssetSymbol={pool.oracleAssetSymbol} className="mb-32" />
@@ -661,12 +670,7 @@ const PoolView = () => {
         <Modal
           heading={
             <div className="flex align-center">
-              <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
-                size={40}
-                bubble2Name={oracleToken?.icon ?? 'unknown'}
-                className="mr-16"
-              />
+              <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
               <div>
                 <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
                   Previous epochs

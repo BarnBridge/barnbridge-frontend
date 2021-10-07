@@ -89,6 +89,9 @@ export type KnownTokensContextType = {
 
 const Context = createContext<KnownTokensContextType>(InvariantContext('KnownTokensProvider'));
 
+/**
+ * @deprecated
+ */
 export function useKnownTokens(): KnownTokensContextType {
   return useContext<KnownTokensContextType>(Context);
 }

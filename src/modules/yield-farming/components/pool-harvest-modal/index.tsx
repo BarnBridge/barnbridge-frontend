@@ -123,7 +123,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
         <Grid flow="col" gap={24} colsTemplate="repeat(auto-fit, 240px)">
           {stableYfPool && (
             <PoolHarvestButton
-              icons={stableYfPool.tokens.map(token => token.icon!)}
+              icons={stableYfPool.tokens.map(token => token.icon ?? 'unknown')}
               label={stableYfPool.label}
               reward={stableYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
               loading={stableHarvesting}
@@ -132,7 +132,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
           )}
           {unilpYfPool && (
             <PoolHarvestButton
-              icons={unilpYfPool.tokens.map(token => token.icon!)}
+              icons={unilpYfPool.tokens.map(token => token.icon ?? 'unknown')}
               label={unilpYfPool.label}
               reward={unilpYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
               loading={unilpHarvesting}
@@ -141,7 +141,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
           )}
           {bondYfPool && (
             <PoolHarvestButton
-              icons={bondYfPool.tokens.map(token => token.icon!)}
+              icons={bondYfPool.tokens.map(token => token.icon ?? 'unknown')}
               label={bondYfPool.label}
               reward={bondYfPool.contract.toClaim?.unscaleBy(projectToken.decimals)}
               loading={bondHarvesting}

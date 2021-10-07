@@ -1,0 +1,110 @@
+.card {
+  background: var(--theme-card-color);
+  box-shadow: var(--theme-card-shadow);
+  border-radius: 4px;
+  padding: 24px;
+  min-width: 392px;
+  max-width: 392px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding-bottom: 16px;
+}
+
+.endedLabel {
+  font: var(--font-lb2);
+  font-weight: bold;
+  background: rgba(113, 121, 128, 0.08);
+  border-radius: 32px;
+  margin-left: auto;
+  padding: 8px 24px;
+}
+
+.tabs {
+  position: relative;
+  background: rgba(var(--theme-secondary-color-rgb), 0.08);
+  border-radius: 22px;
+  display: flex;
+  padding: 4px;
+  margin-bottom: 24px;
+}
+
+.tabSelection {
+  position: absolute;
+  left: 4px;
+  z-index: 0;
+  width: 50%;
+  height: 32px;
+  background-color: var(--theme-card-color);
+  color: var(--theme-primary-color);
+  box-shadow: var(--theme-card-shadow);
+  border-radius: 20px;
+  transition: 0.4s ease-in left;
+
+  &.toggled {
+    left: calc(50% - 4px);
+  }
+}
+
+.tab {
+  font: var(--font-sm);
+  font-weight: 600;
+  width: 50%;
+  background-color: transparent;
+  color: var(--theme-secondary-color);
+  border: 0;
+  padding: 8px;
+  flex-grow: 1;
+  z-index: 1;
+}
+
+.tab.active {
+  color: var(--theme-primary-color);
+}
+
+.defRow {
+  display: flex;
+
+  &:not(:last-of-type) {
+    margin-bottom: 32px;
+  }
+}
+
+.defRow dt {
+  font: var(--font-sm);
+  font-weight: 600;
+  color: var(--theme-secondary-color);
+  display: flex;
+  align-items: center;
+}
+
+.defRow dd {
+  font: var(--font-p1);
+  font-weight: 600;
+  margin: 0 0 0 auto;
+  color: var(--theme-primary-color);
+  display: flex;
+  align-items: center;
+}
+
+.footer {
+  display: flex;
+  gap: 24px;
+  margin-top: auto;
+  padding-top: 24px;
+}
+
+.footer button {
+  flex-grow: 1;
+}
+
+@media (max-width: 768px) {
+  .card {
+    min-width: 320px;
+  }
+}

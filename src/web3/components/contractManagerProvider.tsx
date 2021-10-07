@@ -57,6 +57,8 @@ const ContractManagerProvider: FC = props => {
     contractsRef.current.forEach(contract => {
       contract.setCallProvider(web3.activeProvider);
     });
+
+    reload();
   }
 
   const walletProviderRef = useRef(wallet.provider);
@@ -67,6 +69,8 @@ const ContractManagerProvider: FC = props => {
     contractsRef.current.forEach(contract => {
       contract.setProvider(wallet.provider);
     });
+
+    reload();
   }
 
   const walletAccountRef = useRef(wallet.account);
@@ -77,6 +81,8 @@ const ContractManagerProvider: FC = props => {
     contractsRef.current.forEach(contract => {
       contract.setAccount(wallet.account);
     });
+
+    reload();
   }
 
   /**
@@ -89,9 +95,9 @@ const ContractManagerProvider: FC = props => {
     if (!contractsRef.current.has(address)) {
       contract = factory?.() ?? new Web3Contract([], address, '');
 
-      contract.setCallProvider(web3.activeProvider);
-      contract.setProvider(wallet.provider);
-      contract.setAccount(wallet.account);
+      contract.setCallProvider(web3ProviderRef.current);
+      contract.setProvider(walletProviderRef.current);
+      contract.setAccount(walletAccountRef.current);
 
       contractsRef.current.set(address, contract);
       reload();

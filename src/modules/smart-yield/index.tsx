@@ -2,8 +2,8 @@ import React, { Suspense, lazy } from 'react';
 import { NavLinkProps, Redirect, Route, Switch, useRouteMatch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
-import Icon from 'components/custom/icon';
 import { HorizontalMenu } from 'components/custom/tabs';
+import { Icon } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';
 import SyAPIProvider from 'modules/smart-yield/api';
 import RewardPoolProvider from 'modules/smart-yield/providers/reward-pool-provider';
@@ -58,7 +58,7 @@ const SmartYieldView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="bar-charts-outlined" className="mr-8" /> Markets
+          <Icon name="overview" className="mr-8" /> Markets
         </>
       ),
       to: '/smart-yield/markets',
@@ -73,7 +73,7 @@ const SmartYieldView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="wallet-outlined" className="mr-8" /> Portfolio
+          <Icon name="wallet" className="mr-8" /> Portfolio
         </>
       ),
       to: '/smart-yield/portfolio',
@@ -87,7 +87,7 @@ const SmartYieldView: React.FC = () => {
           {
             children: (
               <>
-                <Icon name="savings-outlined" className="mr-8" /> Pools
+                <Icon name="pools" className="mr-8" /> Pools
               </>
             ),
             to: '/smart-yield/pools',

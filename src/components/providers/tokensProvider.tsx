@@ -15,6 +15,8 @@ import { MainnetHttpsWeb3Provider } from './web3Provider';
 import { InvariantContext } from 'utils/context';
 import { queryfy } from 'utils/fetch';
 
+import { Web3Network } from 'networks/types';
+
 export enum Tokens {
   WBTC = 'WBTC',
   WETH = 'WETH',
@@ -39,158 +41,163 @@ export enum Tokens {
 }
 
 export type BaseTokenType = {
-  address: string;
+  // address: string;
   symbol: string;
   name: string;
   decimals: number;
   icon: TokenIconNames;
 };
 
-export const WBTC: BaseTokenType = {
-  address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
+const WBTC: BaseTokenType = {
+  // address: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
   symbol: Tokens.WBTC,
   name: 'Wrapped BTC',
   decimals: 8,
   icon: 'wbtc',
 };
 
-export const WETH: BaseTokenType = {
-  address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+const WETH: BaseTokenType = {
+  // address: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
   symbol: Tokens.WETH,
   name: 'Wrapped Ether',
   decimals: 18,
   icon: 'weth',
 };
 
-export const USDC: BaseTokenType = {
-  address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
+const USDC: BaseTokenType = {
+  // address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
   symbol: Tokens.USDC,
   name: 'USD Coin',
   decimals: 6,
   icon: 'usdc',
 };
 
-export const USDT: BaseTokenType = {
-  address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+const USDT: BaseTokenType = {
+  // address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
   symbol: Tokens.USDT,
   name: 'Tether USD',
   decimals: 6,
   icon: 'usdt',
 };
 
-export const SUSD: BaseTokenType = {
-  address: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
+const SUSD: BaseTokenType = {
+  // address: '0x57ab1ec28d129707052df4df418d58a2d46d5f51',
   symbol: Tokens.SUSD,
   name: 'Synth sUSD',
   decimals: 18,
   icon: 'susd',
 };
 
-export const GUSD: BaseTokenType = {
-  address: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
+const GUSD: BaseTokenType = {
+  // address: '0x056fd409e1d7a124bd7017459dfea2f387b6d5cd',
   symbol: Tokens.GUSD,
   name: 'Gemini dollar',
   decimals: 2,
   icon: 'gusd',
 };
 
-export const DAI: BaseTokenType = {
-  address: '0x6b175474e89094c44da98b954eedeac495271d0f',
+const DAI: BaseTokenType = {
+  // address: '0x6b175474e89094c44da98b954eedeac495271d0f',
   symbol: Tokens.DAI,
   name: 'Dai Stablecoin',
   decimals: 18,
   icon: 'dai',
 };
 
-export const RAI: BaseTokenType = {
-  address: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
+const RAI: BaseTokenType = {
+  // address: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
   symbol: Tokens.RAI,
   name: 'Rai Reflex Index',
   decimals: 18,
   icon: 'rai',
 };
 
-export const AAVE: BaseTokenType = {
-  address: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
+const AAVE: BaseTokenType = {
+  // address: '0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9',
   symbol: Tokens.AAVE,
   name: 'Aave',
   decimals: 18,
   icon: 'aave',
 };
 
-export const STK_AAVE: BaseTokenType = {
-  address: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
+const STK_AAVE: BaseTokenType = {
+  // address: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
   symbol: Tokens.STK_AAVE,
   name: 'Staked Aave',
   decimals: 18,
   icon: 'stkaave',
 };
 
-export const MATIC: BaseTokenType = {
-  address: '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
+const MATIC: BaseTokenType = {
+  // address: '0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0',
   symbol: Tokens.WMATIC,
   name: 'Polygon (MATIC)',
   decimals: 18,
   icon: 'wmatic',
 };
 
-export const WAVAX: BaseTokenType = {
-  address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
+const WAVAX: BaseTokenType = {
+  // address: '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7',
   symbol: Tokens.WAVAX,
   name: 'Avalanche',
   decimals: 18,
   icon: 'wavax',
 };
 
-export const BOND: BaseTokenType = {
-  address: '0x0391d2021f89dc339f60fff84546ea23e337750f',
+const BOND: BaseTokenType = {
+  // address: '0x0391d2021f89dc339f60fff84546ea23e337750f',
   symbol: Tokens.BOND,
   name: 'BarnBridge Governance Token',
   decimals: 18,
   icon: 'bond',
 };
 
-export const UNIV2: BaseTokenType = {
-  address: '0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244',
+const UNIV2: BaseTokenType = {
+  // address: '0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244',
   symbol: Tokens.UNIV2,
   name: 'Uniswap V2',
   decimals: 18,
   icon: 'uniswap',
 };
 
-export const XSUSHI: BaseTokenType = {
-  address: '0x8798249c2e607446efb7ad49ec89dd1865ff4272',
+const XSUSHI: BaseTokenType = {
+  // address: '0x8798249c2e607446efb7ad49ec89dd1865ff4272',
   symbol: Tokens.XSUSHI,
   name: 'xSUSHI',
   decimals: 18,
   icon: 'xsushi',
 };
 
-export const LINK: BaseTokenType = {
-  address: '0x514910771af9ca656af840dff83e8264ecf986ca',
+const LINK: BaseTokenType = {
+  // address: '0x514910771af9ca656af840dff83e8264ecf986ca',
   symbol: Tokens.LINK,
   name: 'Chainlink',
   decimals: 18,
   icon: 'link',
 };
 
-export const UNI: BaseTokenType = {
-  address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
+const UNI: BaseTokenType = {
+  // address: '0x1f9840a85d5af5bf1d1762f925bdaddc4201f984',
   symbol: Tokens.UNI,
   name: 'Uniswap',
   decimals: 18,
   icon: 'uni',
 };
 
-export const FEI: BaseTokenType = {
-  address: '0x956f47f50a910163d8bf957cf5846d573e7f87ca',
+const FEI: BaseTokenType = {
+  // address: '0x956f47f50a910163d8bf957cf5846d573e7f87ca',
   symbol: Tokens.FEI,
   name: 'Fei Protocol',
   decimals: 18,
   icon: 'fei',
 };
 
-export const ProjectToken: BaseTokenType = BOND;
+export const ProjectToken: BaseTokenType & {
+  address: string;
+} = {
+  ...BOND,
+  address: '0x0391d2021f89dc339f60fff84546ea23e337750f',
+};
 
 export type TokenType = BaseTokenType & {
   price?: BigNumber;
@@ -198,8 +205,12 @@ export type TokenType = BaseTokenType & {
 
 export type TokensContextType = {
   version: number;
-  getToken(symbol?: string): TokenType | undefined;
-  getAmountInUSD(amount: BigNumber | undefined, source: string | undefined): BigNumber | undefined;
+  getToken(symbol?: string, network?: Web3Network): TokenType | undefined;
+  getAmountInUSD(
+    amount: BigNumber | undefined,
+    source: string | undefined,
+    network?: Web3Network,
+  ): BigNumber | undefined;
 };
 
 const Context = createContext<TokensContextType>(InvariantContext('TokensProvider'));
@@ -410,8 +421,8 @@ const TokensProvider: FC = props => {
     })();
   }, []);
 
-  const getToken = useCallback((symbol: string | undefined): TokenType | undefined => {
-    if (activeNetwork === AvalancheNetwork || activeNetwork === AvalancheTestnetNetwork) {
+  const getToken = useCallback((symbol: string | undefined, network?: Web3Network): TokenType | undefined => {
+    if ([activeNetwork, network].some(n => n === AvalancheNetwork || n === AvalancheTestnetNetwork)) {
       symbol = symbol?.replace('.e', '');
     }
 
@@ -419,12 +430,12 @@ const TokensProvider: FC = props => {
   }, []);
 
   const getAmountInUSD = useCallback(
-    (amount: BigNumber | undefined, source: string | undefined): BigNumber | undefined => {
+    (amount: BigNumber | undefined, source: string | undefined, network?: Web3Network): BigNumber | undefined => {
       if (!amount || !source) {
         return undefined;
       }
 
-      const token = getToken(source);
+      const token = getToken(source, network);
 
       if (!token || !token.price) {
         return undefined;

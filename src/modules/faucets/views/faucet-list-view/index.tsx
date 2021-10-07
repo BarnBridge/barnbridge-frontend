@@ -20,8 +20,8 @@ const columns: ColumnType<FaucetType>[] = [
         <div className="flex align-center">
           <TokenIcon
             name={item.icon as TokenIconNames}
-            bubble1Name={item.markets?.[0]?.icon! as TokenIconNames}
-            bubble2Name={item.markets?.[1]?.icon! as TokenIconNames}
+            bubble1Name={item.markets?.[0]?.icon as TokenIconNames}
+            bubble2Name={item.markets?.[1]?.icon as TokenIconNames}
             size={40}
             className="mr-16"
           />

@@ -88,7 +88,7 @@ const PoolCard: FC<Props> = props => {
       <div className="flex align-center justify-space-between p-24">
         <div className="flex align-center">
           <IconsSet
-            icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon!} />) ?? []}
+            icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon} />) ?? []}
             className="mr-16"
           />
           <div>
@@ -143,7 +143,7 @@ const PoolCard: FC<Props> = props => {
                 Weekly reward
               </Text>
               <div className="flex align-center">
-                <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
+                <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(epochReward) ?? '-'}
                 </Text>
@@ -187,7 +187,7 @@ const PoolCard: FC<Props> = props => {
                 </Text>
               </Hint>
               <div className="flex align-center">
-                <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
+                <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(potentialReward) ?? '-'}
                 </Text>
@@ -292,7 +292,7 @@ const PoolCard: FC<Props> = props => {
                 <Text type="h2" weight="semibold" color="primary">
                   {formatToken(toClaim?.unscaleBy(projectToken.decimals)) ?? '-'}
                 </Text>
-                <TokenIcon name={projectToken.icon!} size={32} />
+                <TokenIcon name={projectToken.icon} size={32} />
               </div>
             }
             submitText="Claim"

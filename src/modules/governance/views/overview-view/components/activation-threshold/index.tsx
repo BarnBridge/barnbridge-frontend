@@ -9,7 +9,7 @@ import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { TokenIcon } from 'components/token-icon';
 
 import { useDAO } from '../../../../components/dao-provider';
 
@@ -60,7 +60,7 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
           <Icon name="ribbon-outlined" />
         </Grid>
         <Grid flow="col" gap={8}>
-          <TokenIcon name={projectToken.icon! as TokenIconNames} />
+          <TokenIcon name={projectToken.icon} />
           <Text type="p1" weight="bold" color="primary">
             {formatToken(daoCtx.bondStaked)}
           </Text>
