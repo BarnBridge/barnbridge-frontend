@@ -153,7 +153,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
                         className="mr-8"
                         size="16"
                       />
-                      {formatToken(kpiContract.getBalanceFor(token.address), {
+                      {formatToken(kpiContract.getRewardLeftFor(token.address), {
                         scale: token.decimals,
                       }) ?? '-'}
                     </dd>
