@@ -231,7 +231,11 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             </InfoTooltip>
           </Text>
           <dd>
-            <Text type="p1" weight="semibold" color="purple">
+            <Text
+              type="p1"
+              weight="semibold"
+              color="purple"
+              tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
               {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
           </dd>

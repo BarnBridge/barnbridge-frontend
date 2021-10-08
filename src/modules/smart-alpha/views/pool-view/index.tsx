@@ -217,7 +217,12 @@ const PoolView = () => {
             </div>
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
-                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                <Text
+                  type="h3"
+                  weight="bold"
+                  color="primary"
+                  className="mb-4"
+                  tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
                   {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">
@@ -434,7 +439,12 @@ const PoolView = () => {
             </div>
             <div className={s.epochCardHeaderItem}>
               <div className="flex align-center col-gap-8">
-                <Text type="h3" weight="bold" color="primary" className="mb-4">
+                <Text
+                  type="h3"
+                  weight="bold"
+                  color="primary"
+                  className="mb-4"
+                  tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
                   {nextEpochDownsideLeverage ? `≤${formatNumber(nextEpochDownsideLeverage)}x` : `-`}
                 </Text>
                 <Badge color="purple" size="small">

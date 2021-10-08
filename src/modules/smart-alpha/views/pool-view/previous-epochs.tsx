@@ -144,7 +144,11 @@ const Epoch = ({
             <Text type="small" weight="semibold" className="mb-8" color="secondary">
               Downside leverage
             </Text>
-            <Text type="p2" weight="semibold" color="purple">
+            <Text
+              type="p2"
+              weight="semibold"
+              color="purple"
+              tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
               ≤{formatNumber(downsideLeverage, { decimals: 2 })}x
             </Text>
           </div>
