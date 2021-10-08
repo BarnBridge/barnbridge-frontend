@@ -1,4 +1,5 @@
 import add from 'date-fns/add';
+import formatDistance from 'date-fns/formatDistance';
 import formatDuration from 'date-fns/formatDuration';
 import intervalToDuration from 'date-fns/intervalToDuration';
 import { isAddress } from 'web3-utils';
@@ -13,6 +14,25 @@ export function getNowTs(): number {
 
 export function inRange(value: number, min: number, max: number): boolean {
   return min < value && value < max;
+}
+
+export namespace DateUtils {
+  export function formatDuration(value: number | undefined): string | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const start = new Date().getTime();
+    const end = start + value;
+
+    return formatDistance(end * 1_000, start * 1_000, {
+      locale: {
+        formatDistance(...args: any[]) {
+          return undefined;
+        },
+      },
+    });
+  }
 }
 
 export function getFormattedDuration(value?: number, endValue?: number): string | undefined {
