@@ -68,7 +68,7 @@ const PoolsView: FC = () => {
               }}>
               <TokenIcon
                 name={market.icon.active as TokenIconNames}
-                bubble2Name={activeNetwork === PolygonNetwork ? 'polygon' : undefined}
+                {...(activeNetwork === PolygonNetwork ? { bubble2Name: 'polygon' } : undefined)}
                 size={24}
                 className="mr-16"
               />
