@@ -25,7 +25,7 @@ export function getKpiOptionTokenIconNames(symbol: string): [TokenIconNames, Tok
   switch (symbol) {
     case 'bbBPT_ETHUSD':
       return ['balancer', 'usd', 'eth'];
-    case 'bbBPT_BTCUSD':
+    case 'WBTC (USD) BPT':
       return ['balancer', 'usd', 'wbtc'];
     case 'KPI_WETH-USD-1w':
       return ['uma', 'usd', 'weth'];

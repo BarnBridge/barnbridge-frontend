@@ -8,7 +8,6 @@ import { formatToken } from 'web3/utils';
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
-import { KnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
 import { KpiOptionType } from 'modules/smart-alpha/api';
@@ -121,21 +120,19 @@ const Statistics: FCx<StatisticsProps> = ({
             );
             return (
               <React.Fragment key={token.address}>
-                {token.symbol === KnownTokens.BOND ? (
-                  <div className={s.def}>
-                    <dt>My daily {token.symbol} reward</dt>
-                    <dd>
-                      <TokenIcon
-                        name={rewardTokenName}
-                        bubble1Name={rewardTokenBubble1Name}
-                        bubble2Name={rewardTokenBubble2Name}
-                        className="mr-8"
-                        size="16"
-                      />
-                      {formatToken(kpiContract.getMyDailyRewardFor(token.address)?.unscaleBy(token.decimals)) ?? '-'}
-                    </dd>
-                  </div>
-                ) : null}
+                <div className={s.def}>
+                  <dt>My daily {token.symbol} reward</dt>
+                  <dd>
+                    <TokenIcon
+                      name={rewardTokenName}
+                      bubble1Name={rewardTokenBubble1Name}
+                      bubble2Name={rewardTokenBubble2Name}
+                      className="mr-8"
+                      size="16"
+                    />
+                    {formatToken(kpiContract.getMyDailyRewardFor(token.address)?.unscaleBy(token.decimals)) ?? '-'}
+                  </dd>
+                </div>
                 <div className={s.def}>
                   <dt>My {token.symbol} balance</dt>
                   <dd>
