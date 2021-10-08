@@ -3,6 +3,8 @@ import { useSessionStorage } from 'react-use-storage';
 
 import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
+import { BinanceNetwork } from 'networks/binance';
+import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
@@ -30,11 +32,20 @@ export function useNetwork(): NetworkType {
 
 const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
-    return [KovanNetwork, MainnetNetwork, PolygonNetwork, AvalancheNetwork, TestnetNetwork, AvalancheTestnetNetwork];
+    return [
+      KovanNetwork,
+      TestnetNetwork,
+      MainnetNetwork,
+      PolygonNetwork,
+      AvalancheTestnetNetwork,
+      AvalancheNetwork,
+      BinanceTestnetNetwork,
+      BinanceNetwork,
+    ];
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, TestnetNetwork];
+    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, TestnetNetwork];
   }
 
   return [];

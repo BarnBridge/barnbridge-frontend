@@ -83,8 +83,17 @@ $paddings: 0, 4, 8, 12, 16, 24, 32, 48, 64;
     padding-left: #{$padding}px;
     padding-right: #{$padding}px;
   }
+  .pt-#{$padding}.pt-#{$padding} {
+    padding-top: #{$padding}px;
+  }
   .pb-#{$padding}.pb-#{$padding} {
     padding-bottom: #{$padding}px;
+  }
+  .pr-#{$padding}.pr-#{$padding} {
+    padding-right: #{$padding}px;
+  }
+  .pl-#{$padding}.pl-#{$padding} {
+    padding-left: #{$padding}px;
   }
 }
 

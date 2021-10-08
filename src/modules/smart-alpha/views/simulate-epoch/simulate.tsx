@@ -305,8 +305,12 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                     </Text>
                   </dt>
                   <dd className="ml-auto">
-                    <Text type="p1" weight="semibold" color="primary">
-                      {downsideLeverage ? `${downsideLeverage.toFormat(2)}x` : '-'}
+                    <Text
+                      type="p1"
+                      weight="semibold"
+                      color="primary"
+                      tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
+                      {downsideLeverage ? `≤${downsideLeverage.toFormat(2)}x` : '-'}
                     </Text>
                   </dd>
                 </div>

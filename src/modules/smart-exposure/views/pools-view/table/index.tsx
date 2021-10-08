@@ -7,7 +7,7 @@ import { ColumnType, Table } from 'components/custom/table';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { TokenIcon } from 'components/token-icon';
 import { PoolApiType, TranchesItemApiType, useSeAPI } from 'modules/smart-exposure/api';
 
 const tableColumns: ColumnType<TranchesItemApiType>[] = [
@@ -27,7 +27,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
         <>
           <div className="flex col-gap-32 mb-8">
             <div className="flex">
-              <TokenIcon name={tokenA?.icon! as TokenIconNames} className="mr-8" />
+              <TokenIcon name={tokenA?.icon} className="mr-8" />
               <div>
                 <div className="text-p1 fw-semibold color-primary">{formatPercent(Number(item.tokenARatio))}</div>
                 <RatioLabel current={Number(item.state.tokenACurrentRatio)} target={Number(item.tokenARatio)} />
@@ -35,7 +35,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
             </div>
             <div>
               <div className="flex">
-                <TokenIcon name={tokenB?.icon! as TokenIconNames} className="mr-8" />
+                <TokenIcon name={tokenB?.icon} className="mr-8" />
                 <div>
                   <div className="text-p1 fw-semibold color-primary">{formatPercent(Number(item.tokenBRatio))}</div>
                   <RatioLabel current={Number(item.state.tokenBCurrentRatio)} target={Number(item.tokenBRatio)} />

@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { useConfig } from 'components/providers/configProvider';
 
 import { InvariantContext } from 'utils/context';
-import { PaginatedResult, queryfy } from 'utils/fetch';
+import { PaginatedResult, UseFetchReturn, queryfy, useFetch } from 'utils/fetch';
 
 export type APISYPool = {
   protocolId: string;
@@ -640,3 +640,22 @@ const SyAPIProvider: FC = props => {
 };
 
 export default SyAPIProvider;
+
+export function useFetchSyPools({
+  originator,
+  baseUrl,
+}: {
+  originator?: string;
+  baseUrl?: string;
+} = {}): UseFetchReturn<APISYPool[]> {
+  const config = useConfig();
+  const url = new URL('/api/smartyield/pools', baseUrl ?? config.api.baseUrl);
+
+  if (originator) {
+    url.searchParams.set('originator', originator);
+  }
+
+  return useFetch(url, {
+    transform: ({ data }) => data,
+  });
+}

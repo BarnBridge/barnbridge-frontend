@@ -13,7 +13,7 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
 import { TokenType, useTokens } from 'components/providers/tokensProvider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
 import {
@@ -47,7 +47,7 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     heading: 'Token Name',
     render: entity => (
       <div className="flex flow-col col-gap-12 align-center">
-        <TokenIcon name={(entity.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-16" size={32} />
+        <TokenIcon name={entity.token?.icon} className="mr-16" size={32} />
         <div className="flex flow-row row-gap-4">
           <Text type="p1" weight="semibold" color="primary">
             {entity.tokenSymbol ?? '-'}
@@ -283,7 +283,7 @@ const TreasuryHoldings: FC = () => {
       <div className="grid gap-16 mb-32" style={{ gridTemplateColumns: 'repeat(3, 1fr)' } as CSSProperties}>
         {tokensSource.map(item => (
           <div key={item.address} className="card flex flow-col col-gap-12 align-center p-24">
-            <TokenIcon name={(item.token?.icon as TokenIconNames) ?? 'unknown'} className="mr-8" size={32} />
+            <TokenIcon name={item.token?.icon} className="mr-8" size={32} />
             <div className="flex flow-row row-gap-4">
               <Text type="p1" weight="semibold" color="primary">
                 {item.symbol ?? '-'}

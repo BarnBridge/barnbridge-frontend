@@ -110,7 +110,7 @@ export function formatToken(
     }
   }
 
-  if (compact) {
+  if (compact && val.gt(1_000)) {
     str += Intl.NumberFormat('en', {
       notation: 'compact',
       maximumFractionDigits: 2,

@@ -276,7 +276,7 @@ const JuniorTranche: React.FC = () => {
                 before={
                   <TokenIcon
                     name={pool?.token?.icon as TokenIconNames}
-                    bubble1Name={projectToken.icon! as TokenIconNames}
+                    bubble1Name={projectToken.icon}
                     bubble2Name={pool?.market?.icon.active as TokenIconNames}
                     size={24}
                   />

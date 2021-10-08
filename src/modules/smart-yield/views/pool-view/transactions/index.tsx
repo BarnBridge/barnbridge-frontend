@@ -64,7 +64,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           <div className="flex flow-col col-gap-16 align-center">
             <TokenIcon
               name={uToken?.icon as TokenIconNames}
-              bubble1Name={projectToken.icon!}
+              bubble1Name={projectToken.icon}
               bubble2Name={poolMarket?.icon.active as TokenIconNames}
             />
             <div>

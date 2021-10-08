@@ -11,6 +11,8 @@ import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
 import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
+import { BinanceNetwork } from 'networks/binance';
+import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 
 import s from './s.module.scss';
 
@@ -52,10 +54,10 @@ const LayoutView: React.FC = () => {
                       )}
                     />
                   )}
-                  {(activeNetwork === AvalancheNetwork || activeNetwork === AvalancheTestnetNetwork) && (
-                    <Redirect to="/smart-alpha" />
-                  )}
-                  <Redirect from="/" to="/smart-yield" />
+                  {[AvalancheNetwork, AvalancheTestnetNetwork, BinanceNetwork, BinanceTestnetNetwork].includes(
+                    activeNetwork,
+                  ) && <Redirect to="/smart-alpha" />}
+                  <Redirect from="/" to="/smart-alpha" />
                 </Switch>
               </Suspense>
             </ErrorBoundary>

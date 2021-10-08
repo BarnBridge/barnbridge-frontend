@@ -161,7 +161,7 @@ const InstantWithdraw: React.FC = () => {
             tokenIcon={
               <TokenIcon
                 name={pool.token?.icon as TokenIconNames}
-                bubble1Name={projectToken.icon!}
+                bubble1Name={projectToken.icon}
                 bubble2Name={pool.market?.icon.active as TokenIconNames}
                 size={36}
               />

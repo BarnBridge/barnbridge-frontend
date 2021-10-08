@@ -144,10 +144,10 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(withdrawQueueBalance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
             <TokenIcon
-              name={poolToken?.icon ?? 'unknown'}
+              name={poolToken?.icon}
               outline={isSenior ? 'green' : 'purple'}
               bubble1Name="bond"
-              bubble2Name={oracleToken?.icon ?? 'unknown'}
+              bubble2Name={oracleToken?.icon}
               size={16}
               className="ml-8"
             />
@@ -163,7 +163,7 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
           </Hint>
           <Text type="p1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(unclaimedUnderlying?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-            <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+            <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
           </Text>
         </div>
       </div>
@@ -174,7 +174,7 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
       <TokenAmount
         before={
           <TokenIcon
-            name={poolToken?.icon ?? 'unknown'}
+            name={poolToken?.icon}
             bubble1Name="bond"
             bubble2Name={oracleToken?.icon}
             outline={isSenior ? 'green' : 'purple'}
@@ -229,9 +229,9 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
                   <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(BigNumber.from(tokenState)) ?? '-'}
                     <TokenIcon
-                      name={poolToken?.icon ?? 'unknown'}
+                      name={poolToken?.icon}
                       bubble1Name="bond"
-                      bubble2Name={oracleToken?.icon ?? 'unknown'}
+                      bubble2Name={oracleToken?.icon}
                       outline={isSenior ? 'green' : 'purple'}
                       className="ml-8"
                     />
@@ -243,7 +243,7 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
                   </Text>
                   <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(unclaimedUnderlying?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                    <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+                    <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
                   </Text>
                 </div>
               </div>

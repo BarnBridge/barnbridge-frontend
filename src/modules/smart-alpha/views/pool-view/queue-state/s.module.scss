@@ -1,0 +1,22 @@
+.section {
+  border: 1px solid var(--theme-border-color);
+  background-color: var(--theme-card-color);
+  border-radius: 4px;
+  overflow: hidden;
+
+  &:not(:last-of-type) {
+    margin-bottom: 16px;
+  }
+}
+
+.sectionHeader {
+  padding: 12px 16px;
+  background-color: var(--theme-body-color);
+  border-bottom: 1px solid var(--theme-border-color);
+}
+
+.sectionBody {
+  padding: 12px 16px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}

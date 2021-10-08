@@ -115,7 +115,7 @@ const Epoch = ({
               <Text type="p2" weight="semibold" className="mr-4" tooltip={item.seniorLiquidity}>
                 {formatNumber(Number(item.seniorLiquidity), { decimals: 4 })}
               </Text>
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+              <TokenIcon name={poolToken?.icon} size={16} />
             </div>
           </div>
           <div>
@@ -126,7 +126,7 @@ const Epoch = ({
               <Text type="p2" weight="semibold" className="mr-4" tooltip={item.juniorLiquidity}>
                 {formatNumber(Number(item.juniorLiquidity), { decimals: 4 })}
               </Text>
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} />
+              <TokenIcon name={poolToken?.icon} size={16} />
             </div>
           </div>
         </div>
@@ -144,8 +144,12 @@ const Epoch = ({
             <Text type="small" weight="semibold" className="mb-8" color="secondary">
               Downside leverage
             </Text>
-            <Text type="p2" weight="semibold" color="purple">
-              {formatNumber(downsideLeverage, { decimals: 2 })}x
+            <Text
+              type="p2"
+              weight="semibold"
+              color="purple"
+              tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
+              ≤{formatNumber(downsideLeverage, { decimals: 2 })}x
             </Text>
           </div>
           <div>

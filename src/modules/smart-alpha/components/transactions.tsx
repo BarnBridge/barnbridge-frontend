@@ -125,46 +125,25 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
         const poolToken = getToken(item.poolTokenSymbol);
         const oracleToken = getAsset(item.oracleAssetSymbol);
 
+        const [outline, bubble1Name, bubble2Name] =
+          {
+            JUNIOR_EXIT: ['purple', 'bond', oracleToken?.icon],
+            JUNIOR_REDEEM_TOKENS: ['purple', 'bond', oracleToken?.icon],
+            JTOKEN_SEND: ['purple', 'bond', oracleToken?.icon],
+            JTOKEN_RECEIVE: ['purple', 'bond', oracleToken?.icon],
+            SENIOR_EXIT: ['green', 'bond', oracleToken?.icon],
+            SENIOR_REDEEM_TOKENS: ['green', 'bond', oracleToken?.icon],
+            STOKEN_SEND: ['green', 'bond', oracleToken?.icon],
+            STOKEN_RECEIVE: ['green', 'bond', oracleToken?.icon],
+          }[item.transactionType] ?? [];
+
         return (
           <div className="flex align-center" style={{ whiteSpace: 'nowrap' }}>
             <TokenIcon
-              name={poolToken?.icon ?? 'unknown'}
-              outline={
-                {
-                  JUNIOR_EXIT: 'purple',
-                  JUNIOR_REDEEM_TOKENS: 'purple',
-                  JTOKEN_SEND: 'purple',
-                  JTOKEN_RECEIVE: 'purple',
-                  SENIOR_EXIT: 'green',
-                  SENIOR_REDEEM_TOKENS: 'green',
-                  STOKEN_SEND: 'green',
-                  STOKEN_RECEIVE: 'green',
-                }[item.transactionType]
-              }
-              bubble1Name={
-                {
-                  JUNIOR_EXIT: 'bond',
-                  JUNIOR_REDEEM_TOKENS: 'bond',
-                  JTOKEN_SEND: 'bond',
-                  JTOKEN_RECEIVE: 'bond',
-                  SENIOR_EXIT: 'bond',
-                  SENIOR_REDEEM_TOKENS: 'bond',
-                  STOKEN_SEND: 'bond',
-                  STOKEN_RECEIVE: 'bond',
-                }[item.transactionType]
-              }
-              bubble2Name={
-                {
-                  JUNIOR_EXIT: oracleToken?.icon ?? 'unknown',
-                  JUNIOR_REDEEM_TOKENS: oracleToken?.icon ?? 'unknown',
-                  JTOKEN_SEND: oracleToken?.icon ?? 'unknown',
-                  JTOKEN_RECEIVE: oracleToken?.icon ?? 'unknown',
-                  SENIOR_EXIT: oracleToken?.icon ?? 'unknown',
-                  SENIOR_REDEEM_TOKENS: oracleToken?.icon ?? 'unknown',
-                  STOKEN_SEND: oracleToken?.icon ?? 'unknown',
-                  STOKEN_RECEIVE: oracleToken?.icon ?? 'unknown',
-                }[item.transactionType]
-              }
+              name={poolToken?.icon}
+              outline={outline}
+              {...(bubble1Name ? { bubble1Name } : {})}
+              {...(bubble2Name ? { bubble2Name } : {})}
               size={32}
               className="mr-16"
             />

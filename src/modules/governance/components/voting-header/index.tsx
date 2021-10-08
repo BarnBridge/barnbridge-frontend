@@ -12,7 +12,7 @@ import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { TokenIcon } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -91,7 +91,7 @@ const VotingHeader: React.FC = () => {
                 })}
               </Text>
             </Tooltip>
-            <TokenIcon name={projectToken.icon! as TokenIconNames} />
+            <TokenIcon name={projectToken.icon} />
             <Button type="light" disabled={toClaim?.isZero()} onClick={handleClaim}>
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
@@ -108,7 +108,7 @@ const VotingHeader: React.FC = () => {
                 {formatToken(bondBalance)}
               </Text>
             </Skeleton>
-            <TokenIcon name={projectToken.icon! as TokenIconNames} />
+            <TokenIcon name={projectToken.icon} />
           </Grid>
         </Grid>
         <Divider type="vertical" />

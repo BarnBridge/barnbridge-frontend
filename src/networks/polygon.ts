@@ -103,6 +103,7 @@ export const PolygonMetamaskChain: MetamaskAddEthereumChain = {
 
 export const PolygonNetwork: Web3Network = {
   id: 'polygon',
+  type: 'Polygon',
   meta: {
     chainId: POLYGON_CHAIN_ID,
     name: isDevelopmentMode ? 'Polygon Mainnet (Alpha)' : 'Polygon Mainnet',

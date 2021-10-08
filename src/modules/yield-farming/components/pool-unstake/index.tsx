@@ -120,7 +120,7 @@ const PoolUnstake: FC = () => {
               tokens={poolMeta.tokens.map(t => t.symbol as KnownTokens)}
             />
           ) : (
-            <TokenIcon name={activeToken.icon!} size={24} />
+            <TokenIcon name={activeToken.icon} size={24} />
           )
         }
         value={amount}
@@ -198,7 +198,7 @@ const PoolUnstake: FC = () => {
                   decimals: activeToken.decimals,
                 })}
               </Text>
-              <TokenIcon name={activeToken.icon!} />
+              <TokenIcon name={activeToken.icon} />
             </div>
           }
           submitText={`Confirm your unstake`}

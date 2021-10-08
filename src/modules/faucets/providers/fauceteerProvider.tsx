@@ -5,7 +5,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 import { useConfig } from 'components/providers/configProvider';
-import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
+import { Tokens, useTokens } from 'components/providers/tokensProvider';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
@@ -86,7 +86,7 @@ export const FauceteerProvider: FC = props => {
   const { children } = props;
   const config = useConfig();
   const walletCtx = useWallet();
-  const knownTokens = useKnownTokens();
+  const { getToken } = useTokens();
 
   const compFauceteerContract = useCompFauceteerContract();
   const aaveFauceteerContract = useAaveFauceteerContract();
@@ -95,13 +95,14 @@ export const FauceteerProvider: FC = props => {
   const aaveUsdcFaucet = useErc20Contract(config.contracts.faucets?.aaveUsdc!);
   const aaveUsdtFaucet = useErc20Contract(config.contracts.faucets?.aaveUsdt!);
   const aaveDaiFaucet = useErc20Contract(config.contracts.faucets?.aaveDai!);
+  const bondContract = useErc20Contract('0xc40a66AFB908789341A58B8423F89fE2cb7Dc1f9');
 
   const faucets = useMemo<FaucetType[]>(() => {
-    const ethToken = knownTokens.getTokenBySymbol(KnownTokens.ETH);
-    const bondToken = knownTokens.getTokenBySymbol(KnownTokens.BOND);
-    const usdcToken = knownTokens.getTokenBySymbol(KnownTokens.USDC);
-    const usdtToken = knownTokens.getTokenBySymbol(KnownTokens.USDT);
-    const daiToken = knownTokens.getTokenBySymbol(KnownTokens.DAI);
+    const ethToken = getToken(Tokens.WETH);
+    const usdcToken = getToken(Tokens.USDC);
+    const usdtToken = getToken(Tokens.USDT);
+    const daiToken = getToken(Tokens.DAI);
+    const bondToken = getToken(Tokens.BOND);
 
     return [
       {
@@ -111,20 +112,16 @@ export const FauceteerProvider: FC = props => {
         label: 'Kovan Ether',
         link: { url: 'https://github.com/kovan-testnet/faucet', label: 'Faucets' },
       },
-      ...(bondToken
-        ? [
-            {
-              name: bondToken.symbol,
-              icon: bondToken.icon,
-              decimals: bondToken.decimals,
-              link: {
-                url: `https://app.uniswap.org/#/swap?use=V2&outputCurrency=${bondToken.address}`,
-                label: 'Swap',
-              },
-              token: bondToken.contract,
-            },
-          ]
-        : []),
+      {
+        name: bondToken?.symbol,
+        icon: bondToken?.icon,
+        decimals: bondToken?.decimals,
+        link: {
+          url: `https://app.uniswap.org/#/swap?use=V2&outputCurrency=${bondContract?.address}`,
+          label: 'Swap',
+        },
+        token: bondContract,
+      },
       ...(usdcToken
         ? [
             {
@@ -222,12 +219,12 @@ export const FauceteerProvider: FC = props => {
   }, []);
 
   useEffect(() => {
-    faucets.forEach(faucet => {
-      if (walletCtx.isActive) {
+    if (walletCtx.account) {
+      faucets.forEach(faucet => {
         faucet.token?.loadBalance().catch(Error);
-      }
-    });
-  }, [faucets, walletCtx.isActive]);
+      });
+    }
+  }, [faucets, walletCtx.account]);
 
   const value = {
     compFauceteerContract,

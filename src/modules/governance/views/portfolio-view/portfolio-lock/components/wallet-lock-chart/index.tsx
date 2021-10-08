@@ -153,21 +153,22 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
   const daoCtx = useDAO();
   const { balance: stakedBalance } = daoCtx.daoBarn;
 
-  const multiplier = React.useMemo<number>(() => getPeriodRate(addYears(new Date(), 1), new Date(), lockEndDate), [
-    lockEndDate,
-  ]);
+  const multiplier = React.useMemo<number>(
+    () => getPeriodRate(addYears(new Date(), 1), new Date(), lockEndDate),
+    [lockEndDate],
+  );
 
-  const myBonus = React.useMemo<BigNumber | undefined>(() => stakedBalance?.multipliedBy(multiplier - 1), [
-    stakedBalance,
-    multiplier,
-  ]);
+  const myBonus = React.useMemo<BigNumber | undefined>(
+    () => stakedBalance?.multipliedBy(multiplier - 1),
+    [stakedBalance, multiplier],
+  );
 
   const granularity = React.useMemo<GranularityType>(() => getGranularityType(lockEndDate), [lockEndDate]);
 
-  const data = React.useMemo<GranularPeriod[]>(() => getGranularPeriods(granularity, lockEndDate), [
-    granularity,
-    lockEndDate,
-  ]);
+  const data = React.useMemo<GranularPeriod[]>(
+    () => getGranularPeriods(granularity, lockEndDate),
+    [granularity, lockEndDate],
+  );
 
   return (
     <div className="card">

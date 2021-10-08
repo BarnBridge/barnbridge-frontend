@@ -353,7 +353,7 @@ export default SeAPIProvider;
 
 export function useFetchSePools(baseUrl?: string): UseFetchReturn<PoolApiType[]> {
   const config = useConfig();
-  const url = new URL(`/api/smartexposure/pools`, baseUrl ?? config.api.baseUrl);
+  const url = new URL('/api/smartexposure/pools', baseUrl ?? config.api.baseUrl);
 
   return useFetch(url, {
     transform: ({ data }) => data,
