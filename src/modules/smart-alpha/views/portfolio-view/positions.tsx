@@ -164,18 +164,23 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
     );
   }, [pool, isSenior]);
 
-  const tokenAmountInQuoteAsset = useMemo(() => {
-    const entryPriceDecimals = smartAlphaContract?.getEntryPriceDecimals(pool.oracleAssetSymbol);
-    const price = (
-      isSenior ? smartAlphaContract.epochSeniorTokenPrice : smartAlphaContract.epochJuniorTokenPrice
-    )?.unscaleBy(SMART_ALPHA_DECIMALS);
-    const entryPrice = smartAlphaContract.epochEntryPrice?.unscaleBy(entryPriceDecimals);
-    return tokenContract.balance?.unscaleBy(pool.poolToken.decimals)?.multipliedBy(price).multipliedBy(entryPrice);
+  const tokenAmountInUnderlying = useMemo(() => {
+    const estimateTokenPrice = isSenior
+      ? smartAlphaContract?.estimateCurrentSeniorTokenPrice
+      : smartAlphaContract?.estimateCurrentJuniorTokenPrice;
+
+    return tokenContract.balance?.multipliedBy(estimateTokenPrice?.unscaleBy(SMART_ALPHA_DECIMALS) ?? 0);
   }, [
-    smartAlphaContract.epochSeniorTokenPrice,
-    smartAlphaContract.epochJuniorTokenPrice,
-    smartAlphaContract.epochEntryPrice,
+    tokenContract.balance,
+    smartAlphaContract?.estimateCurrentSeniorTokenPrice,
+    smartAlphaContract?.estimateCurrentJuniorTokenPrice,
   ]);
+
+  const tokenAmountInQuoteAsset = useMemo(() => {
+    const decimals = smartAlphaContract.getEntryPriceDecimals(pool.oracleAssetSymbol);
+
+    return tokenAmountInUnderlying?.multipliedBy(smartAlphaContract?.priceOracle?.unscaleBy(decimals) ?? 0);
+  }, [tokenAmountInUnderlying, pool.oracleAssetSymbol, smartAlphaContract?.priceOracle]);
 
   return (
     <section className="card flex flow-row p-24">
@@ -195,18 +200,42 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
         />
       </div>
       <div className={classNames(s.positionsWalletSecondaryValues, 'mb-32')}>
-        {/*<div className={s.positionsWalletSecondaryValue}>
-          <Text type="small" weight="semibold" color="secondary">
-            {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+        <div className={s.positionsWalletSecondaryValue}>
+          <Text
+            type="small"
+            weight="semibold"
+            color="secondary"
+            tooltip={
+              formatToken(tokenAmountInUnderlying, {
+                scale: pool.poolToken.decimals,
+                decimals: pool.poolToken.decimals,
+                tokenName: pool.poolToken.symbol,
+              }) ?? '-'
+            }>
+            {formatToken(tokenAmountInUnderlying, {
+              scale: pool.poolToken.decimals,
+              compact: true,
+            }) ?? '-'}
           </Text>
           <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
-        </div>*/}
+        </div>
         <div className={s.positionsWalletSecondaryValue}>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text
+            type="small"
+            weight="semibold"
+            color="secondary"
+            tooltip={
+              formatToken(tokenAmountInQuoteAsset, {
+                scale: pool.poolToken.decimals,
+                decimals: oracleToken?.decimals,
+                tokenName: pool.oracleAssetSymbol,
+              }) ?? '-'
+            }>
             {formatToken(tokenAmountInQuoteAsset, {
-              decimals: oracleToken?.decimals,
+              scale: pool.poolToken.decimals,
+              compact: true,
               tokenName: pool.oracleAssetSymbol,
-            })}
+            }) ?? '-'}
           </Text>
         </div>
       </div>

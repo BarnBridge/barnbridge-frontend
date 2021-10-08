@@ -41,8 +41,9 @@ const PoolView = () => {
   const { getToken } = useTokens();
   const wallet = useWallet();
   const [reload] = useReload();
-  const [queueStateVisible, setQueueStateVisible] = useState<boolean>(false);
-  const [previousEpochVisible, setPreviousEpochVisible] = useState<boolean>(false);
+  const [queueStateVisible, setQueueStateVisible] = useState(false);
+  const [previousEpochVisible, setPreviousEpochVisible] = useState(false);
+  const [epochAdvancing, setEpochAdvancing] = useState(false);
 
   const { getOrCreateContract } = useContractFactory();
 
@@ -148,6 +149,19 @@ const PoolView = () => {
   const entryPriceDecimals = smartAlphaContract?.getEntryPriceDecimals(pool.oracleAssetSymbol);
   const upsideLeverage = smartAlphaContract?.epochUpsideLeverage?.unscaleBy(SMART_ALPHA_DECIMALS);
   const downsideLeverage = smartAlphaContract?.epochDownsideLeverage?.unscaleBy(SMART_ALPHA_DECIMALS);
+
+  async function handleEpochAdvance() {
+    setEpochAdvancing(true);
+
+    try {
+      await smartAlphaContract?.advanceEpoch();
+      smartAlphaContract?.loadCommon();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setEpochAdvancing(false);
+    }
+  }
 
   return (
     <div className="container-limit">
@@ -627,28 +641,52 @@ const PoolView = () => {
         <Button variation="text" color="red" onClick={() => setPreviousEpochVisible(true)}>
           View previous epochs
         </Button>
-        <UseLeftTime delay={1_000}>
-          {() => {
-            const tillNextEpoch = smartAlphaContract?.tillNextEpoch;
-
-            if (tillNextEpoch === undefined) {
-              return null;
+        <UseLeftTime
+          end={(smartAlphaContract?.nextEpochStart ?? 0) * 1_000}
+          delay={1_000}
+          onEnd={() => smartAlphaContract?.loadCommon()}>
+          {tillNextEpoch => {
+            if (smartAlphaContract?.requireEpochAdvance) {
+              return (
+                <Text
+                  type="small"
+                  tooltip={
+                    <span>
+                      Epochs are automatically advanced whenever an action occurs - however, until that happens, they
+                      cannot automatically advance - which means that essentially we would end up with epochs lasting
+                      more than one week, the concept we call elastic epochs.
+                      <br />
+                      <br />
+                      Advancing the epoch manually ensures the previous epoch's profits and losses are cemented between
+                      seniors and juniors. This yields no other benefit to the caller.
+                    </span>
+                  }>
+                  <Button
+                    variation="text"
+                    color="red"
+                    disabled={!wallet.isActive || epochAdvancing}
+                    loading={epochAdvancing}
+                    onClick={handleEpochAdvance}>
+                    Advance epoch
+                  </Button>
+                </Text>
+              );
             }
 
-            return tillNextEpoch > 0 ? (
-              <>
-                <Text type="p2" weight="bold" color="primary" className="ml-auto">
-                  {getFormattedDuration(tillNextEpoch)}
-                </Text>
-                <Text type="p2" weight="semibold" color="secondary" className="ml-4">
-                  until next epoch
-                </Text>
-              </>
-            ) : (
-              <Button variation="text" color="red" onClick={() => smartAlphaContract?.advanceEpoch()}>
-                Advance epoch
-              </Button>
-            );
+            if (tillNextEpoch > 0) {
+              return (
+                <>
+                  <Text type="p2" weight="bold" color="primary" className="ml-auto">
+                    {getFormattedDuration(tillNextEpoch / 1_000)}
+                  </Text>
+                  <Text type="p2" weight="semibold" color="secondary" className="ml-4">
+                    until next epoch
+                  </Text>
+                </>
+              );
+            }
+
+            return null;
           }}
         </UseLeftTime>
       </div>
