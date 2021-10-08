@@ -42,7 +42,7 @@ const PoolHeader: FC = () => {
       <div className="flex align-center mb-40">
         <IconsSet
           icons={poolMeta.tokens.map(token => (
-            <TokenIcon key={token.symbol} name={token.icon!} />
+            <TokenIcon key={token.symbol} name={token.icon} />
           ))}
           className="mr-16"
         />
@@ -85,7 +85,7 @@ const PoolHeader: FC = () => {
             Weekly rewards
           </Text>
           <div className="flex align-center">
-            <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
+            <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
             <Text type="p1" weight="semibold" color="primary">
               {!isEnded ? formatNumber(poolMeta.contract.epochReward) ?? '-' : 0}
             </Text>

@@ -7,6 +7,8 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
 
 import { Button, Link } from 'components/button';
+import { Badge } from 'components/custom/badge';
+import { Dropdown } from 'components/custom/dropdown';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { useConfig } from 'components/providers/configProvider';
@@ -15,7 +17,7 @@ import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
-import { useFetchPools } from 'modules/smart-alpha/api';
+import { useFetchSaPools } from 'modules/smart-alpha/api';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
@@ -29,7 +31,8 @@ export const PortfolioPositions = () => {
   const location = useLocation();
   const history = useHistory();
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
-  const { data } = useFetchPools();
+  const { account } = useWallet();
+  const { data } = useFetchSaPools({ userAddress: account });
   const { getToken } = useTokens();
   const [reload] = useReload();
 
@@ -72,45 +75,62 @@ export const PortfolioPositions = () => {
     );
   }, [activePool]);
 
+  const tranches = useMemo(() => {
+    return (
+      data
+        ?.sort((a, b) => (a.userHasActivePosition === b.userHasActivePosition ? 0 : a.userHasActivePosition ? -1 : 1))
+        .map(item => {
+          const poolToken = getToken(item.poolToken.symbol);
+          const oracleToken = getAsset(item.oracleAssetSymbol);
+
+          return {
+            children: (
+              <div className="flex flex-grow align-center">
+                <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={32} className="mr-16" />
+                <Text type="p2" weight="semibold" color="primary">
+                  {item.poolName}
+                </Text>
+                {item.userHasActivePosition ? (
+                  <Badge color="red" size="small" className="ml-auto">
+                    Staked
+                  </Badge>
+                ) : null}
+              </div>
+            ),
+            onClick: () => {
+              history.push({
+                pathname: location.pathname,
+                search: `?poolAddress=${item.poolAddress}`,
+              });
+            },
+          };
+        }) ?? []
+    );
+  }, [data]);
+
   if (!activePool) {
     return <Spinner />;
   }
+
+  const poolToken = getToken(activePool.poolToken.symbol);
+  const oracleToken = getAsset(activePool.oracleAssetSymbol);
 
   return (
     <>
       <Text type="h1" weight="bold" color="primary" className="mb-32">
         Positions
       </Text>
-      <div className="flex wrap col-gap-32 row-gap-32 mb-64 sm-mb-32">
-        {data?.map(item => {
-          const poolToken = getToken(item.poolToken.symbol);
-          const oracleToken = getAsset(item.oracleAssetSymbol);
-
-          return (
-            <button
-              key={item.poolAddress}
-              onClick={() => {
-                history.push({
-                  pathname: location.pathname,
-                  search: `?poolAddress=${item.poolAddress}`,
-                });
-              }}
-              className={classNames('tab-card', {
-                active: item.poolAddress === activePool?.poolAddress,
-              })}>
-              <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
-                bubble2Name={oracleToken?.icon}
-                size={24}
-                className="mr-16"
-              />
-              <Text type="p2" weight="semibold" color="primary">
-                {item.poolName}
-              </Text>
-            </button>
-          );
-        })}
-      </div>
+      <Dropdown items={tranches ?? []} size="large" className="mb-32" style={{ maxWidth: 360 }}>
+        <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={32} className="mr-16" />
+        <Text type="p2" weight="semibold" color="primary">
+          {activePool.poolName}
+        </Text>
+        {activePool.userHasActivePosition ? (
+          <Badge color="red" size="small" className="ml-auto">
+            Staked
+          </Badge>
+        ) : null}
+      </Dropdown>
       <div className={s.positionsCards}>
         <WalletBalance pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
         <EntryQueue pool={activePool} tranche={tranche} smartAlphaContract={smartAlphaContract} />
@@ -144,54 +164,89 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
     );
   }, [pool, isSenior]);
 
-  const tokenAmountInQuoteAsset = useMemo(() => {
-    const entryPriceDecimals = smartAlphaContract?.getEntryPriceDecimals(pool.oracleAssetSymbol);
-    const price = (
-      isSenior ? smartAlphaContract.epochSeniorTokenPrice : smartAlphaContract.epochJuniorTokenPrice
-    )?.unscaleBy(SMART_ALPHA_DECIMALS);
-    const entryPrice = smartAlphaContract.epochEntryPrice?.unscaleBy(entryPriceDecimals);
-    return tokenContract.balance?.unscaleBy(poolToken?.decimals)?.multipliedBy(price).multipliedBy(entryPrice);
+  const tokenAmountInUnderlying = useMemo(() => {
+    const estimateTokenPrice = isSenior
+      ? smartAlphaContract?.estimateCurrentSeniorTokenPrice
+      : smartAlphaContract?.estimateCurrentJuniorTokenPrice;
+
+    return tokenContract.balance?.multipliedBy(estimateTokenPrice?.unscaleBy(SMART_ALPHA_DECIMALS) ?? 0);
   }, [
-    smartAlphaContract.epochSeniorTokenPrice,
-    smartAlphaContract.epochJuniorTokenPrice,
-    smartAlphaContract.epochEntryPrice,
+    tokenContract.balance,
+    smartAlphaContract?.estimateCurrentSeniorTokenPrice,
+    smartAlphaContract?.estimateCurrentJuniorTokenPrice,
   ]);
 
+  const tokenAmountInQuoteAsset = useMemo(() => {
+    const decimals = smartAlphaContract.getEntryPriceDecimals(pool.oracleAssetSymbol);
+
+    return tokenAmountInUnderlying?.multipliedBy(smartAlphaContract?.priceOracle?.unscaleBy(decimals) ?? 0);
+  }, [tokenAmountInUnderlying, pool.oracleAssetSymbol, smartAlphaContract?.priceOracle]);
+
   return (
-    <section className="card">
-      <header className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
-          Wallet balance
+    <section className="card flex flow-row p-24">
+      <Text type="p1" weight="semibold" color="primary" className="mb-24 text-center">
+        Wallet balance
+      </Text>
+      <div className="flex justify-center align-center mb-8">
+        <Text type="h2" weight="bold" color="primary" className="mr-8">
+          {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
         </Text>
-      </header>
-      <div className="p-24">
-        <div className="flex align-center mb-8">
-          <Text type="h2" weight="bold" color="primary" className="mr-8">
-            {formatToken(tokenContract.balance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-          </Text>
-          <TokenIcon
-            name={poolToken?.icon ?? 'unknown'}
-            bubble1Name="bond"
-            bubble2Name={oracleToken?.icon}
-            outline={isSenior ? 'green' : 'purple'}
-            size={24}
-          />
-        </div>
-        <Text type="small" weight="semibold" color="secondary" className="mb-24">
-          {formatToken(tokenAmountInQuoteAsset, {
-            decimals: oracleToken?.decimals,
-            tokenName: pool.oracleAssetSymbol,
-          })}
-        </Text>
-        <footer>
-          <Link
-            variation="primary"
-            aria-disabled={!tokenContract.balance?.gt(0)}
-            to={`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`}>
-            Signal withdraw
-          </Link>
-        </footer>
+        <TokenIcon
+          name={poolToken?.icon}
+          bubble1Name="bond"
+          bubble2Name={oracleToken?.icon}
+          outline={isSenior ? 'green' : 'purple'}
+          size={24}
+        />
       </div>
+      <div className={classNames(s.positionsWalletSecondaryValues, 'mb-32')}>
+        <div className={s.positionsWalletSecondaryValue}>
+          <Text
+            type="small"
+            weight="semibold"
+            color="secondary"
+            tooltip={
+              formatToken(tokenAmountInUnderlying, {
+                scale: pool.poolToken.decimals,
+                decimals: pool.poolToken.decimals,
+                tokenName: pool.poolToken.symbol,
+              }) ?? '-'
+            }>
+            {formatToken(tokenAmountInUnderlying, {
+              scale: pool.poolToken.decimals,
+              compact: true,
+            }) ?? '-'}
+          </Text>
+          <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
+        </div>
+        <div className={s.positionsWalletSecondaryValue}>
+          <Text
+            type="small"
+            weight="semibold"
+            color="secondary"
+            tooltip={
+              formatToken(tokenAmountInQuoteAsset, {
+                scale: pool.poolToken.decimals,
+                decimals: oracleToken?.decimals,
+                tokenName: pool.oracleAssetSymbol,
+              }) ?? '-'
+            }>
+            {formatToken(tokenAmountInQuoteAsset, {
+              scale: pool.poolToken.decimals,
+              compact: true,
+              tokenName: pool.oracleAssetSymbol,
+            }) ?? '-'}
+          </Text>
+        </div>
+      </div>
+      <footer>
+        <Link
+          variation="primary"
+          aria-disabled={!tokenContract.balance?.gt(0)}
+          to={`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`}>
+          Signal withdraw
+        </Link>
+      </footer>
     </section>
   );
 };
@@ -315,7 +370,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
               </Text>
             </dt>
             <dd className="flex align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} className="mr-8" />
+              <TokenIcon name={poolToken?.icon} className="mr-8" />
               <Text type="p1" weight="bold" color="primary">
                 {formatToken(underlyingInQueue.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
@@ -329,9 +384,9 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
             </dt>
             <dd className="flex align-center">
               <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
+                name={poolToken?.icon}
                 bubble1Name="bond"
-                bubble2Name={oracleToken?.icon ?? 'unknown'}
+                bubble2Name={oracleToken?.icon}
                 outline={isSenior ? 'green' : 'purple'}
                 className="mr-8"
               />
@@ -345,7 +400,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
                   weight="semibold"
                   color="secondary"
                   tooltip={`Because entry queue conditions may change if other users add or remove ${
-                    poolToken?.symbol
+                    pool.poolToken.symbol
                   }, the amount of ${
                     isSenior ? 'senior' : 'junior'
                   } tokens you will be able to redeem when the next epoch starts may differ. This value will become fixed whenever the new epoch starts and all queued deposits are executed.`}>
@@ -422,9 +477,9 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
               <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(redeemableTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                 <TokenIcon
-                  name={poolToken?.icon ?? 'unknown'}
+                  name={poolToken?.icon}
                   bubble1Name="bond"
-                  bubble2Name={oracleToken?.icon ?? 'unknown'}
+                  bubble2Name={oracleToken?.icon}
                   outline={isSenior ? 'green' : 'purple'}
                   className="ml-8"
                 />
@@ -557,9 +612,9 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
             </dt>
             <dd className="flex align-center">
               <TokenIcon
-                name={poolToken?.icon ?? 'unknown'}
+                name={poolToken?.icon}
                 bubble1Name="bond"
-                bubble2Name={oracleToken?.icon ?? 'unknown'}
+                bubble2Name={oracleToken?.icon}
                 outline={isSenior ? 'green' : 'purple'}
                 className="mr-8"
               />
@@ -575,7 +630,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
               </Text>
             </dt>
             <dd className="flex align-center">
-              <TokenIcon name={poolToken?.icon ?? 'unknown'} className="mr-8" />
+              <TokenIcon name={poolToken?.icon} className="mr-8" />
               {redeemableUnderlying?.gt(0) ? (
                 <Text type="p1" weight="semibold" color="primary">
                   {formatToken(redeemableUnderlying.unscaleBy(pool.poolToken.decimals)) ?? '-'}
@@ -585,7 +640,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
                   type="p1"
                   weight="semibold"
                   color="secondary"
-                  tooltip={`Because exit queue conditions may change if other users add or remove either senior or junior tokens, the amount of ${poolToken?.symbol} you will be able to redeem when the next epoch starts may differ. This value will become fixed whenever the new epoch starts, and all queued withdrawals are executed.`}>
+                  tooltip={`Because exit queue conditions may change if other users add or remove either senior or junior tokens, the amount of ${pool.poolToken.symbol} you will be able to redeem when the next epoch starts may differ. This value will become fixed whenever the new epoch starts, and all queued withdrawals are executed.`}>
                   ???
                 </Text>
               )}
@@ -658,7 +713,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
               </Text>
               <Text type="p1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(redeemableUnderlying?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-                <TokenIcon name={poolToken?.icon ?? 'unknown'} size={16} className="ml-8" />
+                <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
               </Text>
             </div>
           }

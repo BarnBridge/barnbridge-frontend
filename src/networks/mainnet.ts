@@ -27,6 +27,7 @@ export const MainnetConfig: NetworkConfig = {
     smartAlpha: true,
     gasFees: true,
     addBondToken: true,
+    smartAlphaKPIOptions: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -116,6 +117,7 @@ export const MainnetMetamaskChain: MetamaskAddEthereumChain = {
 
 export const MainnetNetwork: Web3Network = {
   id: 'mainnet',
+  type: 'Ethereum',
   meta: {
     chainId: MAINNET_CHAIN_ID,
     name: isDevelopmentMode ? 'Ethereum Mainnet (Alpha)' : 'Ethereum Mainnet',

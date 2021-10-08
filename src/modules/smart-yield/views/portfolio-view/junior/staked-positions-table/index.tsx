@@ -37,7 +37,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
         <div className="flex flow-col align-center">
           <TokenIcon
             name={token?.icon as TokenIconNames}
-            bubble1Name={projectToken.icon!}
+            bubble1Name={projectToken.icon}
             bubble2Name={market?.icon.active as TokenIconNames}
             className="mr-16"
           />

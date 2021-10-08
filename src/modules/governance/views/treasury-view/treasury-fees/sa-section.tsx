@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { ReactElement, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
 import uniqBy from 'lodash/uniqBy';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
@@ -13,20 +13,31 @@ import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import {
+  AvalancheHttpsWeb3Provider,
+  BinanceHttpsWeb3Provider,
+  MainnetHttpsWeb3Provider,
+  PolygonHttpsWeb3Provider,
+} from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
-import { PoolApiType } from 'modules/smart-alpha/api';
-import SaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { useContractFactory } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
+import { PoolApiType, useFetchSaPools } from 'modules/smart-alpha/api';
+import SmartAlphaContract from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { AvalancheNetwork } from 'networks/avalanche';
+import { BinanceNetwork } from 'networks/binance';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
+import { Web3Network } from 'networks/types';
+
 export type ExtendedPoolApiType = PoolApiType & {
-  providerContract: SaContract | undefined;
-  isPolygon: boolean;
+  saContract: SmartAlphaContract | undefined;
   feesAmountToken: BigNumber | undefined;
   feesAmountUSDToken: BigNumber | undefined;
+  network: Web3Network;
 };
 
 const columns: ColumnType<ExtendedPoolApiType>[] = [
@@ -34,16 +45,12 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     heading: <div>Token Name</div>,
     render: function Render(entity) {
       const { getToken } = useTokens();
-      const token = getToken(entity.poolToken.symbol);
+      const token = getToken(entity.poolToken.symbol, entity.network);
       const oracle = getAsset(entity.oracleAssetSymbol);
+
       return (
         <div className="flex flow-col align-center">
-          <TokenIcon
-            name={token?.icon ?? 'unknown'}
-            bubble2Name={oracle?.icon ?? 'unknown'}
-            size={32}
-            className="mr-16"
-          />
+          <TokenIcon name={token?.icon} bubble2Name={oracle?.icon} size={32} className="mr-16" />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="blue" className="mr-4">
@@ -64,9 +71,9 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-          <IconOld name={!entity.isPolygon ? MainnetNetwork.meta.logo : PolygonNetwork.meta.logo} />
+          <IconOld name={entity.network.meta.logo} />
           <Text type="p2" weight="semibold" color="secondary">
-            {!entity.isPolygon ? 'Ethereum' : 'Polygon'}
+            {entity.network.type}
           </Text>
         </div>
       );
@@ -77,8 +84,16 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="text-right">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            {formatToken(entity.feesAmountToken ?? BigNumber.ZERO, {
+          <Text
+            type="p1"
+            weight="semibold"
+            color="primary"
+            className="mb-4"
+            tooltip={formatToken(entity.feesAmountToken, {
+              decimals: entity.poolToken.decimals,
+              tokenName: entity.poolToken.symbol,
+            })}>
+            {formatToken(entity.feesAmountToken, {
               compact: true,
             }) ?? '-'}
           </Text>
@@ -92,14 +107,15 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: '',
     render: function Render(entity: ExtendedPoolApiType) {
-      const { feesAmountToken, isPolygon } = entity;
+      const { network, feesAmountToken } = entity;
 
       const wallet = useWallet();
-      const { getTokenIconBySymbol } = useKnownTokens();
+      const { getToken } = useTokens();
+
       const [confirmVisible, setConfirmVisible] = useState(false);
       const [harvesting, setHarvesting] = useState(false);
 
-      if (!wallet.isActive || isPolygon) {
+      if (network !== MainnetNetwork || !wallet.isActive) {
         return <></>;
       }
 
@@ -107,8 +123,8 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
         setHarvesting(true);
 
         try {
-          await entity.providerContract?.transferFees(args.gasPrice);
-          await entity.providerContract?.getFeesAccrued();
+          await entity.saContract?.transferFees(args.gasPrice);
+          await entity.saContract?.getFeesAccrued();
         } catch (e) {
           console.error(e);
         } finally {
@@ -116,12 +132,14 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
         }
       }
 
+      const disabled = !feesAmountToken?.gt(0) || harvesting;
+
       return (
         <>
           <button
             type="button"
             className="button-ghost ml-auto"
-            disabled={!feesAmountToken?.gt(BigNumber.ZERO) || harvesting}
+            disabled={disabled}
             onClick={() => setConfirmVisible(true)}>
             {harvesting && <Spinner className="mr-8" />}
             Transfer fees
@@ -141,7 +159,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                       </Text>
                       <Text type="p1" weight="bold" color="primary" className="flex align-center">
                         {formatToken(feesAmountToken) ?? '-'}
-                        <TokenIcon name={getTokenIconBySymbol(entity.poolToken.symbol)} size={24} className="ml-8" />
+                        <TokenIcon name={getToken(entity.poolToken.symbol)?.icon} size={24} className="ml-8" />
                       </Text>
                     </div>
                   </div>
@@ -175,17 +193,112 @@ type TreasuryFilterType = {
   pool: string;
 };
 
+export function useSAData(): [ExtendedPoolApiType[], BigNumber, boolean, ReactElement | null] {
+  const [reload, version] = useReload();
+
+  const { getAmountInUSD } = useTokens();
+  const { getOrCreateContract, getContract, Listeners } = useContractFactory();
+
+  const { data: poolsMainnet = [], loading: loadingMainnet } = useFetchSaPools({
+    baseUrl: MainnetNetwork.config.api.baseUrl,
+  });
+  const { data: poolsPolygon = [], loading: loadingPolygon } = useFetchSaPools({
+    baseUrl: PolygonNetwork.config.api.baseUrl,
+  });
+  const { data: poolsAvalanche = [], loading: loadingAvalanche } = useFetchSaPools({
+    baseUrl: AvalancheNetwork.config.api.baseUrl,
+  });
+  const { data: poolsBinance = [], loading: loadingBinance } = useFetchSaPools({
+    baseUrl: BinanceNetwork.config.api.baseUrl,
+  });
+
+  const pools = useMemo(() => {
+    function mapPool(pool: PoolApiType, network: Web3Network): ExtendedPoolApiType {
+      const saContract = getContract<SmartAlphaContract>(pool.poolAddress);
+      const feesAmountToken = saContract?.feesAccrued?.unscaleBy(pool.poolToken.decimals);
+      const feesAmountUSDToken = getAmountInUSD(feesAmountToken, pool.poolToken.symbol, network);
+
+      return {
+        ...pool,
+        network,
+        saContract,
+        feesAmountToken,
+        feesAmountUSDToken,
+      };
+    }
+
+    return [
+      ...poolsMainnet.map(pool => mapPool(pool, MainnetNetwork)),
+      ...poolsPolygon.map(pool => mapPool(pool, PolygonNetwork)),
+      ...poolsAvalanche.map(pool => mapPool(pool, AvalancheNetwork)),
+      ...poolsBinance.map(pool => mapPool(pool, BinanceNetwork)),
+    ];
+  }, [poolsMainnet, poolsPolygon, poolsAvalanche, poolsBinance, version]);
+
+  useEffect(() => {
+    poolsMainnet.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(MainnetHttpsWeb3Provider);
+          contract.onUpdateData(reload);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [poolsMainnet]);
+
+  useEffect(() => {
+    poolsPolygon.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(PolygonHttpsWeb3Provider);
+          contract.onUpdateData(reload);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [poolsPolygon]);
+
+  useEffect(() => {
+    poolsAvalanche.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(AvalancheHttpsWeb3Provider);
+          contract.onUpdateData(reload);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [poolsAvalanche]);
+
+  useEffect(() => {
+    poolsBinance.forEach(pool => {
+      getOrCreateContract(pool.poolAddress, () => new SmartAlphaContract(pool.poolAddress), {
+        afterInit: contract => {
+          contract.setCallProvider(BinanceHttpsWeb3Provider);
+          contract.onUpdateData(reload);
+          contract.getFeesAccrued().catch(Error);
+        },
+      });
+    });
+  }, [poolsBinance]);
+
+  const total = useMemo(() => {
+    return BigNumber.sumEach(pools, pool => pool.feesAmountUSDToken ?? BigNumber.ZERO) ?? BigNumber.ZERO;
+  }, [pools]);
+
+  return [pools, total, loadingMainnet || loadingPolygon || loadingAvalanche || loadingBinance, Listeners];
+}
+
 export const SASection = ({
   pools,
   total,
-  loadingMainnet,
-  loadingPolygon,
+  loading,
   className,
 }: {
   pools: ExtendedPoolApiType[];
   total: BigNumber;
-  loadingMainnet: boolean;
-  loadingPolygon: boolean;
+  loading: boolean;
   className?: string;
 }) => {
   const [poolFilter, setPoolFilter] = useState('all');
@@ -277,7 +390,7 @@ export const SASection = ({
           columns={columns}
           data={filteredDataSource}
           rowKey={row => row.poolAddress}
-          loading={loadingMainnet || loadingPolygon}
+          loading={loading}
           // locale={{
           //   emptyText: 'No accrued fees', // TODO: Add support of empty result to Table component
           // }}

@@ -79,6 +79,7 @@ export const useContract = (
 
 export type UseContractOptions<T extends Web3Contract> = {
   afterInit?: (contract: T) => void;
+  onDestroy?: (contract: T) => void;
 };
 
 export type UseContractFactoryType = {
@@ -134,6 +135,7 @@ export function useContractFactory(options?: UseContractFactoryOptions): UseCont
 
   const updateContracts = useDebounce(() => {
     contractsRef.current.forEach(meta => {
+      meta.options?.onDestroy?.(meta.instance);
       createContract(meta.address, () => meta.instance, meta.options);
     });
   }, 250);

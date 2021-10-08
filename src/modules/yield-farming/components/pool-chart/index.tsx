@@ -166,7 +166,7 @@ const PoolChart: FC<Props> = props => {
             <IconsSet
               className="mr-8"
               icons={activeYfPool.tokens.map(token => (
-                <TokenIcon key={token.symbol} name={token.icon!} />
+                <TokenIcon key={token.symbol} name={token.icon} />
               ))}
             />
           )}

@@ -4,7 +4,10 @@ import { Modifier, usePopper } from 'react-popper';
 import { Link, LinkProps } from 'react-router-dom';
 import * as PopperJS from '@popperjs/core';
 import { ModifierPhases } from '@popperjs/core';
+import classNames from 'classnames';
 import outy from 'outy';
+
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -25,7 +28,7 @@ const modifiers: readonly Partial<Modifier<string, object>>[] = [
   },
 ];
 
-export type DropdownProps = {
+export type DropdownBaseProps = {
   content: (setOpen: React.Dispatch<React.SetStateAction<boolean>>) => React.ReactNode;
   options?: Partial<PopperJS.Options>;
   children: ({
@@ -39,7 +42,7 @@ export type DropdownProps = {
   }) => void;
 };
 
-export const Dropdown: React.FC<DropdownProps> = ({ content, children, options }) => {
+export const DropdownBase: React.FC<DropdownBaseProps> = ({ content, children, options }) => {
   const [open, setOpen] = React.useState(false);
   const referenceElement = React.useRef(null);
   const popperElement = React.useRef(null);
@@ -114,7 +117,7 @@ export type DropdownListProps = {
 
 export const DropdownList: React.FC<DropdownListProps> = ({ items, children, options }) => {
   return (
-    <Dropdown
+    <DropdownBase
       content={setOpen => (
         <ul className={s.tokenSelectList}>
           {items.map(({ onClick, ...rest }, idx) => {
@@ -175,6 +178,36 @@ export const DropdownList: React.FC<DropdownListProps> = ({ items, children, opt
       )}
       options={options}>
       {children}
-    </Dropdown>
+    </DropdownBase>
+  );
+};
+
+type DropdownProps = {
+  items: (HTMLProps<HTMLButtonElement> | HTMLProps<HTMLLinkElement> | LinkProps)[];
+  className?: string;
+  style?: React.CSSProperties;
+  size?: 'normal' | 'large';
+};
+
+export const Dropdown: React.FC<DropdownProps> = ({ items, children, className, size = 'normal', style }) => {
+  return (
+    <DropdownList items={items}>
+      {({ ref, setOpen, open }) => (
+        <button
+          type="button"
+          ref={ref}
+          onClick={() => setOpen(isOpen => !isOpen)}
+          className={classNames(s.dropdown, s[size], className)}
+          style={style}>
+          <div className="flex align-center flex-grow pr-16">{children}</div>
+          <Icon
+            name="dropdown"
+            size="24"
+            className={s.dropdownChevron}
+            style={{ transform: open ? 'rotate(180deg)' : '' }}
+          />
+        </button>
+      )}
+    </DropdownList>
   );
 };

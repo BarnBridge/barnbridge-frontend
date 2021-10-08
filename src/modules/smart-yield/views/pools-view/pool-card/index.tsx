@@ -65,7 +65,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
         <header className={s.header}>
           <TokenIcon
             name={uToken?.icon as TokenIconNames}
-            bubble1Name={projectToken.icon!}
+            bubble1Name={projectToken.icon}
             bubble2Name={poolMarket?.icon.active as TokenIconNames}
             size={36}
             className="mr-16"
@@ -112,7 +112,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       </Hint>
                     </dt>
                     <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                      <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                       {rewardPool.getRewardLeftFor(rewardToken.address)?.isZero()
                         ? '0'
                         : formatToken(rewardPool.getDailyRewardFor(rewardToken.address), {
@@ -136,7 +136,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                     )}
                   </dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                    <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                     {(rewardToken === bondToken &&
                       formatToken(rewardPool.getRewardLeftFor(rewardToken.address), {
                         scale: rewardToken.decimals,
@@ -156,7 +156,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
               <dd>
                 <TokenIcon
                   name={uToken?.icon as TokenIconNames}
-                  bubble1Name={projectToken.icon!}
+                  bubble1Name={projectToken.icon}
                   bubble2Name={poolMarket?.icon.active as TokenIconNames}
                   size={16}
                   className="mr-8"
@@ -189,7 +189,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       </Hint>
                     </dt>
                     <dd>
-                      <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                      <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                       {formatToken(rewardPool.getMyDailyRewardFor(rewardToken.address), {
                         scale: rewardToken.decimals,
                       }) ?? '-'}
@@ -199,7 +199,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                 <div className={s.defRow}>
                   <dt>My current {rewardToken.symbol} reward</dt>
                   <dd>
-                    <TokenIcon name={rewardToken.icon!} className="mr-8" size="16" />
+                    <TokenIcon name={rewardToken.icon} className="mr-8" size="16" />
                     {formatToken(rewardPool.getClaimFor(rewardToken.address), {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
@@ -212,7 +212,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
               <dd>
                 <TokenIcon
                   name={uToken?.icon as TokenIconNames}
-                  bubble1Name={projectToken.icon!}
+                  bubble1Name={projectToken.icon}
                   bubble2Name={poolMarket?.icon.active as TokenIconNames}
                   size={16}
                   className="mr-8"
@@ -260,7 +260,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
                       scale: rewardToken.decimals,
                     }) ?? '-'}
                   </Text>
-                  <TokenIcon name={rewardToken.icon!} size={32} />
+                  <TokenIcon name={rewardToken.icon} size={32} />
                 </Tooltip>
               ))}
             </div>

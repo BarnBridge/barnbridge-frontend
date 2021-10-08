@@ -15,6 +15,7 @@ export type NetworkConfig = {
     faucets?: boolean;
     gasFees?: boolean;
     addBondToken?: boolean;
+    smartAlphaKPIOptions?: boolean;
   };
   wallets: {
     portisId: string;
@@ -72,6 +73,7 @@ export type NetworkConfig = {
 
 export type Web3Network = {
   id: string;
+  type: string;
   meta: {
     chainId: number;
     name: string;

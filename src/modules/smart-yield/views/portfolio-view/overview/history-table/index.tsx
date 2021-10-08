@@ -46,7 +46,7 @@ const Columns: ColumnsType<TableEntity> = [
           {entity.isTokenAmount ? (
             <TokenIcon
               name={entity.poolEntity?.token?.icon as TokenIconNames}
-              bubble1Name={projectToken.icon!}
+              bubble1Name={projectToken.icon}
               bubble2Name={entity.poolEntity?.market?.icon.active as TokenIconNames}
             />
           ) : (

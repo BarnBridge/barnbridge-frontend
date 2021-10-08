@@ -349,7 +349,7 @@ const UnstakeForm: FC = () => {
                   </Text>
                   <TokenIcon
                     name={uToken?.icon as TokenIconNames}
-                    bubble1Name={projectToken.icon!}
+                    bubble1Name={projectToken.icon}
                     bubble2Name={poolMarket?.icon.active as TokenIconNames}
                     size={32}
                     className="mr-8"
@@ -372,7 +372,7 @@ const UnstakeForm: FC = () => {
                             scale: rewardToken.decimals,
                           }) ?? '-'}
                         </Text>
-                        <TokenIcon name={rewardToken.icon!} size={32} />
+                        <TokenIcon name={rewardToken.icon} size={32} />
                       </div>
                     );
                   })}

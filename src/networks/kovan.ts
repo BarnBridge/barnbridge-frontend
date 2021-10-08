@@ -25,6 +25,7 @@ export const KovanConfig: NetworkConfig = {
     smartAlpha: true,
     gasFees: true,
     addBondToken: true,
+    smartAlphaKPIOptions: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -114,6 +115,7 @@ export const KovanMetamaskChain: MetamaskAddEthereumChain = {
 
 export const KovanNetwork: Web3Network = {
   id: 'kovan',
+  type: 'Ethereum',
   meta: {
     chainId: KOVAN_CHAIN_ID,
     name: 'Ethereum Dev (Kovan)',

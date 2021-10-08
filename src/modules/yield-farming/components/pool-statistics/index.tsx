@@ -76,7 +76,7 @@ const PoolStatistics: FC = () => {
               {projectToken.symbol} balance
             </Text>
             <div className="flex align-center">
-              <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
+              <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(bondContract.balance?.unscaleBy(projectToken.decimals)) ?? '-'}
               </Text>
@@ -87,7 +87,7 @@ const PoolStatistics: FC = () => {
               Potential reward this epoch
             </Text>
             <div className="flex align-center">
-              <TokenIcon name={projectToken.icon!} size={16} className="mr-8" />
+              <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.potentialReward) ?? '-'}
               </Text>
@@ -98,7 +98,7 @@ const PoolStatistics: FC = () => {
           <div className={cn('flex align-center justify-space-between', s.claimBlock)}>
             <div className="flex flow-row">
               <div className="flex align-center mb-4">
-                <TokenIcon name={projectToken.icon!} className="mr-8" style={{ flexShrink: 0 }} />
+                <TokenIcon name={projectToken.icon} className="mr-8" style={{ flexShrink: 0 }} />
                 <Tooltip
                   title={
                     formatToken(poolMeta.contract.toClaim?.unscaleBy(projectToken.decimals), {
@@ -228,7 +228,7 @@ const PoolStatistics: FC = () => {
               <Text type="h2" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.toClaim?.unscaleBy(projectToken.decimals)) ?? '-'}
               </Text>
-              <TokenIcon name={projectToken.icon!} size={32} />
+              <TokenIcon name={projectToken.icon} size={32} />
             </div>
           }
           submitText="Claim"
