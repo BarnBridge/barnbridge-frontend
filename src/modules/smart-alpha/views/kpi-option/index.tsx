@@ -76,9 +76,9 @@ const KpiOptionView: FC = () => {
     {
       afterInit: contract => {
         contract.onUpdateData(reload);
-        contract.loadAllowance(kpiOption.poolAddress);
 
         if (walletCtx.account) {
+          contract.loadAllowance(kpiOption.poolAddress);
           contract.loadBalance(walletCtx.account);
         }
       },
@@ -88,7 +88,9 @@ const KpiOptionView: FC = () => {
   const rewardContracts = kpiOption.rewardTokens.map(token => {
     return getOrCreateContract(token.address, () => new Erc20Contract([], token.address), {
       afterInit: contract => {
-        contract.loadBalance();
+        if (walletCtx.account) {
+          contract.loadBalance();
+        }
       },
     });
   });
@@ -165,7 +167,7 @@ const KpiOptionView: FC = () => {
                       className="mr-8"
                       size="16"
                     />
-                    {formatToken(kpiContract.getBalanceFor(token.address), {
+                    {formatToken(kpiContract.getRewardLeftFor(token.address), {
                       scale: token.decimals,
                     }) ?? '-'}
                   </dd>
