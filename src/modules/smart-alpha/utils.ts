@@ -23,7 +23,7 @@ export function tillNextEpoch(pool: PoolApiType): number {
 
 export function getKpiOptionTokenIconNames(symbol: string): [TokenIconNames, TokenIconNames, TokenIconNames] {
   switch (symbol) {
-    case 'bbBPT_ETHUSD':
+    case 'WETH (USD) BPT':
       return ['balancer', 'usd', 'eth'];
     case 'WBTC (USD) BPT':
       return ['balancer', 'usd', 'wbtc'];
