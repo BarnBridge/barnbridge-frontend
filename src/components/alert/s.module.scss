@@ -4,6 +4,11 @@
   padding: 16px 24px;
   display: flex;
   border-radius: 4px;
+
+  a {
+    color: inherit;
+    text-decoration: underline;
+  }
 }
 
 .info {
