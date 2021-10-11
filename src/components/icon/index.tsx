@@ -78,7 +78,9 @@ export type IconNames =
   | 'percentage'
   | 'external'
   | 'burger'
-  | 'search';
+  | 'search'
+  | 'cards-view'
+  | 'list-view';
 
 export type IconProps = {
   name: IconNames;

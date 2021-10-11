@@ -55,3 +55,48 @@
   margin-top: auto;
   padding: 0 24px 24px;
 }
+
+.table {
+  border-collapse: separate;
+  border-spacing: 0 12px;
+
+  thead {
+    th {
+      background-color: rgba(0, 0, 0, 0.02);
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      padding: 20px 24px;
+      min-width: 200px;
+
+      &:first-of-type {
+        border-radius: 4px 0 0 4px;
+        border-left: 1px solid rgba(0, 0, 0, 0.04);
+      }
+
+      &:last-of-type {
+        border-radius: 0 4px 4px 0;
+        border-right: 1px solid rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+
+  tbody {
+    td {
+      background-color: var(--theme-card-color);
+      border-top: 1px solid rgba(0, 0, 0, 0.04);
+      border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+      padding: 24px;
+      white-space: nowrap;
+
+      &:first-of-type {
+        border-radius: 4px 0 0 4px;
+        border-left: 1px solid rgba(0, 0, 0, 0.04);
+      }
+
+      &:last-of-type {
+        border-radius: 0 4px 4px 0;
+        border-right: 1px solid rgba(0, 0, 0, 0.04);
+      }
+    }
+  }
+}
