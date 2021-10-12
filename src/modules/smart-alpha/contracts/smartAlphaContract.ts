@@ -19,6 +19,8 @@ const ABI: AbiItem[] = [
   createAbiItem('epochEntryPrice', [], ['uint256']),
   createAbiItem('getEpochSeniorTokenPrice', [], ['uint256']),
   createAbiItem('getEpochJuniorTokenPrice', [], ['uint256']),
+  createAbiItem('estimateCurrentSeniorTokenPrice', [], ['uint256']),
+  createAbiItem('estimateCurrentJuniorTokenPrice', [], ['uint256']),
 
   createAbiItem('queuedJuniorsUnderlyingIn', [], ['uint256']),
   createAbiItem('queuedJuniorsUnderlyingOut', [], ['uint256']),
@@ -28,6 +30,7 @@ const ABI: AbiItem[] = [
   createAbiItem('queuedSeniorTokensBurn', [], ['uint256']),
 
   createAbiItem('feesAccrued', [], ['uint256']),
+  createAbiItem('priceOracle', [], ['address']),
 
   createAbiItem('seniorEntryQueue', ['address'], ['uint256', 'uint256']),
   createAbiItem('seniorExitQueue', ['address'], ['uint256', 'uint256']),
@@ -49,6 +52,16 @@ const ABI: AbiItem[] = [
 
 export const SMART_ALPHA_DECIMALS = 18;
 
+class PriceOracleContract extends Web3Contract {
+  constructor(address: string) {
+    super([createAbiItem('getPrice', [], ['uint256'])], address, 'SA Price Oracle');
+  }
+
+  getPrice(): Promise<BigNumber | undefined> {
+    return this.call('getPrice').then(value => BigNumber.from(value));
+  }
+}
+
 class SmartAlphaContract extends Web3Contract {
   // common
   epoch: number | undefined;
@@ -68,22 +81,46 @@ class SmartAlphaContract extends Web3Contract {
   queuedSeniorsUnderlyingIn: BigNumber | undefined;
   queuedSeniorsUnderlyingOut: BigNumber | undefined;
   queuedSeniorTokensBurn: BigNumber | undefined;
+  estimateCurrentSeniorTokenPrice: BigNumber | undefined;
+  estimateCurrentJuniorTokenPrice: BigNumber | undefined;
   feesAccrued: BigNumber | undefined;
+  priceOracleContract: PriceOracleContract | undefined;
+  priceOracle: BigNumber | undefined;
 
   constructor(address: string) {
     super(ABI, address, 'Smart Alpha');
   }
 
   // computed
-  get tillNextEpoch(): number | undefined {
+  get nextEpochStart(): number | undefined {
     if (this.currentEpoch === undefined || this.epochDuration === undefined || this.epoch1Start === undefined) {
       return undefined;
     }
 
-    const nextEpochStart = this.epoch1Start + this.currentEpoch * this.epochDuration;
-    const now = getUnixTime(Date.now());
+    return this.epoch1Start + this.currentEpoch * this.epochDuration;
+  }
 
-    return now < nextEpochStart ? nextEpochStart - now : 0;
+  get tillNextEpoch(): number | undefined {
+    const nextEpochStart = this.nextEpochStart;
+
+    if (nextEpochStart === undefined) {
+      return undefined;
+    }
+
+    return Math.max(0, nextEpochStart - getUnixTime(Date.now()));
+  }
+
+  get epochsGap(): number | undefined {
+    if (this.epoch === undefined || this.currentEpoch === undefined) {
+      return undefined;
+    }
+
+    return this.currentEpoch - this.epoch;
+  }
+
+  get requireEpochAdvance(): boolean {
+    const epochsGap = this.epochsGap;
+    return epochsGap !== undefined && epochsGap > 0;
   }
 
   get epochTotalLiquidityRate(): BigNumber | undefined {
@@ -157,6 +194,9 @@ class SmartAlphaContract extends Web3Contract {
       queuedSeniorsUnderlyingIn,
       queuedSeniorsUnderlyingOut,
       queuedSeniorTokensBurn,
+      estimateCurrentSeniorTokenPrice,
+      estimateCurrentJuniorTokenPrice,
+      priceOracleAddress,
     ] = await this.batch([
       { method: 'epoch' },
       { method: 'getCurrentEpoch' },
@@ -175,6 +215,9 @@ class SmartAlphaContract extends Web3Contract {
       { method: 'queuedSeniorsUnderlyingIn' },
       { method: 'queuedSeniorsUnderlyingOut' },
       { method: 'queuedSeniorTokensBurn' },
+      { method: 'estimateCurrentSeniorTokenPrice' },
+      { method: 'estimateCurrentJuniorTokenPrice' },
+      { method: 'priceOracle' },
     ]);
 
     this.epoch = Number(epoch);
@@ -194,6 +237,11 @@ class SmartAlphaContract extends Web3Contract {
     this.queuedSeniorsUnderlyingIn = BigNumber.from(queuedSeniorsUnderlyingIn);
     this.queuedSeniorsUnderlyingOut = BigNumber.from(queuedSeniorsUnderlyingOut);
     this.queuedSeniorTokensBurn = BigNumber.from(queuedSeniorTokensBurn);
+    this.estimateCurrentSeniorTokenPrice = BigNumber.from(estimateCurrentSeniorTokenPrice);
+    this.estimateCurrentJuniorTokenPrice = BigNumber.from(estimateCurrentJuniorTokenPrice);
+    this.priceOracleContract = new PriceOracleContract(priceOracleAddress);
+    this.priceOracleContract.setCallProvider(this.provider);
+    this.priceOracle = await this.priceOracleContract.getPrice();
     this.emit(Web3Contract.UPDATE_DATA);
   }
 

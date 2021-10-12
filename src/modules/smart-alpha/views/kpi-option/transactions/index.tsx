@@ -131,7 +131,6 @@ const Transactions: FC<{ poolAddress: string; kpiOption: KpiOptionType; version:
 
   useEffect(() => {
     if (version > 0) {
-      console.log('-----LOAD');
       load().catch(Error);
     }
   }, [version]);

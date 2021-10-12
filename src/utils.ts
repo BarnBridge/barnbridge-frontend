@@ -15,6 +15,30 @@ export function inRange(value: number, min: number, max: number): boolean {
   return min < value && value < max;
 }
 
+export namespace DateUtils {
+  const FORMAT_DURATION_FORMATS = ['years', 'months', 'days', 'hours', 'minutes', 'seconds'];
+  const FORMAT_DURATION_SHORTS = ['y', 'mo', 'd', 'h', 'm', 's'];
+
+  export function formatDurationNew(value: number | undefined): string | undefined {
+    if (value === undefined) {
+      return undefined;
+    }
+
+    const start = new Date().getTime();
+    const duration = intervalToDuration({
+      start,
+      end: start + value,
+    });
+
+    return FORMAT_DURATION_FORMATS.map((key, index) => {
+      const val = duration[key];
+      return val > 0 ? `${val}${FORMAT_DURATION_SHORTS[index]}` : undefined;
+    })
+      .filter(Boolean)
+      .join(' ');
+  }
+}
+
 export function getFormattedDuration(value?: number, endValue?: number): string | undefined {
   if (value === undefined) {
     return undefined;
