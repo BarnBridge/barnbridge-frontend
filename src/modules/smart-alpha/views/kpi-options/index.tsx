@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import AntdSpin from 'antd/lib/spin';
 
 import { Alert } from 'components/alert';
@@ -7,7 +6,7 @@ import { KpiOptionCard } from 'modules/smart-alpha/views/kpi-options/kpi-option-
 
 import s from './s.module.scss';
 
-const KpiOptionsView: FC = () => {
+const KpiOptionsView: React.FC = () => {
   const { loading, data: kpiOptions } = useFetchKpiOptions();
 
   return (

@@ -39,7 +39,11 @@ export namespace DateUtils {
   }
 }
 
-export function getFormattedDuration(value?: number, endValue?: number): string | undefined {
+export function getFormattedDuration(
+  value?: number,
+  endValue?: number,
+  { format = ['months', 'days', 'hours', 'minutes', 'seconds'] } = {},
+): string | undefined {
   if (value === undefined) {
     return undefined;
   }
@@ -53,7 +57,7 @@ export function getFormattedDuration(value?: number, endValue?: number): string 
   });
 
   return formatDuration(duration, {
-    format: ['months', 'days', 'hours', 'minutes', 'seconds'],
+    format,
     delimiter: ' ',
     zero: true,
     locale: {

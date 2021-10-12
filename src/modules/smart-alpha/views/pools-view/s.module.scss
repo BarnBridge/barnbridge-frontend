@@ -18,7 +18,7 @@
     right: 0;
     width: 100%;
     height: 4px;
-    background-color: #e3e4e6;
+    background-color: var(--theme-border-color);
     border-radius: 0 4px 4px;
   }
 
@@ -54,4 +54,75 @@
 .poolCardFooter {
   margin-top: auto;
   padding: 0 24px 24px;
+}
+
+.table {
+  --border-color: rgba(0, 0, 0, 0.04);
+
+  border-collapse: separate;
+  border-spacing: 0 12px;
+
+  [data-theme='dark'] & {
+    --border-color: rgba(255, 255, 255, 0.04);
+  }
+
+  thead {
+    th {
+      background-color: rgba(0, 0, 0, 0.02);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 20px 12px;
+
+      [data-theme='dark'] & {
+        background-color: rgba(255, 255, 255, 0.02);
+      }
+
+      &:first-of-type {
+        border-radius: 4px 0 0 4px;
+        border-left: 1px solid var(--border-color);
+        padding-left: 24px;
+      }
+
+      &:last-of-type {
+        border-radius: 0 4px 4px 0;
+        border-right: 1px solid var(--border-color);
+        padding-right: 24px;
+      }
+    }
+  }
+
+  tbody {
+    tr {
+      box-shadow: 0 2px 4px rgba(6, 10, 13, 0.04);
+
+      &:hover {
+        box-shadow: 0 16px 32px rgba(255, 67, 57, 0.04);
+
+        td {
+          border-color: var(--theme-red-color);
+        }
+      }
+    }
+
+    td {
+      background-color: var(--theme-card-color);
+      border-top: 1px solid var(--border-color);
+      border-bottom: 1px solid var(--border-color);
+      padding: 24px 12px;
+      white-space: nowrap;
+
+      &:first-of-type {
+        border-radius: 4px 0 0 4px;
+        border-left: 1px solid var(--border-color);
+        padding-left: 24px;
+      }
+
+      &:last-of-type {
+        border-radius: 0 4px 4px 0;
+        border-right: 1px solid var(--border-color);
+        padding-right: 24px;
+        position: relative;
+      }
+    }
+  }
 }
