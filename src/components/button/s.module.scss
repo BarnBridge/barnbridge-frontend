@@ -132,7 +132,7 @@
   &[aria-disabled='true'],
   &.disabled {
     background: rgba(170, 175, 179, 0.08);
-    border-color: #e3e4e6;
+    border-color: var(--theme-border-color);
     color: #aaafb3;
   }
 }
@@ -140,7 +140,7 @@
 .ghost-alt {
   @include button-base;
 
-  border: 1px solid #e3e4e6;
+  border: 1px solid var(--theme-border-color);
   background-color: transparent;
   border-radius: 4px;
 
@@ -163,7 +163,7 @@
   &[aria-disabled='true'],
   &.disabled {
     background: rgba(170, 175, 179, 0.08);
-    border-color: #e3e4e6;
+    border-color: var(--theme-border-color);
     color: #aaafb3;
   }
 }
