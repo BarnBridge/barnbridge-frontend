@@ -140,7 +140,8 @@ export type IconNames =
   | 'checkbox-checked'
   | 'checkbox'
   | 'loader'
-  | 'insured';
+  | 'insured'
+  | 'arbitrum-logo';
 
 export type IconProps = {
   name: IconNames;
