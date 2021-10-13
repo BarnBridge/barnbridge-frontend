@@ -51,6 +51,7 @@ export enum Tokens {
   BNB = 'BNB',
   CAKE = 'CAKE',
   AAVE = 'AAVE',
+  DPI = 'DPI',
 }
 
 export type BaseTokenType = {
@@ -219,6 +220,13 @@ const CAKE: BaseTokenType = {
   icon: 'cake',
 };
 
+const DPI: BaseTokenType = {
+  symbol: Tokens.DPI,
+  name: 'DeFiPulse Index',
+  decimals: 18,
+  icon: 'dpi',
+};
+
 export const ProjectToken: BaseTokenType & {
   address: string;
 } = {
@@ -365,6 +373,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'BNB':
         // Chainlink: BNB/USD
         return getChainlinkFeedPrice('0x14e613ac84a31f709eadbdf89c6cc390fdc9540a', MainnetHttpsWeb3Provider);
+      case 'DPI':
+        // Chainlink: DPI/USD
+        return getChainlinkFeedPrice('0x68f1b8317c19ff02fb68a8476c1d3f9fc5139c0a', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
         return getGeckoPrice('gemini-dollar');
@@ -517,6 +528,7 @@ const ALL_TOKENS: BaseTokenType[] = [
   BNB,
   CAKE,
   FEI,
+  DPI,
 ];
 
 const TokensProvider: FC = props => {
