@@ -38,6 +38,7 @@ export type TokenIconNames =
   | 'cake'
   | 'balancer'
   | 'uma'
+  | 'dpi'
   | 'all';
 
 type TokenIconProps = {
