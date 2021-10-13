@@ -1,6 +1,7 @@
 import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSessionStorage } from 'react-use-storage';
 
+import { ArbitrumTestnetNetwork } from 'networks/arbitrum-testnet';
 import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
 import { BinanceNetwork } from 'networks/binance';
@@ -41,6 +42,7 @@ const networks: Web3Network[] = (() => {
       AvalancheNetwork,
       BinanceTestnetNetwork,
       BinanceNetwork,
+      ArbitrumTestnetNetwork,
     ];
   }
 
