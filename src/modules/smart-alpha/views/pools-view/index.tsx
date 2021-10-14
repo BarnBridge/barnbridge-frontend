@@ -91,8 +91,6 @@ const PoolsView = () => {
     [tokenFilter],
   );
 
-  console.log({ tokenFilter });
-
   const items = useMemo(() => {
     return (
       data?.filter(dataItem => {
