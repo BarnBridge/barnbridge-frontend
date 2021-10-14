@@ -35,8 +35,8 @@ export const PreviousEpochs = ({ poolTokenSymbol }: { poolTokenSymbol: Tokens })
   useEffect(() => handleSearchChange(search), [search]);
 
   return (
-    <div>
-      <div style={{ paddingLeft: 116 }}>
+    <div style={{ paddingLeft: 44 }}>
+      <div style={{ paddingLeft: 72 }}>
         <Input
           type="search"
           className={classNames(s.search, 'mb-16')}
@@ -62,7 +62,7 @@ export const PreviousEpochs = ({ poolTokenSymbol }: { poolTokenSymbol: Tokens })
           isLast={idx === data.length - 1}
         />
       ))}
-      <div style={{ paddingLeft: 116 }}>
+      <div style={{ paddingLeft: 72 }}>
         {loaded && hasOlder ? (
           <Button type="button" variation="text" onClick={() => loadOlder()} loading={loading} className="mt-16">
             Load older epochs
