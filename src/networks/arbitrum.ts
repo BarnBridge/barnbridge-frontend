@@ -12,7 +12,7 @@ const EXPLORER_KEY = '';
 const EXPLORER_URL = 'https://arbiscan.io';
 const EXPLORER_API_URL = 'https://api.arbiscan.io';
 
-export const ARBITRUM_CHAIN_ID = 421611;
+export const ARBITRUM_CHAIN_ID = 42161;
 
 export const ArbitrumConfig: NetworkConfig = {
   title: 'BarnBridge Arbitrum',
