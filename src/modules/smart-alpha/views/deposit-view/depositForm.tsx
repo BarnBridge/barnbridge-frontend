@@ -172,7 +172,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
       </div>
 
       <Text type="small" weight="semibold" color="secondary" className="mb-8">
-        wETH amount
+        {pool.poolToken.symbol} amount
       </Text>
       <TokenAmount
         before={<TokenIcon name={poolToken?.icon} size={24} />}
