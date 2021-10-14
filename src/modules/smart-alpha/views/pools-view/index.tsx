@@ -3,9 +3,12 @@ import { useLocation } from 'react-router-dom';
 import useWindowSize from '@rooks/use-window-size';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
+import uniqBy from 'lodash/uniqBy';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
+import Select from 'components/antd/select';
 import { Button, Link } from 'components/button';
+import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { InfoTooltip } from 'components/custom/tooltip';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
@@ -19,6 +22,10 @@ import { tillNextEpoch } from 'modules/smart-alpha/utils';
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
+
+type TreasuryFilterType = {
+  token: string;
+};
 
 const PoolsView = () => {
   const { data } = useFetchSaPools();
@@ -45,6 +52,58 @@ const PoolsView = () => {
       return sum.plus(item.tvl.juniorExitedTVL).plus(item.tvl.seniorExitedTVL);
     }, BigNumber.ZERO);
   }, [data]);
+
+  const [tokenFilter, setTokenFilter] = useState('');
+
+  const filters = useMemo(
+    () =>
+      [
+        {
+          name: 'token',
+          label: 'Token',
+          defaultValue: '',
+          itemRender: () => {
+            const tokenOpts = [
+              {
+                value: '',
+                label: 'All tokens',
+              },
+              ...uniqBy(
+                data?.map(item => ({
+                  value: item.poolToken.symbol,
+                  label: item.poolToken.symbol,
+                })),
+                'value',
+              ),
+            ];
+
+            return <Select options={tokenOpts} className="full-width" />;
+          },
+        },
+      ] as TableFilterType<PoolApiType>[],
+    [data],
+  );
+
+  const filterValue = useMemo<TreasuryFilterType>(
+    () => ({
+      token: tokenFilter,
+    }),
+    [tokenFilter],
+  );
+
+  console.log({ tokenFilter });
+
+  const items = useMemo(() => {
+    return (
+      data?.filter(dataItem => {
+        if (tokenFilter) {
+          return dataItem.poolToken.symbol.toUpperCase() === tokenFilter.toUpperCase();
+        }
+
+        return true;
+      }) ?? []
+    );
+  }, [data, tokenFilter]);
 
   return (
     <>
@@ -90,21 +149,24 @@ const PoolsView = () => {
               className="ml-16"
             />
           )}
-          <Button variation="ghost-alt" icon="filter" iconPosition="left" className="ml-16">
-            Filters
-          </Button>
+          <TableFilter<TreasuryFilterType>
+            className="ml-16"
+            filters={filters}
+            value={filterValue}
+            onChange={(filters: TreasuryFilterType) => setTokenFilter(filters.token)}
+          />
         </div>
       </div>
-      {forceCardsView || layout === 'cards' ? <Cards items={data} /> : <Table items={data} />}
+      {forceCardsView || layout === 'cards' ? <Cards items={items} /> : <Table items={items} />}
     </>
   );
 };
 export default PoolsView;
 
-const Cards = ({ items }: { items: PoolApiType[] | undefined }) => {
+const Cards = ({ items }: { items: PoolApiType[] }) => {
   return (
     <div className={s.cards}>
-      {items?.map(item => (
+      {items.map(item => (
         <PoolCard key={item.poolAddress} item={item} />
       ))}
     </div>
@@ -281,7 +343,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   );
 };
 
-const Table = ({ items }: { items: PoolApiType[] | undefined }) => {
+const Table = ({ items }: { items: PoolApiType[] }) => {
   const location = useLocation();
   const { getToken } = useTokens();
 
@@ -362,7 +424,7 @@ const Table = ({ items }: { items: PoolApiType[] | undefined }) => {
         </tr>
       </thead>
       <tbody>
-        {items?.map(function Render(item) {
+        {items.map(function Render(item) {
           const poolToken = getToken(item.poolToken.symbol);
           const oracleToken = getAsset(item.oracleAssetSymbol);
 
