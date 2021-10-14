@@ -320,4 +320,14 @@
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M7.466 13.867a6.4 6.4 0 100-12.8 6.4 6.4 0 000 12.8z" clip-rule="evenodd" />
 		<path stroke="currentColor" stroke-linecap="round" stroke-width="1.5" d="M14.4 14.4L12 12" />
 	</symbol>
+  <symbol id="icon__cards-view" fill="none" viewBox="0 0 24 24">
+    <rect width="7.2" height="7.2" x="3.199" y="3.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" rx="2"/>
+    <rect width="7.2" height="7.2" x="13.6" y="3.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" rx="2"/>
+    <rect width="7.2" height="7.2" x="13.6" y="13.6" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" rx="2"/>
+    <rect width="7.2" height="7.2" x="3.199" y="13.6" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" rx="2"/>
+  </symbol>
+  <symbol id="icon__list-view" fill="none" viewBox="0 0 24 24">
+    <rect width="17.6" height="6.4" x="3.199" y="3.2" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" rx="2"/>
+    <rect width="17.6" height="6.4" x="3.199" y="14.4" stroke="currentColor" stroke-linecap="round" stroke-width="1.5" rx="2"/>
+  </symbol>
 </svg>

@@ -4,18 +4,21 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_HTTPS_URL = `https://bsc-dataseed1.ninicoin.io`;
-const RPC_WSS_URL = ``;
+const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
+const RPC_HTTPS_URL = `https://rinkeby.arbitrum.io/rpc`;
+const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
-const EXPLORER_URL = 'https://bscscan.com';
+const EXPLORER_KEY = '';
+const EXPLORER_URL = 'https://testnet.arbiscan.io';
+const EXPLORER_API_URL = 'https://api-testnet.arbiscan.io';
 
-export const BINANCE_CHAIN_ID = 56;
+export const ARBITRUM_CHAIN_ID = 421611;
 
-export const BinanceDevConfig: NetworkConfig = {
-  title: 'BarnBridge Binance',
+export const ArbitrumConfig: NetworkConfig = {
+  title: 'BarnBridge Arbitrum',
   features: {
     smartAlpha: true,
-    gasFees: false,
+    gasFees: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -25,7 +28,7 @@ export const BinanceDevConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://prod-bsc.api.barnbridge.com',
+    baseUrl: 'https://dev-arbitrum.api.barnbridge.com',
   },
   tokens: {
     wbtc: '',
@@ -68,30 +71,30 @@ export const BinanceDevConfig: NetworkConfig = {
   },
   contracts: {
     sa: {
-      loupe: '0x525fbAa28220027e65785D6fa67595Df6a6F4C28',
+      loupe: '0x500813d36d27320012F0DA24CC7dfaC4fADb4519',
     },
   },
 };
 
-export const BinanceMetamaskChain: MetamaskAddEthereumChain = {
-  chainId: toHex(BINANCE_CHAIN_ID),
-  chainName: 'Binance Smart Chain Mainnet',
+export const ArbitrumMetamaskChain: MetamaskAddEthereumChain = {
+  chainId: toHex(ARBITRUM_CHAIN_ID),
+  chainName: 'Arbitrum Testnet',
   nativeCurrency: {
-    name: 'Binance Coin',
-    symbol: 'BNB',
+    name: 'Ethereum',
+    symbol: 'ETH',
     decimals: 18,
   },
   rpcUrls: [RPC_HTTPS_URL],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
-export const BinanceNetwork: Web3Network = {
-  id: 'binance',
-  type: 'Binance',
+export const ArbitrumTestnetNetwork: Web3Network = {
+  id: 'arbitrum-testnet',
+  type: 'Arbitrum',
   meta: {
-    chainId: BINANCE_CHAIN_ID,
-    name: 'BSC Mainnet',
-    logo: 'binance-logo',
+    chainId: ARBITRUM_CHAIN_ID,
+    name: 'Arbitrum Testnet',
+    logo: 'arbitrum-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
@@ -99,11 +102,11 @@ export const BinanceNetwork: Web3Network = {
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
-    name: 'Binance Explorer',
-    key: '',
+    name: 'Arbiscan',
+    key: EXPLORER_KEY,
     url: EXPLORER_URL,
-    apiUrl: '',
+    apiUrl: EXPLORER_API_URL,
   },
-  metamaskChain: BinanceMetamaskChain,
-  config: BinanceDevConfig,
+  metamaskChain: ArbitrumMetamaskChain,
+  config: ArbitrumConfig,
 };

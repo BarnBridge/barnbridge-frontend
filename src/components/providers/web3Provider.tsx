@@ -9,6 +9,7 @@ import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
+import { ArbitrumNetwork } from 'networks/arbitrum';
 import { AvalancheNetwork } from 'networks/avalanche';
 import { BinanceNetwork } from 'networks/binance';
 import { MainnetNetwork } from 'networks/mainnet';
@@ -22,12 +23,14 @@ export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(MainnetN
 export const PolygonHttpsWeb3Provider = new Web3.providers.HttpProvider(PolygonNetwork.rpc.httpsUrl);
 export const AvalancheHttpsWeb3Provider = new Web3.providers.HttpProvider(AvalancheNetwork.rpc.httpsUrl);
 export const BinanceHttpsWeb3Provider = new Web3.providers.HttpProvider(BinanceNetwork.rpc.httpsUrl);
+export const ArbitrumHttpsWeb3Provider = new Web3.providers.HttpProvider(ArbitrumNetwork.rpc.httpsUrl);
 
 const CacheHttpsWeb3Provider: Record<string, HttpProvider> = {
   [MainnetNetwork.rpc.httpsUrl]: MainnetHttpsWeb3Provider,
   [PolygonNetwork.rpc.httpsUrl]: PolygonHttpsWeb3Provider,
   [AvalancheNetwork.rpc.httpsUrl]: AvalancheHttpsWeb3Provider,
   [BinanceNetwork.rpc.httpsUrl]: BinanceHttpsWeb3Provider,
+  [ArbitrumNetwork.rpc.httpsUrl]: ArbitrumHttpsWeb3Provider,
 };
 
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;

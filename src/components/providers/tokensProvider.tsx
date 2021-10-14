@@ -7,6 +7,8 @@ import { createAbiItem } from 'web3/web3Contract';
 import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
+import { ArbitrumNetwork } from 'networks/arbitrum';
+import { ArbitrumTestnetNetwork } from 'networks/arbitrum-testnet';
 import { AvalancheNetwork } from 'networks/avalanche';
 import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
 import { BinanceNetwork } from 'networks/binance';
@@ -17,6 +19,7 @@ import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
 import {
+  ArbitrumHttpsWeb3Provider,
   AvalancheHttpsWeb3Provider,
   BinanceHttpsWeb3Provider,
   MainnetHttpsWeb3Provider,
@@ -45,12 +48,14 @@ export enum Tokens {
   BTC = 'BTC',
   USD = 'USD',
   XSUSHI = 'xSUSHI',
+  SUSHI = 'SUSHI',
   LINK = 'LINK',
   UNI = 'UNI',
   FEI = 'FEI',
   BNB = 'BNB',
   CAKE = 'CAKE',
   AAVE = 'AAVE',
+  DPI = 'DPI',
 }
 
 export type BaseTokenType = {
@@ -173,6 +178,14 @@ const UNIV2: BaseTokenType = {
   icon: 'uniswap',
 };
 
+const SUSHI: BaseTokenType = {
+  // address: '0x8798249c2e607446efb7ad49ec89dd1865ff4272',
+  symbol: Tokens.SUSHI,
+  name: 'SUSHI',
+  decimals: 18,
+  icon: 'sushi',
+};
+
 const XSUSHI: BaseTokenType = {
   // address: '0x8798249c2e607446efb7ad49ec89dd1865ff4272',
   symbol: Tokens.XSUSHI,
@@ -217,6 +230,13 @@ const CAKE: BaseTokenType = {
   name: 'PancakeSwap',
   decimals: 18,
   icon: 'cake',
+};
+
+const DPI: BaseTokenType = {
+  symbol: Tokens.DPI,
+  name: 'DeFiPulse Index',
+  decimals: 18,
+  icon: 'dpi',
 };
 
 export const ProjectToken: BaseTokenType & {
@@ -365,6 +385,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'BNB':
         // Chainlink: BNB/USD
         return getChainlinkFeedPrice('0x14e613ac84a31f709eadbdf89c6cc390fdc9540a', MainnetHttpsWeb3Provider);
+      case 'DPI':
+        // Chainlink: DPI/USD
+        return getChainlinkFeedPrice('0x68f1b8317c19ff02fb68a8476c1d3f9fc5139c0a', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
         return getGeckoPrice('gemini-dollar');
@@ -377,6 +400,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'XSUSHI':
         // Coingecko API: XSUSHI/USD
         return getGeckoPrice('xsushi');
+      case 'SUSHI':
+        // Coingecko API: SUSHI/USD
+        return getChainlinkFeedPrice('0x7213536a36094cd8a768a5e45203ec286cba2d74', MainnetHttpsWeb3Provider);
       case 'BOND':
         // UNISWAP V2: BOND/USDC
         return getBondPrice('0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244');
@@ -491,6 +517,14 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       default:
         return getPriceFor(symbol, MainnetNetwork);
     }
+  } else if (network === ArbitrumNetwork || network === ArbitrumTestnetNetwork) {
+    switch (symbol.toUpperCase()) {
+      case 'SUSHI':
+        // Chainlink: SUSHI/USD
+        return getChainlinkFeedPrice('0xb2a8ba74cbca38508ba1632761b56c897060147c', ArbitrumHttpsWeb3Provider);
+      default:
+        return getPriceFor(symbol, MainnetNetwork);
+    }
   }
 
   return undefined;
@@ -512,11 +546,13 @@ const ALL_TOKENS: BaseTokenType[] = [
   BOND,
   UNIV2,
   XSUSHI,
+  SUSHI,
   LINK,
   UNI,
   BNB,
   CAKE,
   FEI,
+  DPI,
 ];
 
 const TokensProvider: FC = props => {
