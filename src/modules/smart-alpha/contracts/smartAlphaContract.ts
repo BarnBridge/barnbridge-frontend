@@ -240,7 +240,7 @@ class SmartAlphaContract extends Web3Contract {
     this.estimateCurrentSeniorTokenPrice = BigNumber.from(estimateCurrentSeniorTokenPrice);
     this.estimateCurrentJuniorTokenPrice = BigNumber.from(estimateCurrentJuniorTokenPrice);
     this.priceOracleContract = new PriceOracleContract(priceOracleAddress);
-    this.priceOracleContract.setCallProvider(this.provider);
+    this.priceOracleContract.setCallProvider(this.callProvider);
     this.priceOracle = await this.priceOracleContract.getPrice();
     this.emit(Web3Contract.UPDATE_DATA);
   }

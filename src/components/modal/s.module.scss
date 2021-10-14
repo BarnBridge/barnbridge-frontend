@@ -19,6 +19,7 @@
   border-radius: 4px;
   padding: 32px;
   overflow-y: auto;
+  max-height: 100vh;
 
   &.fullscreen {
     max-width: none;
