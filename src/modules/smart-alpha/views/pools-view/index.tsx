@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import useWindowSize from '@rooks/use-window-size';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -12,6 +12,7 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { InfoTooltip } from 'components/custom/tooltip';
 // import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 // import { Icon } from 'components/icon';
 import { TokenIcon } from 'components/token-icon';
@@ -343,6 +344,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
 
 const Table = ({ items }: { items: PoolApiType[] }) => {
   const location = useLocation();
+  const history = useHistory();
   const { getToken } = useTokens();
 
   return (
@@ -437,7 +439,7 @@ const Table = ({ items }: { items: PoolApiType[] }) => {
             : new BigNumber(1);
 
           return (
-            <tr key={item.poolAddress}>
+            <tr key={item.poolAddress} onClick={() => history.push(`${location.pathname}/${item.poolAddress}`)}>
               <td>
                 <div className="flex align-center">
                   <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
@@ -538,12 +540,7 @@ const Table = ({ items }: { items: PoolApiType[] }) => {
                 </Text>
               </td>
               <td>
-                <Link
-                  to={`${location.pathname}/${item.poolAddress}`}
-                  variation="text"
-                  icon="arrow"
-                  iconPosition="only"
-                />
+                <Icon name="arrow" color="red" className={s.arrowIcon} />
               </td>
             </tr>
           );
