@@ -39,7 +39,8 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
   const [enabling, setEnabled] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
 
-  const maxAmountUnscaled = poolTokenContract.balance?.unscaleBy(kpiOption.poolToken.decimals);
+  const walletBalance = poolTokenContract.balance;
+  const maxAmountUnscaled = walletBalance?.unscaleBy(kpiOption.poolToken.decimals);
 
   const formCtx = useForm<StakeFormValues>({
     defaultValues: {
@@ -211,7 +212,8 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
   const [isClaimUnstake, setClaimUnstake] = useState(false);
   const [visibleConfirm, showConfirm] = useState(false);
 
-  const maxAmountUnscaled = poolTokenContract.balance?.unscaleBy(kpiOption.poolToken.decimals);
+  const stakedBalance = walletCtx.account ? kpiContract.getBalanceFor(walletCtx.account) : undefined;
+  const maxAmountUnscaled = stakedBalance?.unscaleBy(kpiOption.poolToken.decimals);
 
   const formCtx = useForm<UnstakeFormValues>({
     defaultValues: {
