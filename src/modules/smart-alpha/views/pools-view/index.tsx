@@ -541,12 +541,6 @@ const Table = ({ items }: { items: PoolApiType[] }) => {
               </td>
               <td>
                 <Icon name="arrow" color="red" className={s.arrowIcon} />
-                {/* <Link
-                  to={`${location.pathname}/${item.poolAddress}`}
-                  variation="text"
-                  icon="arrow"
-                  iconPosition="only"
-                /> */}
               </td>
             </tr>
           );
