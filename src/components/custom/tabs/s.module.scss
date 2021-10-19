@@ -76,8 +76,11 @@
       }
     }
 
-    &:disabled {
-      cursor: not-allowed;
+    &:disabled,
+    &[disabled],
+    &.disabled {
+      color: var(--theme-icon-color);
+      pointer-events: none;
     }
   }
 
