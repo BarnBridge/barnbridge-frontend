@@ -14,14 +14,22 @@ const Cell = ({
   iconPosition,
   size,
   iconRotate,
+  disabled,
 }: {
   variation: ButtonProps['variation'];
   icon?: ButtonProps['icon'];
   iconPosition?: ButtonProps['iconPosition'];
   size?: ButtonProps['size'];
   iconRotate?: ButtonProps['iconRotate'];
+  disabled?: boolean;
 }) => (
-  <Button variation={variation} icon={icon} iconPosition={iconPosition} iconRotate={iconRotate} size={size}>
+  <Button
+    variation={variation}
+    icon={icon}
+    iconPosition={iconPosition}
+    iconRotate={iconRotate}
+    size={size}
+    disabled={disabled}>
     Button
   </Button>
 );
@@ -40,11 +48,13 @@ const Row = ({
   iconPosition,
   size,
   iconRotate,
+  disabled,
 }: {
   icon?: ButtonProps['icon'];
   iconPosition?: ButtonProps['iconPosition'];
   size?: ButtonProps['size'];
   iconRotate?: ButtonProps['iconRotate'];
+  disabled?: boolean;
 }) => (
   <tr>
     <th>
@@ -52,11 +62,11 @@ const Row = ({
     </th>
     {buttonVariationList.map(variation => (
       <td>
-        <Cell variation={variation} icon={icon} iconPosition={iconPosition} size={size} />
+        <Cell variation={variation} icon={icon} iconPosition={iconPosition} size={size} disabled={disabled} />
       </td>
     ))}
     <td>
-      <Button variation="link" size={size}>
+      <Button variation="link" size={size} disabled={disabled}>
         Link
       </Button>
     </td>
@@ -69,6 +79,7 @@ const Tbody = ({ size }: { size?: ButtonProps['size'] }) => (
     <Row icon="arrow" iconPosition="right" size={size} />
     <Row icon="arrow" iconRotate={180} iconPosition="left" size={size} />
     <Row icon="arrow" iconPosition="only" size={size} />
+    <Row size={size} disabled />
   </tbody>
 );
 
