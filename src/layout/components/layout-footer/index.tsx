@@ -46,12 +46,12 @@ const LayoutFooter: React.FC = () => {
                 </Link>
               </li>
               <li>
-                <ExternalLink variation="text-alt" href="https://forum.barnbridge.com">
+                <ExternalLink variation="text-alt" href={links.forum}>
                   Forum
                 </ExternalLink>
               </li>
               <li>
-                <ExternalLink variation="text-alt" href="https://signal.barnbridge.com">
+                <ExternalLink variation="text-alt" href={links.signal}>
                   Signal
                 </ExternalLink>
               </li>
@@ -116,42 +116,6 @@ const LayoutFooter: React.FC = () => {
           </ExternalLink>
         </div>
       </div>
-
-      {/* <ExternalLink href={links.website}>
-        <Text type="p2" weight="semibold">
-          Website
-        </Text>
-      </ExternalLink>
-      <ExternalLink href={links.discord}>
-        <Text type="p2" weight="semibold">
-          Discord
-        </Text>
-      </ExternalLink>
-      <ExternalLink href={links.twitter}>
-        <Text type="p2" weight="semibold">
-          Twitter
-        </Text>
-      </ExternalLink>
-      <ExternalLink href={links.whitepaper}>
-        <Text type="p2" weight="semibold">
-          Whitepaper
-        </Text>
-      </ExternalLink>
-      <ExternalLink href={links.github}>
-        <Text type="p2" weight="semibold">
-          Github
-        </Text>
-      </ExternalLink>
-      <ExternalLink href={links.uniswapLiquidity}>
-        <Text type="p2" weight="semibold">
-          Uniswap v2 USDC/BOND add liquidity
-        </Text>
-      </ExternalLink>
-      <ExternalLink href={links.uniswapSwap}>
-        <Text type="p2" weight="semibold">
-          Uniswap v2 USDC/BOND market
-        </Text>
-      </ExternalLink> */}
     </footer>
   );
 };

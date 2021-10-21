@@ -14,6 +14,8 @@ export type ConfigContextType = NetworkConfig & {
     whitepaper: string;
     docs: string;
     github: string;
+    forum: string;
+    signal: string;
     uniswapLiquidity: string;
     uniswapSwap: string;
   };
@@ -39,6 +41,8 @@ const ConfigProvider: FC = props => {
       whitepaper: 'https://github.com/BarnBridge/BarnBridge-Whitepaper',
       docs: 'https://docs.barnbridge.com/',
       github: 'https://github.com/BarnBridge',
+      forum: 'https://forum.barnbridge.com',
+      signal: 'https://signal.barnbridge.com',
       uniswapLiquidity: `https://app.uniswap.org/#/add/v2/${config.tokens?.bond}/${config.tokens?.usdc}`,
       uniswapSwap: `https://app.uniswap.org/#/swap?use=V2&inputCurrency=${config.tokens?.bond}&outputCurrency=${config.tokens?.usdc}`,
     },
