@@ -214,6 +214,18 @@
     color: var(--theme-primary-color);
   }
 
+  &.small {
+    font: var(--font-sm-bold);
+  }
+
+  &.normal {
+    font: var(--font-p2-bold);
+  }
+
+  &.big {
+    font: var(--font-p1-bold);
+  }
+
   &:disabled,
   &[disabled],
   &[aria-disabled='true'],

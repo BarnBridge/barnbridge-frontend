@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import cn from 'classnames';
 
 import { ExternalLink, Link } from 'components/button';
 import OldIcon from 'components/custom/icon';
