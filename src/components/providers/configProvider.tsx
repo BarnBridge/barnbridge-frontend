@@ -12,6 +12,7 @@ export type ConfigContextType = NetworkConfig & {
     discord: string;
     twitter: string;
     whitepaper: string;
+    docs: string;
     github: string;
     uniswapLiquidity: string;
     uniswapSwap: string;
@@ -36,6 +37,7 @@ const ConfigProvider: FC = props => {
       discord: 'https://discord.com/invite/FfEhsVk',
       twitter: 'https://twitter.com/barn_bridge',
       whitepaper: 'https://github.com/BarnBridge/BarnBridge-Whitepaper',
+      docs: 'https://docs.barnbridge.com/',
       github: 'https://github.com/BarnBridge',
       uniswapLiquidity: `https://app.uniswap.org/#/add/v2/${config.tokens?.bond}/${config.tokens?.usdc}`,
       uniswapSwap: `https://app.uniswap.org/#/swap?use=V2&inputCurrency=${config.tokens?.bond}&outputCurrency=${config.tokens?.usdc}`,
