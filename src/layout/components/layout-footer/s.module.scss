@@ -6,7 +6,7 @@
 }
 
 .footerTop {
-  border-top: 1px solid #e3e4e6;
+  border-top: 1px solid var(--theme-border-color);
   padding: 64px 0;
   display: grid;
   grid-template-columns: max-content 1fr;
@@ -44,10 +44,14 @@
     display: grid;
     gap: 16px;
   }
+
+  a {
+    font: var(--font-p2-semibold) !important;
+  }
 }
 
 .footerBottom {
-  border-top: 1px solid #e3e4e6;
+  border-top: 1px solid var(--theme-border-color);
   padding: 24px 0;
   display: grid;
   gap: 40px 16px;
@@ -75,4 +79,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 16px 24px;
+
+  a {
+    font: var(--font-sm-semibold) !important;
+  }
 }
