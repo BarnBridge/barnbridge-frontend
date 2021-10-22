@@ -12,12 +12,14 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import { getAsset, isUsdAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
+import { TradeLinks, hasTradeOption } from 'modules/smart-alpha/components/trade';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
@@ -37,6 +39,7 @@ const PoolView = () => {
   const history = useHistory();
   const location = useLocation();
   const config = useConfig();
+  const network = useNetwork();
   const { data: pool, loaded } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
@@ -44,7 +47,7 @@ const PoolView = () => {
   const [queueStateVisible, setQueueStateVisible] = useState(false);
   const [previousEpochVisible, setPreviousEpochVisible] = useState(false);
   const [epochAdvancing, setEpochAdvancing] = useState(false);
-
+  const [displayTradeLinks, setDisplayTradeLinks] = useState(false);
   const { getOrCreateContract } = useContractFactory();
 
   const smartAlphaContract = useMemo(() => {
@@ -182,8 +185,13 @@ const PoolView = () => {
             </Text>
           </div>
         </div>
-        <div className="flex col-gap-24">
-          <Link to={`${location.pathname}/simulate-epoch`} variation="ghost">
+        <div className="flex align-center col-gap-24">
+          {network.activeNetwork.type === 'Ethereum' && hasTradeOption(pool.poolName) && (
+            <Button variation="text" onClick={() => setDisplayTradeLinks(true)}>
+              Trade
+            </Button>
+          )}
+          <Link to={`${location.pathname}/simulate-epoch`} variation="text">
             Simulate
           </Link>
           {!isMobile ? (
@@ -732,6 +740,17 @@ const PoolView = () => {
           closeHandler={() => setPreviousEpochVisible(false)}
           fullscreen>
           <PreviousEpochs poolTokenSymbol={pool.poolToken.symbol} />
+        </Modal>
+      )}
+      {displayTradeLinks && (
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Trade on Balancer
+            </Text>
+          }
+          closeHandler={() => setDisplayTradeLinks(false)}>
+          <TradeLinks pool={pool} />
         </Modal>
       )}
     </div>

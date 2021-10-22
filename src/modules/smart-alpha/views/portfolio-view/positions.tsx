@@ -11,13 +11,16 @@ import { Badge } from 'components/custom/badge';
 import { Dropdown } from 'components/custom/dropdown';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
+import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
 import { useFetchSaPools } from 'modules/smart-alpha/api';
+import { TradeLinks, hasTradeOption } from 'modules/smart-alpha/components/trade';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
@@ -142,10 +145,12 @@ export const PortfolioPositions = () => {
 };
 
 const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
+  const network = useNetwork();
   const { getToken } = useTokens();
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
   const isSenior = tranche === 'senior';
+  const [displayTradeLinks, setDisplayTradeLinks] = useState(false);
 
   const { getOrCreateContract } = useContractFactory();
 
@@ -239,14 +244,31 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
           </Text>
         </div>
       </div>
-      <footer>
+      <footer className="flex align-center col-gap-24">
         <Link
           variation="primary"
           aria-disabled={!tokenContract.balance?.gt(0)}
-          to={`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`}>
+          to={`/smart-alpha/pools/${pool.poolAddress}/withdraw/${tranche}`}
+          className="flex-grow">
           Signal withdraw
         </Link>
+        {network.activeNetwork.type === 'Ethereum' && hasTradeOption(pool.poolName) && (
+          <Button variation="ghost" onClick={() => setDisplayTradeLinks(true)}>
+            Trade
+          </Button>
+        )}
       </footer>
+      {displayTradeLinks && (
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Trade on Balancer
+            </Text>
+          }
+          closeHandler={() => setDisplayTradeLinks(false)}>
+          <TradeLinks pool={pool} tranches={[tranche]} />
+        </Modal>
+      )}
     </section>
   );
 };
