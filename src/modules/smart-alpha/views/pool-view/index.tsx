@@ -12,6 +12,7 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import { getAsset, isUsdAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
@@ -38,6 +39,7 @@ const PoolView = () => {
   const history = useHistory();
   const location = useLocation();
   const config = useConfig();
+  const network = useNetwork();
   const { data: pool, loaded } = useFetchPool(poolAddress);
   const { getToken } = useTokens();
   const wallet = useWallet();
@@ -46,7 +48,6 @@ const PoolView = () => {
   const [previousEpochVisible, setPreviousEpochVisible] = useState(false);
   const [epochAdvancing, setEpochAdvancing] = useState(false);
   const [displayTradeLinks, setDisplayTradeLinks] = useState(false);
-
   const { getOrCreateContract } = useContractFactory();
 
   const smartAlphaContract = useMemo(() => {
@@ -185,7 +186,7 @@ const PoolView = () => {
           </div>
         </div>
         <div className="flex align-center col-gap-24">
-          {hasTradeOption(pool.poolName) && (
+          {network.activeNetwork.type === 'Ethereum' && hasTradeOption(pool.poolName) && (
             <Button variation="text" onClick={() => setDisplayTradeLinks(true)}>
               Trade
             </Button>
