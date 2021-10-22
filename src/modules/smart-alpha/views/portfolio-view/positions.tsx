@@ -13,6 +13,7 @@ import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
+import { useNetwork } from 'components/providers/networkProvider';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
@@ -144,6 +145,7 @@ export const PortfolioPositions = () => {
 };
 
 const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
+  const network = useNetwork();
   const { getToken } = useTokens();
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
@@ -250,7 +252,7 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
           className="flex-grow">
           Signal withdraw
         </Link>
-        {hasTradeOption(pool.poolName) && (
+        {network.activeNetwork.type === 'Ethereum' && hasTradeOption(pool.poolName) && (
           <Button variation="ghost" onClick={() => setDisplayTradeLinks(true)}>
             Trade
           </Button>
