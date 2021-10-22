@@ -18,6 +18,7 @@ import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
+import { TradeLinks, hasTradeOption } from 'modules/smart-alpha/components/trade';
 import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 import { useWallet } from 'wallets/walletProvider';
@@ -44,6 +45,7 @@ const PoolView = () => {
   const [queueStateVisible, setQueueStateVisible] = useState(false);
   const [previousEpochVisible, setPreviousEpochVisible] = useState(false);
   const [epochAdvancing, setEpochAdvancing] = useState(false);
+  const [displayTradeLinks, setDisplayTradeLinks] = useState(false);
 
   const { getOrCreateContract } = useContractFactory();
 
@@ -182,8 +184,13 @@ const PoolView = () => {
             </Text>
           </div>
         </div>
-        <div className="flex col-gap-24">
-          <Link to={`${location.pathname}/simulate-epoch`} variation="ghost">
+        <div className="flex align-center col-gap-24">
+          {hasTradeOption(pool.poolName) && (
+            <Button variation="text" onClick={() => setDisplayTradeLinks(true)}>
+              Trade
+            </Button>
+          )}
+          <Link to={`${location.pathname}/simulate-epoch`} variation="text">
             Simulate
           </Link>
           {!isMobile ? (
@@ -732,6 +739,17 @@ const PoolView = () => {
           closeHandler={() => setPreviousEpochVisible(false)}
           fullscreen>
           <PreviousEpochs poolTokenSymbol={pool.poolToken.symbol} />
+        </Modal>
+      )}
+      {displayTradeLinks && (
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Trade on Balancer
+            </Text>
+          }
+          closeHandler={() => setDisplayTradeLinks(false)}>
+          <TradeLinks pool={pool} />
         </Modal>
       )}
     </div>
