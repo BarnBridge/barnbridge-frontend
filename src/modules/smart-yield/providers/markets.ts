@@ -4,6 +4,8 @@ export type MarketMeta = {
   icon: {
     active: string;
   };
+  warning?: string;
+  depositDisabled?: boolean;
 };
 
 export const CompoundMarket: MarketMeta = {
@@ -28,6 +30,8 @@ const CreamFinanceMarket: MarketMeta = {
   icon: {
     active: `cream`,
   },
+  warning: 'Blah blah',
+  depositDisabled: true,
 };
 
 export const KnownMarkets: MarketMeta[] = [CompoundMarket, AaveMarket, CreamFinanceMarket];

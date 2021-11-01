@@ -76,10 +76,15 @@ const MarketsView: FC = () => {
               <Text type="p1" weight="semibold" color="primary">
                 {market.name}
               </Text>
+              {market.warning && (
+                <Tooltip title={market.warning}>
+                  <IconOld name="warn-circle" className="ml-8" />
+                </Tooltip>
+              )}
               <IconOld
                 name={isSelected ? 'checkbox-checked' : 'checkbox'}
                 style={{
-                  marginLeft: 24,
+                  marginLeft: 16,
                   flexShrink: 0,
                 }}
               />
@@ -124,7 +129,12 @@ const MarketsView: FC = () => {
           <Fragment key={selectedMarket.id}>
             <div className="card mb-8 p-24 flex wrap align-center col-gap-64 row-gap-16">
               <div className="flex">
-                <TokenIcon name={selectedMarket.icon.active as TokenIconNames} size={40} className="mr-16" />
+                <TokenIcon
+                  name={selectedMarket.icon.active as TokenIconNames}
+                  {...(selectedMarket.warning ? { bubble2Name: 'warn-circle' } : {})}
+                  size={40}
+                  className="mr-16"
+                />
                 <div>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
                     {selectedMarket.name}

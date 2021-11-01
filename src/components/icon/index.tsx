@@ -69,7 +69,6 @@ export type IconNames =
   | 'hourglass'
   | 'loader'
   | 'bell'
-  | 'gear'
   | 'calendar'
   | 'delegated-by-me'
   | 'voting-power'
