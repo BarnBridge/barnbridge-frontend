@@ -80,7 +80,10 @@ export type IconNames =
   | 'burger'
   | 'search'
   | 'cards-view'
-  | 'list-view';
+  | 'list-view'
+  | 'twitter'
+  | 'discord'
+  | 'github';
 
 export type IconProps = {
   name: IconNames;

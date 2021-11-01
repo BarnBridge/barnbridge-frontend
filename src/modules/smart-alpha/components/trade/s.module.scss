@@ -1,0 +1,40 @@
+.list {
+  display: grid;
+  gap: 16px;
+}
+
+.link {
+  display: grid;
+  grid-template-columns: 1fr max-content 1fr;
+  gap: 16px;
+  align-items: center;
+  border: 1px solid var(--theme-border-color);
+  border-radius: 4px;
+  padding: 16px;
+  color: var(--theme-primary-color);
+
+  &:hover {
+    border-color: var(--theme-red400-color);
+  }
+
+  &:active {
+    border-color: var(--theme-red600-color);
+  }
+}
+
+.token {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 12px;
+  align-items: center;
+  font: var(--font-p2-semibold);
+}
+
+.arrowIcon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--theme-body-color);
+  display: grid;
+  place-content: center;
+}
