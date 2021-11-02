@@ -95,7 +95,7 @@ const ProposalStatusCard: React.FC = () => {
                 </Text>
 
                 {event.txHash && (
-                  <ExternalLink href={getEtherscanTxUrl(`0x${event.txHash}`)} style={{ height: '16px' }}>
+                  <ExternalLink href={getEtherscanTxUrl(event.txHash)} style={{ height: '16px' }}>
                     <Icon name="link-outlined" width={16} height={16} />
                   </ExternalLink>
                 )}
