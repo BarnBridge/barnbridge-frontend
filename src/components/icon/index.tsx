@@ -82,31 +82,49 @@ export type IconNames =
   | 'list-view'
   | 'twitter'
   | 'discord'
-  | 'github';
+  | 'github'
+  | 'circle-arrow'
+  | 'menu-faucet'
+  | 'menu-yf'
+  | 'menu-dao'
+  | 'menu-sy'
+  | 'menu-sa'
+  | 'menu-se'
+  | 'menu-docs'
+  | 'menu-theme-light'
+  | 'menu-theme-dark'
+  | 'menu-theme-auto';
 
 export type IconProps = {
   name: IconNames;
   size?: number | string;
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'icon';
-  rotate?: 0 | 45 | 90 | 135 | 180 | 225 | 270 | 315;
+  rotate?: number;
+  static?: boolean;
   className?: string;
   style?: React.CSSProperties;
 };
 
 export const Icon: React.FC<IconProps> = props => {
-  const { name, size = 24, rotate, color, className, style, ...rest } = props;
+  const { name, size = 24, rotate = 0, color, static: isStatic = false, className, style = {}, ...rest } = props;
 
   return (
     <svg
       className={classNames(s.component, className, {
-        [s[`color-${color}`]]: color,
-        [s[`rotate-${rotate}`]]: rotate,
+        [s[`color-${color}`]]: Boolean(color),
       })}
       width={size}
       height={size}
-      style={style}
+      style={{
+        ...(rotate % 360 === 0 ? { transform: `rotate(${rotate}deg)` } : {}),
+        ...style,
+      }}
       {...rest}>
-      <use xlinkHref={`${process.env.PUBLIC_URL}/icons-sprite.svg#icon__${name}`} />
+      {isStatic ? (
+        <use href={`#icon__${name}`} />
+      ) : (
+        <use href={`${process.env.PUBLIC_URL}/icons-sprite.svg#icon__${name}`} />
+      )}
     </svg>
   );
 };
