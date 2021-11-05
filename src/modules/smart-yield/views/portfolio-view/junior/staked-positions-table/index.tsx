@@ -15,10 +15,9 @@ import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
+import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
-
-import { getKnownMarketById } from '../../../../providers/markets';
 
 export type StakedPositionsTableEntity = SYRewardPoolEntity;
 

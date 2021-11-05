@@ -35,6 +35,8 @@ export type PoolApiType = {
     epochSeniorTVL: string;
     juniorEntryQueueTVL: string;
     seniorEntryQueueTVL: string;
+    juniorExitQueueTVL: string;
+    seniorExitQueueTVL: string;
     juniorExitedTVL: string;
     seniorExitedTVL: string;
   };

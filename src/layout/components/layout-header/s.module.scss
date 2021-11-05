@@ -14,13 +14,26 @@
   }
 
   .burger {
-    display: none;
-    margin-right: 16px;
-    border: 0;
-    background: transparent;
-
     @media (max-width: 768px) {
+      margin-right: 16px;
+      border: 0;
+      background: transparent;
+    }
+
+    @media (min-width: 769px) {
+      position: absolute;
+      top: 24px;
+      left: -24px;
+      z-index: 4;
       display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 24px;
+      height: 24px;
+      transform: translateX(50%);
+      border: 1px solid var(--theme-border-color);
+      border-radius: 50%;
+      background-color: var(--theme-card-color);
     }
   }
 }

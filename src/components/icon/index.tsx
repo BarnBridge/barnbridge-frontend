@@ -2,7 +2,7 @@ import classNames from 'classnames';
 
 import s from './s.module.scss';
 
-export type IconNames =
+type NonStaticNames =
   | 'certificate'
   | 'chart-up'
   | 'graph-up'
@@ -69,7 +69,6 @@ export type IconNames =
   | 'hourglass'
   | 'loader'
   | 'bell'
-  | 'gear'
   | 'calendar'
   | 'delegated-by-me'
   | 'voting-power'
@@ -83,31 +82,65 @@ export type IconNames =
   | 'list-view'
   | 'twitter'
   | 'discord'
-  | 'github';
+  | 'github'
+  | 'circle-arrow';
+
+type StaticNames =
+  | 'menu-faucet'
+  | 'menu-yf'
+  | 'menu-dao'
+  | 'menu-sy'
+  | 'menu-sa'
+  | 'menu-se'
+  | 'menu-docs'
+  | 'menu-theme-light'
+  | 'menu-theme-dark'
+  | 'menu-theme-auto';
+
+export type IconNames = NonStaticNames | StaticNames;
+
+const staticNamesList: StaticNames[] = [
+  'menu-faucet',
+  'menu-yf',
+  'menu-dao',
+  'menu-sy',
+  'menu-sa',
+  'menu-se',
+  'menu-docs',
+  'menu-theme-light',
+  'menu-theme-dark',
+  'menu-theme-auto',
+];
 
 export type IconProps = {
   name: IconNames;
   size?: number | string;
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'icon';
-  rotate?: 0 | 45 | 90 | 135 | 180 | 225 | 270 | 315;
+  rotate?: number;
   className?: string;
   style?: React.CSSProperties;
 };
 
 export const Icon: React.FC<IconProps> = props => {
-  const { name, size = 24, rotate, color, className, style, ...rest } = props;
+  const { name, size = 24, rotate = 0, color, className, style = {}, ...rest } = props;
 
   return (
     <svg
       className={classNames(s.component, className, {
-        [s[`color-${color}`]]: color,
-        [s[`rotate-${rotate}`]]: rotate,
+        [s[`color-${color}`]]: Boolean(color),
       })}
       width={size}
       height={size}
-      style={style}
+      style={{
+        ...(rotate % 360 !== 0 ? { transform: `rotate(${rotate}deg)` } : {}),
+        ...style,
+      }}
       {...rest}>
-      <use xlinkHref={`${process.env.PUBLIC_URL}/icons-sprite.svg#icon__${name}`} />
+      {staticNamesList.includes(name as StaticNames) ? (
+        <use href={`#icon__${name}`} />
+      ) : (
+        <use href={`${process.env.PUBLIC_URL}/icons-sprite.svg#icon__${name}`} />
+      )}
     </svg>
   );
 };

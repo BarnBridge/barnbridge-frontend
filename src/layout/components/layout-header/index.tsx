@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Route, Switch } from 'react-router-dom';
 import cn from 'classnames';
@@ -31,13 +31,14 @@ import { isProductionMode } from 'utils';
 import s from './s.module.scss';
 
 const LayoutHeader: React.FC = () => {
-  const { setNavOpen } = useGeneral();
+  const { navOpen, setNavOpen } = useGeneral();
   const { activeNetwork } = useNetwork();
 
   return (
     <header className={s.component}>
-      <button type="button" className={s.burger} onClick={() => setNavOpen(prevState => !prevState)}>
-        <IconOld name="burger" />
+      <button type="button" className={s.burger} onClick={() => setNavOpen(!navOpen)}>
+        <IconOld name="burger" className="hidden-desktop" />
+        <Icon name="arrow" rotate={navOpen ? 180 : 0} size={12} className="hidden-mobile hidden-tablet" />
       </button>
       <IconOld name="bond-square-token" className={s.logo} />
       <Text type="h3" weight="semibold" color="primary" className={s.title}>

@@ -14,11 +14,10 @@ import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { MarketMeta } from 'modules/smart-yield/providers/markets';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
-
-import { MarketMeta } from '../../../providers/markets';
 
 type PoolEntity = PoolsSYPool;
 
