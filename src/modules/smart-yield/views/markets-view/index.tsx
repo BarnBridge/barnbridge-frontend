@@ -10,11 +10,10 @@ import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { KnownMarkets, MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { usePools } from 'modules/smart-yield/providers/pools-provider';
 import PoolsTable from 'modules/smart-yield/views/markets-view/pools-table';
 import { PolygonNetwork } from 'networks/polygon';
-
-import { KnownMarkets, MarketMeta, getKnownMarketById } from '../../providers/markets';
 
 const MarketsView: FC = () => {
   const { activeNetwork } = useNetwork();
@@ -77,9 +76,11 @@ const MarketsView: FC = () => {
                 {market.name}
               </Text>
               {market.warning && (
-                <Tooltip title={market.warning}>
-                  <IconOld name="warn-circle" className="ml-8" />
-                </Tooltip>
+                <div onClick={ev => ev.stopPropagation()}>
+                  <Tooltip title={market.warning}>
+                    <IconOld name="warn-circle" className="ml-8" />
+                  </Tooltip>
+                </div>
               )}
               <IconOld
                 name={isSelected ? 'checkbox-checked' : 'checkbox'}

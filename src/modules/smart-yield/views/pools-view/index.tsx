@@ -9,11 +9,10 @@ import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { KnownMarkets, MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { PoolCard } from 'modules/smart-yield/views/pools-view/pool-card';
 import { PolygonNetwork } from 'networks/polygon';
-
-import { KnownMarkets, MarketMeta, getKnownMarketById } from '../../providers/markets';
 
 const PoolsView: FC = () => {
   const { activeNetwork } = useNetwork();

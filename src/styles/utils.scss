@@ -167,13 +167,13 @@
 }
 
 .hidden-tablet {
-  @media (min-width: 481px) and (max-width: 767px) {
+  @media (min-width: 481px) and (max-width: 768px) {
     display: none !important;
   }
 }
 
 .hidden-desktop {
-  @media (min-width: 768px) {
+  @media (min-width: 769px) {
     display: none !important;
   }
 }

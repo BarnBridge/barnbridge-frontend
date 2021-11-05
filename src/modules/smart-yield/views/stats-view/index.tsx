@@ -63,7 +63,7 @@ const StatsView: React.FC = () => {
         <div className="flex col-gap-24 row-gap-16 align-start mb-40">
           <DepositHeader />
           <div className="flex wrap col-gap-24 row-gap-16 ml-auto">
-            {market?.depositDisabled === true && (
+            {wallet.isActive && market?.depositDisabled === true && (
               <Link
                 to={{
                   pathname: `/smart-yield/withdraw`,

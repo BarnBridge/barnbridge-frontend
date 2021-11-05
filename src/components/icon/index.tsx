@@ -2,7 +2,7 @@ import classNames from 'classnames';
 
 import s from './s.module.scss';
 
-export type IconNames =
+type NonStaticNames =
   | 'certificate'
   | 'chart-up'
   | 'graph-up'
@@ -83,7 +83,9 @@ export type IconNames =
   | 'twitter'
   | 'discord'
   | 'github'
-  | 'circle-arrow'
+  | 'circle-arrow';
+
+type StaticNames =
   | 'menu-faucet'
   | 'menu-yf'
   | 'menu-dao'
@@ -95,18 +97,32 @@ export type IconNames =
   | 'menu-theme-dark'
   | 'menu-theme-auto';
 
+export type IconNames = NonStaticNames | StaticNames;
+
+const staticNamesList: StaticNames[] = [
+  'menu-faucet',
+  'menu-yf',
+  'menu-dao',
+  'menu-sy',
+  'menu-sa',
+  'menu-se',
+  'menu-docs',
+  'menu-theme-light',
+  'menu-theme-dark',
+  'menu-theme-auto',
+];
+
 export type IconProps = {
   name: IconNames;
   size?: number | string;
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'icon';
   rotate?: number;
-  static?: boolean;
   className?: string;
   style?: React.CSSProperties;
 };
 
 export const Icon: React.FC<IconProps> = props => {
-  const { name, size = 24, rotate = 0, color, static: isStatic = false, className, style = {}, ...rest } = props;
+  const { name, size = 24, rotate = 0, color, className, style = {}, ...rest } = props;
 
   return (
     <svg
@@ -116,11 +132,11 @@ export const Icon: React.FC<IconProps> = props => {
       width={size}
       height={size}
       style={{
-        ...(rotate % 360 === 0 ? { transform: `rotate(${rotate}deg)` } : {}),
+        ...(rotate % 360 !== 0 ? { transform: `rotate(${rotate}deg)` } : {}),
         ...style,
       }}
       {...rest}>
-      {isStatic ? (
+      {staticNamesList.includes(name as StaticNames) ? (
         <use href={`#icon__${name}`} />
       ) : (
         <use href={`${process.env.PUBLIC_URL}/icons-sprite.svg#icon__${name}`} />

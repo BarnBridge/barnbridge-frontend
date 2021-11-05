@@ -43,16 +43,6 @@
   }
 }
 
-.asideBtn {
-  position: absolute;
-  top: 24px;
-  right: 0;
-  z-index: 4;
-  width: 24px;
-  height: 24px;
-  transform: translateX(50%);
-}
-
 .logoContainer {
   display: flex;
   margin-bottom: 48px;
@@ -110,6 +100,8 @@
   &:hover,
   &.active {
     svg {
+      --icon-display__light: none;
+      --icon-display__dark: none;
       --icon-display__hover: block;
     }
 

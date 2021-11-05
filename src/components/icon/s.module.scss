@@ -1,7 +1,9 @@
-.component {
+.component.component {
   flex-shrink: 0;
 
   &:hover {
+    --icon-display__light: none;
+    --icon-display__dark: none;
     --icon-display__hover: block;
   }
 

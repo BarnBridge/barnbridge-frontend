@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React, { useState } from 'react';
+import React from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
@@ -19,8 +19,6 @@ const LayoutSideNav: React.FC = () => {
   const { features } = useConfig();
   const location = useLocation();
 
-  const [expanded, setExpanded] = useState(false);
-
   React.useEffect(() => {
     setNavOpen(false);
   }, [location.pathname, setNavOpen]);
@@ -33,16 +31,12 @@ const LayoutSideNav: React.FC = () => {
     }
   }, [navOpen]);
 
-  function handleExpand() {
-    setExpanded(prevState => !prevState);
-  }
-
-  const displayTooltip = !isMobile && !expanded;
+  const displayTooltip = !isMobile && !navOpen;
 
   return (
     <div className={s.wrap}>
-      <div className={cn(s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
-      <aside className={cn(s.aside, { [s.expanded]: expanded, [s.open]: navOpen })}>
+      <div className={cn('hidden-desktop', s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
+      <aside className={cn(s.aside, { [s.expanded]: navOpen, [s.open]: navOpen })}>
         <div className={s.logoContainer}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
             <Icon name="close" />
@@ -56,7 +50,7 @@ const LayoutSideNav: React.FC = () => {
           {features.faucets && (
             <Tooltip title={displayTooltip && 'Faucets'} placement="right">
               <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
-                <Icon name="menu-faucet" size={40} static />
+                <Icon name="menu-faucet" size={40} />
                 <div className={s.btnContent}>
                   <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
                     DAO
@@ -71,7 +65,7 @@ const LayoutSideNav: React.FC = () => {
           {features.yieldFarming && (
             <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
               <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
-                <Icon name="menu-yf" size={40} static />
+                <Icon name="menu-yf" size={40} />
                 <div className={s.btnContent}>
                   <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
                     DAO
@@ -86,7 +80,7 @@ const LayoutSideNav: React.FC = () => {
           {features.dao && (
             <Tooltip title={displayTooltip && 'Governance'} placement="right">
               <NavLink to="/governance" className={s.button} activeClassName={s.active}>
-                <Icon name="menu-dao" size={40} static />
+                <Icon name="menu-dao" size={40} />
                 <div className={s.btnContent}>
                   <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
                     DAO
@@ -101,7 +95,7 @@ const LayoutSideNav: React.FC = () => {
           {features.smartYield && (
             <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
               <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-                <Icon name="menu-sy" size={40} static />
+                <Icon name="menu-sy" size={40} />
                 <div className={s.btnContent}>
                   <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
                     SMART
@@ -116,7 +110,7 @@ const LayoutSideNav: React.FC = () => {
           {features.smartAlpha && (
             <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
               <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
-                <Icon name="menu-sa" size={40} static />
+                <Icon name="menu-sa" size={40} />
                 <div className={s.btnContent}>
                   <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
                     SMART
@@ -131,7 +125,7 @@ const LayoutSideNav: React.FC = () => {
           {features.smartExposure && (
             <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
               <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-                <Icon name="menu-se" size={40} static />
+                <Icon name="menu-se" size={40} />
                 <div className={s.btnContent}>
                   <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
                     SMART
@@ -147,7 +141,7 @@ const LayoutSideNav: React.FC = () => {
         <div className={s.bottom}>
           <Tooltip title={displayTooltip && 'Docs'} placement="right">
             <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
-              <Icon name="menu-docs" size={40} static />
+              <Icon name="menu-docs" size={40} />
               <div className={s.btnContent}>
                 <Text type="lb1" weight="semibold" className={s.btnLabel} color="primary">
                   Docs
@@ -158,9 +152,6 @@ const LayoutSideNav: React.FC = () => {
           <ToggleThemeButton displayTooltip={displayTooltip} />
         </div>
       </aside>
-      <button type="button" className={cn('button-text', s.asideBtn)} onClick={handleExpand}>
-        <Icon name="circle-arrow" rotate={expanded ? 180 : 0} />
-      </button>
     </div>
   );
 };
@@ -187,7 +178,7 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
   return (
     <Tooltip title={displayTooltip && text} placement="right">
       <button type="button" onClick={toggleTheme} className={s.button}>
-        <Icon name={iconName} size={40} static />
+        <Icon name={iconName} size={40} />
         <div className={s.btnContent}>
           <Text type="lb1" weight="semibold" className={s.btnLabel}>
             {text}
