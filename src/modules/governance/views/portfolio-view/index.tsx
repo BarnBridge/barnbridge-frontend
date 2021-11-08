@@ -1,8 +1,6 @@
-import React, { FC, useEffect, useState } from 'react';
-import { Redirect, Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
-import Grid from 'components/custom/grid';
-import { Tabs } from 'components/custom/tabs';
+import { NavTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import PortfolioDelegate from 'modules/governance/views/portfolio-view/portfolio-delegate';
 import PortfolioDeposit from 'modules/governance/views/portfolio-view/portfolio-deposit';
@@ -10,24 +8,8 @@ import PortfolioLock from 'modules/governance/views/portfolio-view/portfolio-loc
 import PortfolioWithdraw from 'modules/governance/views/portfolio-view/portfolio-withdraw';
 import { useWallet } from 'wallets/walletProvider';
 
-type PortfolioViewRouteParams = {
-  action: string;
-};
-
-const PortfolioView: FC = () => {
-  const history = useHistory();
+const PortfolioView: React.FC = () => {
   const wallet = useWallet();
-  const {
-    params: { action = 'deposit' },
-  } = useRouteMatch<PortfolioViewRouteParams>();
-  const [activeTab, setActiveTab] = useState<string>(action);
-
-  useEffect(() => {
-    if (action !== activeTab) {
-      setActiveTab(action);
-    }
-  }, [action]);
-
   if (!wallet.initialized) {
     return null;
   }
@@ -36,52 +18,36 @@ const PortfolioView: FC = () => {
     return <Redirect to="/governance/overview" />;
   }
 
-  function handleTabChange(tabKey: string) {
-    setActiveTab(tabKey);
-    history.push(`/governance/portfolio/${tabKey}`);
-  }
-
   return (
-    <Grid flow="row" gap={32} className="container-fit">
-      <Text type="h1" weight="bold" color="primary">
+    <div className="container-fit">
+      <Text type="h1" weight="bold" color="primary" className="mb-32">
         Portfolio
       </Text>
       <div className="card">
         <div className="card-header pv-0">
-          <Tabs
+          <NavTabs
             tabs={[
               {
                 id: 'deposit',
                 children: 'Deposit',
-                onClick: () => {
-                  handleTabChange('deposit');
-                },
+                to: '/governance/portfolio/deposit',
               },
               {
                 id: 'lock',
                 children: 'Lock',
-                onClick: () => {
-                  handleTabChange('lock');
-                },
+                to: '/governance/portfolio/lock',
               },
               {
                 id: 'delegate',
                 children: 'Delegate',
-                onClick: () => {
-                  handleTabChange('delegate');
-                },
+                to: '/governance/portfolio/delegate',
               },
               {
                 id: 'withdraw',
                 children: 'Withdraw',
-                onClick: () => {
-                  handleTabChange('withdraw');
-                },
+                to: '/governance/portfolio/withdraw',
               },
             ]}
-            size="small"
-            activeKey={activeTab}
-            onClick={setActiveTab}
           />
         </div>
         <Switch>
@@ -91,7 +57,7 @@ const PortfolioView: FC = () => {
           <Route path="/governance/portfolio/withdraw" component={PortfolioWithdraw} />
         </Switch>
       </div>
-    </Grid>
+    </div>
   );
 };
 

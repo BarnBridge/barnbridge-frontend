@@ -1,6 +1,7 @@
 .tabs {
   overflow-x: auto;
   display: flex;
+  gap: 32px;
   scroll-snap-type: x proximity;
   height: 72px;
   flex-shrink: 0;
@@ -18,7 +19,6 @@
   .tab {
     font: var(--font-p1);
     font-weight: 600;
-    margin-right: 32px;
     color: var(--theme-secondary-color);
     display: flex;
     align-items: center;
@@ -36,10 +36,6 @@
       > svg {
         color: var(--theme-red-color);
       }
-    }
-
-    &:last-child {
-      margin-right: 0;
     }
 
     &[href*='//']
