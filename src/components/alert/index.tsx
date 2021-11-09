@@ -1,3 +1,4 @@
+import { ReactElement } from 'react';
 import classNames from 'classnames';
 
 import { ExternalLink, Link } from 'components/button';
@@ -32,7 +33,7 @@ const RenderLink: React.FC<RenderLinkProps> = ({ type = 'link', href, children }
 interface AlertPropsType {
   type: 'info' | 'warning' | 'error';
   className?: string;
-  title?: string;
+  title?: ReactElement;
   link?: RenderLinkProps;
 }
 

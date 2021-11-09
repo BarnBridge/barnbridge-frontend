@@ -1,45 +1,43 @@
+.wrap {
+  position: relative;
+}
+
 .aside {
-  background-color: var(--theme-card-color);
-  border-right: 1px solid var(--theme-border-color);
-  display: grid;
-  flex-shrink: 0;
-  grid-template-rows: min-content;
-  height: 100vh;
-  overflow: hidden;
-  overflow-y: auto;
-  padding: 12px;
   position: sticky;
   top: 0;
-  transition: all 0.2s linear;
+  display: grid;
+  grid-template-rows: min-content;
+  flex-shrink: 0;
   width: 72px;
+  height: 100vh;
+  padding: 24px 16px;
+  overflow: hidden;
+  overflow-y: auto;
+  background-color: var(--theme-card-color);
+  border-right: 1px solid var(--theme-border-color);
+  transition: all 0.2s linear;
 
   &.expanded {
     width: 216px;
 
-    .logoLabel {
-      display: block;
-    }
-
-    .buttonLabel {
-      display: block;
+    .logoLabel,
+    .btnContent {
+      visibility: visible;
     }
   }
 
   @media (max-width: 768px) {
-    left: -100%;
     position: fixed;
-    width: 275px !important;
+    left: -100%;
     z-index: 10;
+    width: 275px !important;
 
     &.open {
       left: 0;
 
-      .logoLabel {
-        display: block;
-      }
-
-      .buttonLabel {
-        display: block;
+      .logoLabel,
+      .btnContent {
+        visibility: visible;
       }
     }
   }
@@ -47,9 +45,9 @@
 
 .logoContainer {
   display: flex;
-  margin-bottom: 40px;
+  margin-bottom: 48px;
   overflow: hidden;
-  padding: 12px;
+  padding: 0 8px;
   transition: width 0.3s linear;
 }
 
@@ -59,49 +57,56 @@
 }
 
 .logoLabel {
-  display: none;
   flex-shrink: 0;
   margin-left: 12px;
   overflow: hidden;
+  visibility: hidden;
 }
 
 .button {
+  position: relative;
+  display: flex;
   align-items: center;
+  width: 100%;
   background-color: transparent;
   border: 0;
   border-radius: 4px;
-  color: var(--theme-secondary-color);
-  display: flex;
-  padding: 12px;
-  position: relative;
   text-align: left;
-  width: 100%;
 
-  &:hover,
-  &:active {
-    background: rgba(var(--theme-red-color-rgb), 0.08);
-    color: var(--theme-primary-color);
+  .btnContent {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-left: 16px;
+    visibility: hidden;
 
-    svg {
-      color: var(--theme-red-color);
+    > div {
+      white-space: nowrap;
+      overflow: hidden;
     }
   }
 
-  &.active {
-    color: var(--theme-primary-color);
+  &:not(.active):not(:hover) {
+    .btnLabel {
+      color: var(--theme-grey-color);
+    }
+  }
 
-    &::before {
-      background: var(--theme-red-color);
-      border-radius: 0 4px 4px 0;
-      content: '';
-      height: 48px;
-      left: -12px;
-      position: absolute;
-      width: 4px;
+  .btnText {
+    color: var(--theme-secondary-color);
+  }
+
+  &:hover,
+  &.active {
+    svg {
+      --icon-display__light: none;
+      --icon-display__dark: none;
+      --icon-display__hover: block;
     }
 
-    svg {
-      color: var(--theme-red-color);
+    .btnText {
+      color: var(--theme-primary-color);
     }
   }
 
@@ -110,16 +115,9 @@
   }
 }
 
-.buttonLabel {
-  display: none;
-  margin-left: 16px;
-  overflow: hidden;
-  white-space: nowrap;
-}
-
 .top {
   .button {
-    margin-bottom: 12px;
+    margin-bottom: 24px;
   }
 }
 
@@ -127,7 +125,7 @@
   margin-top: auto;
 
   .button {
-    margin-top: 12px;
+    margin-top: 24px;
   }
 }
 

@@ -7,3 +7,20 @@
     transform: rotate(360deg);
   }
 }
+
+.container {
+  position: relative;
+
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -12px;
+  }
+}
+
+.children {
+  opacity: 0.5;
+  user-select: none;
+  pointer-events: none;
+}

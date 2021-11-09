@@ -48,6 +48,12 @@ const PoolsView = () => {
     }, BigNumber.ZERO);
   }, [data]);
 
+  const exitQueueTVLInUsd = useMemo(() => {
+    return data?.reduce((sum, item) => {
+      return sum.plus(item.tvl.juniorExitQueueTVL).plus(item.tvl.seniorExitQueueTVL);
+    }, BigNumber.ZERO);
+  }, [data]);
+
   const exitedTVLInUsd = useMemo(() => {
     return data?.reduce((sum, item) => {
       return sum.plus(item.tvl.juniorExitedTVL).plus(item.tvl.seniorExitedTVL);
@@ -122,6 +128,15 @@ const PoolsView = () => {
           </Text>
           <Text type="h3" weight="bold" color="primary">
             {formatUSD(entryQueueTVLInUsd) ?? '-'}
+          </Text>
+        </div>
+
+        <div className="card p-24" style={{ minWidth: '200px' }}>
+          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            Exit Queue TVL
+          </Text>
+          <Text type="h3" weight="bold" color="primary">
+            {formatUSD(exitQueueTVLInUsd) ?? '-'}
           </Text>
         </div>
 

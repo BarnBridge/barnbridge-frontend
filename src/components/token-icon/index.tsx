@@ -40,7 +40,8 @@ export type TokenIconNames =
   | 'balancer'
   | 'uma'
   | 'dpi'
-  | 'all';
+  | 'all'
+  | 'warn-circle';
 
 type TokenIconProps = {
   name: TokenIconNames | undefined;

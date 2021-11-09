@@ -141,7 +141,8 @@ export type IconNames =
   | 'checkbox'
   | 'loader'
   | 'insured'
-  | 'arbitrum-logo';
+  | 'arbitrum-logo'
+  | 'warn-circle';
 
 export type IconProps = {
   name: IconNames;

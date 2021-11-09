@@ -4,15 +4,15 @@ import AntdSpin from 'antd/lib/spin';
 import cn from 'classnames';
 import { formatUSD } from 'web3/utils';
 
+import Tooltip from 'components/antd/tooltip';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { KnownMarkets, MarketMeta, getKnownMarketById } from 'modules/smart-yield/providers/markets';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { PoolCard } from 'modules/smart-yield/views/pools-view/pool-card';
 import { PolygonNetwork } from 'networks/polygon';
-
-import { KnownMarkets, MarketMeta, getKnownMarketById } from '../../providers/markets';
 
 const PoolsView: FC = () => {
   const { activeNetwork } = useNetwork();
@@ -75,10 +75,15 @@ const PoolsView: FC = () => {
               <Text type="p1" weight="semibold" color="primary">
                 {market.name}
               </Text>
+              {market.warning && (
+                <Tooltip title={market.warning}>
+                  <Icon name="warn-circle" className="ml-8" />
+                </Tooltip>
+              )}
               <Icon
                 name={isSelected ? 'checkbox-checked' : 'checkbox'}
                 style={{
-                  marginLeft: 24,
+                  marginLeft: 16,
                   flexShrink: 0,
                 }}
               />

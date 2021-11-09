@@ -18,7 +18,6 @@ const LayoutSideNav: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
   const { features } = useConfig();
   const location = useLocation();
-  const [expanded, setExpanded] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     setNavOpen(false);
@@ -32,16 +31,12 @@ const LayoutSideNav: React.FC = () => {
     }
   }, [navOpen]);
 
-  function handleExpand() {
-    setExpanded(prevState => !prevState);
-  }
-
-  const displayTooltip = !isMobile && !expanded;
+  const displayTooltip = !isMobile && !navOpen;
 
   return (
-    <>
-      <div className={cn(s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
-      <aside className={cn(s.aside, { [s.expanded]: expanded, [s.open]: navOpen })}>
+    <div className={s.wrap}>
+      <div className={cn('hidden-desktop', s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
+      <aside className={cn(s.aside, { [s.expanded]: navOpen, [s.open]: navOpen })}>
         <div className={s.logoContainer}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
             <Icon name="close" />
@@ -53,87 +48,111 @@ const LayoutSideNav: React.FC = () => {
         </div>
         <nav className={s.top}>
           {features.faucets && (
-            <Tooltip title={displayTooltip && 'Faucets'} placement="right">
-              <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
-                <OldIcon name="building" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+            <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'Faucets'} placement="right">
+                <Icon name="menu-faucet" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
+                  DAO
+                </Text>
+                <Text type="lb1" weight="semibold" className={s.btnText}>
                   Faucets
                 </Text>
-              </NavLink>
-            </Tooltip>
+              </div>
+            </NavLink>
           )}
           {features.yieldFarming && (
-            <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
-              <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
-                <Icon name="yield-farming" color="icon" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+            <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
+                <Icon name="menu-yf" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
+                  DAO
+                </Text>
+                <Text type="lb1" weight="semibold" className={s.btnText}>
                   Yield Farming
                 </Text>
-              </NavLink>
-            </Tooltip>
+              </div>
+            </NavLink>
           )}
           {features.dao && (
-            <Tooltip title={displayTooltip && 'Governance'} placement="right">
-              <NavLink to="/governance" className={s.button} activeClassName={s.active}>
-                <Icon name="governance" color="icon" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
+            <NavLink to="/governance" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'Governance'} placement="right">
+                <Icon name="menu-dao" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
+                  DAO
+                </Text>
+                <Text type="lb1" weight="semibold" className={s.btnText}>
                   Governance
                 </Text>
-              </NavLink>
-            </Tooltip>
+              </div>
+            </NavLink>
           )}
           {features.smartYield && (
-            <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
-              <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-                <Icon name="smart-yield" color="icon" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                  SMART Yield
+            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
+                <Icon name="menu-sy" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                  SMART
                 </Text>
-              </NavLink>
-            </Tooltip>
-          )}
-          {features.smartExposure && (
-            <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
-              <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-                <Icon name="smart-exposure" color="icon" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                  SMART Exposure
+                <Text type="lb1" weight="semibold" className={s.btnText}>
+                  Yield
                 </Text>
-              </NavLink>
-            </Tooltip>
+              </div>
+            </NavLink>
           )}
           {features.smartAlpha && (
-            <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
-              <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
-                <Icon name="smart-alpha" color="icon" />
-                <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                  SMART Alpha
+            <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
+                <Icon name="menu-sa" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                  SMART
                 </Text>
-              </NavLink>
-            </Tooltip>
+                <Text type="lb1" weight="semibold" className={s.btnText}>
+                  Alpha
+                </Text>
+              </div>
+            </NavLink>
+          )}
+          {features.smartExposure && (
+            <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
+                <Icon name="menu-se" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                  SMART
+                </Text>
+                <Text type="lb1" weight="semibold" className={s.btnText}>
+                  Exposure
+                </Text>
+              </div>
+            </NavLink>
           )}
         </nav>
         <div className={s.bottom}>
-          <Tooltip title={displayTooltip && 'Docs'} placement="right">
-            <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
-              <Icon name="docs" color="icon" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
+          <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
+            <Tooltip title={displayTooltip && 'Docs'} placement="right">
+              <Icon name="menu-docs" size={40} />
+            </Tooltip>
+            <div className={s.btnContent}>
+              <Text type="lb1" weight="semibold" className={s.btnLabel} color="primary">
                 Docs
               </Text>
-            </a>
-          </Tooltip>
+            </div>
+          </a>
           <ToggleThemeButton displayTooltip={displayTooltip} />
-          <Tooltip title={displayTooltip && (expanded ? 'Hide menu' : 'Show menu')} placement="right">
-            <button type="button" onClick={handleExpand} className={cn(s.button, 'hidden-mobile hidden-tablet')}>
-              <Icon name={expanded ? 'menu-hide' : 'menu-toggle'} color="icon" />
-              <Text type="p2" weight="semibold" className={s.buttonLabel}>
-                Hide menu
-              </Text>
-            </button>
-          </Tooltip>
         </div>
       </aside>
-    </>
+    </div>
   );
 };
 
@@ -144,25 +163,28 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
 
   let text;
   let iconName: IconNames;
+
   if (selectedTheme === 'light') {
     text = 'Light Theme';
-    iconName = 'light-mode';
+    iconName = 'menu-theme-light';
   } else if (selectedTheme === 'dark') {
     text = 'Dark Theme';
-    iconName = 'dark-mode';
+    iconName = 'menu-theme-dark';
   } else {
     text = 'Auto Theme (OS)';
-    iconName = 'auto';
+    iconName = 'menu-theme-auto';
   }
 
   return (
-    <Tooltip title={displayTooltip && text} placement="right">
-      <button type="button" onClick={toggleTheme} className={s.button}>
-        <Icon name={iconName} color="icon" />
-        <Text type="p2" weight="semibold" className={s.buttonLabel}>
+    <button type="button" onClick={toggleTheme} className={s.button}>
+      <Tooltip title={displayTooltip && text} placement="right">
+        <Icon name={iconName} size={40} />
+      </Tooltip>
+      <div className={s.btnContent}>
+        <Text type="lb1" weight="semibold" className={s.btnLabel}>
           {text}
         </Text>
-      </button>
-    </Tooltip>
+      </div>
+    </button>
   );
 };

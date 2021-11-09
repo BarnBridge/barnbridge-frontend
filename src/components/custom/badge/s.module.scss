@@ -1,10 +1,8 @@
 .badge {
-  font: var(--font-p2);
-  font-weight: bold;
   display: inline-flex;
   flex-direction: row;
   align-items: flex-start;
-  padding: 0 12px;
+
   background: rgba(var(--theme-secondary-color-rgb), 0.08);
   color: var(--theme-secondary-color);
   border-radius: 32px;
@@ -30,16 +28,19 @@
     color: var(--theme-purple-color);
   }
 
-  &.large {
-    font: var(--font-lb2);
-    font-weight: bold;
-    padding: 8px 24px;
+  &.small {
+    font: var(--font-sm-bold);
+    padding: 0 10px;
   }
 
-  &.small {
-    font: var(--font-sm);
-    font-weight: bold;
-    padding: 0 10px;
+  &.medium {
+    font: var(--font-p2-bold);
+    padding: 0 12px;
+  }
+
+  &.large {
+    font: var(--font-lb2-bold);
+    padding: 8px 24px;
   }
 }
 
@@ -48,7 +49,7 @@
   font-weight: 600;
   align-items: center;
   background: rgba(113, 121, 128, 0.08);
-  border-radius: 4px;
+  border-radius: 12px;
   display: flex;
   height: 24px;
   justify-content: center;
