@@ -3,17 +3,17 @@ import cn from 'classnames';
 
 import s from './s.module.scss';
 
-type BadgeProps = {
+export type BadgeProps = {
   className?: string;
   color?: 'green' | 'blue' | 'red' | 'grey' | 'purple';
-  size?: 'small' | 'medium';
+  size?: 'small' | 'medium' | 'large';
 };
 
-export const Badge: React.FC<BadgeProps> = ({ color, size, children, className, ...rest }) => {
+export const Badge: React.FC<BadgeProps> = ({ color = 'grey', size = 'medium', children, className, ...rest }) => {
   if (!children) return null;
 
   return (
-    <div className={cn(s.badge, className, s[color ?? ''], s[size ?? ''])} {...rest}>
+    <div className={cn(s.badge, className, s[color], s[size])} {...rest}>
       {children}
     </div>
   );
@@ -24,11 +24,11 @@ type SquareBadgeProps = {
   color?: 'green' | 'blue' | 'red' | 'grey';
 };
 
-export const SquareBadge: React.FC<SquareBadgeProps> = ({ children, className, color, ...rest }) => {
+export const SquareBadge: React.FC<SquareBadgeProps> = ({ children, className, color = 'grey', ...rest }) => {
   if (!children) return null;
 
   return (
-    <div className={cn(s.squareBadge, s[color ?? ''], className)} {...rest}>
+    <div className={cn(s.squareBadge, s[color], className)} {...rest}>
       {children}
     </div>
   );

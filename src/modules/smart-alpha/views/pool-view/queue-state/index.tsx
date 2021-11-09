@@ -73,55 +73,6 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
         <div className={s.sectionBody}>
           <div>
             <Text type="p2" weight="semibold" color="secondary" className="mb-4">
-              Junior tokens
-            </Text>
-            <div className="flex align-center">
-              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals), {
-                    decimals: pool.poolToken.decimals,
-                    tokenName: pool.poolToken.symbol,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-              </Text>
-            </div>
-          </div>
-          <div>
-            <Text type="p2" weight="semibold" color="secondary" className="mb-4">
-              Senior tokens
-            </Text>
-            <div className="flex align-center">
-              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
-              <Text
-                type="p1"
-                weight="semibold"
-                color="primary"
-                tooltip={
-                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals), {
-                    decimals: pool.poolToken.decimals,
-                    tokenName: pool.poolToken.symbol,
-                  }) ?? '-'
-                }>
-                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
-              </Text>
-            </div>
-          </div>
-        </div>
-      </section>
-      <section className={s.section}>
-        <header className={s.sectionHeader}>
-          <Text type="small" weight="semibold" color="secondary" tag="h3">
-            Out but not redeemed
-          </Text>
-        </header>
-        <div className={s.sectionBody}>
-          <div>
-            <Text type="p2" weight="semibold" color="secondary" className="mb-4">
               Juniors underlying
             </Text>
             <div className="flex align-center">
@@ -171,6 +122,55 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
                   }) ?? '-'
                 }>
                 {formatToken(smartAlphaContract?.queuedSeniorTokensBurn?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
+              </Text>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section className={s.section}>
+        <header className={s.sectionHeader}>
+          <Text type="small" weight="semibold" color="secondary" tag="h3">
+            Out but not redeemed
+          </Text>
+        </header>
+        <div className={s.sectionBody}>
+          <div>
+            <Text type="p2" weight="semibold" color="secondary" className="mb-4">
+              Junior tokens
+            </Text>
+            <div className="flex align-center">
+              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals), {
+                    decimals: pool.poolToken.decimals,
+                    tokenName: pool.poolToken.symbol,
+                  }) ?? '-'
+                }>
+                {formatToken(smartAlphaContract?.queuedJuniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
+              </Text>
+            </div>
+          </div>
+          <div>
+            <Text type="p2" weight="semibold" color="secondary" className="mb-4">
+              Senior tokens
+            </Text>
+            <div className="flex align-center">
+              <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
+              <Text
+                type="p1"
+                weight="semibold"
+                color="primary"
+                tooltip={
+                  formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals), {
+                    decimals: pool.poolToken.decimals,
+                    tokenName: pool.poolToken.symbol,
+                  }) ?? '-'
+                }>
+                {formatToken(smartAlphaContract?.queuedSeniorsUnderlyingOut?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>

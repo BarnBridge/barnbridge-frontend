@@ -1,25 +1,36 @@
-import React from 'react';
-import cn from 'classnames';
-
-import { Text } from 'components/custom/typography';
+import { Badge, BadgeProps } from 'components/custom/badge';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
-
-import s from './s.module.scss';
 
 export type ProposalStatusTagProps = {
   className?: string;
   state: APIProposalState;
 };
 
-const ProposalStatusTag: React.FC<ProposalStatusTagProps> = props => {
-  const { state, className } = props;
+const ProposalStatusTag: React.FC<ProposalStatusTagProps> = ({ state, className }) => {
+  let color: BadgeProps['color'] = 'grey';
+  switch (state) {
+    case 'ACCEPTED':
+    case 'EXECUTED':
+      color = 'green';
+      break;
+    case 'WARMUP':
+    case 'ACTIVE':
+    case 'QUEUED':
+    case 'GRACE':
+      color = 'blue';
+      break;
+    case 'EXPIRED':
+    case 'FAILED':
+    case 'CANCELED':
+    case 'ABROGATED':
+      color = 'red';
+      break;
+  }
 
   return (
-    <div className={cn(s.component, className, s[state])}>
-      <Text type="lb2" weight="bold">
-        {APIProposalStateMap.get(state)}
-      </Text>
-    </div>
+    <Badge color={color} size="large">
+      {APIProposalStateMap.get(state)}
+    </Badge>
   );
 };
 
