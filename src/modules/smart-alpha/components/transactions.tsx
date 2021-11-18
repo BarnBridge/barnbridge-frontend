@@ -149,7 +149,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
               size={32}
               className="mr-16"
             />
-            <ExternalLinkCustom href={getEtherscanAddressUrl('TBD')}>
+            <ExternalLinkCustom href={getEtherscanAddressUrl(item.tokenAddress)}>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
                 {item.tokenSymbol}
               </Text>
