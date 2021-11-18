@@ -5,6 +5,7 @@ import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
 import { ExternalLink } from 'components/button';
+import ExternalLinkCustom from 'components/custom/externalLink';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
@@ -121,6 +122,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
       heading: 'Token Name',
       render: function Render(item) {
         const { getToken } = useTokens();
+        const { getEtherscanAddressUrl } = useWeb3();
 
         const poolToken = getToken(item.poolTokenSymbol);
         const oracleToken = getAsset(item.oracleAssetSymbol);
@@ -147,9 +149,11 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
               size={32}
               className="mr-16"
             />
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {item.tokenSymbol}
-            </Text>
+            <ExternalLinkCustom href={getEtherscanAddressUrl('TBD')}>
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                {item.tokenSymbol}
+              </Text>
+            </ExternalLinkCustom>
           </div>
         );
       },

@@ -1,3 +1,4 @@
+import React from 'react';
 import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-dom';
 import classNames from 'classnames';
 
@@ -5,30 +6,16 @@ import { Icon, IconNames, IconProps } from 'components/icon';
 
 import s from './s.module.scss';
 
-interface CommonProps {
-  variation: 'primary' | 'secondary' | 'ghost' | 'ghost-alt' | 'text' | 'text-alt' | 'link';
+interface ButtonContentProps {
   size?: 'small' | 'normal' | 'big';
   icon?: IconNames;
   iconPosition?: 'right' | 'left' | 'only';
   iconRotate?: IconProps['rotate'];
   loading?: boolean;
-  className?: string;
 }
 
-export type ButtonProps = CommonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
-
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  variation,
-  size = 'normal',
-  icon,
-  iconPosition = 'only',
-  iconRotate,
-  loading,
-  className,
-  ...rest
-}) => {
-  let iconSize: 16 | 24;
+const ButtonContent: React.FC<ButtonContentProps> = ({ size, icon, iconPosition, iconRotate, loading, children }) => {
+  let iconSize: 16 | 24 = 24;
   switch (size) {
     case 'small':
       iconSize = 16;
@@ -44,16 +31,7 @@ export const Button: React.FC<ButtonProps> = ({
   const iconToDisplay = loading ? 'loader' : icon;
 
   return (
-    <button
-      {...rest}
-      className={classNames(
-        s[variation],
-        s[size],
-        {
-          [s.iconOnly]: icon && iconPosition === 'only',
-        },
-        className,
-      )}>
+    <>
       {iconToDisplay && iconPosition === 'left' ? (
         <Icon
           name={iconToDisplay}
@@ -88,6 +66,40 @@ export const Button: React.FC<ButtonProps> = ({
           })}
         />
       ) : null}
+    </>
+  );
+};
+
+interface CommonProps extends ButtonContentProps {
+  variation: 'primary' | 'secondary' | 'ghost' | 'ghost-alt' | 'text' | 'text-alt' | 'link';
+  className?: string;
+}
+
+export type ButtonProps = CommonProps & React.ButtonHTMLAttributes<HTMLButtonElement>;
+
+export const Button: React.FC<ButtonProps> = ({
+  children,
+  variation,
+  size = 'normal',
+  icon,
+  iconPosition = 'only',
+  iconRotate,
+  loading,
+  className,
+  ...rest
+}) => {
+  return (
+    <button
+      {...rest}
+      className={classNames(
+        s[variation],
+        s[size],
+        {
+          [s.iconOnly]: icon && iconPosition === 'only',
+        },
+        className,
+      )}>
+      <ButtonContent {...{ icon, iconPosition, iconRotate, loading, children }} />
     </button>
   );
 };
@@ -104,19 +116,6 @@ export const Link: React.FC<LinkProps> = ({
   className,
   ...rest
 }) => {
-  let iconSize: 16 | 24;
-  switch (size) {
-    case 'small':
-      iconSize = 16;
-      break;
-    case 'normal':
-      iconSize = 24;
-      break;
-    case 'big':
-      iconSize = 24;
-      break;
-  }
-
   return (
     <RouterLink
       {...rest}
@@ -128,13 +127,7 @@ export const Link: React.FC<LinkProps> = ({
         },
         className,
       )}>
-      {icon && iconPosition === 'left' ? (
-        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginRight: 8 }} />
-      ) : null}
-      {icon && iconPosition === 'only' ? <Icon name={icon} rotate={iconRotate} size={iconSize} /> : children}
-      {icon && iconPosition === 'right' ? (
-        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginLeft: 8 }} />
-      ) : null}
+      <ButtonContent {...{ icon, iconPosition, iconRotate, children }} />
     </RouterLink>
   );
 };
@@ -151,19 +144,6 @@ export const ExternalLink: React.FC<ExternalLinkProps> = ({
   className,
   ...rest
 }) => {
-  let iconSize: 16 | 24;
-  switch (size) {
-    case 'small':
-      iconSize = 16;
-      break;
-    case 'normal':
-      iconSize = 24;
-      break;
-    case 'big':
-      iconSize = 24;
-      break;
-  }
-
   return (
     <a
       rel="noopener noreferrer"
@@ -177,13 +157,7 @@ export const ExternalLink: React.FC<ExternalLinkProps> = ({
         },
         className,
       )}>
-      {icon && iconPosition === 'left' ? (
-        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginRight: 8 }} />
-      ) : null}
-      {icon && iconPosition === 'only' ? <Icon name={icon} rotate={iconRotate} size={iconSize} /> : children}
-      {icon && iconPosition === 'right' ? (
-        <Icon name={icon} rotate={iconRotate} size={iconSize} style={{ marginLeft: 8 }} />
-      ) : null}
+      <ButtonContent {...{ icon, iconPosition, iconRotate, children }} />
     </a>
   );
 };

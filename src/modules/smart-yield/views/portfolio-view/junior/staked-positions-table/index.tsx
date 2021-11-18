@@ -7,7 +7,6 @@ import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -42,10 +41,9 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
           />
           <div className="flex flow-row">
             <ExternalLink href={getEtherscanAddressUrl(entity.smartYield.address)} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.meta.underlyingSymbol}
               </Text>
-              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
             </ExternalLink>
             <Text type="small" weight="semibold">
               {market?.name}
@@ -103,7 +101,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             </ExternalLink>
           </>
         }>
-        APY
+        Variable APY
       </Hint>
     ),
     render: function APYRender(_, entity) {

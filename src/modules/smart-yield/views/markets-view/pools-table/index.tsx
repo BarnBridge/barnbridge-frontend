@@ -1,14 +1,11 @@
-import React from 'react';
-import { isMobile } from 'react-device-detect';
-import { NavLink } from 'react-router-dom';
-import { ColumnsType } from 'antd/lib/table/interface';
+import { useMemo } from 'react';
 import BigNumber from 'bignumber.js';
 import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, getHumanValue } from 'web3/utils';
 
-import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import { AprLabel } from 'components/custom/label';
+import { ColumnType, Table } from 'components/custom/table';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -36,12 +33,11 @@ function getMarketInsuranceLink(marketTokenSymbol?: string): string {
   }
 }
 
-function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
+function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): ColumnType<PoolEntity>[] {
   return [
     {
-      title: 'Token Name',
-      fixed: 'left',
-      render: (_, entity) => {
+      heading: 'Token Name',
+      render: entity => {
         const marketInsuranceLink = getMarketInsuranceLink(entity.contracts.smartYield?.symbol);
 
         return (
@@ -93,9 +89,8 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: 'Senior Liquidity',
-      sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
-      render: function Render(_, entity) {
+      heading: 'Senior Liquidity',
+      render: function Render(entity) {
         const { getToken } = useTokens();
         const token = getToken(entity.underlyingSymbol);
         const sum =
@@ -133,27 +128,25 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: (
+      heading: (
         <Hint
           text={
             <Text type="p2" className="mb-8">
               The Senior APY shown is the maximum theoretically possible daily rate for senior bonds.
             </Text>
           }>
-          Senior APY
+          Senior (Fixed) APY
         </Hint>
       ),
-      sorter: (a, b) => a.state.seniorApy - b.state.seniorApy,
-      render: (_, entity) => (
+      render: entity => (
         <Text type="p1" weight="semibold" color="green">
           {formatPercent(entity.state.seniorApy)}
         </Text>
       ),
     },
     {
-      title: 'Junior Liquidity',
-      sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
-      render: function Render(_, entity) {
+      heading: 'Junior Liquidity',
+      render: function Render(entity) {
         const { getToken } = useTokens();
         const token = getToken(entity.underlyingSymbol);
         const sum =
@@ -191,27 +184,27 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: (
+      heading: (
         <Hint
           text={
             <>
               <Text type="p2" className="mb-16">
-                The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
-                positions might differ.
+                The Junior (Variable) APY is estimated based on the current state of the pool. The actual APY you get
+                for your positions might differ.
               </Text>
               <Text type="p2" className="mb-8">
-                The number below is the SMART Yield junior rewards APR. You can add that by staking tokens in Pools
+                The number next to it is the SMART Yield junior rewards APR. You can add that by staking tokens in
+                Pools. Below it, is the average Junior (Variable) APY for the past 30 days.
               </Text>
               <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
                 Learn more
               </ExternalLink>
             </>
           }>
-          Junior APY
+          Junior (Variable) / 30d avg APY
         </Hint>
       ),
-      sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
-      render: function Render(_, entity) {
+      render: function Render(entity) {
         const { bondToken, stkAaveToken } = useKnownTokens();
         const { pools } = useRewardPools();
 
@@ -241,7 +234,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: (
+      heading: (
         <Hint
           text={
             <Text type="p2" className="mb-8">
@@ -249,19 +242,18 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
               any governance token rewards.
             </Text>
           }>
-          Originator APY
+          {activeMarket.name} APY
         </Hint>
       ),
-      sorter: (a, b) => a.state.originatorNetApy - b.state.originatorNetApy,
-      render: (_, entity) => (
+      render: entity => (
         <Text type="p1" weight="semibold" color="primary">
           {formatPercent(entity.state.originatorNetApy)}
         </Text>
       ),
     },
     {
-      title: 'jToken conversion rate',
-      render: (_, entity) => (
+      heading: 'jToken conversion rate',
+      render: entity => (
         <>
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             1 {entity.contracts.smartYield?.symbol}
@@ -278,10 +270,8 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
     ...(showWalletBalance
       ? ([
           {
-            title: 'Wallet balance',
-            sorter: (a, b) =>
-              (a.contracts.underlying?.balance?.toNumber() ?? 0) - (b.contracts.underlying?.balance?.toNumber() ?? 0),
-            render: (_, entity) => (
+            heading: 'Wallet balance',
+            render: entity => (
               <>
                 <div className="flex flow-col col-gap-8">
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
@@ -298,26 +288,7 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
               </>
             ),
           },
-        ] as ColumnsType<PoolEntity>)
-      : []),
-    ...(!isMobile
-      ? ([
-          {
-            fixed: 'right',
-            render(_, entity) {
-              return (
-                <NavLink
-                  className="button-ghost"
-                  to={{
-                    pathname: `/smart-yield/stats`,
-                    search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
-                  }}>
-                  Details
-                </NavLink>
-              );
-            },
-          },
-        ] as ColumnsType<PoolEntity>)
+        ] as ColumnType<PoolEntity>[])
       : []),
   ];
 }
@@ -333,23 +304,21 @@ const PoolsTable: React.FC<Props> = props => {
   const poolsCtx = usePools();
   const { pools, loading } = poolsCtx;
 
-  const entities = React.useMemo<PoolEntity[]>(() => {
+  const entities = useMemo<PoolEntity[]>(() => {
     return pools.filter(pool => !activeMarket || pool.protocolId === activeMarket.id);
   }, [pools, activeMarket]);
 
-  const columns = React.useMemo<ColumnsType<PoolEntity>>(() => {
-    return getTableColumns(wallet.isActive);
-  }, [wallet]);
+  const columns = useMemo<ColumnType<PoolEntity>[]>(() => {
+    return getTableColumns(wallet.isActive, activeMarket!);
+  }, [wallet, activeMarket]);
 
   return (
     <Table<PoolEntity>
       columns={columns}
-      dataSource={entities}
-      rowKey={entity => entity.smartYieldAddress}
+      data={entities}
+      variation="separated"
       loading={loading}
-      scroll={{
-        x: true,
-      }}
+      link={item => `/smart-yield/stats?m=${item.protocolId}&t=${item.underlyingSymbol}`}
     />
   );
 };

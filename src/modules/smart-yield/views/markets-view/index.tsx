@@ -128,7 +128,7 @@ const MarketsView: FC = () => {
       <AntdSpin spinning={poolsCtx.loading}>
         {marketsToDisplay.map(selectedMarket => (
           <Fragment key={selectedMarket.id}>
-            <div className="card mb-8 p-24 flex wrap align-center col-gap-64 row-gap-16">
+            <div className="card p-24 flex wrap align-center col-gap-64 row-gap-16">
               <div className="flex">
                 <TokenIcon
                   name={selectedMarket.icon.active as TokenIconNames}
@@ -154,7 +154,7 @@ const MarketsView: FC = () => {
                 </Text>
               </div>
             </div>
-            <div className="card mb-32">
+            <div className="mb-32">
               <PoolsTable activeMarket={selectedMarket} />
             </div>
           </Fragment>

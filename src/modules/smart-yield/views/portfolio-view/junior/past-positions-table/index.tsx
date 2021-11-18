@@ -7,7 +7,6 @@ import { formatBigValue, formatUSD, formatUSDValue, shortenAddr } from 'web3/uti
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
@@ -40,10 +39,9 @@ const Columns: ColumnsType<TableEntity> = [
           />
           <div className="flex flow-row">
             <ExternalLink href={getEtherscanAddressUrl(entity.pool?.smartYieldAddress)} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.pool?.underlyingSymbol}
               </Text>
-              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
             </ExternalLink>
             <Text type="small" weight="semibold">
               {entity.pool?.market?.name}

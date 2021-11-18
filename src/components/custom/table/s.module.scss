@@ -11,6 +11,26 @@
   }
 }
 
+.table {
+  &.clickable {
+    tr {
+      cursor: pointer;
+    }
+  }
+
+  tr {
+    &:hover {
+      .arrowIcon {
+        visibility: visible;
+      }
+    }
+  }
+}
+
+.arrowIcon {
+  visibility: hidden;
+}
+
 .tableFooter {
   display: grid;
   grid-template-columns: 1fr max-content;

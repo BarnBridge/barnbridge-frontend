@@ -1,8 +1,10 @@
+import { useHistory } from 'react-router-dom';
 import classNames from 'classnames';
 
 import { Pagination } from 'components/custom/pagination';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
 
@@ -17,16 +19,30 @@ type Props<T> = {
   data: T[];
   loading?: boolean;
   rowKey?: (item: T) => string;
+  variation?: 'standard' | 'separated';
+  link?: (item: T) => string;
 };
 
-export const Table = <T extends Record<string, any>>({ columns, data, loading, rowKey }: Props<T>) => {
+export const Table = <T extends Record<string, any>>({
+  columns,
+  data,
+  loading,
+  rowKey,
+  variation = 'standard',
+  link,
+}: Props<T>) => {
+  const history = useHistory();
+
   return (
     <div
       className={classNames('table-container', s.tableContainer, {
         [s.loading]: loading,
       })}>
       <table
-        className={classNames('table', s.table, {
+        className={classNames(s.table, {
+          table: variation === 'standard',
+          'table-separated': variation === 'separated',
+          [s.clickable]: link,
           [s.loading]: loading,
         })}>
         <thead>
@@ -36,16 +52,22 @@ export const Table = <T extends Record<string, any>>({ columns, data, loading, r
                 {heading}
               </th>
             ))}
+            {link ? <th /> : null}
           </tr>
         </thead>
         <tbody>
           {data.map((item, itemIdx) => (
-            <tr key={rowKey?.(item) ?? itemIdx}>
+            <tr key={rowKey?.(item) ?? itemIdx} onClick={link ? () => history.push(link(item)) : undefined}>
               {columns.map(({ render: Render, align }, dataIdx) => (
                 <td key={dataIdx} className={align ? `text-${align}` : undefined}>
                   <Render {...item} />
                 </td>
               ))}
+              {link ? (
+                <td>
+                  <Icon name="arrow" color="red" className={s.arrowIcon} />
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

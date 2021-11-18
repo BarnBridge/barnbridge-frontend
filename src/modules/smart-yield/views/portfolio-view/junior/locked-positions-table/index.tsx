@@ -7,7 +7,6 @@ import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
 import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
@@ -41,10 +40,9 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
           />
           <div className="flex flow-row">
             <ExternalLink href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.pool.underlyingSymbol}
               </Text>
-              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
             </ExternalLink>
             <Text type="small" weight="semibold">
               {entity.pool.market?.name}

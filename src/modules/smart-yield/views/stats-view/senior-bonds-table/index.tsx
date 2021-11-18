@@ -21,6 +21,7 @@ type TableEntity = APISYSeniorBonds & {
 
 const TokenNameColumn: React.FC = () => {
   const { pool } = useSYPool();
+  const { getEtherscanAddressUrl } = useWeb3();
 
   return (
     <div className="flex">
@@ -30,9 +31,11 @@ const TokenNameColumn: React.FC = () => {
         className="mr-16"
       />
       <div className="flex flow-row">
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {pool?.underlyingSymbol}
-        </Text>
+        <ExternalLink href={getEtherscanAddressUrl(pool?.underlyingAddress)} className="flex flow-col mb-4">
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {pool?.underlyingSymbol}
+          </Text>
+        </ExternalLink>
         <Text type="small" weight="semibold" color="secondary">
           {pool?.market?.name}
         </Text>
