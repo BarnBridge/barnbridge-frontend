@@ -76,7 +76,7 @@ const MarketsView: FC = () => {
                 {market.name}
               </Text>
               {market.warning && (
-                <div onClick={ev => ev.stopPropagation()}>
+                <div onClick={ev => ev.stopPropagation()} className="flex">
                   <Tooltip title={market.warning}>
                     <IconOld name="warn-circle" className="ml-8" />
                   </Tooltip>
