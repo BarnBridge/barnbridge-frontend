@@ -218,18 +218,23 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
         );
 
         return (
-          <div>
-            <Text type="p1" weight="semibold" color="purple">
-              {formatPercent(entity.state.juniorApy)}
+          <>
+            <div className="flex align-center col-gap-8">
+              <Text type="p1" weight="semibold" color="purple">
+                {formatPercent(entity.state.juniorApy)}
+              </Text>
+              {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
+                <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
+                  +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
+                </AprLabel>
+              ) : !hasZeroBondRewardLeft && entity.apr ? (
+                <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
+              ) : null}
+            </div>
+            <Text type="small" weight="semibold">
+              TBD
             </Text>
-            {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-              <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
-                +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
-              </AprLabel>
-            ) : !hasZeroBondRewardLeft && entity.apr ? (
-              <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
-            ) : null}
-          </div>
+          </>
         );
       },
     },
