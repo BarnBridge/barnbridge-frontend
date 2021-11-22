@@ -143,7 +143,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           <Text type="p1" weight="semibold" color="primary" className="mb-4">
             {pool.underlyingSymbol}
           </Text>
-          <Text type="small" weight="semibold">
+          <Text type="small" weight="semibold" color="secondary">
             {pool.market?.name}
           </Text>
         </div>
@@ -207,7 +207,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       <Divider />
       <div className="p-24">
         <Text type="small" weight="semibold" color="secondary">
-          APY
+          Fixed APY
         </Text>
         <Text type="p1" weight="semibold" color="green">
           {formatPercent(apy)}
@@ -299,7 +299,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
               </div>
               <div className="grid flow-row row-gap-4">
                 <Text type="small" weight="semibold" color="secondary">
-                  APY
+                  Fixed APY
                 </Text>
                 <Text type="p1" weight="semibold" color="green">
                   {formatPercent(apy)}

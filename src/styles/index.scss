@@ -93,7 +93,7 @@ body.mobile-menu-open {
   --theme-secondary-color-rgb: 113, 121, 128; // grey500
   --theme-default-color: #aaafb3; // grey300
 
-  --theme-card-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 8px 16px rgba(113, 121, 128, 0.08);
+  --theme-card-shadow: 0px 0px 0px 1px rgba(6, 10, 13, 0.03), 0px 2px 4px rgba(6, 10, 13, 0.04);
   --theme-modal-shadow: 0 0 0.5px rgba(6, 10, 13, 0.4), 0 16px 32px rgba(19, 32, 43, 0.4);
   --theme-overlay-shadow: 0 0 0.5px rgba(0, 0, 0, 0.4), 0 32px 64px rgba(113, 121, 128, 0.32);
 
@@ -153,7 +153,7 @@ body.mobile-menu-open {
   --theme-secondary-color: #939496;
   --theme-default-color: #939496;
 
-  --theme-card-shadow: 0 0 0.5px #fff, 0 8px 16px rgba(0, 0, 0, 0.08);
+  --theme-card-shadow: 0px 0px 0px 1px rgba(255, 255, 255, 0.08), 0px 2px 4px rgba(0, 0, 0, 0.16);
   --theme-modal-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
   --theme-overlay-shadow: 0 0 0.5px #fff, 0 32px 64px rgba(0, 0, 0, 0.32);
 
