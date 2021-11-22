@@ -6,12 +6,11 @@ import { shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import PopoverMenu, { PopoverMenuItem } from 'components/antd/popover-menu';
+import { ExplorerAddressLink } from 'components/button';
 import ExpandableCard, { ExpandableCardProps } from 'components/custom/expandable-card';
-import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useWeb3 } from 'components/providers/web3Provider';
 
 import s from './s.module.scss';
 
@@ -39,8 +38,6 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
     ...cardProps
   } = props;
 
-  const { getEtherscanAddressUrl } = useWeb3();
-
   const [ellipsis, setEllipsis] = React.useState<boolean>(false);
   const [expanded, setExpanded] = React.useState<boolean>(false);
   const [isSignature, showSignature] = React.useState<boolean>(false);
@@ -61,10 +58,6 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
     const params = functionParamValues?.map(param => AbiInterface.stringifyParamValue(param));
     return params?.join(',\n') ?? '';
   }, [functionParamValues]);
-
-  const etherscanLink = React.useMemo<string>(() => {
-    return `${getEtherscanAddressUrl(target)}#writeContract`;
-  }, [target]);
 
   const ActionMenuItems: PopoverMenuItem[] = [
     {
@@ -152,11 +145,11 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
       }
       {...cardProps}>
       <div className={s.content}>
-        <ExternalLink href={etherscanLink}>
+        <ExplorerAddressLink address={target} query="#writeContract">
           <Text type="p1" weight="semibold" className={s.address} color="blue">
             {shortenAddr(target)}
           </Text>
-        </ExternalLink>
+        </ExplorerAddressLink>
         {signature && (
           <AntdTypography.Paragraph
             className={cn(s.paragraph, expanded && s.expanded)}

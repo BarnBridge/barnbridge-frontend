@@ -8,7 +8,7 @@ import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
 import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -153,7 +153,9 @@ const VotingHeader: React.FC = () => {
                             <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
                           </li>
                         </ul>
-                        <ExternalLink href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power">
+                        <ExternalLink
+                          href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
+                          variation="link">
                           Learn more
                         </ExternalLink>
                       </>

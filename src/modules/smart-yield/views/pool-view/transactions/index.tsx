@@ -8,10 +8,9 @@ import Select, { SelectOption } from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
 import {
@@ -119,14 +118,12 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           dataIndex: 'from',
           width: '25%',
           render: function Render(_, entity) {
-            const { getEtherscanAddressUrl } = useWeb3();
-
             return (
-              <ExternalLink href={getEtherscanAddressUrl(entity.userAddress)} className="link-blue">
+              <ExplorerAddressLink address={entity.userAddress} variation="link">
                 <Text type="p1" weight="semibold">
                   {shortenAddr(entity.userAddress)}
                 </Text>
-              </ExternalLink>
+              </ExplorerAddressLink>
             );
           },
         }
@@ -135,15 +132,13 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       title: 'Transaction hash/timestamp',
       width: '25%',
       render: function Render(_, entity) {
-        const { getEtherscanTxUrl } = useWeb3();
-
         return (
           <>
-            <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+            <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
               <Text type="p1" weight="semibold">
                 {shortenAddr(entity.transactionHash)}
               </Text>
-            </ExternalLink>
+            </ExplorerTxLink>
             <Text type="small" weight="semibold" color="secondary">
               {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
             </Text>

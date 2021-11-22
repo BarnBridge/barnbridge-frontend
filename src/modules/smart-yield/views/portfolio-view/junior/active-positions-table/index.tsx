@@ -7,11 +7,11 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -28,7 +28,6 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
     title: 'Token Name',
     render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
       const { projectToken } = useKnownTokens();
 
       return (
@@ -40,11 +39,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             className="mr-16"
           />
           <div className="flex flow-row">
-            <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
+            <ExplorerAddressLink address={entity.smartYieldAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.underlyingSymbol}
               </Text>
-            </ExternalLink>
+            </ExplorerAddressLink>
             <Text type="small" weight="semibold">
               {entity.market?.name}
             </Text>

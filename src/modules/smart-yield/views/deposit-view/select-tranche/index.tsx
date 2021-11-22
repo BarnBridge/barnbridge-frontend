@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { formatPercent } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';

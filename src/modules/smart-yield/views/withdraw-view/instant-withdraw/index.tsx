@@ -9,7 +9,7 @@ import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
 import Form from 'components/antd/form';
 import Input from 'components/antd/input';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import TokenAmount from 'components/custom/token-amount';
