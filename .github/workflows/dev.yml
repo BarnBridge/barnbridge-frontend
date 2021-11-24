@@ -17,11 +17,10 @@ jobs:
         id: slack
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: slackapi/slack-github-action@v1.15.0
         with:
-          channel_id: C01D16VJ84C
-          status: BUILD STARTED
-          color: warning
+          channel-id: infrastructure-notifications
+          slack-message: ":pepegalight: STARTED barnbridge-frontend dev build"
 
       - name: Setup Nodejs
         uses: actions/setup-node@v1
@@ -57,23 +56,19 @@ jobs:
         if: success()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: slackapi/slack-github-action@v1.15.0
         with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01D16VJ84C
-          status: BUILD SUCCESSFUL
-          color: good
+          channel-id: infrastructure-notifications
+          slack-message: ":white_check_mark: barnbridge-frontend dev build"
 
       - name: Notify Slack failure
         if: failure()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: slackapi/slack-github-action@v1.15.0
         with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01D16VJ84C
-          status: BUILD FAILED
-          color: danger
+          channel-id: infrastructure-notifications
+          slack-message: ":octagonal_sign: barnbridge-frontend build FAILED"
 
   deploy:
     needs: build
@@ -84,11 +79,10 @@ jobs:
         id: slack
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: slackapi/slack-github-action@v1.15.0
         with:
-          channel_id: C01D16VJ84C
-          status: DEPLOYMENT STARTED
-          color: warning
+          channel-id: q-xyz-cicd
+          slack-message: ":pepegalight: STARTED barnbridge-frontend dev deployment"
 
       - name: Get artifacts
         uses: actions/download-artifact@v2
@@ -103,14 +97,14 @@ jobs:
           aws-region: us-east-1
 
       - name: Deploy static site to S3
-        run: ls -l && aws s3 sync . s3://dev-devappbarnbridgecom-origin --delete
+        run: ls -l && aws s3 sync . s3://dev-appdevqxyz-origin --delete
 
       - name: Invalidate CloudFront cache
         run: |
           #!/usr/bin/env bash
           set -eou pipefail
 
-          CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'dev.app.barnbridge.com')].Id | [0]" | tr -d \")
+          CF_DIST_ID=$(aws cloudfront list-distributions --query "DistributionList.Items[?Aliases.Items!=null] | [?contains(Aliases.Items, 'app.dev.q.xyz')].Id | [0]" | tr -d \")
           echo "Clearing cache for ${CF_DIST_ID}..."
           CF_INVALIDATION_ID=$(aws cloudfront create-invalidation --distribution-id ${CF_DIST_ID} --paths "/*" | jq -r '.Invalidation.Id')
           while [ $(aws cloudfront get-invalidation --distribution-id ${CF_DIST_ID} --id ${CF_INVALIDATION_ID} | jq -r '.Invalidation.Status') != "Completed" ]; do
@@ -122,20 +116,16 @@ jobs:
         if: success()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: slackapi/slack-github-action@v1.15.0
         with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01D16VJ84C
-          status: DEPLOYMENT SUCCESSFUL
-          color: good
+          channel-id: infrastructure-notifications
+          slack-message: ":white_check_mark: barnbridge-frontend dev deployment successful"
 
       - name: Notify Slack failure
         if: failure()
         env:
           SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
+        uses: slackapi/slack-github-action@v1.15.0
         with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01D16VJ84C
-          status: DEPLOYMENT FAILED
-          color: danger
+          channel-id: infrastructure-notifications
+          slack-message: ":octagonal_sign: barnbridge-frontend dev deployment FAILED"
