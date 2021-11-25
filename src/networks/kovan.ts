@@ -35,7 +35,7 @@ export const KovanConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://dev-v2.api.barnbridge.com',
+    baseUrl: 'https://v2-api.dev.q.xyz',
   },
   dao: {
     activationThreshold: 400_000,
