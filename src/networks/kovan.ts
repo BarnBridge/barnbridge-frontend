@@ -4,11 +4,11 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
+const RPC_KEY = '9a1fbb78ff36463989ec66c882d5941f';
 const RPC_HTTPS_URL = `https://kovan.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
-const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
+const EXPLORER_KEY = 'NVK23NSEQ6N9ACDRUEEY42BN82KY3P4YWF';
 const EXPLORER_URL = 'https://kovan.etherscan.io';
 const EXPLORER_API_URL = 'https://api-kovan.etherscan.io';
 
@@ -31,8 +31,8 @@ export const KovanConfig: NetworkConfig = {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
     walletConnectBridge: 'https://bridge.walletconnect.org',
     coinbaseAppName: 'barnbridge',
-    trezorEmail: 'bogdan@barnbridge.com',
-    trezorAppUrl: 'https://app.barnbridge.com/',
+    trezorEmail: 'trevor@q.xyz',
+    trezorAppUrl: 'https://app.q.xyz/',
   },
   api: {
     baseUrl: 'https://v2-api.dev.q.xyz',
