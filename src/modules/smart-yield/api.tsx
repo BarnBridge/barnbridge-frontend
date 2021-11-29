@@ -28,6 +28,8 @@ export type APISYPool = {
     jTokenPrice: number;
     seniorApy: number;
     juniorApy: number;
+    juniorAPYPast30DAvg: number;
+    numberOfJuniorsLocked: number;
     originatorApy: number;
     originatorNetApy: number;
     avgSeniorMaturityDays: number;
