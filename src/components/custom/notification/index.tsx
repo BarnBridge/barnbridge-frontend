@@ -10,15 +10,14 @@ import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 
+import { ExplorerAddressLink } from 'components/button';
 import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { NotificationType, useNotifications } from 'components/providers/notificationsProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { useReload } from 'hooks/useReload';
 
-import ExternalLink from '../externalLink';
 import NotificationIcon from './icon';
 
 import { getRelativeTime } from 'utils';
@@ -49,7 +48,6 @@ function getStrongText(text: string = ''): React.ReactNode {
 
 function useGetData(n: NotificationType): [IconNames, [string, string], React.ReactNode] {
   const [reload] = useReload();
-  const activeWeb3 = useWeb3();
   const knownTokens = useKnownTokens();
   const { getContract } = useContractManager();
 
@@ -83,9 +81,9 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
         colorPairs.red,
         <Text type="p2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been cancelled by{' '}
-          <ExternalLink href={activeWeb3.getEtherscanAddressUrl(n.metadata.caller)} className="link-blue">
+          <ExplorerAddressLink address={n.metadata.caller} variation="link">
             {shortenAddr(n.metadata.caller)}
-          </ExternalLink>
+          </ExplorerAddressLink>
         </Text>,
       ];
     case 'proposal-voting-open':
@@ -221,9 +219,9 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
             }`,
           )}{' '}
           has been delegated to you from{' '}
-          <ExternalLink href={activeWeb3.getEtherscanAddressUrl(n.metadata.from)} className="link-blue">
+          <ExplorerAddressLink address={n.metadata.from} className="link-blue">
             {shortenAddr(n.metadata.from)}
-          </ExternalLink>
+          </ExplorerAddressLink>
         </Text>,
       ];
     case 'smart-yield-token-bought': {

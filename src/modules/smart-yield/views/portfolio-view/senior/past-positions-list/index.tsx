@@ -7,11 +7,10 @@ import { formatBigValue, formatPercent, formatUSD, shortenAddr } from 'web3/util
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerTxLink } from 'components/button';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYSeniorRedeem, useSyAPI } from 'modules/smart-yield/api';
@@ -49,7 +48,6 @@ const PastPositionsList: React.FC<Props> = props => {
   const { originatorFilter = 'all', tokenFilter = 'all' } = props;
 
   const wallet = useWallet();
-  const { getEtherscanTxUrl } = useWeb3();
   const { getAmountInUSD } = useTokens();
   const poolsCtx = usePools();
   const syAPI = useSyAPI();
@@ -173,9 +171,9 @@ const PastPositionsList: React.FC<Props> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   Transaction hash/timestamp
                 </Text>
-                <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+                <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
                   {shortenAddr(entity.transactionHash)}
-                </ExternalLink>
+                </ExplorerTxLink>
                 <Text type="small" weight="semibold" color="secondary">
                   {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
                 </Text>

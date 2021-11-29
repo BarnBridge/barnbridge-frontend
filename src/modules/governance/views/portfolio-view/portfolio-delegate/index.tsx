@@ -5,7 +5,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, shortenAddr } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
 import { Form, FormItem, useForm } from 'components/custom/form';
 import Identicon from 'components/custom/identicon';
 import { Spinner } from 'components/custom/spinner';
@@ -13,7 +13,6 @@ import StatusTag from 'components/custom/status-tag';
 import TokenInput from 'components/custom/token-input';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { RadioCard } from 'components/radio-card';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -31,7 +30,6 @@ type FormType = {
 
 const PortfolioDelegate: FC = () => {
   const { projectToken } = useKnownTokens();
-  const { getEtherscanAddressUrl } = useWeb3();
   const wallet = useWallet();
   const daoCtx = useDAO();
 
@@ -168,11 +166,11 @@ const PortfolioDelegate: FC = () => {
                 Delegated address
               </Text>
               <div className="flex flow-col col-gap-8 align-center">
-                <ExternalLink href={getEtherscanAddressUrl(userDelegatedTo)}>
+                <ExplorerAddressLink address={userDelegatedTo}>
                   <Text type="p1" weight="bold" color="primary">
                     {shortenAddr(userDelegatedTo)}
                   </Text>
-                </ExternalLink>
+                </ExplorerAddressLink>
               </div>
             </div>
           )}

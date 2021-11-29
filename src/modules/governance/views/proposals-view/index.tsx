@@ -7,7 +7,7 @@ import Button from 'components/antd/button';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
 import Tabs from 'components/antd/tabs';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';

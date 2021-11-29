@@ -3,10 +3,10 @@ import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { TransactionApiType, useSeAPI } from 'modules/smart-exposure/api';
 
@@ -162,35 +162,21 @@ export const TransactionsTable = ({
               heading: 'Address',
               // @ts-ignore
               render: function Render(item) {
-                const { getEtherscanAddressUrl } = useWeb3();
-
                 return (
-                  <a
-                    href={getEtherscanAddressUrl(item.accountAddress)}
-                    className="link-blue"
-                    target="_blank"
-                    rel="noreferrer noopener">
+                  <ExplorerAddressLink address={item.accountAddress} variation="link">
                     {shortenAddr(item.accountAddress, 6, 4)}
-                  </a>
+                  </ExplorerAddressLink>
                 );
               },
             } as ColumnType<TransactionApiType>,
           ]),
       {
         heading: 'Transaction Hash',
-        render: function Render(item) {
-          const { getEtherscanTxUrl } = useWeb3();
-
-          return (
-            <a
-              href={getEtherscanTxUrl(item.transactionHash)}
-              className="link-blue"
-              target="_blank"
-              rel="noreferrer noopener">
-              {shortenAddr(item.transactionHash, 6, 4)}
-            </a>
-          );
-        },
+        render: item => (
+          <ExplorerTxLink address={item.transactionHash} variation="link">
+            {shortenAddr(item.transactionHash, 6, 4)}
+          </ExplorerTxLink>
+        ),
       },
       {
         heading: 'Date',

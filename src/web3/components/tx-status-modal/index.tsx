@@ -3,11 +3,10 @@ import { Web3SendState } from 'web3/web3Contract';
 
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerTxLink } from 'components/button';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 
 type Props = ModalProps & {
   state?: Web3SendState;
@@ -19,7 +18,6 @@ type Props = ModalProps & {
 const TxStatusModal: React.FC<Props> = props => {
   const { state, txHash, renderProgress, renderSuccess, ...modalProps } = props;
 
-  const { getEtherscanTxUrl } = useWeb3();
   const { activeNetwork } = useNetwork();
 
   return (
@@ -32,9 +30,9 @@ const TxStatusModal: React.FC<Props> = props => {
               Your transaction is being processed ...
             </Text>
             <div className="mb-64">{renderProgress?.()}</div>
-            <ExternalLink href={getEtherscanTxUrl(txHash)} className="button-primary full-width">
+            <ExplorerTxLink address={txHash} variation="primary" className="full-width">
               View on {activeNetwork.explorer.name}
-            </ExternalLink>
+            </ExplorerTxLink>
           </>
         )}
         {state === 'success' && (

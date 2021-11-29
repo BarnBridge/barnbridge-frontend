@@ -3,6 +3,7 @@ import { Link as RouterLink, LinkProps as RouterLinkProps } from 'react-router-d
 import classNames from 'classnames';
 
 import { Icon, IconNames, IconProps } from 'components/icon';
+import { useWeb3 } from 'components/providers/web3Provider';
 
 import s from './s.module.scss';
 
@@ -71,7 +72,7 @@ const ButtonContent: React.FC<ButtonContentProps> = ({ size, icon, iconPosition,
 };
 
 interface CommonProps extends ButtonContentProps {
-  variation: 'primary' | 'secondary' | 'ghost' | 'ghost-alt' | 'text' | 'text-alt' | 'link';
+  variation?: 'primary' | 'secondary' | 'ghost' | 'ghost-alt' | 'text' | 'text-alt' | 'link';
   className?: string;
 }
 
@@ -92,7 +93,7 @@ export const Button: React.FC<ButtonProps> = ({
     <button
       {...rest}
       className={classNames(
-        s[variation],
+        variation ? s[variation] : null,
         s[size],
         {
           [s.iconOnly]: icon && iconPosition === 'only',
@@ -120,7 +121,7 @@ export const Link: React.FC<LinkProps> = ({
     <RouterLink
       {...rest}
       className={classNames(
-        s[variation],
+        variation ? s[variation] : null,
         s[size],
         {
           [s.iconOnly]: icon && iconPosition === 'only',
@@ -150,7 +151,7 @@ export const ExternalLink: React.FC<ExternalLinkProps> = ({
       target="_blank"
       {...rest}
       className={classNames(
-        s[variation],
+        variation ? s[variation] : null,
         s[size],
         {
           [s.iconOnly]: icon && iconPosition === 'only',
@@ -159,5 +160,46 @@ export const ExternalLink: React.FC<ExternalLinkProps> = ({
       )}>
       <ButtonContent {...{ icon, iconPosition, iconRotate, children }} />
     </a>
+  );
+};
+
+type ExplorerAddressLinkProps = Omit<ExternalLinkProps, 'href'> & {
+  address?: string;
+  query?: string;
+};
+
+export const ExplorerAddressLink: React.FC<ExplorerAddressLinkProps> = props => {
+  const { children, address, query = '', ...rest } = props;
+
+  const { getEtherscanAddressUrl } = useWeb3();
+
+  if (!address) {
+    return <>{children}</>;
+  }
+
+  return (
+    <ExternalLink href={`${getEtherscanAddressUrl(address)}${query}`} {...rest}>
+      {children}
+    </ExternalLink>
+  );
+};
+
+type ExplorerTxLinkProps = Omit<ExternalLinkProps, 'href'> & {
+  address?: string;
+};
+
+export const ExplorerTxLink: React.FC<ExplorerTxLinkProps> = props => {
+  const { children, address, ...rest } = props;
+
+  const { getEtherscanTxUrl } = useWeb3();
+
+  if (!address) {
+    return <>{children}</>;
+  }
+
+  return (
+    <ExternalLink href={getEtherscanTxUrl(address)} {...rest}>
+      {children}
+    </ExternalLink>
   );
 };
