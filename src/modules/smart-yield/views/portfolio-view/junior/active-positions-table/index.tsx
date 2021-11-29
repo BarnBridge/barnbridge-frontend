@@ -12,6 +12,7 @@ import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -61,10 +62,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
         .unscaleBy(a.underlyingDecimals)
         ?.comparedTo(b.smartYieldBalance.unscaleBy(b.underlyingDecimals)!) ?? 0,
     render: function BalanceRender(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const value = entity.smartYieldBalance.unscaleBy(entity.underlyingDecimals);
       const uValue = value?.multipliedBy(entity.state.jTokenPrice);
-      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.underlyingSymbol);
+      const valueInUSD = getAmountInUSD(uValue, entity.underlyingSymbol);
+
       return (
         <>
           <Tooltip

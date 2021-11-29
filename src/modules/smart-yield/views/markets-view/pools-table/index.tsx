@@ -1,6 +1,6 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, getHumanValue } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import { ExternalLink } from 'components/button';
@@ -11,12 +11,22 @@ import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
+import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
+import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
+import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { MarketMeta } from 'modules/smart-yield/providers/markets';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
-type PoolEntity = PoolsSYPool;
+type PoolEntity = PoolsSYPool & {
+  seniorBalance?: BigNumber;
+  juniorBalance?: BigNumber;
+  juniorTokenSymbol?: string;
+};
 
 function getMarketInsuranceLink(marketTokenSymbol?: string): string {
   switch (marketTokenSymbol) {
@@ -232,7 +242,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
               ) : null}
             </div>
             <Text type="small" weight="semibold">
-              TBD
+              {formatPercent(entity.state.juniorAPYPast30DAvg)}
             </Text>
           </>
         );
@@ -256,42 +266,55 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
         </Text>
       ),
     },
-    {
-      heading: 'jToken conversion rate',
-      render: entity => (
-        <>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            1 {entity.contracts.smartYield?.symbol}
-          </Text>
-          <Text type="small" weight="semibold" wrap={false}>
-            ={' '}
-            {formatToken(entity.state.jTokenPrice, {
-              tokenName: entity.underlyingSymbol,
-            })}
-          </Text>
-        </>
-      ),
-    },
     ...(showWalletBalance
       ? ([
           {
-            heading: 'Wallet balance',
-            render: entity => (
-              <>
-                <div className="flex flow-col col-gap-8">
+            heading: 'Junior Positions Balance',
+            render: function Render(entity) {
+              const { getAmountInUSD } = useTokens();
+              return (
+                <>
                   <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                    {formatBigValue(getHumanValue(entity.contracts.underlying?.balance, entity.underlyingDecimals))}
+                    {formatToken(entity.juniorBalance?.unscaleBy(entity.underlyingDecimals), {
+                      tokenName: entity.juniorTokenSymbol,
+                    }) ?? '-'}
                   </Text>
-                  <Text type="p1" weight="semibold" color="primary">
-                    {entity.underlyingSymbol}
+                  <Text type="small" weight="semibold" wrap={false}>
+                    {formatUSD(
+                      getAmountInUSD(
+                        entity.juniorBalance
+                          ?.unscaleBy(entity.underlyingDecimals)
+                          ?.multipliedBy(entity.state.jTokenPrice),
+                        entity.underlyingSymbol,
+                      ),
+                    ) ?? '-'}
                   </Text>
-                </div>
-
-                <Text type="small" weight="semibold">
-                  {formatUSDValue(getHumanValue(entity.contracts.underlying?.balance, entity.underlyingDecimals))}
-                </Text>
-              </>
-            ),
+                </>
+              );
+            },
+          },
+          {
+            heading: 'Senior Positions Balance',
+            render: function Render(entity) {
+              const { getAmountInUSD } = useTokens();
+              return (
+                <>
+                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    {formatToken(entity.seniorBalance?.unscaleBy(entity.underlyingDecimals), {
+                      tokenName: entity.underlyingSymbol,
+                    }) ?? '-'}
+                  </Text>
+                  <Text type="small" weight="semibold" wrap={false}>
+                    {formatUSD(
+                      getAmountInUSD(
+                        entity.seniorBalance?.unscaleBy(entity.underlyingDecimals),
+                        entity.underlyingSymbol,
+                      ),
+                    ) ?? '-'}
+                  </Text>
+                </>
+              );
+            },
           },
         ] as ColumnType<PoolEntity>[])
       : []),
@@ -305,9 +328,12 @@ type Props = {
 const PoolsTable: React.FC<Props> = props => {
   const { activeMarket } = props;
 
+  const [reload] = useReload();
   const wallet = useWallet();
   const poolsCtx = usePools();
   const { pools, loading } = poolsCtx;
+
+  const { getOrCreateContract } = useContractFactory();
 
   const entities = useMemo<PoolEntity[]>(() => {
     return pools.filter(pool => !activeMarket || pool.protocolId === activeMarket.id);
@@ -316,6 +342,106 @@ const PoolsTable: React.FC<Props> = props => {
   const columns = useMemo<ColumnType<PoolEntity>[]>(() => {
     return getTableColumns(wallet.isActive, activeMarket!);
   }, [wallet, activeMarket]);
+
+  useEffect(() => {
+    pools.forEach(pool => {
+      (pool as PoolEntity).seniorBalance = undefined;
+      (pool as PoolEntity).juniorBalance = undefined;
+    });
+
+    if (!wallet.isActive) {
+      return;
+    }
+
+    pools.map(async pool => {
+      const smartYieldContract = getOrCreateContract(
+        pool.smartYieldAddress,
+        () => {
+          return new SYSmartYieldContract(pool.smartYieldAddress);
+        },
+        {
+          afterInit: contract => {
+            contract.loadCommon().catch(Error);
+          },
+        },
+      );
+
+      const seniorBondContract = getOrCreateContract(pool.seniorBondAddress, () => {
+        return new SYSeniorBondContract(pool.seniorBondAddress);
+      });
+
+      const juniorBondContract = getOrCreateContract(pool.juniorBondAddress, () => {
+        return new SYJuniorBondContract(pool.juniorBondAddress);
+      });
+
+      const lockedSeniorBalancePromise = seniorBondContract.getSeniorBondIds().then(sBondIds => {
+        if (sBondIds.length === 0) {
+          return Promise.resolve(BigNumber.ZERO);
+        }
+
+        return smartYieldContract.getSeniorBonds(sBondIds).then(sBonds => {
+          if (sBonds.length === 0) {
+            return Promise.resolve(BigNumber.ZERO);
+          }
+
+          return sBonds.reduce((sum, sBond) => {
+            return sum.plus(sBond.principal).plus(sBond.gain);
+          }, BigNumber.ZERO);
+        });
+      });
+
+      const lockedJuniorBalancePromise = juniorBondContract.getJuniorBondIds().then(jBondIds => {
+        if (jBondIds.length === 0) {
+          return Promise.resolve(BigNumber.ZERO);
+        }
+
+        return smartYieldContract.getJuniorBonds(jBondIds).then(jBonds => {
+          if (jBonds.length === 0) {
+            return Promise.resolve(BigNumber.ZERO);
+          }
+
+          return jBonds.reduce((sum, sBond) => {
+            return sum.plus(sBond.tokens);
+          }, BigNumber.ZERO);
+        });
+      });
+
+      const activeJuniorBalancePromise = smartYieldContract.loadBalance().then(() => smartYieldContract.balance);
+
+      let stakedJuniorBalancePromise = Promise.resolve(BigNumber.ZERO);
+
+      if (pool.rewardPoolAddress) {
+        const rewardContract = getOrCreateContract(pool.rewardPoolAddress, () => {
+          return new SYRewardPoolContract(pool.rewardPoolAddress, false);
+        });
+
+        const account = wallet.account;
+
+        if (account) {
+          stakedJuniorBalancePromise = rewardContract.loadBalanceFor(account).then(() => {
+            return rewardContract.getBalanceFor(account) ?? BigNumber.ZERO;
+          });
+        }
+      }
+
+      const [
+        lockedSeniorBalance = BigNumber.ZERO,
+        activeJuniorBalance = BigNumber.ZERO,
+        lockedJuniorBalance = BigNumber.ZERO,
+        stakedJuniorBalance = BigNumber.ZERO,
+      ] = await Promise.all([
+        lockedSeniorBalancePromise,
+        activeJuniorBalancePromise,
+        lockedJuniorBalancePromise,
+        stakedJuniorBalancePromise,
+      ]);
+
+      (pool as PoolEntity).seniorBalance = lockedSeniorBalance;
+      (pool as PoolEntity).juniorBalance = activeJuniorBalance.plus(lockedJuniorBalance).plus(stakedJuniorBalance);
+      (pool as PoolEntity).juniorTokenSymbol = smartYieldContract.symbol;
+      reload();
+    });
+  }, [wallet.isActive, pools]);
 
   return (
     <Table<PoolEntity>

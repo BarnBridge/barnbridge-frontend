@@ -2,7 +2,7 @@ import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
-import { formatBigValue, formatUSD, formatUSDValue, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
@@ -67,17 +67,18 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     sorter: (a, b) => a.tokensIn.toNumber() - b.tokensIn.toNumber(),
     render: function Render(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const value = entity.tokensIn;
       const uValue = value?.multipliedBy(entity.pool?.state.jTokenPrice ?? 0);
-      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.pool?.underlyingSymbol!);
+      const valueInUSD = getAmountInUSD(uValue, entity.pool?.underlyingSymbol!);
 
       return (
         <>
           <Tooltip title={formatBigValue(entity.tokensIn, entity.pool?.underlyingDecimals)}>
             <Text type="p1" weight="semibold" color="primary">
-              {formatBigValue(entity.tokensIn)}
-              {` ${entity.pool?.contracts.smartYield?.symbol}`}
+              {formatToken(entity.tokensIn, {
+                tokenName: entity.pool?.contracts.smartYield?.symbol,
+              })}
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" color="secondary">
@@ -92,17 +93,18 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     sorter: (a, b) => a.underlyingOut.toNumber() - b.underlyingOut.toNumber(),
     render: function Render(_, entity) {
-      const { getToken } = useTokens();
+      const { getAmountInUSD } = useTokens();
       return (
         <>
           <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
             <Text type="p1" weight="semibold" color="primary">
-              {formatBigValue(entity.underlyingOut)}
-              {` ${entity.pool?.underlyingSymbol}`}
+              {formatToken(entity.underlyingOut, {
+                tokenName: entity.pool?.underlyingSymbol,
+              })}
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSDValue(entity.underlyingOut.multipliedBy(getToken(entity.pool?.underlyingSymbol)?.price ?? 0))}
+            {formatUSD(getAmountInUSD(entity.underlyingOut, entity.pool?.underlyingSymbol))}
           </Text>
         </>
       );
@@ -113,19 +115,18 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     sorter: (a, b) => a.forfeits?.toNumber() ?? 0 - b.underlyingOut?.toNumber() ?? 0,
     render: function Render(_, entity) {
-      const { getToken } = useTokens();
+      const { getAmountInUSD } = useTokens();
       return (
         <>
           <Tooltip title={formatBigValue(entity.forfeits ?? BigNumber.ZERO, entity.pool?.underlyingDecimals)}>
             <Text type="p1" weight="semibold" color="primary">
-              {formatBigValue(entity.forfeits ?? BigNumber.ZERO)}
-              {` ${entity.pool?.underlyingSymbol}`}
+              {formatToken(entity.forfeits, {
+                tokenName: entity.pool?.underlyingSymbol,
+              })}
             </Text>
           </Tooltip>
           <Text type="small" weight="semibold" color="secondary">
-            {formatUSDValue(
-              entity.forfeits.multipliedBy(getToken(entity.pool?.underlyingSymbol)?.price ?? 0) ?? BigNumber.ZERO,
-            )}
+            {formatUSD(getAmountInUSD(entity.forfeits, entity.pool?.underlyingSymbol))}
           </Text>
         </>
       );

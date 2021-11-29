@@ -56,11 +56,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     width: '20%',
     align: 'right',
     render: function PoolBalanceRender(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const walletCtx = useWallet();
       const val = entity.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(entity.meta.poolTokenDecimals);
       const uVal = val?.multipliedBy(entity.smartYield.price ?? 0);
-      const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, entity.meta.underlyingSymbol);
+      const valInUSD = getAmountInUSD(uVal, entity.meta.underlyingSymbol);
 
       return (
         <>
@@ -135,9 +135,10 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     width: '20%',
     align: 'right',
     render: function RewardsRender(_, entity) {
-      const { bondToken, convertTokenInUSD } = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
+      const { bondToken } = useKnownTokens();
       const bondToClaim = entity.rewardPool.getClaimFor(bondToken.address)?.unscaleBy(bondToken.decimals);
-      const bondToClaimInUSD = convertTokenInUSD(bondToClaim, bondToken.symbol!);
+      const bondToClaimInUSD = getAmountInUSD(bondToClaim, bondToken.symbol!);
 
       return (
         <>

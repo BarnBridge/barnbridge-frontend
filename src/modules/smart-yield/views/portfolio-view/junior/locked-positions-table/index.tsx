@@ -9,6 +9,7 @@ import { ExplorerAddressLink, ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -69,10 +70,10 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     align: 'right',
     sorter: (a, b) => a.jBond.tokens.toNumber() - b.jBond.tokens.toNumber(),
     render: function Render(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const value = entity.jBond.tokens.unscaleBy(entity.pool.underlyingDecimals);
       const uValue = value?.multipliedBy(entity.pool.state.jTokenPrice);
-      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.pool.underlyingSymbol);
+      const valueInUSD = getAmountInUSD(uValue, entity.pool.underlyingSymbol);
 
       return (
         <>
