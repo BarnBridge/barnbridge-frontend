@@ -6,7 +6,7 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Select from 'components/antd/select';
-import { ExplorerAddressLink } from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
 import IconOld from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { ColumnType, Table } from 'components/custom/table';

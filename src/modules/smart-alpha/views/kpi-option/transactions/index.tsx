@@ -7,7 +7,7 @@ import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Select, { SelectOption } from 'components/antd/select';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
-import { ExplorerAddressLink, ExplorerTxLink } from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';

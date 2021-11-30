@@ -4,7 +4,7 @@ import cn from 'classnames';
 import { formatToken, formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';

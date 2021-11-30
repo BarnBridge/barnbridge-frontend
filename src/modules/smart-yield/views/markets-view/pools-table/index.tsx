@@ -1,25 +1,32 @@
-import React from 'react';
-import { isMobile } from 'react-device-detect';
-import { NavLink } from 'react-router-dom';
-import { ColumnsType } from 'antd/lib/table/interface';
+import { useEffect, useMemo } from 'react';
 import BigNumber from 'bignumber.js';
-import { formatBigValue, formatPercent, formatToken, formatUSD, formatUSDValue, getHumanValue } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
-import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import { AprLabel } from 'components/custom/label';
+import { ColumnType, Table } from 'components/custom/table';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
+import { useReload } from 'hooks/useReload';
+import SYJuniorBondContract from 'modules/smart-yield/contracts/syJuniorBondContract';
+import SYRewardPoolContract from 'modules/smart-yield/contracts/syRewardPoolContract';
+import SYSeniorBondContract from 'modules/smart-yield/contracts/sySeniorBondContract';
+import SYSmartYieldContract from 'modules/smart-yield/contracts/sySmartYieldContract';
 import { MarketMeta } from 'modules/smart-yield/providers/markets';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
 
-type PoolEntity = PoolsSYPool;
+type PoolEntity = PoolsSYPool & {
+  seniorBalance?: BigNumber;
+  juniorBalance?: BigNumber;
+  juniorTokenSymbol?: string;
+};
 
 function getMarketInsuranceLink(marketTokenSymbol?: string): string {
   switch (marketTokenSymbol) {
@@ -36,12 +43,11 @@ function getMarketInsuranceLink(marketTokenSymbol?: string): string {
   }
 }
 
-function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
+function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): ColumnType<PoolEntity>[] {
   return [
     {
-      title: 'Token Name',
-      fixed: 'left',
-      render: (_, entity) => {
+      heading: 'Token Name',
+      render: entity => {
         const marketInsuranceLink = getMarketInsuranceLink(entity.contracts.smartYield?.symbol);
 
         return (
@@ -93,9 +99,8 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: 'Senior Liquidity',
-      sorter: (a, b) => a.state.seniorLiquidity - b.state.seniorLiquidity,
-      render: function Render(_, entity) {
+      heading: 'Senior Liquidity',
+      render: function Render(entity) {
         const { getToken } = useTokens();
         const token = getToken(entity.underlyingSymbol);
         const sum =
@@ -133,27 +138,25 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: (
+      heading: (
         <Hint
           text={
             <Text type="p2" className="mb-8">
               The Senior APY shown is the maximum theoretically possible daily rate for senior bonds.
             </Text>
           }>
-          Senior APY
+          Senior (Fixed) APY
         </Hint>
       ),
-      sorter: (a, b) => a.state.seniorApy - b.state.seniorApy,
-      render: (_, entity) => (
+      render: entity => (
         <Text type="p1" weight="semibold" color="green">
           {formatPercent(entity.state.seniorApy)}
         </Text>
       ),
     },
     {
-      title: 'Junior Liquidity',
-      sorter: (a, b) => a.state.juniorLiquidity - b.state.juniorLiquidity,
-      render: function Render(_, entity) {
+      heading: 'Junior Liquidity',
+      render: function Render(entity) {
         const { getToken } = useTokens();
         const token = getToken(entity.underlyingSymbol);
         const sum =
@@ -191,27 +194,27 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
       },
     },
     {
-      title: (
+      heading: (
         <Hint
           text={
             <>
               <Text type="p2" className="mb-16">
-                The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
-                positions might differ.
+                The Junior (Variable) APY is estimated based on the current state of the pool. The actual APY you get
+                for your positions might differ.
               </Text>
               <Text type="p2" className="mb-8">
-                The number below is the SMART Yield junior rewards APR. You can add that by staking tokens in Pools
+                The number next to it is the SMART Yield junior rewards APR. You can add that by staking tokens in
+                Pools. Below it, is the average Junior (Variable) APY for the past 30 days.
               </Text>
               <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
                 Learn more
               </ExternalLink>
             </>
           }>
-          Junior APY
+          Junior (Variable) / 30d avg APY
         </Hint>
       ),
-      sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
-      render: function Render(_, entity) {
+      render: function Render(entity) {
         const { bondToken, stkAaveToken } = useKnownTokens();
         const { pools } = useRewardPools();
 
@@ -225,23 +228,28 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
         );
 
         return (
-          <div>
-            <Text type="p1" weight="semibold" color="purple">
-              {formatPercent(entity.state.juniorApy)}
+          <>
+            <div className="flex align-center col-gap-8">
+              <Text type="p1" weight="semibold" color="purple">
+                {formatPercent(entity.state.juniorApy)}
+              </Text>
+              {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
+                <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
+                  +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
+                </AprLabel>
+              ) : !hasZeroBondRewardLeft && entity.apr ? (
+                <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
+              ) : null}
+            </div>
+            <Text type="small" weight="semibold">
+              {formatPercent(entity.state.juniorAPYPast30DAvg)}
             </Text>
-            {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
-              <AprLabel icons={[bondToken.icon!, stkAaveToken.icon!]}>
-                +{formatPercent(entity.apy?.plus(hasZeroBondRewardLeft ? 0 : entity.apr ?? 0) ?? 0)} APR
-              </AprLabel>
-            ) : !hasZeroBondRewardLeft && entity.apr ? (
-              <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
-            ) : null}
-          </div>
+          </>
         );
       },
     },
     {
-      title: (
+      heading: (
         <Hint
           text={
             <Text type="p2" className="mb-8">
@@ -249,75 +257,66 @@ function getTableColumns(showWalletBalance: boolean): ColumnsType<PoolEntity> {
               any governance token rewards.
             </Text>
           }>
-          Originator APY
+          {activeMarket.name} APY
         </Hint>
       ),
-      sorter: (a, b) => a.state.originatorNetApy - b.state.originatorNetApy,
-      render: (_, entity) => (
+      render: entity => (
         <Text type="p1" weight="semibold" color="primary">
           {formatPercent(entity.state.originatorNetApy)}
         </Text>
       ),
     },
-    {
-      title: 'jToken conversion rate',
-      render: (_, entity) => (
-        <>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
-            1 {entity.contracts.smartYield?.symbol}
-          </Text>
-          <Text type="small" weight="semibold" wrap={false}>
-            ={' '}
-            {formatToken(entity.state.jTokenPrice, {
-              tokenName: entity.underlyingSymbol,
-            })}
-          </Text>
-        </>
-      ),
-    },
     ...(showWalletBalance
       ? ([
           {
-            title: 'Wallet balance',
-            sorter: (a, b) =>
-              (a.contracts.underlying?.balance?.toNumber() ?? 0) - (b.contracts.underlying?.balance?.toNumber() ?? 0),
-            render: (_, entity) => (
-              <>
-                <div className="flex flow-col col-gap-8">
-                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                    {formatBigValue(getHumanValue(entity.contracts.underlying?.balance, entity.underlyingDecimals))}
-                  </Text>
-                  <Text type="p1" weight="semibold" color="primary">
-                    {entity.underlyingSymbol}
-                  </Text>
-                </div>
-
-                <Text type="small" weight="semibold">
-                  {formatUSDValue(getHumanValue(entity.contracts.underlying?.balance, entity.underlyingDecimals))}
-                </Text>
-              </>
-            ),
-          },
-        ] as ColumnsType<PoolEntity>)
-      : []),
-    ...(!isMobile
-      ? ([
-          {
-            fixed: 'right',
-            render(_, entity) {
+            heading: 'Junior Positions Balance',
+            render: function Render(entity) {
+              const { getAmountInUSD } = useTokens();
               return (
-                <NavLink
-                  className="button-ghost"
-                  to={{
-                    pathname: `/smart-yield/stats`,
-                    search: `?m=${entity.protocolId}&t=${entity.underlyingSymbol}`,
-                  }}>
-                  Details
-                </NavLink>
+                <>
+                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    {formatToken(entity.juniorBalance?.unscaleBy(entity.underlyingDecimals), {
+                      tokenName: entity.juniorTokenSymbol,
+                    }) ?? '-'}
+                  </Text>
+                  <Text type="small" weight="semibold" wrap={false}>
+                    {formatUSD(
+                      getAmountInUSD(
+                        entity.juniorBalance
+                          ?.unscaleBy(entity.underlyingDecimals)
+                          ?.multipliedBy(entity.state.jTokenPrice),
+                        entity.underlyingSymbol,
+                      ),
+                    ) ?? '-'}
+                  </Text>
+                </>
               );
             },
           },
-        ] as ColumnsType<PoolEntity>)
+          {
+            heading: 'Senior Positions Balance',
+            render: function Render(entity) {
+              const { getAmountInUSD } = useTokens();
+              return (
+                <>
+                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    {formatToken(entity.seniorBalance?.unscaleBy(entity.underlyingDecimals), {
+                      tokenName: entity.underlyingSymbol,
+                    }) ?? '-'}
+                  </Text>
+                  <Text type="small" weight="semibold" wrap={false}>
+                    {formatUSD(
+                      getAmountInUSD(
+                        entity.seniorBalance?.unscaleBy(entity.underlyingDecimals),
+                        entity.underlyingSymbol,
+                      ),
+                    ) ?? '-'}
+                  </Text>
+                </>
+              );
+            },
+          },
+        ] as ColumnType<PoolEntity>[])
       : []),
   ];
 }
@@ -329,27 +328,128 @@ type Props = {
 const PoolsTable: React.FC<Props> = props => {
   const { activeMarket } = props;
 
+  const [reload] = useReload();
   const wallet = useWallet();
   const poolsCtx = usePools();
   const { pools, loading } = poolsCtx;
 
-  const entities = React.useMemo<PoolEntity[]>(() => {
+  const { getOrCreateContract } = useContractFactory();
+
+  const entities = useMemo<PoolEntity[]>(() => {
     return pools.filter(pool => !activeMarket || pool.protocolId === activeMarket.id);
   }, [pools, activeMarket]);
 
-  const columns = React.useMemo<ColumnsType<PoolEntity>>(() => {
-    return getTableColumns(wallet.isActive);
-  }, [wallet]);
+  const columns = useMemo<ColumnType<PoolEntity>[]>(() => {
+    return getTableColumns(wallet.isActive, activeMarket!);
+  }, [wallet, activeMarket]);
+
+  useEffect(() => {
+    pools.forEach(pool => {
+      (pool as PoolEntity).seniorBalance = undefined;
+      (pool as PoolEntity).juniorBalance = undefined;
+    });
+
+    if (!wallet.isActive) {
+      return;
+    }
+
+    pools.map(async pool => {
+      const smartYieldContract = getOrCreateContract(
+        pool.smartYieldAddress,
+        () => {
+          return new SYSmartYieldContract(pool.smartYieldAddress);
+        },
+        {
+          afterInit: contract => {
+            contract.loadCommon().catch(Error);
+          },
+        },
+      );
+
+      const seniorBondContract = getOrCreateContract(pool.seniorBondAddress, () => {
+        return new SYSeniorBondContract(pool.seniorBondAddress);
+      });
+
+      const juniorBondContract = getOrCreateContract(pool.juniorBondAddress, () => {
+        return new SYJuniorBondContract(pool.juniorBondAddress);
+      });
+
+      const lockedSeniorBalancePromise = seniorBondContract.getSeniorBondIds().then(sBondIds => {
+        if (sBondIds.length === 0) {
+          return Promise.resolve(BigNumber.ZERO);
+        }
+
+        return smartYieldContract.getSeniorBonds(sBondIds).then(sBonds => {
+          if (sBonds.length === 0) {
+            return Promise.resolve(BigNumber.ZERO);
+          }
+
+          return sBonds.reduce((sum, sBond) => {
+            return sum.plus(sBond.principal).plus(sBond.gain);
+          }, BigNumber.ZERO);
+        });
+      });
+
+      const lockedJuniorBalancePromise = juniorBondContract.getJuniorBondIds().then(jBondIds => {
+        if (jBondIds.length === 0) {
+          return Promise.resolve(BigNumber.ZERO);
+        }
+
+        return smartYieldContract.getJuniorBonds(jBondIds).then(jBonds => {
+          if (jBonds.length === 0) {
+            return Promise.resolve(BigNumber.ZERO);
+          }
+
+          return jBonds.reduce((sum, sBond) => {
+            return sum.plus(sBond.tokens);
+          }, BigNumber.ZERO);
+        });
+      });
+
+      const activeJuniorBalancePromise = smartYieldContract.loadBalance().then(() => smartYieldContract.balance);
+
+      let stakedJuniorBalancePromise = Promise.resolve(BigNumber.ZERO);
+
+      if (pool.rewardPoolAddress) {
+        const rewardContract = getOrCreateContract(pool.rewardPoolAddress, () => {
+          return new SYRewardPoolContract(pool.rewardPoolAddress, false);
+        });
+
+        const account = wallet.account;
+
+        if (account) {
+          stakedJuniorBalancePromise = rewardContract.loadBalanceFor(account).then(() => {
+            return rewardContract.getBalanceFor(account) ?? BigNumber.ZERO;
+          });
+        }
+      }
+
+      const [
+        lockedSeniorBalance = BigNumber.ZERO,
+        activeJuniorBalance = BigNumber.ZERO,
+        lockedJuniorBalance = BigNumber.ZERO,
+        stakedJuniorBalance = BigNumber.ZERO,
+      ] = await Promise.all([
+        lockedSeniorBalancePromise,
+        activeJuniorBalancePromise,
+        lockedJuniorBalancePromise,
+        stakedJuniorBalancePromise,
+      ]);
+
+      (pool as PoolEntity).seniorBalance = lockedSeniorBalance;
+      (pool as PoolEntity).juniorBalance = activeJuniorBalance.plus(lockedJuniorBalance).plus(stakedJuniorBalance);
+      (pool as PoolEntity).juniorTokenSymbol = smartYieldContract.symbol;
+      reload();
+    });
+  }, [wallet.isActive, pools]);
 
   return (
     <Table<PoolEntity>
       columns={columns}
-      dataSource={entities}
-      rowKey={entity => entity.smartYieldAddress}
+      data={entities}
+      variation="separated"
       loading={loading}
-      scroll={{
-        x: true,
-      }}
+      link={item => `/smart-yield/stats?m=${item.protocolId}&t=${item.underlyingSymbol}`}
     />
   );
 };

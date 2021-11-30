@@ -8,13 +8,12 @@ import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import {
   APISYPoolTransaction,
@@ -55,9 +54,15 @@ const Columns: ColumnsType<TableEntity> = [
             />
           )}
           <div className="flex flow-row">
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.symbol : entity.underlyingTokenSymbol}
-            </Text>
+            <ExplorerAddressLink
+              address={
+                entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.address : entity.underlyingTokenAddress
+              }
+              className="flex flow-col mb-4">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+                {entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.symbol : entity.underlyingTokenSymbol}
+              </Text>
+            </ExplorerAddressLink>
             <Text type="small" weight="semibold" color="secondary">
               {entity.poolEntity?.market?.name}
             </Text>
@@ -110,34 +115,28 @@ const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Address',
     render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
-
       return (
         <Grid flow="row" gap={4}>
-          <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
+          <ExplorerAddressLink address={entity.accountAddress}>
             <Text type="p1" weight="semibold" color="blue">
               {shortenAddr(entity.accountAddress)}
             </Text>
-          </ExternalLink>
+          </ExplorerAddressLink>
         </Grid>
       );
     },
   },
   {
     title: 'Transaction Hash',
-    render: function Render(_, entity) {
-      const { getEtherscanTxUrl } = useWeb3();
-
-      return (
-        <Grid flow="row" gap={4}>
-          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)}>
-            <Text type="p1" weight="semibold" color="blue">
-              {shortenAddr(entity.transactionHash)}
-            </Text>
-          </ExternalLink>
-        </Grid>
-      );
-    },
+    render: (_, entity) => (
+      <Grid flow="row" gap={4}>
+        <ExplorerTxLink address={entity.transactionHash}>
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.transactionHash)}
+          </Text>
+        </ExplorerTxLink>
+      </Grid>
+    ),
   },
   {
     title: 'Date',

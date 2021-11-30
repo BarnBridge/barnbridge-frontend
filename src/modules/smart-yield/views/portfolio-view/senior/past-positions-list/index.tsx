@@ -3,15 +3,14 @@ import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
 import { format } from 'date-fns';
-import { formatBigValue, formatPercent, formatUSDValue, shortenAddr } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSD, shortenAddr } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerTxLink } from 'components/button';
 import StatusTag from 'components/custom/status-tag';
 import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { mergeState } from 'hooks/useMergeState';
 import { APISYSeniorRedeem, useSyAPI } from 'modules/smart-yield/api';
@@ -49,11 +48,10 @@ const PastPositionsList: React.FC<Props> = props => {
   const { originatorFilter = 'all', tokenFilter = 'all' } = props;
 
   const wallet = useWallet();
-  const { getEtherscanTxUrl } = useWeb3();
+  const { getAmountInUSD } = useTokens();
   const poolsCtx = usePools();
   const syAPI = useSyAPI();
   const { pools } = poolsCtx;
-  const { getToken } = useTokens();
 
   const [state, setState] = React.useState<State>(InitialState);
 
@@ -145,11 +143,7 @@ const PastPositionsList: React.FC<Props> = props => {
                   </Text>
                 </Tooltip>
                 <Text type="p2" weight="semibold" color="secondary">
-                  {formatUSDValue(
-                    BigNumber.from(entity.underlyingIn)?.multipliedBy(
-                      getToken(entity.pool?.underlyingSymbol)?.price ?? 0,
-                    ),
-                  )}
+                  {formatUSD(getAmountInUSD(BigNumber.from(entity.underlyingIn), entity.pool?.underlyingSymbol))}
                 </Text>
               </div>
               <Divider />
@@ -164,10 +158,11 @@ const PastPositionsList: React.FC<Props> = props => {
                   </Text>
                 </Tooltip>
                 <Text type="p2" weight="semibold" color="secondary">
-                  {formatUSDValue(
-                    BigNumber.from(
-                      Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee),
-                    )?.multipliedBy(getToken(entity.pool?.underlyingSymbol)?.price ?? 0),
+                  {formatUSD(
+                    getAmountInUSD(
+                      BigNumber.from(Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee)),
+                      entity.pool?.underlyingSymbol,
+                    ),
                   )}
                 </Text>
               </div>
@@ -176,9 +171,9 @@ const PastPositionsList: React.FC<Props> = props => {
                 <Text type="small" weight="semibold" color="secondary">
                   Transaction hash/timestamp
                 </Text>
-                <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="link-blue mb-4">
+                <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
                   {shortenAddr(entity.transactionHash)}
-                </ExternalLink>
+                </ExplorerTxLink>
                 <Text type="small" weight="semibold" color="secondary">
                   {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
                 </Text>

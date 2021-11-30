@@ -6,12 +6,11 @@ import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Select from 'components/antd/select';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { APISYJuniorBonds, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
@@ -31,9 +30,11 @@ const TokenNameColumn: React.FC = () => {
         className="mr-16"
       />
       <div className="flex flow-row">
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {pool?.contracts.smartYield.symbol}
-        </Text>
+        <ExplorerAddressLink address={pool?.contracts.smartYield.address} className="flex flow-col mb-4">
+          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            {pool?.contracts.smartYield.symbol}
+          </Text>
+        </ExplorerAddressLink>
         <Text type="small" weight="semibold" color="secondary">
           {pool?.market?.name}
         </Text>
@@ -77,35 +78,29 @@ const Columns: ColumnsType<TableEntity> = [
   {
     title: 'Address',
     render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
-
       return (
-        <ExternalLink href={getEtherscanAddressUrl(entity.accountAddress)}>
+        <ExplorerAddressLink address={entity.accountAddress}>
           <Text type="p1" weight="semibold" color="blue">
             {shortenAddr(entity.accountAddress)}
           </Text>
-        </ExternalLink>
+        </ExplorerAddressLink>
       );
     },
   },
   {
     title: 'Tx Hash / Timestamp',
-    render: function Render(_, entity) {
-      const { getEtherscanTxUrl } = useWeb3();
-
-      return (
-        <>
-          <ExternalLink href={getEtherscanTxUrl(entity.transactionHash)} className="mb-4">
-            <Text type="p1" weight="semibold" color="blue">
-              {shortenAddr(entity.transactionHash)}
-            </Text>
-          </ExternalLink>
-          <Text type="small" weight="semibold" color="secondary">
-            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+    render: (_, entity) => (
+      <>
+        <ExplorerTxLink address={entity.transactionHash} className="mb-4">
+          <Text type="p1" weight="semibold" color="blue">
+            {shortenAddr(entity.transactionHash)}
           </Text>
-        </>
-      );
-    },
+        </ExplorerTxLink>
+        <Text type="small" weight="semibold" color="secondary">
+          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+        </Text>
+      </>
+    ),
   },
   {
     title: 'Maturity Date',

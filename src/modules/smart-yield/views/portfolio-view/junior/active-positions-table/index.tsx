@@ -7,12 +7,12 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYAbond } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -29,7 +29,6 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
   {
     title: 'Token Name',
     render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
       const { projectToken } = useKnownTokens();
 
       return (
@@ -41,12 +40,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             className="mr-16"
           />
           <div className="flex flow-row">
-            <ExternalLink href={getEtherscanAddressUrl(entity.smartYieldAddress)} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+            <ExplorerAddressLink address={entity.smartYieldAddress} className="flex flow-col mb-4">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.underlyingSymbol}
               </Text>
-              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
-            </ExternalLink>
+            </ExplorerAddressLink>
             <Text type="small" weight="semibold">
               {entity.market?.name}
             </Text>
@@ -64,10 +62,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
         .unscaleBy(a.underlyingDecimals)
         ?.comparedTo(b.smartYieldBalance.unscaleBy(b.underlyingDecimals)!) ?? 0,
     render: function BalanceRender(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const value = entity.smartYieldBalance.unscaleBy(entity.underlyingDecimals);
       const uValue = value?.multipliedBy(entity.state.jTokenPrice);
-      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.underlyingSymbol);
+      const valueInUSD = getAmountInUSD(uValue, entity.underlyingSymbol);
+
       return (
         <>
           <Tooltip
@@ -103,7 +102,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
             </ExternalLink>
           </Grid>
         }>
-        APY
+        Variable APY
       </Hint>
     ),
     width: '20%',

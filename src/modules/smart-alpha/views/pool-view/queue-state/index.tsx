@@ -73,7 +73,7 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
         <div className={s.sectionBody}>
           <div>
             <Text type="p2" weight="semibold" color="secondary" className="mb-4">
-              Juniors underlying
+              Junior tokens
             </Text>
             <div className="flex align-center">
               <TokenIcon
@@ -100,7 +100,7 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
           </div>
           <div>
             <Text type="p2" weight="semibold" color="secondary" className="mb-4">
-              Seniors underlying
+              Senior tokens
             </Text>
             <div className="flex align-center">
               <TokenIcon
@@ -136,7 +136,7 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
         <div className={s.sectionBody}>
           <div>
             <Text type="p2" weight="semibold" color="secondary" className="mb-4">
-              Junior tokens
+              Juniors underlying
             </Text>
             <div className="flex align-center">
               <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />
@@ -156,7 +156,7 @@ export const QueueState = ({ pool, smartAlphaContract }) => {
           </div>
           <div>
             <Text type="p2" weight="semibold" color="secondary" className="mb-4">
-              Senior tokens
+              Seniors underlying
             </Text>
             <div className="flex align-center">
               <TokenIcon name={poolToken?.icon} size={16} className="mr-8" />

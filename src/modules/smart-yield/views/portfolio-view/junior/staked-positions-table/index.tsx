@@ -6,13 +6,11 @@ import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
-import Icon from 'components/custom/icon';
+import { ExplorerAddressLink, ExternalLink } from 'components/button';
 import { AprLabel } from 'components/custom/label';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { SYRewardPoolEntity } from 'modules/smart-yield/models/syRewardPoolEntity';
 import { getKnownMarketById } from 'modules/smart-yield/providers/markets';
@@ -25,7 +23,6 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
   {
     title: 'Token Name',
     render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
       const { getToken } = useTokens();
       const { projectToken } = useKnownTokens();
 
@@ -41,12 +38,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             className="mr-16"
           />
           <div className="flex flow-row">
-            <ExternalLink href={getEtherscanAddressUrl(entity.smartYield.address)} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+            <ExplorerAddressLink address={entity.smartYield.address} className="flex flow-col mb-4">
+              <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.meta.underlyingSymbol}
               </Text>
-              <Icon name="arrow-top-right" width={8} height={8} color="blue" />
-            </ExternalLink>
+            </ExplorerAddressLink>
             <Text type="small" weight="semibold">
               {market?.name}
             </Text>
@@ -60,11 +56,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     width: '20%',
     align: 'right',
     render: function PoolBalanceRender(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const walletCtx = useWallet();
       const val = entity.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(entity.meta.poolTokenDecimals);
       const uVal = val?.multipliedBy(entity.smartYield.price ?? 0);
-      const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, entity.meta.underlyingSymbol);
+      const valInUSD = getAmountInUSD(uVal, entity.meta.underlyingSymbol);
 
       return (
         <>
@@ -103,7 +99,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
             </ExternalLink>
           </>
         }>
-        APY
+        Variable APY
       </Hint>
     ),
     render: function APYRender(_, entity) {
@@ -139,9 +135,10 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
     width: '20%',
     align: 'right',
     render: function RewardsRender(_, entity) {
-      const { bondToken, convertTokenInUSD } = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
+      const { bondToken } = useKnownTokens();
       const bondToClaim = entity.rewardPool.getClaimFor(bondToken.address)?.unscaleBy(bondToken.decimals);
-      const bondToClaimInUSD = convertTokenInUSD(bondToClaim, bondToken.symbol!);
+      const bondToClaimInUSD = getAmountInUSD(bondToClaim, bondToken.symbol!);
 
       return (
         <>

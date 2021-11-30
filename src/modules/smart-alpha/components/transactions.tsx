@@ -4,12 +4,11 @@ import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
-import { ExternalLink } from 'components/button';
+import { ExplorerAddressLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { getAsset, useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { TransactionApiType, useFetchTransactions } from 'modules/smart-alpha/api';
 
@@ -147,9 +146,11 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
               size={32}
               className="mr-16"
             />
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {item.tokenSymbol}
-            </Text>
+            <ExplorerAddressLink address={item.tokenAddress}>
+              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                {item.tokenSymbol}
+              </Text>
+            </ExplorerAddressLink>
           </div>
         );
       },
@@ -200,28 +201,20 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
           {
             heading: 'Address',
             // @ts-ignore
-            render: function Render(item) {
-              const { getEtherscanAddressUrl } = useWeb3();
-
-              return (
-                <ExternalLink href={getEtherscanAddressUrl(item.userAddress)} variation="link">
-                  {shortenAddr(item.userAddress, 6, 4)}
-                </ExternalLink>
-              );
-            },
+            render: item => (
+              <ExplorerAddressLink address={item.userAddress} variation="link">
+                {shortenAddr(item.userAddress, 6, 4)}
+              </ExplorerAddressLink>
+            ),
           } as ColumnType<TransactionApiType>,
         ]),
     {
       heading: 'Transaction Hash',
-      render: function Render(item) {
-        const { getEtherscanTxUrl } = useWeb3();
-
-        return (
-          <ExternalLink href={getEtherscanTxUrl(item.transactionHash)} variation="link">
-            {shortenAddr(item.transactionHash, 6, 4)}
-          </ExternalLink>
-        );
-      },
+      render: item => (
+        <ExplorerAddressLink address={item.transactionHash} variation="link">
+          {shortenAddr(item.transactionHash, 6, 4)}
+        </ExplorerAddressLink>
+      ),
     },
     {
       heading: 'Date',

@@ -212,6 +212,7 @@ export type TransactionApiType = {
   transactionHash: string;
   blockTimestamp: number;
   tokenSymbol: string;
+  tokenAddress: string;
   poolTokenSymbol: string;
   oracleAssetSymbol: string;
 };
