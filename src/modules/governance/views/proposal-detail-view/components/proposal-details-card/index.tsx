@@ -3,12 +3,11 @@ import { shortenAddr } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Skeleton from 'components/antd/skeleton';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import Identicon from 'components/custom/identicon';
 import { Hint, Text } from 'components/custom/typography';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { APIProposalState } from 'modules/governance/api';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -25,7 +24,6 @@ const InitialState: ProposalDetailsCardState = {
 
 const ProposalDetailsCard: React.FC = () => {
   const wallet = useWallet();
-  const { getEtherscanAddressUrl } = useWeb3();
   const proposalCtx = useProposal();
   const { proposal, thresholdRate, minThreshold } = proposalCtx;
 
@@ -72,11 +70,11 @@ const ProposalDetailsCard: React.FC = () => {
           </Text>
           <Grid flow="col" gap={8}>
             <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
-            <ExternalLink href={`${getEtherscanAddressUrl(proposalCtx.proposal?.proposer)}`}>
+            <ExplorerAddressLink address={proposalCtx.proposal?.proposer}>
               <Text type="p1" weight="semibold" color="blue">
                 {shortenAddr(proposalCtx.proposal?.proposer)}
               </Text>
-            </ExternalLink>
+            </ExplorerAddressLink>
           </Grid>
         </div>
         <div>

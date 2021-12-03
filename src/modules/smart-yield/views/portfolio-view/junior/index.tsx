@@ -8,12 +8,13 @@ import { formatBigValue, getHumanValue } from 'web3/utils';
 import Divider from 'components/antd/divider';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
+import { ExternalLink } from 'components/button';
 import { SquareBadge } from 'components/custom/badge';
-import ExternalLink from 'components/custom/externalLink';
 import Grid from 'components/custom/grid';
 import { Text } from 'components/custom/typography';
 import PortfolioBalance from 'components/portfolio-balance';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { mergeState } from 'hooks/useMergeState';
 import { useReload } from 'hooks/useReload';
 import PortfolioValue from 'modules/smart-yield/components/portfolio-value';
@@ -74,7 +75,8 @@ const InitialFiltersMap: Record<string, PositionsFilterValues> = {
 const JuniorPortfolioInner: React.FC = () => {
   const [activeTab, setActiveTab] = React.useState('active');
 
-  const knownTokensCtx = useKnownTokens();
+  const { bondToken } = useKnownTokens();
+  const { getAmountInUSD } = useTokens();
   const walletCtx = useWallet();
   const poolsCtx = usePools();
   const rewardPoolsCtx = useRewardPools();
@@ -230,16 +232,14 @@ const JuniorPortfolioInner: React.FC = () => {
   const activeBalance = state.dataActive?.reduce((sum, c) => {
     const val = c.smartYieldBalance.unscaleBy(c.underlyingDecimals);
     const uVal = val?.multipliedBy(c.state.jTokenPrice);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.underlyingSymbol);
-    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
+    const valInUSD = getAmountInUSD(uVal, c.underlyingSymbol);
     return sum.plus(valInUSD ?? 0);
   }, BigNumber.ZERO);
 
   const lockedBalance = state.dataLocked?.reduce((sum, c) => {
     const val = c.jBond.tokens.unscaleBy(c.pool.underlyingDecimals);
     const uVal = val?.multipliedBy(c.pool.state.jTokenPrice);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.pool.underlyingSymbol);
-    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.pool.contracts.smartYield?.symbol!);
+    const valInUSD = getAmountInUSD(uVal, c.pool.underlyingSymbol);
     return sum.plus(valInUSD ?? 0);
   }, BigNumber.ZERO);
 
@@ -247,16 +247,14 @@ const JuniorPortfolioInner: React.FC = () => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
     const pool = pools.find(pool => pool.smartYieldAddress === c.meta.poolTokenAddress);
     const uVal = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.meta.underlyingSymbol);
-    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
+    const valInUSD = getAmountInUSD(uVal, c.meta.underlyingSymbol);
     return sum.plus(valInUSD ?? BigNumber.ZERO);
   }, BigNumber.ZERO);
 
   const apySum = state.dataActive.reduce((sum, c) => {
     const val = c.smartYieldBalance.unscaleBy(c.underlyingDecimals);
     const uVal = val?.multipliedBy(c.state.jTokenPrice);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.underlyingSymbol);
-    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.contracts.smartYield?.symbol!);
+    const valInUSD = getAmountInUSD(uVal, c.underlyingSymbol);
     return sum.plus(valInUSD?.multipliedBy(c.state.juniorApy) ?? 0);
   }, BigNumber.ZERO);
 
@@ -270,8 +268,7 @@ const JuniorPortfolioInner: React.FC = () => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
     const pool = pools.find(pool => pool.smartYieldAddress === c.meta.poolTokenAddress);
     const uVal = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.meta.underlyingSymbol);
-    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
+    const valInUSD = getAmountInUSD(uVal, c.meta.underlyingSymbol);
     return sum.plus(valInUSD?.multipliedBy(item.state.juniorApy) ?? 0);
   }, BigNumber.ZERO);
 
@@ -279,10 +276,9 @@ const JuniorPortfolioInner: React.FC = () => {
     const val = c.rewardPool.getBalanceFor(walletCtx.account!)?.unscaleBy(c.smartYield.decimals);
     const pool = pools.find(pool => pool.smartYieldAddress === c.meta.poolTokenAddress);
     const uVal = val?.multipliedBy(pool?.state.jTokenPrice ?? 0);
-    const valInUSD = knownTokensCtx.convertTokenInUSD(uVal, c.meta.underlyingSymbol);
-    // const valInUSD = knownTokensCtx.convertTokenInUSD(val, c.smartYield.symbol!);
+    const valInUSD = getAmountInUSD(uVal, c.meta.underlyingSymbol);
 
-    const hasZeroBondRewardLeft = c.rewardPool.getRewardLeftFor(knownTokensCtx.bondToken.address)?.isZero();
+    const hasZeroBondRewardLeft = c.rewardPool.getRewardLeftFor(bondToken.address)?.isZero();
 
     const apyr = c.apy?.plus(hasZeroBondRewardLeft ? 0 : c.apr ?? 0) ?? 0;
 

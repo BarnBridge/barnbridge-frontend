@@ -5,11 +5,11 @@ import { formatBigValue, formatUSD, getHumanValue } from 'web3/utils';
 import Button from 'components/antd/button';
 import Table from 'components/antd/table';
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { SYJuniorBondToken } from 'modules/smart-yield/contracts/sySmartYieldContract';
@@ -27,7 +27,6 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
   {
     title: 'Token Name',
     render: function Render(_, entity) {
-      const { getEtherscanAddressUrl } = useWeb3();
       const { projectToken } = useKnownTokens();
 
       return (
@@ -39,11 +38,11 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
             className="mr-16"
           />
           <div className="flex flow-row">
-            <ExternalLink href={getEtherscanAddressUrl(entity.pool.smartYieldAddress)} className="flex flow-col mb-4">
+            <ExplorerAddressLink address={entity.pool.smartYieldAddress} className="flex flow-col mb-4">
               <Text type="p1" weight="semibold" color="primary" className="mr-4">
                 {entity.pool.underlyingSymbol}
               </Text>
-            </ExternalLink>
+            </ExplorerAddressLink>
             <Text type="small" weight="semibold">
               {entity.pool.market?.name}
             </Text>
@@ -71,10 +70,10 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     align: 'right',
     sorter: (a, b) => a.jBond.tokens.toNumber() - b.jBond.tokens.toNumber(),
     render: function Render(_, entity) {
-      const knownTokensCtx = useKnownTokens();
+      const { getAmountInUSD } = useTokens();
       const value = entity.jBond.tokens.unscaleBy(entity.pool.underlyingDecimals);
       const uValue = value?.multipliedBy(entity.pool.state.jTokenPrice);
-      const valueInUSD = knownTokensCtx.convertTokenInUSD(uValue, entity.pool.underlyingSymbol);
+      const valueInUSD = getAmountInUSD(uValue, entity.pool.underlyingSymbol);
 
       return (
         <>

@@ -7,7 +7,7 @@ import Web3Contract from 'web3/web3Contract';
 
 import Select from 'components/antd/select';
 import Tooltip from 'components/antd/tooltip';
-import { ExplorerAddressLink, ExplorerTxLink } from 'components/custom/externalLink';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';

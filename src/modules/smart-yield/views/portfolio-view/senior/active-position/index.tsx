@@ -2,7 +2,7 @@ import React from 'react';
 import BigNumber from 'bignumber.js';
 import format from 'date-fns/format';
 import { useContractManager } from 'web3/components/contractManagerProvider';
-import { formatBigValue, formatPercent, formatUSDValue, getHumanValue } from 'web3/utils';
+import { formatBigValue, formatPercent, formatUSD, getHumanValue } from 'web3/utils';
 
 import Button from 'components/antd/button';
 import Divider from 'components/antd/divider';
@@ -39,6 +39,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const { getContract } = useContractManager();
   const poolsCtx = usePools();
   const wallet = useWallet();
+  const { getAmountInUSD } = useTokens();
   const [redeemModalVisible, showRedeemModal] = React.useState<boolean>(false);
   const [transferModalVisible, showTransferModal] = React.useState<boolean>(false);
   const [saving, setSaving] = React.useState<boolean>(false);
@@ -123,8 +124,6 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
   const canTransfer = !sBond.liquidated;
   const gainedFee = gained.multipliedBy(seniorRedeemFee?.dividedBy(1e18) ?? BigNumber.ZERO);
   const toGetAmount = deposited.plus(gained).minus(gainedFee);
-  const { getToken } = useTokens();
-  const tokenPrice = getToken(pool.underlyingSymbol)?.price ?? 0;
 
   return (
     <div className="card">
@@ -162,7 +161,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           </Text>
         </Tooltip>
         <Text type="p2" weight="semibold" color="secondary">
-          {formatUSDValue(deposited.multipliedBy(tokenPrice))}
+          {formatUSD(getAmountInUSD(deposited, pool.underlyingSymbol))}
         </Text>
       </div>
       <Divider />
@@ -177,7 +176,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           </Text>
         </Tooltip>
         <Text type="p2" weight="semibold" color="secondary">
-          {formatUSDValue(redeemable.multipliedBy(tokenPrice))}
+          {formatUSD(getAmountInUSD(redeemable, pool.underlyingSymbol))}
         </Text>
       </div>
       <Divider />

@@ -2,7 +2,7 @@ import React from 'react';
 
 import Button from 'components/antd/button';
 import Modal, { ModalProps } from 'components/antd/modal';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { useNetwork } from 'components/providers/networkProvider';
