@@ -10,19 +10,38 @@ import Select from 'components/antd/select';
 import { Button, Link } from 'components/button';
 import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
+import { Tabs } from 'components/custom/tabs';
 import { InfoTooltip } from 'components/custom/tooltip';
-// import Tooltip from 'components/antd/tooltip';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
-// import { Icon } from 'components/icon';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
+import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useReload } from 'hooks/useReload';
 import { PoolApiType, useFetchSaPools } from 'modules/smart-alpha/api';
+import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { useNextEpochEstimate } from 'modules/smart-alpha/hooks/next-epoch-estimate';
 
 import { tillNextEpoch } from 'modules/smart-alpha/utils';
 import { getFormattedDuration } from 'utils';
 
 import s from './s.module.scss';
+
+export enum EpochTypeKey {
+  current = 'current',
+  estimates = 'estimates',
+}
+
+const epochTabs = [
+  {
+    id: EpochTypeKey.current,
+    children: 'Current',
+  },
+  {
+    id: EpochTypeKey.estimates,
+    children: 'Estimates',
+  },
+];
 
 type TreasuryFilterType = {
   token: string;
@@ -31,6 +50,7 @@ type TreasuryFilterType = {
 const PoolsView = () => {
   const { data, loading } = useFetchSaPools();
   const [layout, setLayout] = useState<'cards' | 'list'>('list');
+  const [epochType, setEpochType] = useState<EpochTypeKey>(EpochTypeKey.current);
 
   const { innerWidth } = useWindowSize();
 
@@ -154,6 +174,7 @@ const PoolsView = () => {
           Pools
         </Text>
         <div className="flex align-center ml-auto">
+          <Tabs<EpochTypeKey> tabs={epochTabs} activeKey={epochType} onClick={setEpochType} variation="elastic" />
           {forceCardsView ? null : (
             <Button
               variation="ghost-alt"
@@ -171,44 +192,128 @@ const PoolsView = () => {
           />
         </div>
       </div>
-      {forceCardsView || layout === 'cards' ? <Cards items={items} /> : <TableLayout items={items} loading={loading} />}
+      {forceCardsView || layout === 'cards' ? (
+        <Cards items={items} epochType={epochType} />
+      ) : (
+        <TableLayout items={items} epochType={epochType} loading={loading} />
+      )}
     </>
   );
 };
 export default PoolsView;
 
-const Cards = ({ items }: { items: PoolApiType[] }) => {
+const Cards = ({ items, epochType }: { items: PoolApiType[]; epochType: EpochTypeKey }) => {
   return (
     <div className={s.cards}>
-      {items.map(item => (
-        <PoolCard key={item.poolAddress} item={item} />
-      ))}
+      {items.map(function Render(item) {
+        return epochType === EpochTypeKey.current ? (
+          <PoolCardCurrent key={item.poolAddress} item={item} />
+        ) : (
+          <PoolCardEstimate key={item.poolAddress} item={item} />
+        );
+      })}
     </div>
   );
 };
 
-const PoolCard = ({ item }: { item: PoolApiType }) => {
-  const location = useLocation();
-  const { getToken } = useTokens();
-
-  const poolToken = getToken(item.poolToken.symbol);
-  const oracleToken = getAsset(item.oracleAssetSymbol);
-
+const PoolCardCurrent = ({ item }: { item: PoolApiType }) => {
   const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
   const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
-  const exposure = new BigNumber(item.state.upsideExposureRate);
+  const upsideRate = new BigNumber(item.state.upsideExposureRate);
+  const downsideRate = new BigNumber(item.state.downsideProtectionRate);
   const upsideLeverage = juniorLiquidity.gt(0)
-    ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
+    ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(upsideRate)).plus(1)
     : new BigNumber(1);
   const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
 
-  const tne = tillNextEpoch(item);
+  return (
+    <PoolCardInner
+      item={item}
+      epoch={item.state.epoch}
+      juniorLiquidity={juniorLiquidity}
+      seniorLiquidity={seniorLiquidity}
+      upsideRate={upsideRate}
+      downsideRate={downsideRate}
+      upsideLeverage={upsideLeverage}
+      downsideLeverage={downsideLeverage}
+      isEstimate={false}
+    />
+  );
+};
+
+const PoolCardEstimate = ({ item }: { item: PoolApiType }) => {
+  const [reload] = useReload();
+  const { getOrCreateContract } = useContractFactory();
+  const { nextEpochEstimates, nextEpochUpsideLeverage, nextEpochDownsideLeverage } = useNextEpochEstimate(
+    item.poolAddress,
+  );
+
+  const smartAlphaContract = useMemo(() => {
+    return getOrCreateContract(
+      item.poolAddress,
+      () => {
+        return new SmartAlphaContract(item.poolAddress);
+      },
+      {
+        afterInit: async contract => {
+          contract.onUpdateData(reload);
+          await contract.loadCommon();
+        },
+      },
+    );
+  }, [item]);
+
+  return (
+    <PoolCardInner
+      item={item}
+      epoch={smartAlphaContract.currentEpoch ? smartAlphaContract.currentEpoch + 1 : undefined}
+      juniorLiquidity={nextEpochEstimates[0]?.unscaleBy(item.poolToken.decimals)}
+      seniorLiquidity={nextEpochEstimates[1]?.unscaleBy(item.poolToken.decimals)}
+      upsideRate={nextEpochEstimates[2]?.unscaleBy(SMART_ALPHA_DECIMALS)}
+      downsideRate={nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS)}
+      upsideLeverage={nextEpochUpsideLeverage}
+      downsideLeverage={nextEpochDownsideLeverage}
+      isEstimate
+    />
+  );
+};
+
+const PoolCardInner = ({
+  item,
+  epoch,
+  juniorLiquidity,
+  seniorLiquidity,
+  upsideRate,
+  downsideRate,
+  upsideLeverage,
+  downsideLeverage,
+  isEstimate,
+}: {
+  item: PoolApiType;
+  epoch?: number;
+  juniorLiquidity: BigNumber | undefined;
+  seniorLiquidity: BigNumber | undefined;
+  upsideRate: BigNumber | undefined;
+  downsideRate: BigNumber | undefined;
+  upsideLeverage: BigNumber | undefined;
+  downsideLeverage: BigNumber | undefined;
+  isEstimate: boolean;
+}) => {
+  const location = useLocation();
+  const { getToken, getAsset } = useTokens();
+  const poolToken = getToken(item.poolToken.symbol);
+  const oracleToken = getAsset(item.oracleAssetSymbol);
+  const dollarPriceCalculated = downsideRate
+    ? oracleToken?.price?.multipliedBy(new BigNumber(1).minus(downsideRate))
+    : undefined;
 
   return (
     <section
       className={classNames(s.poolCard, 'card')}
       style={
-        { '--pool-card-progress': ((item.epochDuration - tne) / item.epochDuration) * 100 } as React.CSSProperties
+        (!isEstimate
+          ? { '--pool-card-progress': ((item.epochDuration - tillNextEpoch(item)) / item.epochDuration) * 100 }
+          : {}) as React.CSSProperties
       }>
       <header className="card-header flex align-center mb-32">
         <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
@@ -217,25 +322,23 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
             {item.poolName}
           </Text>
           <Text type="small" weight="semibold" color="red" tag="small">
-            Epoch {item.state.epoch}
+            Epoch {epoch ?? '-'}
           </Text>
         </div>
-        <div className="ml-auto" style={{ textAlign: 'right' }}>
-          <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
-            Epoch ends in
-          </Text>
-          <UseLeftTime delay={1_000}>
-            {() => {
-              const tne = tillNextEpoch(item);
-
-              return (
+        {!isEstimate && (
+          <div className="ml-auto" style={{ textAlign: 'right' }}>
+            <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
+              Epoch ends in
+            </Text>
+            <UseLeftTime delay={1_000}>
+              {() => (
                 <Text type="p1" weight="semibold">
-                  {getFormattedDuration(tne)}
+                  {getFormattedDuration(tillNextEpoch(item))}
                 </Text>
-              );
-            }}
-          </UseLeftTime>
-        </div>
+              )}
+            </UseLeftTime>
+          </div>
+        )}
       </header>
       <dl>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
@@ -249,17 +352,15 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
               tooltip={
                 <Text type="p2" color="primary" className="flex flow-row row-gap-4">
                   <span>
-                    {formatToken(item.state.seniorLiquidity, {
+                    {formatToken(seniorLiquidity, {
                       tokenName: item.poolToken.symbol,
                       decimals: item.poolToken.decimals,
                     })}
                   </span>
-                  <span>
-                    {formatUSD(BigNumber.from(item.state.seniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
-                  </span>
+                  <span>{formatUSD(BigNumber.from(seniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}</span>
                 </Text>
               }>
-              {formatToken(item.state.seniorLiquidity, { compact: true })}
+              {formatToken(seniorLiquidity, { compact: true })}
             </Text>
             <TokenIcon name={poolToken?.icon} className="ml-8" />
           </dd>
@@ -273,7 +374,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="green">
-              {formatPercent(Number(item.state.upsideExposureRate))}
+              {formatPercent(upsideRate)}
             </Text>
           </dd>
         </div>
@@ -284,7 +385,7 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           </Text>
           <dd>
             <Text type="p1" weight="semibold" color="green">
-              {formatPercent(Number(item.state.downsideProtectionRate))}
+              {formatPercent(downsideRate)}
             </Text>
           </dd>
         </div>
@@ -300,17 +401,15 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
               tooltip={
                 <Text type="p2" color="primary" className="flex flow-row row-gap-4">
                   <span>
-                    {formatToken(item.state.juniorLiquidity, {
+                    {formatToken(juniorLiquidity, {
                       tokenName: item.poolToken.symbol,
                       decimals: item.poolToken.decimals,
                     })}
                   </span>
-                  <span>
-                    {formatUSD(BigNumber.from(item.state.juniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
-                  </span>
+                  <span>{formatUSD(BigNumber.from(juniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}</span>
                 </Text>
               }>
-              {formatToken(item.state.juniorLiquidity, { compact: true })}
+              {formatToken(juniorLiquidity, { compact: true })}
             </Text>
             <TokenIcon name={poolToken?.icon} className="ml-8" />
           </dd>
@@ -330,11 +429,12 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
           <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Downside leverage
             <InfoTooltip>
-              How much of every 1% move to the downside in the underlying asset a junior position will have exposure to.
-              <br />
+              {`How much of every 1% move to the downside in ${item.poolToken.symbol} price a junior position will have exposure to.`}
               <br />
               The downside leverage is only applicable until senior downside protection is fully covered, and junior
               losses are fully realized.
+              <br />
+              {`Below that, is the ${item.poolToken.symbol} price after which there is no more senior downside protection to cover.`}
             </InfoTooltip>
           </Text>
           <dd>
@@ -342,8 +442,15 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
               type="p1"
               weight="semibold"
               color="purple"
-              tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
+              tooltip={`You have this amount of downside leverage, until the ${
+                item.poolToken.symbol
+              } price drops under ${formatUSD(
+                dollarPriceCalculated,
+              )} - after which there is no more downside leverage - or you can consider it as being 1x`}>
               {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
+            </Text>
+            <Text type="small" weight="semibold" color="secondary">
+              {formatUSD(dollarPriceCalculated) ?? '-'}
             </Text>
           </dd>
         </div>
@@ -357,211 +464,448 @@ const PoolCard = ({ item }: { item: PoolApiType }) => {
   );
 };
 
-const columns: ColumnType<PoolApiType>[] = [
-  {
-    heading: 'Asset/Epoch',
-    render: function Render(item) {
-      const { getToken } = useTokens();
+function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
+  if (epochType === EpochTypeKey.current) {
+    return [
+      {
+        heading: 'Asset/Epoch',
+        render: function Render(item) {
+          const { getToken, getAsset } = useTokens();
 
-      const poolToken = getToken(item.poolToken.symbol);
-      const oracleToken = getAsset(item.oracleAssetSymbol);
-      return (
-        <div className="flex align-center">
-          <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
-          <div>
-            <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
-              {item.poolName}
-            </Text>
-            <Text type="small" weight="semibold" color="red" tag="small">
-              Epoch {item.state.epoch}
-            </Text>
+          const poolToken = getToken(item.poolToken.symbol);
+          const oracleToken = getAsset(item.oracleAssetSymbol);
+          return (
+            <div className="flex align-center">
+              <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
+              <div>
+                <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+                  {item.poolName}
+                </Text>
+                <Text type="small" weight="semibold" color="red" tag="small">
+                  Epoch {item.state.epoch}
+                </Text>
+              </div>
+            </div>
+          );
+        },
+      },
+      {
+        heading: 'Epoch ends in',
+        render: item => {
+          return (
+            <UseLeftTime delay={1_000}>
+              {() => {
+                const tne = tillNextEpoch(item);
+
+                return (
+                  <Text type="p1" weight="semibold">
+                    {getFormattedDuration(tne, undefined, {
+                      format: ['months', 'days', 'hours', 'minutes'],
+                    })}
+                  </Text>
+                );
+              }}
+            </UseLeftTime>
+          );
+        },
+      },
+      {
+        heading: 'Epoch senior liquidity',
+        render: function Render(item) {
+          const { getToken } = useTokens();
+          const poolToken = getToken(item.poolToken.symbol);
+
+          return (
+            <div className="flex align-center justify-end">
+              <Text
+                type="p1"
+                weight="semibold"
+                tooltip={
+                  <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                    <span>
+                      {formatToken(item.state.seniorLiquidity, {
+                        tokenName: item.poolToken.symbol,
+                        decimals: item.poolToken.decimals,
+                      })}
+                    </span>
+                    <span>
+                      {formatUSD(BigNumber.from(item.state.seniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
+                    </span>
+                  </Text>
+                }>
+                {formatToken(item.state.seniorLiquidity, { compact: true })}
+              </Text>
+              <TokenIcon name={poolToken?.icon} className="ml-8" />
+            </div>
+          );
+        },
+      },
+      {
+        heading: (
+          <div className="flex align-center justify-end">
+            Upside
+            <br />
+            exposure rate{' '}
+            <InfoTooltip className="ml-4">
+              Senior positions will only receive this much of every percentage point gain in the underlying asset
+            </InfoTooltip>
           </div>
-        </div>
-      );
-    },
-  },
-  {
-    heading: 'Epoch ends in',
-    render: item => {
-      return (
-        <UseLeftTime delay={1_000}>
-          {() => {
-            const tne = tillNextEpoch(item);
+        ),
+        align: 'right',
+        render: item => {
+          return (
+            <Text type="p1" weight="semibold" color="green">
+              {formatPercent(Number(item.state.upsideExposureRate))}
+            </Text>
+          );
+        },
+      },
+      {
+        heading: (
+          <div className="flex align-center justify-end">
+            Downside
+            <br />
+            protection rate{' '}
+            <InfoTooltip className="ml-4">
+              Senior positions will only start taking losses beyond this decline
+            </InfoTooltip>
+          </div>
+        ),
+        align: 'right',
+        render: item => {
+          return (
+            <Text type="p1" weight="semibold" color="green">
+              {formatPercent(Number(item.state.downsideProtectionRate))}
+            </Text>
+          );
+        },
+      },
+      {
+        heading: 'Epoch junior liquidity',
+        align: 'right',
+        render: function Render(item) {
+          const { getToken } = useTokens();
+          const poolToken = getToken(item.poolToken.symbol);
 
-            return (
-              <Text type="p1" weight="semibold">
-                {getFormattedDuration(tne, undefined, {
-                  format: ['months', 'days', 'hours', 'minutes'],
-                })}
+          return (
+            <div className="flex align-center justify-end">
+              <Text
+                type="p1"
+                weight="semibold"
+                tooltip={
+                  <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                    <span>
+                      {formatToken(item.state.juniorLiquidity, {
+                        tokenName: item.poolToken.symbol,
+                        decimals: item.poolToken.decimals,
+                      })}
+                    </span>
+                    <span>
+                      {formatUSD(BigNumber.from(item.state.juniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
+                    </span>
+                  </Text>
+                }>
+                {formatToken(item.state.juniorLiquidity, { compact: true })}
               </Text>
-            );
-          }}
-        </UseLeftTime>
-      );
-    },
-  },
-  {
-    heading: 'Epoch senior liquidity',
-    render: function Render(item) {
-      const { getToken } = useTokens();
-      const poolToken = getToken(item.poolToken.symbol);
+              <TokenIcon name={poolToken?.icon} className="ml-8" />
+            </div>
+          );
+        },
+      },
+      {
+        heading: (
+          <div className="flex align-center justify-end">
+            Upside
+            <br />
+            leverage{' '}
+            <InfoTooltip className="ml-4">Junior positions will have their upside amplified by this much</InfoTooltip>
+          </div>
+        ),
+        align: 'right',
+        render: item => {
+          const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
+          const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
+          const exposure = new BigNumber(item.state.upsideExposureRate);
+          const upsideLeverage = juniorLiquidity.gt(0)
+            ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
+            : new BigNumber(1);
 
-      return (
+          return (
+            <Text type="p1" weight="semibold" color="purple">
+              {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
+            </Text>
+          );
+        },
+      },
+      {
+        heading: (
+          <div className="flex align-center justify-end">
+            Downside
+            <br />
+            leverage{' '}
+            <InfoTooltip className="ml-4">
+              How much of every 1% move to the downside in underlying token price a junior position will have exposure
+              to.
+              <br />
+              The downside leverage is only applicable until senior downside protection is fully covered, and junior
+              losses are fully realized.
+              <br />
+              Below that, is the underlying token price after which there is no more senior downside protection to
+              cover.
+            </InfoTooltip>
+          </div>
+        ),
+        align: 'right',
+        render: function Render(item) {
+          const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
+          const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
+          const downsideLeverage = juniorLiquidity.gt(0)
+            ? seniorLiquidity.div(juniorLiquidity).plus(1)
+            : new BigNumber(1);
+          const { getAsset } = useTokens();
+          const dollarPriceCalculated = getAsset(item.oracleAssetSymbol)?.price?.multipliedBy(
+            1 - Number(item.state.downsideProtectionRate),
+          );
+
+          return (
+            <>
+              <Text
+                type="p1"
+                weight="semibold"
+                color="purple"
+                tooltip={`You have this amount of downside leverage, until the ${
+                  item.poolToken.symbol
+                } price drops under ${formatUSD(
+                  dollarPriceCalculated,
+                )} - after which there is no more downside leverage - or you can consider it as being 1x`}>
+                {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
+              </Text>
+              <Text type="small" weight="semibold" color="secondary">
+                {formatUSD(dollarPriceCalculated) ?? '-'}
+              </Text>
+            </>
+          );
+        },
+      },
+    ];
+  }
+
+  return [
+    {
+      heading: 'Asset/Epoch',
+      render: function Render(item) {
+        const { getToken, getAsset } = useTokens();
+
+        const poolToken = getToken(item.poolToken.symbol);
+        const oracleToken = getAsset(item.oracleAssetSymbol);
+        return (
+          <div className="flex align-center">
+            <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
+            <div>
+              <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+                {item.poolName}
+              </Text>
+              <Text type="small" weight="semibold" color="red" tag="small">
+                Epoch {item.state.epoch}
+              </Text>
+            </div>
+          </div>
+        );
+      },
+    },
+    {
+      heading: 'Epoch senior liquidity',
+      render: function Render(item) {
+        const { getToken } = useTokens();
+        const poolToken = getToken(item.poolToken.symbol);
+
+        const { nextEpochEstimates } = useNextEpochEstimate(item.poolAddress);
+        const seniorLiquidity = nextEpochEstimates[1]?.unscaleBy(item.poolToken.decimals);
+
+        return (
+          <div className="flex align-center justify-end">
+            <Text
+              type="p1"
+              weight="semibold"
+              tooltip={
+                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                  <span>
+                    {formatToken(seniorLiquidity, {
+                      tokenName: item.poolToken.symbol,
+                      decimals: item.poolToken.decimals,
+                    })}
+                  </span>
+                  <span>{formatUSD(BigNumber.from(seniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}</span>
+                </Text>
+              }>
+              {formatToken(seniorLiquidity, { compact: true })}
+            </Text>
+            <TokenIcon name={poolToken?.icon} className="ml-8" />
+          </div>
+        );
+      },
+    },
+    {
+      heading: (
         <div className="flex align-center justify-end">
-          <Text
-            type="p1"
-            weight="semibold"
-            tooltip={
-              <Text type="p2" color="primary" className="flex flow-row row-gap-4">
-                <span>
-                  {formatToken(item.state.seniorLiquidity, {
-                    tokenName: item.poolToken.symbol,
-                    decimals: item.poolToken.decimals,
-                  })}
-                </span>
-                <span>
-                  {formatUSD(BigNumber.from(item.state.seniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
-                </span>
-              </Text>
-            }>
-            {formatToken(item.state.seniorLiquidity, { compact: true })}
-          </Text>
-          <TokenIcon name={poolToken?.icon} className="ml-8" />
+          Upside
+          <br />
+          exposure rate{' '}
+          <InfoTooltip className="ml-4">
+            Senior positions will only receive this much of every percentage point gain in the underlying asset
+          </InfoTooltip>
         </div>
-      );
-    },
-  },
-  {
-    heading: (
-      <div className="flex align-center justify-end">
-        Upside
-        <br />
-        exposure rate{' '}
-        <InfoTooltip className="ml-4">
-          Senior positions will only receive this much of every percentage point gain in the underlying asset
-        </InfoTooltip>
-      </div>
-    ),
-    align: 'right',
-    render: item => {
-      return (
-        <Text type="p1" weight="semibold" color="green">
-          {formatPercent(Number(item.state.upsideExposureRate))}
-        </Text>
-      );
-    },
-  },
-  {
-    heading: (
-      <div className="flex align-center justify-end">
-        Downside
-        <br />
-        protection rate{' '}
-        <InfoTooltip className="ml-4">Senior positions will only start taking losses beyond this decline</InfoTooltip>
-      </div>
-    ),
-    align: 'right',
-    render: item => {
-      return (
-        <Text type="p1" weight="semibold" color="green">
-          {formatPercent(Number(item.state.downsideProtectionRate))}
-        </Text>
-      );
-    },
-  },
-  {
-    heading: 'Epoch junior liquidity',
-    align: 'right',
-    render: function Render(item) {
-      const { getToken } = useTokens();
-      const poolToken = getToken(item.poolToken.symbol);
+      ),
+      align: 'right',
+      render: function Render(item) {
+        const { nextEpochEstimates } = useNextEpochEstimate(item.poolAddress);
+        const upsideRate = nextEpochEstimates[2]?.unscaleBy(SMART_ALPHA_DECIMALS);
 
-      return (
+        return (
+          <Text type="p1" weight="semibold" color="green">
+            {formatPercent(upsideRate)}
+          </Text>
+        );
+      },
+    },
+    {
+      heading: (
         <div className="flex align-center justify-end">
-          <Text
-            type="p1"
-            weight="semibold"
-            tooltip={
-              <Text type="p2" color="primary" className="flex flow-row row-gap-4">
-                <span>
-                  {formatToken(item.state.juniorLiquidity, {
-                    tokenName: item.poolToken.symbol,
-                    decimals: item.poolToken.decimals,
-                  })}
-                </span>
-                <span>
-                  {formatUSD(BigNumber.from(item.state.juniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}
-                </span>
-              </Text>
-            }>
-            {formatToken(item.state.juniorLiquidity, { compact: true })}
-          </Text>
-          <TokenIcon name={poolToken?.icon} className="ml-8" />
+          Downside
+          <br />
+          protection rate{' '}
+          <InfoTooltip className="ml-4">Senior positions will only start taking losses beyond this decline</InfoTooltip>
         </div>
-      );
-    },
-  },
-  {
-    heading: (
-      <div className="flex align-center justify-end">
-        Upside
-        <br />
-        leverage{' '}
-        <InfoTooltip className="ml-4">Junior positions will have their upside amplified by this much</InfoTooltip>
-      </div>
-    ),
-    align: 'right',
-    render: item => {
-      const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
-      const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
-      const exposure = new BigNumber(item.state.upsideExposureRate);
-      const upsideLeverage = juniorLiquidity.gt(0)
-        ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(exposure)).plus(1)
-        : new BigNumber(1);
+      ),
+      align: 'right',
+      render: function Render(item) {
+        const { nextEpochEstimates } = useNextEpochEstimate(item.poolAddress);
 
-      return (
-        <Text type="p1" weight="semibold" color="purple">
-          {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
-        </Text>
-      );
+        const downsideRate = nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS);
+
+        return (
+          <Text type="p1" weight="semibold" color="green">
+            {formatPercent(downsideRate)}
+          </Text>
+        );
+      },
     },
-  },
-  {
-    heading: (
-      <div className="flex align-center justify-end">
-        Downside
-        <br />
-        leverage{' '}
-        <InfoTooltip className="ml-4">
-          How much of every 1% move to the downside in the underlying asset a junior position will have exposure to.
+    {
+      heading: 'Epoch junior liquidity',
+      align: 'right',
+      render: function Render(item) {
+        const { getToken } = useTokens();
+        const poolToken = getToken(item.poolToken.symbol);
+        const { nextEpochEstimates } = useNextEpochEstimate(item.poolAddress);
+        const juniorLiquidity = nextEpochEstimates[0]?.unscaleBy(item.poolToken.decimals);
+
+        return (
+          <div className="flex align-center justify-end">
+            <Text
+              type="p1"
+              weight="semibold"
+              tooltip={
+                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                  <span>
+                    {formatToken(juniorLiquidity, {
+                      tokenName: item.poolToken.symbol,
+                      decimals: item.poolToken.decimals,
+                    })}
+                  </span>
+                  <span>{formatUSD(BigNumber.from(juniorLiquidity)?.multipliedBy(poolToken?.price ?? 0))}</span>
+                </Text>
+              }>
+              {formatToken(juniorLiquidity, { compact: true })}
+            </Text>
+            <TokenIcon name={poolToken?.icon} className="ml-8" />
+          </div>
+        );
+      },
+    },
+    {
+      heading: (
+        <div className="flex align-center justify-end">
+          Upside
           <br />
-          <br />
-          The downside leverage is only applicable until senior downside protection is fully covered, and junior losses
-          are fully realized.
-        </InfoTooltip>
-      </div>
-    ),
-    align: 'right',
-    render: item => {
-      const seniorLiquidity = new BigNumber(item.state.seniorLiquidity);
-      const juniorLiquidity = new BigNumber(item.state.juniorLiquidity);
-      const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
+          leverage{' '}
+          <InfoTooltip className="ml-4">Junior positions will have their upside amplified by this much</InfoTooltip>
+        </div>
+      ),
+      align: 'right',
+      render: function Render(item) {
+        const { nextEpochUpsideLeverage } = useNextEpochEstimate(item.poolAddress);
 
-      return (
-        <Text
-          type="p1"
-          weight="semibold"
-          color="purple"
-          tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
-          {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
-        </Text>
-      );
+        return (
+          <Text type="p1" weight="semibold" color="purple">
+            {nextEpochUpsideLeverage ? `${formatNumber(nextEpochUpsideLeverage)}x` : `-`}
+          </Text>
+        );
+      },
     },
-  },
-];
+    {
+      heading: (
+        <div className="flex align-center justify-end">
+          Downside
+          <br />
+          leverage{' '}
+          <InfoTooltip className="ml-4">
+            How much of every 1% move to the downside in underlying token price a junior position will have exposure to.
+            <br />
+            The downside leverage is only applicable until senior downside protection is fully covered, and junior
+            losses are fully realized.
+            <br />
+            Below that, is the underlying token price after which there is no more senior downside protection to cover.
+          </InfoTooltip>
+        </div>
+      ),
+      align: 'right',
+      render: function Render(item) {
+        const { getAsset } = useTokens();
+        const { nextEpochEstimates, nextEpochDownsideLeverage } = useNextEpochEstimate(item.poolAddress);
 
-const TableLayout = ({ items, loading }: { items: PoolApiType[]; loading: boolean }) => {
+        const oracleToken = getAsset(item.oracleAssetSymbol);
+
+        const downsideRate = nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS);
+
+        const dollarPriceCalculated = downsideRate
+          ? oracleToken?.price?.multipliedBy(new BigNumber(1).minus(downsideRate))
+          : undefined;
+
+        return (
+          <>
+            <Text
+              type="p1"
+              weight="semibold"
+              color="purple"
+              tooltip={`You have this amount of downside leverage, until the ${
+                item.poolToken.symbol
+              } price drops under ${formatUSD(
+                dollarPriceCalculated,
+              )} - after which there is no more downside leverage - or you can consider it as being 1x`}>
+              {nextEpochDownsideLeverage ? `≤${formatNumber(nextEpochDownsideLeverage)}x` : `-`}
+            </Text>
+            <Text type="small" weight="semibold" color="secondary">
+              {formatUSD(dollarPriceCalculated) ?? '-'}
+            </Text>
+          </>
+        );
+      },
+    },
+  ];
+}
+
+const TableLayout = ({
+  items,
+  epochType,
+  loading,
+}: {
+  items: PoolApiType[];
+  epochType: EpochTypeKey;
+  loading: boolean;
+}) => {
   const location = useLocation();
+
+  const columns = useMemo(() => getColumns(epochType), [epochType]);
 
   return (
     <Table<PoolApiType>
