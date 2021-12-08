@@ -303,9 +303,11 @@ const PoolCardInner = ({
   const { getToken, getAsset } = useTokens();
   const poolToken = getToken(item.poolToken.symbol);
   const oracleToken = getAsset(item.oracleAssetSymbol);
-  const dollarPriceCalculated = downsideRate
-    ? oracleToken?.price?.multipliedBy(new BigNumber(1).minus(downsideRate))
-    : undefined;
+
+  const tokenInOracleValue =
+    downsideRate && poolToken?.price && oracleToken?.price
+      ? poolToken.price?.multipliedBy(new BigNumber(1).minus(downsideRate))?.dividedBy(oracleToken.price)
+      : undefined;
 
   return (
     <section
@@ -444,14 +446,18 @@ const PoolCardInner = ({
               color="purple"
               tooltip={`You have this amount of downside leverage, until the ${
                 item.poolToken.symbol
-              } price drops under ${formatUSD(
-                dollarPriceCalculated,
-              )} - after which there is no more downside leverage - or you can consider it as being 1x`}>
+              } price drops under ${formatToken(tokenInOracleValue, {
+                tokenName: oracleToken?.symbol,
+              })} - after which there is no more downside leverage - or you can consider it as being 1x`}
+              className="mb-4">
               {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
-              {formatUSD(dollarPriceCalculated) ?? '-'}
-            </Text>
+            <div className="flex align-center justify-end">
+              <Text type="small" weight="semibold" color="secondary">
+                {formatToken(tokenInOracleValue) ?? '-'}
+              </Text>
+              <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
+            </div>
           </dd>
         </div>
       </dl>
@@ -662,10 +668,17 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
           const downsideLeverage = juniorLiquidity.gt(0)
             ? seniorLiquidity.div(juniorLiquidity).plus(1)
             : new BigNumber(1);
-          const { getAsset } = useTokens();
-          const dollarPriceCalculated = getAsset(item.oracleAssetSymbol)?.price?.multipliedBy(
-            1 - Number(item.state.downsideProtectionRate),
-          );
+
+          const { getToken, getAsset } = useTokens();
+          const poolToken = getToken(item.poolToken.symbol);
+          const oracleToken = getAsset(item.oracleAssetSymbol);
+
+          const tokenInOracleValue =
+            poolToken?.price && oracleToken?.price
+              ? poolToken.price
+                  ?.multipliedBy(new BigNumber(1).minus(Number(item.state.downsideProtectionRate)))
+                  ?.dividedBy(oracleToken.price)
+              : undefined;
 
           return (
             <>
@@ -675,14 +688,19 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
                 color="purple"
                 tooltip={`You have this amount of downside leverage, until the ${
                   item.poolToken.symbol
-                } price drops under ${formatUSD(
-                  dollarPriceCalculated,
-                )} - after which there is no more downside leverage - or you can consider it as being 1x`}>
+                } price drops under ${formatToken(tokenInOracleValue, {
+                  tokenName: oracleToken?.symbol,
+                })} - after which there is no more downside leverage - or you can consider it as being 1x`}
+                className="mb-4">
                 {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
-                {formatUSD(dollarPriceCalculated) ?? '-'}
-              </Text>
+
+              <div className="flex align-center justify-end">
+                <Text type="small" weight="semibold" color="secondary">
+                  {formatToken(tokenInOracleValue) ?? '-'}
+                </Text>
+                <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
+              </div>
             </>
           );
         },
@@ -860,16 +878,18 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
       ),
       align: 'right',
       render: function Render(item) {
-        const { getAsset } = useTokens();
+        const { getToken, getAsset } = useTokens();
         const { nextEpochEstimates, nextEpochDownsideLeverage } = useNextEpochEstimate(item.poolAddress);
 
+        const poolToken = getToken(item.poolToken.symbol);
         const oracleToken = getAsset(item.oracleAssetSymbol);
 
         const downsideRate = nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS);
 
-        const dollarPriceCalculated = downsideRate
-          ? oracleToken?.price?.multipliedBy(new BigNumber(1).minus(downsideRate))
-          : undefined;
+        const tokenInOracleValue =
+          downsideRate && poolToken?.price && oracleToken?.price
+            ? poolToken.price?.multipliedBy(new BigNumber(1).minus(downsideRate))?.dividedBy(oracleToken.price)
+            : undefined;
 
         return (
           <>
@@ -879,14 +899,19 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
               color="purple"
               tooltip={`You have this amount of downside leverage, until the ${
                 item.poolToken.symbol
-              } price drops under ${formatUSD(
-                dollarPriceCalculated,
-              )} - after which there is no more downside leverage - or you can consider it as being 1x`}>
+              } price drops under ${formatToken(tokenInOracleValue, {
+                tokenName: oracleToken?.symbol,
+              })} - after which there is no more downside leverage - or you can consider it as being 1x`}
+              className="mb-4">
               {nextEpochDownsideLeverage ? `≤${formatNumber(nextEpochDownsideLeverage)}x` : `-`}
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
-              {formatUSD(dollarPriceCalculated) ?? '-'}
-            </Text>
+
+            <div className="flex align-center justify-end">
+              <Text type="small" weight="semibold" color="secondary">
+                {formatToken(tokenInOracleValue) ?? '-'}
+              </Text>
+              <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
+            </div>
           </>
         );
       },

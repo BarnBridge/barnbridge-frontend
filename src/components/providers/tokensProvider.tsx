@@ -725,33 +725,33 @@ const TokensProvider: FC = props => {
 
 export default TokensProvider;
 
-type AssetTypeOld = {
-  icon: TokenIconNames;
-  decimals: number;
-};
+// type AssetTypeOld = {
+//   icon: TokenIconNames;
+//   decimals: number;
+// };
 
-/** @deprecated */
-export function getAsset(symbol: string): AssetTypeOld | undefined {
-  switch (symbol) {
-    case 'BTC':
-      return {
-        icon: 'wbtc',
-        decimals: WBTC.decimals,
-      };
-    case 'ETH':
-      return {
-        icon: 'eth',
-        decimals: WETH.decimals,
-      };
-    case 'USD':
-      return {
-        icon: 'usd',
-        decimals: 2,
-      };
-    default:
-      return undefined;
-  }
-}
+// /** @deprecated */
+// export function getAsset(symbol: string): AssetTypeOld | undefined {
+//   switch (symbol) {
+//     case 'BTC':
+//       return {
+//         icon: 'wbtc',
+//         decimals: WBTC.decimals,
+//       };
+//     case 'ETH':
+//       return {
+//         icon: 'eth',
+//         decimals: WETH.decimals,
+//       };
+//     case 'USD':
+//       return {
+//         icon: 'usd',
+//         decimals: 2,
+//       };
+//     default:
+//       return undefined;
+//   }
+// }
 
 /** @deprecated */
 export function isEthAsset(symbol: string) {

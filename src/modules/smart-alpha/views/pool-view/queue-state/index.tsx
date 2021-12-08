@@ -1,14 +1,14 @@
 import { formatToken } from 'web3/utils';
 
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
 
 import s from './s.module.scss';
 
 export const QueueState = ({ pool, smartAlphaContract }) => {
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
 
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
