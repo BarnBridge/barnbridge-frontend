@@ -4,7 +4,7 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
+const RPC_KEY = 'aacf4c6a162a483eab3163105bebe222';
 const RPC_HTTPS_URL = `https://kovan.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
