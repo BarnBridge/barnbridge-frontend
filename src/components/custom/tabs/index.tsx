@@ -74,9 +74,6 @@ type TabsProps<T> = {
 export const Tabs = <T extends string>(props: TabsProps<T>) => {
   const { variation = 'normal', tabs, activeKey, size, className, style } = props;
 
-  const totalTabs = tabs.length;
-  const activeIndex = tabs.findIndex(tab => tab.id === activeKey);
-
   return (
     <div
       className={cn(className, {
@@ -84,15 +81,6 @@ export const Tabs = <T extends string>(props: TabsProps<T>) => {
         [s.elasticTabs]: variation === 'elastic',
       })}
       style={style}>
-      {variation === 'elastic' && (
-        <div
-          className={s.elasticToggle}
-          style={{
-            left: `calc(${activeIndex} * 100% / ${totalTabs} + 4px)`,
-            width: `calc(100% / ${totalTabs} - 8px)`,
-          }}
-        />
-      )}
       {tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}
@@ -100,7 +88,6 @@ export const Tabs = <T extends string>(props: TabsProps<T>) => {
             [s.active]: id === activeKey,
             [s.small]: size === 'small',
           })}
-          style={{ width: variation === 'elastic' ? `calc(100% / ${totalTabs})` : 'inherit' }}
           type="button"
           onClick={() => {
             props.onClick?.(id);
