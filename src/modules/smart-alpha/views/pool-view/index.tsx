@@ -12,7 +12,7 @@ import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useNetwork } from 'components/providers/networkProvider';
-import { getAsset, isUsdAsset, useTokens } from 'components/providers/tokensProvider';
+import { isUsdAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -39,7 +39,7 @@ const PoolView = () => {
   const location = useLocation();
   const network = useNetwork();
   const { data: pool, loaded } = useFetchPool(poolAddress);
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const wallet = useWallet();
   const [reload] = useReload();
   const [queueStateVisible, setQueueStateVisible] = useState(false);
