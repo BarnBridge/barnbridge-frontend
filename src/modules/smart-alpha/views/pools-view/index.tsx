@@ -922,7 +922,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
 
         const downsideRate = nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS);
 
-        const tokenInOracleValue =
+        const tokenInOracleValueLeverage =
           downsideRate && poolToken?.price && oracleToken?.price
             ? poolToken.price?.multipliedBy(new BigNumber(1).minus(downsideRate))?.dividedBy(oracleToken.price)
             : undefined;
@@ -935,7 +935,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
               color="purple"
               tooltip={`You have this amount of downside leverage, until the ${
                 item.poolToken.symbol
-              } price drops under ${formatToken(tokenInOracleValue, {
+              } price drops under ${formatToken(tokenInOracleValueLeverage, {
                 tokenName: oracleToken?.symbol,
               })} - after which there is no more downside leverage - or you can consider it as being 1x`}
               className="mb-4">
@@ -944,7 +944,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
 
             <div className="flex align-center justify-end">
               <Text type="small" weight="semibold" color="secondary">
-                {formatToken(tokenInOracleValue) ?? '-'}
+                {formatToken(tokenInOracleValueLeverage) ?? '-'}
               </Text>
               <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
             </div>
