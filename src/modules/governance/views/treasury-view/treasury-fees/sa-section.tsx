@@ -6,14 +6,14 @@ import { formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
 import Select from 'components/antd/select';
-import { ExplorerAddressLink } from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
 import IconOld from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import {
   AvalancheHttpsWeb3Provider,
   BinanceHttpsWeb3Provider,
@@ -44,7 +44,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: <div>Token Name</div>,
     render: function Render(entity) {
-      const { getToken } = useTokens();
+      const { getToken, getAsset } = useTokens();
       const token = getToken(entity.poolToken.symbol, entity.network);
       const oracle = getAsset(entity.oracleAssetSymbol);
 

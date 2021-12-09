@@ -4,7 +4,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';

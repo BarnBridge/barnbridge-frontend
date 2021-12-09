@@ -5,9 +5,8 @@ import cn from 'classnames';
 import { shortenAddr } from 'web3/utils';
 
 import Popover from 'components/antd/popover';
-import { Button, Link } from 'components/button';
+import { Button, ExplorerAddressLink, Link } from 'components/button';
 import { Badge, SquareBadge } from 'components/custom/badge';
-import ExternalLink from 'components/custom/externalLink';
 import IconOld from 'components/custom/icon';
 import IconNotification from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
@@ -17,7 +16,7 @@ import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useNotifications } from 'components/providers/notificationsProvider';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
@@ -75,7 +74,7 @@ export default LayoutHeader;
 
 const PositionsAction: React.FC = () => {
   const { data } = useFetchQueuePositions();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const [visible, setVisible] = useState(false);
 
   if (!Array.isArray(data) || !data.length) {
@@ -223,7 +222,6 @@ const NotificationsAction: React.FC = () => {
 const WalletAction: React.FC = () => {
   const { activeNetwork } = useNetwork();
   const wallet = useWallet();
-  const { getEtherscanAddressUrl } = useWeb3();
 
   if (wallet.connecting) {
     return (
@@ -234,11 +232,11 @@ const WalletAction: React.FC = () => {
           <div className="card">
             <div className="card-header flex align-center">
               <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
-              <ExternalLink href={getEtherscanAddressUrl(wallet.account!)}>
+              <ExplorerAddressLink address={wallet.account}>
                 <Text type="p1" weight="semibold" color="blue">
                   {shortenAddr(wallet.account, 8, 8)}
                 </Text>
-              </ExternalLink>
+              </ExplorerAddressLink>
             </div>
             <div className="pv-24 ph-32">
               <div className="flex align-center mb-32">
@@ -293,11 +291,11 @@ const WalletAction: React.FC = () => {
         <div className="card">
           <div className="card-header flex align-center">
             <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
-            <ExternalLink href={getEtherscanAddressUrl(wallet.account!)}>
+            <ExplorerAddressLink address={wallet.account}>
               <Text type="p1" weight="semibold" color="blue">
                 {shortenAddr(wallet.account, 8, 8)}
               </Text>
-            </ExternalLink>
+            </ExplorerAddressLink>
           </div>
           <div className="pv-24 ph-32">
             <div className="flex align-center mb-32">

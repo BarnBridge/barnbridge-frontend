@@ -6,11 +6,10 @@ import { formatBigValue, shortenAddr } from 'web3/utils';
 import Modal, { ModalProps } from 'components/antd/modal';
 import Table from 'components/antd/table';
 import Tabs from 'components/antd/tabs';
-import ExternalLink from 'components/custom/externalLink';
+import { ExplorerAddressLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { APIVoteEntity } from 'modules/governance/api';
 
 import ProposalVotersProvider, { useProposalVoters } from '../../providers/ProposalVotersProvider';
@@ -23,16 +22,14 @@ const Columns: ColumnsType<APIVoteEntity> = [
     dataIndex: 'address',
     width: '35%',
     render: function Render(address: string) {
-      const { getEtherscanAddressUrl } = useWeb3();
-
       return (
         <Grid flow="col" gap={8} align="center">
           <Identicon address={address} width={32} height={32} />
-          <ExternalLink href={getEtherscanAddressUrl(address)}>
+          <ExplorerAddressLink address={address}>
             <Text type="p1" weight="semibold" color="blue">
               {shortenAddr(address)}
             </Text>
-          </ExternalLink>
+          </ExplorerAddressLink>
         </Grid>
       );
     },

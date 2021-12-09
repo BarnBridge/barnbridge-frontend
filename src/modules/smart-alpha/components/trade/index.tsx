@@ -1,4 +1,4 @@
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import { Icon } from 'components/icon';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';

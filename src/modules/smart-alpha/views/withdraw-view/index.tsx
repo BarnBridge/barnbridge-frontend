@@ -6,7 +6,7 @@ import { formatToken } from 'web3/utils';
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useFetchPool } from 'modules/smart-alpha/api';
@@ -15,7 +15,7 @@ import { WithdrawForm } from 'modules/smart-alpha/views/withdraw-view/withdrawFo
 const WithdrawView = () => {
   const { id: poolAddress, tranche } = useParams<{ id: string; tranche: 'senior' | 'junior' }>();
   const { data: pool } = useFetchPool(poolAddress);
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
 
   const isSenior = tranche === 'senior';
 

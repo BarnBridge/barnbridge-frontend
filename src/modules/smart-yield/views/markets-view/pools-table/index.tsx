@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import { AprLabel } from 'components/custom/label';
 import { ColumnType, Table } from 'components/custom/table';
 import { Hint, Text } from 'components/custom/typography';

@@ -22,7 +22,7 @@ import flow from 'lodash/fp/flow';
 import * as ReCharts from 'recharts';
 import { formatBigValue, formatToken } from 'web3/utils';
 
-import ExternalLink from 'components/custom/externalLink';
+import { ExternalLink } from 'components/button';
 import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useDAO } from 'modules/governance/components/dao-provider';
