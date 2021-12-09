@@ -9,11 +9,12 @@ import { BinanceNetwork } from 'networks/binance';
 import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
+import { OptimisticKovanNetwork } from 'networks/optimistic-kovan';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
+import { isDevelopmentMode, isProductionMode } from 'utils';
 import { InvariantContext } from 'utils/context';
-import { isDevelopmentMode, isProductionMode } from '../../utils';
 
 import { Web3Network } from 'networks/types';
 
@@ -36,6 +37,7 @@ const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
     return [
       KovanNetwork,
+      OptimisticKovanNetwork,
       TestnetNetwork,
       MainnetNetwork,
       PolygonNetwork,
