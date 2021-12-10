@@ -15,6 +15,7 @@ import { BinanceNetwork } from 'networks/binance';
 import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
+import { OptimisticKovanNetwork } from 'networks/optimistic-kovan';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
@@ -376,7 +377,7 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
     return new BigNumber(1);
   }
 
-  if (network === MainnetNetwork || network === KovanNetwork || network === TestnetNetwork) {
+  if ([MainnetNetwork, KovanNetwork, TestnetNetwork, OptimisticKovanNetwork].includes(network)) {
     switch (symbol.toUpperCase()) {
       case 'BTC':
       case 'WBTC':

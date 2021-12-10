@@ -5,8 +5,6 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
 const RPC_HTTPS_URL = `https://bsc-dataseed1.ninicoin.io`;
-const RPC_WSS_URL = ``;
-
 const EXPLORER_URL = 'https://bscscan.com';
 
 export const BINANCE_CHAIN_ID = 56;
@@ -95,7 +93,7 @@ export const BinanceNetwork: Web3Network = {
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
-    wssUrl: RPC_WSS_URL,
+    wssUrl: '',
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {

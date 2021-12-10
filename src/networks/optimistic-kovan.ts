@@ -4,28 +4,22 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = 'aacf4c6a162a483eab3163105bebe222';
-const RPC_HTTPS_URL = `https://kovan.infura.io/v3/${RPC_KEY}`;
-const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
+const RPC_KEY = '37be407c6e72476aa174bc8657c8a787';
+const RPC_HTTPS_URL = `https://optimism-kovan.infura.io/v3/${RPC_KEY}`;
+const RPC_WSS_URL = `wss://optimism-kovan.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
-const EXPLORER_URL = 'https://kovan.etherscan.io';
-const EXPLORER_API_URL = 'https://api-kovan.etherscan.io';
+const EXPLORER_URL = 'https://kovan-optimistic.etherscan.io';
+const EXPLORER_API_URL = 'https://api-kovan-optimistic.etherscan.io';
 
-export const KOVAN_CHAIN_ID = 42;
+export const OPTIMISTIC_KOVAN_CHAIN_ID = 69;
 
-export const KovanConfig: NetworkConfig = {
-  title: 'BarnBridge Kovan',
+export const OptimisticKovanConfig: NetworkConfig = {
+  title: 'BarnBridge Optimistic Kovan',
   features: {
-    yieldFarming: true,
-    dao: true,
-    smartYield: true,
-    smartYieldReward: true,
-    smartExposure: true,
     smartAlpha: true,
     gasFees: true,
     addBondToken: true,
-    smartAlphaKPIOptions: true,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -35,10 +29,7 @@ export const KovanConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://dev-v2.api.barnbridge.com',
-  },
-  dao: {
-    activationThreshold: 400_000,
+    baseUrl: 'https://dev-optimistic.api.barnbridge.com',
   },
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
@@ -80,29 +71,14 @@ export const KovanConfig: NetworkConfig = {
     wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {
-    yf: {
-      staking: '0x618bB8f9e76f2982B8783e6AA09bC930c65f0AC8',
-      stable: '0xf865D61e3791ef6C202c62b79f42de3f9e9AC8b3',
-      unilp: '0x4e600bd65AE29d12ab22EE0384bD472F24d7aEa6',
-      bond: '0x82B568C2E5159ba20358aF425E92ac96345c9C9a',
-    },
-    dao: {
-      governance: '0x930e52B96320d7dBbfb6be458e5EE0Cd3E5E5Dac',
-      barn: '0x0DEc9fdb535eB45cef986F1129bb234578F8BD20',
-      reward: '0xc2d3B609EB967c72AfF4731Ca96375f26926B1F9',
-    },
-    se: {
-      ePoolPeriphery: '0x5fa08f7817844e38ee8f54a24b65f6dc1ae23785',
-      ePoolHelper: '0xc1442ac5d2631bd9369b42b35bfe12b88ee8daaf',
-    },
     sa: {
-      loupe: '0xA408F3f26ebe1768512c9977108633CEF84c17a7',
+      loupe: '0x7e72E1947df00060ddCE3551a60aC7BF7d811e3c',
     },
   },
 };
 
-export const KovanMetamaskChain: MetamaskAddEthereumChain = {
-  chainId: toHex(KOVAN_CHAIN_ID),
+export const OptimisticKovanMetamaskChain: MetamaskAddEthereumChain = {
+  chainId: toHex(OPTIMISTIC_KOVAN_CHAIN_ID),
   chainName: 'Kovan Testnet',
   nativeCurrency: {
     name: 'Ethereum',
@@ -113,13 +89,13 @@ export const KovanMetamaskChain: MetamaskAddEthereumChain = {
   blockExplorerUrls: [EXPLORER_URL],
 };
 
-export const KovanNetwork: Web3Network = {
-  id: 'kovan',
+export const OptimisticKovanNetwork: Web3Network = {
+  id: 'optimistic-kovan',
   type: 'Ethereum',
   meta: {
-    chainId: KOVAN_CHAIN_ID,
-    name: 'Ethereum Dev (Kovan)',
-    logo: 'testnet-logo',
+    chainId: OPTIMISTIC_KOVAN_CHAIN_ID,
+    name: 'Ethereum (Optimistic Kovan)',
+    logo: 'optimistic-kovan-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
@@ -132,6 +108,6 @@ export const KovanNetwork: Web3Network = {
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,
   },
-  metamaskChain: KovanMetamaskChain,
-  config: KovanConfig,
+  metamaskChain: OptimisticKovanMetamaskChain,
+  config: OptimisticKovanConfig,
 };
