@@ -23,7 +23,7 @@
     "deploy-storybook": "storybook-to-ghpages"
   },
   "engines": {
-    "node": "> 12.x",
+    "node": "> 14.0",
     "npm": "> 6.x"
   },
   "husky": {
