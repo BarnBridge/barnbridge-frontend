@@ -59,6 +59,7 @@ export type IconNames =
   | 'polygon-logo'
   | 'avalanche-logo'
   | 'binance-logo'
+  | 'optimistic-kovan-logo'
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'

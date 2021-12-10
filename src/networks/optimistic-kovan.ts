@@ -95,7 +95,7 @@ export const OptimisticKovanNetwork: Web3Network = {
   meta: {
     chainId: OPTIMISTIC_KOVAN_CHAIN_ID,
     name: 'Ethereum (Optimistic Kovan)',
-    logo: 'testnet-logo',
+    logo: 'optimistic-kovan-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
