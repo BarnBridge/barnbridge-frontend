@@ -22,10 +22,6 @@
     "build-storybook": "build-storybook -s public",
     "deploy-storybook": "storybook-to-ghpages"
   },
-  "engines": {
-    "node": "> 14.0",
-    "npm": "> 6.x"
-  },
   "husky": {
     "hooks": {
       "pre-commit": "lint-staged"
