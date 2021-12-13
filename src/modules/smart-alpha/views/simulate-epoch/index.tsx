@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
@@ -16,7 +16,7 @@ import { Simulate } from './simulate';
 const SimulateEpoch = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const { data: pool } = useFetchPool(poolAddress);
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const [reload] = useReload();
 
   const { getOrCreateContract } = useContractFactory();

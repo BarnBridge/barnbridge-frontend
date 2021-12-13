@@ -14,7 +14,7 @@ import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -36,7 +36,7 @@ export const PortfolioPositions = () => {
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
   const { account } = useWallet();
   const { data } = useFetchSaPools({ userAddress: account });
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const [reload] = useReload();
 
   const activePoolAddress = useMemo(() => {
@@ -146,7 +146,7 @@ export const PortfolioPositions = () => {
 
 const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
   const network = useNetwork();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
   const isSenior = tranche === 'senior';
@@ -277,7 +277,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   const history = useHistory();
   const config = useConfig();
   const wallet = useWallet();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const { getOrCreateContract } = useContractFactory();
   const [reload, version] = useReload();
 
@@ -521,7 +521,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   const history = useHistory();
   const config = useConfig();
   const wallet = useWallet();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const { getOrCreateContract } = useContractFactory();
   const [reload, version] = useReload();
 

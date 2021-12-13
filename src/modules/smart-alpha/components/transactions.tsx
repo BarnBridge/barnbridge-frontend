@@ -8,7 +8,7 @@ import { ExplorerAddressLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { TransactionApiType, useFetchTransactions } from 'modules/smart-alpha/api';
 
@@ -119,7 +119,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     {
       heading: 'Token Name',
       render: function Render(item) {
-        const { getToken } = useTokens();
+        const { getToken, getAsset } = useTokens();
 
         const poolToken = getToken(item.poolTokenSymbol);
         const oracleToken = getAsset(item.oracleAssetSymbol);
@@ -172,6 +172,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     {
       heading: `Amount`,
       render: function Render(item) {
+        const { getAsset } = useTokens();
         const isIncome = checkIsIncome(item.transactionType, !!accountAddress);
         const oracleToken = getAsset(item.oracleAssetSymbol);
 

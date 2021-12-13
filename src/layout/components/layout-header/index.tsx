@@ -16,7 +16,7 @@ import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useNotifications } from 'components/providers/notificationsProvider';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
@@ -74,7 +74,7 @@ export default LayoutHeader;
 
 const PositionsAction: React.FC = () => {
   const { data } = useFetchQueuePositions();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const [visible, setVisible] = useState(false);
 
   if (!Array.isArray(data) || !data.length) {
