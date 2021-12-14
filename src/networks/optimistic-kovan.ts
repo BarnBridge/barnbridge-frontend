@@ -5,8 +5,8 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
 const RPC_KEY = '37be407c6e72476aa174bc8657c8a787';
-const RPC_HTTPS_URL = `https://optimism-kovan.infura.io/v3/${RPC_KEY}`;
-const RPC_WSS_URL = `wss://optimism-kovan.infura.io/ws/v3/${RPC_KEY}`;
+const RPC_HTTPS_URL = `https://kovan.optimism.io/v3/${RPC_KEY}`;
+const RPC_WSS_URL = `wss://ws-kovan.optimism.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
 const EXPLORER_URL = 'https://kovan-optimistic.etherscan.io';
@@ -79,13 +79,13 @@ export const OptimisticKovanConfig: NetworkConfig = {
 
 export const OptimisticKovanMetamaskChain: MetamaskAddEthereumChain = {
   chainId: toHex(OPTIMISTIC_KOVAN_CHAIN_ID),
-  chainName: 'Kovan Testnet',
+  chainName: 'Optimistic Kovan',
   nativeCurrency: {
     name: 'Ethereum',
     symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: ['https://kovan.infura.io'],
+  rpcUrls: ['https://kovan.optimism.io'],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
