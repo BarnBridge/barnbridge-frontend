@@ -27,7 +27,6 @@ const ChangeTrancheView: React.FC = () => {
   useEffect(() => {
     seAPI.fetchTranche(trancheAddress).then(result => {
       setTranche(result);
-      console.log('tranche', result);
     });
   }, [trancheAddress]);
 

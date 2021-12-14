@@ -139,13 +139,12 @@ const Web3Provider: FC = props => {
           });
 
           if (error) {
-            canSetNetwork = false;
+            await Promise.reject(error);
           }
         } catch (e) {
           canSetNetwork = false;
-
           // @ts-ignore
-          if (e.code === 4902) {
+          if (e.code === 4902 || e.message?.includes('Unrecognized chain ID')) {
             await wallet.connector.addChain(network.metamaskChain);
           }
         }
