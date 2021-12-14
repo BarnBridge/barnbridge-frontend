@@ -5,17 +5,17 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
 const RPC_KEY = '37be407c6e72476aa174bc8657c8a787';
-const RPC_HTTPS_URL = `https://optimism-kovan.infura.io/v3/${RPC_KEY}`;
-const RPC_WSS_URL = `wss://optimism-kovan.infura.io/ws/v3/${RPC_KEY}`;
+const RPC_HTTPS_URL = `https://optimism-mainnet.infura.io/v3/${RPC_KEY}`;
+const RPC_WSS_URL = `wss://optimism-mainnet.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
-const EXPLORER_URL = 'https://kovan-optimistic.etherscan.io';
-const EXPLORER_API_URL = 'https://api-kovan-optimistic.etherscan.io';
+const EXPLORER_URL = 'https://optimistic.etherscan.io';
+const EXPLORER_API_URL = 'https://api-optimistic.etherscan.io';
 
-export const OPTIMISTIC_KOVAN_CHAIN_ID = 69;
+export const OPTIMISTIC_MAINNET_CHAIN_ID = 10;
 
-export const OptimisticKovanConfig: NetworkConfig = {
-  title: 'BarnBridge Optimistic Kovan',
+export const OptimisticMainnetConfig: NetworkConfig = {
+  title: 'BarnBridge Optimistic Ethereum',
   features: {
     smartAlpha: true,
     gasFees: true,
@@ -29,7 +29,7 @@ export const OptimisticKovanConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://dev-optimistic.api.barnbridge.com',
+    baseUrl: 'https://prod-optimistic.api.barnbridge.com/api',
   },
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
@@ -72,29 +72,29 @@ export const OptimisticKovanConfig: NetworkConfig = {
   },
   contracts: {
     sa: {
-      loupe: '0x7e72E1947df00060ddCE3551a60aC7BF7d811e3c',
+      loupe: '0x045a3438a37de5b68c9e4ed5ea26c49cce1b5f5a',
     },
   },
 };
 
-export const OptimisticKovanMetamaskChain: MetamaskAddEthereumChain = {
-  chainId: toHex(OPTIMISTIC_KOVAN_CHAIN_ID),
-  chainName: 'Optimistic Kovan',
+export const OptimisticMainnetMetamaskChain: MetamaskAddEthereumChain = {
+  chainId: toHex(OPTIMISTIC_MAINNET_CHAIN_ID),
+  chainName: 'Optimistic Ethereum',
   nativeCurrency: {
     name: 'Ethereum',
     symbol: 'ETH',
     decimals: 18,
   },
-  rpcUrls: ['https://kovan.optimism.io'],
+  rpcUrls: ['https://mainnet.optimism.io'],
   blockExplorerUrls: [EXPLORER_URL],
 };
 
-export const OptimisticKovanNetwork: Web3Network = {
-  id: 'optimistic-kovan',
+export const OptimisticMainnetNetwork: Web3Network = {
+  id: 'optimistic-ethereum',
   type: 'Ethereum',
   meta: {
-    chainId: OPTIMISTIC_KOVAN_CHAIN_ID,
-    name: 'Ethereum (Optimistic Kovan)',
+    chainId: OPTIMISTIC_MAINNET_CHAIN_ID,
+    name: 'Optimistic Ethereum',
     logo: 'optimistic-kovan-logo',
   },
   rpc: {
@@ -108,6 +108,6 @@ export const OptimisticKovanNetwork: Web3Network = {
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,
   },
-  metamaskChain: OptimisticKovanMetamaskChain,
-  config: OptimisticKovanConfig,
+  metamaskChain: OptimisticMainnetMetamaskChain,
+  config: OptimisticMainnetConfig,
 };
