@@ -51,6 +51,7 @@ export const ArbitrumTestnetConfig: NetworkConfig = {
     bb_ausdt: '',
     bb_agusd: '',
     bb_adai: '',
+    bb_arai: '',
     bb_crusdc: '',
     bb_crusdt: '',
     bb_crdai: '',

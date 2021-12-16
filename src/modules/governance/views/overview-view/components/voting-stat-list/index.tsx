@@ -1,7 +1,7 @@
 import React from 'react';
 import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
-import { formatToken, formatUSD } from 'web3/utils';
+import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
 import { ExternalLink } from 'components/button';
@@ -9,6 +9,7 @@ import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { ProjectToken } from 'components/providers/tokensProvider';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIOverviewData, useDaoAPI } from 'modules/governance/api';
 import { useDAO } from 'modules/governance/components/dao-provider';
@@ -32,6 +33,10 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
   React.useEffect(() => {
     daoAPI.fetchOverviewData().then(setOverview);
   }, []);
+
+  const apr = daoCtx.daoBarn.bondStaked
+    ? daoCtx.daoReward.weeklyRewards?.multipliedBy(52).dividedBy(daoCtx.daoBarn.bondStaked)
+    : undefined;
 
   return (
     <div className={cn(s.cards, className)}>
@@ -222,6 +227,32 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Grid>
             <Text type="p1" color="secondary">
               {overview?.barnUsers} stakers & {overview?.voters} voters
+            </Text>
+          </Grid>
+        </Grid>
+      </div>
+
+      <div className="card p-24">
+        <Grid flow="row" gap={48}>
+          <Text type="lb2" weight="semibold" color="red">
+            Annual Percentage Rate (APR)
+          </Text>
+          <Grid flow="row" gap={4}>
+            <Text type="h2" weight="bold" color="primary">
+              {formatPercent(apr) ?? '-'}
+            </Text>
+          </Grid>
+        </Grid>
+      </div>
+
+      <div className="card p-24">
+        <Grid flow="row" gap={48}>
+          <Text type="lb2" weight="semibold" color="red">
+            Weekly {ProjectToken.symbol} Rewards
+          </Text>
+          <Grid flow="row" gap={4}>
+            <Text type="h2" weight="bold" color="primary">
+              {formatToken(daoCtx.daoReward.weeklyRewards) ?? '-'}
             </Text>
           </Grid>
         </Grid>
