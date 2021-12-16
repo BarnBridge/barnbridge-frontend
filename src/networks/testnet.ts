@@ -62,6 +62,7 @@ export const TestnetConfig: NetworkConfig = {
     bb_ausdt: '0x73d82Cd31CEe823B75E2078dbf16e11C7C174a6E',
     bb_agusd: '',
     bb_adai: '0xc62441DE5dD50b4ee18265d5AD66FAAB2EEBc4Fe',
+    bb_arai: '',
     bb_crusdc: '0xEd515cC6470f075bd32899dB8a42ddB75f43a4f1',
     bb_crusdt: '',
     bb_crdai: '',

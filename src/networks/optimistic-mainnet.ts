@@ -54,6 +54,7 @@ export const OptimisticMainnetConfig: NetworkConfig = {
     bb_ausdt: '0xe3d9c0ca18e6757e975b6f663811f207ec26c2b3',
     bb_agusd: '',
     bb_adai: '0xdfcb1c9d8209594cbc39745b274e9171ba4fd343',
+    bb_arai: '',
     bb_crusdc: '0x378630f9e1968Aa76b299636A837E737fa476037',
     bb_crusdt: '',
     bb_crdai: '',

@@ -95,7 +95,9 @@ type StaticNames =
   | 'menu-docs'
   | 'menu-theme-light'
   | 'menu-theme-dark'
-  | 'menu-theme-auto';
+  | 'menu-theme-auto'
+  | 'dao-circle'
+  | 'sy-circle';
 
 export type IconNames = NonStaticNames | StaticNames;
 
@@ -110,6 +112,8 @@ const staticNamesList: StaticNames[] = [
   'menu-theme-light',
   'menu-theme-dark',
   'menu-theme-auto',
+  'dao-circle',
+  'sy-circle',
 ];
 
 export type IconProps = {

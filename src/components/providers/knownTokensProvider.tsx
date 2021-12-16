@@ -47,6 +47,7 @@ export namespace KnownTokens {
   export const bbaDAI = 'bb_aDAI';
   export const bbaUSDT = 'bb_aUSDT';
   export const bbaGUSD = 'bb_aGUSD';
+  export const bbaRAI = 'bb_aRAI';
   // cream
   export const bbcrUSDC = 'bb_crUSDC';
   export const bbcrDAI = 'bb_crDAI';
@@ -350,6 +351,15 @@ const KnownTokensProvider: FC = props => {
         pricePath: [KnownTokens.GUSD],
       },
       {
+        symbol: KnownTokens.bbaRAI,
+        name: 'BarnBridge aRAI',
+        address: config.tokens.bb_arai.toLowerCase(),
+        decimals: 18,
+        icon: 'rai',
+        priceFeed: config.tokens.bb_arai, // bb_aRAI -> RAI
+        pricePath: [KnownTokens.RAI],
+      },
+      {
         symbol: KnownTokens.bbcrUSDC,
         name: 'BarnBridge crUSDC',
         address: config.tokens.bb_crusdc.toLowerCase(),
@@ -409,6 +419,9 @@ const KnownTokensProvider: FC = props => {
             break;
           case 'bb_amDAI':
             fSymbol = KnownTokens.bbaDAI;
+            break;
+          case 'bb_amRAI':
+            fSymbol = KnownTokens.bbaRAI;
             break;
           case 'bb_crmUSDC':
             fSymbol = KnownTokens.bbcrUSDC;
@@ -670,6 +683,9 @@ const KnownTokensProvider: FC = props => {
             case KnownTokens.bbaUSDC:
             case KnownTokens.bbaUSDT:
             case KnownTokens.bbaGUSD:
+              token.price = await getJATokenPrice(token.symbol);
+              break;
+            case KnownTokens.bbaRAI:
               token.price = await getJATokenPrice(token.symbol);
               break;
             case KnownTokens.GUSD:

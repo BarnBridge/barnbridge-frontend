@@ -9,7 +9,10 @@ import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
+import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import { useReload } from 'hooks/useReload';
+import DaoBarnContract from 'modules/governance/contracts/daoBarn';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 import { useYFPools } from '../../providers/pools-provider';
@@ -23,16 +26,30 @@ type Props = {
 };
 
 const PoolStats: React.FC<Props> = ({ className }) => {
-  const { links } = useConfig();
+  const { links, contracts } = useConfig();
   const yfPoolsCtx = useYFPools();
   const rewardPoolsCtx = useRewardPools();
-  const { projectToken } = useKnownTokens();
+  const { projectToken, convertTokenInUSD } = useKnownTokens();
+  const [reload] = useReload();
+
+  const { getOrCreateContract } = useContractFactory({ listeners: false });
+  const daoBarnContract = getOrCreateContract(
+    contracts.dao?.barn ?? '',
+    () => {
+      return new DaoBarnContract(contracts.dao?.barn ?? '');
+    },
+    {
+      afterInit: contract => {
+        contract.onUpdateData(reload);
+        contract.loadCommonData().catch(Error);
+      },
+    },
+  );
 
   const yfTotalStakedInUSD = yfPoolsCtx.getYFTotalStakedInUSD();
-  const yfTotalEffectiveStakedInUSD = yfPoolsCtx.getYFTotalEffectiveStakedInUSD();
+  const daoStakedInUSD = convertTokenInUSD(daoBarnContract.bondStaked, projectToken.symbol);
   const syTotalStakedInUSD = rewardPoolsCtx.getSYTotalStakedInUSD();
-  const totalStakedInUSD = BigNumber.sumEach([yfTotalStakedInUSD, syTotalStakedInUSD], bn => bn);
-  const totalEffectiveStakedInUSD = BigNumber.sumEach([yfTotalEffectiveStakedInUSD, syTotalStakedInUSD], bn => bn);
+  const totalStakedInUSD = BigNumber.sumEach([yfTotalStakedInUSD, syTotalStakedInUSD, daoStakedInUSD], bn => bn);
   const yfTotalSupply = yfPoolsCtx.getYFTotalSupply();
   const yfDistributedRewards = yfPoolsCtx.getYFDistributedRewards();
 
@@ -43,19 +60,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
       <div className="card p-24">
         <div className="flex flow-row">
           <div className="flex align-center justify-space-between mb-48">
-            <Hint
-              text={
-                <>
-                  This number shows the Total Value Locked across the staking pool(s), and the effective Total Value
-                  Locked.
-                  <br />
-                  <br />
-                  When staking tokens during an epoch that is currently running, your effective deposit amount will be
-                  proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked
-                  balance and effective staked balance will be the equal, therefore TVL and effective TVL will differ in
-                  most cases.
-                </>
-              }>
+            <Hint text="This number shows the Total Value Locked across the yield farming pool(s), and governance staking.">
               <Text type="lb2" weight="semibold" color="red">
                 Total Value Locked
               </Text>
@@ -84,12 +89,6 @@ const PoolStats: React.FC<Props> = ({ className }) => {
                 <Icon name="insured" color="green" size={32} />
               </Tooltip>
             </div>
-            <Text type="p1" color="secondary">
-              {formatUSD(totalEffectiveStakedInUSD, {
-                decimals: 0,
-              }) ?? '-'}{' '}
-              effective locked
-            </Text>
           </div>
         </div>
       </div>

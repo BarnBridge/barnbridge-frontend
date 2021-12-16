@@ -1013,4 +1013,160 @@
       </g>
     </g>
   </symbol>
+  <symbol id="icon__dao-circle" viewBox="0 0 40 40" fill="none">
+    <defs>
+      <linearGradient id="icon__dao-circle/gradient0" x1="20" x2="20" y1="0" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF6961"/>
+        <stop offset="1" stop-color="#FF4339"/>
+      </linearGradient>
+      <linearGradient id="icon__dao-circle/gradient1" x1="20" x2="20" y1="0" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#7288EA"/>
+        <stop offset="1" stop-color="#4F6AE5"/>
+      </linearGradient>
+      <filter id="icon__dao-circle/filter0" width="40" height="46" x="0" y="-4" color-interpolation-filters="sRGB"
+              filterUnits="userSpaceOnUse">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="2"/>
+        <feGaussianBlur stdDeviation="2"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 0.964706 0 0 0 0 0.972549 0 0 0 0 0.996078 0 0 0 0.16 0"/>
+        <feBlend in2="shape" result="effect1_innerShadow_10531_202891"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-1"/>
+        <feGaussianBlur stdDeviation="1"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 0.964706 0 0 0 0 0.972549 0 0 0 0 0.996078 0 0 0 0.32 0"/>
+        <feBlend in2="effect1_innerShadow_10531_202891" result="effect2_innerShadow_10531_202891"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-4"/>
+        <feGaussianBlur stdDeviation="4"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 0.0941176 0 0 0 0 0.12549 0 0 0 0 0.270588 0 0 0 0.16 0"/>
+        <feBlend in2="effect2_innerShadow_10531_202891" result="effect3_innerShadow_10531_202891"/>
+      </filter>
+      <filter id="icon__dao-circle/filter1" width="38.002" height="41.5984" x="-3" y="3.19702"
+              color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="1"/>
+        <feGaussianBlur stdDeviation=".5"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix values="0 0 0 0 0.0941176 0 0 0 0 0.12549 0 0 0 0 0.270588 0 0 0 0.32 0"/>
+        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_10531_202891"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dx="-4" dy="4"/>
+        <feGaussianBlur stdDeviation="4"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix values="0 0 0 0 0.0941176 0 0 0 0 0.12549 0 0 0 0 0.270588 0 0 0 0.64 0"/>
+        <feBlend in2="effect1_dropShadow_10531_202891" result="effect2_dropShadow_10531_202891"/>
+        <feBlend in="SourceGraphic" in2="effect2_dropShadow_10531_202891" result="shape"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-1"/>
+        <feGaussianBlur stdDeviation="1.5"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 0.309804 0 0 0 0 0.415686 0 0 0 0 0.898039 0 0 0 0.4 0"/>
+        <feBlend in2="shape" result="effect3_innerShadow_10531_202891"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-1"/>
+        <feGaussianBlur stdDeviation=".5"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+        <feBlend in2="effect3_innerShadow_10531_202891" result="effect4_innerShadow_10531_202891"/>
+      </filter>
+      <mask id="icon__dao-circle/mask0" width="40" height="40" x="0" y="0" maskUnits="userSpaceOnUse"
+            style="mask-type:alpha">
+        <rect width="40" height="40" fill="url(#icon__dao-circle/gradient0)" rx="20"/>
+      </mask>
+    </defs>
+    <g mask="url(#icon__dao-circle/mask0)">
+      <g filter="url(#icon__dao-circle/filter0)">
+        <rect width="40" height="40" fill="url(#icon__dao-circle/gradient1)" rx="20"/>
+      </g>
+      <g filter="url(#icon__dao-circle/filter1)">
+        <path fill="#fff" fill-rule="evenodd"
+              d="m22.0436 7.83582 8.4033 5.98618c1.0459.7437.5169 2.3992-.7694 2.3992h-19.247c-1.28636 0-1.81532-1.6435-.76942-2.3992l8.40332-5.98618c1.1901-.85173 2.789-.85173 3.9792 0ZM15.1431 18.9444v7.0418c-1.5388.06-2.9934.1439-4.3279.2639v-7.3057h4.3279Zm6.9727 6.9698v-6.9698h-4.3279v6.9698c.7093-.012 1.4306-.012 2.1639-.012.7334 0 1.4547 0 2.164.012Zm6.9726-6.9698v7.2937c-1.3344-.108-2.789-.2039-4.3278-.2639v-7.0298h4.3278ZM27.0448 32.788c2.0918.132 3.859-1.5355 3.859-3.6228-5.3978-.7198-16.506-.7198-21.9038 0 0 2.0873 1.7672 3.7428 3.847 3.6228 4.3279-.2519 9.8699-.2519 14.1978 0Z"
+              clip-rule="evenodd"/>
+      </g>
+    </g>
+  </symbol>
+  <symbol id="icon__sy-circle" viewBox="0 0 40 40" fill="none">
+    <defs>
+      <linearGradient id="icon__sy-circle/gradient0" x1="20" x2="20" y1="0" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF6961"/>
+        <stop offset="1" stop-color="#FF4339"/>
+      </linearGradient>
+      <linearGradient id="icon__sy-circle/gradient1" x1="20" x2="20" y1="0" y2="40" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#FF6961"/>
+        <stop offset="1" stop-color="#FF4339"/>
+      </linearGradient>
+      <filter id="icon__sy-circle/filter0" width="40" height="46" x="0" y="-4" color-interpolation-filters="sRGB"
+              filterUnits="userSpaceOnUse">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feBlend in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="2"/>
+        <feGaussianBlur stdDeviation="2"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 1 0 0 0 0 0.964706 0 0 0 0 0.960784 0 0 0 0.16 0"/>
+        <feBlend in2="shape" result="effect1_innerShadow_10531_202901"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-1"/>
+        <feGaussianBlur stdDeviation="1"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 1 0 0 0 0 0.964706 0 0 0 0 0.960784 0 0 0 0.32 0"/>
+        <feBlend in2="effect1_innerShadow_10531_202901" result="effect2_innerShadow_10531_202901"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-4"/>
+        <feGaussianBlur stdDeviation="4"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 0.301961 0 0 0 0 0.0784314 0 0 0 0 0.0666667 0 0 0 0.16 0"/>
+        <feBlend in2="effect2_innerShadow_10531_202901" result="effect3_innerShadow_10531_202901"/>
+      </filter>
+      <filter id="icon__sy-circle/filter1" width="36.8008" height="41.6001" x="-2.40039" y="3.19995"
+              color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+        <feFlood flood-opacity="0" result="BackgroundImageFix"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="1"/>
+        <feGaussianBlur stdDeviation=".5"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix values="0 0 0 0 0.301961 0 0 0 0 0.0784314 0 0 0 0 0.0666667 0 0 0 0.32 0"/>
+        <feBlend in2="BackgroundImageFix" result="effect1_dropShadow_10531_202901"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dx="-4" dy="4"/>
+        <feGaussianBlur stdDeviation="4"/>
+        <feComposite in2="hardAlpha" operator="out"/>
+        <feColorMatrix values="0 0 0 0 0.301961 0 0 0 0 0.0784314 0 0 0 0 0.0666667 0 0 0 0.64 0"/>
+        <feBlend in2="effect1_dropShadow_10531_202901" result="effect2_dropShadow_10531_202901"/>
+        <feBlend in="SourceGraphic" in2="effect2_dropShadow_10531_202901" result="shape"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-1"/>
+        <feGaussianBlur stdDeviation="1.5"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 1 0 0 0 0 0.262745 0 0 0 0 0.223529 0 0 0 0.4 0"/>
+        <feBlend in2="shape" result="effect3_innerShadow_10531_202901"/>
+        <feColorMatrix in="SourceAlpha" result="hardAlpha" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0"/>
+        <feOffset dy="-1"/>
+        <feGaussianBlur stdDeviation=".5"/>
+        <feComposite in2="hardAlpha" k2="-1" k3="1" operator="arithmetic"/>
+        <feColorMatrix values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 1 0"/>
+        <feBlend in2="effect3_innerShadow_10531_202901" result="effect4_innerShadow_10531_202901"/>
+      </filter>
+      <mask id="icon__sy-circle/mask0" width="40" height="40" x="0" y="0" maskUnits="userSpaceOnUse"
+            style="mask-type:alpha">
+        <rect width="40" height="40" fill="url(#icon__sy-circle/gradient0)" rx="20"/>
+      </mask>
+    </defs>
+    <g mask="url(#icon__sy-circle/mask0)">
+      <g filter="url(#icon__sy-circle/filter0)">
+        <rect width="40" height="40" fill="url(#icon__sy-circle/gradient1)" rx="20"/>
+      </g>
+      <g filter="url(#icon__sy-circle/filter1)">
+        <path fill="#fff" fill-rule="evenodd"
+              d="m24.1554 10.433 6.2442-3.23305-1.357 6.86755-1.5478-1.1517c-.3604.391-7.9299 8.5897-17.89519 9.3716 0 0 9.50949-2.4935 16.06119-10.7345l-1.5054-1.1199Zm5.2898 6.9415v12.9954c0 1.3418-1.092 2.4301-2.4384 2.4301h-2.2581V18.5472c1.2086-.9086 2.2157-1.775 2.9684-2.4617l1.7281 1.289Zm-7.1028 2.8315c-1.5478.9826-3.1168 1.8067-4.6964 2.4829V32.8h4.6964V20.206Zm-7.1031 3.3809c-1.569.5072-3.1487.8453-4.6965 1.0249v5.7581c0 1.3418 1.092 2.4301 2.4384 2.4301h2.2581v-9.2131Z"
+              clip-rule="evenodd"/>
+      </g>
+    </g>
+  </symbol>
 </svg>
