@@ -100,6 +100,16 @@ const PoolCard: FC<Props> = props => {
             </Text>
           </div>
         </div>
+        {isEnded === false && (
+          <StatusTag
+            text={
+              <Text type="lb2" weight="bold" color="green">
+                ACTIVE
+              </Text>
+            }
+            color="green"
+          />
+        )}
         {isEnded && (
           <StatusTag
             text={

@@ -10,6 +10,7 @@ import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { OptimisticKovanNetwork } from 'networks/optimistic-kovan';
+import { OptimisticMainnetNetwork } from 'networks/optimistic-mainnet';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
@@ -39,7 +40,9 @@ const networks: Web3Network[] = (() => {
       KovanNetwork,
       OptimisticKovanNetwork,
       TestnetNetwork,
+      OptimisticKovanNetwork,
       MainnetNetwork,
+      OptimisticMainnetNetwork,
       PolygonNetwork,
       AvalancheTestnetNetwork,
       AvalancheNetwork,

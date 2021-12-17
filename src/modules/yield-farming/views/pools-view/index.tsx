@@ -8,6 +8,7 @@ import AggregatedPoolCard from 'modules/smart-yield/views/pools-view/aggregated-
 import PoolsTransactions from 'modules/yield-farming/components/pools-transactions';
 import { useWallet } from 'wallets/walletProvider';
 
+import DaoRewardCard from '../../components/dao-reward-card';
 import PoolCard from '../../components/pool-card';
 import PoolChart from '../../components/pool-chart';
 import PoolRewards from '../../components/pool-rewards';
@@ -32,8 +33,9 @@ const PoolsView: FC = () => {
             Overview
           </Text>
           <div className={s.poolCards}>
-            <AggregatedPoolCard />
             <PoolCard poolId={YFPoolID.UNILP} />
+            <DaoRewardCard />
+            <AggregatedPoolCard />
             <PoolCard poolId={YFPoolID.STABLE} />
             <PoolCard poolId={YFPoolID.BOND} />
           </div>

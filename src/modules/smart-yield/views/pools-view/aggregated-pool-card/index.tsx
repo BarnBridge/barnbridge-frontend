@@ -7,6 +7,7 @@ import { formatToken, formatUSD } from 'web3/utils';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { TokenMeta, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
@@ -68,21 +69,20 @@ const AggregatedPoolCard: FCx = props => {
   return (
     <div className="card flex flow-row">
       <div className={cn(s.cardHeader, 'flex align-center justify-space-between p-24')}>
-        <div className="flex align-center">
-          <StatusTag
-            text="NEW"
-            color="blue"
-            style={{
-              minWidth: 49,
-              height: 24,
-              padding: '4px 8px',
-            }}
-            className="mr-16"
-          />
+        <div className="flex align-center col-gap-16">
+          <Icon name="sy-circle" size={40} />
           <Text type="p1" weight="semibold" color="primary">
             SMART Yield Pools
           </Text>
         </div>
+        <StatusTag
+          text={
+            <Text type="lb2" weight="bold" color="green">
+              ACTIVE
+            </Text>
+          }
+          color="green"
+        />
       </div>
       <div className="flex flow-row flex-grow ph-24 pb-24">
         <ElasticTabs

@@ -65,6 +65,7 @@ export const MainnetConfig: NetworkConfig = {
     bb_ausdt: '0x660dAF6643191cF0eD045B861D820F283cA078fc',
     bb_agusd: '0x6324538cc222b43490dd95CEBF72cf09d98D9dAe',
     bb_adai: '0x6c9DaE2C40b1e5883847bF5129764e76Cb69Fc57',
+    bb_arai: '0x4db6fb0218ce5da392f1e6475a554bafcb62ef30',
     bb_crusdc: '0x62e479060c89C48199FC7ad43b1432CC585BA1b9',
     bb_crusdt: '0xc45F49bE156888a1C0C93dc0fE7dC89091E291f5',
     bb_crdai: '0x89d82FdF095083Ded96B48FC6462Ed5dBD14151f',
