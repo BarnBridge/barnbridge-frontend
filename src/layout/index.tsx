@@ -9,19 +9,9 @@ import WarningProvider from 'components/providers/warning-provider';
 import LayoutFooter from 'layout/components/layout-footer';
 import LayoutHeader from 'layout/components/layout-header';
 import LayoutSideNav from 'layout/components/layout-side-nav';
-// import { AvalancheNetwork } from 'networks/avalanche';
-// import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
-// import { BinanceNetwork } from 'networks/binance';
-// import { BinanceTestnetNetwork } from 'networks/binance-testnet';
-
 import s from './s.module.scss';
 
-// const YieldFarmingView = lazy(() => import('modules/yield-farming'));
 const GovernanceView = lazy(() => import('modules/governance'));
-// const SmartYieldView = lazy(() => import('modules/smart-yield'));
-// const SmartAlphaView = lazy(() => import('modules/smart-alpha'));
-// const SmartExposureView = lazy(() => import('modules/smart-exposure'));
-// const FaucetsView = lazy(() => import('modules/faucets'));
 
 const LayoutView: React.FC = () => {
   const { activeNetwork } = useNetwork();

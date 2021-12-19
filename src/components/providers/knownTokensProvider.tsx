@@ -11,7 +11,6 @@ import { useNetwork } from 'components/providers/networkProvider';
 import { MainnetHttpsWeb3Provider, useWeb3 } from 'components/providers/web3Provider';
 import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
-import { PolygonNetwork } from 'networks/polygon';
 import { useWallet } from 'wallets/walletProvider';
 
 import TokensProvider from './tokensProvider';
@@ -25,7 +24,7 @@ export enum KnownTokens {
   BTC = 'BTC',
   WETH = 'WETH',
   WBTC = 'WBTC',
-  BOND = 'BOND',
+  SWINGBY = 'SWINGBY',
   USDC = 'USDC',
   DAI = 'DAI',
   RAI = 'RAI',
@@ -147,7 +146,7 @@ const KnownTokensProvider: FC = props => {
   const wbtcContract = useErc20Contract(config.tokens.wbtc);
   const wethContract = useErc20Contract(config.tokens.weth);
   const usdcContract = useErc20Contract(config.tokens.usdc);
-  const bondContract = useErc20Contract(config.tokens.bond);
+  const swingbyContract = useErc20Contract(config.tokens.swingby);
   const usdtContract = useErc20Contract(config.tokens.usdt);
   const susdContract = useErc20Contract(config.tokens.susd);
   const gusdContract = useErc20Contract(config.tokens.gusd);
@@ -204,14 +203,14 @@ const KnownTokensProvider: FC = props => {
         contract: usdcContract,
       },
       {
-        symbol: KnownTokens.BOND,
-        name: 'BarnBridge',
-        address: config.tokens.bond.toLowerCase(),
+        symbol: KnownTokens.SWINGBY,
+        name: 'SWINGBY',
+        address: config.tokens.swingby.toLowerCase(),
         decimals: 18,
         icon: 'bond',
-        priceFeed: config.feeds.bond, // BOND -> USDC
+        priceFeed: config.feeds.swingby, // BOND -> USDC
         pricePath: [KnownTokens.USDC],
-        contract: bondContract,
+        contract: swingbyContract,
       },
       {
         symbol: KnownTokens.USDT,
@@ -389,39 +388,6 @@ const KnownTokensProvider: FC = props => {
           fSymbol = KnownTokens.bbcUSDC;
         }
       }
-
-      if (network.activeNetwork === PolygonNetwork) {
-        switch (fSymbol) {
-          case 'bb_cmUSDC':
-            fSymbol = KnownTokens.bbcUSDC;
-            break;
-          case 'bb_cmDAI':
-            fSymbol = KnownTokens.bbcDAI;
-            break;
-          case 'bb_amUSDC':
-            fSymbol = KnownTokens.bbaUSDC;
-            break;
-          case 'bb_amUSDT':
-            fSymbol = KnownTokens.bbaUSDT;
-            break;
-          case 'bb_amGUSD':
-            fSymbol = KnownTokens.bbaGUSD;
-            break;
-          case 'bb_amDAI':
-            fSymbol = KnownTokens.bbaDAI;
-            break;
-          case 'bb_crmUSDC':
-            fSymbol = KnownTokens.bbcrUSDC;
-            break;
-          case 'bb_crmUSDT':
-            fSymbol = KnownTokens.bbcrUSDT;
-            break;
-          case 'bb_crmDAI':
-            fSymbol = KnownTokens.bbcrDAI;
-            break;
-        }
-      }
-
       return tokens.find(token => token.symbol === fSymbol);
     },
     [tokens],
@@ -471,7 +437,7 @@ const KnownTokensProvider: FC = props => {
 
   const getBondPrice = useCallback(async (): Promise<BigNumber> => {
     const usdcToken = getTokenBySymbol(KnownTokens.USDC);
-    const bondToken = getTokenBySymbol(KnownTokens.BOND);
+    const bondToken = getTokenBySymbol(KnownTokens.SWINGBY);
 
     if (!usdcToken || !bondToken || !bondToken.priceFeed) {
       return Promise.reject();
@@ -633,12 +599,9 @@ const KnownTokensProvider: FC = props => {
     usdtToken,
   ] = useMemo<TokenMeta[]>(() => {
     return [
-      getTokenBySymbol(KnownTokens.BOND)!,
-      getTokenBySymbol(KnownTokens.BOND)!,
+      getTokenBySymbol(KnownTokens.SWINGBY)!,
+      getTokenBySymbol(KnownTokens.SWINGBY)!,
       getTokenBySymbol(KnownTokens.ETH)!,
-      network.activeNetwork !== PolygonNetwork
-        ? getTokenBySymbol(KnownTokens.STK_AAVE)!
-        : getTokenBySymbol(KnownTokens.WMATIC)!,
       getTokenBySymbol(KnownTokens.DAI)!,
       getTokenBySymbol(KnownTokens.GUSD)!,
       getTokenBySymbol(KnownTokens.SUSD)!,
@@ -653,7 +616,7 @@ const KnownTokensProvider: FC = props => {
       await Promise.allSettled(
         tokens.map(async token => {
           switch (token.symbol) {
-            case KnownTokens.BOND:
+            case KnownTokens.SWINGBY:
               token.price = await getBondPrice();
               break;
             case KnownTokens.UNIV2:

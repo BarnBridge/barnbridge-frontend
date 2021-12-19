@@ -44,7 +44,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               </Text>
             }>
             <Text type="lb2" weight="semibold" color="blue">
-              Bond Staked
+              Total Staked
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
@@ -96,7 +96,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               </Grid>
             }>
             <Text type="lb2" weight="semibold" color="blue">
-              VBond
+              VSWINGBY
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
@@ -150,7 +150,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               </Text>
             }>
             <Text type="lb2" weight="semibold" color="blue">
-              Bond Rewards
+              Staking rewards
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>

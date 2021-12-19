@@ -43,8 +43,8 @@ const ConfigProvider: FC = props => {
       github: 'https://github.com/BarnBridge',
       forum: 'https://forum.barnbridge.com',
       signal: 'https://signal.barnbridge.com',
-      uniswapLiquidity: `https://app.uniswap.org/#/add/v2/${config.tokens?.bond}/${config.tokens?.usdc}`,
-      uniswapSwap: `https://app.uniswap.org/#/swap?use=V2&inputCurrency=${config.tokens?.bond}&outputCurrency=${config.tokens?.usdc}`,
+      uniswapLiquidity: `https://app.uniswap.org/#/add/v2/${config.tokens?.swingby}/${config.tokens?.usdc}`,
+      uniswapSwap: `https://app.uniswap.org/#/swap?use=V2&inputCurrency=${config.tokens?.swingby}&outputCurrency=${config.tokens?.usdc}`,
     },
   };
 

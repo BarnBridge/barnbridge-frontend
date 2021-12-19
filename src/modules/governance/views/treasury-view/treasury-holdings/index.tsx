@@ -22,12 +22,10 @@ import {
   useFetchTreasuryHistory,
   useFetchTreasuryTokens,
 } from 'modules/governance/api';
-import { MarketMeta } from 'modules/smart-yield/providers/markets';
 
 type ExtendedAPITreasuryToken = APITreasuryToken & {
   balanceAmount: BigNumber | undefined;
   balanceAmountUSD: BigNumber | undefined;
-  market: MarketMeta | undefined;
   token: TokenType | undefined;
 };
 

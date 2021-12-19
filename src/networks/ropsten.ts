@@ -43,7 +43,7 @@ export const RopstenConfig: NetworkConfig = {
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    bond: '0x02ce048c863b76ed7397f18da654475e123503ac',
+    swingby: '0x02ce048c863b76ed7397f18da654475e123503ac',
     univ2: '0xe594D2B3BeA4454D841e5b616627dCA6A5D7aCF1',
     usdc: '0x4A69d0F05c8667B993eFC2b500014AE1bC8fD958',
     usdt: '0xdac17f958d2ee523a2206206994597c13d831ec7',
@@ -70,7 +70,7 @@ export const RopstenConfig: NetworkConfig = {
   feeds: {
     btc: '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c',
     eth: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
-    bond: '0xe594D2B3BeA4454D841e5b616627dCA6A5D7aCF1',
+    swingby: '0xe594D2B3BeA4454D841e5b616627dCA6A5D7aCF1',
     univ2: '0xe594D2B3BeA4454D841e5b616627dCA6A5D7aCF1',
     usdc: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
     usdt: '0x4e58ab12d2051ea2068e78e4fcee7ddee6785848',
@@ -84,7 +84,7 @@ export const RopstenConfig: NetworkConfig = {
       staking: '0x618bB8f9e76f2982B8783e6AA09bC930c65f0AC8',
       stable: '0xf865D61e3791ef6C202c62b79f42de3f9e9AC8b3',
       unilp: '0x4e600bd65AE29d12ab22EE0384bD472F24d7aEa6',
-      bond: '0x82B568C2E5159ba20358aF425E92ac96345c9C9a',
+      swingby: '0x82B568C2E5159ba20358aF425E92ac96345c9C9a',
     },
     dao: {
       governance: '0x034a13bb56304438d4aC389eE0e56D1697A2Ec04',

@@ -62,11 +62,6 @@ const LayoutFooter: React.FC = () => {
             </Text>
             <ul>
               <li>
-                <Link variation="text-alt" to="/smart-yield">
-                  SMART Yield
-                </Link>
-              </li>
-              <li>
                 <Link variation="text-alt" to="/smart-alpha">
                   SMART Alpha
                 </Link>

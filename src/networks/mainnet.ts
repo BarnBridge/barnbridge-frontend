@@ -45,7 +45,7 @@ export const MainnetConfig: NetworkConfig = {
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    bond: '0x0391D2021f89DC339F60Fff84546EA23E337750f',
+    swingby: '0x0391D2021f89DC339F60Fff84546EA23E337750f',
     univ2: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
     usdc: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
     usdt: '0xdac17f958d2ee523a2206206994597c13d831ec7',
@@ -72,7 +72,7 @@ export const MainnetConfig: NetworkConfig = {
   feeds: {
     btc: '0xF4030086522a5bEEa4988F8cA5B36dbC97BeE88c',
     eth: '0x5f4eC3Df9cbd43714FE2740f5E3616155c5b8419',
-    bond: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
+    swingby: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
     univ2: '0x6591c4BcD6D7A1eb4E537DA8B78676C1576Ba244',
     usdc: '0x8fFfFfd4AfB6115b954Bd326cbe7B4BA576818f6',
     usdt: '0x4e58ab12d2051ea2068e78e4fcee7ddee6785848',
@@ -86,7 +86,7 @@ export const MainnetConfig: NetworkConfig = {
       staking: '0xb0Fa2BeEe3Cf36a7Ac7E99B885b48538Ab364853',
       stable: '0xB3F7abF8FA1Df0fF61C5AC38d35e20490419f4bb',
       unilp: '0xC25c37c387C5C909a94055F4f16184ca325D3a76',
-      bond: '0x3FdFb07472ea4771E1aD66FD3b87b265Cd4ec112',
+      swingby: '0x3FdFb07472ea4771E1aD66FD3b87b265Cd4ec112',
     },
     dao: {
       governance: '0x4cAE362D7F227e3d306f70ce4878E245563F3069',

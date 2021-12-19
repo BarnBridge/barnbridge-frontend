@@ -92,21 +92,7 @@ const LayoutSideNav: React.FC = () => {
               </div>
             </NavLink>
           )}
-          {features.smartYield && (
-            <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
-                <Icon name="menu-sy" size={40} />
-              </Tooltip>
-              <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
-                  SMART
-                </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
-                  Yield
-                </Text>
-              </div>
-            </NavLink>
-          )}
+
           {features.smartAlpha && (
             <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
               <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">

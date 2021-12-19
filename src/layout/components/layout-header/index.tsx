@@ -43,7 +43,6 @@ const LayoutHeader: React.FC = () => {
         <Switch>
           <Route path="/yield-farming">Yield Farming</Route>
           <Route path="/governance">{title}</Route>
-          <Route path="/smart-yield">SMART Yield</Route>
           <Route path="/smart-exposure">SMART Exposure</Route>
           <Route path="/smart-alpha">SMART Alpha</Route>
           <Route path="/faucets">Faucets</Route>
