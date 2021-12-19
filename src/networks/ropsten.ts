@@ -43,7 +43,7 @@ export const RopstenConfig: NetworkConfig = {
   tokens: {
     wbtc: '0x2260fac5e5542a773aa44fbcfedf7c193bc2c599',
     weth: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-    bond: '0x521EE0CeDbed2a5A130B9218551fe492C5c402e4',
+    bond: '0x02ce048c863b76ed7397f18da654475e123503ac',
     univ2: '0xe594D2B3BeA4454D841e5b616627dCA6A5D7aCF1',
     usdc: '0x4A69d0F05c8667B993eFC2b500014AE1bC8fD958',
     usdt: '0xdac17f958d2ee523a2206206994597c13d831ec7',

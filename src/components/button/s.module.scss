@@ -50,20 +50,20 @@
 .primary {
   @include button-base;
 
-  background: var(--theme-red-color);
-  box-shadow: 0 8px 16px rgba(var(--theme-red-color-rgb), 0.16);
+  background: var(--theme-blue-color);
+  box-shadow: 0 8px 16px rgba(var(--theme-blue-color-rgb), 0.16);
   border-radius: 4px;
   color: #fff;
 
   &:hover {
-    background: var(--theme-red400-color);
+    background: var(--theme-blue400-color);
     color: #fff;
-    box-shadow: 0 8px 16px rgba(var(--theme-red400-color-rgb), 0.24);
+    box-shadow: 0 8px 16px rgba(var(--theme-blue400-color-rgb), 0.24);
   }
 
   &:active {
-    background: var(--theme-red600-color);
-    box-shadow: 0 4px 8px rgba(var(--theme-red600-color-rgb), 0.16);
+    background: var(--theme-blue600-color);
+    box-shadow: 0 4px 8px rgba(var(--theme-blue600-color-rgb), 0.16);
     color: #fff;
   }
 

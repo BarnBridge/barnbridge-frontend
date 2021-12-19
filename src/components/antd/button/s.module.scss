@@ -4,19 +4,19 @@
   // primary regular
   --btn-primary-shadow: 0 8px 16px rgba(255, 67, 57, 0.16);
   --btn-primary-border: 0;
-  --btn-primary-bg: #{$color-red500};
+  --btn-primary-bg: #{$color-blue500};
   --btn-primary-text: #fff;
 
   // primary hover
   --btn-primary-shadow-hover: 0 8px 16px rgba(255, 105, 97, 0.24);
   --btn-primary-border-hover: none;
-  --btn-primary-bg-hover: #{$color-red400};
+  --btn-primary-bg-hover: #{$color-blue400};
   --btn-primary-text-hover: #fff;
 
   // primary active
   --btn-primary-shadow-active: 0 4px 8px rgba(204, 54, 46, 0.16);
   --btn-primary-border-active: none;
-  --btn-primary-bg-active: #{$color-red600};
+  --btn-primary-bg-active: #{$color-blue600};
   --btn-primary-text-active: #fff;
 
   // primary disabled
@@ -29,19 +29,19 @@
   --btn-default-shadow: none;
   --btn-default-border: 0;
   --btn-default-bg: rgba(255, 67, 57, 0.1);
-  --btn-default-text: #{$color-red500};
+  --btn-default-text: #{$color-blue500};
 
   // default hover
   --btn-default-shadow-hover: none;
   --btn-default-border-hover: none;
   --btn-default-bg-hover: rgba(255, 105, 97, 0.1);
-  --btn-default-text-hover: #{$color-red400};
+  --btn-default-text-hover: #{$color-blue400};
 
   // default active
   --btn-default-shadow-active: none;
   --btn-default-border-active: none;
   --btn-default-bg-active: rgba(204, 54, 46, 0.08);
-  --btn-default-text-active: #{$color-red600};
+  --btn-default-text-active: #{$color-blue600};
 
   // default disabled
   --btn-default-shadow-disabled: none;
@@ -51,19 +51,19 @@
 
   // ghost regular
   --btn-ghost-shadow: none;
-  --btn-ghost-border: 1px solid #{$color-red500};
+  --btn-ghost-border: 1px solid #{$color-blue500};
   --btn-ghost-bg: transparent;
-  --btn-ghost-text: #{$color-red500};
+  --btn-ghost-text: #{$color-blue500};
 
   // ghost hover
   --btn-ghost-shadow-hover: none;
-  --btn-ghost-border-hover: 1px solid #{$color-red300};
+  --btn-ghost-border-hover: 1px solid #{$color-blue300};
   --btn-ghost-bg-hover: rgba(255, 105, 97, 0.1);
   --btn-ghost-text-hover: #{$color-red400};
 
   // ghost active
   --btn-ghost-shadow-active: none;
-  --btn-ghost-border-active: 1px solid #{$color-red600};
+  --btn-ghost-border-active: 1px solid #{$color-blue600};
   --btn-ghost-bg-active: rgba(204, 54, 46, 0.04);
   --btn-ghost-text-active: #{$color-red600};
 
@@ -79,9 +79,9 @@
   --btn-link-text-active: #{$color-blue600};
 
   // light
-  --btn-light-text: #{$color-red500};
-  --btn-light-text-hover: #{$color-red400};
-  --btn-light-text-active: #{$color-red600};
+  --btn-light-text: #{$color-blue500};
+  --btn-light-text-hover: #{$color-blue400};
+  --btn-light-text-active: #{$color-blue600};
 
   // select
   --btn-select-shadow: none;
