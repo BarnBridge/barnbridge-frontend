@@ -8,9 +8,9 @@ import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
 import { BinanceNetwork } from 'networks/binance';
 import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
+import { RopstenNetwork } from 'networks/ropsten';
 import { MainnetNetwork } from 'networks/mainnet';
 import { PolygonNetwork } from 'networks/polygon';
-import { TestnetNetwork } from 'networks/testnet';
 
 import { InvariantContext } from 'utils/context';
 import { isDevelopmentMode, isProductionMode } from '../../utils';
@@ -36,7 +36,7 @@ const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
     return [
       KovanNetwork,
-      TestnetNetwork,
+      RopstenNetwork,
       MainnetNetwork,
       PolygonNetwork,
       AvalancheTestnetNetwork,
@@ -49,7 +49,7 @@ const networks: Web3Network[] = (() => {
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, TestnetNetwork, ArbitrumNetwork];
+    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, ArbitrumNetwork];
   }
 
   return [];
@@ -68,7 +68,7 @@ const NetworkProvider: FC = props => {
         const networkId = lastNetwork?.toLowerCase();
         network = networks.find(n => n.id.toLowerCase() === networkId);
       }
-    } catch {}
+    } catch { }
 
     return network ?? networks[0];
   }, [lastNetwork]);
