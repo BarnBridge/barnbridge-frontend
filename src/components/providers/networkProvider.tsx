@@ -33,7 +33,7 @@ const networks: Web3Network[] = (() => {
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork];
+    return [RopstenNetwork, MainnetNetwork];
   }
 
   return [];
