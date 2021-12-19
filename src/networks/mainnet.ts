@@ -120,7 +120,7 @@ export const MainnetNetwork: Web3Network = {
   type: 'Ethereum',
   meta: {
     chainId: MAINNET_CHAIN_ID,
-    name: isDevelopmentMode ? 'Ethereum Mainnet (Alpha)' : 'Ethereum Mainnet',
+    name: isDevelopmentMode ? 'Ethereum' : 'Ethereum',
     logo: 'mainnet-logo',
   },
   rpc: {

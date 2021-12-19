@@ -118,7 +118,7 @@ export const RopstenNetwork: Web3Network = {
   type: 'Ethereum',
   meta: {
     chainId: ROPSTEN_CHAIN_ID,
-    name: 'Ethereum Testnet (Ropsten)',
+    name: 'Ropsten',
     logo: 'testnet-logo',
   },
   rpc: {

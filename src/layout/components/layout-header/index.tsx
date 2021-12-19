@@ -32,18 +32,17 @@ import s from './s.module.scss';
 const LayoutHeader: React.FC = () => {
   const { navOpen, setNavOpen } = useGeneral();
   const { activeNetwork } = useNetwork();
-
+  let title = !isMobile ? "Governance" : ""
   return (
     <header className={s.component}>
       <button type="button" className={s.burger} onClick={() => setNavOpen(!navOpen)}>
         <IconOld name="burger" className="hidden-desktop" />
         <Icon name="arrow" rotate={navOpen ? 180 : 0} size={12} className="hidden-mobile hidden-tablet" />
       </button>
-      <IconOld name="bond-square-token" className={s.logo} />
       <Text type="h3" weight="semibold" color="primary" className={s.title}>
         <Switch>
           <Route path="/yield-farming">Yield Farming</Route>
-          <Route path="/governance">Governance</Route>
+          <Route path="/governance">{title}</Route>
           <Route path="/smart-yield">SMART Yield</Route>
           <Route path="/smart-exposure">SMART Exposure</Route>
           <Route path="/smart-alpha">SMART Alpha</Route>
@@ -53,19 +52,18 @@ const LayoutHeader: React.FC = () => {
       </Text>
       {!isMobile ? (
         <div className="flex align-center col-gap-16 ml-auto">
-          {!isProductionMode && (
-            <Switch>
-              <Route path="/smart-alpha">
-                <PositionsAction />
-              </Route>
-            </Switch>
-          )}
           {activeNetwork.config.features.addBondToken && <AddTokenAction />}
           <NetworkAction />
           <NotificationsAction />
           <WalletAction />
         </div>
-      ) : null}
+      ) : (
+        <div className="flex align-center col-gap-8 ml-auto">
+          <NetworkAction />
+          <NotificationsAction />
+          <WalletAction />
+        </div>
+      )}
     </header>
   );
 };
@@ -113,9 +111,8 @@ const PositionsAction: React.FC = () => {
                   </div>
                   <Link
                     variation="text"
-                    to={`/smart-alpha/portfolio/${item.tranche === 'SENIOR' ? 'senior' : 'junior'}?poolAddress=${
-                      item.poolAddress
-                    }`}
+                    to={`/smart-alpha/portfolio/${item.tranche === 'SENIOR' ? 'senior' : 'junior'}?poolAddress=${item.poolAddress
+                      }`}
                     onClick={() => setVisible(false)}>
                     View position
                   </Link>
@@ -274,11 +271,11 @@ const WalletAction: React.FC = () => {
   }
 
   if (!wallet.isActive) {
-    return !isMobile ? (
-      <Button variation="primary" onClick={() => wallet.showWalletsModal()}>
+    return (
+      <Button size="small" variation="primary" onClick={() => wallet.showWalletsModal()}>
         Connect Wallet
       </Button>
-    ) : null;
+    );
   }
 
   return (
