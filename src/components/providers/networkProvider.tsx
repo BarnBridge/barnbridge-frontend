@@ -1,16 +1,8 @@
 import { FC, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { useSessionStorage } from 'react-use-storage';
 
-import { ArbitrumNetwork } from 'networks/arbitrum';
-import { ArbitrumTestnetNetwork } from 'networks/arbitrum-testnet';
-import { AvalancheNetwork } from 'networks/avalanche';
-import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
-import { BinanceNetwork } from 'networks/binance';
-import { BinanceTestnetNetwork } from 'networks/binance-testnet';
-import { KovanNetwork } from 'networks/kovan';
 import { RopstenNetwork } from 'networks/ropsten';
 import { MainnetNetwork } from 'networks/mainnet';
-import { PolygonNetwork } from 'networks/polygon';
 
 import { InvariantContext } from 'utils/context';
 import { isDevelopmentMode, isProductionMode } from '../../utils';
@@ -35,21 +27,13 @@ export function useNetwork(): NetworkType {
 const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
     return [
-      KovanNetwork,
       RopstenNetwork,
-      MainnetNetwork,
-      PolygonNetwork,
-      AvalancheTestnetNetwork,
-      AvalancheNetwork,
-      BinanceTestnetNetwork,
-      BinanceNetwork,
-      ArbitrumTestnetNetwork,
-      ArbitrumNetwork,
-    ];
+      MainnetNetwork
+    ]
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, ArbitrumNetwork];
+    return [MainnetNetwork];
   }
 
   return [];
