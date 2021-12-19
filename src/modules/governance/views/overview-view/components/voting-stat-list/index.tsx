@@ -43,7 +43,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
               </Text>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="lb2" weight="semibold" color="blue">
               Bond Staked
             </Text>
           </Hint>
@@ -95,7 +95,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 </ExternalLink>
               </Grid>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="lb2" weight="semibold" color="blue">
               VBond
             </Text>
           </Hint>
@@ -124,7 +124,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 </ExternalLink>
               </Grid>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="lb2" weight="semibold" color="blue">
               Avg. Lock Time
             </Text>
           </Hint>
@@ -149,7 +149,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 Staking.
               </Text>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="lb2" weight="semibold" color="blue">
               Bond Rewards
             </Text>
           </Hint>
@@ -182,7 +182,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 </ExternalLink>
               </Grid>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="lb2" weight="semibold" color="blue">
               Delegated
             </Text>
           </Hint>
@@ -207,7 +207,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 the DAO.
               </Text>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="lb2" weight="semibold" color="blue">
               Addresses
             </Text>
           </Hint>

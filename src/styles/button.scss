@@ -64,21 +64,21 @@
 }
 
 .button-ghost {
-  border-color: #ff4339;
+  border-color: #2261e9;
   background-color: transparent;
   border-radius: 4px;
-  color: #ff4339;
+  color: #2261e9;
 
   &:hover {
     background: rgba(255, 105, 97, 0.1);
-    border: 1px solid #ff8e88;
-    color: #ff6961;
+    border: 1px solid #2a67e9;
+    color: #2a67e9;
   }
 
   &:active {
     background: rgba(204, 54, 46, 0.04);
-    border: 1px solid #cc362e;
-    color: #cc362e;
+    border: 1px solid #2a67e9;
+    color: #2a67e9;
   }
 }
 
@@ -157,7 +157,7 @@
 
   &:hover {
     color: var(--theme-primary-color);
-    border: 1px solid #ff4339;
+    border: 1px solid #2a67e9;
   }
 
   &:active {
@@ -165,7 +165,7 @@
   }
 
   &.selected {
-    border-color: var(--theme-red-color);
+    border-color: var(--theme-blue-color);
   }
 }
 

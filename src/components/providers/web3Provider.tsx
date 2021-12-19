@@ -9,28 +9,31 @@ import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useNetwork } from 'components/providers/networkProvider';
-import { ArbitrumNetwork } from 'networks/arbitrum';
-import { AvalancheNetwork } from 'networks/avalanche';
-import { BinanceNetwork } from 'networks/binance';
+// import { ArbitrumNetwork } from 'networks/arbitrum';
+// import { AvalancheNetwork } from 'networks/avalanche';
+// import { BinanceNetwork } from 'networks/binance';
 import { MainnetNetwork } from 'networks/mainnet';
-import { PolygonNetwork } from 'networks/polygon';
+import { RopstenNetwork } from 'networks/ropsten';
+// import { PolygonNetwork } from 'networks/polygon';
 import { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
 
 import { InvariantContext } from 'utils/context';
 
 export const MainnetHttpsWeb3Provider = new Web3.providers.HttpProvider(MainnetNetwork.rpc.httpsUrl);
-export const PolygonHttpsWeb3Provider = new Web3.providers.HttpProvider(PolygonNetwork.rpc.httpsUrl);
-export const AvalancheHttpsWeb3Provider = new Web3.providers.HttpProvider(AvalancheNetwork.rpc.httpsUrl);
-export const BinanceHttpsWeb3Provider = new Web3.providers.HttpProvider(BinanceNetwork.rpc.httpsUrl);
-export const ArbitrumHttpsWeb3Provider = new Web3.providers.HttpProvider(ArbitrumNetwork.rpc.httpsUrl);
+export const RopstenHttpsWeb3Provider = new Web3.providers.HttpProvider(RopstenNetwork.rpc.httpsUrl);
+// export const PolygonHttpsWeb3Provider = new Web3.providers.HttpProvider(PolygonNetwork.rpc.httpsUrl);
+// export const AvalancheHttpsWeb3Provider = new Web3.providers.HttpProvider(AvalancheNetwork.rpc.httpsUrl);
+// export const BinanceHttpsWeb3Provider = new Web3.providers.HttpProvider(BinanceNetwork.rpc.httpsUrl);
+// export const ArbitrumHttpsWeb3Provider = new Web3.providers.HttpProvider(ArbitrumNetwork.rpc.httpsUrl);
 
 const CacheHttpsWeb3Provider: Record<string, HttpProvider> = {
   [MainnetNetwork.rpc.httpsUrl]: MainnetHttpsWeb3Provider,
-  [PolygonNetwork.rpc.httpsUrl]: PolygonHttpsWeb3Provider,
-  [AvalancheNetwork.rpc.httpsUrl]: AvalancheHttpsWeb3Provider,
-  [BinanceNetwork.rpc.httpsUrl]: BinanceHttpsWeb3Provider,
-  [ArbitrumNetwork.rpc.httpsUrl]: ArbitrumHttpsWeb3Provider,
+  [RopstenNetwork.rpc.httpsUrl]: RopstenHttpsWeb3Provider,
+  // [PolygonNetwork.rpc.httpsUrl]: PolygonHttpsWeb3Provider,
+  // [AvalancheNetwork.rpc.httpsUrl]: AvalancheHttpsWeb3Provider,
+  // [BinanceNetwork.rpc.httpsUrl]: BinanceHttpsWeb3Provider,
+  // [ArbitrumNetwork.rpc.httpsUrl]: ArbitrumHttpsWeb3Provider,
 };
 
 export const WEB3_ERROR_VALUE = 3.9638773911973445e75;

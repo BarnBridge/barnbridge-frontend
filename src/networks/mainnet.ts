@@ -17,7 +17,7 @@ const EXPLORER_API_URL = 'https://api.etherscan.io';
 export const MAINNET_CHAIN_ID = 1;
 
 export const MainnetConfig: NetworkConfig = {
-  title: isDevelopmentMode ? 'BarnBridge Alpha' : 'BarnBridge',
+  title: isDevelopmentMode ? 'Swingby DAO' : 'Swingby DAO',
   features: {
     yieldFarming: true,
     dao: true,

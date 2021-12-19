@@ -72,7 +72,7 @@ const VotingHeader: React.FC = () => {
 
   return (
     <div className={cn(s.component, 'pv-24 ph-64 sm-ph-16')}>
-      <Text type="lb2" weight="semibold" color="red" className="mb-16">
+      <Text type="lb2" weight="semibold" color="blue" className="mb-16">
         My Voting Power
       </Text>
       <Grid flow="col" gap={24} className={s.items}>
@@ -167,7 +167,7 @@ const VotingHeader: React.FC = () => {
 
                   <Grid flow="col" gap={8} align="center">
                     <Tooltip title={`x${leftMultiplier}`}>
-                      <Text type="lb1" weight="bold" color="red" className={s.ratio}>
+                      <Text type="lb1" weight="bold" color="blue" className={s.ratio}>
                         {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
                       </Text>
                     </Tooltip>

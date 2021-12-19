@@ -40,7 +40,7 @@ const PortfolioView: React.FC = () => {
               },
               {
                 id: 'stake',
-                children: 'Stake',
+                children: 'Node Stake',
                 to: '/governance/portfolio/stake',
               },
               {

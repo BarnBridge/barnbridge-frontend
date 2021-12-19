@@ -7,23 +7,21 @@ import { createAbiItem } from 'web3/web3Contract';
 import { useNetwork } from 'components/providers/networkProvider';
 import { TokenIconNames } from 'components/token-icon';
 import { useReload } from 'hooks/useReload';
-import { ArbitrumNetwork } from 'networks/arbitrum';
-import { ArbitrumTestnetNetwork } from 'networks/arbitrum-testnet';
-import { AvalancheNetwork } from 'networks/avalanche';
-import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
-import { BinanceNetwork } from 'networks/binance';
-import { BinanceTestnetNetwork } from 'networks/binance-testnet';
-import { KovanNetwork } from 'networks/kovan';
+// import { ArbitrumNetwork } from 'networks/arbitrum';
+// import { ArbitrumTestnetNetwork } from 'networks/arbitrum-testnet';
+// import { AvalancheNetwork } from 'networks/avalanche';
+// import { AvalancheTestnetNetwork } from 'networks/avalanche-testnet';
+// import { BinanceNetwork } from 'networks/binance';
+// import { BinanceTestnetNetwork } from 'networks/binance-testnet';
+// import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
-import { PolygonNetwork } from 'networks/polygon';
-import { TestnetNetwork } from 'networks/testnet';
+import { RopstenNetwork } from 'networks/ropsten';
+// import { PolygonNetwork } from 'networks/polygon';
+// import { TestnetNetwork } from 'networks/testnet';
 
 import {
-  ArbitrumHttpsWeb3Provider,
-  AvalancheHttpsWeb3Provider,
-  BinanceHttpsWeb3Provider,
   MainnetHttpsWeb3Provider,
-  PolygonHttpsWeb3Provider,
+  RopstenHttpsWeb3Provider,
 } from './web3Provider';
 
 import { InvariantContext } from 'utils/context';
@@ -376,7 +374,7 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
     return new BigNumber(1);
   }
 
-  if (network === MainnetNetwork || network === KovanNetwork || network === TestnetNetwork) {
+  if (network === MainnetNetwork || network === RopstenNetwork) {
     switch (symbol.toUpperCase()) {
       case 'BTC':
       case 'WBTC':
@@ -448,119 +446,6 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
         return getUniV2Price('0x6591c4bcd6d7a1eb4e537da8b78676c1576ba244');
       default:
         return undefined;
-    }
-  } else if (network === PolygonNetwork) {
-    switch (symbol.toUpperCase()) {
-      case 'BTC':
-      case 'WBTC':
-        // Chainlink: BTC/USD
-        return getChainlinkFeedPrice('0xc907e116054ad103354f2d350fd2514433d57f6f', PolygonHttpsWeb3Provider);
-      case 'ETH':
-      case 'WETH':
-        // Chainlink: ETH/USD
-        return getChainlinkFeedPrice('0xf9680d99d6c9589e2a93a78a04a279e509205945', PolygonHttpsWeb3Provider);
-      case 'MATIC':
-      case 'WMATIC':
-        // Chainlink: MATIC/USD
-        return getChainlinkFeedPrice('0xab594600376ec9fd91f8e885dadf0ce036862de0', PolygonHttpsWeb3Provider);
-      case 'LINK':
-        // Chainlink: LINK/USD
-        return getChainlinkFeedPrice('0xd9ffdb71ebe7496cc440152d43986aae0ab76665', PolygonHttpsWeb3Provider);
-      case 'AAVE':
-      case 'STKAAVE':
-        // Chainlink: AAVE/USD
-        return getChainlinkFeedPrice('0x72484b12719e23115761d5da1646945632979bb6', PolygonHttpsWeb3Provider);
-      case 'UNI':
-        // Chainlink: UNI/USD
-        return getChainlinkFeedPrice('0xdf0fb4e4f928d2dcb76f438575fdd8682386e13c', PolygonHttpsWeb3Provider);
-      case 'SUSHI':
-        // Chainlink: SUSHI/USD
-        return getChainlinkFeedPrice('0x49b0c695039243bbfeb8ecd054eb70061fd54aa0', PolygonHttpsWeb3Provider);
-      case 'USDC':
-        // Chainlink: USDC/USD
-        return getChainlinkFeedPrice('0xfe4a8cc5b5b2366c1b58bea3858e81843581b2f7', PolygonHttpsWeb3Provider);
-      case 'USDT':
-        // Chainlink: USDT/USD
-        return getChainlinkFeedPrice('0x0a6513e40db6eb1b165753ad52e80663aea50545', PolygonHttpsWeb3Provider);
-      default:
-        return getPriceFor(symbol, MainnetNetwork);
-    }
-  } else if (network === AvalancheNetwork || network === AvalancheTestnetNetwork) {
-    switch (symbol.toUpperCase()) {
-      case 'BTC':
-      case 'WBTC':
-        // Chainlink: BTC/USD
-        return getChainlinkFeedPrice('0x2779d32d5166baaa2b2b658333ba7e6ec0c65743', AvalancheHttpsWeb3Provider);
-      case 'ETH':
-      case 'WETH':
-        // Chainlink: ETH/USD
-        return getChainlinkFeedPrice('0x976b3d034e162d8bd72d6b9c989d545b839003b0', AvalancheHttpsWeb3Provider);
-      case 'AVAX':
-      case 'WAVAX':
-        // Chainlink: AVAX/USD
-        return getChainlinkFeedPrice('0x0A77230d17318075983913bC2145DB16C7366156', AvalancheHttpsWeb3Provider);
-      case 'LINK':
-        // Chainlink: LINK/USD
-        return getChainlinkFeedPrice('0x49ccd9ca821efeab2b98c60dc60f518e765ede9a', AvalancheHttpsWeb3Provider);
-      case 'AAVE':
-      case 'STKAAVE':
-        // Chainlink: AAVE/USD
-        return getChainlinkFeedPrice('0x3ca13391e9fb38a75330fb28f8cc2eb3d9ceceed', AvalancheHttpsWeb3Provider);
-      case 'USDC':
-        // Chainlink: USDC/USD
-        return getChainlinkFeedPrice('0xf096872672f44d6eba71458d74fe67f9a77a23b9', AvalancheHttpsWeb3Provider);
-      case 'USDT':
-        // Chainlink: USDT/USD
-        return getChainlinkFeedPrice('0xebe676ee90fe1112671f19b6b7459bc678b67e8a', AvalancheHttpsWeb3Provider);
-      default:
-        return getPriceFor(symbol, MainnetNetwork);
-    }
-  } else if (network === BinanceNetwork || network === BinanceTestnetNetwork) {
-    switch (symbol.toUpperCase()) {
-      case 'BTC':
-      case 'WBTC':
-        // Chainlink: BTC/USD
-        return getChainlinkFeedPrice('0x264990fbd0a4796a3e3d8e37c4d5f87a3aca5ebf', BinanceHttpsWeb3Provider);
-      case 'ETH':
-      case 'WETH':
-        // Chainlink: ETH/USD
-        return getChainlinkFeedPrice('0x9ef1b8c0e4f7dc8bf5719ea496883dc6401d5b2e', BinanceHttpsWeb3Provider);
-      case 'BNB':
-        // Chainlink: BNB/USD
-        return getChainlinkFeedPrice('0x0567f2323251f0aab15c8dfb1967e4e8a7d42aee', BinanceHttpsWeb3Provider);
-      case 'CAKE':
-        // Chainlink: CAKE/USD
-        return getChainlinkFeedPrice('0xb6064ed41d4f67e353768aa239ca86f4f73665a1', BinanceHttpsWeb3Provider);
-      case 'LINK':
-        // Chainlink: LINK/USD
-        return getChainlinkFeedPrice('0xca236e327f629f9fc2c30a4e95775ebf0b89fac8', BinanceHttpsWeb3Provider);
-      case 'AAVE':
-      case 'STKAAVE':
-        // Chainlink: AAVE/USD
-        return getChainlinkFeedPrice('0xa8357bf572460fc40f4b0acacbb2a6a61c89f475', BinanceHttpsWeb3Provider);
-      case 'MATIC':
-      case 'WMATIC':
-        // Chainlink: MATIC/USD
-        return getChainlinkFeedPrice('0x7ca57b0ca6367191c94c8914d7df09a57655905f', BinanceHttpsWeb3Provider);
-      case 'UNI':
-        // Chainlink: UNI/USD
-        return getChainlinkFeedPrice('0xb57f259e7c24e56a1da00f66b55a5640d9f9e7e4', BinanceHttpsWeb3Provider);
-      case 'USDC':
-        // Chainlink: USDC/USD
-        return getChainlinkFeedPrice('0x51597f405303c4377e36123cbc172b13269ea163', BinanceHttpsWeb3Provider);
-      case 'USDT':
-        // Chainlink: USDT/USD
-        return getChainlinkFeedPrice('0xb97ad0e74fa7d920791e90258a6e2085088b4320', BinanceHttpsWeb3Provider);
-      default:
-        return getPriceFor(symbol, MainnetNetwork);
-    }
-  } else if (network === ArbitrumNetwork || network === ArbitrumTestnetNetwork) {
-    switch (symbol.toUpperCase()) {
-      case 'SUSHI':
-        // Chainlink: SUSHI/USD
-        return getChainlinkFeedPrice('0xb2a8ba74cbca38508ba1632761b56c897060147c', ArbitrumHttpsWeb3Provider);
-      default:
-        return getPriceFor(symbol, MainnetNetwork);
     }
   }
 
@@ -657,36 +542,6 @@ const TokensProvider: FC = props => {
 
   const getToken = useCallback(
     (symbol: string | undefined, network: Web3Network = activeNetwork): TokenType | undefined => {
-      if (network === AvalancheNetwork || network === AvalancheTestnetNetwork) {
-        switch (symbol?.toUpperCase()) {
-          case 'WBTC.E':
-            symbol = Tokens.WBTC;
-            break;
-          case 'WETH.E':
-            symbol = Tokens.WETH;
-            break;
-          case 'AAVE.E':
-            symbol = Tokens.AAVE;
-            break;
-          default:
-            break;
-        }
-      } else if (network === BinanceNetwork || network === BinanceTestnetNetwork) {
-        switch (symbol?.toUpperCase()) {
-          case 'BTCB':
-            symbol = Tokens.WBTC;
-            break;
-          case 'ETH':
-            symbol = Tokens.WETH;
-            break;
-          case 'WBNB':
-            symbol = Tokens.BNB;
-            break;
-          default:
-            break;
-        }
-      }
-
       return symbol ? tokensRef.current.get(symbol.toUpperCase()) : undefined;
     },
     [],

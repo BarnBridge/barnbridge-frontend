@@ -3,7 +3,6 @@ import { Route, Switch, useHistory, useRouteMatch } from 'react-router-dom';
 
 import { Tabs } from 'components/custom/tabs';
 
-import TreasuryFees from './treasury-fees';
 import TreasuryHoldings from './treasury-holdings';
 
 type RouteParams = {
@@ -41,13 +40,6 @@ const TreasuryView: FC = () => {
                   handleTabChange('holdings');
                 },
               },
-              {
-                id: 'fees',
-                children: 'Fees accrued',
-                onClick: () => {
-                  handleTabChange('fees');
-                },
-              },
             ]}
             size="small"
             activeKey={activeTab}
@@ -57,7 +49,6 @@ const TreasuryView: FC = () => {
       </div>
       <Switch>
         <Route path="/governance/treasury/holdings" exact component={TreasuryHoldings} />
-        <Route path="/governance/treasury/fees" exact component={TreasuryFees} />
       </Switch>
     </div>
   );

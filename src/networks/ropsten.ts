@@ -15,7 +15,7 @@ const EXPLORER_API_URL = 'https://api-ropsten.etherscan.io';
 export const ROPSTEN_CHAIN_ID = 3;
 
 export const RopstenConfig: NetworkConfig = {
-  title: 'BarnBridge ROSPTEN',
+  title: 'Swingby DAO',
   features: {
     yieldFarming: false,
     dao: true,

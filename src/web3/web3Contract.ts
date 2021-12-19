@@ -8,7 +8,7 @@ import { AbiItem } from 'web3-utils';
 import { getGasValue } from 'web3/utils';
 import EventEmitter from 'wolfy87-eventemitter';
 
-import { PolygonHttpsWeb3Provider, WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
+import { WEB3_ERROR_VALUE } from 'components/providers/web3Provider';
 
 export class AbiTuple {
   items: string[] = [];
@@ -136,10 +136,10 @@ class BatchRequestManager {
       let extractCount = 0;
       let delay = 0;
 
-      if (provider === PolygonHttpsWeb3Provider) {
-        extractCount = 20;
-        delay = 250;
-      }
+      // if (provider === PolygonHttpsWeb3Provider) {
+      //   extractCount = 20;
+      //   delay = 250;
+      // }
 
       state.busy = true;
 
