@@ -9,7 +9,7 @@
     "clean": "rimraf build/",
     "prebuild": "npm run clean",
     "build": "GENERATE_SOURCEMAP=false node ./scripts/build-non-split.js",
-    "build:prod": "react-scripts build",
+    "build:prod": "react-scripts build && cp vercel.json ./build",
     "start": "react-scripts start",
     "start:alpha": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.alpha.local",
     "start:prod": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.production.local",
@@ -23,7 +23,7 @@
     "deploy-storybook": "storybook-to-ghpages"
   },
   "engines": {
-    "node": "> 12.x",
+    "node": "> 14.x",
     "npm": "> 6.x"
   },
   "husky": {
@@ -180,7 +180,7 @@
     "node-sass": "5.0.0",
     "prettier": "2.3.2",
     "prettier-plugin-import-sort": "0.0.7",
-    "react-scripts": "4.0.3",
+    "react-scripts": "^4.0.3",
     "rewire": "5.0.0",
     "rimraf": "3.0.2",
     "source-map-explorer": "2.5.2",
