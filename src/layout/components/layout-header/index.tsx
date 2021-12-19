@@ -265,7 +265,7 @@ const WalletAction: React.FC = () => {
           </div>
         }
         trigger="click">
-        <Button variation="primary">Connecting...</Button>
+        <Button size="small" variation="primary">Connecting...</Button>
       </Popover>
     );
   }

@@ -42,7 +42,7 @@ const VotingHeader: React.FC = () => {
 
   const { toClaim } = daoCtx.daoReward;
   const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
-  const { votingPower, userLockedUntil } = daoCtx.daoBarn;
+  const { votingPower, userLockedUntil, balance: myStakedBalance } = daoCtx.daoBarn;
   const [multiplier, setMultiplier] = useState(1);
 
   useEffect(() => {
@@ -75,6 +75,19 @@ const VotingHeader: React.FC = () => {
       <Text type="lb2" weight="semibold" color="blue" className="mb-16">
         My Voting Power
       </Text>
+      <Grid flow="row" gap={4}>
+        <Text type="p2" color="secondary">
+          Current staked
+        </Text>
+        <Grid flow="col" gap={16} align="center">
+          <Skeleton loading={myStakedBalance === undefined}>
+            <Text type="h3" weight="bold" color="primary">
+              {formatToken(myStakedBalance)}
+            </Text>
+          </Skeleton>
+          <TokenIcon name={projectToken.icon} />
+        </Grid>
+      </Grid>
       <Grid flow="col" gap={24} className={s.items}>
         <Grid flow="row" gap={4}>
           <Text type="p2" color="secondary">
@@ -98,19 +111,7 @@ const VotingHeader: React.FC = () => {
           </Grid>
         </Grid>
         <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
-            Bond Balance
-          </Text>
-          <Grid flow="col" gap={16} align="center">
-            <Skeleton loading={bondBalance === undefined}>
-              <Text type="h3" weight="bold" color="primary">
-                {formatToken(bondBalance)}
-              </Text>
-            </Skeleton>
-            <TokenIcon name={projectToken.icon} />
-          </Grid>
-        </Grid>
+
         <Divider type="vertical" />
         <Grid flow="row" gap={4}>
           <Text type="p2" color="secondary">
