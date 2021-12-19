@@ -5,6 +5,7 @@ import { Text } from 'components/custom/typography';
 import PortfolioDelegate from 'modules/governance/views/portfolio-view/portfolio-delegate';
 import PortfolioDeposit from 'modules/governance/views/portfolio-view/portfolio-deposit';
 import PortfolioLock from 'modules/governance/views/portfolio-view/portfolio-lock';
+import PortfolioStake from 'modules/governance/views/portfolio-view/portfolio-stake';
 import PortfolioWithdraw from 'modules/governance/views/portfolio-view/portfolio-withdraw';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -38,6 +39,11 @@ const PortfolioView: React.FC = () => {
                 to: '/governance/portfolio/lock',
               },
               {
+                id: 'stake',
+                children: 'Stake',
+                to: '/governance/portfolio/stake',
+              },
+              {
                 id: 'delegate',
                 children: 'Delegate',
                 to: '/governance/portfolio/delegate',
@@ -53,6 +59,7 @@ const PortfolioView: React.FC = () => {
         <Switch>
           <Route path="/governance/portfolio/deposit" component={PortfolioDeposit} />
           <Route path="/governance/portfolio/lock" component={PortfolioLock} />
+          <Route path="/governance/portfolio/stake" component={PortfolioStake} />
           <Route path="/governance/portfolio/delegate" component={PortfolioDelegate} />
           <Route path="/governance/portfolio/withdraw" component={PortfolioWithdraw} />
         </Switch>
