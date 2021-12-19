@@ -57,7 +57,7 @@ const LayoutView: React.FC = () => {
                   {[AvalancheNetwork, AvalancheTestnetNetwork, BinanceNetwork, BinanceTestnetNetwork].includes(
                     activeNetwork,
                   ) && <Redirect to="/smart-alpha" />}
-                  <Redirect from="/" to="/smart-alpha" />
+                  <Redirect from="/" to="/governance" />
                 </Switch>
               </Suspense>
             </ErrorBoundary>

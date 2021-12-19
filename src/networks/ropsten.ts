@@ -4,7 +4,7 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
+const RPC_KEY = 'f35c2a4f3d0941a38a3edb62ed10c847';
 const RPC_HTTPS_URL = `https://ropsten.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://ropsten.infura.io/ws/v3/${RPC_KEY}`;
 
@@ -25,7 +25,7 @@ export const RopstenConfig: NetworkConfig = {
     smartAlpha: false,
     gasFees: true,
     addBondToken: true,
-    smartAlphaKPIOptions: true,
+    smartAlphaKPIOptions: false,
   },
   wallets: {
     portisId: 'b0b0f776-bbf6-458c-a175-6483e0c452b7',
@@ -87,9 +87,9 @@ export const RopstenConfig: NetworkConfig = {
       bond: '0x82B568C2E5159ba20358aF425E92ac96345c9C9a',
     },
     dao: {
-      governance: '0x930e52B96320d7dBbfb6be458e5EE0Cd3E5E5Dac',
-      barn: '0x0DEc9fdb535eB45cef986F1129bb234578F8BD20',
-      reward: '0xc2d3B609EB967c72AfF4731Ca96375f26926B1F9',
+      governance: '0x034a13bb56304438d4aC389eE0e56D1697A2Ec04',
+      barn: '0xc950Fa60bD9CbC4D306Ce2A4405D1156F77f44B4',
+      reward: '0x00D09C9AD07010B9F32907DfCA70E2fBF5189AD8',
     },
     se: {
       ePoolPeriphery: '0x5fa08f7817844e38ee8f54a24b65f6dc1ae23785',
