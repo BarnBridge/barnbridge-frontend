@@ -8,16 +8,19 @@ export function useENS(address: string) {
   const RPC_HTTPS_URL = `https://mainnet.infura.io/v3/${RPC_KEY}`;
   const provider = new ethers.providers.JsonRpcProvider(RPC_HTTPS_URL);
   const [ensName, setENSName] = useState<string | null>(null);
+  const [ensAvatar, setENSAvatar] = useState<string | null>(null);
 
   useEffect(() => {
     const resolveENS = async () => {
       if (ethers.utils.isAddress(address)) {
         let ensName = await provider.lookupAddress(address);
+        let avatar = ensName ? await provider.getAvatar(ensName) : null;
         if (ensName) setENSName(ensName);
+        if (avatar) setENSAvatar(avatar);
       }
     };
     resolveENS();
   }, [address]);
 
-  return { ensName };
+  return { ensAvatar, ensName };
 }
