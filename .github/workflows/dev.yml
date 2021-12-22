@@ -53,27 +53,27 @@ jobs:
           name: dev-frontend
           path: build
 
-      - name: Notify Slack success
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01D16VJ84C
-          status: BUILD SUCCESSFUL
-          color: good
+#      - name: Notify Slack success
+#        if: success()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#        uses: voxmedia/github-action-slack-notify-build@v1
+#        with:
+#          message_id: ${{ steps.slack.outputs.message_id }}
+#          channel_id: C01D16VJ84C
+#          status: BUILD SUCCESSFUL
+#          color: good
 
-      - name: Notify Slack failure
-        if: failure()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: voxmedia/github-action-slack-notify-build@v1
-        with:
-          message_id: ${{ steps.slack.outputs.message_id }}
-          channel_id: C01D16VJ84C
-          status: BUILD FAILED
-          color: danger
+#      - name: Notify Slack failure
+#        if: failure()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#        uses: voxmedia/github-action-slack-notify-build@v1
+#        with:
+#          message_id: ${{ steps.slack.outputs.message_id }}
+#          channel_id: C01D16VJ84C
+#          status: BUILD FAILED
+#          color: danger
 
   deploy:
     needs: build
