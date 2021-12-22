@@ -13,6 +13,7 @@ import classnames from 'classnames';
 
 import Alert from 'components/antd/alert';
 import { Form, FormItem, useForm } from 'components/custom/form';
+import { Input } from 'components/input';
 import Icon from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
 import DatePicker from 'components/antd/datepicker';
@@ -40,6 +41,21 @@ const DURATION_OPTIONS: string[] = [
   DURATION_1_YEAR,
 ];
 
+const NETWORK: string[] = [
+  "BTC_ETH",
+  "BTC_BSC",
+]
+
+function getNetworkID(network: string): number {
+  if (network == "BTC_ETH") {
+    return 1;
+  }
+  if (network == "BTC_BSC") {
+    return 2;
+  }
+  return 0;
+}
+
 function getLockEndDate(startDate: Date, duration: string): Date | undefined {
   switch (duration) {
     case DURATION_1_WEEK:
@@ -60,6 +76,8 @@ function getLockEndDate(startDate: Date, duration: string): Date | undefined {
 type FormType = {
   amount: string;
   lockEndDate: Date | undefined;
+  p2pKey: string;
+  dataType: number;
 };
 
 const PortfolioDeposit: FC = () => {
@@ -107,6 +125,20 @@ const PortfolioDeposit: FC = () => {
           min: 'Should be a positive value.',
         },
       },
+      p2pkey: {
+        rules: {
+          required: false,
+        },
+        messages: {
+        },
+      },
+      dataType: {
+        rules: {
+          required: false,
+        },
+        messages: {
+        },
+      },
     },
     onSubmit: () => {
       if (isLocked) {
@@ -132,6 +164,8 @@ const PortfolioDeposit: FC = () => {
       }
       form.reset({
         lockEndDate,
+        p2pKey: "",
+        dataType: 1,
       });
     } catch { }
 
@@ -144,8 +178,10 @@ const PortfolioDeposit: FC = () => {
 
   const { formState, watch } = form;
   const amount = watch('amount');
-  const lockEndDate = watch('lockEndDate');
   const bnAmount = BigNumber.from(amount);
+  const lockEndDate = watch('lockEndDate');
+  const p2pKey = watch('p2pKey')
+  const dataType = watch('dataType')
 
   const isEnabled = useMemo(() => barnAllowance?.gt(BigNumber.ZERO) ?? false, [barnAllowance]);
   const canSubmit = isEnabled && formState.isDirty && formState.isValid && !isSubmitting;
@@ -296,6 +332,55 @@ const PortfolioDeposit: FC = () => {
             </div>
           )}
         </FormItem>
+        <FormItem
+          name="dataType"
+          label="DataType (optional)"
+          labelProps={{ hint: 'What DataType for your node. 1 => BTC_ETH network, 2 => BTC_BSC network' }}
+          className="flex-grow">
+          {({ field }) => (<>
+            <div className="flexbox-grid" style={{ '--gap': '8px' } as React.CSSProperties}>
+              {NETWORK.map(item => (
+                <button
+                  key={item}
+                  type="button"
+                  className={classnames(
+                    'flex justify-center ph-24 pv-16 button-ghost-monochrome'
+                  )}
+                  onClick={() => {
+                    form.updateValue('dataType', getNetworkID(item));
+                  }}>
+                  {item}
+                </button>
+              ))}
+            </div>
+            <Input
+              placeholder="0"
+              dimension="large"
+              className="flex-grow"
+              disabled={isSubmitting}
+              value={dataType}
+              onChange={field.onChange}
+            />
+          </>
+          )}
+        </FormItem>
+        <FormItem
+          name="p2pKey"
+          label="Node P2Pkey (optional)"
+          labelProps={{ hint: 'What is p2p key (32bytes hexstring) is on your node' }}
+          className="flex-grow">
+          {({ field }) => (
+            <Input
+              placeholder="0x0"
+              dimension="large"
+              className="flex-grow"
+              disabled={isSubmitting}
+              value={p2pKey}
+              onChange={field.onChange}
+            />
+          )}
+        </FormItem>
+
         <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
         <div className="flex flow-col col-gap-12 align-center justify-end">
           {!isEnabled && (
@@ -309,7 +394,7 @@ const PortfolioDeposit: FC = () => {
           )}
           <button type="submit" className="button-primary align-self-start" disabled={!canSubmit}>
             {isSubmitting && <Spinner className="mr-4" />}
-            Deposit
+            Timelock
           </button>
         </div>
       </Form>
