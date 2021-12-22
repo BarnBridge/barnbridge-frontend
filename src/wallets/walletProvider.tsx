@@ -6,6 +6,7 @@ import { UnsupportedChainIdError, Web3ReactProvider, useWeb3React } from '@web3-
 import { NoEthereumProviderError } from '@web3-react/injected-connector';
 import * as Antd from 'antd';
 import BigNumber from 'bignumber.js';
+import { ethers } from 'ethers';
 import Web3 from 'web3';
 import EventEmitter from 'wolfy87-eventemitter';
 
@@ -47,6 +48,10 @@ type WalletContextType = {
   connect: (connector: BaseWalletConfig, args?: Record<string, any>) => Promise<void>;
   disconnect: () => void;
   event: EventEmitter;
+  ens: {
+    name: string | undefined;
+    avatar: string | undefined;
+  };
 };
 
 const Context = createContext<WalletContextType>(InvariantContext('Web3WalletProvider'));
@@ -67,11 +72,13 @@ const Web3WalletProvider: FC = props => {
   const event = useMemo(() => new EventEmitter(), []);
 
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [connecting, setConnecting] = useState<BaseWalletConfig | undefined>(undefined);
+  const [connecting, setConnecting] = useState<BaseWalletConfig | undefined>();
   const connectingRef = useRef<BaseWalletConfig | undefined>(connecting);
   connectingRef.current = connecting;
   const [activeMeta, setActiveMeta] = useState<BaseWalletConfig | undefined>();
   const [ethBalance, setEthBalance] = useState<BigNumber | undefined>();
+  const [ensName, setENSName] = useState<string | undefined>();
+  const [ensAvatar, setENSAvatar] = useState<string | undefined>();
 
   const [connectWalletModal, setConnectWalletModal] = useState<boolean>(false);
   const [unsupportedChainModal, setUnsupportedChainModal] = useState<boolean>(false);
@@ -142,19 +149,40 @@ const Web3WalletProvider: FC = props => {
   );
 
   useEffect(() => {
-    if (web3React.account) {
+    setEthBalance(undefined);
+    setENSName(undefined);
+    setENSAvatar(undefined);
+
+    const account = web3React.account;
+
+    if (account && Web3.utils.isAddress(account)) {
       const ethWeb3 = new Web3(web3React.library);
 
       ethWeb3.eth
-        .getBalance(web3React.account)
+        .getBalance(account)
         .then(value => {
           setEthBalance(value ? new BigNumber(value) : undefined);
         })
         .catch(Error);
-    } else {
-      setEthBalance(undefined);
+
+      const provider = new ethers.providers.JsonRpcProvider(activeNetwork.rpc.httpsUrl);
+      provider
+        .lookupAddress(account)
+        .then(value => {
+          setENSName(value ?? undefined);
+
+          if (value) {
+            provider
+              .getAvatar(value ?? '')
+              .then(value => {
+                setENSAvatar(value ?? undefined);
+              })
+              .catch(Error);
+          }
+        })
+        .catch(Error);
     }
-  }, [web3React.account]);
+  }, [web3React.account, activeNetwork]);
 
   useEffect(() => {
     (async () => {
@@ -191,6 +219,10 @@ const Web3WalletProvider: FC = props => {
     connect,
     disconnect,
     event,
+    ens: {
+      name: ensName,
+      avatar: ensAvatar,
+    },
   };
 
   return (
