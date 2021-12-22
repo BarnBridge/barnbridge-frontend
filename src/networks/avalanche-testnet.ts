@@ -39,6 +39,7 @@ export const AvalancheDevConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
     ausdc: '',
     ausdt: '',
@@ -65,6 +66,7 @@ export const AvalancheDevConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
   },
   contracts: {

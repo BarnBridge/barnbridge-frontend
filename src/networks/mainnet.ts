@@ -54,6 +54,7 @@ export const MainnetConfig: NetworkConfig = {
     dai: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     rai: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
     stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
+    floki: '0x43f11c02439e2736800433b4594994bd43cd066d',
     wmatic: '',
     ausdc: '0xBcca60bB61934080951369a648Fb03DF4F96263C',
     ausdt: '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
@@ -80,6 +81,7 @@ export const MainnetConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    floki: '0xfbafc1f5b1b37cc0763780453d1ea635520708f2',
     wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {
