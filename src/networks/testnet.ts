@@ -51,6 +51,7 @@ export const TestnetConfig: NetworkConfig = {
     dai: '0xEa8BE82DF1519D4a25E2539bcA0342a1203CD591',
     rai: '',
     stkaave: '0xf2fbf9a6710afda1c4aab2e922de9d69e0c97fd2',
+    floki: '',
     wmatic: '',
     ausdc: '0xe12AFeC5aa12Cf614678f9bFeeB98cA9Bb95b5B0',
     ausdt: '0xFF3c8bc103682FA918c954E84F5056aB4DD5189d',
@@ -77,6 +78,7 @@ export const TestnetConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    floki: '',
     wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {

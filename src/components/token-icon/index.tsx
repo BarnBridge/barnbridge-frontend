@@ -40,6 +40,7 @@ export type TokenIconNames =
   | 'balancer'
   | 'uma'
   | 'dpi'
+  | 'floki'
   | 'all'
   | 'warn-circle';
 
