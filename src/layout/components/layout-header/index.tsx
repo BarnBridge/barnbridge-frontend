@@ -19,6 +19,7 @@ import { useNotifications } from 'components/providers/notificationsProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
+import { useENS } from 'hooks/useENS';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
 import Notifications from 'wallets/components/notifications';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
@@ -222,6 +223,7 @@ const NotificationsAction: React.FC = () => {
 const WalletAction: React.FC = () => {
   const { activeNetwork } = useNetwork();
   const wallet = useWallet();
+  const { ensAvatar, ensName } = useENS(wallet.account || '');
 
   if (wallet.connecting) {
     return (
@@ -231,10 +233,21 @@ const WalletAction: React.FC = () => {
         content={
           <div className="card">
             <div className="card-header flex align-center">
-              <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+              {ensAvatar ? (
+                <img
+                  width={40}
+                  height={40}
+                  className="mr-16"
+                  style={{ borderRadius: '3px' }}
+                  src={ensAvatar}
+                  alt={ensAvatar}
+                />
+              ) : (
+                <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+              )}
               <ExplorerAddressLink address={wallet.account}>
                 <Text type="p1" weight="semibold" color="blue">
-                  {shortenAddr(wallet.account, 8, 8)}
+                  {ensName || shortenAddr(wallet.account, 8, 8)}
                 </Text>
               </ExplorerAddressLink>
             </div>
@@ -290,10 +303,21 @@ const WalletAction: React.FC = () => {
       content={
         <div className="card">
           <div className="card-header flex align-center">
-            <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+            {ensAvatar ? (
+              <img
+                width={40}
+                height={40}
+                className="mr-16"
+                style={{ borderRadius: '3px' }}
+                src={ensAvatar}
+                alt={ensAvatar}
+              />
+            ) : (
+              <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+            )}
             <ExplorerAddressLink address={wallet.account}>
               <Text type="p1" weight="semibold" color="blue">
-                {shortenAddr(wallet.account, 8, 8)}
+                {ensName || shortenAddr(wallet.account, 8, 8)}
               </Text>
             </ExplorerAddressLink>
           </div>
@@ -336,8 +360,19 @@ const WalletAction: React.FC = () => {
         </div>
       }>
       <button type="button" className={s.actionButton}>
-        <Identicon address={wallet.account} width={24} height={24} className="mr-8" />
-        {shortenAddr(wallet.account, 4, 3)}
+        {ensAvatar ? (
+          <img
+            width={24}
+            height={24}
+            className="mr-8"
+            style={{ borderRadius: '3px' }}
+            src={ensAvatar}
+            alt={ensAvatar}
+          />
+        ) : (
+          <Identicon address={wallet.account} width={24} height={24} className="mr-8" />
+        )}
+        {ensName || shortenAddr(wallet.account, 4, 3)}
       </button>
     </Popover>
   );
