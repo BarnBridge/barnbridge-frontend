@@ -49,6 +49,7 @@ export const PolygonConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '',
     wmatic: '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270',
     ausdc: '',
     ausdt: '',
@@ -75,6 +76,7 @@ export const PolygonConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    floki: '',
     wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {

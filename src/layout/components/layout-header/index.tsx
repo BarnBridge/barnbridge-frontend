@@ -231,10 +231,21 @@ const WalletAction: React.FC = () => {
         content={
           <div className="card">
             <div className="card-header flex align-center">
-              <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+              {wallet.ens.avatar ? (
+                <img
+                  width={40}
+                  height={40}
+                  className="mr-16"
+                  style={{ borderRadius: '3px' }}
+                  src={wallet.ens.avatar}
+                  alt={wallet.ens.avatar}
+                />
+              ) : (
+                <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+              )}
               <ExplorerAddressLink address={wallet.account}>
                 <Text type="p1" weight="semibold" color="blue">
-                  {shortenAddr(wallet.account, 8, 8)}
+                  {wallet.ens.name || shortenAddr(wallet.account, 8, 8)}
                 </Text>
               </ExplorerAddressLink>
             </div>
@@ -290,10 +301,21 @@ const WalletAction: React.FC = () => {
       content={
         <div className="card">
           <div className="card-header flex align-center">
-            <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+            {wallet.ens.avatar ? (
+              <img
+                width={40}
+                height={40}
+                className="mr-16"
+                style={{ borderRadius: '3px' }}
+                src={wallet.ens.avatar}
+                alt={wallet.ens.avatar}
+              />
+            ) : (
+              <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
+            )}
             <ExplorerAddressLink address={wallet.account}>
               <Text type="p1" weight="semibold" color="blue">
-                {shortenAddr(wallet.account, 8, 8)}
+                {wallet.ens.name || shortenAddr(wallet.account, 8, 8)}
               </Text>
             </ExplorerAddressLink>
           </div>
@@ -336,8 +358,19 @@ const WalletAction: React.FC = () => {
         </div>
       }>
       <button type="button" className={s.actionButton}>
-        <Identicon address={wallet.account} width={24} height={24} className="mr-8" />
-        {shortenAddr(wallet.account, 4, 3)}
+        {wallet.ens.avatar ? (
+          <img
+            width={24}
+            height={24}
+            className="mr-8"
+            style={{ borderRadius: '3px' }}
+            src={wallet.ens.avatar}
+            alt={wallet.ens.avatar}
+          />
+        ) : (
+          <Identicon address={wallet.account} width={24} height={24} className="mr-8" />
+        )}
+        {wallet.ens.name || shortenAddr(wallet.account, 4, 3)}
       </button>
     </Popover>
   );

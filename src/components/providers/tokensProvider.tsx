@@ -57,6 +57,7 @@ export enum Tokens {
   CAKE = 'CAKE',
   AAVE = 'AAVE',
   DPI = 'DPI',
+  FLOKI = 'FLOKI',
 }
 
 export type BaseTokenType = {
@@ -238,6 +239,13 @@ const DPI: BaseTokenType = {
   name: 'DeFiPulse Index',
   decimals: 18,
   icon: 'dpi',
+};
+
+const FLOKI: BaseTokenType = {
+  symbol: Tokens.FLOKI,
+  name: 'FLOKI',
+  decimals: 9,
+  icon: 'floki',
 };
 
 export const ProjectToken: BaseTokenType & {
@@ -426,6 +434,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'DPI':
         // Chainlink: DPI/USD
         return getChainlinkFeedPrice('0x68f1b8317c19ff02fb68a8476c1d3f9fc5139c0a', MainnetHttpsWeb3Provider);
+      case 'FLOKI':
+        // Chainlink: FLOKI/USD
+        return getChainlinkFeedPrice('0xfbafc1f5b1b37cc0763780453d1ea635520708f2', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
         return getGeckoPrice('gemini-dollar');
@@ -591,6 +602,7 @@ const ALL_TOKENS: BaseTokenType[] = [
   CAKE,
   FEI,
   DPI,
+  FLOKI,
 ];
 
 const ALL_ASSETS: BaseAssetType[] = [BTC, ETH, USD];
@@ -651,7 +663,8 @@ const TokensProvider: FC = props => {
       }
 
       Array.from(tokensRef.current).forEach(([k, t]) => {
-        console.log(`[New Token Price] ${t.symbol} = $${t.price?.toFixed(3) ?? '-'}`);
+        const price = t.price?.gte(0.001) ? t.price?.toFixed(3) : t.price?.toNumber();
+        console.log(`[New Token Price] ${t.symbol} = $${price ?? '-'}`);
       });
     })();
   }, []);
