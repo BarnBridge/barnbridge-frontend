@@ -24,8 +24,8 @@ import { UseLeftTime } from 'hooks/useLeftTime';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { useDAO } from 'modules/governance/components/dao-provider';
-import WalletDepositConfirmModal from 'modules/governance/views/portfolio-view/portfolio-deposit/components/wallet-deposit-confirm-modal';
 import { getFormattedDuration } from 'utils';
+import { useWallet } from 'wallets/walletProvider';
 
 const DURATION_1_WEEK = '1 w';
 const DURATION_1_MONTH = '1 mo';
@@ -84,12 +84,12 @@ const PortfolioDeposit: FC = () => {
   const config = useConfig();
   const { projectToken } = useKnownTokens();
   const daoCtx = useDAO();
+  const wallet = useWallet()
 
   const [isLoading, setLoading] = useState(false);
   const [isEnabling, setEnabling] = useState(false);
   const [isSubmitting, setSubmitting] = useState(false);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
-  const [stakeConfirmModal, showStakeConfirmModal] = useState(false);
 
   const { balance: stakedBalance, userLockedUntil } = daoCtx.daoBarn;
   const projectTokenContract = projectToken.contract as Erc20Contract;
@@ -142,14 +142,21 @@ const PortfolioDeposit: FC = () => {
     },
     onSubmit: () => {
       if (isLocked) {
-        showStakeConfirmModal(true);
+        setConfirmModalVisible(false);
         return;
       }
-
       setConfirmModalVisible(true);
     },
   });
-
+  async function loadTimelock(type: number) {
+    if (!wallet.account)
+      return
+    console.log(wallet.account, type)
+    const timelockData = await daoCtx.daoBarn.checkTimeLock(wallet.account, type);
+    console.log(timelockData)
+    form.updateValue('dataType', type);
+    form.updateValue('p2pKey', timelockData.data.slice(2))
+  }
   async function loadData() {
     setLoading(true);
 
@@ -179,6 +186,7 @@ const PortfolioDeposit: FC = () => {
   const { formState, watch } = form;
   const amount = watch('amount');
   const bnAmount = BigNumber.from(amount);
+  const nextStakeBalance = stakedBalance?.plus(amount)
   const lockEndDate = watch('lockEndDate');
   const p2pKey = watch('p2pKey')
   const dataType = watch('dataType')
@@ -211,13 +219,16 @@ const PortfolioDeposit: FC = () => {
       const depositAmount = amount.scaleBy(projectToken.decimals);
 
       if (depositAmount && lockUntil) {
-        await daoCtx.daoBarn.deposit(depositAmount, gasPrice);
-
         const timestamp = getUnixTime(lockUntil);
 
         if (timestamp && timestamp > 0) {
           // todo:
-          // await daoCtx.daoBarn.addOrAdjusttimelock(depositAmount, timestamp, type, p2pkey, gasPrice);
+          await daoCtx.daoBarn.addOrAdjusttimelock(
+            depositAmount,
+            timestamp,
+            type,
+            "0x" + p2pkey, // 0x + hexstirng
+            gasPrice);
           await loadData();
         }
       }
@@ -236,9 +247,8 @@ const PortfolioDeposit: FC = () => {
     if (!bnAmount) {
       return;
     }
-
     setConfirmModalVisible(false);
-    await doDepositAndLock(bnAmount, lockEndDate, 2, "0x831f112", gasPrice);
+    await doDepositAndLock(bnAmount, lockEndDate, dataType, p2pKey, gasPrice);
   }
 
   if (isLoading) {
@@ -347,6 +357,7 @@ const PortfolioDeposit: FC = () => {
                     'flex justify-center ph-24 pv-16 button-ghost-monochrome'
                   )}
                   onClick={() => {
+                    loadTimelock(getNetworkID(item))
                     form.updateValue('dataType', getNetworkID(item));
                   }}>
                   {item}
@@ -371,7 +382,7 @@ const PortfolioDeposit: FC = () => {
           className="flex-grow">
           {({ field }) => (
             <Input
-              placeholder="0x0"
+              placeholder="18c9c5..."
               dimension="large"
               className="flex-grow"
               disabled={isSubmitting}
@@ -398,40 +409,29 @@ const PortfolioDeposit: FC = () => {
           </button>
         </div>
       </Form>
-
-      {
-        stakeConfirmModal && (
-          <WalletDepositConfirmModal
-            deposit={bnAmount}
-            lockDuration={userLockedUntil}
-            onCancel={() => showStakeConfirmModal(false)}
-            onOk={() => {
-              showStakeConfirmModal(false);
-              // return handleSubmit();
-            }}
-          />
-        )
-      }
       {
         confirmModalVisible && (
           <TxConfirmModal
-            title="Confirm deposit"
+            title="Are you sure you want to lock your balance?"
             header={
-              <div className="container-box flex flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
-                  Deposit amount
+              <div className="flex flow-row row-gap-16">
+                <Text type="p2" weight="bold" color="secondary">
+                  You are about to lock{' '}
+                  <span className="primary-color">
+                    {formatToken(nextStakeBalance)} {projectToken.symbol}
+                  </span>{' '}
+                  for{' '}
+                  <span className="primary-color">{getFormattedDuration(Date.now(), lockEndDate?.valueOf() ?? 0)}</span>.
+                  You cannot undo this or partially lock your balance. Locked tokens will be unavailable for withdrawal
+                  until the lock timer ends. All future deposits you make will be locked for the same time.
                 </Text>
-                <div className="flex flow-col col-gap-8 align-center">
-                  <Text type="p1" weight="bold" color="primary">
-                    {formatToken(bnAmount, {
-                      decimals: projectToken.decimals,
-                    })}
-                  </Text>
-                  <TokenIcon name={projectToken.icon as TokenIconNames} />
-                </div>
+                <Text type="p2" weight="bold" color="primary">
+                  The multiplier you get for locking tokens only applies to your voting power, it does not earn more
+                  rewards.
+                </Text>
               </div>
             }
-            submitText="Confirm your deposit"
+            submitText="Lock balance"
             onCancel={handleCancel}
             onConfirm={({ gasPrice }) => handleConfirm(gasPrice)}
           />

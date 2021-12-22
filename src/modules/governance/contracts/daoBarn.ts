@@ -2,6 +2,13 @@ import BigNumber from 'bignumber.js';
 import { AbiItem } from 'web3-utils';
 import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
+export type Timelock = {
+  amount: number;
+  expiry: number;
+  data: string;
+};
+
+
 const DaoBarnABI: AbiItem[] = [
   // call
   createAbiItem('bondStaked', [], ['uint256']),
@@ -13,14 +20,15 @@ const DaoBarnABI: AbiItem[] = [
   createAbiItem('bondStakedAtTs', ['uint256'], ['uint256']),
   createAbiItem('votingPowerAtTs', ['address', 'uint256'], ['uint256']),
   createAbiItem('multiplierAtTs', ['address', 'uint256'], ['uint256']),
+  createAbiItem('checkTimeLock', ['address', 'uint8'], ['uint256', 'uint256', 'bytes32']),
   // send
   createAbiItem('deposit', ['uint256'], []),
   createAbiItem('withdraw', ['uint256'], []),
+  createAbiItem('addOrAdjusttimelock', ['uint256', 'uint256', 'uint8', 'bytes32'], []),
   createAbiItem('delegate', ['address'], []),
   createAbiItem('stopDelegate', [], []),
   createAbiItem('lock', ['uint256'], []),
 ];
-
 class DaoBarnContract extends Web3Contract {
   constructor(address: string) {
     super(DaoBarnABI, address, 'DAO Barn');
@@ -43,6 +51,7 @@ class DaoBarnContract extends Web3Contract {
   userLockedUntil?: number;
   delegatedPower?: BigNumber;
   userDelegatedTo?: string;
+
 
   // computed data
   get isUserLocked(): boolean {
@@ -92,6 +101,14 @@ class DaoBarnContract extends Web3Contract {
     return this.call('votingPowerAtTs', [address, timestamp]).then(value => new BigNumber(value).unscaleBy(18)!); /// TODO: re-check
   }
 
+  checkTimeLock(address: string, dataType: number): Promise<Timelock> {
+    return this.call('checkTimeLock', [address, dataType]).then(value => ({
+      amount: new BigNumber(value[0]).unscaleBy(18)!.toNumber(),
+      expiry: Number(value[1]),
+      data: String(value[2]),
+    }));
+  }
+
   deposit(amount: BigNumber, gasPrice?: number): Promise<void> {
     return this.send('deposit', [amount], {}, gasPrice);
   }
@@ -110,6 +127,10 @@ class DaoBarnContract extends Web3Contract {
 
   lock(timestamp: number, gasPrice?: number): Promise<void> {
     return this.send('lock', [timestamp], {}, gasPrice);
+  }
+
+  addOrAdjusttimelock(amount: BigNumber, timestamp: number, dataType: number, data: string, gasPrice?: number): Promise<void> {
+    return this.send('addOrAdjusttimelock', [amount, timestamp, dataType, data], {}, gasPrice);
   }
 }
 

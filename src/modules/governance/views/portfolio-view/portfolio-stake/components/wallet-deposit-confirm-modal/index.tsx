@@ -7,19 +7,16 @@ import Modal, { ModalProps } from 'components/antd/modal';
 import Grid from 'components/custom/grid';
 import Icon from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
-import { useKnownTokens } from 'components/providers/knownTokensProvider';
 
 import { getFormattedDuration } from 'utils';
 
-export type WalletDepositConfirmModalProps = ModalProps & {
-  deposit?: BigNumber;
-  lockDuration?: number;
+export type StakeLockConfirmModalProps = ModalProps & {
+  balance?: BigNumber;
+  duration?: number;
 };
 
-const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = props => {
-  const { deposit, lockDuration, ...modalProps } = props;
-
-  const { projectToken } = useKnownTokens();
+const StakeLockConfirmModal: React.FC<StakeLockConfirmModalProps> = props => {
+  const { balance, duration, ...modalProps } = props;
 
   return (
     <Modal width={560} {...modalProps}>
@@ -28,16 +25,25 @@ const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = prop
           <Icon name="warning-outlined" width={40} height={40} color="red" />
           <Grid flow="row" gap={8}>
             <Text type="h3" weight="semibold" color="primary">
-              Are you sure you want to deposit?
+              Are you sure you want to lock your balance?
             </Text>
-
             <Text type="p2" weight="semibold" color="secondary">
-              You are about to deposit {formatToken(deposit)} ${projectToken.symbol}.
+              You are about to lock {formatToken(balance)} $BOND for {getFormattedDuration(0, duration)}.
               <br />
-              You have an active lock for {getFormattedDuration(0, lockDuration)}.
+              <br />
+              You cannot undo this or partially lock your balance.
+              <br />
+              <br />
+              Locked tokens will be unavailable for withdrawal until the lock timer ends.
+              <br />
+              <br />
+              All future deposits you make will be locked for the same time.
+              <br />
+              <br />
             </Text>
             <Text type="p2" weight="bold" color="primary">
-              All deposits you make until the lock timer ends will be locked for the same duration.
+              The multiplier you get for locking tokens only applies to your voting power, it does not earn more
+              rewards.
             </Text>
           </Grid>
         </Grid>
@@ -46,7 +52,7 @@ const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = prop
             Cancel
           </Button>
           <Button type="primary" onClick={modalProps.onOk}>
-            Deposit
+            Lock balance
           </Button>
         </Grid>
       </Grid>
@@ -54,4 +60,4 @@ const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = prop
   );
 };
 
-export default WalletDepositConfirmModal;
+export default StakeLockConfirmModal;

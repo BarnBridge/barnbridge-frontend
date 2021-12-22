@@ -87,9 +87,9 @@ export const RopstenConfig: NetworkConfig = {
       swingby: '0x82B568C2E5159ba20358aF425E92ac96345c9C9a',
     },
     dao: {
-      governance: '0x034a13bb56304438d4aC389eE0e56D1697A2Ec04',
-      barn: '0xc950Fa60bD9CbC4D306Ce2A4405D1156F77f44B4',
-      reward: '0x00D09C9AD07010B9F32907DfCA70E2fBF5189AD8',
+      governance: '0xb7EAB16427009dae4e063cb723c6a1450C874996',
+      barn: '0x9170f8d749dCF64467793325512a5e34B2B189Eb',
+      reward: '0xbCED010B27DC675c46F2526D21e4f1b01EAc669F',
     },
     se: {
       ePoolPeriphery: '0x5fa08f7817844e38ee8f54a24b65f6dc1ae23785',

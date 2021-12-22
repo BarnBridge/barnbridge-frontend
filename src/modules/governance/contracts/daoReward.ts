@@ -4,7 +4,7 @@ import Web3Contract, { createAbiItem } from 'web3/web3Contract';
 
 const DaoRewardABI: AbiItem[] = [
   // call
-  createAbiItem('pullFeature', [], ['address', 'uint256', 'uint256', 'uint256', 'uint256']),
+  createAbiItem('pullFeature', [], ['address', 'uint256', 'uint256', 'uint256']),
   // send
   createAbiItem('claim', [], ['uint256']),
 ];
@@ -35,7 +35,7 @@ class DaoRewardContract extends Web3Contract {
       return undefined;
     }
 
-    const { startTs, endTs, totalDuration, totalAmount } = this.pullFeature;
+    const { startTs, endTs, totalDuration } = this.pullFeature;
     const now = Date.now() / 1_000;
 
     if (startTs > now) {
@@ -43,10 +43,10 @@ class DaoRewardContract extends Web3Contract {
     }
 
     if (endTs <= now) {
-      return totalAmount;
+      return BigNumber.ZERO;
     }
 
-    return totalAmount.multipliedBy(now - startTs).div(totalDuration);
+    return BigNumber.ZERO
   }
 
   async loadCommonData(): Promise<void> {
