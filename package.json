@@ -173,6 +173,7 @@
     "@types/recharts": "1.8.19",
     "@types/wolfy87-eventemitter": "5.2.0",
     "dotenv": "10.0.0",
+    "eslint": "8.5.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-config-react-app": "7.0.0",
     "eslint-plugin-prettier": "3.4.0",
