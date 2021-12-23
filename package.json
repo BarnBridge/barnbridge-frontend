@@ -9,7 +9,7 @@
     "clean": "rimraf build/",
     "prebuild": "npm run clean",
     "build": "GENERATE_SOURCEMAP=false node ./scripts/build-non-split.js",
-    "build:prod": "SKIP_PREFLIGHT_CHECK=true REACT_APP_ENV=production react-scripts build && cp vercel.json ./build",
+    "build:prod": "SKIP_PREFLIGHT_CHECK=true REACT_APP_ENV=production npm run build && cp vercel.json ./build",
     "start": "react-scripts start",
     "start:alpha": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.alpha.local",
     "start:prod": "node -r dotenv/config ./node_modules/.bin/react-scripts start dotenv_config_path=.env.production.local",
