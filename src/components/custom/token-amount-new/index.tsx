@@ -37,6 +37,7 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
       className,
       classNameBefore,
       slider,
+      value,
       errors = [],
       decimals = 6,
       max: maxValue,
@@ -63,6 +64,7 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
               onChange={e => {
                 onChange(e.target.value);
               }}
+              value={value || ''}
               {...rest}
             />
             <div className={s.tokenAmountHint}>{secondary}</div>
@@ -91,7 +93,8 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
             min="0"
             max={max.toString()}
             step={1 / 10 ** Math.min(decimals, 6)}
-            value={rest.value ?? 0}
+            // value={rest.value ?? 0}
+            value={value ?? 0}
             disabled={rest.disabled || max.isZero()}
             onChange={e => {
               onChange(e.target.value);

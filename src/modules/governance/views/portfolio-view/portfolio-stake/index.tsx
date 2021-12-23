@@ -1,31 +1,32 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import TxConfirmModal from 'web3/components/tx-confirm-modal';
-import Erc20Contract from 'web3/erc20Contract';
-import { formatToken } from 'web3/utils';
+import classnames from 'classnames';
 import addDays from 'date-fns/addDays';
 import addMinutes from 'date-fns/addMinutes';
 import addMonths from 'date-fns/addMonths';
 import addYears from 'date-fns/addYears';
 import getUnixTime from 'date-fns/getUnixTime';
-import classnames from 'classnames';
+import TxConfirmModal from 'web3/components/tx-confirm-modal';
+import Erc20Contract from 'web3/erc20Contract';
+import { formatToken } from 'web3/utils';
 
 import Alert from 'components/antd/alert';
+import DatePicker from 'components/antd/datepicker';
 import { Form, FormItem, useForm } from 'components/custom/form';
-import { Input } from 'components/input';
 import Icon from 'components/custom/icon';
 import { Spinner } from 'components/custom/spinner';
-import DatePicker from 'components/antd/datepicker';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
+import { Input } from 'components/input';
 import { useConfig } from 'components/providers/configProvider';
-import { UseLeftTime } from 'hooks/useLeftTime';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
+import { UseLeftTime } from 'hooks/useLeftTime';
 import { useDAO } from 'modules/governance/components/dao-provider';
-import { getFormattedDuration } from 'utils';
 import { useWallet } from 'wallets/walletProvider';
+
+import { getFormattedDuration } from 'utils';
 
 const DURATION_1_WEEK = '1 w';
 const DURATION_1_MONTH = '1 mo';
@@ -41,16 +42,13 @@ const DURATION_OPTIONS: string[] = [
   DURATION_1_YEAR,
 ];
 
-const NETWORK: string[] = [
-  "BTC_ETH",
-  "BTC_BSC",
-]
+const NETWORK: string[] = ['BTC_ETH', 'BTC_BSC'];
 
 function getNetworkID(network: string): number {
-  if (network == "BTC_ETH") {
+  if (network === 'BTC_ETH') {
     return 1;
   }
-  if (network == "BTC_BSC") {
+  if (network === 'BTC_BSC') {
     return 2;
   }
   return 0;
@@ -84,7 +82,7 @@ const PortfolioDeposit: FC = () => {
   const config = useConfig();
   const { projectToken } = useKnownTokens();
   const daoCtx = useDAO();
-  const wallet = useWallet()
+  const wallet = useWallet();
 
   const [isLoading, setLoading] = useState(false);
   const [isEnabling, setEnabling] = useState(false);
@@ -129,15 +127,13 @@ const PortfolioDeposit: FC = () => {
         rules: {
           required: false,
         },
-        messages: {
-        },
+        messages: {},
       },
       dataType: {
         rules: {
           required: false,
         },
-        messages: {
-        },
+        messages: {},
       },
     },
     onSubmit: () => {
@@ -149,13 +145,12 @@ const PortfolioDeposit: FC = () => {
     },
   });
   async function loadTimelock(type: number) {
-    if (!wallet.account)
-      return
-    console.log(wallet.account, type)
+    if (!wallet.account) return;
+    console.log(wallet.account, type);
     const timelockData = await daoCtx.daoBarn.checkTimeLock(wallet.account, type);
-    console.log(timelockData)
+    console.log(timelockData);
     form.updateValue('dataType', type);
-    form.updateValue('p2pKey', timelockData.data.slice(2))
+    form.updateValue('p2pKey', timelockData.data.slice(2));
   }
   async function loadData() {
     setLoading(true);
@@ -171,10 +166,10 @@ const PortfolioDeposit: FC = () => {
       }
       form.reset({
         lockEndDate,
-        p2pKey: "",
+        p2pKey: '',
         dataType: 1,
       });
-    } catch { }
+    } catch {}
 
     setLoading(false);
   }
@@ -186,10 +181,10 @@ const PortfolioDeposit: FC = () => {
   const { formState, watch } = form;
   const amount = watch('amount');
   const bnAmount = BigNumber.from(amount);
-  const nextStakeBalance = stakedBalance?.plus(amount)
+  const nextStakeBalance = stakedBalance?.plus(amount);
   const lockEndDate = watch('lockEndDate');
-  const p2pKey = watch('p2pKey')
-  const dataType = watch('dataType')
+  const p2pKey = watch('p2pKey');
+  const dataType = watch('dataType');
 
   const isEnabled = useMemo(() => barnAllowance?.gt(BigNumber.ZERO) ?? false, [barnAllowance]);
   const canSubmit = isEnabled && formState.isDirty && formState.isValid && !isSubmitting;
@@ -212,7 +207,13 @@ const PortfolioDeposit: FC = () => {
     setEnabling(false);
   }
 
-  async function doDepositAndLock(amount: BigNumber, lockUntil: Date | undefined, type: number, p2pkey: string, gasPrice?: number) {
+  async function doDepositAndLock(
+    amount: BigNumber,
+    lockUntil: Date | undefined,
+    type: number,
+    p2pkey: string,
+    gasPrice?: number,
+  ) {
     setSubmitting(true);
 
     try {
@@ -227,8 +228,9 @@ const PortfolioDeposit: FC = () => {
             depositAmount,
             timestamp,
             type,
-            "0x" + p2pkey, // 0x + hexstirng
-            gasPrice);
+            '0x' + p2pkey, // 0x + hexstirng
+            gasPrice,
+          );
           await loadData();
         }
       }
@@ -347,32 +349,31 @@ const PortfolioDeposit: FC = () => {
           label="DataType (optional)"
           labelProps={{ hint: 'What DataType for your node. 1 => BTC_ETH network, 2 => BTC_BSC network' }}
           className="flex-grow">
-          {({ field }) => (<>
-            <div className="flexbox-grid" style={{ '--gap': '8px' } as React.CSSProperties}>
-              {NETWORK.map(item => (
-                <button
-                  key={item}
-                  type="button"
-                  className={classnames(
-                    'flex justify-center ph-24 pv-16 button-ghost-monochrome'
-                  )}
-                  onClick={() => {
-                    loadTimelock(getNetworkID(item))
-                    form.updateValue('dataType', getNetworkID(item));
-                  }}>
-                  {item}
-                </button>
-              ))}
-            </div>
-            <Input
-              placeholder="0"
-              dimension="large"
-              className="flex-grow"
-              disabled={isSubmitting}
-              value={dataType}
-              onChange={field.onChange}
-            />
-          </>
+          {({ field }) => (
+            <>
+              <div className="flexbox-grid" style={{ '--gap': '8px' } as React.CSSProperties}>
+                {NETWORK.map(item => (
+                  <button
+                    key={item}
+                    type="button"
+                    className={classnames('flex justify-center ph-24 pv-16 button-ghost-monochrome')}
+                    onClick={() => {
+                      loadTimelock(getNetworkID(item));
+                      form.updateValue('dataType', getNetworkID(item));
+                    }}>
+                    {item}
+                  </button>
+                ))}
+              </div>
+              <Input
+                placeholder="0"
+                dimension="large"
+                className="flex-grow"
+                disabled={isSubmitting}
+                value={dataType}
+                onChange={field.onChange}
+              />
+            </>
           )}
         </FormItem>
         <FormItem
@@ -409,34 +410,32 @@ const PortfolioDeposit: FC = () => {
           </button>
         </div>
       </Form>
-      {
-        confirmModalVisible && (
-          <TxConfirmModal
-            title="Are you sure you want to lock your balance?"
-            header={
-              <div className="flex flow-row row-gap-16">
-                <Text type="p2" weight="bold" color="secondary">
-                  You are about to lock{' '}
-                  <span className="primary-color">
-                    {formatToken(nextStakeBalance)} {projectToken.symbol}
-                  </span>{' '}
-                  for{' '}
-                  <span className="primary-color">{getFormattedDuration(Date.now(), lockEndDate?.valueOf() ?? 0)}</span>.
-                  You cannot undo this or partially lock your balance. Locked tokens will be unavailable for withdrawal
-                  until the lock timer ends. All future deposits you make will be locked for the same time.
-                </Text>
-                <Text type="p2" weight="bold" color="primary">
-                  The multiplier you get for locking tokens only applies to your voting power, it does not earn more
-                  rewards.
-                </Text>
-              </div>
-            }
-            submitText="Lock balance"
-            onCancel={handleCancel}
-            onConfirm={({ gasPrice }) => handleConfirm(gasPrice)}
-          />
-        )
-      }
+      {confirmModalVisible && (
+        <TxConfirmModal
+          title="Are you sure you want to lock your balance?"
+          header={
+            <div className="flex flow-row row-gap-16">
+              <Text type="p2" weight="bold" color="secondary">
+                You are about to lock{' '}
+                <span className="primary-color">
+                  {formatToken(nextStakeBalance)} {projectToken.symbol}
+                </span>{' '}
+                for{' '}
+                <span className="primary-color">{getFormattedDuration(Date.now(), lockEndDate?.valueOf() ?? 0)}</span>.
+                You cannot undo this or partially lock your balance. Locked tokens will be unavailable for withdrawal
+                until the lock timer ends. All future deposits you make will be locked for the same time.
+              </Text>
+              <Text type="p2" weight="bold" color="primary">
+                The multiplier you get for locking tokens only applies to your voting power, it does not earn more
+                rewards.
+              </Text>
+            </div>
+          }
+          submitText="Lock balance"
+          onCancel={handleCancel}
+          onConfirm={({ gasPrice }) => handleConfirm(gasPrice)}
+        />
+      )}
     </>
   );
 };
