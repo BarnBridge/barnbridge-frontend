@@ -563,6 +563,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'USDT':
         // Chainlink: USDT/USD
         return getChainlinkFeedPrice('0xb97ad0e74fa7d920791e90258a6e2085088b4320', BinanceHttpsWeb3Provider);
+      case 'FLOKI':
+        // Chainlink: FLOKI/USD
+        return getChainlinkFeedPrice('0x19018cb4e5228a433ca0469e11e04ad47679b97d', BinanceHttpsWeb3Provider);
       default:
         return getPriceFor(symbol, MainnetNetwork);
     }

@@ -37,7 +37,7 @@ export const BinanceDevConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
-    floki: '',
+    floki: '0x2b3f34e9d4b127797ce6244ea341a83733ddd6e4',
     wmatic: '',
     ausdc: '',
     ausdt: '',
