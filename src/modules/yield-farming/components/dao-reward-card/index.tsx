@@ -63,36 +63,41 @@ const DaoRewardCard: FC<{}> = () => {
   }, [wallet.account]);
 
   return (
-    <div className="card flex flow-row">
-      <div className="flex align-center justify-space-between p-24" style={{ minHeight: '92px' }}>
-        <div className="flex align-center col-gap-16">
+    <article className="card flex flow-row p-24">
+      <header className="flex align-center  col-gap-24 row-gap-12 mb-24">
+        <div className="flex align-center">
           <Icon name="dao-circle" size={40} />
-          <Text type="p1" weight="semibold" color="primary">
-            DAO Rewards
-          </Text>
         </div>
-        {daoRewardContract.isEnded === false && (
-          <StatusTag
-            text={
-              <Text type="lb2" weight="bold" color="green">
-                ACTIVE
-              </Text>
-            }
-            color="green"
-          />
-        )}
-        {daoRewardContract.isEnded && (
-          <StatusTag
-            text={
-              <Text type="lb2" weight="bold" color="green">
-                ENDED
-              </Text>
-            }
-            color="green"
-            style={{ backgroundColor: 'rgba(113, 121, 128, 0.08)' }}
-          />
-        )}
-      </div>
+        <div className="flex-grow">
+          <div className="flex justify-space-between align-center wrap mb-4">
+            <Text type="p1" weight="semibold" color="primary">
+              DAO Rewards
+            </Text>
+
+            {daoRewardContract.isEnded === false && (
+              <StatusTag
+                text={
+                  <Text type="lb2" weight="bold" color="green">
+                    ACTIVE
+                  </Text>
+                }
+                color="green"
+              />
+            )}
+            {daoRewardContract.isEnded && (
+              <StatusTag
+                text={
+                  <Text type="lb2" weight="bold" color="green">
+                    ENDED
+                  </Text>
+                }
+                color="green"
+                style={{ backgroundColor: 'rgba(113, 121, 128, 0.08)' }}
+              />
+            )}
+          </div>
+        </div>
+      </header>
       <div className="flex flow-row flex-grow ph-24 pb-24">
         <ElasticTabs
           tabs={[
@@ -176,7 +181,7 @@ const DaoRewardCard: FC<{}> = () => {
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

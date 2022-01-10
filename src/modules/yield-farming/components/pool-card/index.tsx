@@ -84,45 +84,49 @@ const PoolCard: FC<Props> = props => {
   };
 
   return (
-    <div className="card flex flow-row">
-      <div className="flex align-center justify-space-between p-24">
+    <article className="card flex flow-row p-24">
+      <header className="flex align-center  col-gap-24 row-gap-12 mb-24">
         <div className="flex align-center">
           <IconsSet
             icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon} />) ?? []}
             className="mr-16"
           />
-          <div>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        </div>
+        <div className="flex-grow">
+          <div className="flex justify-space-between align-center wrap mb-4">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4" wrap>
               {poolMeta?.label ?? '-'}
             </Text>
-            <Text type="small" weight="semibold" color="red">
-              Epoch {lastActiveEpoch ?? '-'} / {totalEpochs ?? '-'}
-            </Text>
+
+            {isEnded === false && (
+              <StatusTag
+                text={
+                  <Text type="lb2" weight="bold" color="green">
+                    ACTIVE
+                  </Text>
+                }
+                color="green"
+              />
+            )}
+            {isEnded && (
+              <StatusTag
+                text={
+                  <Text type="lb2" weight="bold" color="secondary">
+                    ENDED
+                  </Text>
+                }
+                color="green"
+                style={{ backgroundColor: 'rgba(113, 121, 128, 0.08)' }}
+              />
+            )}
           </div>
+
+          <Text type="small" weight="semibold" color="red">
+            Epoch {lastActiveEpoch ?? '-'} / {totalEpochs ?? '-'}
+          </Text>
         </div>
-        {isEnded === false && (
-          <StatusTag
-            text={
-              <Text type="lb2" weight="bold" color="green">
-                ACTIVE
-              </Text>
-            }
-            color="green"
-          />
-        )}
-        {isEnded && (
-          <StatusTag
-            text={
-              <Text type="lb2" weight="bold" color="secondary">
-                ENDED
-              </Text>
-            }
-            color="green"
-            style={{ backgroundColor: 'rgba(113, 121, 128, 0.08)' }}
-          />
-        )}
-      </div>
-      <div className="flex flow-row flex-grow ph-24 pb-24">
+      </header>
+      <div className="flex flow-row flex-grow ph-24">
         <ElasticTabs
           tabs={[
             { id: 'pool', children: 'Pool statistics' },
@@ -311,7 +315,7 @@ const PoolCard: FC<Props> = props => {
           />
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
