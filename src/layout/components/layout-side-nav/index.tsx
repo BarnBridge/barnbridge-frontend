@@ -6,11 +6,13 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import OldIcon from 'components/custom/icon';
+import IconOld from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';
 import { useGeneral } from 'components/providers/generalProvider';
+import { useNetwork } from 'components/providers/networkProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 
 import s from './s.module.scss';
 
@@ -42,8 +44,8 @@ const LayoutSideNav: React.FC = () => {
             <Icon name="close" />
           </button>
           <Link to="/" className={s.logo}>
-            <OldIcon name="bond-square-token" />
-            <OldIcon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+            <IconOld name="bond-square-token" />
+            <IconOld name="barnbridge" width="113" color="primary" className={s.logoLabel} />
           </Link>
         </div>
         <nav className={s.top}>
@@ -139,16 +141,7 @@ const LayoutSideNav: React.FC = () => {
           )}
         </nav>
         <div className={s.bottom}>
-          <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
-            <Tooltip title={displayTooltip && 'Docs'} placement="right">
-              <Icon name="menu-docs" size={40} />
-            </Tooltip>
-            <div className={s.btnContent}>
-              <Text type="lb1" weight="semibold" className={s.btnLabel} color="primary">
-                Docs
-              </Text>
-            </div>
-          </a>
+          <NetworkAction displayTooltip={displayTooltip} />
           <ToggleThemeButton displayTooltip={displayTooltip} />
         </div>
       </aside>
@@ -157,6 +150,24 @@ const LayoutSideNav: React.FC = () => {
 };
 
 export default LayoutSideNav;
+
+const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }) => {
+  const { activeNetwork } = useNetwork();
+  const { showNetworkSelect } = useWeb3();
+
+  return (
+    <button type="button" onClick={() => showNetworkSelect()} className={s.button}>
+      <Tooltip title={displayTooltip && activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
+        <IconOld name={activeNetwork.meta.logo} width={40} height={40} style={{ flexShrink: 0 }} />
+      </Tooltip>
+      <div className={s.btnContent}>
+        <Text type="lb1" weight="semibold" className={s.btnLabel}>
+          {activeNetwork.meta.name}
+        </Text>
+      </div>
+    </button>
+  );
+};
 
 const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
   const { toggleTheme, selectedTheme } = useGeneral();
@@ -176,8 +187,8 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
   }
 
   return (
-    <button type="button" onClick={toggleTheme} className={s.button}>
-      <Tooltip title={displayTooltip && text} placement="right">
+    <button type="button" onClick={toggleTheme} className={cn(s.themeButton, s.button)}>
+      <Tooltip title={displayTooltip && text} placement={isMobile ? 'right' : 'left'}>
         <Icon name={iconName} size={40} />
       </Tooltip>
       <div className={s.btnContent}>

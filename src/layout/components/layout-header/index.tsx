@@ -17,7 +17,6 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useNotifications } from 'components/providers/notificationsProvider';
 import { useTokens } from 'components/providers/tokensProvider';
-import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
 import Notifications from 'wallets/components/notifications';
@@ -51,21 +50,18 @@ const LayoutHeader: React.FC = () => {
           <Route path="*">BarnBridge</Route>
         </Switch>
       </Text>
-      {!isMobile ? (
-        <div className="flex align-center col-gap-16 ml-auto">
-          {!isProductionMode && (
-            <Switch>
-              <Route path="/smart-alpha">
-                <PositionsAction />
-              </Route>
-            </Switch>
-          )}
-          {activeNetwork.config.features.addBondToken && <AddTokenAction />}
-          <NetworkAction />
-          <NotificationsAction />
-          <WalletAction />
-        </div>
-      ) : null}
+      <div className="flex align-center col-gap-16 ml-auto">
+        {!isProductionMode && (
+          <Switch>
+            <Route path="/smart-alpha">
+              <PositionsAction />
+            </Route>
+          </Switch>
+        )}
+        {activeNetwork.config.features.addBondToken && <AddTokenAction />}
+        <NotificationsAction />
+        <WalletAction />
+      </div>
     </header>
   );
 };
@@ -164,20 +160,6 @@ const AddTokenAction: React.FC = () => {
       <IconOld name="bond-add-token" />
     </button>
   ) : null;
-};
-
-const NetworkAction: React.FC = () => {
-  const { activeNetwork } = useNetwork();
-  const { showNetworkSelect } = useWeb3();
-
-  return (
-    <button type="button" onClick={() => showNetworkSelect()} className={s.actionButton}>
-      <IconOld name={activeNetwork.meta.logo} width={24} height={24} className="mr-8" />
-      <Text type="p2" weight="semibold" color="secondary">
-        {activeNetwork.meta.name}
-      </Text>
-    </button>
-  );
 };
 
 const NotificationsAction: React.FC = () => {
