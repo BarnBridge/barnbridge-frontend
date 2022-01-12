@@ -2,7 +2,17 @@ import { Component, useMemo, useRef } from 'react';
 import { format } from 'date-fns';
 import { isFunction } from 'lodash';
 import { nanoid } from 'nanoid';
-import { Area, AreaChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import {
+  Area,
+  AreaChart,
+  CartesianGrid,
+  Legend,
+  ResponsiveContainer,
+  Tooltip,
+  XAxis,
+  YAxis,
+  YAxisProps,
+} from 'recharts';
 import { CategoricalChartProps, CategoricalChartState } from 'recharts/types/chart/generateCategoricalChart';
 import { AxisDomain, AxisDomainItem } from 'recharts/types/util/types';
 
@@ -31,6 +41,7 @@ interface PropsType {
     }[];
     domain?: AxisDomain;
     domainRight?: AxisDomain;
+    width?: YAxisProps['width'];
   };
   className?: string;
   loading?: boolean;
@@ -144,6 +155,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               orientation="left"
               yAxisId="left"
               domain={yDomainLeft}
+              width={y.width}
             />
             {hasRightYAxis && (
               <YAxis
@@ -153,6 +165,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
                 orientation="right"
                 yAxisId="right"
                 domain={y.domainRight}
+                width={y.width}
               />
             )}
 
