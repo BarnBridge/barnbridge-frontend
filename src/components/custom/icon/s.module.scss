@@ -1,5 +1,6 @@
 .component {
   color: var(--theme-icon-color);
+  flex-shrink: 0;
 
   &:global(.rotate-90) {
     transform: rotate(90deg);

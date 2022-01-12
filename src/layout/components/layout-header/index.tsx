@@ -35,7 +35,7 @@ const LayoutHeader: React.FC = () => {
   return (
     <header className={s.component}>
       <button type="button" className={s.burger} onClick={() => setNavOpen(!navOpen)}>
-        <IconOld name="burger" className="hidden-desktop" />
+        <Icon name={navOpen ? 'close' : 'burger'} className="hidden-desktop" color="icon" />
         <Icon name="arrow" rotate={navOpen ? 180 : 0} size={12} className="hidden-mobile hidden-tablet" />
       </button>
       <IconOld name="bond-square-token" className={s.logo} />

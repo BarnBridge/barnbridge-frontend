@@ -98,7 +98,7 @@ const DaoRewardCard: FC<{}> = () => {
           </div>
         </div>
       </header>
-      <div className="flex flow-row flex-grow ph-24 pb-24">
+      <div className="flex flow-row flex-grow pb-24">
         <ElasticTabs
           tabs={[
             { id: 'dao', children: 'DAO statistics' },

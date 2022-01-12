@@ -87,10 +87,7 @@ const PoolCard: FC<Props> = props => {
     <article className="card flex flow-row p-24">
       <header className="flex align-center  col-gap-24 row-gap-12 mb-24">
         <div className="flex align-center">
-          <IconsSet
-            icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon} />) ?? []}
-            className="mr-16"
-          />
+          <IconsSet icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon} />) ?? []} />
         </div>
         <div className="flex-grow">
           <div className="flex justify-space-between align-center wrap mb-4">
@@ -126,7 +123,7 @@ const PoolCard: FC<Props> = props => {
           </Text>
         </div>
       </header>
-      <div className="flex flow-row flex-grow ph-24">
+      <div className="flex flow-row flex-grow">
         <ElasticTabs
           tabs={[
             { id: 'pool', children: 'Pool statistics' },
