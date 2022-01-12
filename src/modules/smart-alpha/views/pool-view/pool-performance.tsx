@@ -44,6 +44,16 @@ export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol:
   const [epochFilter, setEpochFilter] = useState<EpochFilterTypeKey>(EpochFilterTypeKey.current);
   const { data = [], loading } = useFetchPoolPerformance(poolAddress, epochFilter);
 
+  const decimals = data.some(item =>
+    trancheFilter === TrancheFilterTypeKey.senior
+      ? (item.seniorWithSA > 0 && item.seniorWithSA < 0.001) ||
+        (item.seniorWithoutSA > 0 && item.seniorWithoutSA < 0.001)
+      : (item.juniorWithSA > 0 && item.juniorWithSA < 0.001) ||
+        (item.juniorWithoutSA > 0 && item.juniorWithoutSA < 0.001),
+  )
+    ? 8
+    : 4;
+
   return (
     <div className={classNames('card', className)}>
       <div className="card-header flex align-center">
@@ -80,13 +90,15 @@ export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol:
               `${
                 formatToken(value, {
                   compact: true,
+                  decimals,
                 }) ?? value
               } ${oracleAssetSymbol}`,
-            itemsFormat: value => `${formatToken(value) ?? value} ${oracleAssetSymbol}`,
+            itemsFormat: value => `${formatToken(value, { decimals }) ?? value} ${oracleAssetSymbol}`,
             domain: [
               (dataMin, domain = [dataMin, dataMin]) => dataMin - (domain[1] - dataMin) * 0.1,
               (dataMax, domain = [dataMax, dataMax]) => dataMax + (dataMax - domain[0]) * 0.1,
             ],
+            width: decimals === 8 ? 100 : undefined,
             items:
               trancheFilter === TrancheFilterTypeKey.senior
                 ? [
