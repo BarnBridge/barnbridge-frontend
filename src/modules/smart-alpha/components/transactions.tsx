@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
-import { ExplorerAddressLink } from 'components/button';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
@@ -212,9 +212,9 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     {
       heading: 'Transaction Hash',
       render: item => (
-        <ExplorerAddressLink address={item.transactionHash} variation="link">
+        <ExplorerTxLink address={item.transactionHash} variation="link">
           {shortenAddr(item.transactionHash, 6, 4)}
-        </ExplorerAddressLink>
+        </ExplorerTxLink>
       ),
     },
     {
