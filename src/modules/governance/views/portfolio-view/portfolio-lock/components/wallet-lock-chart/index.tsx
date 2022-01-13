@@ -11,7 +11,6 @@ import differenceInHours from 'date-fns/differenceInHours';
 import differenceInMinutes from 'date-fns/differenceInMinutes';
 import differenceInMonths from 'date-fns/differenceInMonths';
 import differenceInWeeks from 'date-fns/differenceInWeeks';
-import format from 'date-fns/format';
 import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 import startOfDay from 'date-fns/startOfDay';
 import startOfHour from 'date-fns/startOfHour';
@@ -28,6 +27,7 @@ import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useDAO } from 'modules/governance/components/dao-provider';
 
 import { inRange } from 'utils';
+import { formatDate, formatDateTime, formatTime } from 'utils/date';
 
 enum GranularityType {
   NONE,
@@ -215,17 +215,31 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
             tickFormatter={tick => {
               switch (granularity) {
                 case GranularityType.MONTHS:
-                  return format(tick, 'MMM yyyy');
+                  return formatDate(tick, {
+                    year: 'numeric',
+                    month: '2-digit',
+                  });
                 case GranularityType.WEEKS:
-                  return format(tick, 'dd MMM');
+                  return formatDate(tick, {
+                    month: '2-digit',
+                    day: '2-digit',
+                  });
                 case GranularityType.DAYS:
-                  return format(tick, 'dd MMM');
+                  return formatDate(tick, {
+                    month: '2-digit',
+                    day: '2-digit',
+                  });
                 case GranularityType.HOURS:
-                  return format(tick, 'dd MMM HH:mm');
+                  return formatDateTime(tick, {
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  });
                 case GranularityType.MINUTES:
-                  return format(tick, 'HH:mm');
+                  return formatTime(tick);
                 default:
-                  return format(tick, 'yyyy-MM-dd HH:mm');
+                  return formatDateTime(tick);
               }
             }}
             // domain={[0, 2 ** 32]}
@@ -247,17 +261,17 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
 
               switch (granularity) {
                 case GranularityType.MONTHS:
-                  return format(value, 'yyyy-MM-dd');
+                  return formatDate(value);
                 case GranularityType.WEEKS:
-                  return format(value, 'yyyy-MM-dd');
+                  return formatDate(value);
                 case GranularityType.DAYS:
-                  return format(value, 'yyyy-MM-dd');
+                  return formatDate(value);
                 case GranularityType.HOURS:
-                  return format(value, 'yyyy-MM-dd HH:mm');
+                  return formatDateTime(value);
                 case GranularityType.MINUTES:
-                  return format(value, 'yyyy-MM-dd HH:mm');
+                  return formatDateTime(value);
                 default:
-                  return format(value, 'yyyy-MM-dd HH:mm');
+                  return formatDateTime(value);
               }
             }}
             formatter={(value: any) => `${formatBigValue(BigNumber.from(value), 6, '-')}x`}

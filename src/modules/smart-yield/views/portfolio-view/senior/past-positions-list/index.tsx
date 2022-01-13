@@ -2,7 +2,6 @@ import React from 'react';
 import AntdEmpty from 'antd/lib/empty';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
-import { format } from 'date-fns';
 import { formatBigValue, formatPercent, formatUSD, shortenAddr } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -16,6 +15,8 @@ import { mergeState } from 'hooks/useMergeState';
 import { APISYSeniorRedeem, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -175,7 +176,7 @@ const PastPositionsList: React.FC<Props> = props => {
                   {shortenAddr(entity.transactionHash)}
                 </ExplorerTxLink>
                 <Text type="small" weight="semibold" color="secondary">
-                  {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+                  {formatDateTime(entity.blockTimestamp * 1_000)}
                 </Text>
               </div>
               <Divider />

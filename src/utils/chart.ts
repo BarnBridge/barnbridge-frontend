@@ -1,6 +1,6 @@
-import { format } from 'date-fns';
-
 import { PeriodTabsKey } from 'components/custom/tabs';
+
+import { formatDate, formatTime } from './date';
 
 export function formatTick(value: string, filter: string) {
   if (typeof value !== 'string') {
@@ -15,11 +15,11 @@ export function formatTick(value: string, filter: string) {
 
   switch (filter) {
     case PeriodTabsKey.day:
-      return format(date, 'HH:mm');
+      return formatTime(date);
     case PeriodTabsKey.week:
-      return format(date, 'EEE');
+      return formatDate(date, { weekday: 'short' });
     case PeriodTabsKey.month:
-      return format(date, 'dd MMM');
+      return formatDate(date, { month: '2-digit', day: '2-digit' });
     default:
       return '';
   }

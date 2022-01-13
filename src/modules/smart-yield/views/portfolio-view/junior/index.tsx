@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import AntdSpin from 'antd/lib/spin';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, getHumanValue } from 'web3/utils';
 
@@ -32,6 +31,7 @@ import PastPositionsTable from './past-positions-table';
 import PositionsFilter, { PositionsFilterValues } from './positions-filter';
 
 import { doSequential } from 'utils';
+import { formatDate } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -415,7 +415,7 @@ const JuniorPortfolioInner: React.FC = () => {
                         Maturity date
                       </Text>
                       <Text type="p1" weight="semibold" color="primary">
-                        {format(redeemModal.jBond.maturesAt * 1_000, 'dd.MM.yyyy')}
+                        {formatDate(redeemModal.jBond.maturesAt * 1_000)}
                       </Text>
                     </div>
                   </div>

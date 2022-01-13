@@ -1,7 +1,6 @@
 ﻿import React from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import format from 'date-fns/format';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -15,6 +14,7 @@ import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 
 import { getFormattedDuration } from 'utils';
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -348,7 +348,7 @@ const MarketDetails: React.FC = () => {
               </Hint>
               <div className="flex flow-col col-gap-8">
                 <Text type="p1" weight="semibold" color="primary">
-                  {(abond?.maturesAt && format(abond.maturesAt * 1_000, 'MM.dd.yyyy HH:mm')) ?? '-'}
+                  {abond?.maturesAt ? formatDateTime(abond.maturesAt * 1_000) : '-'}
                 </Text>
               </div>
             </div>

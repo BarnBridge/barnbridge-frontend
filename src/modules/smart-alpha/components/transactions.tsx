@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
@@ -11,6 +10,8 @@ import { Text } from 'components/custom/typography';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { TransactionApiType, useFetchTransactions } from 'modules/smart-alpha/api';
+
+import { formatDate, formatTime } from 'utils/date';
 
 const transactionTypeLabelMap = {
   JUNIOR_ENTRY: 'Junior entry',
@@ -224,10 +225,10 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
         return (
           <>
             <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {format(date, 'dd.MM.yyyy')}
+              {formatDate(date)}
             </Text>
             <Text type="small" weight="semibold" color="secondary">
-              {format(date, 'HH:mm')}
+              {formatTime(date)}
             </Text>
           </>
         );

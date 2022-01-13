@@ -1,5 +1,4 @@
 import { Component, useMemo, useRef } from 'react';
-import { format } from 'date-fns';
 import { isFunction } from 'lodash';
 import { nanoid } from 'nanoid';
 import {
@@ -19,6 +18,8 @@ import { AxisDomain, AxisDomainItem } from 'recharts/types/util/types';
 import Spin from 'components/antd/spin';
 import { Text } from 'components/custom/typography';
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
+
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -55,7 +56,7 @@ const renderTooltip = (
   const { payload, label } = props;
   if (!payload) return null;
 
-  const date = label && titleFormat ? titleFormat(label) : label; // format(new Date(label), 'MM.dd.yyyy HH:mm') : '';
+  const date = label && titleFormat ? titleFormat(label) : label;
 
   return (
     <div className={s.tooltip}>
@@ -183,9 +184,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
               />
             ))}
             <Tooltip
-              labelFormatter={value => (
-                <div className={s.tooltipTitle}>{value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}</div>
-              )}
+              labelFormatter={value => <div className={s.tooltipTitle}>{value ? formatDateTime(value) : ''}</div>}
               content={p => renderTooltip(p, x.itemFormat, y.itemsFormat)}
             />
             <Legend content={renderLegend} />
