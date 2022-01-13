@@ -38,7 +38,6 @@ const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
     return [
       KovanNetwork,
-      OptimisticKovanNetwork,
       TestnetNetwork,
       OptimisticKovanNetwork,
       MainnetNetwork,
