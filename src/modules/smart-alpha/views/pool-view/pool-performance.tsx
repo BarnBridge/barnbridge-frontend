@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import classNames from 'classnames';
-import { format } from 'date-fns';
 import { formatToken } from 'web3/utils';
 
 import { Chart } from 'components/chart';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
 import { EpochFilterTypeKey, useFetchPoolPerformance } from 'modules/smart-alpha/api';
+
+import { formatDate, formatDateTime, formatTime } from 'utils/date';
 
 export enum TrancheFilterTypeKey {
   senior = 'senior',
@@ -82,8 +83,8 @@ export const PoolPerformance: React.FC<{ poolAddress: string; oracleAssetSymbol:
           data={data ?? []}
           x={{
             key: 'point',
-            format: item => format(new Date(item), 'EEE HH:mm'),
-            itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
+            format: item => `${formatDate(item, { weekday: 'short' })} ${formatTime(item)}`,
+            itemFormat: item => formatDateTime(item),
           }}
           y={{
             format: value =>

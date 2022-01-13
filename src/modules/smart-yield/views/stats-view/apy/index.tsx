@@ -11,6 +11,8 @@ import { mergeState } from 'hooks/useMergeState';
 import { APISYPoolAPY, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
+import { formatDateTime } from 'utils/date';
+
 import s from './s.module.scss';
 
 type ChartEntity = Omit<APISYPoolAPY, 'point'> & {
@@ -189,7 +191,7 @@ const ApyTrend: React.FC = () => {
                 separator=""
                 labelFormatter={value => (
                   <Text type="p2" tag="span" weight="semibold" color="primary">
-                    {Number.isFinite(value) ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
+                    {Number.isFinite(value) ? formatDateTime(value) : ''}
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (

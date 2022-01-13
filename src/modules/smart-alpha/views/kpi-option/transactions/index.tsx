@@ -1,7 +1,6 @@
 import React, { FC, useEffect, useMemo, useState } from 'react';
 import { SelectValue } from 'antd/lib/select';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
@@ -16,6 +15,7 @@ import { KpiOptionType, KpiTransactionType, useFetchKpiOptionTransactions } from
 import { useWallet } from 'wallets/walletProvider';
 
 import { getKpiOptionTokenIconNames } from 'modules/smart-alpha/utils';
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -101,7 +101,7 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
             </Text>
           </ExplorerTxLink>
           <Text type="small" weight="semibold" color="secondary">
-            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+            {formatDateTime(entity.blockTimestamp * 1_000)}
           </Text>
         </>
       ),
