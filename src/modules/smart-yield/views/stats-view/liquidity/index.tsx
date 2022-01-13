@@ -1,7 +1,6 @@
 import React from 'react';
 import { Spin } from 'antd';
 import cn from 'classnames';
-import format from 'date-fns/format';
 import * as ReCharts from 'recharts';
 import { formatUSD } from 'web3/utils';
 
@@ -12,7 +11,7 @@ import { mergeState } from 'hooks/useMergeState';
 import { APISYPoolLiquidity, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
 
-import { formatDateTime } from 'utils/date';
+import { formatDate, formatDateTime, formatTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -141,11 +140,16 @@ const Liquidity: React.FC<Props> = ({ className }) => {
 
     switch (activeTab) {
       case '24h':
-        return format(new Date(value), 'HH:mm');
+        return formatTime(value);
       case '1w':
-        return format(new Date(value), 'EEE');
+        return formatDate(value, {
+          weekday: 'short',
+        });
       case '30d':
-        return format(new Date(value), 'dd MMM');
+        return formatDate(value, {
+          month: '2-digit',
+          day: '2-digit',
+        });
       default:
         return '';
     }
