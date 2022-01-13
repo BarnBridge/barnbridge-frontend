@@ -18,7 +18,7 @@ export const OptimisticMainnetConfig: NetworkConfig = {
   title: 'BarnBridge Optimistic Ethereum',
   features: {
     smartAlpha: true,
-    gasFees: true,
+    gasFees: false,
     addBondToken: true,
   },
   wallets: {
