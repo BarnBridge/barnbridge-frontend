@@ -7,6 +7,7 @@ import { formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
+import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { TokenIcon } from 'components/token-icon';
 import { useWeb3Contract } from 'hooks/useContract';
@@ -24,13 +25,29 @@ export type KpiOptionCardProps = {
   kpiOption: KpiOptionType;
 };
 
+export enum TypeKey {
+  pool = 'pool',
+  my = 'my',
+}
+
+const epochTabs = [
+  {
+    id: TypeKey.pool,
+    children: 'Pool statistics',
+  },
+  {
+    id: TypeKey.my,
+    children: 'My statistics',
+  },
+];
+
 export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
   const { className, kpiOption } = props;
 
   const walletCtx = useWallet();
   const [reload] = useReload();
 
-  const [activeTab, setActiveTab] = useState<'pool' | 'my'>('pool');
+  const [activeTab, setActiveTab] = useState<TypeKey>(TypeKey.pool);
   const [confirmClaimVisible, setConfirmClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
 
@@ -94,23 +111,14 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
             {kpiOption.poolToken.symbol}
           </Text>
         </header>
-        <div className={s.tabs}>
-          <div className={cn(s.tabSelection, activeTab === 'my' && s.toggled)} />
-          <button
-            type="button"
-            className={cn(s.tab, activeTab === 'pool' && s.active)}
-            onClick={() => setActiveTab('pool')}>
-            Pool statistics
-          </button>
-          <button
-            type="button"
-            className={cn(s.tab, activeTab === 'my' && s.active)}
-            disabled={!walletCtx.isActive}
-            onClick={() => setActiveTab('my')}>
-            My statistics
-          </button>
-        </div>
-        {activeTab === 'pool' && (
+        <Tabs<TypeKey>
+          tabs={epochTabs}
+          activeKey={activeTab}
+          onClick={setActiveTab}
+          variation="elastic"
+          className="mb-24"
+        />
+        {activeTab === TypeKey.pool && (
           <dl>
             {kpiOption.rewardTokens.map(token => {
               const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
@@ -177,7 +185,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
             </div>
           </dl>
         )}
-        {activeTab === 'my' && walletCtx.isActive && (
+        {activeTab === TypeKey.my && walletCtx.isActive && (
           <dl>
             {kpiOption.rewardTokens.map(token => {
               const [rewardTokenName, rewardTokenBubble1Name, rewardTokenBubble2Name] = getKpiOptionTokenIconNames(
@@ -245,7 +253,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
           <Link className="button-primary full-width" to={`/smart-alpha/kpi-options/${kpiOption.poolAddress}`}>
             View pool
           </Link>
-          {walletCtx.isActive && activeTab === 'my' && (
+          {walletCtx.isActive && activeTab === TypeKey.my && (
             <button type="button" className="button-ghost" disabled={!kpiContract.hasToClaim()} onClick={handleClaim}>
               {claiming && <Spin type="circle" />}
               Claim
