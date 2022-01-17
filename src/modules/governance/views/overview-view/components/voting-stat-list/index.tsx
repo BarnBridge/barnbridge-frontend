@@ -54,7 +54,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </Hint>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
-              <Text type="h2" weight="bold" color="primary">
+              <Text type="h2" weight="bold" color="primary" wrap>
                 {formatToken(daoCtx.daoBarn.bondStaked)}
               </Text>
               <Text type="p1" color="secondary">
@@ -105,7 +105,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary">
+            <Text type="h2" weight="bold" color="primary" wrap>
               {formatToken(overview?.totalVbond)}
             </Text>
           </Grid>
@@ -134,7 +134,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary">
+            <Text type="h2" weight="bold" color="primary" wrap>
               {overview?.avgLockTimeSeconds ? getFormattedDuration(overview?.avgLockTimeSeconds) : '-'}
             </Text>
             <Text type="p1" color="secondary">
@@ -161,7 +161,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Grid flow="row" gap={4}>
             <UseLeftTime end={(daoCtx.daoReward.pullFeature?.endTs ?? 0) * 1000} delay={5_000}>
               {() => (
-                <Text type="h2" weight="bold" color="primary">
+                <Text type="h2" weight="bold" color="primary" wrap>
                   {formatToken(daoCtx.daoReward.bondRewards)}
                 </Text>
               )}
@@ -192,7 +192,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary">
+            <Text type="h2" weight="bold" color="primary" wrap>
               {formatToken(overview?.totalDelegatedPower)}
             </Text>
             <Text type="p1" color="secondary">
@@ -218,7 +218,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </Hint>
           <Grid flow="row" gap={4}>
             <Grid flow="col" gap={4} align="end">
-              <Text type="h2" weight="bold" color="primary">
+              <Text type="h2" weight="bold" color="primary" wrap>
                 {overview?.holdersStakingExcluded}
               </Text>
               <Text type="p1" color="secondary">
@@ -238,7 +238,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             Annual Percentage Rate (APR)
           </Text>
           <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary">
+            <Text type="h2" weight="bold" color="primary" wrap>
               {formatPercent(apr) ?? '-'}
             </Text>
           </Grid>
@@ -251,7 +251,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             Weekly {ProjectToken.symbol} Rewards
           </Text>
           <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary">
+            <Text type="h2" weight="bold" color="primary" wrap>
               {formatToken(daoCtx.daoReward.weeklyRewards) ?? '-'}
             </Text>
           </Grid>

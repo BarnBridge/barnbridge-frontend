@@ -43,9 +43,9 @@ const PoolViewInner: FC = () => {
       <div className="container-limit">
         <PoolHeader />
 
-        <div className="flexbox-grid mb-32">
-          <div className={cn('card', s.stakeCard)}>
-            <div className={cn('card-header pv-0', s.stakeCardHeader)}>
+        <div className={s.stakeColumns}>
+          <article className={cn('card', s.stakeCard)}>
+            <header className={cn('card-header pv-0', s.stakeCardHeader)}>
               {isInitialized && (
                 <Tabs
                   tabs={[
@@ -67,14 +67,14 @@ const PoolViewInner: FC = () => {
                   onClick={setActiveTab}
                 />
               )}
-            </div>
+            </header>
             <Spin spinning={!isInitialized}>
               <div className="p-24">
                 {activeTab === 'stake' && <PoolStake />}
                 {activeTab === 'unstake' && <PoolUnstake />}
               </div>
             </Spin>
-          </div>
+          </article>
           <PoolStatistics />
         </div>
         <PoolTransactions />

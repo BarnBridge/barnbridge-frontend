@@ -9,6 +9,7 @@ import { formatPercent, formatToken } from 'web3/utils';
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
 import { AprLabel } from 'components/custom/label';
+import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { KnownTokens, useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
@@ -23,6 +24,22 @@ export type PoolCardProps = {
   pool: SYRewardPoolEntity;
 };
 
+export enum TypeKey {
+  pool = 'pool',
+  my = 'my',
+}
+
+const epochTabs = [
+  {
+    id: TypeKey.pool,
+    children: 'Pool statistics',
+  },
+  {
+    id: TypeKey.my,
+    children: 'My statistics',
+  },
+];
+
 export const PoolCard: FC<PoolCardProps> = props => {
   const { className, pool } = props;
 
@@ -35,7 +52,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
 
   const walletCtx = useWallet();
 
-  const [activeTab, setActiveTab] = useState<'pool' | 'my'>('pool');
+  const [activeTab, setActiveTab] = useState<TypeKey>(TypeKey.pool);
   const [confirmClaimVisible, setConfirmClaim] = useState(false);
   const [claiming, setClaiming] = useState(false);
 
@@ -74,7 +91,14 @@ export const PoolCard: FC<PoolCardProps> = props => {
             {smartYield.symbol}
           </Text>
         </header>
-        <div className={s.tabs}>
+        <Tabs<TypeKey>
+          tabs={epochTabs}
+          activeKey={activeTab}
+          onClick={setActiveTab}
+          variation="elastic"
+          className="mb-24"
+        />
+        {/* <div className={s.tabs}>
           <div className={cn(s.tabSelection, activeTab === 'my' && s.toggled)} />
           <button
             type="button"
@@ -89,8 +113,8 @@ export const PoolCard: FC<PoolCardProps> = props => {
             onClick={() => setActiveTab('my')}>
             My statistics
           </button>
-        </div>
-        {activeTab === 'pool' && (
+        </div> */}
+        {activeTab === TypeKey.pool && (
           <dl>
             <div className={s.defRow}>
               <dt>APR</dt>
@@ -166,7 +190,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
             </div>
           </dl>
         )}
-        {activeTab === 'my' && walletCtx.isActive && (
+        {activeTab === TypeKey.my && walletCtx.isActive && (
           <dl>
             <div className={s.defRow}>
               <dt>APR</dt>
@@ -223,10 +247,10 @@ export const PoolCard: FC<PoolCardProps> = props => {
           </dl>
         )}
         <footer className={s.footer}>
-          <Link className="button-primary full-width" to={`/smart-yield/pool?m=${poolMarket?.id}&t=${uToken?.symbol}`}>
+          <Link className="button-primary" to={`/smart-yield/pool?m=${poolMarket?.id}&t=${uToken?.symbol}`}>
             View pool
           </Link>
-          {walletCtx.isActive && activeTab === 'my' && (
+          {walletCtx.isActive && activeTab === TypeKey.my && (
             <button
               type="button"
               className="button-ghost"
