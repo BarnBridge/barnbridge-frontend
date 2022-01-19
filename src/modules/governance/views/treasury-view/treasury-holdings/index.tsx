@@ -274,8 +274,14 @@ const TreasuryHoldings: FC = () => {
 
   return (
     <>
-      <Text type="h2" weight="bold" color="primary" className="mb-4">
-        {formatUSD(totalHoldingsUSD) ?? '-'}
+      <Text
+        type="h2"
+        weight="bold"
+        color="primary"
+        className="mb-4"
+        tooltip={formatUSD(totalHoldingsUSD) ?? '-'}
+        style={{ display: 'inline-block' }}>
+        {formatUSD(totalHoldingsUSD, { compact: true }) ?? '-'}
       </Text>
       <Text type="p2" weight="semibold" color="secondary" className="mb-32">
         Total holdings balance
