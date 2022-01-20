@@ -75,7 +75,7 @@ export const OptimisticMainnetConfig: NetworkConfig = {
   },
   contracts: {
     sa: {
-      loupe: '0x045a3438a37de5b68c9e4ed5ea26c49cce1b5f5a',
+      loupe: '0x7e26ff45ce22d14b88d8cb29ed66fce9b043291b',
     },
   },
 };
