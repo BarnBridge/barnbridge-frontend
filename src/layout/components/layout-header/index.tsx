@@ -8,18 +8,15 @@ import Popover from 'components/antd/popover';
 import { Button, ExplorerAddressLink, Link } from 'components/button';
 import { Badge, SquareBadge } from 'components/custom/badge';
 import IconOld from 'components/custom/icon';
-import IconNotification from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
-import { useNotifications } from 'components/providers/notificationsProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
-import Notifications from 'wallets/components/notifications';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import MetamaskWalletConfig, { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
@@ -59,7 +56,6 @@ const LayoutHeader: React.FC = () => {
           </Switch>
         )}
         {activeNetwork.config.features.addBondToken && <AddTokenAction />}
-        <NotificationsAction />
         <WalletAction />
       </div>
     </header>
@@ -122,11 +118,7 @@ const PositionsAction: React.FC = () => {
         </div>
       }>
       <button type="button" className={s.actionButton}>
-        {data.length ? (
-          <SquareBadge color="red" className="mr-8">
-            {data.length}
-          </SquareBadge>
-        ) : null}
+        {data.length ? <SquareBadge color="red">{data.length}</SquareBadge> : null}
         Queued positions
       </button>
     </Popover>
@@ -156,49 +148,10 @@ const AddTokenAction: React.FC = () => {
   }
 
   return wallet.meta === MetamaskWalletConfig ? (
-    <button type="button" onClick={handleAddProjectToken} className={s.actionButton}>
+    <button type="button" onClick={handleAddProjectToken} className={cn(s.actionButton, 'hidden-mobile')}>
       <IconOld name="bond-add-token" />
     </button>
   ) : null;
-};
-
-const NotificationsAction: React.FC = () => {
-  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
-
-  const markAllAsRead = () => {
-    if (notifications.length) {
-      setNotificationsReadUntil(Math.max(...notifications.map(n => n.startsOn)));
-    }
-  };
-  const hasUnread = notificationsReadUntil ? notifications.some(n => n.startsOn > notificationsReadUntil) : false;
-
-  return (
-    <Popover
-      placement="bottomRight"
-      trigger="click"
-      noPadding
-      content={
-        <div className={cn('card', s.notifications)}>
-          <div className="card-header flex">
-            <Text type="p1" weight="semibold" color="primary">
-              Notifications
-            </Text>
-            {hasUnread && (
-              <Button type="button" variation="link" className="ml-auto" onClick={markAllAsRead}>
-                Mark all as read
-              </Button>
-            )}
-          </div>
-          <Notifications />
-        </div>
-      }>
-      <button type="button" className={s.actionButton}>
-        <IconNotification width={24} height={24} notificationSize={8} bubble={hasUnread} className={s.notificationIcon}>
-          <Icon name="bell" />
-        </IconNotification>
-      </button>
-    </Popover>
-  );
 };
 
 const WalletAction: React.FC = () => {
@@ -341,18 +294,11 @@ const WalletAction: React.FC = () => {
       }>
       <button type="button" className={s.actionButton}>
         {wallet.ens.avatar ? (
-          <img
-            width={24}
-            height={24}
-            className="mr-8"
-            style={{ borderRadius: '3px' }}
-            src={wallet.ens.avatar}
-            alt={wallet.ens.avatar}
-          />
+          <img width={24} height={24} style={{ borderRadius: '3px' }} src={wallet.ens.avatar} alt={wallet.ens.avatar} />
         ) : (
-          <Identicon address={wallet.account} width={24} height={24} className="mr-8" />
+          <Identicon address={wallet.account} width={24} height={24} />
         )}
-        {wallet.ens.name || shortenAddr(wallet.account, 4, 3)}
+        <div className="hidden-mobile">{wallet.ens.name || shortenAddr(wallet.account, 4, 3)}</div>
       </button>
     </Popover>
   );
