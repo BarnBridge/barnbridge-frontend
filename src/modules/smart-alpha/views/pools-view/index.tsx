@@ -329,14 +329,16 @@ const PoolCardInner = ({
           </Text>
         </div>
         {!isEstimate && (
-          <div className="ml-auto" style={{ textAlign: 'right' }}>
+          <div className="ml-auto" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
             <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
               Epoch ends in
             </Text>
             <UseLeftTime delay={1_000}>
               {() => (
                 <Text type="p1" weight="semibold">
-                  {getFormattedDuration(tillNextEpoch(item))}
+                  {getFormattedDuration(tillNextEpoch(item), undefined, {
+                    format: ['months', 'days', 'hours', 'minutes'],
+                  })}
                 </Text>
               )}
             </UseLeftTime>

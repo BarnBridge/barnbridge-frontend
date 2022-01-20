@@ -6,9 +6,9 @@ import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-m
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD } from 'web3/utils';
 
-import Spin from 'components/antd/spin';
 import Tabs from 'components/antd/tabs';
 import Tooltip from 'components/antd/tooltip';
+import { Button } from 'components/button';
 import { VFormValidationResolver } from 'components/custom/form';
 import { TokenAmount } from 'components/custom/token-amount-new';
 import { Text } from 'components/custom/typography';
@@ -154,18 +154,28 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
           )}
         />
 
-        <div className="flex align-center mt-auto">
+        <div className="flex wrap align-center mt-auto" style={{ gap: '16px' }}>
           {walletCtx.isActive && notAllowed && (
-            <button type="button" className="button-primary mr-16" disabled={enabling} onClick={handleEnable}>
-              {enabling && <Spin spinning />}
+            <Button
+              type="button"
+              variation="primary"
+              disabled={enabling}
+              onClick={handleEnable}
+              loading={enabling}
+              iconPosition="left">
               Enable {kpiOption.poolToken.symbol}
-            </button>
+            </Button>
           )}
 
-          <button type="button" className="button-primary" disabled={stakeDisabled} onClick={() => showConfirm(true)}>
-            {formCtx.formState.isSubmitting && <Spin spinning />}
+          <Button
+            type="button"
+            variation="primary"
+            disabled={stakeDisabled}
+            onClick={() => showConfirm(true)}
+            loading={formCtx.formState.isSubmitting}
+            iconPosition="left">
             Stake
-          </button>
+          </Button>
         </div>
       </form>
 
@@ -320,29 +330,31 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
           )}
         />
 
-        <div className="flex align-center mt-auto">
-          <button
+        <div className="flex wrap align-center mt-auto" style={{ gap: '16px' }}>
+          <Button
             type="button"
-            className="button-primary mr-16"
+            variation="primary"
             disabled={unstakeDisabled}
             onClick={() => {
               setClaimUnstake(false);
               showConfirm(true);
-            }}>
-            {formCtx.formState.isSubmitting && !isClaimUnstake && <Spin spinning />}
+            }}
+            loading={formCtx.formState.isSubmitting && !isClaimUnstake}
+            iconPosition="left">
             Unstake
-          </button>
-          <button
+          </Button>
+          <Button
             type="button"
-            className="button-primary"
+            variation="primary"
             disabled={unstakeDisabled}
             onClick={() => {
               setClaimUnstake(true);
               showConfirm(true);
-            }}>
-            {formCtx.formState.isSubmitting && isClaimUnstake && <Spin spinning />}
+            }}
+            loading={formCtx.formState.isSubmitting && isClaimUnstake}
+            iconPosition="left">
             Claim & Unstake
-          </button>
+          </Button>
         </div>
       </form>
 
