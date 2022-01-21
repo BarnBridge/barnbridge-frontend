@@ -191,13 +191,8 @@ const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayToo
       <button type="button" className={s.button} onClick={() => setOpen(prevOpen => !prevOpen)}>
         <Tooltip title={displayTooltip && 'Notifications'} placement={isMobile ? 'right' : 'left'}>
           <div style={{ width: 40, height: 40, flexShrink: 0 }} className="flex align-center justify-center">
-            <IconNotification
-              width={32}
-              height={32}
-              notificationSize={8}
-              bubble={hasUnread}
-              className={s.notificationIcon}>
-              <Icon name="bell" size={32} color="icon" />
+            <IconNotification width={32} height={32} notificationSize={8} bubble={hasUnread}>
+              <Icon name="bell" size={32} />
             </IconNotification>
           </div>
         </Tooltip>
@@ -216,7 +211,7 @@ const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }
   const { showNetworkSelect } = useWeb3();
 
   return (
-    <button type="button" onClick={() => showNetworkSelect()} className={s.button}>
+    <button type="button" onClick={() => showNetworkSelect()} className={cn(s.button, 'hidden-desktop')}>
       <Tooltip title={displayTooltip && activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
         <IconOld name={activeNetwork.meta.logo} width={40} height={40} style={{ flexShrink: 0 }} />
       </Tooltip>
