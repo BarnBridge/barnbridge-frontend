@@ -30,6 +30,10 @@
   &.color-blue {
     color: var(--theme-blue-color);
   }
+
+  &.color-yellow {
+    color: var(--theme-yellow-color);
+  }
 }
 
 [data-theme='light'] {

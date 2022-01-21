@@ -102,6 +102,11 @@ export const MainnetConfig: NetworkConfig = {
     },
     sa: {
       loupe: '0xb7D7E8F3526187e065bc674b19E0BBa42B569f6d',
+      pools: {
+        '0x6acb5f6d4c7e2ca6fe3b7cac13ca6b3ea6c9ee01': {
+          depositDisabled: true,
+        },
+      },
     },
   },
 };
