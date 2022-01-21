@@ -15,6 +15,7 @@ import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useTokens } from 'components/providers/tokensProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
@@ -56,6 +57,7 @@ const LayoutHeader: React.FC = () => {
           </Switch>
         )}
         {activeNetwork.config.features.addBondToken && <AddTokenAction />}
+        <NetworkAction />
         <WalletAction />
       </div>
     </header>
@@ -152,6 +154,23 @@ const AddTokenAction: React.FC = () => {
       <IconOld name="bond-add-token" />
     </button>
   ) : null;
+};
+
+const NetworkAction: React.FC = () => {
+  const { activeNetwork } = useNetwork();
+  const { showNetworkSelect } = useWeb3();
+
+  return (
+    <button
+      type="button"
+      onClick={() => showNetworkSelect()}
+      className={cn(s.actionButton, 'hidden-mobile hidden-tablet')}>
+      <IconOld name={activeNetwork.meta.logo} width={24} height={24} className="mr-8" />
+      <Text type="p2" weight="semibold" color="secondary">
+        {activeNetwork.meta.name}
+      </Text>
+    </button>
+  );
 };
 
 const WalletAction: React.FC = () => {

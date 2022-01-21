@@ -216,7 +216,7 @@ const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }
   const { showNetworkSelect } = useWeb3();
 
   return (
-    <button type="button" onClick={() => showNetworkSelect()} className={s.button}>
+    <button type="button" onClick={() => showNetworkSelect()} className={cn(s.button, 'hidden-desktop')}>
       <Tooltip title={displayTooltip && activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
         <IconOld name={activeNetwork.meta.logo} width={40} height={40} style={{ flexShrink: 0 }} />
       </Tooltip>

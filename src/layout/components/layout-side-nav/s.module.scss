@@ -74,12 +74,25 @@
   border-radius: 4px;
   text-align: left;
 
+  &:hover,
+  &.active {
+    svg {
+      --icon-display__light: none;
+      --icon-display__dark: none;
+      --icon-display__hover: block;
+    }
+
+    .btnText {
+      color: var(--theme-primary-color);
+    }
+  }
+
   .btnContent {
     margin-left: 16px;
     visibility: hidden;
 
     > div {
-      // white-space: nowrap;
+      white-space: nowrap;
       overflow: hidden;
     }
   }
