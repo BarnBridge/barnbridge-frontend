@@ -73,13 +73,17 @@
   border: 0;
   border-radius: 4px;
   text-align: left;
+  color: var(--theme-secondary-color);
 
   &:hover,
   &.active {
+    color: var(--theme-primary-color);
+
     svg {
       --icon-display__light: none;
       --icon-display__dark: none;
       --icon-display__hover: block;
+      color: inherit;
     }
 
     .btnText {
@@ -109,17 +113,6 @@
 }
 
 .themeButton {
-  @media (min-width: 769px) {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: auto;
-
-    .btnContent {
-      display: none;
-    }
-  }
-
   &:hover,
   &.active {
     svg {
