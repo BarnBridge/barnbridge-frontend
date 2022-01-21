@@ -68,7 +68,10 @@ export type NetworkConfig = {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
     dao?: Record<'governance' | 'barn' | 'reward', string>;
     se?: Record<'ePoolPeriphery' | 'ePoolHelper', string>;
-    sa?: Record<'loupe', string>;
+    sa?: {
+      loupe: string;
+      pools?: Record<string, { depositDisabled: boolean }>;
+    };
     faucets?: Record<
       'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai',
       string

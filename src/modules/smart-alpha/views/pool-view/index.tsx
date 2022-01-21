@@ -1,16 +1,17 @@
 import React, { useMemo, useState } from 'react';
-import { isMobile } from 'react-device-detect';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
+import Tooltip from 'components/antd/tooltip';
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
 import { Spinner } from 'components/custom/spinner';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
+import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
 import { isUsdAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
@@ -47,6 +48,7 @@ const PoolView = () => {
   const [epochAdvancing, setEpochAdvancing] = useState(false);
   const [displayTradeLinks, setDisplayTradeLinks] = useState(false);
   const { getOrCreateContract } = useContractFactory();
+  const config = useConfig();
 
   const smartAlphaContract = useMemo(() => {
     if (!pool) {
@@ -103,6 +105,8 @@ const PoolView = () => {
     }
   }
 
+  const isDisabled = config.contracts.sa?.pools?.[pool.poolAddress]?.depositDisabled ?? false;
+
   return (
     <div className="container-limit">
       <div className="mb-16">
@@ -131,11 +135,22 @@ const PoolView = () => {
           <Link to={`${location.pathname}/simulate-epoch`} variation="text">
             Simulate
           </Link>
-          {!isMobile ? (
+          {isDisabled ? (
+            <Tooltip title={<Text type="p1">FLOKI deposits have been disabled</Text>}>
+              <Link
+                to={`/smart-alpha/portfolio`}
+                variation="primary"
+                aria-disabled={!wallet.account}
+                icon="danger"
+                iconPosition="left">
+                Go to Portfolio
+              </Link>
+            </Tooltip>
+          ) : (
             <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
               Deposit
             </Link>
-          ) : null}
+          )}
         </div>
       </div>
       <div className={classNames(s.cards, 'mb-12')}>

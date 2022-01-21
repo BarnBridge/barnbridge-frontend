@@ -119,7 +119,7 @@ const staticNamesList: StaticNames[] = [
 export type IconProps = {
   name: IconNames;
   size?: number | string;
-  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'icon';
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'yellow' | 'icon';
   rotate?: number;
   className?: string;
   style?: React.CSSProperties;
