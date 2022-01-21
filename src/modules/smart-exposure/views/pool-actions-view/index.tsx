@@ -3,7 +3,7 @@ import { Redirect, Route, Switch, useParams } from 'react-router-dom';
 
 import { useWallet } from 'wallets/walletProvider';
 
-const DepositView = lazy(() => import('../deposit-view'));
+// const DepositView = lazy(() => import('../deposit-view'));
 const WithdrawView = lazy(() => import('../withdraw-view'));
 const ChangeTrancheView = lazy(() => import('../change-tranche-view'));
 
@@ -21,9 +21,9 @@ export const PoolActionsView: React.FC = () => {
 
   return (
     <Switch>
-      <Route path="/smart-exposure/pools/:pool/:tranche/deposit" exact>
+      {/* <Route path="/smart-exposure/pools/:pool/:tranche/deposit" exact>
         <DepositView />
-      </Route>
+      </Route> */}
       <Route path="/smart-exposure/pools/:pool/:tranche/withdraw" exact>
         <WithdrawView />
       </Route>
