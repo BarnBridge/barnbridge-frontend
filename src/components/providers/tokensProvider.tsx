@@ -446,6 +446,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'FLOKI':
         // Chainlink: FLOKI/USD
         return getChainlinkFeedPrice('0xfbafc1f5b1b37cc0763780453d1ea635520708f2', MainnetHttpsWeb3Provider);
+      case 'SNX':
+        // Chainlink: SNX/USD
+        return getChainlinkFeedPrice('0xdc3ea94cd0ac27d9a86c180091e7f78c683d3699', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
         return getGeckoPrice('gemini-dollar');
