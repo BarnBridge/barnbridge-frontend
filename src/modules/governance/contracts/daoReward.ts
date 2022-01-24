@@ -59,15 +59,26 @@ class DaoRewardContract extends Web3Contract {
     return totalAmount.dividedBy(totalDuration).multipliedBy(7 * 24 * 60 * 60);
   }
 
+  get isStarted(): Boolean | undefined {
+    if (!this.pullFeature) {
+      return undefined;
+    }
+
+    const { startTs } = this.pullFeature;
+    const now = Date.now() / 1_000;
+
+    return startTs <= now;
+  }
+
   get isEnded(): Boolean | undefined {
     if (!this.pullFeature) {
       return undefined;
     }
 
-    const { endTs } = this.pullFeature;
+    const { startTs, endTs } = this.pullFeature;
     const now = Date.now() / 1_000;
 
-    return endTs < now;
+    return startTs <= now && endTs < now;
   }
 
   async loadCommonData(): Promise<void> {
