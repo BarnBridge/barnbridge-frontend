@@ -6,6 +6,7 @@ import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
 
+import { Alert } from 'components/alert';
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
 import { Dropdown } from 'components/custom/dropdown';
@@ -354,6 +355,8 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   }
 
   if (underlyingInQueue.eq(0)) {
+    const isDisabled = config.contracts.sa?.pools?.[pool.poolAddress]?.depositDisabled ?? false;
+
     return (
       <section
         className="card p-24"
@@ -369,9 +372,14 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
         <Text type="small" weight="semibold" color="secondary" className="mb-8">
           Your entry queue for {pool.poolName} is currently empty.
         </Text>
-        <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
-          Deposit {pool.poolToken.symbol}
-        </Link>
+
+        {isDisabled ? (
+          <Alert type="warning">FLOKI deposits have been disabled</Alert>
+        ) : (
+          <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
+            Deposit {pool.poolToken.symbol}
+          </Link>
+        )}
       </section>
     );
   }

@@ -1,7 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import capitalize from 'lodash/capitalize';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
@@ -24,6 +23,8 @@ import {
   useSyAPI,
 } from 'modules/smart-yield/api';
 import { SYPool, useSYPool } from 'modules/smart-yield/providers/pool-provider';
+
+import { formatDate, formatTime } from 'utils/date';
 
 type TableEntity = APISYPoolTransaction & {
   poolEntity?: SYPool;
@@ -144,10 +145,10 @@ const Columns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
+          {formatDate(entity.blockTimestamp * 1_000)}
         </Text>
         <Text type="small" weight="semibold">
-          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
+          {formatTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
     ),

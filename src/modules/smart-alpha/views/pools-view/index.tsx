@@ -169,11 +169,11 @@ const PoolsView = () => {
           </Text>
         </div>
       </div>
-      <div className="flex align-center mb-32">
+      <div className="flex wrap col-gap-16 row-gap-16 align-center justify-space-between mb-32">
         <Text type="h1" weight="bold">
           Pools
         </Text>
-        <div className="flex align-center ml-auto">
+        <div className="flex wrap col-gap-16 row-gap-16 align-center">
           <Tabs<EpochTypeKey> tabs={epochTabs} activeKey={epochType} onClick={setEpochType} variation="elastic" />
           {forceCardsView ? null : (
             <Button
@@ -181,11 +181,9 @@ const PoolsView = () => {
               icon={layout === 'cards' ? 'list-view' : 'cards-view'}
               iconPosition="only"
               onClick={() => setLayout(prevLayout => (prevLayout === 'cards' ? 'list' : 'cards'))}
-              className="ml-16"
             />
           )}
           <TableFilter<TreasuryFilterType>
-            className="ml-16"
             filters={filters}
             value={filterValue}
             onChange={(filters: TreasuryFilterType) => setTokenFilter(filters.token)}
@@ -321,7 +319,7 @@ const PoolCardInner = ({
           : {}) as React.CSSProperties
       }>
       <header className="card-header flex align-center mb-32">
-        <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
+        <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} />
         <div>
           <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
             {item.poolName}
@@ -331,14 +329,16 @@ const PoolCardInner = ({
           </Text>
         </div>
         {!isEstimate && (
-          <div className="ml-auto" style={{ textAlign: 'right' }}>
+          <div className="ml-auto" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
             <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
               Epoch ends in
             </Text>
             <UseLeftTime delay={1_000}>
               {() => (
                 <Text type="p1" weight="semibold">
-                  {getFormattedDuration(tillNextEpoch(item))}
+                  {getFormattedDuration(tillNextEpoch(item), undefined, {
+                    format: ['months', 'days', 'hours', 'minutes'],
+                  })}
                 </Text>
               )}
             </UseLeftTime>

@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
-import cn from 'classnames';
 import { formatToken, formatUSD } from 'web3/utils';
 
 import StatusTag from 'components/custom/status-tag';
@@ -13,8 +12,6 @@ import { TokenIcon } from 'components/token-icon';
 import { FCx } from 'components/types.tx';
 import { useRewardPools } from 'modules/smart-yield/providers/reward-pools-provider';
 import { useWallet } from 'wallets/walletProvider';
-
-import s from './s.module.scss';
 
 const AggregatedPoolCard: FCx = props => {
   const { getTokenByAddress, convertTokenInUSD, bondToken } = useKnownTokens();
@@ -67,23 +64,27 @@ const AggregatedPoolCard: FCx = props => {
   });
 
   return (
-    <div className="card flex flow-row">
-      <div className={cn(s.cardHeader, 'flex align-center justify-space-between p-24')}>
-        <div className="flex align-center col-gap-16">
+    <article className="card flex flow-row p-24">
+      <header className="flex align-center  col-gap-24 row-gap-12 mb-24">
+        <div className="flex align-center">
           <Icon name="sy-circle" size={40} />
-          <Text type="p1" weight="semibold" color="primary">
-            SMART Yield Pools
-          </Text>
         </div>
-        <StatusTag
-          text={
-            <Text type="lb2" weight="bold" color="green">
-              ACTIVE
+        <div className="flex-grow">
+          <div className="flex justify-space-between align-center wrap mb-4">
+            <Text type="p1" weight="semibold" color="primary">
+              SMART Yield Pools
             </Text>
-          }
-          color="green"
-        />
-      </div>
+            <StatusTag
+              text={
+                <Text type="lb2" weight="bold" color="green">
+                  ACTIVE
+                </Text>
+              }
+              color="green"
+            />
+          </div>
+        </div>
+      </header>
       <div className="flex flow-row flex-grow ph-24 pb-24">
         <ElasticTabs
           tabs={[
@@ -174,7 +175,7 @@ const AggregatedPoolCard: FCx = props => {
           </Link>
         </div>
       </div>
-    </div>
+    </article>
   );
 };
 

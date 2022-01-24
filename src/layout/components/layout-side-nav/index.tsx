@@ -1,16 +1,23 @@
 /* eslint-disable jsx-a11y/no-static-element-interactions */
 /* eslint-disable jsx-a11y/click-events-have-key-events */
-import React from 'react';
+import React, { useState } from 'react';
 import { isMobile } from 'react-device-detect';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
-import OldIcon from 'components/custom/icon';
+import { Button } from 'components/button';
+import IconOld from 'components/custom/icon';
+import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
+import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
 import { useGeneral } from 'components/providers/generalProvider';
+import { useNetwork } from 'components/providers/networkProvider';
+import { useNotifications } from 'components/providers/notificationsProvider';
+import { useWeb3 } from 'components/providers/web3Provider';
+import Notifications from 'wallets/components/notifications';
 
 import s from './s.module.scss';
 
@@ -42,8 +49,8 @@ const LayoutSideNav: React.FC = () => {
             <Icon name="close" />
           </button>
           <Link to="/" className={s.logo}>
-            <OldIcon name="bond-square-token" />
-            <OldIcon name="barnbridge" width="113" color="primary" className={s.logoLabel} />
+            <IconOld name="bond-square-token" />
+            <IconOld name="barnbridge" width="113" color="primary" className={s.logoLabel} />
           </Link>
         </div>
         <nav className={s.top}>
@@ -139,16 +146,8 @@ const LayoutSideNav: React.FC = () => {
           )}
         </nav>
         <div className={s.bottom}>
-          <a rel="noopener noreferrer" target="_blank" href="https://docs.barnbridge.com/" className={s.button}>
-            <Tooltip title={displayTooltip && 'Docs'} placement="right">
-              <Icon name="menu-docs" size={40} />
-            </Tooltip>
-            <div className={s.btnContent}>
-              <Text type="lb1" weight="semibold" className={s.btnLabel} color="primary">
-                Docs
-              </Text>
-            </div>
-          </a>
+          <NotificationsAction displayTooltip={displayTooltip} />
+          <NetworkAction displayTooltip={displayTooltip} />
           <ToggleThemeButton displayTooltip={displayTooltip} />
         </div>
       </aside>
@@ -157,6 +156,73 @@ const LayoutSideNav: React.FC = () => {
 };
 
 export default LayoutSideNav;
+
+const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }) => {
+  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
+  const [open, setOpen] = useState(false);
+
+  const markAllAsRead = () => {
+    if (notifications.length) {
+      setNotificationsReadUntil(Math.max(...notifications.map(n => n.startsOn)));
+    }
+  };
+  const hasUnread = notificationsReadUntil ? notifications.some(n => n.startsOn > notificationsReadUntil) : false;
+
+  return (
+    <>
+      {open && (
+        <Modal
+          heading={
+            <Text type="h3" weight="bold" color="primary">
+              Notifications
+            </Text>
+          }
+          closeHandler={() => setOpen(false)}>
+          <div className="flex">
+            {hasUnread && (
+              <Button type="button" variation="link" className="ml-auto" onClick={markAllAsRead}>
+                Mark all as read
+              </Button>
+            )}
+          </div>
+          <Notifications />
+        </Modal>
+      )}
+      <button type="button" className={s.button} onClick={() => setOpen(prevOpen => !prevOpen)}>
+        <Tooltip title={displayTooltip && 'Notifications'} placement={isMobile ? 'right' : 'left'}>
+          <div style={{ width: 40, height: 40, flexShrink: 0 }} className="flex align-center justify-center">
+            <IconNotification width={32} height={32} notificationSize={8} bubble={hasUnread}>
+              <Icon name="bell" size={32} />
+            </IconNotification>
+          </div>
+        </Tooltip>
+        <div className={s.btnContent}>
+          <Text type="lb1" weight="semibold" className={s.btnLabel}>
+            Notifications
+          </Text>
+        </div>
+      </button>
+    </>
+  );
+};
+
+const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }) => {
+  const { activeNetwork } = useNetwork();
+  const { showNetworkSelect } = useWeb3();
+
+  return (
+    <button type="button" onClick={() => showNetworkSelect()} className={cn(s.button, 'hidden-desktop')}>
+      <Tooltip title={displayTooltip && activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
+        <IconOld name={activeNetwork.meta.logo} width={40} height={40} style={{ flexShrink: 0 }} />
+      </Tooltip>
+      <Tooltip title={activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
+        <Text type="lb1" weight="semibold" className={cn(s.btnLabel, s.btnContent)} ellipsis>
+          {activeNetwork.meta.name}
+        </Text>
+      </Tooltip>
+    </button>
+  );
+};
 
 const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
   const { toggleTheme, selectedTheme } = useGeneral();
@@ -176,8 +242,8 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
   }
 
   return (
-    <button type="button" onClick={toggleTheme} className={s.button}>
-      <Tooltip title={displayTooltip && text} placement="right">
+    <button type="button" onClick={toggleTheme} className={cn(s.themeButton, s.button)}>
+      <Tooltip title={displayTooltip && text} placement={isMobile ? 'right' : 'left'}>
         <Icon name={iconName} size={40} />
       </Tooltip>
       <div className={s.btnContent}>

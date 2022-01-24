@@ -1,10 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import { format } from 'date-fns';
 
 import { Chart as ChartComponent } from 'components/chart';
 import { PeriodTabsKey } from 'components/custom/tabs';
 
 import { formatTick } from 'utils/chart';
+import { formatDateTime } from 'utils/date';
 
 export default {
   title: 'Components/Chart',
@@ -1471,7 +1471,7 @@ Chart.args = {
   x: {
     key: 'point',
     format: item => formatTick(item, PeriodTabsKey.month),
-    itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
+    itemFormat: item => formatDateTime(item),
   },
   y: {
     format: value => Intl.NumberFormat('en', { notation: 'compact', style: 'currency', currency: 'USD' }).format(value),

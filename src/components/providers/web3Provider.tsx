@@ -222,7 +222,7 @@ const Web3Provider: FC = props => {
             </Text>
           }
           closeHandler={showNetworkSelect}>
-          <div className="flex flow-row row-gap-16 p-24">
+          <div className="flex flow-row row-gap-16">
             {networks.map(network => (
               <button
                 key={network.id}

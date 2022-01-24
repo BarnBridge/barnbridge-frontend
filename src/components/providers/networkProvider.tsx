@@ -38,7 +38,6 @@ const networks: Web3Network[] = (() => {
   if (isDevelopmentMode) {
     return [
       KovanNetwork,
-      OptimisticKovanNetwork,
       TestnetNetwork,
       OptimisticKovanNetwork,
       MainnetNetwork,
@@ -54,7 +53,7 @@ const networks: Web3Network[] = (() => {
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, TestnetNetwork, ArbitrumNetwork];
+    return [MainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, ArbitrumNetwork];
   }
 
   return [];

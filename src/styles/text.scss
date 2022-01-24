@@ -32,7 +32,7 @@
 }
 
 .text-wrap {
-  @include text-wrap;
+  overflow-wrap: anywhere;
 }
 
 .text-nowrap {

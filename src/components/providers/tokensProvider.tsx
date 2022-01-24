@@ -58,6 +58,7 @@ export enum Tokens {
   AAVE = 'AAVE',
   DPI = 'DPI',
   FLOKI = 'FLOKI',
+  SNX = 'SNX',
 }
 
 export type BaseTokenType = {
@@ -246,6 +247,13 @@ const FLOKI: BaseTokenType = {
   name: 'FLOKI',
   decimals: 9,
   icon: 'floki',
+};
+
+const SNX: BaseTokenType = {
+  symbol: Tokens.SNX,
+  name: 'SNX',
+  decimals: 18,
+  icon: 'snx',
 };
 
 export const ProjectToken: BaseTokenType & {
@@ -606,6 +614,7 @@ const ALL_TOKENS: BaseTokenType[] = [
   FEI,
   DPI,
   FLOKI,
+  SNX,
 ];
 
 const ALL_ASSETS: BaseAssetType[] = [BTC, ETH, USD];

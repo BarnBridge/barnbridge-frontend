@@ -95,6 +95,7 @@ export const MainnetConfig: NetworkConfig = {
       governance: '0x4cAE362D7F227e3d306f70ce4878E245563F3069',
       barn: '0x10e138877df69Ca44Fdc68655f86c88CDe142D7F',
       reward: '0x9d0CF50547D848cC4b6A12BeDCF7696e9b334a22',
+      reward2: '0x85B86b749aD4B898407aC3c86DbA8d13E652e521',
     },
     se: {
       ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
@@ -102,6 +103,11 @@ export const MainnetConfig: NetworkConfig = {
     },
     sa: {
       loupe: '0xb7D7E8F3526187e065bc674b19E0BBa42B569f6d',
+      pools: {
+        '0x6acb5f6d4c7e2ca6fe3b7cac13ca6b3ea6c9ee01': {
+          depositDisabled: true,
+        },
+      },
     },
   },
 };

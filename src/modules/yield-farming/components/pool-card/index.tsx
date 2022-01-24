@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import addMinutes from 'date-fns/addMinutes';
-import format from 'date-fns/format';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
@@ -21,6 +20,8 @@ import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/walletProvider';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
+
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -51,9 +52,8 @@ const PoolCard: FC<Props> = props => {
     toClaim,
   } = poolMeta?.contract ?? {};
 
-  const formattedEndDate = format(
+  const formattedEndDate = formatDateTime(
     addMinutes(fromUnixTime(poolEndDate), fromUnixTime(poolEndDate).getTimezoneOffset()),
-    'MMM dd yyyy, HH:mm',
   );
 
   const poolBalanceInUSD = yfPoolsCtx.getPoolBalanceInUSD(poolId);
@@ -84,45 +84,46 @@ const PoolCard: FC<Props> = props => {
   };
 
   return (
-    <div className="card flex flow-row">
-      <div className="flex align-center justify-space-between p-24">
+    <article className="card flex flow-row p-24">
+      <header className="flex align-center  col-gap-24 row-gap-12 mb-24">
         <div className="flex align-center">
-          <IconsSet
-            icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon} />) ?? []}
-            className="mr-16"
-          />
-          <div>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          <IconsSet icons={poolMeta?.tokens.map(token => <TokenIcon key={token.symbol} name={token.icon} />) ?? []} />
+        </div>
+        <div className="flex-grow">
+          <div className="flex justify-space-between align-center wrap mb-4">
+            <Text type="p1" weight="semibold" color="primary" className="mb-4" wrap>
               {poolMeta?.label ?? '-'}
             </Text>
-            <Text type="small" weight="semibold" color="red">
-              Epoch {lastActiveEpoch ?? '-'} / {totalEpochs ?? '-'}
-            </Text>
+
+            {isEnded === false && (
+              <StatusTag
+                text={
+                  <Text type="lb2" weight="bold" color="green">
+                    ACTIVE
+                  </Text>
+                }
+                color="green"
+              />
+            )}
+            {isEnded && (
+              <StatusTag
+                text={
+                  <Text type="lb2" weight="bold" color="secondary">
+                    ENDED
+                  </Text>
+                }
+                color="green"
+                style={{ backgroundColor: 'rgba(113, 121, 128, 0.08)' }}
+              />
+            )}
           </div>
+
+          <Text type="small" weight="semibold" color="red">
+            Epoch {lastActiveEpoch ?? '-'} / {totalEpochs ?? '-'}
+          </Text>
         </div>
-        {isEnded === false && (
-          <StatusTag
-            text={
-              <Text type="lb2" weight="bold" color="green">
-                ACTIVE
-              </Text>
-            }
-            color="green"
-          />
-        )}
-        {isEnded && (
-          <StatusTag
-            text={
-              <Text type="lb2" weight="bold" color="secondary">
-                ENDED
-              </Text>
-            }
-            color="green"
-            style={{ backgroundColor: 'rgba(113, 121, 128, 0.08)' }}
-          />
-        )}
-      </div>
-      <div className="flex flow-row flex-grow ph-24 pb-24">
+      </header>
+      <div className="flex flow-row flex-grow">
         <ElasticTabs
           tabs={[
             { id: 'pool', children: 'Pool statistics' },
@@ -311,7 +312,7 @@ const PoolCard: FC<Props> = props => {
           />
         )}
       </div>
-    </div>
+    </article>
   );
 };
 
