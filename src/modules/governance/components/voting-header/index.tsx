@@ -60,6 +60,10 @@ const VotingHeader: React.FC = () => {
       setClaimModalVisible(true);
     } else if (daoCtx.activeDaoReward) {
       handleRewardClaim(daoCtx.activeDaoReward);
+    } else if (toClaimReward?.gt(0)) {
+      handleRewardClaim(daoCtx.daoReward);
+    } else if (toClaimReward2?.gt(0) && daoCtx.daoReward2) {
+      handleRewardClaim(daoCtx.daoReward2);
     }
   }
 
