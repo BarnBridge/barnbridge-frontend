@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { format } from 'date-fns';
 
 import { Chart } from 'components/chart';
 import { PortfolioPeriodChartTabs, PortfolioPeriodTabsKey } from 'components/custom/tabs';
@@ -7,6 +6,7 @@ import { Text } from 'components/custom/typography';
 import { useFetchPortfolioValue } from 'modules/smart-alpha/api';
 
 import { formatTick } from 'utils/chart';
+import { formatDateTime } from 'utils/date';
 
 export const PortfolioValue: React.FC = () => {
   const [periodFilter, setPeriodFilter] = useState<PortfolioPeriodTabsKey>(PortfolioPeriodTabsKey.week);
@@ -38,7 +38,7 @@ export const PortfolioValue: React.FC = () => {
           x={{
             key: 'point',
             format: item => formatTick(item, periodFilter),
-            itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
+            itemFormat: item => formatDateTime(item),
           }}
           y={{
             format: value =>

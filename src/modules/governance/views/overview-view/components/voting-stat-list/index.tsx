@@ -1,5 +1,6 @@
 import React from 'react';
 import cn from 'classnames';
+import capitalize from 'lodash/capitalize';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
@@ -35,7 +36,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
   }, []);
 
   const apr = daoCtx.daoBarn.bondStaked
-    ? daoCtx.daoReward.weeklyRewards?.multipliedBy(52).dividedBy(daoCtx.daoBarn.bondStaked)
+    ? daoCtx.activeDaoReward?.weeklyRewards?.multipliedBy(52).dividedBy(daoCtx.daoBarn.bondStaked)
     : undefined;
 
   return (
@@ -45,11 +46,12 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Hint
             text={
               <Text type="p2">
-                This number shows the amount of $BOND (and their USD value) currently staked in the DAO.
+                This number shows the amount of ${projectToken.symbol} (and their USD value) currently staked in the
+                DAO.
               </Text>
             }>
             <Text type="lb2" weight="semibold" color="red">
-              Bond Staked
+              {projectToken.symbol} Staked
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
@@ -89,8 +91,8 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             text={
               <Grid flow="row" gap={8} align="start">
                 <Text type="p2">
-                  This number shows the amount of vBOND currently minted. This number may differ from the amount of
-                  $BOND staked because of the multiplier mechanic
+                  This number shows the amount of v{projectToken.symbol} currently minted. This number may differ from
+                  the amount of ${projectToken.symbol} staked because of the multiplier mechanic
                 </Text>
                 <ExternalLink
                   href="https://integrations.barnbridge.com/specs/dao-specifications#multiplier-and-voting-power"
@@ -101,7 +103,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               </Grid>
             }>
             <Text type="lb2" weight="semibold" color="red">
-              VBond
+              V{capitalize(projectToken.symbol)}
             </Text>
           </Hint>
           <Grid flow="row" gap={4}>
@@ -118,8 +120,8 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             text={
               <Grid flow="row" gap={8} align="start">
                 <Text type="p2">
-                  This counter shows the average amount of time $BOND stakers locked their deposits in order to take
-                  advantage of the voting power bonus.
+                  This counter shows the average amount of time ${projectToken.symbol} stakers locked their deposits in
+                  order to take advantage of the voting power bonus.
                 </Text>
                 <ExternalLink
                   href="https://integrations.barnbridge.com/specs/dao-specifications#users-can-lock-bond-for-vbond"
@@ -144,41 +146,45 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
         </Grid>
       </div>
 
-      <div className="card p-24">
-        <Grid flow="row" gap={48}>
-          <Hint
-            text={
-              <Text type="p2">
-                This number shows the $BOND token rewards distributed so far out of the total of{' '}
-                {formatToken(daoCtx.daoReward.pullFeature?.totalAmount)} that are going to be available for the DAO
-                Staking.
-              </Text>
-            }>
-            <Text type="lb2" weight="semibold" color="red">
-              Bond Rewards
-            </Text>
-          </Hint>
-          <Grid flow="row" gap={4}>
-            <UseLeftTime end={(daoCtx.daoReward.pullFeature?.endTs ?? 0) * 1000} delay={5_000}>
-              {() => (
-                <Text type="h2" weight="bold" color="primary" wrap>
-                  {formatToken(daoCtx.daoReward.bondRewards)}
+      {daoCtx.activeDaoReward && (
+        <div className="card p-24">
+          <Grid flow="row" gap={48}>
+            <Hint
+              text={
+                <Text type="p2">
+                  This number shows the ${projectToken.symbol} token rewards distributed so far out of the total of{' '}
+                  {formatToken(daoCtx.activeDaoReward.pullFeature?.totalAmount)} that are going to be available for the
+                  DAO Staking.
                 </Text>
-              )}
-            </UseLeftTime>
-            <Text type="p1" color="secondary">
-              out of {formatToken(daoCtx.daoReward.pullFeature?.totalAmount)}
-            </Text>
+              }>
+              <Text type="lb2" weight="semibold" color="red">
+                {projectToken.symbol} Rewards
+              </Text>
+            </Hint>
+            <Grid flow="row" gap={4}>
+              <UseLeftTime end={(daoCtx.activeDaoReward.pullFeature?.endTs ?? 0) * 1000} delay={5_000}>
+                {() => (
+                  <Text type="h2" weight="bold" color="primary" wrap>
+                    {formatToken(daoCtx.activeDaoReward?.bondRewards)}
+                  </Text>
+                )}
+              </UseLeftTime>
+              <Text type="p1" color="secondary">
+                out of {formatToken(daoCtx.activeDaoReward.pullFeature?.totalAmount)}
+              </Text>
+            </Grid>
           </Grid>
-        </Grid>
-      </div>
+        </div>
+      )}
 
       <div className="card p-24">
         <Grid flow="row" gap={48}>
           <Hint
             text={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">This number shows the amount of vBOND that is delegated to other addresses.</Text>
+                <Text type="p2">
+                  This number shows the amount of v{projectToken.symbol} that is delegated to other addresses.
+                </Text>
                 <ExternalLink
                   href="https://integrations.barnbridge.com/specs/dao-specifications#users-can-delegate-vbond-to-other-users"
                   className="link-blue"
@@ -208,8 +214,8 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Hint
             text={
               <Text type="p2">
-                This card shows the number of holders of $BOND and compares it to the number of stakers and voters in
-                the DAO.
+                This card shows the number of holders of ${projectToken.symbol} and compares it to the number of stakers
+                and voters in the DAO.
               </Text>
             }>
             <Text type="lb2" weight="semibold" color="red">
@@ -232,31 +238,34 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
         </Grid>
       </div>
 
-      <div className="card p-24">
-        <Grid flow="row" gap={48}>
-          <Text type="lb2" weight="semibold" color="red">
-            Annual Percentage Rate (APR)
-          </Text>
-          <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary" wrap>
-              {formatPercent(apr) ?? '-'}
-            </Text>
-          </Grid>
-        </Grid>
-      </div>
-
-      <div className="card p-24">
-        <Grid flow="row" gap={48}>
-          <Text type="lb2" weight="semibold" color="red">
-            Weekly {ProjectToken.symbol} Rewards
-          </Text>
-          <Grid flow="row" gap={4}>
-            <Text type="h2" weight="bold" color="primary" wrap>
-              {formatToken(daoCtx.daoReward.weeklyRewards) ?? '-'}
-            </Text>
-          </Grid>
-        </Grid>
-      </div>
+      {daoCtx.activeDaoReward && (
+        <>
+          <div className="card p-24">
+            <Grid flow="row" gap={48}>
+              <Text type="lb2" weight="semibold" color="red">
+                Annual Percentage Rate (APR)
+              </Text>
+              <Grid flow="row" gap={4}>
+                <Text type="h2" weight="bold" color="primary" wrap>
+                  {formatPercent(apr) ?? '-'}
+                </Text>
+              </Grid>
+            </Grid>
+          </div>
+          <div className="card p-24">
+            <Grid flow="row" gap={48}>
+              <Text type="lb2" weight="semibold" color="red">
+                Weekly {ProjectToken.symbol} Rewards
+              </Text>
+              <Grid flow="row" gap={4}>
+                <Text type="h2" weight="bold" color="primary" wrap>
+                  {formatToken(daoCtx.activeDaoReward.weeklyRewards) ?? '-'}
+                </Text>
+              </Grid>
+            </Grid>
+          </div>
+        </>
+      )}
     </div>
   );
 };

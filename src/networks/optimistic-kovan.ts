@@ -18,7 +18,7 @@ export const OptimisticKovanConfig: NetworkConfig = {
   title: 'BarnBridge Optimistic Kovan',
   features: {
     smartAlpha: true,
-    gasFees: true,
+    gasFees: false,
     addBondToken: true,
   },
   wallets: {

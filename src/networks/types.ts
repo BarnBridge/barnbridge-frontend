@@ -66,9 +66,17 @@ export type NetworkConfig = {
   >;
   contracts: {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
-    dao?: Record<'governance' | 'barn' | 'reward', string>;
+    dao?: {
+      governance: string;
+      barn: string;
+      reward: string;
+      reward2?: string;
+    };
     se?: Record<'ePoolPeriphery' | 'ePoolHelper', string>;
-    sa?: Record<'loupe', string>;
+    sa?: {
+      loupe: string;
+      pools?: Record<string, { depositDisabled: boolean }>;
+    };
     faucets?: Record<
       'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai',
       string

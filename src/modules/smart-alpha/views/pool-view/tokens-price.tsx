@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import classNames from 'classnames';
-import { format } from 'date-fns';
 
 import { Chart } from 'components/chart';
 import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
@@ -8,6 +7,7 @@ import { Text } from 'components/custom/typography';
 import { useFetchTokenPrice } from 'modules/smart-alpha/api';
 
 import { formatTick } from 'utils/chart';
+import { formatDateTime } from 'utils/date';
 
 export const TokensPrice: React.FC<{ poolAddress: string; tokenSymbol: string; className?: string }> = ({
   poolAddress,
@@ -32,7 +32,7 @@ export const TokensPrice: React.FC<{ poolAddress: string; tokenSymbol: string; c
           x={{
             key: 'point',
             format: item => formatTick(item, periodFilter),
-            itemFormat: item => format(new Date(item), 'MM.dd.yyyy HH:mm'),
+            itemFormat: item => formatDateTime(item),
           }}
           y={{
             format: value => `${Intl.NumberFormat('en', { notation: 'compact' }).format(value)} ${tokenSymbol}`,

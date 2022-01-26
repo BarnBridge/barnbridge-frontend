@@ -70,6 +70,11 @@ export const BinanceDevConfig: NetworkConfig = {
   contracts: {
     sa: {
       loupe: '0x525fbAa28220027e65785D6fa67595Df6a6F4C28',
+      pools: {
+        '0xf88b77681bfa3a05790c2491f021ff085a1bded5': {
+          depositDisabled: true,
+        },
+      },
     },
   },
 };

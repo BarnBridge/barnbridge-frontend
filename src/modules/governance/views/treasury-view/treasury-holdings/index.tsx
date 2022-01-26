@@ -1,6 +1,5 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
@@ -23,6 +22,8 @@ import {
   useFetchTreasuryTokens,
 } from 'modules/governance/api';
 import { MarketMeta } from 'modules/smart-yield/providers/markets';
+
+import { formatDate, formatTime } from 'utils/date';
 
 type ExtendedAPITreasuryToken = APITreasuryToken & {
   balanceAmount: BigNumber | undefined;
@@ -74,10 +75,10 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     render: entity => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
+          {formatDate(entity.blockTimestamp * 1_000)}
         </Text>
         <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
+          {formatTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
     ),

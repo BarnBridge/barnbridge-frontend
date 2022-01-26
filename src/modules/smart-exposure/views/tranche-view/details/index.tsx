@@ -1,7 +1,6 @@
 ﻿import { useState } from 'react';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import { format } from 'date-fns';
 import { formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Divider from 'components/antd/divider';
@@ -15,6 +14,7 @@ import { TrancheApiType } from 'modules/smart-exposure/api';
 import { useWallet } from 'wallets/walletProvider';
 
 import { getRelativeTime } from 'utils';
+import { formatDate, formatTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -100,10 +100,10 @@ const RebalancingDetails = ({ tranche }: { tranche: TrancheApiType }) => {
           {tranche.state.lastRebalance ? (
             <>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                {format(new Date(tranche.state.lastRebalance * 1000), 'dd.MM.yyyy')}
+                {formatDate(tranche.state.lastRebalance * 1000)}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                {format(new Date(tranche.state.lastRebalance * 1000), 'HH:mm')}
+                {formatTime(tranche.state.lastRebalance * 1000)}
               </Text>
             </>
           ) : (

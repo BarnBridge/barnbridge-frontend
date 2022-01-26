@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import addMinutes from 'date-fns/addMinutes';
-import format from 'date-fns/format';
 import fromUnixTime from 'date-fns/fromUnixTime';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
@@ -21,6 +20,8 @@ import { YfPoolContract } from 'modules/yield-farming/contracts/yfPool';
 import { useWallet } from 'wallets/walletProvider';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
+
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -51,9 +52,8 @@ const PoolCard: FC<Props> = props => {
     toClaim,
   } = poolMeta?.contract ?? {};
 
-  const formattedEndDate = format(
+  const formattedEndDate = formatDateTime(
     addMinutes(fromUnixTime(poolEndDate), fromUnixTime(poolEndDate).getTimezoneOffset()),
-    'MMM dd yyyy, HH:mm',
   );
 
   const poolBalanceInUSD = yfPoolsCtx.getPoolBalanceInUSD(poolId);

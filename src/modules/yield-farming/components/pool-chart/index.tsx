@@ -2,7 +2,6 @@ import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Spin } from 'antd';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
-import format from 'date-fns/format';
 import getUnixTime from 'date-fns/getUnixTime';
 import * as ReCharts from 'recharts';
 import { formatUSD, formatUSDValue } from 'web3/utils';
@@ -18,6 +17,8 @@ import { useYfAPI } from 'modules/yield-farming/api';
 import { ReactComponent as EmptyChartSvg } from 'resources/svg/empty-chart.svg';
 
 import { YFPoolID, useYFPools } from '../../providers/pools-provider';
+
+import { formatDate } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -142,7 +143,7 @@ const PoolChart: FC<Props> = props => {
               ?.multipliedBy(-1);
 
             historyMap.set(timestamp, {
-              label: isAll ? `Epoch ${epoch + 1}` : format(new Date(timestamp), 'dd-MM-yyyy'),
+              label: isAll ? `Epoch ${epoch + 1}` : formatDate(timestamp),
               deposits: prevDeposits.plus(deposits ?? BigNumber.ZERO),
               withdrawals: prevWithdrawals.plus(withdrawals ?? BigNumber.ZERO),
             });

@@ -1,7 +1,6 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import { formatBigValue, formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Table from 'components/antd/table';
@@ -15,6 +14,8 @@ import { mergeState } from 'hooks/useMergeState';
 import { APISYJuniorPastPosition, JuniorPastPositionTypes, useSyAPI } from 'modules/smart-yield/api';
 import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { formatDateTime } from 'utils/date';
 
 type TableEntity = APISYJuniorPastPosition & {
   pool?: PoolsSYPool;
@@ -57,7 +58,7 @@ const Columns: ColumnsType<TableEntity> = [
           {shortenAddr(entity.transactionHash)}
         </ExplorerTxLink>
         <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+          {formatDateTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
     ),
