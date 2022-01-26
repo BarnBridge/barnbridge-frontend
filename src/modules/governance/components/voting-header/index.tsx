@@ -75,9 +75,9 @@ const VotingHeader: React.FC = () => {
       <Text type="lb2" weight="semibold" color="red" className="mb-16">
         My Voting Power
       </Text>
-      <Grid flow="col" gap={24} className={s.items}>
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+      <div className={s.items}>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Current reward
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -96,10 +96,9 @@ const VotingHeader: React.FC = () => {
               {!state.claiming ? 'Claim' : <Spin spinning />}
             </Button>
           </Grid>
-        </Grid>
-        <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+        </div>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Bond Balance
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -110,10 +109,9 @@ const VotingHeader: React.FC = () => {
             </Skeleton>
             <TokenIcon name={projectToken.icon} />
           </Grid>
-        </Grid>
-        <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+        </div>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Total voting power
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -128,62 +126,60 @@ const VotingHeader: React.FC = () => {
 
             {state.showDetailedView && <VotingDetailedModal onCancel={() => setState({ showDetailedView: false })} />}
           </Grid>
-        </Grid>
+        </div>
 
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {leftTime => {
             const leftMultiplier = (multiplier - 1) * (leftTime / loadedUserLockedUntil) + 1;
 
             return leftMultiplier > 1 ? (
-              <>
-                <Divider type="vertical" />
-                <Grid flow="row" gap={4}>
-                  <Hint
-                    text={
-                      <>
-                        <Text type="p2">
-                          The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus
-                          of up to 2x vBOND. The bonus is linear, as per the following example:
-                        </Text>
-                        <ul>
-                          <li>
-                            <Text type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Text>
-                          </li>
-                          <li>
-                            <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
-                          </li>
-                        </ul>
-                        <ExternalLink
-                          href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
-                          variation="link">
-                          Learn more
-                        </ExternalLink>
-                      </>
-                    }>
-                    <Text type="p2" color="secondary">
-                      Multiplier & Lock timer
-                    </Text>
-                  </Hint>
-
-                  <Grid flow="col" gap={8} align="center">
-                    <Tooltip title={`x${leftMultiplier}`}>
-                      <Text type="lb1" weight="bold" color="red" className={s.ratio}>
-                        {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
+              <div>
+                <Hint
+                  text={
+                    <>
+                      <Text type="p2">
+                        The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus of
+                        up to 2x vBOND. The bonus is linear, as per the following example:
                       </Text>
-                    </Tooltip>
-                    <Text type="p2" color="secondary">
-                      for
+                      <ul>
+                        <li>
+                          <Text type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Text>
+                        </li>
+                        <li>
+                          <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
+                        </li>
+                      </ul>
+                      <ExternalLink
+                        href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
+                        variation="link">
+                        Learn more
+                      </ExternalLink>
+                    </>
+                  }
+                  className="mb-4">
+                  <Text type="p2" color="secondary">
+                    Multiplier & Lock timer
+                  </Text>
+                </Hint>
+
+                <Grid flow="col" gap={8} align="center">
+                  <Tooltip title={`x${leftMultiplier}`}>
+                    <Text type="lb1" weight="bold" color="red" className={s.ratio}>
+                      {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
                     </Text>
-                    <Text type="h3" weight="bold" color="primary">
-                      {getFormattedDuration(0, userLockedUntil)}
-                    </Text>
-                  </Grid>
+                  </Tooltip>
+                  <Text type="p2" color="secondary">
+                    for
+                  </Text>
+                  <Text type="h3" weight="bold" color="primary">
+                    {getFormattedDuration(0, userLockedUntil)}
+                  </Text>
                 </Grid>
-              </>
+              </div>
             ) : undefined;
           }}
         </UseLeftTime>
-      </Grid>
+      </div>
     </div>
   );
 };
