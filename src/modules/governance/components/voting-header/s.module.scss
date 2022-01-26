@@ -1,11 +1,12 @@
 .component {
   background: var(--theme-card-color);
+  border-bottom: 1px solid var(--theme-border-color);
 }
 
 .items {
-  @media (max-width: 480px) {
-    display: block;
-  }
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
 }
 
 .ratio {
