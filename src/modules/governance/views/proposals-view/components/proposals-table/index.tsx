@@ -1,24 +1,27 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ColumnsType } from 'antd/lib/table/interface';
 import BigNumber from 'bignumber.js';
 
-import Progress from 'components/antd/progress';
-import Table from 'components/antd/table';
 import Grid from 'components/custom/grid';
+import { Progress } from 'components/custom/progress';
+import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import { Text } from 'components/custom/typography';
 import { UseLeftTime } from 'hooks/useLeftTime';
+import useMergeState from 'hooks/useMergeState';
+import { APILiteProposalEntity, useDaoAPI } from 'modules/governance/api';
 
-import { LiteProposalEntity, useProposals } from '../../providers/ProposalsProvider';
 import ProposalStatusTag from '../proposal-status-tag';
 
 import { getFormattedDuration } from 'utils';
 
-const Columns: ColumnsType<LiteProposalEntity> = [
+export type LiteProposalEntity = APILiteProposalEntity & {
+  stateTimeLeftTs: number;
+};
+
+const columns: ColumnType<LiteProposalEntity>[] = [
   {
-    title: 'Proposal',
-    width: '70%',
-    render: (_, data: LiteProposalEntity) => (
+    heading: 'Proposal',
+    render: data => (
       <Grid flow="row" gap={8}>
         <Link to={`proposals/${data.proposalId}`}>
           <Text type="p1" weight="semibold" color="primary">
@@ -39,76 +42,127 @@ const Columns: ColumnsType<LiteProposalEntity> = [
     ),
   },
   {
-    title: 'Votes',
-    width: '30%',
-    render: (_, data: LiteProposalEntity) => {
+    heading: 'Votes',
+    render: data => {
       const total = data.forVotes.plus(data.againstVotes);
 
       let forRate = BigNumber.ZERO;
       let againstRate = BigNumber.ZERO;
 
-      if (total.gt(BigNumber.ZERO)) {
+      if (total.gt(0)) {
         forRate = data.forVotes.multipliedBy(100).div(total);
         againstRate = data.againstVotes.multipliedBy(100).div(total);
       }
 
       return (
-        <Grid flow="row" gap={8}>
-          <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
-            <Progress
-              percent={forRate.toNumber()}
-              strokeColor="var(--theme-green-color)"
-              trailColor="rgba(var(--theme-green-color-rgb), .16)"
-            />
+        <div
+          style={{
+            display: 'grid',
+            gap: '8px',
+          }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 196px) 65px',
+              gap: '24px',
+              alignItems: 'center',
+            }}>
+            <Progress value={forRate.toNumber()} color="green" />
             <Text type="p2" weight="semibold" color="secondary" align="right">
               {forRate.toFormat(2)}%
             </Text>
-          </Grid>
-          <Grid gap={24} colsTemplate="minmax(0, 196px) 65px">
-            <Progress
-              percent={againstRate.toNumber()}
-              strokeColor="var(--theme-red-color)"
-              trailColor="rgba(var(--theme-red-color-rgb), .16)"
-            />
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'minmax(0, 196px) 65px',
+              gap: '24px',
+              alignItems: 'center',
+            }}>
+            <Progress value={againstRate.toNumber()} color="red" />
             <Text type="p2" weight="semibold" color="secondary" align="right">
               {againstRate.toFormat(2)}%
             </Text>
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       );
     },
   },
 ];
 
-const ProposalsTable: React.FC = () => {
-  const proposalsCtx = useProposals();
+export type ProposalsProviderState = {
+  proposals: LiteProposalEntity[];
+  total: number;
+  page: number;
+  pageSize: number;
+  loading: boolean;
+  stateFilter?: string;
+  searchFilter?: string;
+};
+
+const InitialState: ProposalsProviderState = {
+  proposals: [],
+  total: 0,
+  page: 1,
+  pageSize: 10,
+  loading: false,
+  stateFilter: undefined,
+  searchFilter: undefined,
+};
+
+type Props = {
+  stateFilter?: string;
+  searchFilter?: string;
+};
+
+const ProposalsTable: React.FC<Props> = ({ stateFilter, searchFilter }) => {
+  const daoAPI = useDaoAPI();
+  const [state, setState] = useMergeState<ProposalsProviderState>(InitialState);
 
   function handlePaginationChange(page: number) {
-    proposalsCtx.changePage(page);
+    setState({ page });
   }
 
+  useEffect(() => {
+    setState({
+      loading: true,
+    });
+
+    daoAPI
+      .fetchProposals(state.page, state.pageSize, stateFilter, searchFilter)
+      .then(data => {
+        setState({
+          loading: false,
+          proposals: data.data.map(item => ({
+            ...item,
+            stateTimeLeftTs: Date.now() + (item.stateTimeLeft ?? 0) * 1_000,
+          })),
+          total: data.meta.count,
+        });
+      })
+      .catch(() => {
+        setState({
+          loading: false,
+          proposals: [],
+        });
+      });
+  }, [state.page, stateFilter, searchFilter]);
+
   return (
-    <Table<LiteProposalEntity>
-      columns={Columns}
-      dataSource={proposalsCtx.proposals}
-      rowKey="proposalId"
-      loading={proposalsCtx.loading}
-      locale={{
-        emptyText: 'No proposals',
-      }}
-      pagination={{
-        total: proposalsCtx.total,
-        current: proposalsCtx.page,
-        pageSize: proposalsCtx.pageSize,
-        position: ['bottomRight'],
-        showTotal: (total: number, [from, to]: [number, number]) => (
-          <Text type="p2" weight="semibold" color="secondary">
-            Showing {from} to {to} out of {total} proposals
-          </Text>
-        ),
-        onChange: handlePaginationChange,
-      }}
-    />
+    <>
+      <Table<LiteProposalEntity> columns={columns} data={state.proposals} loading={state.loading} />
+      <TableFooter
+        total={state.total}
+        current={state.page}
+        pageSize={state.pageSize}
+        onChange={handlePaginationChange}
+        text={({ total, from, to }) => (
+          <>
+            Showing {from} to {to} out of {total} transactions
+          </>
+        )}
+      />
+    </>
   );
 };
 

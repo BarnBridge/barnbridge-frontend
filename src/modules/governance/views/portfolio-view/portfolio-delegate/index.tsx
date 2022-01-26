@@ -210,7 +210,7 @@ const PortfolioDelegate: FC = () => {
         {isLocked && (
           <Alert message="Switching back to manual voting while a lock is active will put the amount back under lock. Delegation does not stop the lock timer." />
         )}
-        <div className="flex flow-col col-gap-12 align-center justify-end">
+        <div className="flex wrap flow-col col-gap-12 row-gap-12 align-center justify-end">
           <button type="submit" className="button-primary" disabled={!canSubmit}>
             {isSubmitting && <Spinner className="mr-4" />}
             {votingType === DELEGATED_KEY ? 'Delegate' : 'Stop Delegate'}

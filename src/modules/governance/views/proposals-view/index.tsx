@@ -1,18 +1,16 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
-import AntdSpin from 'antd/lib/spin';
 
-import Button from 'components/antd/button';
 import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
-import Tabs from 'components/antd/tabs';
-import { ExternalLink } from 'components/button';
+import { Button, ExternalLink, Link } from 'components/button';
 import Grid from 'components/custom/grid';
-import Icon from 'components/custom/icon';
+import { PageSpinner } from 'components/custom/spinner';
+import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
+import { ProjectToken } from 'components/providers/tokensProvider';
 import useMergeState from 'hooks/useMergeState';
-import ProposalsProvider, { useProposals } from 'modules/governance/views/proposals-view/providers/ProposalsProvider';
 import { useWallet } from 'wallets/walletProvider';
 
 import { useDAO } from '../../components/dao-provider';
@@ -24,30 +22,39 @@ import s from './s.module.scss';
 type ProposalsViewState = {
   hasActiveProposal?: boolean;
   showWhyReason: boolean;
+  stateFilter: string;
+  searchFilter?: string;
 };
 
 const InitialState: ProposalsViewState = {
   hasActiveProposal: undefined,
   showWhyReason: false,
+  stateFilter: '',
+  searchFilter: undefined,
 };
 
 const ProposalsViewInner: React.FC = () => {
   const history = useHistory();
   const wallet = useWallet();
   const daoCtx = useDAO();
-  const proposalsCtx = useProposals();
+  // const proposalsCtx = useProposals();
 
   const [state, setState] = useMergeState<ProposalsViewState>(InitialState);
 
   function handleStateChange(stateFilter: string) {
-    proposalsCtx.changeStateFilter(stateFilter);
+    setState({ stateFilter });
   }
 
+  // function handleStateChange(stateFilter: string) {
+  //   proposalsCtx.changeStateFilter(stateFilter);
+  // }
+
   const handleSearchChange = useDebounce((ev: React.ChangeEvent<HTMLInputElement>) => {
-    proposalsCtx.changeSearchFilter(ev.target.value);
+    // proposalsCtx.changeSearchFilter(ev.target.value);
+    setState({ searchFilter: ev.target.value });
   }, 400);
 
-  React.useEffect(() => {
+  useEffect(() => {
     daoCtx.actions.hasActiveProposal().then(hasActiveProposal => {
       setState({ hasActiveProposal });
     });
@@ -57,14 +64,18 @@ const ProposalsViewInner: React.FC = () => {
   const canCreateProposal = state.hasActiveProposal === false && daoCtx.actions.hasThreshold() === true;
 
   return (
-    <Grid flow="row" gap={32}>
-      <Grid flow="col" align="center" justify="space-between">
+    <>
+      <Grid flow="col" align="center" justify="space-between" className="mb-32">
         <Text type="h1" weight="bold" color="primary">
           Proposals
         </Text>
         {wallet.isActive && (
           <Grid flow="row" gap={8} align="end" justify="end">
-            <Button type="primary" disabled={!canCreateProposal} onClick={() => history.push('proposals/create')}>
+            <Button
+              type="button"
+              variation="primary"
+              disabled={!canCreateProposal}
+              onClick={() => history.push('proposals/create')}>
               Create proposal
             </Button>
 
@@ -92,20 +103,22 @@ const ProposalsViewInner: React.FC = () => {
                         <li>
                           <Text type="p2" weight="semibold">
                             You don’t have enough voting power to create a proposal. The creator of a proposal needs to
-                            have a voting power of at least {daoCtx.minThreshold}% of the amount of $BOND staked in the
-                            DAO.
+                            have a voting power of at least {daoCtx.minThreshold}% of the amount of $
+                            {ProjectToken.symbol} staked in the DAO.
                           </Text>
                         </li>
                       </ul>
 
-                      <ExternalLink href="https://integrations.barnbridge.com/specs/dao-specifications#proposals-and-voting">
+                      <ExternalLink variation="link" href="">
                         Learn more
                       </ExternalLink>
                     </Grid>
                   }
                   visible={state.showWhyReason}
                   onVisibleChange={visible => setState({ showWhyReason: visible })}>
-                  <Button type="link">See why</Button>
+                  <Button type="button" variation="text">
+                    See why
+                  </Button>
                 </Popover>
               </Grid>
             )}
@@ -114,55 +127,67 @@ const ProposalsViewInner: React.FC = () => {
       </Grid>
 
       <div className="card">
-        <div className="card-header flex justify-space-between" style={{ padding: 0 }}>
-          <Tabs className={s.tabs} simple activeKey={proposalsCtx.stateFilter} onChange={handleStateChange}>
-            <Tabs.Tab key="all" tab="All proposals" />
-            <Tabs.Tab key="active" tab="Active" />
-            <Tabs.Tab key="executed" tab="Executed" />
-            <Tabs.Tab key="failed" tab="Failed" />
-          </Tabs>
+        <div className="card-header flex justify-space-between">
+          <Tabs
+            tabs={[
+              {
+                id: '',
+                children: 'All proposals',
+              },
+              {
+                id: 'active',
+                children: 'Active',
+              },
+              {
+                id: 'executed',
+                children: 'Executed',
+              },
+              {
+                id: 'failed',
+                children: 'Failed',
+              },
+            ]}
+            activeKey={state.stateFilter}
+            onClick={handleStateChange}
+          />
           <Input
+            type="search"
             className={s.search}
-            prefix={<Icon name="search-outlined" width={16} height={16} />}
             placeholder="Search proposal"
             onChange={ev => handleSearchChange(ev)}
           />
         </div>
-        <ProposalsTable />
+        <ProposalsTable stateFilter={state.stateFilter} searchFilter={state.searchFilter} />
       </div>
-    </Grid>
+    </>
   );
 };
 
 const ProposalsView: React.FC = () => {
-  const history = useHistory();
   const daoCtx = useDAO();
 
-  function handleBackClick() {
-    history.push('/governance/overview');
-  }
-
   if (daoCtx.isActive === undefined) {
-    return <AntdSpin />;
+    return <PageSpinner />;
   }
 
   if (!daoCtx.isActive) {
     return (
-      <Grid flow="row" gap={24} align="start">
-        <button type="button" onClick={handleBackClick} className="button-text">
-          <Icon name="arrow-back" width={16} height={16} className="mr-8" color="inherit" />
+      <div>
+        <Link
+          to="/governance/overview"
+          variation="text-alt"
+          className="mb-24"
+          icon="arrow"
+          iconPosition="left"
+          iconRotate={180}>
           Overview
-        </button>
+        </Link>
         <ActivationThreshold className="full-width" />
-      </Grid>
+      </div>
     );
   }
 
-  return (
-    <ProposalsProvider>
-      <ProposalsViewInner />
-    </ProposalsProvider>
-  );
+  return <ProposalsViewInner />;
 };
 
 export default ProposalsView;
