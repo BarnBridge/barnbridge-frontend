@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatPercent, formatToken } from 'web3/utils';
 
@@ -18,7 +18,7 @@ import { useWallet } from 'wallets/walletProvider';
 const DaoRewardCard: FC<{}> = () => {
   const config = useConfig();
   const wallet = useWallet();
-  const [reload] = useReload();
+  const [reload, version] = useReload();
 
   const [activeTab, setActiveTab] = useState('dao');
 
@@ -35,7 +35,7 @@ const DaoRewardCard: FC<{}> = () => {
       },
     },
   );
-  const daoRewardContract = getOrCreateContract(
+  const daoReward = getOrCreateContract(
     config.contracts.dao?.reward ?? '',
     () => {
       return new DaoRewardContract(config.contracts.dao?.reward ?? '');
@@ -48,8 +48,27 @@ const DaoRewardCard: FC<{}> = () => {
     },
   );
 
+  const daoReward2 = config.contracts.dao?.reward2
+    ? getOrCreateContract(
+        config.contracts.dao?.reward2,
+        () => {
+          return new DaoRewardContract(config.contracts.dao?.reward2!);
+        },
+        {
+          afterInit: contract => {
+            contract.onUpdateData(reload);
+            contract.loadCommonData().catch(Error);
+          },
+        },
+      )
+    : undefined;
+
+  const activeDaoReward = useMemo(() => {
+    return [daoReward, daoReward2].find(rw => rw && rw.isStarted && !rw.isEnded);
+  }, [daoReward, daoReward2, version]);
+
   const apr = daoBarnContract.bondStaked
-    ? daoRewardContract.weeklyRewards?.multipliedBy(52).dividedBy(daoBarnContract.bondStaked)
+    ? activeDaoReward?.weeklyRewards?.multipliedBy(52).dividedBy(daoBarnContract.bondStaked)
     : undefined;
 
   useEffect(() => {
@@ -57,8 +76,8 @@ const DaoRewardCard: FC<{}> = () => {
       daoBarnContract.setAccount(wallet.account);
       daoBarnContract.loadUserData().catch(Error);
 
-      daoRewardContract.setAccount(wallet.account);
-      daoRewardContract.loadUserData().catch(Error);
+      activeDaoReward?.setAccount(wallet.account);
+      activeDaoReward?.loadUserData().catch(Error);
     }
   }, [wallet.account]);
 
@@ -74,7 +93,7 @@ const DaoRewardCard: FC<{}> = () => {
               DAO Rewards
             </Text>
 
-            {daoRewardContract.isEnded === false && (
+            {activeDaoReward?.isEnded === false && (
               <StatusTag
                 text={
                   <Text type="lb2" weight="bold" color="green">
@@ -84,7 +103,7 @@ const DaoRewardCard: FC<{}> = () => {
                 color="green"
               />
             )}
-            {daoRewardContract.isEnded && (
+            {activeDaoReward?.isEnded && (
               <StatusTag
                 text={
                   <Text type="lb2" weight="bold" color="green">
@@ -142,7 +161,7 @@ const DaoRewardCard: FC<{}> = () => {
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(daoRewardContract.weeklyRewards) ?? '-'}
+                    {formatToken(activeDaoReward?.weeklyRewards) ?? '-'}
                   </Text>
                 </div>
               </div>
@@ -168,7 +187,7 @@ const DaoRewardCard: FC<{}> = () => {
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(daoRewardContract.toClaim) ?? '-'}
+                    {formatToken(activeDaoReward?.toClaim) ?? '-'}
                   </Text>
                 </div>
               </div>
