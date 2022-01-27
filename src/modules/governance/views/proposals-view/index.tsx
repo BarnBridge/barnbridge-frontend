@@ -2,13 +2,13 @@ import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 
-import Input from 'components/antd/input';
 import Popover from 'components/antd/popover';
 import { Button, ExternalLink, Link } from 'components/button';
 import Grid from 'components/custom/grid';
 import { PageSpinner } from 'components/custom/spinner';
 import { Tabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
+import { Input } from 'components/input';
 import { ProjectToken } from 'components/providers/tokensProvider';
 import useMergeState from 'hooks/useMergeState';
 import { useWallet } from 'wallets/walletProvider';
