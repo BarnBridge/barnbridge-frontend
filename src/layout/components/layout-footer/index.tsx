@@ -104,7 +104,7 @@ const LayoutFooter: React.FC = () => {
       </div>
       <div className={s.footerBottom}>
         <Text type="small" weight="semibold" className={s.copyright}>
-          BarnBridge © 2021
+          BarnBridge © {new Date().getFullYear()}
         </Text>
         <div className={s.footerBottomLinks}>
           <ExternalLink variation="text-alt" href={links.uniswapSwap}>

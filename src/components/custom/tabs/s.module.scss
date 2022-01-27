@@ -186,6 +186,7 @@ a.tab {
 
 .horizontalMenu {
   padding: 0 var(--horizontal-padding);
+  scroll-padding: 0 var(--horizontal-padding);
   background: var(--theme-card-color);
   border-bottom: 1px solid var(--theme-border-color);
   height: 73px;
