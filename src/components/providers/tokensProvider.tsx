@@ -16,6 +16,7 @@ import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
 import { OptimisticKovanNetwork } from 'networks/optimistic-kovan';
+import { OptimisticMainnetNetwork } from 'networks/optimistic-mainnet';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
@@ -393,7 +394,7 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
     return new BigNumber(1);
   }
 
-  if ([MainnetNetwork, KovanNetwork, TestnetNetwork, OptimisticKovanNetwork].includes(network)) {
+  if ([MainnetNetwork, KovanNetwork, TestnetNetwork, OptimisticKovanNetwork, OptimisticMainnetNetwork].includes(network)) {
     switch (symbol.toUpperCase()) {
       case 'BTC':
       case 'WBTC':
@@ -445,6 +446,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'FLOKI':
         // Chainlink: FLOKI/USD
         return getChainlinkFeedPrice('0xfbafc1f5b1b37cc0763780453d1ea635520708f2', MainnetHttpsWeb3Provider);
+      case 'SNX':
+        // Chainlink: SNX/USD
+        return getChainlinkFeedPrice('0xdc3ea94cd0ac27d9a86c180091e7f78c683d3699', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
         return getGeckoPrice('gemini-dollar');

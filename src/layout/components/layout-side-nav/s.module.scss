@@ -140,6 +140,10 @@
 .bottom {
   margin-top: auto;
 
+  @media (max-width: 768px) {
+    border-top: 1px solid var(--theme-border-color);
+  }
+
   .button {
     margin-top: 24px;
   }

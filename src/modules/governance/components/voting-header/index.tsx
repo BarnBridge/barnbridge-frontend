@@ -6,7 +6,6 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatBigValue, formatToken } from 'web3/utils';
 
 import Button from 'components/antd/button';
-import Divider from 'components/antd/divider';
 import Modal from 'components/antd/modal';
 import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
@@ -88,9 +87,9 @@ const VotingHeader: React.FC = () => {
       <Text type="lb2" weight="semibold" color="red" className="mb-16">
         My Voting Power
       </Text>
-      <Grid flow="col" gap={24} className={s.items}>
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+      <div className={s.items}>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Current reward
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -109,10 +108,9 @@ const VotingHeader: React.FC = () => {
               {claimingReward ? <Spin spinning /> : 'Claim'}
             </Button>
           </Grid>
-        </Grid>
-        <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+        </div>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             {projectToken.symbol} Balance
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -123,10 +121,9 @@ const VotingHeader: React.FC = () => {
             </Skeleton>
             <TokenIcon name={projectToken.icon} />
           </Grid>
-        </Grid>
-        <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+        </div>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Total voting power
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -141,67 +138,65 @@ const VotingHeader: React.FC = () => {
 
             {showDetailedView && <VotingDetailedModal onCancel={() => setShowDetailedView(false)} />}
           </Grid>
-        </Grid>
+        </div>
 
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {leftTime => {
             const leftMultiplier = (multiplier - 1) * (leftTime / loadedUserLockedUntil) + 1;
 
             return leftMultiplier > 1 ? (
-              <>
-                <Divider type="vertical" />
-                <Grid flow="row" gap={4}>
-                  <Hint
-                    text={
-                      <>
-                        <Text type="p2">
-                          The multiplier mechanic allows users to lock ${projectToken.symbol} for a period up to 1 year
-                          and get a bonus of up to 2x v{projectToken.symbol}. The bonus is linear, as per the following
-                          example:
-                        </Text>
-                        <ul>
-                          <li>
-                            <Text type="p2">
-                              lock 1000 ${projectToken.symbol} for 1 year → get back 2000 v{projectToken.symbol}
-                            </Text>
-                          </li>
-                          <li>
-                            <Text type="p2">
-                              lock 1000 ${projectToken.symbol} for 6 months → get back 1500 v{projectToken.symbol}
-                            </Text>
-                          </li>
-                        </ul>
-                        <ExternalLink
-                          href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
-                          variation="link">
-                          Learn more
-                        </ExternalLink>
-                      </>
-                    }>
-                    <Text type="p2" color="secondary">
-                      Multiplier & Lock timer
-                    </Text>
-                  </Hint>
-
-                  <Grid flow="col" gap={8} align="center">
-                    <Tooltip title={`x${leftMultiplier}`}>
-                      <Text type="lb1" weight="bold" color="red" className={s.ratio}>
-                        {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
+              <div>
+                <Hint
+                  text={
+                    <>
+                      <Text type="p2">
+                        The multiplier mechanic allows users to lock ${projectToken.symbol} for a period up to 1 year
+                        and get a bonus of up to 2x v{projectToken.symbol}. The bonus is linear, as per the following
+                        example:
                       </Text>
-                    </Tooltip>
-                    <Text type="p2" color="secondary">
-                      for
+                      <ul>
+                        <li>
+                          <Text type="p2">
+                            lock 1000 ${projectToken.symbol} for 1 year → get back 2000 v{projectToken.symbol}
+                          </Text>
+                        </li>
+                        <li>
+                          <Text type="p2">
+                            lock 1000 ${projectToken.symbol} for 6 months → get back 1500 v{projectToken.symbol}
+                          </Text>
+                        </li>
+                      </ul>
+                      <ExternalLink
+                        href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
+                        variation="link">
+                        Learn more
+                      </ExternalLink>
+                    </>
+                  }
+                  className="mb-4">
+                  <Text type="p2" color="secondary">
+                    Multiplier & Lock timer
+                  </Text>
+                </Hint>
+
+                <Grid flow="col" gap={8} align="center">
+                  <Tooltip title={`x${leftMultiplier}`}>
+                    <Text type="lb1" weight="bold" color="red" className={s.ratio}>
+                      {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
                     </Text>
-                    <Text type="h3" weight="bold" color="primary">
-                      {getFormattedDuration(0, userLockedUntil)}
-                    </Text>
-                  </Grid>
+                  </Tooltip>
+                  <Text type="p2" color="secondary">
+                    for
+                  </Text>
+                  <Text type="h3" weight="bold" color="primary">
+                    {getFormattedDuration(0, userLockedUntil)}
+                  </Text>
                 </Grid>
-              </>
+              </div>
             ) : undefined;
           }}
         </UseLeftTime>
-      </Grid>
+      </div>
 
       {claimModalVisible && (
         <Modal visible onCancel={() => setClaimModalVisible(false)}>

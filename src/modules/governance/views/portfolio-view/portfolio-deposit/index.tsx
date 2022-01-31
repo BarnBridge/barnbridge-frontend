@@ -184,7 +184,7 @@ const PortfolioDeposit: FC = () => {
           )}
         </FormItem>
         <Alert message="Deposits made after you have an ongoing lock will be added to the locked balance and will be subjected to the same lock timer." />
-        <div className="flex flow-col col-gap-12 align-center justify-end">
+        <div className="flex wrap flow-col col-gap-12 row-gap-12 align-center justify-end">
           {!isEnabled && (
             <>
               <button type="button" className="button-primary align-self-start" onClick={handleTokenEnable}>

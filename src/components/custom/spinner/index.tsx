@@ -1,15 +1,16 @@
 import classNames from 'classnames';
 
 import { Icon } from 'components/icon';
-import { FCx } from 'components/types.tx';
 
 import s from './s.module.scss';
 
 type PropsType = {
   spinning?: boolean;
+  className?: string;
+  style?: React.CSSProperties;
 };
 
-export const Spinner: FCx<PropsType> = ({ className, children, spinning, ...restProps }) => {
+export const Spinner: React.FC<PropsType> = ({ className, children, spinning, ...restProps }) => {
   if (children) {
     if (spinning) {
       return (
@@ -25,3 +26,14 @@ export const Spinner: FCx<PropsType> = ({ className, children, spinning, ...rest
 
   return <Icon name="loader" className={classNames(s.spinner, className)} {...restProps} />;
 };
+
+type PageSpinnerProps = {
+  className?: string;
+  style?: React.CSSProperties;
+};
+
+export const PageSpinner: React.FC<PageSpinnerProps> = ({ className, ...restProps }) => (
+  <div className={s.pageSpinnerContainer}>
+    <Icon name="loader" className={classNames(s.spinner, className)} {...restProps} />
+  </div>
+);

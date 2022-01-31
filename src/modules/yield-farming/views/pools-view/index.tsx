@@ -1,5 +1,4 @@
 import { FC } from 'react';
-import { isMobile } from 'react-device-detect';
 
 import { Text } from 'components/custom/typography';
 import SyAPIProvider from 'modules/smart-yield/api';
@@ -22,7 +21,7 @@ const PoolsView: FC = () => {
 
   return (
     <SyAPIProvider>
-      {!isMobile && walletCtx.isActive && <PoolRewards />}
+      {walletCtx.isActive && <PoolRewards />}
       <div className="content-container-fix content-container">
         <RewardPoolsProvider>
           <PoolStats className="mb-64" />

@@ -197,7 +197,7 @@ const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayToo
           </div>
         </Tooltip>
         <div className={s.btnContent}>
-          <Text type="lb1" weight="semibold" className={s.btnLabel}>
+          <Text type="lb1" weight="semibold">
             Notifications
           </Text>
         </div>
@@ -216,7 +216,7 @@ const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }
         <IconOld name={activeNetwork.meta.logo} width={40} height={40} style={{ flexShrink: 0 }} />
       </Tooltip>
       <Tooltip title={activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
-        <Text type="lb1" weight="semibold" className={cn(s.btnLabel, s.btnContent)} ellipsis>
+        <Text type="lb1" weight="semibold" className={s.btnContent} ellipsis>
           {activeNetwork.meta.name}
         </Text>
       </Tooltip>
@@ -247,7 +247,7 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
         <Icon name={iconName} size={40} />
       </Tooltip>
       <div className={s.btnContent}>
-        <Text type="lb1" weight="semibold" className={s.btnLabel}>
+        <Text type="lb1" weight="semibold">
           {text}
         </Text>
       </div>
