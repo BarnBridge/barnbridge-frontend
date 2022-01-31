@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { isMobile } from 'react-device-detect';
 import { Route, Switch } from 'react-router-dom';
 import cn from 'classnames';
 import { shortenAddr } from 'web3/utils';
@@ -239,11 +238,11 @@ const WalletAction: React.FC = () => {
   }
 
   if (!wallet.isActive) {
-    return !isMobile ? (
+    return (
       <Button variation="primary" onClick={() => wallet.showWalletsModal()}>
         Connect Wallet
       </Button>
-    ) : null;
+    );
   }
 
   return (
