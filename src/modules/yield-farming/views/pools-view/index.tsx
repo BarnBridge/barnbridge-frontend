@@ -1,6 +1,7 @@
 import { FC } from 'react';
 
 import { Text } from 'components/custom/typography';
+import { Warnings } from 'components/warning';
 import SyAPIProvider from 'modules/smart-yield/api';
 import RewardPoolsProvider from 'modules/smart-yield/providers/reward-pools-provider';
 import AggregatedPoolCard from 'modules/smart-yield/views/pools-view/aggregated-pool-card';
@@ -22,6 +23,7 @@ const PoolsView: FC = () => {
   return (
     <SyAPIProvider>
       {walletCtx.isActive && <PoolRewards />}
+      <Warnings />
       <div className="content-container-fix content-container">
         <RewardPoolsProvider>
           <PoolStats className="mb-64" />

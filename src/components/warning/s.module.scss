@@ -1,3 +1,9 @@
+.warnings {
+  &:empty {
+    display: none;
+  }
+}
+
 .warning {
   background: #ffce45; // clr-?
 }

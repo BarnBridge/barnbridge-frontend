@@ -11,7 +11,7 @@ export type GeneralContextType = {
   selectedTheme: 'light' | 'dark' | undefined;
   toggleTheme: () => void;
   windowState: {
-    visibilityState: VisibilityState;
+    visibilityState: DocumentVisibilityState;
     isVisible: boolean;
   };
 };
@@ -27,7 +27,7 @@ export function useGeneral(): GeneralContextType {
 
 const GeneralProvider: FC = props => {
   const [navOpen, setNavOpen] = useState<boolean>(false);
-  const [visibilityState, setVisibilityState] = useState<VisibilityState>(window.document.visibilityState);
+  const [visibilityState, setVisibilityState] = useState<DocumentVisibilityState>(window.document.visibilityState);
   const [osColorScheme, setOsColorScheme] = useState<'light' | 'dark'>(defaultTheme);
   const [selectedTheme, setSelectedTheme, removeSelectedTheme] = useLocalStorage<'light' | 'dark' | undefined>(
     'bb_theme',
