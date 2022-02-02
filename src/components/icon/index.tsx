@@ -97,7 +97,21 @@ type StaticNames =
   | 'menu-theme-dark'
   | 'menu-theme-auto'
   | 'dao-circle'
-  | 'sy-circle';
+  | 'sy-circle'
+  | 'notification'
+  | 'notification-active'
+  | 'mainnet-logo'
+  | 'testnet-logo'
+  | 'kovan-logo'
+  | 'polygon-logo'
+  | 'avalanche-logo'
+  | 'avalanche-testnet-logo'
+  | 'binance-logo'
+  | 'binance-testnet-logo'
+  | 'optimistic-logo'
+  | 'optimistic-kovan-logo'
+  | 'arbitrum-logo'
+  | 'arbitrum-testnet-logo';
 
 export type IconNames = NonStaticNames | StaticNames;
 
@@ -114,6 +128,20 @@ const staticNamesList: StaticNames[] = [
   'menu-theme-auto',
   'dao-circle',
   'sy-circle',
+  'notification',
+  'notification-active',
+  'mainnet-logo',
+  'testnet-logo',
+  'kovan-logo',
+  'polygon-logo',
+  'avalanche-logo',
+  'avalanche-testnet-logo',
+  'binance-logo',
+  'binance-testnet-logo',
+  'optimistic-logo',
+  'optimistic-kovan-logo',
+  'arbitrum-logo',
+  'arbitrum-testnet-logo',
 ];
 
 export type IconProps = {

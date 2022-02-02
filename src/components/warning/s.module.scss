@@ -5,13 +5,18 @@
 }
 
 .warning {
-  background: #ffce45; // clr-?
+  background: var(--theme-yellow-color); // clr-?
+  padding: 12px var(--horizontal-padding);
+
+  button {
+    color: #665426; // clr-yellow700
+
+    &:hover {
+      opacity: 0.9;
+    }
+  }
 }
 
 .text {
   color: #665426; // clr-yellow800
-}
-
-.closeIcon {
-  color: #997d3a; // clr-yellow700
 }

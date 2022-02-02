@@ -11,7 +11,7 @@ export type IconBubbleProps = {
   notificationGap?: number;
 };
 
-const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
+export const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
   const {
     bubble,
     style = {},
@@ -55,5 +55,3 @@ const IconNotification: React.FunctionComponent<IconBubbleProps> = props => {
     </svg>
   );
 };
-
-export default IconNotification;

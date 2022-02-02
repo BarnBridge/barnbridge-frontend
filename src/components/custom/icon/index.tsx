@@ -54,12 +54,6 @@ export type IconNames =
   | TokenIconNames
   | NavIconNames
   | ThemeIconNames
-  | 'mainnet-logo'
-  | 'testnet-logo'
-  | 'polygon-logo'
-  | 'avalanche-logo'
-  | 'binance-logo'
-  | 'optimistic-kovan-logo'
   | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'
@@ -142,7 +136,6 @@ export type IconNames =
   | 'checkbox'
   | 'loader'
   | 'insured'
-  | 'arbitrum-logo'
   | 'warn-circle';
 
 export type IconProps = {

@@ -122,7 +122,7 @@ export const KovanNetwork: Web3Network = {
   meta: {
     chainId: KOVAN_CHAIN_ID,
     name: 'Ethereum Dev (Kovan)',
-    logo: 'testnet-logo',
+    logo: 'kovan-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

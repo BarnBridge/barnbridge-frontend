@@ -31,22 +31,14 @@ const Warn: React.FC<WarnProps> = props => {
   }
 
   return (
-    <div
-      className={classNames(
-        s.warning,
-        'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between pv-12 ph-64 sm-ph-24',
-      )}>
+    <div className={classNames(s.warning, 'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between')}>
       <Grid flow="col" gap={16} align="center">
         <Icon name="danger" color="red" />
         <Text type="p2" weight="semibold" className={s.text}>
           {text}
         </Text>
       </Grid>
-      {closable && (
-        <Button type="button" variation="link" onClick={handleClose}>
-          <Icon name="close" className={s.closeIcon} />
-        </Button>
-      )}
+      {closable && <Button type="button" variation="text-alt" onClick={handleClose} icon="close" />}
     </div>
   );
 };
