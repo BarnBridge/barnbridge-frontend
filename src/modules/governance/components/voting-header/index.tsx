@@ -5,6 +5,7 @@ import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatBigValue, formatToken } from 'web3/utils';
 
+import { MerkleDistributor, useAirdrop } from 'airdrop/airdrop';
 import Button from 'components/antd/button';
 import Modal from 'components/antd/modal';
 import Skeleton from 'components/antd/skeleton';
@@ -12,6 +13,7 @@ import Tooltip from 'components/antd/tooltip';
 import { ExternalLink } from 'components/button';
 import Grid from 'components/custom/grid';
 import { Hint, Text } from 'components/custom/typography';
+import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -28,13 +30,17 @@ import s from './s.module.scss';
 const VotingHeader: React.FC = () => {
   const daoCtx = useDAO();
   const walletCtx = useWallet();
+  const config = useConfig();
   const { projectToken } = useKnownTokens();
 
   const [showDetailedView, setShowDetailedView] = useState(false);
   const [claimModalVisible, setClaimModalVisible] = useState(false);
-  const [claimingReward, setClaimingReward] = useState<DaoRewardContract | undefined>();
+  const [claimingReward, setClaimingReward] = useState<DaoRewardContract | MerkleDistributor | undefined>();
 
-  const { toClaim: toClaimReward } = daoCtx.daoReward;
+  const airdropDaoConfig = config.contracts.airdrop?.dao;
+  const merkleDistributor = useAirdrop(airdropDaoConfig?.merkleDistributor, airdropDaoConfig?.data);
+
+  const toClaimReward = merkleDistributor?.toClaim;
   const { toClaim: toClaimReward2 } = daoCtx.daoReward2 ?? {};
   const totalToClaim = toClaimReward?.plus(toClaimReward2 ?? 0);
 
@@ -57,16 +63,14 @@ const VotingHeader: React.FC = () => {
   function handleClaim() {
     if (toClaimReward?.gt(0) && toClaimReward2?.gt(0)) {
       setClaimModalVisible(true);
-    } else if (daoCtx.activeDaoReward) {
-      handleRewardClaim(daoCtx.activeDaoReward);
-    } else if (toClaimReward?.gt(0)) {
-      handleRewardClaim(daoCtx.daoReward);
+    } else if (toClaimReward?.gt(0) && merkleDistributor) {
+      handleRewardClaim(merkleDistributor);
     } else if (toClaimReward2?.gt(0) && daoCtx.daoReward2) {
       handleRewardClaim(daoCtx.daoReward2);
     }
   }
 
-  function handleRewardClaim(reward: DaoRewardContract) {
+  function handleRewardClaim(reward: DaoRewardContract | MerkleDistributor) {
     setClaimingReward(reward);
 
     reward
@@ -210,7 +214,7 @@ const VotingHeader: React.FC = () => {
               </Text>
             </div>
             <div className="flex flow-row row-gap-24">
-              {[daoCtx.daoReward, daoCtx.daoReward2].map((reward, rewardIndex) =>
+              {[merkleDistributor, daoCtx.daoReward2].map((reward, rewardIndex) =>
                 reward ? (
                   <Spin key={reward.address} spinning={claimingReward === reward}>
                     <button

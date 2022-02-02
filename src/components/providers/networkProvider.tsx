@@ -53,7 +53,14 @@ const networks: Web3Network[] = (() => {
   }
 
   if (isProductionMode) {
-    return [MainnetNetwork, OptimisticMainnetNetwork, PolygonNetwork, AvalancheNetwork, BinanceNetwork, ArbitrumNetwork];
+    return [
+      MainnetNetwork,
+      OptimisticMainnetNetwork,
+      PolygonNetwork,
+      AvalancheNetwork,
+      BinanceNetwork,
+      ArbitrumNetwork,
+    ];
   }
 
   return [];
