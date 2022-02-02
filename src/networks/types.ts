@@ -3,6 +3,20 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 export const DEFAULT_RPC_POOLING_INTERVAL = 12_000;
 
+export type AirdropClaimType = {
+  index: number;
+  amount: string;
+  proof: string[];
+};
+
+export type AirdropDataType = {
+  merkleRoot: string;
+  tokenTotal: string;
+  claims: {
+    [address: string]: AirdropClaimType;
+  };
+};
+
 export type NetworkConfig = {
   title: string;
   features: {
@@ -81,6 +95,12 @@ export type NetworkConfig = {
       'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai',
       string
     >;
+    airdrop?: {
+      dao?: {
+        merkleDistributor: string;
+        data: AirdropDataType;
+      };
+    };
   };
 };
 
