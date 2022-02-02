@@ -83,7 +83,9 @@ type NonStaticNames =
   | 'twitter'
   | 'discord'
   | 'github'
-  | 'circle-arrow';
+  | 'circle-arrow'
+  | 'plus-circle'
+  | 'minus-circle';
 
 type StaticNames =
   | 'menu-faucet'
