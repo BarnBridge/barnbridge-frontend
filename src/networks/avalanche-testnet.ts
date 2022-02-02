@@ -94,7 +94,7 @@ export const AvalancheTestnetNetwork: Web3Network = {
   meta: {
     chainId: AVALANCHE_TEST_CHAIN_ID,
     name: 'Avalanche Testnet (Fuji)',
-    logo: 'avalanche-logo',
+    logo: 'avalanche-testnet-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

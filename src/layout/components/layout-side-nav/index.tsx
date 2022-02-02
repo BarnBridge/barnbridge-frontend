@@ -8,7 +8,6 @@ import cn from 'classnames';
 import Tooltip from 'components/antd/tooltip';
 import { Button } from 'components/button';
 import IconOld from 'components/custom/icon';
-import IconNotification from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
 import { Modal } from 'components/modal';
@@ -191,9 +190,7 @@ const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayToo
       <button type="button" className={s.button} onClick={() => setOpen(prevOpen => !prevOpen)}>
         <Tooltip title={displayTooltip && 'Notifications'} placement={isMobile ? 'right' : 'left'}>
           <div style={{ width: 40, height: 40, flexShrink: 0 }} className="flex align-center justify-center">
-            <IconNotification width={32} height={32} notificationSize={8} bubble={hasUnread}>
-              <Icon name="bell" size={32} />
-            </IconNotification>
+            <Icon name={hasUnread ? 'notification-active' : 'notification'} size={40} />
           </div>
         </Tooltip>
         <div className={s.btnContent}>
@@ -213,7 +210,7 @@ const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }
   return (
     <button type="button" onClick={() => showNetworkSelect()} className={cn(s.button, 'hidden-desktop')}>
       <Tooltip title={displayTooltip && activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
-        <IconOld name={activeNetwork.meta.logo} width={40} height={40} style={{ flexShrink: 0 }} />
+        <Icon name={activeNetwork.meta.logo} size={40} />
       </Tooltip>
       <Tooltip title={activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
         <Text type="lb1" weight="semibold" className={s.btnContent} ellipsis>

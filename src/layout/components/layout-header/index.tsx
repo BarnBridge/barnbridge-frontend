@@ -164,7 +164,7 @@ const NetworkAction: React.FC = () => {
       type="button"
       onClick={() => showNetworkSelect()}
       className={cn(s.actionButton, 'hidden-mobile hidden-tablet')}>
-      <IconOld name={activeNetwork.meta.logo} width={24} height={24} className="mr-8" />
+      <Icon name={activeNetwork.meta.logo} size={24} className="mr-8" />
       <Text type="p2" weight="semibold" color="secondary">
         {activeNetwork.meta.name}
       </Text>

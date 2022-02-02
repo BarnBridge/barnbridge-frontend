@@ -1,4 +1,4 @@
-import { IconNames } from 'components/custom/icon';
+import { IconNames } from 'components/icon';
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 export const DEFAULT_RPC_POOLING_INTERVAL = 12_000;

@@ -92,7 +92,7 @@ export const BinanceTestnetNetwork: Web3Network = {
   meta: {
     chainId: BINANCE_TEST_CHAIN_ID,
     name: 'BSC Testnet',
-    logo: 'binance-logo',
+    logo: 'binance-testnet-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

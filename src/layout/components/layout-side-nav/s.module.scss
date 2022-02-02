@@ -45,6 +45,7 @@
 }
 
 .logoContainer {
+  flex-shrink: 0;
   display: flex;
   margin-bottom: 48px;
   overflow: hidden;
