@@ -66,6 +66,7 @@ const DaoRewardCard: FC<{}> = () => {
       daoReward?.setAccount(wallet.account);
       daoReward?.loadUserData().catch(Error);
 
+      airdrop?.setAccount(wallet.account);
       airdrop?.loadUserData().catch(Error);
     }
   }, [wallet.account]);
