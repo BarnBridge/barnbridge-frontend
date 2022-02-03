@@ -1,9 +1,10 @@
-import React, { FC, useEffect, useState } from 'react';
+import { FC, useEffect, useState } from 'react';
 import { Redirect, useRouteMatch } from 'react-router-dom';
 import cn from 'classnames';
 
 import Spin from 'components/antd/spin';
 import { Tabs } from 'components/custom/tabs';
+import { Warnings } from 'components/warning';
 
 import PoolHeader from '../../components/pool-header';
 import PoolStake from '../../components/pool-stake';
@@ -39,47 +40,49 @@ const PoolViewInner: FC = () => {
   const isInitialized = poolMeta.contract.isPoolEnded !== undefined;
 
   return (
-    <div className="content-container-fix content-container">
-      <div className="container-limit">
-        <PoolHeader />
-
-        <div className={s.stakeColumns}>
-          <article className={cn('card', s.stakeCard)}>
-            <header className={cn('card-header pv-0', s.stakeCardHeader)}>
-              {isInitialized && (
-                <Tabs
-                  tabs={[
-                    ...(poolMeta.contract.isPoolEnded === false
-                      ? [
-                          {
-                            id: 'stake',
-                            children: 'Stake',
-                          },
-                        ]
-                      : []),
-                    {
-                      id: 'unstake',
-                      children: 'Unstake',
-                    },
-                  ]}
-                  size="small"
-                  activeKey={activeTab}
-                  onClick={setActiveTab}
-                />
-              )}
-            </header>
-            <Spin spinning={!isInitialized}>
-              <div className="p-24">
-                {activeTab === 'stake' && <PoolStake />}
-                {activeTab === 'unstake' && <PoolUnstake />}
-              </div>
-            </Spin>
-          </article>
-          <PoolStatistics />
+    <>
+      <Warnings />
+      <div className="content-container-fix content-container">
+        <div className="container-limit">
+          <PoolHeader />
+          <div className={s.stakeColumns}>
+            <article className={cn('card', s.stakeCard)}>
+              <header className={cn('card-header pv-0', s.stakeCardHeader)}>
+                {isInitialized && (
+                  <Tabs
+                    tabs={[
+                      ...(poolMeta.contract.isPoolEnded === false
+                        ? [
+                            {
+                              id: 'stake',
+                              children: 'Stake',
+                            },
+                          ]
+                        : []),
+                      {
+                        id: 'unstake',
+                        children: 'Unstake',
+                      },
+                    ]}
+                    size="small"
+                    activeKey={activeTab}
+                    onClick={setActiveTab}
+                  />
+                )}
+              </header>
+              <Spin spinning={!isInitialized}>
+                <div className="p-24">
+                  {activeTab === 'stake' && <PoolStake />}
+                  {activeTab === 'unstake' && <PoolUnstake />}
+                </div>
+              </Spin>
+            </article>
+            <PoolStatistics />
+          </div>
+          <PoolTransactions />
         </div>
-        <PoolTransactions />
       </div>
-    </div>
+    </>
   );
 };
 

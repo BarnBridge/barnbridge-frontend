@@ -1,4 +1,11 @@
 .component {
   background: var(--theme-card-color);
   border-bottom: 1px solid var(--theme-border-color);
+  padding: 24px var(--horizontal-padding);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 48px;
 }

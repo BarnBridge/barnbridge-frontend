@@ -12,6 +12,9 @@ export type NotificationsContextType = {
   notifications: NotificationType[];
   notificationsReadUntil: number;
   setNotificationsReadUntil: (value: number) => void;
+  addWarn: (warn: WarnType) => void;
+  removeWarn: (warn: WarnType) => void;
+  warns: WarnType[];
 };
 
 type ProposalBaseType = {
@@ -196,6 +199,12 @@ export type NotificationType =
   | DelegateStartType
   | SmartYieldTokenBoughtType;
 
+export type WarnType = {
+  text: string;
+  closable?: boolean;
+  storageIdentity?: string;
+};
+
 const Context = createContext<NotificationsContextType>(InvariantContext('NotificationsProvider'));
 
 const notificationsNode = document.querySelector('#notifications-root');
@@ -209,6 +218,20 @@ const NotificationsProvider: FC = ({ children }) => {
   const [notificationsReadUntil, setNotificationsReadUntil] =
     useState<NotificationsContextType['notificationsReadUntil']>(1);
   const [storedReadUntil, setStoredReadUntil, removeStoredReadUntil] = useLocalStorage('bb_notifications_read_until');
+
+  const [warns, setWarns] = useState<WarnType[]>([]);
+
+  function removeWarn(warn: WarnType) {
+    setWarns(prevState => prevState.filter(w => w !== warn));
+  }
+
+  function addWarn(warn: WarnType) {
+    setWarns(prevState => [...prevState, warn]);
+
+    return () => {
+      removeWarn(warn);
+    };
+  }
 
   const addToast = useCallback((notification: NotificationType) => {
     setToasts(ns => [...ns, notification]);
@@ -291,6 +314,9 @@ const NotificationsProvider: FC = ({ children }) => {
         notifications,
         notificationsReadUntil,
         setNotificationsReadUntil: setNotificationsReadUntilHandler,
+        addWarn,
+        removeWarn,
+        warns,
       }}>
       {children}
       {notificationsNode &&

@@ -394,7 +394,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
     return new BigNumber(1);
   }
 
-  if ([MainnetNetwork, KovanNetwork, TestnetNetwork, OptimisticKovanNetwork, OptimisticMainnetNetwork].includes(network)) {
+  if (
+    [MainnetNetwork, KovanNetwork, TestnetNetwork, OptimisticKovanNetwork, OptimisticMainnetNetwork].includes(network)
+  ) {
     switch (symbol.toUpperCase()) {
       case 'BTC':
       case 'WBTC':

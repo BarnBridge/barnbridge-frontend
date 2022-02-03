@@ -10,7 +10,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 
 import { ExplorerAddressLink } from 'components/button';
-import IconNotification from 'components/custom/icon-notification';
+import { IconNotification } from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';

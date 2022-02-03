@@ -95,7 +95,7 @@ export const ArbitrumTestnetNetwork: Web3Network = {
   meta: {
     chainId: ARBITRUM_TESTNET_CHAIN_ID,
     name: 'Arbitrum Testnet',
-    logo: 'arbitrum-logo',
+    logo: 'arbitrum-testnet-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

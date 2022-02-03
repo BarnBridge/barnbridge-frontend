@@ -101,6 +101,12 @@ export const KovanConfig: NetworkConfig = {
     sa: {
       loupe: '0xA408F3f26ebe1768512c9977108633CEF84c17a7',
     },
+    airdrop: {
+      dao: {
+        merkleDistributor: '0xD1C002D25025bedaEef918Ce3f2C1C5B62047243',
+        data: require(`airdrop/kovan-proof.json`),
+      },
+    },
   },
 };
 
@@ -122,7 +128,7 @@ export const KovanNetwork: Web3Network = {
   meta: {
     chainId: KOVAN_CHAIN_ID,
     name: 'Ethereum Dev (Kovan)',
-    logo: 'testnet-logo',
+    logo: 'kovan-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

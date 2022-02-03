@@ -71,7 +71,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-          <IconOld name={entity.network.meta.logo} />
+          <Icon name={entity.network.meta.logo} />
           <Text type="p2" weight="semibold" color="secondary">
             {entity.network.type}
           </Text>

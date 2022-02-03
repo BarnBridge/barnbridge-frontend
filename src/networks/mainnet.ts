@@ -109,6 +109,12 @@ export const MainnetConfig: NetworkConfig = {
         },
       },
     },
+    airdrop: {
+      dao: {
+        merkleDistributor: '0x209df5e74795da85c08cfc919b91231c9760a596',
+        data: require(`airdrop/mainnet-proof.json`),
+      },
+    },
   },
 };
 

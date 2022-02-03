@@ -2,7 +2,7 @@ import { FC, Suspense, lazy, useEffect } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
-import { useWarning } from 'components/providers/warning-provider';
+import { useNotifications } from 'components/providers/notificationsProvider';
 import YfAPIProvider from 'modules/yield-farming/api';
 
 import YfPoolsProvider from './providers/pools-provider';
@@ -11,12 +11,12 @@ const PoolsView = lazy(() => import('./views/pools-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
 
 const YieldFarmingView: FC = () => {
-  const warning = useWarning();
+  const { addWarn } = useNotifications();
 
   useEffect(() => {
-    let warningDestructor: () => void;
+    let warningDestructor;
 
-    warningDestructor = warning.addWarn({
+    warningDestructor = addWarn({
       text: 'Do not send funds directly to the contract!',
       closable: true,
       storageIdentity: 'bb_send_funds_warn',

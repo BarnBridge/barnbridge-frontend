@@ -7,60 +7,11 @@ import s from './s.module.scss';
 
 export type LogoIconNames = 'barnbridge';
 
-export type TokenIconNames =
-  | 'bond-square-token'
-  | 'bond-add-token'
-  | 'token-unknown'
-  | 'token-eth'
-  | 'token-btc'
-  | 'token-weth'
-  | 'token-wbtc'
-  | 'token-renbtc'
-  | 'token-usdc'
-  | 'token-usdt'
-  | 'token-dai'
-  | 'token-rai'
-  | 'token-susd'
-  | 'token-gusd'
-  | 'static/token-bond'
-  | 'static/token-uniswap'
-  | 'static/token-staked-aave'
-  | 'token-wmatic'
-  | 'compound'
-  | 'static/aave'
-  | 'cream_finance'
-  | 'aave_polygon'
-  | 'token-all'
-  | 'polygon';
-
-export type NavIconNames =
-  | 'paper-bill-outlined'
-  | 'paper-alpha-outlined'
-  | 'chats-outlined'
-  | 'forum-outlined'
-  | 'bar-charts-outlined'
-  | 'savings-outlined'
-  | 'proposal-outlined'
-  | 'treasury-outlined'
-  | 'bank-outlined'
-  | 'tractor-outlined'
-  | 'wallet-outlined'
-  | 'docs-outlined';
-
-export type ThemeIconNames = 'moon' | 'sun' | 'weather';
+export type TokenIconNames = 'bond-square-token' | 'bond-add-token';
 
 export type IconNames =
   | LogoIconNames
   | TokenIconNames
-  | NavIconNames
-  | ThemeIconNames
-  | 'mainnet-logo'
-  | 'testnet-logo'
-  | 'polygon-logo'
-  | 'avalanche-logo'
-  | 'binance-logo'
-  | 'optimistic-kovan-logo'
-  | 'right-arrow-circle-outlined'
   | 'arrow-back'
   | 'down-arrow-circle'
   | 'plus-circle'
@@ -71,13 +22,9 @@ export type IconNames =
   | 'check-circle-outlined'
   | 'history-circle-outlined'
   | 'close'
-  | 'close-tiny'
-  | 'dropdown-arrow'
   | 'warning-outlined'
   | 'warning-circle-outlined'
   | 'gear'
-  | 'node-status'
-  | 'info-outlined'
   | 'network'
   | 'pencil-outlined'
   | 'rate-outlined'
@@ -142,7 +89,6 @@ export type IconNames =
   | 'checkbox'
   | 'loader'
   | 'insured'
-  | 'arbitrum-logo'
   | 'warn-circle';
 
 export type IconProps = {
