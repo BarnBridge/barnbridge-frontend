@@ -35,9 +35,7 @@ const VotingHeader: React.FC = () => {
   const [claimModalVisible, setClaimModalVisible] = useState(false);
   const [claimingReward, setClaimingReward] = useState<DaoRewardContract | MerkleDistributor | undefined>();
 
-  const toClaimReward = daoCtx.airdrop?.toClaim;
-  const { toClaim: toClaimReward2 } = daoCtx.daoReward2 ?? {};
-  const totalToClaim = toClaimReward?.plus(toClaimReward2 ?? 0);
+  const totalToClaim = daoCtx.daoReward.toClaim?.plus(daoCtx.airdrop?.toClaim ?? 0);
 
   const projectTokenBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
   const { votingPower, userLockedUntil } = daoCtx.daoBarn;
@@ -56,12 +54,12 @@ const VotingHeader: React.FC = () => {
   }
 
   function handleClaim() {
-    if (toClaimReward?.gt(0) && toClaimReward2?.gt(0)) {
+    if (daoCtx.daoReward.toClaim?.gt(0) && daoCtx.airdrop?.toClaim?.gt(0)) {
       setClaimModalVisible(true);
-    } else if (toClaimReward?.gt(0) && daoCtx.airdrop) {
+    } else if (daoCtx.airdrop?.toClaim?.gt(0) && daoCtx.airdrop) {
       handleRewardClaim(daoCtx.airdrop);
-    } else if (toClaimReward2?.gt(0) && daoCtx.daoReward2) {
-      handleRewardClaim(daoCtx.daoReward2);
+    } else if (daoCtx.daoReward.toClaim?.gt(0) && daoCtx.daoReward) {
+      handleRewardClaim(daoCtx.daoReward);
     }
   }
 
@@ -209,7 +207,7 @@ const VotingHeader: React.FC = () => {
               </Text>
             </div>
             <div className="flex flow-row row-gap-24">
-              {[daoCtx.airdrop, daoCtx.daoReward2].map((reward, rewardIndex) =>
+              {[daoCtx.airdrop, daoCtx.daoReward].map((reward, rewardIndex) =>
                 reward ? (
                   <Spin key={reward.address} spinning={claimingReward === reward}>
                     <button
