@@ -3,6 +3,7 @@ import BigNumber from 'bignumber.js';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 
+import { MerkleDistributor, useAirdrop } from 'airdrop/airdrop';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
@@ -37,6 +38,7 @@ type DAOContextType = DAOProviderState & {
   daoReward: DaoRewardContract;
   daoReward2?: DaoRewardContract;
   activeDaoReward?: DaoRewardContract;
+  airdrop?: MerkleDistributor;
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
@@ -73,6 +75,8 @@ const DAOProvider: React.FC = props => {
         return new DaoRewardContract(config.contracts.dao?.reward2!);
       })
     : undefined;
+  const airdropDaoConfig = config.contracts.airdrop?.dao;
+  const airdrop = useAirdrop(airdropDaoConfig?.merkleDistributor, airdropDaoConfig?.data);
   const { projectToken } = useKnownTokens();
 
   const [state, setState] = useMergeState<DAOProviderState>(InitialState);
@@ -97,6 +101,7 @@ const DAOProvider: React.FC = props => {
       daoGovernance.loadUserData();
       daoReward.loadUserData();
       daoReward2?.loadUserData();
+      airdrop?.loadUserData();
       daoBarn.loadUserData();
       bondContract.loadAllowance(config.contracts.dao?.barn!).catch(Error);
     }
@@ -174,6 +179,7 @@ const DAOProvider: React.FC = props => {
         daoReward,
         daoReward2,
         activeDaoReward,
+        airdrop,
         daoGovernance,
         actions: {
           activate,
