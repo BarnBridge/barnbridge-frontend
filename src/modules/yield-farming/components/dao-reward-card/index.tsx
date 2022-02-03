@@ -1,7 +1,8 @@
-import React, { FC, useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { formatPercent, formatToken } from 'web3/utils';
 
+import { useAirdrop } from 'airdrop/airdrop';
 import StatusTag from 'components/custom/status-tag';
 import { Tabs as ElasticTabs } from 'components/custom/tabs';
 import { Text } from 'components/custom/typography';
@@ -18,7 +19,7 @@ import { useWallet } from 'wallets/walletProvider';
 const DaoRewardCard: FC<{}> = () => {
   const config = useConfig();
   const wallet = useWallet();
-  const [reload, version] = useReload();
+  const [reload] = useReload();
 
   const [activeTab, setActiveTab] = useState('dao');
 
@@ -48,36 +49,25 @@ const DaoRewardCard: FC<{}> = () => {
     },
   );
 
-  const daoReward2 = config.contracts.dao?.reward2
-    ? getOrCreateContract(
-        config.contracts.dao?.reward2,
-        () => {
-          return new DaoRewardContract(config.contracts.dao?.reward2!);
-        },
-        {
-          afterInit: contract => {
-            contract.onUpdateData(reload);
-            contract.loadCommonData().catch(Error);
-          },
-        },
-      )
-    : undefined;
-
-  const activeDaoReward = useMemo(() => {
-    return [daoReward, daoReward2].find(rw => rw && rw.isStarted && !rw.isEnded);
-  }, [daoReward, daoReward2, version]);
+  const airdropDaoConfig = config.contracts.airdrop?.dao;
+  const airdrop = useAirdrop(airdropDaoConfig?.merkleDistributor, airdropDaoConfig?.data);
 
   const apr = daoBarnContract.bondStaked
-    ? activeDaoReward?.weeklyRewards?.multipliedBy(52).dividedBy(daoBarnContract.bondStaked)
+    ? daoReward?.weeklyRewards?.multipliedBy(52).dividedBy(daoBarnContract.bondStaked)
     : undefined;
+
+  const totalToClaim = daoReward?.toClaim?.plus(airdrop?.toClaim ?? 0);
 
   useEffect(() => {
     if (wallet.account) {
       daoBarnContract.setAccount(wallet.account);
       daoBarnContract.loadUserData().catch(Error);
 
-      activeDaoReward?.setAccount(wallet.account);
-      activeDaoReward?.loadUserData().catch(Error);
+      daoReward?.setAccount(wallet.account);
+      daoReward?.loadUserData().catch(Error);
+
+      airdrop?.setAccount(wallet.account);
+      airdrop?.loadUserData().catch(Error);
     }
   }, [wallet.account]);
 
@@ -93,7 +83,7 @@ const DaoRewardCard: FC<{}> = () => {
               DAO Rewards
             </Text>
 
-            {activeDaoReward?.isEnded === false && (
+            {daoReward?.isEnded === false && (
               <StatusTag
                 text={
                   <Text type="lb2" weight="bold" color="green">
@@ -103,7 +93,7 @@ const DaoRewardCard: FC<{}> = () => {
                 color="green"
               />
             )}
-            {activeDaoReward?.isEnded && (
+            {daoReward?.isEnded && (
               <StatusTag
                 text={
                   <Text type="lb2" weight="bold" color="green">
@@ -161,7 +151,7 @@ const DaoRewardCard: FC<{}> = () => {
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(activeDaoReward?.weeklyRewards) ?? '-'}
+                    {formatToken(daoReward?.weeklyRewards) ?? '-'}
                   </Text>
                 </div>
               </div>
@@ -187,7 +177,7 @@ const DaoRewardCard: FC<{}> = () => {
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(activeDaoReward?.toClaim) ?? '-'}
+                    {formatToken(totalToClaim) ?? '-'}
                   </Text>
                 </div>
               </div>

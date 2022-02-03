@@ -84,7 +84,6 @@ export type NetworkConfig = {
       governance: string;
       barn: string;
       reward: string;
-      reward2?: string;
     };
     se?: Record<'ePoolPeriphery' | 'ePoolHelper', string>;
     sa?: {

@@ -1,8 +1,9 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import BigNumber from 'bignumber.js';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 
+import { MerkleDistributor, useAirdrop } from 'airdrop/airdrop';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
@@ -35,8 +36,7 @@ type DAOContextType = DAOProviderState & {
   daoBarn: DaoBarnContract;
   daoGovernance: DaoGovernanceContract;
   daoReward: DaoRewardContract;
-  daoReward2?: DaoRewardContract;
-  activeDaoReward?: DaoRewardContract;
+  airdrop?: MerkleDistributor;
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
@@ -55,7 +55,7 @@ const DAOProvider: React.FC = props => {
 
   const config = useConfig();
   const walletCtx = useWallet();
-  const [reloadReward, rewardVersion] = useReload();
+  const [reloadReward] = useReload();
 
   const { getContract } = useContractManager();
 
@@ -68,23 +68,15 @@ const DAOProvider: React.FC = props => {
   const daoReward = getContract(config.contracts.dao?.reward!, () => {
     return new DaoRewardContract(config.contracts.dao?.reward!);
   });
-  const daoReward2 = config.contracts.dao?.reward2
-    ? getContract(config.contracts.dao?.reward2, () => {
-        return new DaoRewardContract(config.contracts.dao?.reward2!);
-      })
-    : undefined;
+  const airdropDaoConfig = config.contracts.airdrop?.dao;
+  const airdrop = useAirdrop(airdropDaoConfig?.merkleDistributor, airdropDaoConfig?.data);
   const { projectToken } = useKnownTokens();
 
   const [state, setState] = useMergeState<DAOProviderState>(InitialState);
 
-  const activeDaoReward = useMemo(() => {
-    return [daoReward, daoReward2].find(rw => rw && rw.isStarted && !rw.isEnded);
-  }, [daoReward, daoReward2, rewardVersion]);
-
   React.useEffect(() => {
     daoGovernance.loadCommonData();
     daoReward.loadCommonData().then(reloadReward);
-    daoReward2?.loadCommonData().then(reloadReward);
     daoBarn.loadCommonData();
   }, []);
 
@@ -96,7 +88,7 @@ const DAOProvider: React.FC = props => {
     if (walletCtx.account) {
       daoGovernance.loadUserData();
       daoReward.loadUserData();
-      daoReward2?.loadUserData();
+      airdrop?.loadUserData();
       daoBarn.loadUserData();
       bondContract.loadAllowance(config.contracts.dao?.barn!).catch(Error);
     }
@@ -172,8 +164,7 @@ const DAOProvider: React.FC = props => {
         ...state,
         daoBarn,
         daoReward,
-        daoReward2,
-        activeDaoReward,
+        airdrop,
         daoGovernance,
         actions: {
           activate,
