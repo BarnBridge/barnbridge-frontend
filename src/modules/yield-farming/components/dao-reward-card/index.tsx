@@ -15,6 +15,8 @@ import DaoBarnContract from 'modules/governance/contracts/daoBarn';
 import DaoRewardContract from 'modules/governance/contracts/daoReward';
 import { useWallet } from 'wallets/walletProvider';
 
+import { useAirdrop } from '../../../../airdrop/airdrop';
+
 const DaoRewardCard: FC<{}> = () => {
   const config = useConfig();
   const wallet = useWallet();
@@ -63,6 +65,9 @@ const DaoRewardCard: FC<{}> = () => {
       )
     : undefined;
 
+  const airdropDaoConfig = config.contracts.airdrop?.dao;
+  const airdrop = useAirdrop(airdropDaoConfig?.merkleDistributor, airdropDaoConfig?.data);
+
   const activeDaoReward = useMemo(() => {
     return [daoReward, daoReward2].find(rw => rw && rw.isStarted && !rw.isEnded);
   }, [daoReward, daoReward2, version]);
@@ -71,6 +76,8 @@ const DaoRewardCard: FC<{}> = () => {
     ? activeDaoReward?.weeklyRewards?.multipliedBy(52).dividedBy(daoBarnContract.bondStaked)
     : undefined;
 
+  const totalToClaim = activeDaoReward?.toClaim?.plus(airdrop?.toClaim ?? 0);
+
   useEffect(() => {
     if (wallet.account) {
       daoBarnContract.setAccount(wallet.account);
@@ -78,6 +85,8 @@ const DaoRewardCard: FC<{}> = () => {
 
       activeDaoReward?.setAccount(wallet.account);
       activeDaoReward?.loadUserData().catch(Error);
+
+      airdrop?.loadUserData().catch(Error);
     }
   }, [wallet.account]);
 
@@ -187,7 +196,7 @@ const DaoRewardCard: FC<{}> = () => {
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
                   <Text type="p1" weight="semibold" color="primary">
-                    {formatToken(activeDaoReward?.toClaim) ?? '-'}
+                    {formatToken(totalToClaim) ?? '-'}
                   </Text>
                 </div>
               </div>
