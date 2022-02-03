@@ -42,7 +42,7 @@
     color: var(--theme-primary-color);
 
     > svg {
-      color: var(--theme-brand-color);
+      color: var(--theme-red-color);
     }
   }
 
@@ -82,12 +82,12 @@
       left: 0;
       right: 0;
       height: 2px;
-      background: var(--theme-brand-color);
+      background: var(--theme-red-color);
       border-radius: 4px 4px 0 0;
     }
 
     > svg {
-      color: var(--theme-brand-color);
+      color: var(--theme-red-color);
     }
   }
 
@@ -166,7 +166,7 @@ a.tab {
     color: var(--theme-primary-color);
 
     > svg {
-      color: var(--theme-brand-color);
+      color: var(--theme-red-color);
     }
   }
 
@@ -174,7 +174,7 @@ a.tab {
     color: var(--theme-primary-color);
 
     > svg {
-      color: var(--theme-brand-color);
+      color: var(--theme-red-color);
     }
   }
 
