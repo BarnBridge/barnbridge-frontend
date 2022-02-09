@@ -67,7 +67,7 @@
 .card {
   background-color: var(--theme-card-color);
   border-radius: 12px;
-  box-shadow: var(--theme-card-shadow);
+  border: 1px solid var(--theme-border-color);
 
   .card-row:not(:last-of-type) {
     border-bottom: 1px solid var(--theme-border-color);

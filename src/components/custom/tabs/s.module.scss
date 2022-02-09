@@ -117,7 +117,7 @@ a.tab {
   display: inline-flex;
   max-width: 100%;
 
-  background: rgba(113, 121, 128, 0.08);
+  background: var(--theme-grey200-color);
   border-radius: 8px;
   padding: 4px;
   flex-shrink: 0;

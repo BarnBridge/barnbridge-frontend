@@ -77,7 +77,7 @@ body.mobile-menu-open {
   --font-caption-semibold: 600 var(--font-caption);
   --font-caption-medium: 500 var(--font-caption);
 
-  --theme-body-color: #f8f8f9; // grey50
+  --theme-body-color: var(--theme-grey100-color);
   --theme-card-color: #fff;
   --theme-overlay-color: #fff;
   --theme-mask-color: rgba(19, 32, 43, 0.8);
@@ -86,8 +86,8 @@ body.mobile-menu-open {
   --theme-icon-color: #aaafb3; // grey300
   --theme-icon-hover-color: #060a0d; // grey900
 
-  --theme-primary-color: #060a0d; // grey900
-  --theme-secondary-color: #717980; // grey500
+  --theme-primary-color: var(--theme-grey900-color);
+  --theme-secondary-color: var(--theme-grey500-color);
   --theme-secondary-color-rgb: 113, 121, 128; // grey500
   --theme-default-color: #aaafb3; // grey300
 
@@ -123,10 +123,11 @@ body.mobile-menu-open {
 
   --theme-grey-color: #c6c9cc;
   --theme-grey-color-rgb: 198, 201, 204;
+  --theme-grey100-color: #f7f8fa;
   --theme-grey200-color: #f0f2f5;
   --theme-grey300-color: #aaafb3;
   --theme-grey500-color: #7588a3;
-  --theme-grey900-color: #060a0d;
+  --theme-grey900-color: #1f252e;
 
   --theme-white-color: #fff;
 

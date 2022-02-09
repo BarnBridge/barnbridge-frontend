@@ -13,7 +13,7 @@
 
 .table {
   &.clickable {
-    tr {
+    tbody tr {
       cursor: pointer;
     }
   }
