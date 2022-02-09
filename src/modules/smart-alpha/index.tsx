@@ -3,7 +3,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { Spinner } from 'components/custom/spinner';
 import { HorizontalMenu } from 'components/custom/tabs';
-import { Icon } from 'components/icon';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useWallet } from 'wallets/walletProvider';
 
