@@ -81,7 +81,7 @@ body.mobile-menu-open {
   --theme-card-color: #fff;
   --theme-overlay-color: #fff;
   --theme-mask-color: rgba(19, 32, 43, 0.8);
-  --theme-border-color: #e3e4e6; // grey100
+  --theme-border-color: var(--theme-grey200-color);
   --theme-border-color-rgb: 227, 228, 230;
   --theme-icon-color: #aaafb3; // grey300
   --theme-icon-hover-color: #060a0d; // grey900
@@ -123,13 +123,20 @@ body.mobile-menu-open {
 
   --theme-grey-color: #c6c9cc;
   --theme-grey-color-rgb: 198, 201, 204;
-  --theme-grey200-color: #c6c9cc;
+  --theme-grey200-color: #f0f2f5;
   --theme-grey300-color: #aaafb3;
+  --theme-grey500-color: #7588a3;
   --theme-grey900-color: #060a0d;
 
   --theme-white-color: #fff;
 
   --horizontal-padding: 64px;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --horizontal-padding: 32px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -159,6 +166,7 @@ body.mobile-menu-open {
   --theme-input-placeholder: #606268;
 
   --theme-grey-color: #606268;
+  --theme-grey500-color: #47566b;
 }
 
 :focus:not(:focus-visible) {
@@ -173,6 +181,17 @@ button {
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--theme-body-color);
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 }
 
 #root[inert] {

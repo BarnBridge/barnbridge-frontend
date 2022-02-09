@@ -9,7 +9,7 @@ import s from './s.module.scss';
 export type TextProps = {
   tag?: keyof JSX.IntrinsicElements;
   type: 'h1' | 'h2' | 'h3' | 'body1' | 'body2' | 'caption';
-  weight?: 'semibold' | 'bold';
+  weight?: 'semibold' | 'bold' | 'medium';
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'purple' | 'yellow';
   align?: 'left' | 'center' | 'right';
   ellipsis?: boolean;

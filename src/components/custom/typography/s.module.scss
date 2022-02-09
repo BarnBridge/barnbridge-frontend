@@ -1,4 +1,8 @@
 .text {
+  &.weight-medium.weight-medium {
+    font-weight: 500;
+  }
+
   &.weight-semibold.weight-semibold {
     font-weight: 600;
   }

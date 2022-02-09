@@ -1,13 +1,10 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
 import React, { useState } from 'react';
 import { isMobile } from 'react-device-detect';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { NavLink, useLocation } from 'react-router-dom';
 import cn from 'classnames';
 
 import Tooltip from 'components/antd/tooltip';
 import { Button } from 'components/button';
-import IconOld from 'components/custom/icon';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
 import { Modal } from 'components/modal';
@@ -37,25 +34,19 @@ const LayoutSideNav: React.FC = () => {
     }
   }, [navOpen]);
 
-  const displayTooltip = !isMobile && !navOpen;
-
   return (
-    <div className={s.wrap}>
-      <div className={cn('hidden-desktop', s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
-      <aside className={cn(s.aside, { [s.expanded]: navOpen, [s.open]: navOpen })}>
+    <div className={cn('hidden-desktop', s.wrap)}>
+      <div className={cn(s.mask, { [s.open]: navOpen })} onClick={() => setNavOpen(false)} />
+      <aside className={cn(s.aside, { [s.open]: navOpen })}>
         <div className={s.logoContainer}>
           <button type="button" className={s.closeButton} onClick={() => setNavOpen(false)}>
             <Icon name="close" />
           </button>
-          <Link to="/" className={s.logo}>
-            <IconOld name="bond-square-token" />
-            <IconOld name="barnbridge" width="113" color="primary" className={s.logoLabel} />
-          </Link>
         </div>
         <nav className={s.top}>
           {features.faucets && (
             <NavLink to="/faucets" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'Faucets'} placement="right">
+              <Tooltip title="Faucets" placement="right">
                 <Icon name="menu-faucet" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
@@ -70,7 +61,7 @@ const LayoutSideNav: React.FC = () => {
           )}
           {features.yieldFarming && (
             <NavLink to="/yield-farming" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'Yield Farming'} placement="right">
+              <Tooltip title="Yield Farming" placement="right">
                 <Icon name="menu-yf" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
@@ -85,7 +76,7 @@ const LayoutSideNav: React.FC = () => {
           )}
           {features.dao && (
             <NavLink to="/governance" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'Governance'} placement="right">
+              <Tooltip title="Governance" placement="right">
                 <Icon name="menu-dao" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
@@ -100,7 +91,7 @@ const LayoutSideNav: React.FC = () => {
           )}
           {features.smartYield && (
             <NavLink to="/smart-yield" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'SMART Yield'} placement="right">
+              <Tooltip title="SMART Yield" placement="right">
                 <Icon name="menu-sy" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
@@ -115,7 +106,7 @@ const LayoutSideNav: React.FC = () => {
           )}
           {features.smartAlpha && (
             <NavLink to="/smart-alpha" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'SMART Alpha'} placement="right">
+              <Tooltip title="SMART Alpha" placement="right">
                 <Icon name="menu-sa" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
@@ -130,7 +121,7 @@ const LayoutSideNav: React.FC = () => {
           )}
           {features.smartExposure && (
             <NavLink to="/smart-exposure" className={s.button} activeClassName={s.active}>
-              <Tooltip title={displayTooltip && 'SMART Exposure'} placement="right">
+              <Tooltip title="SMART Exposure" placement="right">
                 <Icon name="menu-se" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
@@ -145,9 +136,9 @@ const LayoutSideNav: React.FC = () => {
           )}
         </nav>
         <div className={s.bottom}>
-          <NotificationsAction displayTooltip={displayTooltip} />
-          <NetworkAction displayTooltip={displayTooltip} />
-          <ToggleThemeButton displayTooltip={displayTooltip} />
+          <NotificationsAction />
+          <NetworkAction />
+          <ToggleThemeButton />
         </div>
       </aside>
     </div>
@@ -156,7 +147,7 @@ const LayoutSideNav: React.FC = () => {
 
 export default LayoutSideNav;
 
-const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }) => {
+const NotificationsAction: React.FC = () => {
   const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
   const [open, setOpen] = useState(false);
 
@@ -188,7 +179,7 @@ const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayToo
         </Modal>
       )}
       <button type="button" className={s.button} onClick={() => setOpen(prevOpen => !prevOpen)}>
-        <Tooltip title={displayTooltip && 'Notifications'} placement={isMobile ? 'right' : 'left'}>
+        <Tooltip title="Notifications" placement={isMobile ? 'right' : 'left'}>
           <div style={{ width: 40, height: 40, flexShrink: 0 }} className="flex align-center justify-center">
             <Icon name={hasUnread ? 'notification-active' : 'notification'} size={40} />
           </div>
@@ -203,13 +194,13 @@ const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayToo
   );
 };
 
-const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }) => {
+const NetworkAction: React.FC = () => {
   const { activeNetwork } = useNetwork();
   const { showNetworkSelect } = useWeb3();
 
   return (
     <button type="button" onClick={() => showNetworkSelect()} className={cn(s.button, 'hidden-desktop')}>
-      <Tooltip title={displayTooltip && activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
+      <Tooltip title={activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
         <Icon name={activeNetwork.meta.logo} size={40} />
       </Tooltip>
       <Tooltip title={activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
@@ -221,7 +212,7 @@ const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }
   );
 };
 
-const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
+const ToggleThemeButton = () => {
   const { toggleTheme, selectedTheme } = useGeneral();
 
   let text;
@@ -240,7 +231,7 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
 
   return (
     <button type="button" onClick={toggleTheme} className={cn(s.themeButton, s.button)}>
-      <Tooltip title={displayTooltip && text} placement={isMobile ? 'right' : 'left'}>
+      <Tooltip title={text} placement={isMobile ? 'right' : 'left'}>
         <Icon name={iconName} size={40} />
       </Tooltip>
       <div className={s.btnContent}>

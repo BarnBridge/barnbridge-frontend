@@ -1,22 +1,26 @@
 import React, { useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import cn from 'classnames';
+import classNames from 'classnames';
 import { shortenAddr } from 'web3/utils';
 
 import Popover from 'components/antd/popover';
 import { Button, ExplorerAddressLink, Link } from 'components/button';
 import { Badge, SquareBadge } from 'components/custom/badge';
 import IconOld from 'components/custom/icon';
+import { IconNotification } from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
+import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
+import { useNotifications } from 'components/providers/notificationsProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
+import Notifications from 'wallets/components/notifications';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import MetamaskWalletConfig, { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
@@ -30,23 +34,193 @@ const LayoutHeader: React.FC = () => {
   const { activeNetwork } = useNetwork();
 
   return (
-    <header className={s.component}>
-      <button type="button" className={s.burger} onClick={() => setNavOpen(!navOpen)}>
-        <Icon name={navOpen ? 'close' : 'burger'} className="hidden-desktop" color="icon" />
-        <Icon name="arrow" rotate={navOpen ? 180 : 0} size={12} className="hidden-mobile hidden-tablet" />
+    <header className={s.header}>
+      <button
+        type="button"
+        className={classNames(s.actionButton, 'hidden-desktop', 'mr-16')}
+        onClick={() => setNavOpen(!navOpen)}>
+        <Icon name={navOpen ? 'close' : 'burger'} color="icon" />
       </button>
-      <IconOld name="bond-square-token" className={s.logo} />
-      <Text type="h3" weight="semibold" color="primary" className={s.title}>
+      <div className={s.title}>
         <Switch>
-          <Route path="/yield-farming">Yield Farming</Route>
-          <Route path="/governance">Governance</Route>
-          <Route path="/smart-yield">SMART Yield</Route>
-          <Route path="/smart-exposure">SMART Exposure</Route>
-          <Route path="/smart-alpha">SMART Alpha</Route>
-          <Route path="/faucets">Faucets</Route>
-          <Route path="*">BarnBridge</Route>
+          <Route path="/yield-farming">
+            <Icon
+              name="menu-yf"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              <Text type="caption" weight="bold" color="blue">
+                Yield
+              </Text>
+              <Text type="body1" weight="medium">
+                Farming
+              </Text>
+            </div>
+          </Route>
+          <Route path="/governance">
+            <Icon
+              name="menu-dao"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              <Text type="body1" weight="medium">
+                Governance
+              </Text>
+            </div>
+          </Route>
+          <Route path="/smart-yield">
+            <Icon
+              name="menu-sy"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text>
+              <Text type="body1" weight="medium">
+                Yield
+              </Text>
+            </div>
+          </Route>
+          <Route path="/smart-exposure">
+            <Icon
+              name="menu-se"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text>
+              <Text type="body1" weight="medium">
+                Exposure
+              </Text>
+            </div>
+          </Route>
+          <Route path="/smart-alpha">
+            <Icon
+              name="menu-sa"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text>
+              <Text type="body1" weight="medium">
+                Alpha
+              </Text>
+            </div>
+          </Route>
+          <Route path="/faucets">
+            <Icon
+              name="menu-sa"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              {/* <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text> */}
+              <Text type="body1" weight="medium">
+                Faucets
+              </Text>
+            </div>
+          </Route>
+          <Route path="*">
+            <IconOld name="bond-square-token" width={40} height={40} className="mr-12" />
+            <div>
+              {/* <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text> */}
+              <Text type="body1" weight="medium">
+                BarnBridge
+              </Text>
+            </div>
+          </Route>
         </Switch>
-      </Text>
+      </div>
+      <nav className={classNames(s.nav, 'hidden-mobile', 'hidden-tablet')}>
+        <Link variation="text-alt" to="/" className={s.navGroupLink}>
+          Home
+        </Link>
+        <div className={s.navGroup}>
+          <button className={s.navGroupTitle}>
+            Products
+            <Icon name="chevron" size={16} className="ml-4" rotate={90} />
+          </button>
+          <div className={s.navDropdown}>
+            <Link variation="text-alt" to="/smart-yield">
+              SMART Yield
+            </Link>
+            <Link variation="text-alt" to="/smart-alpha">
+              SMART Alpha
+            </Link>
+            <Link variation="text-alt" to="/smart-exposure">
+              SMART Exposure
+            </Link>
+          </div>
+        </div>
+        <div className={s.navGroup}>
+          <button className={s.navGroupTitle}>
+            Governance
+            <Icon name="chevron" size={16} className="ml-4" rotate={90} />
+          </button>
+          <div className={s.navDropdown}>
+            <Link variation="text-alt" to="/yield-farming">
+              Yield Farming
+            </Link>
+            <Link variation="text-alt" to="/governance">
+              Governance
+            </Link>
+          </div>
+        </div>
+      </nav>
       <div className="flex align-center col-gap-16 ml-auto">
         {!isProductionMode && (
           <Switch>
@@ -58,6 +232,7 @@ const LayoutHeader: React.FC = () => {
         {activeNetwork.config.features.addBondToken && <AddTokenAction />}
         <NetworkAction />
         <WalletAction />
+        <NotificationsAction />
       </div>
     </header>
   );
@@ -82,7 +257,7 @@ const PositionsAction: React.FC = () => {
       visible={visible}
       onVisibleChange={setVisible}
       content={
-        <div className={cn('card', s.notifications)}>
+        <div className={classNames('card', s.notifications)}>
           <div className="card-header flex">
             <Text type="body1" weight="semibold" color="primary">
               Queued positions
@@ -149,7 +324,7 @@ const AddTokenAction: React.FC = () => {
   }
 
   return wallet.meta === MetamaskWalletConfig ? (
-    <button type="button" onClick={handleAddProjectToken} className={cn(s.actionButton, 'hidden-mobile')}>
+    <button type="button" onClick={handleAddProjectToken} className={classNames(s.actionButton, 'hidden-mobile')}>
       <IconOld name="bond-add-token" />
     </button>
   ) : null;
@@ -163,11 +338,11 @@ const NetworkAction: React.FC = () => {
     <button
       type="button"
       onClick={() => showNetworkSelect()}
-      className={cn(s.actionButton, 'hidden-mobile hidden-tablet')}>
-      <Icon name={activeNetwork.meta.logo} size={24} className="mr-8" />
-      <Text type="body2" weight="semibold" color="secondary">
+      className={classNames(s.actionButton, 'hidden-mobile hidden-tablet')}>
+      <Icon name={activeNetwork.meta.logo} size={24} />
+      {/* <Text type="body2" weight="semibold" color="secondary">
         {activeNetwork.meta.name}
-      </Text>
+      </Text> */}
     </button>
   );
 };
@@ -319,5 +494,42 @@ const WalletAction: React.FC = () => {
         <div className="hidden-mobile">{wallet.ens.name || shortenAddr(wallet.account, 4, 3)}</div>
       </button>
     </Popover>
+  );
+};
+
+const NotificationsAction: React.FC = () => {
+  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
+  const [open, setOpen] = useState(false);
+
+  const markAllAsRead = () => {
+    if (notifications.length) {
+      setNotificationsReadUntil(Math.max(...notifications.map(n => n.startsOn)));
+    }
+  };
+  const hasUnread = notificationsReadUntil ? notifications.some(n => n.startsOn > notificationsReadUntil) : false;
+
+  return (
+    <>
+      {open && (
+        <Modal heading="Notifications" closeHandler={() => setOpen(false)}>
+          <div className="flex">
+            {hasUnread && (
+              <Button type="button" variation="link" className="ml-auto" onClick={markAllAsRead}>
+                Mark all as read
+              </Button>
+            )}
+          </div>
+          <Notifications />
+        </Modal>
+      )}
+      <button
+        type="button"
+        className={classNames(s.actionButton, 'hidden-mobile hidden-tablet')}
+        onClick={() => setOpen(prevOpen => !prevOpen)}>
+        <IconNotification width={24} height={24} notificationSize={8} bubble={hasUnread} className={s.notificationIcon}>
+          <Icon name="bell" />
+        </IconNotification>
+      </button>
+    </>
   );
 };

@@ -25,7 +25,7 @@
 
 .tab {
   font: var(--font-body1);
-  font-weight: 600;
+  font-weight: 500;
   // margin-right: 32px;
   color: var(--theme-secondary-color);
   display: flex;
@@ -189,5 +189,5 @@ a.tab {
   scroll-padding: 0 var(--horizontal-padding);
   background: var(--theme-card-color);
   border-bottom: 1px solid var(--theme-border-color);
-  height: 73px;
+  justify-content: center;
 }

@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import classNames from 'classnames';
 
+import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 
 import s from './s.module.scss';
@@ -49,7 +50,15 @@ export const Modal: React.FC<Props> = ({ children, heading, closeHandler, fullsc
     <section className={s.dialog}>
       <div className={classNames(s.inner, { [s.fullscreen]: fullscreen })}>
         <header className={s.header}>
-          <div className={s.heading}>{heading}</div>
+          <div className={s.heading}>
+            {typeof heading === 'string' ? (
+              <Text type="h3" weight="semibold">
+                {heading}
+              </Text>
+            ) : (
+              heading
+            )}
+          </div>
           <button className={classNames(s.closeButton, { [s.fullscreen]: fullscreen })} onClick={() => closeHandler()}>
             <Icon name="close" size={fullscreen ? 32 : 24} />
           </button>
