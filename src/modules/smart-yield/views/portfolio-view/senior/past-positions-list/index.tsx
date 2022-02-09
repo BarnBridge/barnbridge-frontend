@@ -123,10 +123,10 @@ const PastPositionsList: React.FC<Props> = props => {
                   className="mr-16"
                 />
                 <div>
-                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  <Text type="body1" weight="semibold" color="primary" className="mb-4">
                     {entity.pool?.underlyingSymbol}
                   </Text>
-                  <Text type="small" weight="semibold">
+                  <Text type="caption" weight="semibold">
                     {entity.pool?.market?.name}
                   </Text>
                 </div>
@@ -134,31 +134,31 @@ const PastPositionsList: React.FC<Props> = props => {
                 <StatusTag text="REDEEMED" color="blue" className="ml-auto" />
               </div>
               <div className="p-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Deposited
                 </Text>
                 <Tooltip title={entity.underlyingIn}>
-                  <Text type="p1" tag="span" weight="semibold" color="primary">
+                  <Text type="body1" tag="span" weight="semibold" color="primary">
                     {formatBigValue(entity.underlyingIn)}
                     {` ${entity.pool?.underlyingSymbol}`}
                   </Text>
                 </Tooltip>
-                <Text type="p2" weight="semibold" color="secondary">
+                <Text type="body2" weight="semibold" color="secondary">
                   {formatUSD(getAmountInUSD(BigNumber.from(entity.underlyingIn), entity.pool?.underlyingSymbol))}
                 </Text>
               </div>
               <Divider />
               <div className="p-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Redeemed
                 </Text>
                 <Tooltip title={Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee)}>
-                  <Text type="p1" tag="span" weight="semibold" color="primary">
+                  <Text type="body1" tag="span" weight="semibold" color="primary">
                     {formatBigValue(Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee))}
                     {` ${entity.pool?.underlyingSymbol}`}
                   </Text>
                 </Tooltip>
-                <Text type="p2" weight="semibold" color="secondary">
+                <Text type="body2" weight="semibold" color="secondary">
                   {formatUSD(
                     getAmountInUSD(
                       BigNumber.from(Number(entity.underlyingIn) + Number(entity.gain) - Number(entity.fee)),
@@ -169,22 +169,22 @@ const PastPositionsList: React.FC<Props> = props => {
               </div>
               <Divider />
               <div className="p-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Transaction hash/timestamp
                 </Text>
                 <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
                   {shortenAddr(entity.transactionHash)}
                 </ExplorerTxLink>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatDateTime(entity.blockTimestamp * 1_000)}
                 </Text>
               </div>
               <Divider />
               <div className="p-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   APY
                 </Text>
-                <Text type="p1" weight="semibold" color="green">
+                <Text type="body1" weight="semibold" color="green">
                   {formatPercent(
                     new BigNumber(entity.gain)
                       .dividedBy(entity.underlyingIn)

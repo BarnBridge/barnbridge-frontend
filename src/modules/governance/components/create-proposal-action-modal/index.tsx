@@ -339,7 +339,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
 
           <Grid flow="col" align="center" justify="space-between">
             <Hint text="In case you are using a proxy address as the target, please specify the address where the function implementation is found.">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Is this a proxy address?
               </Text>
             </Hint>
@@ -385,7 +385,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                     name="actionValue"
                     label={
                       <Grid flow="col" gap={8}>
-                        <Text type="small" weight="semibold" color="secondary">
+                        <Text type="caption" weight="semibold" color="secondary">
                           Action Value
                         </Text>
                         <AddZerosPopup
@@ -469,7 +469,7 @@ const CreateProposalActionModal: React.FC<CreateProposalActionModalProps> = prop
                           name={['functionParams', input.name]}
                           label={
                             <Grid flow="col" gap={8}>
-                              <Text type="small" weight="semibold" color="secondary">
+                              <Text type="caption" weight="semibold" color="secondary">
                                 {input.name} ({input.type})
                               </Text>
                               {/(u?int\d+)/g.test(input.type) && (

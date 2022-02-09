@@ -162,7 +162,7 @@ const Liquidity: React.FC<Props> = ({ className }) => {
   return (
     <section className={cn('card', className)}>
       <header className={cn('card-header flex align-center', s.header)}>
-        <div className="text-p1 fw-semibold color-primary">Liquidity</div>
+        <div className="text-body1 fw-semibold color-primary">Liquidity</div>
         <Tabs
           tabs={tabs}
           activeKey={activeTab}
@@ -206,13 +206,13 @@ const Liquidity: React.FC<Props> = ({ className }) => {
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
-                  <Text type="p2" tag="span" weight="semibold" color="primary">
+                  <Text type="body2" tag="span" weight="semibold" color="primary">
                     {Number.isFinite(value) ? formatDateTime(value) : ''}
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
                   <Text
-                    type="p2"
+                    type="body2"
                     tag="span"
                     weight="semibold"
                     color={dataKey === 'seniorLiquidity' ? 'green' : 'purple'}>

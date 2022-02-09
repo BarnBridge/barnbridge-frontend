@@ -68,10 +68,10 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
               bubble2Name={poolMarket?.icon.active as TokenIconNames}
             />
             <div>
-              <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {RewardHistoryShortTypes.get(entity.transactionType) ?? entity.transactionType}
               </Text>
-              <Text type="small" weight="semibold" wrap={false}>
+              <Text type="caption" weight="semibold" wrap={false}>
                 {smartYield.symbol}
               </Text>
             </div>
@@ -99,14 +99,14 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
                   decimals: smartYield.decimals,
                 }) ?? '-'
               }>
-              <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+              <Text type="body1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
                 {isStake ? '+' : '-'}
                 {formatToken(entity.amount, {
                   tokenName: smartYield.symbol,
                 }) ?? '-'}
               </Text>
             </Tooltip>
-            <Text type="small" weight="semibold" wrap={false}>
+            <Text type="caption" weight="semibold" wrap={false}>
               {formatUSD(amountInUSD)}
             </Text>
           </>
@@ -121,7 +121,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           render: function Render(_, entity) {
             return (
               <ExplorerAddressLink address={entity.userAddress} variation="link">
-                <Text type="p1" weight="semibold">
+                <Text type="body1" weight="semibold">
                   {shortenAddr(entity.userAddress)}
                 </Text>
               </ExplorerAddressLink>
@@ -136,11 +136,11 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
         return (
           <>
             <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
-              <Text type="p1" weight="semibold">
+              <Text type="body1" weight="semibold">
                 {shortenAddr(entity.transactionHash)}
               </Text>
             </ExplorerTxLink>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {formatDateTime(entity.blockTimestamp * 1_000)}
             </Text>
           </>
@@ -291,7 +291,7 @@ const Transactions: FC = () => {
           pageSize: state.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} transactions
             </Text>
           ),

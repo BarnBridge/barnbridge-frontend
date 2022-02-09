@@ -48,12 +48,12 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
           <TokenIconPair name1={tokenAIcon?.icon} name2={tokenBIcon?.icon} className="mr-16" />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.poolAddress} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="blue" className="mr-4">
+              <Text type="body1" weight="semibold" color="blue" className="mr-4">
                 {entity.poolName ?? '-'}
               </Text>
               <Icon name="external" size={8} color="blue" />
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {entity.tokenA.symbol} – {entity.tokenB.symbol}
             </Text>
           </div>
@@ -67,7 +67,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
       return (
         <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
           <Icon name={entity.network.meta.logo} />
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             {entity.network.type}
           </Text>
         </div>
@@ -80,7 +80,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
       return (
         <div className="text-right">
           <Text
-            type="p1"
+            type="body1"
             weight="semibold"
             color="primary"
             className="mb-4"
@@ -92,7 +92,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
               compact: true,
             }) ?? '-'}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(entity.feesAmountUSDTokenA) ?? '-'}
           </Text>
         </div>
@@ -105,7 +105,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
       return (
         <div className="text-right">
           <Text
-            type="p1"
+            type="body1"
             weight="semibold"
             color="primary"
             className="mb-4"
@@ -117,7 +117,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
               compact: true,
             }) ?? '-'}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(entity.feesAmountUSDTokenB) ?? '-'}
           </Text>
         </div>
@@ -175,19 +175,19 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                 <div>
                   <div className="container-box flex align-center col-gap-32 mb-32">
                     <div>
-                      <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                      <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                         {entity.tokenA.symbol} fee
                       </Text>
-                      <Text type="p1" weight="bold" color="primary" className="flex align-center">
+                      <Text type="body1" weight="bold" color="primary" className="flex align-center">
                         {formatToken(feesAmountTokenA) ?? '-'}
                         <TokenIcon name={getToken(entity.tokenA.symbol)?.icon} size={24} className="ml-8" />
                       </Text>
                     </div>
                     <div>
-                      <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                      <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                         {entity.tokenB.symbol} fee
                       </Text>
-                      <Text type="p1" weight="bold" color="primary" className="flex align-center">
+                      <Text type="body1" weight="bold" color="primary" className="flex align-center">
                         {formatToken(feesAmountTokenB) ?? '-'}
                         <TokenIcon name={getToken(entity.tokenB.symbol)?.icon} size={24} className="ml-8" />
                       </Text>
@@ -195,11 +195,11 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                   </div>
                   <div className="flex align-center justify-center mb-8">
                     <IconOld name="warning-circle-outlined" className="mr-8" />
-                    <Text type="p2" weight="semibold" align="center" color="red">
+                    <Text type="body2" weight="semibold" align="center" color="red">
                       Warning
                     </Text>
                   </div>
-                  <Text type="p2" weight="semibold" align="center" color="secondary" className="mb-32">
+                  <Text type="body2" weight="semibold" align="center" color="secondary" className="mb-32">
                     Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
                     Treasury. Make sure you are willing to spend the gas to send this transaction!
                   </Text>
@@ -367,18 +367,18 @@ export const SESection = ({
             <Icon name="smart-exposure" />
           </div>
           <div className="flex flow-row row-gap-4 mr-64">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               SMART Exposure
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Fees
             </Text>
           </div>
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Total fees accrued
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatUSD(total) ?? '-'}
             </Text>
           </div>

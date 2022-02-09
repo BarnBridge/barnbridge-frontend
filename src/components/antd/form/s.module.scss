@@ -6,7 +6,7 @@
   margin-bottom: 0;
 
   :global(.ant-form-item-label) label {
-    font: var(--font-sm);
+    font: var(--font-caption);
     font-weight: 600;
     display: inline-grid;
     grid-template-columns: repeat(2, max-content);

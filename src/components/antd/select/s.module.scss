@@ -38,7 +38,7 @@
 
     :global(.ant-select-selection-item),
     :global(.ant-select-selection-placeholder) {
-      font: var(--font-p1);
+      font: var(--font-body1);
       font-weight: 600;
       color: var(--theme-primary-color);
     }
@@ -75,7 +75,7 @@
     }
 
     :global(.ant-select-item-option-content) {
-      font: var(--font-p2);
+      font: var(--font-body2);
       font-weight: 600;
       color: var(--theme-secondary-color);
     }

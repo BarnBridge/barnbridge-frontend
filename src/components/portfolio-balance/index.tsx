@@ -42,14 +42,14 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
   return (
     <div className="card">
       <div className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           Portfolio balance
         </Text>
       </div>
       <div className="p-24 flexbox-grid flow-col gap-16">
         <div>
           <Hint text={totalHint}>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               Total balance
             </Text>
           </Hint>
@@ -60,11 +60,11 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
         {aggregated !== null && (
           <div>
             <Hint text={aggregatedText}>
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                 Aggregated APY
               </Text>
             </Hint>
-            <Text type="p1" weight="semibold" color={aggregatedColor}>
+            <Text type="body1" weight="semibold" color={aggregatedColor}>
               {formatPercent(aggregated)}
             </Text>
             {Boolean(aggregatedApr) && (
@@ -87,18 +87,18 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
         />
         <div className="flex flow-col align-top mt-24">
           <div className={classNames(s.dataColumn, 'flex-grow')} style={{ '--color': color1 } as React.CSSProperties}>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               {label1}
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatUSDValue(value1)}
             </Text>
           </div>
           <div className={classNames(s.dataColumn, 'flex-grow')} style={{ '--color': color2 } as React.CSSProperties}>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               {label2}
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatUSDValue(value2)}
             </Text>
           </div>
@@ -122,20 +122,20 @@ const PortfolioBalance: React.FC<Props> = (props: Props) => {
                   <div
                     className={classNames(s.dataColumn, 'flex-grow')}
                     style={{ '--color': color3 } as React.CSSProperties}>
-                    <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                       {label3}
                     </Text>
-                    <Text type="p1" weight="semibold" color="primary">
+                    <Text type="body1" weight="semibold" color="primary">
                       {formatUSDValue(value3)}
                     </Text>
                   </div>
                   <div
                     className={classNames(s.dataColumn, 'flex-grow')}
                     style={{ '--color': color4 } as React.CSSProperties}>
-                    <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                       {label4}
                     </Text>
-                    <Text type="p1" weight="semibold" color="primary">
+                    <Text type="body1" weight="semibold" color="primary">
                       {formatUSDValue(value4)}
                     </Text>
                   </div>

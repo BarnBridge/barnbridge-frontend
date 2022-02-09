@@ -124,7 +124,7 @@ export const Chart: React.FC<PropsType> = ({ data, x, y, className, loading = fa
       {data.length === 0 ? (
         <div className="flex flow-row row-gap-24 align-center justify-center pv-48">
           <EmptyChartSvg />
-          <Text type="p1" color="secondary">
+          <Text type="body1" color="secondary">
             Not enough data to plot a graph
           </Text>
         </div>

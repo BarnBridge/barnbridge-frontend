@@ -81,12 +81,12 @@ const VotingHeader: React.FC = () => {
 
   return (
     <div className={cn(s.component, 'pv-24 ph-64 sm-ph-16')}>
-      <Text type="lb2" weight="semibold" color="red" className="mb-16">
+      <Text type="caption" weight="semibold" color="red" className="mb-16">
         My Voting Power
       </Text>
       <div className={s.items}>
         <div>
-          <Text type="p2" color="secondary" className="mb-4">
+          <Text type="body2" color="secondary" className="mb-4">
             Current reward
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -107,7 +107,7 @@ const VotingHeader: React.FC = () => {
           </Grid>
         </div>
         <div>
-          <Text type="p2" color="secondary" className="mb-4">
+          <Text type="body2" color="secondary" className="mb-4">
             {projectToken.symbol} Balance
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -120,7 +120,7 @@ const VotingHeader: React.FC = () => {
           </Grid>
         </div>
         <div>
-          <Text type="p2" color="secondary" className="mb-4">
+          <Text type="body2" color="secondary" className="mb-4">
             Total voting power
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -146,19 +146,19 @@ const VotingHeader: React.FC = () => {
                 <Hint
                   text={
                     <>
-                      <Text type="p2">
+                      <Text type="body2">
                         The multiplier mechanic allows users to lock ${projectToken.symbol} for a period up to 1 year
                         and get a bonus of up to 2x v{projectToken.symbol}. The bonus is linear, as per the following
                         example:
                       </Text>
                       <ul>
                         <li>
-                          <Text type="p2">
+                          <Text type="body2">
                             lock 1000 ${projectToken.symbol} for 1 year → get back 2000 v{projectToken.symbol}
                           </Text>
                         </li>
                         <li>
-                          <Text type="p2">
+                          <Text type="body2">
                             lock 1000 ${projectToken.symbol} for 6 months → get back 1500 v{projectToken.symbol}
                           </Text>
                         </li>
@@ -171,18 +171,18 @@ const VotingHeader: React.FC = () => {
                     </>
                   }
                   className="mb-4">
-                  <Text type="p2" color="secondary">
+                  <Text type="body2" color="secondary">
                     Multiplier & Lock timer
                   </Text>
                 </Hint>
 
                 <Grid flow="col" gap={8} align="center">
                   <Tooltip title={`x${leftMultiplier}`}>
-                    <Text type="lb1" weight="bold" color="red" className={s.ratio}>
+                    <Text type="caption" weight="bold" color="red" className={s.ratio}>
                       {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
                     </Text>
                   </Tooltip>
-                  <Text type="p2" color="secondary">
+                  <Text type="body2" color="secondary">
                     for
                   </Text>
                   <Text type="h3" weight="bold" color="primary">
@@ -202,7 +202,7 @@ const VotingHeader: React.FC = () => {
               <Text type="h3" weight="semibold" color="primary" className="mb-8">
                 Claim your reward
               </Text>
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 Select the reward contract you want to claim your reward from
               </Text>
             </div>
@@ -217,14 +217,14 @@ const VotingHeader: React.FC = () => {
                       disabled={!!claimingReward || !reward?.toClaim?.gt(BigNumber.ZERO)}
                       onClick={() => handleRewardClaim(reward)}>
                       <div className="flex flow-col align-center justify-space-between full-width">
-                        <Text type="p1" weight="semibold" color="primary">
+                        <Text type="body1" weight="semibold" color="primary">
                           Reward contract {rewardIndex + 1}
                         </Text>
                         <div className="flex flow-row align-end">
-                          <Text type="lb2" weight="semibold" color="secondary" className="mb-8">
+                          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
                             Reward
                           </Text>
-                          <Text type="p1" weight="semibold" color="primary" className="mr-4">
+                          <Text type="body1" weight="semibold" color="primary" className="mr-4">
                             {formatToken(reward?.toClaim, {
                               tokenName: projectToken.symbol,
                             })}

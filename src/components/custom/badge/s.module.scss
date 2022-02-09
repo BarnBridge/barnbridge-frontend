@@ -29,23 +29,23 @@
   }
 
   &.small {
-    font: var(--font-sm-bold);
+    font: var(--font-caption-bold);
     padding: 0 10px;
   }
 
   &.medium {
-    font: var(--font-p2-bold);
+    font: var(--font-body2-bold);
     padding: 0 12px;
   }
 
   &.large {
-    font: var(--font-lb2-bold);
+    font: var(--font-caption-bold);
     padding: 8px 24px;
   }
 }
 
 .squareBadge {
-  font: var(--font-sm);
+  font: var(--font-caption);
   font-weight: 600;
   align-items: center;
   background: rgba(113, 121, 128, 0.08);

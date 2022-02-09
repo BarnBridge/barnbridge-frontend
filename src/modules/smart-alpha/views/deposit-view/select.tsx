@@ -17,20 +17,20 @@ export const SelectTranche = ({ pool }: { pool: PoolApiType }) => {
       <Text type="h3" weight="bold" color="primary" tag="h3" className="mb-16">
         Select your preferred side
       </Text>
-      <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
+      <Text type="body2" weight="semibold" color="secondary" tag="p" className="mb-32">
         You can choose between senior or junior positions. Be aware of the risk involved and read the warnings before
         going further.
       </Text>
       <RadioCards className="mb-32">
         <RadioCard selected={tranche === 'senior'} onClick={() => setTranche('senior')}>
           <Icon name="senior-side" width={64} height={64} className="mb-24" />
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          <Text type="body1" weight="semibold" color="primary" className="mb-8">
             Senior side
           </Text>
         </RadioCard>
         <RadioCard selected={tranche === 'junior'} onClick={() => setTranche('junior')}>
           <Icon name="junior-side" width={64} height={64} className="mb-24" />
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          <Text type="body1" weight="semibold" color="primary" className="mb-8">
             Junior side
           </Text>
         </RadioCard>

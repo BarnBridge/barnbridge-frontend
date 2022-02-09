@@ -64,7 +64,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
       key: 'sig',
       icon: <Icon name="chevron-right" />,
       title: (
-        <Text type="p1" weight="semibold">
+        <Text type="body1" weight="semibold">
           {isSignature ? 'Show transaction' : 'Show function signature'}
         </Text>
       ),
@@ -78,7 +78,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
       key: 'delete',
       icon: <Icon name="bin-outlined" color="red" />,
       title: (
-        <Text type="p1" weight="semibold" color="red">
+        <Text type="body1" weight="semibold" color="red">
           Delete action
         </Text>
       ),
@@ -115,7 +115,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
     <ExpandableCard
       className={className}
       title={
-        <Text type="p2" weight="semibold" color="primary">
+        <Text type="body2" weight="semibold" color="primary">
           {title}
         </Text>
       }
@@ -126,7 +126,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
           </PopoverMenu>
         ) : (
           <Button type="link" onClick={handleShowSignature}>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {isSignature ? 'Show transaction' : 'Show function signature'}
             </Text>
           </Button>
@@ -136,7 +136,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
         ellipsis || expanded ? (
           <Grid flow="col" align="center" justify="center">
             <Button type="link" onClick={handleExpand}>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {expanded ? 'Hide details' : 'Show more'}
               </Text>
             </Button>
@@ -146,7 +146,7 @@ const ProposalActionCard: React.FC<ProposalActionCardProps> = props => {
       {...cardProps}>
       <div className={s.content}>
         <ExplorerAddressLink address={target} query="#writeContract">
-          <Text type="p1" weight="semibold" className={s.address} color="blue">
+          <Text type="body1" weight="semibold" className={s.address} color="blue">
             {shortenAddr(target)}
           </Text>
         </ExplorerAddressLink>

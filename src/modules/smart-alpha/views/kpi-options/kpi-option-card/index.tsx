@@ -107,7 +107,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
             size={36}
             className="mr-16"
           />
-          <Text type="p1" weight="semibold">
+          <Text type="body1" weight="semibold">
             {kpiOption.poolToken.symbol}
           </Text>
         </header>

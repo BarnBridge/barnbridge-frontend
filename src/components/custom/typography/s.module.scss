@@ -19,24 +19,16 @@
     font: var(--font-h3);
   }
 
-  &.p1 {
-    font: var(--font-p1);
+  &.body1 {
+    font: var(--font-body1);
   }
 
-  &.p2 {
-    font: var(--font-p2);
+  &.body2 {
+    font: var(--font-body2);
   }
 
-  &.lb1 {
-    font: var(--font-lb1);
-  }
-
-  &.lb2 {
-    font: var(--font-lb2);
-  }
-
-  &.small {
-    font: var(--font-sm);
+  &.caption {
+    font: var(--font-caption);
   }
 
   &.primary-color {

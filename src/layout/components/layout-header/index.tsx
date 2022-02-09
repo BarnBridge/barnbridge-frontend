@@ -84,7 +84,7 @@ const PositionsAction: React.FC = () => {
       content={
         <div className={cn('card', s.notifications)}>
           <div className="card-header flex">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Queued positions
             </Text>
           </div>
@@ -97,10 +97,10 @@ const PositionsAction: React.FC = () => {
                 <li key={idx} className={s.queuedPosition}>
                   <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={40} className="mr-16" />
                   <div className="mr-16">
-                    <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    <Text type="body1" weight="semibold" color="primary" className="mb-4">
                       {item.poolName}
                     </Text>
-                    <Text type="small" weight="semibold" color="secondary">
+                    <Text type="caption" weight="semibold" color="secondary">
                       {`${item.tranche === 'SENIOR' ? 'Senior' : 'Junior'} ${item.queueType} queue`}
                     </Text>
                   </div>
@@ -165,7 +165,7 @@ const NetworkAction: React.FC = () => {
       onClick={() => showNetworkSelect()}
       className={cn(s.actionButton, 'hidden-mobile hidden-tablet')}>
       <Icon name={activeNetwork.meta.logo} size={24} className="mr-8" />
-      <Text type="p2" weight="semibold" color="secondary">
+      <Text type="body2" weight="semibold" color="secondary">
         {activeNetwork.meta.name}
       </Text>
     </button>
@@ -197,7 +197,7 @@ const WalletAction: React.FC = () => {
                 <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
               )}
               <ExplorerAddressLink address={wallet.account}>
-                <Text type="p1" weight="semibold" color="blue">
+                <Text type="body1" weight="semibold" color="blue">
                   {wallet.ens.name || shortenAddr(wallet.account, 8, 8)}
                 </Text>
               </ExplorerAddressLink>
@@ -205,7 +205,7 @@ const WalletAction: React.FC = () => {
             <div className="pv-24 ph-32">
               <div className="flex align-center mb-32">
                 <Icon name="status" className="mr-16" color="secondary" />
-                <Text type="p1" color="secondary" className="mr-16">
+                <Text type="body1" color="secondary" className="mr-16">
                   Status
                 </Text>
                 <Badge color="green" className="ml-auto">
@@ -214,10 +214,10 @@ const WalletAction: React.FC = () => {
               </div>
               <div className="flex align-center mb-32">
                 <Icon name="wallet" className="mr-16" color="secondary" />
-                <Text type="p1" color="secondary" className="mr-16">
+                <Text type="body1" color="secondary" className="mr-16">
                   Wallet
                 </Text>
-                <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+                <Text type="body1" weight="semibold" color="primary" className="ml-auto">
                   {wallet.connecting?.name}
                 </Text>
               </div>
@@ -267,7 +267,7 @@ const WalletAction: React.FC = () => {
               <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
             )}
             <ExplorerAddressLink address={wallet.account}>
-              <Text type="p1" weight="semibold" color="blue">
+              <Text type="body1" weight="semibold" color="blue">
                 {wallet.ens.name || shortenAddr(wallet.account, 8, 8)}
               </Text>
             </ExplorerAddressLink>
@@ -275,7 +275,7 @@ const WalletAction: React.FC = () => {
           <div className="pv-24 ph-32">
             <div className="flex align-center mb-32">
               <Icon name="status" className="mr-16" color="secondary" />
-              <Text type="p1" color="secondary" className="mr-16">
+              <Text type="body1" color="secondary" className="mr-16">
                 Status
               </Text>
               <Badge color="green" className="ml-auto">
@@ -284,19 +284,19 @@ const WalletAction: React.FC = () => {
             </div>
             <div className="flex align-center mb-32">
               <Icon name="wallet" className="mr-16" color="secondary" />
-              <Text type="p1" color="secondary" className="mr-16">
+              <Text type="body1" color="secondary" className="mr-16">
                 Wallet
               </Text>
-              <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+              <Text type="body1" weight="semibold" color="primary" className="ml-auto">
                 {wallet.meta?.name}
               </Text>
             </div>
             <div className="flex align-center">
               <Icon name="network" className="mr-16" color="secondary" />
-              <Text type="p1" color="secondary" className="mr-16">
+              <Text type="body1" color="secondary" className="mr-16">
                 Network
               </Text>
-              <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+              <Text type="body1" weight="semibold" color="primary" className="ml-auto">
                 {activeNetwork.meta.name}
               </Text>
             </div>

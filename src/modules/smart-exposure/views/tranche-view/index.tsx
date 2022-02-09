@@ -51,12 +51,12 @@ const TrancheView: React.FC = () => {
         <div className="flex">
           <TokenIconPair name1={tokenA?.icon} name2={tokenB?.icon} size={40} className="mr-16" />
           <div>
-            <div className="text-p1 fw-semibold color-primary mr-4">
+            <div className="text-body1 fw-semibold color-primary mr-4">
               {`${formatPercent(Number(tranche.tokenARatio))} ${tokenA?.symbol} / ${formatPercent(
                 Number(tranche.tokenBRatio),
               )} ${tokenB?.symbol}`}
             </div>
-            <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
+            <div className="text-caption fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
 

@@ -51,7 +51,7 @@ const PoolView: FC = () => {
           size={36}
           className="mr-16"
         />
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           {smartYield.symbol}
         </Text>
       </div>

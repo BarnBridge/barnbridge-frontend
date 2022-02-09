@@ -104,7 +104,7 @@ export const MultipleTokensForm = ({
   return (
     <form onSubmit={submitHandler}>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
         before={<TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={24} />}
@@ -129,8 +129,8 @@ export const MultipleTokensForm = ({
         }}
       />
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        <span className="text-caption fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary ml-auto">
           Current ratio: {formatPercent(Number(tranche.tokenARatio))}
         </span>
       </div>
@@ -152,8 +152,8 @@ export const MultipleTokensForm = ({
         }}
       />
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        <span className="text-caption fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary ml-auto">
           Current ratio: {formatPercent(Number(tranche.tokenBRatio))}
         </span>
       </div>
@@ -170,10 +170,10 @@ export const MultipleTokensForm = ({
         className="mb-32"
         items={[
           [
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Transaction fees
             </Text>,
-            <Text type="p2" weight="semibold" color="primary">
+            <Text type="body2" weight="semibold" color="primary">
               {formatUSD(
                 BigNumber.from(tokenEState)?.multipliedBy(tranche.state.eTokenPrice).multipliedBy(feeRate) ?? 0,
               )}{' '}
@@ -181,20 +181,20 @@ export const MultipleTokensForm = ({
             </Text>,
           ],
           [
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {tranche.tokenA.symbol} amount
             </Text>,
-            <Text type="p1" weight="bold" color="primary">
+            <Text type="body1" weight="bold" color="primary">
               {formatToken(tokenAState?.minus(tokenAState.multipliedBy(feeRate))?.unscaleBy(tranche.tokenA.decimals)) ||
                 '0'}{' '}
               {tranche.tokenA.symbol}
             </Text>,
           ],
           [
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {tranche.tokenB.symbol} amount
             </Text>,
-            <Text type="p1" weight="bold" color="primary">
+            <Text type="body1" weight="bold" color="primary">
               {formatToken(tokenBState?.minus(tokenBState.multipliedBy(feeRate))?.unscaleBy(tranche.tokenB.decimals)) ||
                 '0'}{' '}
               {tranche.tokenB.symbol}

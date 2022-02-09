@@ -62,10 +62,10 @@ const SimulateEpoch = () => {
       <div className="flex align-center mb-40">
         <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
         <div>
-          <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+          <Text type="body1" weight="semibold" color="primary" tag="h2" className="mb-4">
             {pool.poolName}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             Epoch {smartAlphaContract?.epoch ?? pool.state.epoch ?? '-'}
           </Text>
         </div>

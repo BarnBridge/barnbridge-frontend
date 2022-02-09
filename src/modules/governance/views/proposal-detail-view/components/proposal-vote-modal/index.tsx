@@ -116,45 +116,45 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
             <Text type="h2" weight="bold" color="primary">
               {formatBigValue(proposalCtx.votingPower, 2)}
             </Text>
-            <Text type="p1" weight="semibold" color="secondary">
+            <Text type="body1" weight="semibold" color="secondary">
               Votes
             </Text>
           </Grid>
           {(voteState === VoteState.VoteFor || voteState === VoteState.VoteAgainst) && (
             <Grid flow="row" gap={8}>
-              <Text type="p2" color="secondary">
+              <Text type="body2" color="secondary">
                 You are about to vote on proposal
               </Text>
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 &ldquo;{proposalCtx.proposal?.title}&rdquo;
               </Text>
-              <Text type="p2" color="secondary">
+              <Text type="body2" color="secondary">
                 Are you sure you want to continue? You can change your vote later.
               </Text>
             </Grid>
           )}
           {voteState === VoteState.VoteChange && (
             <Grid flow="row" gap={8}>
-              <Text type="p2" color="secondary">
+              <Text type="body2" color="secondary">
                 You are about to change your vote on proposal
               </Text>
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 &ldquo;{proposalCtx.proposal?.title}&rdquo;
               </Text>
-              <Text type="p2" color="secondary">
+              <Text type="body2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
               </Text>
             </Grid>
           )}
           {voteState === VoteState.VoteCancel && (
             <Grid flow="row" gap={8}>
-              <Text type="p2" color="secondary">
+              <Text type="body2" color="secondary">
                 You are about to cancel your vote on proposal
               </Text>
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 &ldquo;{proposalCtx.proposal?.title}&rdquo;
               </Text>
-              <Text type="p2" color="secondary">
+              <Text type="body2" color="secondary">
                 Are you sure you want to continue? You can change your vote again later.
               </Text>
             </Grid>
@@ -168,7 +168,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="body1" weight="semibold" color="primary">
                         For
                       </Text>
                     }
@@ -176,7 +176,7 @@ const ProposalVoteModal: React.FC<ModalProps & ProposalVoteModalProps> = props =
                   />
                   <RadioButton
                     label={
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="body1" weight="semibold" color="primary">
                         Against
                       </Text>
                     }

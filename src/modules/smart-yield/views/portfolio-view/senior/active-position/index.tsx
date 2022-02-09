@@ -139,10 +139,10 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           className="mr-16"
         />
         <div>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          <Text type="body1" weight="semibold" color="primary" className="mb-4">
             {pool.underlyingSymbol}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {pool.market?.name}
           </Text>
         </div>
@@ -151,43 +151,43 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       </div>
       <Divider />
       <div className="p-24">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Deposited
         </Text>
         <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
-          <Text type="p1" tag="span" weight="semibold" color="primary">
+          <Text type="body1" tag="span" weight="semibold" color="primary">
             {formatBigValue(deposited)}
             {` ${pool.underlyingSymbol}`}
           </Text>
         </Tooltip>
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {formatUSD(getAmountInUSD(deposited, pool.underlyingSymbol))}
         </Text>
       </div>
       <Divider />
       <div className="p-24">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Redeemable
         </Text>
         <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
-          <Text type="p1" tag="span" weight="semibold" color="primary">
+          <Text type="body1" tag="span" weight="semibold" color="primary">
             {formatBigValue(redeemable)}
             {` ${pool.underlyingSymbol}`}
           </Text>
         </Tooltip>
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {formatUSD(getAmountInUSD(redeemable, pool.underlyingSymbol))}
         </Text>
       </div>
       <Divider />
       <div className="p-24">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Time left until maturity
         </Text>
         <UseLeftTime end={maturesAt} delay={1_000}>
           {leftTime => (
             <>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {leftTime > 0 ? getFormattedDuration(0, maturesAt) : 'Redeem now'}
               </Text>
               <Progress
@@ -205,10 +205,10 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
       </div>
       <Divider />
       <div className="p-24">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Fixed APY
         </Text>
-        <Text type="p1" weight="semibold" color="green">
+        <Text type="body1" weight="semibold" color="green">
           {formatPercent(apy)}
         </Text>
       </div>
@@ -228,30 +228,30 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
                 <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatBigValue(redeemable)} {pool.underlyingSymbol}
                   </Text>
                 </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Protocol fee ({formatPercent(seniorRedeemFee?.dividedBy(1e18))})
                 </Text>
                 <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatBigValue(gainedFee)} {pool.underlyingSymbol}
                   </Text>
                 </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   You will get
                 </Text>
-                <Text type="p1" weight="bold" color="primary">
+                <Text type="body1" weight="bold" color="primary">
                   {formatBigValue(toGetAmount)} {pool.underlyingSymbol}
                 </Text>
               </div>
@@ -269,38 +269,38 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
                 <Tooltip title={formatBigValue(redeemable, pool.underlyingDecimals)}>
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatBigValue(redeemable)} {pool.underlyingSymbol}
                   </Text>
                 </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Deposited amount
                 </Text>
                 <Tooltip title={formatBigValue(deposited, pool.underlyingDecimals)}>
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatBigValue(deposited)} {pool.underlyingSymbol}
                   </Text>
                 </Tooltip>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Maturity date
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatDate(maturesAt)}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Fixed APY
                 </Text>
-                <Text type="p1" weight="semibold" color="green">
+                <Text type="body1" weight="semibold" color="green">
                   {formatPercent(apy)}
                 </Text>
               </div>

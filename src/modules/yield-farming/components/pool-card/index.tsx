@@ -91,14 +91,14 @@ const PoolCard: FC<Props> = props => {
         </div>
         <div className="flex-grow">
           <div className="flex justify-space-between align-center wrap mb-4">
-            <Text type="p1" weight="semibold" color="primary" className="mb-4" wrap>
+            <Text type="body1" weight="semibold" color="primary" className="mb-4" wrap>
               {poolMeta?.label ?? '-'}
             </Text>
 
             {isEnded === false && (
               <StatusTag
                 text={
-                  <Text type="lb2" weight="bold" color="green">
+                  <Text type="caption" weight="bold" color="green">
                     ACTIVE
                   </Text>
                 }
@@ -108,7 +108,7 @@ const PoolCard: FC<Props> = props => {
             {isEnded && (
               <StatusTag
                 text={
-                  <Text type="lb2" weight="bold" color="secondary">
+                  <Text type="caption" weight="bold" color="secondary">
                     ENDED
                   </Text>
                 }
@@ -118,7 +118,7 @@ const PoolCard: FC<Props> = props => {
             )}
           </div>
 
-          <Text type="small" weight="semibold" color="red">
+          <Text type="caption" weight="semibold" color="red">
             Epoch {lastActiveEpoch ?? '-'} / {totalEpochs ?? '-'}
           </Text>
         </div>
@@ -142,39 +142,39 @@ const PoolCard: FC<Props> = props => {
         {isEnded === false && activeTab === 'pool' && (
           <div className="flex flow-row">
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 APR
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatPercent(apy) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Weekly reward
               </Text>
               <div className="flex align-center">
                 <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(epochReward) ?? '-'}
                 </Text>
               </div>
             </div>
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Pool balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(poolBalanceInUSD) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
               <Hint text="When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore pool balance and effective pool balance will differ in most cases.">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Effective pool balance
                 </Text>
               </Hint>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(poolEffectiveBalanceInUSD) ?? '-'}
               </Text>
             </div>
@@ -184,41 +184,41 @@ const PoolCard: FC<Props> = props => {
         {isEnded === false && activeTab === 'my' && walletCtx.isActive && (
           <div className="flex flow-row">
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 APR
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatPercent(apy) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
               <Hint text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake.">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   My potential reward
                 </Text>
               </Hint>
               <div className="flex align-center">
                 <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(potentialReward) ?? '-'}
                 </Text>
               </div>
             </div>
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 My pool balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(myPoolBalanceInUSD) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
               <Hint text="When staking tokens during an epoch that is currently running, your effective deposit amount will be proportionally reduced by the time that has passed from that epoch. Once an epoch ends, your staked balance and effective staked balance will be the equal, therefore pool balance and effective pool balance will differ in most cases.">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   My effective pool balance
                 </Text>
               </Hint>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(myPoolEffectiveBalanceInUSD) ?? '-'}
               </Text>
             </div>
@@ -230,7 +230,7 @@ const PoolCard: FC<Props> = props => {
             {poolId === YFPoolID.STABLE && (
               <div className={cn(s.box, 'mb-24')}>
                 <Grid flow="row" align="start">
-                  <Text type="p2" weight="semibold" color="secondary">
+                  <Text type="body2" weight="semibold" color="secondary">
                     The stablecoin staking pool ended after {totalEpochs} epochs on {formattedEndDate} UTC. Deposits are
                     now disabled but you can still withdraw your tokens and collect any unclaimed rewards.
                   </Text>
@@ -243,7 +243,7 @@ const PoolCard: FC<Props> = props => {
             {poolId === YFPoolID.UNILP && (
               <div className={cn(s.box, 'mb-24')}>
                 <Grid flow="row" align="start">
-                  <Text type="p2" weight="semibold" color="secondary">
+                  <Text type="body2" weight="semibold" color="secondary">
                     The unilp staking pool ended after {totalEpochs} epochs on {formattedEndDate} UTC. Deposits are now
                     disabled but you can still withdraw your tokens and collect any unclaimed rewards.
                   </Text>
@@ -253,7 +253,7 @@ const PoolCard: FC<Props> = props => {
             {poolId === YFPoolID.BOND && (
               <div className={cn(s.box, 'mb-24')}>
                 <Grid className="card-row" flow="row" align="start">
-                  <Text type="p2" weight="semibold" color="secondary">
+                  <Text type="body2" weight="semibold" color="secondary">
                     The $BOND staking pool ended after {totalEpochs} epochs on {formattedEndDate} UTC. Deposits are now
                     disabled, but you can still withdraw your tokens and collect any unclaimed rewards. To continue to
                     stake $BOND
@@ -270,10 +270,10 @@ const PoolCard: FC<Props> = props => {
         <div className="flex flow-row justify-end mt-auto">
           {isEnded && (
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Your balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(myPoolBalanceInUSD) ?? '-'}
               </Text>
             </div>

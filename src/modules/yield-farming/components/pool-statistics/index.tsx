@@ -66,29 +66,29 @@ const PoolStatistics: FC = () => {
     <div className={s.component}>
       <div className="card mb-32">
         <div className="card-header">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             My rewards
           </Text>
         </div>
         <div className="p-24">
           <div className="flex align-center justify-space-between mb-24">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {projectToken.symbol} balance
             </Text>
             <div className="flex align-center">
               <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(bondContract.balance?.unscaleBy(projectToken.decimals)) ?? '-'}
               </Text>
             </div>
           </div>
           <div className="flex align-center justify-space-between">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Potential reward this epoch
             </Text>
             <div className="flex align-center">
               <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(poolMeta.contract.potentialReward) ?? '-'}
               </Text>
             </div>
@@ -117,7 +117,7 @@ const PoolStatistics: FC = () => {
                   </Text>
                 </Tooltip>
               </div>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Current reward
               </Text>
             </div>
@@ -135,7 +135,7 @@ const PoolStatistics: FC = () => {
 
       <div className="card">
         <div className="card-header">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             My stake
           </Text>
         </div>
@@ -158,7 +158,7 @@ const PoolStatistics: FC = () => {
           )}
           <div className="flex flow-row">
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Staked balance
               </Text>
               <Tooltip
@@ -170,7 +170,7 @@ const PoolStatistics: FC = () => {
                     ),
                   ) ?? '-'
                 }>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(selectedStakedToken?.nextEpochUserBalance?.unscaleBy(activeToken?.decimals), {
                     decimals: activeToken?.decimals,
                   }) ?? '-'}
@@ -179,7 +179,7 @@ const PoolStatistics: FC = () => {
             </div>
 
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Effective Staked balance
               </Text>
               <Tooltip
@@ -191,7 +191,7 @@ const PoolStatistics: FC = () => {
                     ),
                   ) ?? '-'
                 }>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(selectedStakedToken?.currentEpochUserBalance?.unscaleBy(activeToken?.decimals), {
                     decimals: activeToken?.decimals,
                   }) ?? '-'}
@@ -200,7 +200,7 @@ const PoolStatistics: FC = () => {
             </div>
 
             <div className="flex align-center justify-space-between">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Wallet balance
               </Text>
               <Tooltip
@@ -209,7 +209,7 @@ const PoolStatistics: FC = () => {
                     convertTokenInUSD(activeContract.balance?.unscaleBy(activeToken?.decimals), activeToken?.symbol!),
                   ) ?? '-'
                 }>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(activeContract.balance?.unscaleBy(activeToken?.decimals), {
                     decimals: activeToken?.decimals,
                   }) ?? '-'}

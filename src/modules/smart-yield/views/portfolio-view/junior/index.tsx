@@ -330,7 +330,7 @@ const JuniorPortfolioInner: React.FC = () => {
             aggregatedColor="purple"
             aggregatedText={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
+                <Text type="body2">
                   The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
                   positions might differ. This number shows a weighted average of these APYs for your active positions.
                 </Text>
@@ -396,7 +396,7 @@ const JuniorPortfolioInner: React.FC = () => {
                 header={
                   <div className="grid flow-col col-gap-32">
                     <div className="grid flow-row row-gap-4">
-                      <Text type="small" weight="semibold" color="secondary">
+                      <Text type="caption" weight="semibold" color="secondary">
                         Redeemable balance
                       </Text>
                       <Tooltip
@@ -404,17 +404,17 @@ const JuniorPortfolioInner: React.FC = () => {
                           getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals),
                           redeemModal.pool.underlyingDecimals,
                         )}>
-                        <Text type="p1" weight="semibold" color="primary">
+                        <Text type="body1" weight="semibold" color="primary">
                           {formatBigValue(getHumanValue(redeemModal.jBond.tokens, redeemModal.pool.underlyingDecimals))}
                           {` ${redeemModal.pool.contracts.smartYield?.symbol}`}
                         </Text>
                       </Tooltip>
                     </div>
                     <div className="grid flow-row row-gap-4">
-                      <Text type="small" weight="semibold" color="secondary">
+                      <Text type="caption" weight="semibold" color="secondary">
                         Maturity date
                       </Text>
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="body1" weight="semibold" color="primary">
                         {formatDate(redeemModal.jBond.maturesAt * 1_000)}
                       </Text>
                     </div>

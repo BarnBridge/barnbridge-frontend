@@ -33,7 +33,7 @@ export const Checkbox: React.FC<PropsType> = ({ checked, onChange, indeterminate
         />
       </svg>
       {children ? (
-        <Text type="p2" weight="semibold">
+        <Text type="body2" weight="semibold">
           {children}
         </Text>
       ) : null}

@@ -50,10 +50,10 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
       <div className="flex flow-col col-gap-12 align-center">
         <TokenIcon name={entity.token?.icon} className="mr-16" size={32} />
         <div className="flex flow-row row-gap-4">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {entity.tokenSymbol ?? '-'}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {entity.token?.name ?? '-'}
           </Text>
         </div>
@@ -64,7 +64,7 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     heading: 'Transaction Hash',
     render: entity => (
       <ExplorerTxLink address={entity.transactionHash}>
-        <Text type="p1" weight="semibold" color="blue">
+        <Text type="body1" weight="semibold" color="blue">
           {shortenAddr(entity.transactionHash)}
         </Text>
       </ExplorerTxLink>
@@ -74,10 +74,10 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     heading: 'Date',
     render: entity => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="body1" weight="semibold" color="primary" className="mb-4">
           {formatDate(entity.blockTimestamp * 1_000)}
         </Text>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           {formatTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
@@ -93,10 +93,10 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
           tokenName: entity.tokenSymbol,
         })}>
         <div className="text-right">
-          <Text type="p1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
+          <Text type="body1" weight="semibold" color={entity.transactionDirection === 'IN' ? 'green' : 'red'}>
             {entity.transactionDirection === 'IN' ? '+' : '-'} {formatToken(entity.amount) ?? '-'}
           </Text>
-          <Text type="small" weight="semibold">
+          <Text type="caption" weight="semibold">
             {formatUSD(entity.amountUSD) ?? '-'}
           </Text>
         </div>
@@ -108,7 +108,7 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     render: entity => (
       <ExplorerAddressLink
         address={entity.transactionDirection === 'IN' ? entity.counterpartyAddress : entity.accountAddress}>
-        <Text type="p1" weight="semibold" color="blue">
+        <Text type="body1" weight="semibold" color="blue">
           {entity.transactionDirection === 'IN'
             ? entity.counterpartyLabel || shortenAddr(entity.counterpartyAddress)
             : entity.accountLabel || shortenAddr(entity.accountAddress)}
@@ -121,7 +121,7 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     render: entity => (
       <ExplorerAddressLink
         address={entity.transactionDirection === 'OUT' ? entity.counterpartyAddress : entity.accountAddress}>
-        <Text type="p1" weight="semibold" color="blue">
+        <Text type="body1" weight="semibold" color="blue">
           {entity.transactionDirection === 'OUT'
             ? entity.counterpartyLabel || shortenAddr(entity.counterpartyAddress)
             : entity.accountLabel || shortenAddr(entity.accountAddress)}
@@ -284,7 +284,7 @@ const TreasuryHoldings: FC = () => {
         style={{ display: 'inline-block' }}>
         {formatUSD(totalHoldingsUSD, { compact: true }) ?? '-'}
       </Text>
-      <Text type="p2" weight="semibold" color="secondary" className="mb-32">
+      <Text type="body2" weight="semibold" color="secondary" className="mb-32">
         Total holdings balance
       </Text>
       <div
@@ -303,19 +303,19 @@ const TreasuryHoldings: FC = () => {
             <div className="flex col-gap-12">
               <TokenIcon name={item.token?.icon} size={32} />
               <div className="flex flow-row row-gap-4">
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {item.symbol ?? '-'}
                 </Text>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {item.token?.name ?? '-'}
                 </Text>
               </div>
             </div>
             <div className="flex flow-row row-gap-4">
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(item.balanceAmount) ?? '-'}
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {formatUSD(item.balanceAmountUSD) ?? '-'}
               </Text>
             </div>
@@ -324,7 +324,7 @@ const TreasuryHoldings: FC = () => {
       </div>
       <div className="card">
         <div className="card-header" style={{ justifyContent: 'space-between' }}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             Transaction history
           </Text>
           <TableFilter<HistoryFilterType> filters={historyFilters} value={filterValue} onChange={handleFilterChange} />

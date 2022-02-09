@@ -120,7 +120,7 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
   return (
     <>
       <form className="flex flow-row full-height">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Amount
         </Text>
         <Controller
@@ -147,7 +147,7 @@ const StakeForm: FC<StakeFormProps> = ({ kpiOption, kpiContract, poolTokenContra
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
-              <Text type="small" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 {(fieldState.error as any)?.message}
               </Text>
             </>
@@ -296,7 +296,7 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
   return (
     <>
       <form className="flex flow-row full-height">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Amount
         </Text>
         <Controller
@@ -323,7 +323,7 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
-              <Text type="small" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 {(fieldState.error as any)?.message}
               </Text>
             </>
@@ -364,7 +364,7 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
           header={
             <div className="flex col-gap-64 align-center justify-center">
               <div>
-                <Text type="p1" weight="semibold" color="secondary">
+                <Text type="body1" weight="semibold" color="secondary">
                   Unstake
                 </Text>
                 <div className="flex col-gap-8 align-center justify-center">
@@ -384,7 +384,7 @@ const UnstakeForm: FC<UnstakeFormProps> = ({ kpiOption, kpiContract, poolTokenCo
 
               {isClaimUnstake && (
                 <div>
-                  <Text type="p1" weight="semibold" color="secondary">
+                  <Text type="body1" weight="semibold" color="secondary">
                     Claim
                   </Text>
                   {kpiOption.rewardTokens.map(token => {
@@ -443,7 +443,7 @@ const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract, poolTokenCo
       <div className="flex flow-row flex-grow p-24">
         <div className={cn('flexbox-list p-16 mb-32', s.stakeBlock)}>
           <div className="flex flow-row mr-16">
-            <Text type="small" weight="semibold" color="secondary" className="mb-8">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-8">
               Staked balance
             </Text>
             <Tooltip
@@ -452,7 +452,7 @@ const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract, poolTokenCo
                   getAmountInUSD(stakedBalance?.unscaleBy(kpiOption.poolToken.decimals), kpiOption.poolToken.symbol),
                 ) ?? '-'
               }>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(stakedBalance, {
                   decimals: kpiOption.poolToken.decimals,
                   scale: kpiOption.poolToken.decimals,
@@ -461,7 +461,7 @@ const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract, poolTokenCo
             </Tooltip>
           </div>
           <div className="flex flow-row">
-            <Text type="small" weight="semibold" color="secondary" className="mb-8">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-8">
               Wallet balance
             </Text>
             <Tooltip
@@ -470,7 +470,7 @@ const Stake: FCx<StakeProps> = ({ className, kpiOption, kpiContract, poolTokenCo
                   getAmountInUSD(walletBalance?.unscaleBy(kpiOption.poolToken.decimals), kpiOption.poolToken.symbol),
                 ) ?? '-'
               }>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(walletBalance, {
                   decimals: kpiOption.poolToken.decimals,
                   scale: kpiOption.poolToken.decimals,

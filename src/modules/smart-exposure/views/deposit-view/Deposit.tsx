@@ -155,8 +155,8 @@ export const Deposit = ({
   return (
     <form onSubmit={handleDeposit}>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        <span className="text-caption fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary ml-auto">
           Current ratio: {formatPercent(Number(tranche.tokenARatio))}
         </span>
       </div>
@@ -183,8 +183,8 @@ export const Deposit = ({
         }}
       />
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        <span className="text-caption fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary ml-auto">
           Current ratio: {formatPercent(Number(tranche.tokenBRatio))}
         </span>
       </div>
@@ -211,10 +211,10 @@ export const Deposit = ({
         }}
       />
       <div className="flex mb-8">
-        <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+        <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
           {tranche.eTokenSymbol} amount <InfoTooltip>These tokens represent your share in the tranche.</InfoTooltip>
         </Text>
-        <span className="text-sm fw-semibold color-secondary ml-auto">
+        <span className="text-caption fw-semibold color-secondary ml-auto">
           {formatUSD(Number(tranche.state.eTokenPrice))} per {tranche.eTokenSymbol}
         </span>
       </div>

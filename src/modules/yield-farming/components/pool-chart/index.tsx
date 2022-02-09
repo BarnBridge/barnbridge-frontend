@@ -210,7 +210,7 @@ const PoolChart: FC<Props> = props => {
           {chartData.length === 0 && (
             <div className="flex flow-row row-gap-24 align-center justify-center pv-48">
               <EmptyChartSvg />
-              <Text type="p1" color="secondary">
+              <Text type="body1" color="secondary">
                 Not enough data to plot a graph
               </Text>
             </div>
@@ -252,7 +252,7 @@ const PoolChart: FC<Props> = props => {
                             minHeight: 40,
                             background: 'var(--theme-body-color)',
                           }}>
-                          <Text type="p2" weight="semibold" color="primary">
+                          <Text type="body2" weight="semibold" color="primary">
                             {label}
                           </Text>
                         </div>
@@ -268,7 +268,7 @@ const PoolChart: FC<Props> = props => {
                               }>
                               Deposits
                             </div>
-                            <Text type="p2" weight="semibold" color="primary">
+                            <Text type="body2" weight="semibold" color="primary">
                               {formatUSD(payload?.[0]?.value as any)}
                             </Text>
                           </div>
@@ -283,7 +283,7 @@ const PoolChart: FC<Props> = props => {
                               }>
                               Withdrawals
                             </div>
-                            <Text type="p2" weight="semibold" color="primary">
+                            <Text type="body2" weight="semibold" color="primary">
                               {formatUSD(payload?.[1]?.value as any)}
                             </Text>
                           </div>

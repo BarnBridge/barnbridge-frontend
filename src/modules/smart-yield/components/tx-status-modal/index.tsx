@@ -40,7 +40,7 @@ const TxStatusModal: React.FC<Props> = props => {
             <Text type="h3" weight="semibold" color="primary" className="mb-16 text-center">
               Congratulations!
             </Text>
-            <Text type="small" weight="semibold" color="secondary" className="mb-64 text-center">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-64 text-center">
               Your transaction was successful.
               <br />
               {type === 'deposit' && 'You can see your new position in your portfolio'}
@@ -61,7 +61,7 @@ const TxStatusModal: React.FC<Props> = props => {
             <Text type="h3" weight="semibold" color="primary" className="mb-16 text-center">
               Failed!
             </Text>
-            <Text type="small" weight="semibold" color="secondary" className="mb-64 text-center">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-64 text-center">
               Your transaction failed to execute.
               <br />
               Please try again.

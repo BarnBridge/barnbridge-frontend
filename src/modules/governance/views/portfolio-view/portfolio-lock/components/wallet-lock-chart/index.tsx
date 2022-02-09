@@ -176,22 +176,22 @@ const WalletLockChart: React.FC<WalletLockChartProps> = props => {
         <Hint
           text={
             <>
-              <Text type="p2">
+              <Text type="body2">
                 The multiplier mechanic allows users to lock ${projectToken.symbol} for a period up to 1 year and get a
                 bonus of up to 2x v{projectToken.symbol}. The bonus is linear, as per the following example:
               </Text>
               <ul>
                 <li>
-                  <Text type="p2">lock 1000 ${projectToken.symbol} for 1 year → get back 2000 vBOND</Text>
+                  <Text type="body2">lock 1000 ${projectToken.symbol} for 1 year → get back 2000 vBOND</Text>
                 </li>
                 <li>
-                  <Text type="p2">lock 1000 ${projectToken.symbol} for 6 months → get back 1500 vBOND</Text>
+                  <Text type="body2">lock 1000 ${projectToken.symbol} for 6 months → get back 1500 vBOND</Text>
                 </li>
               </ul>
               <ExternalLink href="#">Learn more</ExternalLink>
             </>
           }>
-          <Text type="small" weight="semibold">
+          <Text type="caption" weight="semibold">
             {formatToken(myBonus)}
             <span> v{projectToken.symbol} bonus - </span>
             {inRange(multiplier, 1, 1.01) ? '>' : ''}

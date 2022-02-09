@@ -22,7 +22,7 @@ const TreasuryFees: FC = () => {
       <Text type="h2" weight="bold" color="primary" className="mb-4">
         {formatUSD(totalFeesUSD) ?? '-'}
       </Text>
-      <Text type="p2" weight="semibold" color="secondary" className="mb-32">
+      <Text type="body2" weight="semibold" color="secondary" className="mb-32">
         Total fees accrued
       </Text>
       <SYSection pools={syPools} total={syTotalFees} loading={syLoading} className="mb-32" />

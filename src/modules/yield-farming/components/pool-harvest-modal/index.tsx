@@ -40,15 +40,15 @@ const PoolHarvestButton: FC<PoolHarvestButtonProps> = props => {
               ))}
               className="mb-8"
             />
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {label}
             </Text>
           </div>
           <div className="flex flow-row align-start">
-            <Text type="lb2" weight="semibold" color="secondary" className="mb-8">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-8">
               Reward
             </Text>
-            <Text type="p1" weight="semibold" color="primary" className="mr-4">
+            <Text type="body1" weight="semibold" color="primary" className="mr-4">
               {formatToken(reward, {
                 tokenName: projectToken.symbol,
               })}
@@ -116,7 +116,7 @@ const PoolHarvestModal: FC<ModalProps> = props => {
           <Text type="h3" weight="semibold" color="primary" className="mb-8">
             Claim your reward
           </Text>
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             Select the pool you want to claim your reward from
           </Text>
         </div>

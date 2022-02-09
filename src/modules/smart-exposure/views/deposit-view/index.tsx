@@ -79,44 +79,44 @@ const DepositView: React.FC = () => {
         <div className="flex">
           <TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={40} className="mr-16" />
           <div>
-            <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
+            <div className="text-body1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
               tranche.tokenA.symbol
             } / ${Number(tranche.tokenBRatio) * 100}% ${tranche.tokenB.symbol}`}</div>
-            <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
+            <div className="text-caption fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.tokenA.symbol} balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet {tranche.tokenA.symbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">
+            <span className="text-body1 fw-semibold color-primary mr-8">
               {formatToken(tokenAContract.balance, {
                 scale: tranche.tokenA.decimals,
               }) ?? '-'}
             </span>
-            <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol}</span>
+            <span className="text-caption fw-semibold color-secondary">{tranche.tokenA.symbol}</span>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.tokenB.symbol} balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet {tranche.tokenB.symbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">
+            <span className="text-body1 fw-semibold color-primary mr-8">
               {' '}
               {formatToken(tokenBContract.balance, {
                 scale: tranche.tokenB.decimals,
               }) ?? '-'}
             </span>
-            <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol}</span>
+            <span className="text-caption fw-semibold color-secondary">{tranche.tokenB.symbol}</span>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">
+            <span className="text-body1 fw-semibold color-primary mr-8">
               {formatToken(tokenEContract.balance, {
                 scale: tokenEContract.decimals,
               }) ?? '-'}
             </span>
-            <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
+            <span className="text-caption fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
           </div>
         </div>
       </div>
@@ -129,7 +129,7 @@ const DepositView: React.FC = () => {
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
           {activeTab === 'deposit' ? 'Deposit' : 'Swap'}
         </Text>
-        <Text type="p2" weight="semibold" color="secondary" className="mb-32">
+        <Text type="body2" weight="semibold" color="secondary" className="mb-32">
           {activeTab === 'deposit'
             ? 'Build your SMART Exposure position by minting eTokens with both the tokens in the tranche according to the current tranche ratio.'
             : 'Start building your SMART Exposure position by swapping a specified amount of input token, in order to be able to purchase eTokens. This is where the slippage and deadline parameters will be used.'}

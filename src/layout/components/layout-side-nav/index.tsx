@@ -59,10 +59,10 @@ const LayoutSideNav: React.FC = () => {
                 <Icon name="menu-faucet" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
+                <Text type="caption" weight="bold" className={s.btnLabel} color="blue">
                   DAO
                 </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
+                <Text type="caption" weight="semibold" className={s.btnText}>
                   Faucets
                 </Text>
               </div>
@@ -74,10 +74,10 @@ const LayoutSideNav: React.FC = () => {
                 <Icon name="menu-yf" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
+                <Text type="caption" weight="bold" className={s.btnLabel} color="blue">
                   DAO
                 </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
+                <Text type="caption" weight="semibold" className={s.btnText}>
                   Yield Farming
                 </Text>
               </div>
@@ -89,10 +89,10 @@ const LayoutSideNav: React.FC = () => {
                 <Icon name="menu-dao" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="blue">
+                <Text type="caption" weight="bold" className={s.btnLabel} color="blue">
                   DAO
                 </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
+                <Text type="caption" weight="semibold" className={s.btnText}>
                   Governance
                 </Text>
               </div>
@@ -104,10 +104,10 @@ const LayoutSideNav: React.FC = () => {
                 <Icon name="menu-sy" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                <Text type="caption" weight="bold" className={s.btnLabel} color="red">
                   SMART
                 </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
+                <Text type="caption" weight="semibold" className={s.btnText}>
                   Yield
                 </Text>
               </div>
@@ -119,10 +119,10 @@ const LayoutSideNav: React.FC = () => {
                 <Icon name="menu-sa" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                <Text type="caption" weight="bold" className={s.btnLabel} color="red">
                   SMART
                 </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
+                <Text type="caption" weight="semibold" className={s.btnText}>
                   Alpha
                 </Text>
               </div>
@@ -134,10 +134,10 @@ const LayoutSideNav: React.FC = () => {
                 <Icon name="menu-se" size={40} />
               </Tooltip>
               <div className={s.btnContent}>
-                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                <Text type="caption" weight="bold" className={s.btnLabel} color="red">
                   SMART
                 </Text>
-                <Text type="lb1" weight="semibold" className={s.btnText}>
+                <Text type="caption" weight="semibold" className={s.btnText}>
                   Exposure
                 </Text>
               </div>
@@ -194,7 +194,7 @@ const NotificationsAction: React.FC<{ displayTooltip: boolean }> = ({ displayToo
           </div>
         </Tooltip>
         <div className={s.btnContent}>
-          <Text type="lb1" weight="semibold">
+          <Text type="caption" weight="semibold">
             Notifications
           </Text>
         </div>
@@ -213,7 +213,7 @@ const NetworkAction: React.FC<{ displayTooltip: boolean }> = ({ displayTooltip }
         <Icon name={activeNetwork.meta.logo} size={40} />
       </Tooltip>
       <Tooltip title={activeNetwork.meta.name} placement={isMobile ? 'right' : 'left'}>
-        <Text type="lb1" weight="semibold" className={s.btnContent} ellipsis>
+        <Text type="caption" weight="semibold" className={s.btnContent} ellipsis>
           {activeNetwork.meta.name}
         </Text>
       </Tooltip>
@@ -244,7 +244,7 @@ const ToggleThemeButton = ({ displayTooltip }: { displayTooltip: boolean }) => {
         <Icon name={iconName} size={40} />
       </Tooltip>
       <div className={s.btnContent}>
-        <Text type="lb1" weight="semibold">
+        <Text type="caption" weight="semibold">
           {text}
         </Text>
       </div>

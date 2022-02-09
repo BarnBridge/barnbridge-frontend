@@ -69,7 +69,7 @@ const QueueForExecutionModal: React.FC<QueueForExecutionModalProps> = props => {
         validateTrigger={['onSubmit', 'onChange']}
         onFinish={handleSubmit}>
         <Grid flow="row" gap={16} className={s.row}>
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             Once a proposal is accepted, it will have to wait in the queue before it can be executed. During this time
             it can only be cancelled by an abrogation proposal.
           </Text>

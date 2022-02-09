@@ -50,7 +50,7 @@ const Modal: React.FC<ModalProps> = props => {
           closeIcon={<></>}
           onCancel={() => showConfirm(false)}>
           <Grid flow="row" gap={32}>
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               {confirmText}
             </Text>
             <Grid flow="col" justify="space-between">

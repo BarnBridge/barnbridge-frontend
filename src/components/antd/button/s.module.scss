@@ -120,7 +120,7 @@
 }
 
 .component:global(.ant-btn) {
-  font: var(--font-p2);
+  font: var(--font-body2);
   font-weight: bold;
   display: flex;
   align-items: center;
@@ -132,14 +132,14 @@
   text-align: center;
 
   &:global(.ant-btn-lg) {
-    font: var(--font-p1);
+    font: var(--font-body1);
     font-weight: bold;
     height: 64px;
     padding: 20px;
   }
 
   &:global(.ant-btn-sm) {
-    font: var(--font-sm);
+    font: var(--font-caption);
     font-weight: bold;
     height: 34px;
     padding: 9px;

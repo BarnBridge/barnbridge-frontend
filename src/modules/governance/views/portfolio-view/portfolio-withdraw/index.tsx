@@ -115,22 +115,22 @@ const PortfolioWithdraw: FC = () => {
       <Form form={form} className="flex flow-row row-gap-32 p-24" disabled={isSubmitting}>
         <div className="container-box flex flow-col col-gap-44">
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Portfolio balance
             </Text>
             <div className="flex flow-col col-gap-8 align-center">
-              <Text type="p1" weight="bold" color="primary">
+              <Text type="body1" weight="bold" color="primary">
                 {formatToken(stakedBalance) ?? '-'}
               </Text>
               <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Wallet balance
             </Text>
             <div className="flex flow-col col-gap-8 align-center">
-              <Text type="p1" weight="bold" color="primary">
+              <Text type="body1" weight="bold" color="primary">
                 {formatToken(bondBalance) ?? '-'}
               </Text>
               <TokenIcon name={projectToken.icon as TokenIconNames} />
@@ -163,11 +163,11 @@ const PortfolioWithdraw: FC = () => {
           title="Confirm withdraw"
           header={
             <div className="container-box flex flow-row row-gap-4">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Withdraw amount
               </Text>
               <div className="flex flow-col col-gap-8 align-center">
-                <Text type="p1" weight="bold" color="primary">
+                <Text type="body1" weight="bold" color="primary">
                   {formatToken(bnAmount, {
                     decimals: projectToken.decimals,
                   })}

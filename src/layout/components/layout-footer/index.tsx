@@ -19,7 +19,7 @@ const LayoutFooter: React.FC = () => {
             <OldIcon name="bond-square-token" className="mr-12" />
             <OldIcon name="barnbridge" width="113" color="primary" />
           </RouterLink>
-          <Text type="small" weight="semibold" color="secondary" className="mb-24">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-24">
             A fluctuations derivatives protocol for hedging yield sensitivity and market price.
           </Text>
           <div className={s.socialLinks}>
@@ -30,7 +30,7 @@ const LayoutFooter: React.FC = () => {
         </div>
         <div className={s.footerTopRight}>
           <section className={s.navSection}>
-            <Text type="lb2" weight="bold" tag="h3" className="mb-16 color-icon">
+            <Text type="caption" weight="bold" tag="h3" className="mb-16 color-icon">
               DAO
             </Text>
             <ul>
@@ -57,7 +57,7 @@ const LayoutFooter: React.FC = () => {
             </ul>
           </section>
           <section className={s.navSection}>
-            <Text type="lb2" weight="bold" tag="h3" className="mb-16 color-icon">
+            <Text type="caption" weight="bold" tag="h3" className="mb-16 color-icon">
               SMART Products
             </Text>
             <ul>
@@ -79,7 +79,7 @@ const LayoutFooter: React.FC = () => {
             </ul>
           </section>
           <section className={s.navSection}>
-            <Text type="lb2" weight="bold" tag="h3" className="mb-16 color-icon">
+            <Text type="caption" weight="bold" tag="h3" className="mb-16 color-icon">
               INFO
             </Text>
             <ul>
@@ -103,7 +103,7 @@ const LayoutFooter: React.FC = () => {
         </div>
       </div>
       <div className={s.footerBottom}>
-        <Text type="small" weight="semibold" className={s.copyright}>
+        <Text type="caption" weight="semibold" className={s.copyright}>
           BarnBridge © {new Date().getFullYear()}
         </Text>
         <div className={s.footerBottomLinks}>

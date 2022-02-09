@@ -20,7 +20,7 @@ export const TokensPrice: React.FC<{ poolAddress: string; tokenSymbol: string; c
   return (
     <div className={classNames('card', className)}>
       <div className="card-header flex align-center">
-        <Text type="p1" weight="semibold">
+        <Text type="body1" weight="semibold">
           Tokens price
         </Text>
         <PeriodChartTabs activeKey={periodFilter} onClick={setPeriodFilter} size="small" className="ml-auto" />

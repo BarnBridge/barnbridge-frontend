@@ -34,7 +34,7 @@ const Warn: React.FC<WarnProps> = props => {
     <div className={classNames(s.warning, 'grid flow-col col-gap-16 sm-col-gap-12 align-center justify-space-between')}>
       <Grid flow="col" gap={16} align="center">
         <Icon name="danger" color="red" />
-        <Text type="p2" weight="semibold" className={s.text}>
+        <Text type="body2" weight="semibold" className={s.text}>
           {text}
         </Text>
       </Grid>

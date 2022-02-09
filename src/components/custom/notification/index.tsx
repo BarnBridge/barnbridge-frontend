@@ -40,7 +40,7 @@ function getProposalLink(id: number): React.ReactNode {
 
 function getStrongText(text: string = ''): React.ReactNode {
   return (
-    <Text type="p2" tag="strong" weight="bold" color="primary">
+    <Text type="body2" tag="strong" weight="bold" color="primary">
       {text}
     </Text>
   );
@@ -57,7 +57,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
         'file-add',
         colorPairs.blue,
         <>
-          <Text type="p2" weight="semibold" color="secondary" className="mb-16">
+          <Text type="body2" weight="semibold" color="secondary" className="mb-16">
             Proposal {getProposalLink(n.metadata.proposalId)} has been created by{' '}
             {getStrongText(shortenAddr(n.metadata.proposer))} and entered the warm-up phase. You have{' '}
             {getStrongText(getRelativeTime(n.metadata.displayDuration))} to stake your BOND
@@ -71,7 +71,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'timer',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Voting on proposal {getProposalLink(n.metadata.proposalId)} starts in {getStrongText('5 minutes')}
         </Text>,
       ];
@@ -79,7 +79,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-failed',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been cancelled by{' '}
           <ExplorerAddressLink address={n.metadata.caller} variation="link">
             {shortenAddr(n.metadata.caller)}
@@ -90,7 +90,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'judge',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has entered the voting period. You have{' '}
           {getStrongText(getRelativeTime(n.metadata.displayDuration))} to cast your vote
         </Text>,
@@ -99,7 +99,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'judge',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Voting on proposal {getProposalLink(n.metadata.proposalId)} ends in {getStrongText('5 minutes')}
         </Text>,
       ];
@@ -107,7 +107,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-clock',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {n.message}
         </Text>,
       ];
@@ -115,7 +115,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-clock',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been accepted with{' '}
           {getStrongText(`${n.metadata.votedRatio}%`)} votes for. You have{' '}
           {getStrongText(getRelativeTime(n.metadata.displayDuration))} to queue it for execution
@@ -125,7 +125,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-failed',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has not met quorum and has been rejected
         </Text>,
       ];
@@ -133,7 +133,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-failed',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been rejected with {n.metadata.votedRatio}% votes
           against
         </Text>,
@@ -142,7 +142,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'queue',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been queued for execution by{' '}
           {getStrongText(shortenAddr(n.metadata.caller))}. You have{' '}
           {getStrongText(getRelativeTime(n.metadata.displayDuration))} to create an abrogation proposal
@@ -152,7 +152,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'queue',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Queue period on proposal {getProposalLink(n.metadata.proposalId)} ends in {getStrongText('5 minutes')}
         </Text>,
       ];
@@ -160,7 +160,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'gear',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has passed the queue period. You have{' '}
           {getStrongText(getRelativeTime(n.metadata.displayDuration))} to execute it
         </Text>,
@@ -169,7 +169,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-check',
         colorPairs.green,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been executed by{' '}
           {getStrongText(shortenAddr(n.metadata.caller))}
         </Text>,
@@ -178,7 +178,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'docs',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} expires in {getStrongText('5 minutes')}
         </Text>,
       ];
@@ -186,7 +186,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-failed',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has expired
         </Text>,
       ];
@@ -194,7 +194,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'proposal-canceled',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Abrogation proposal for proposal {getProposalLink(n.metadata.proposalId)} has been created by{' '}
           {getStrongText(shortenAddr(n.metadata.proposer))}. You have{' '}
           {getStrongText(getRelativeTime(n.metadata.displayDuration))} to vote on the abrogation proposal
@@ -204,7 +204,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'file-failed',
         colorPairs.red,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           Proposal {getProposalLink(n.metadata.proposalId)} has been abrogated
         </Text>,
       ];
@@ -212,7 +212,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'delegated',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {getStrongText(
             `${getHumanValue(new BigNumber(n.metadata.amount ?? 0), knownTokens.projectToken.decimals)?.toFixed()} v${
               knownTokens.projectToken.symbol
@@ -242,7 +242,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
         'stake',
         colorPairs.blue,
         <>
-          <Text type="p2" weight="semibold" color="secondary" className="mb-16">
+          <Text type="body2" weight="semibold" color="secondary" className="mb-16">
             Stake your{' '}
             {getStrongText(
               `${formatToken(BigNumber.from(n.metadata.amount)?.unscaleBy(erc20Contract.decimals)) ?? '-'} ${
@@ -264,7 +264,7 @@ function useGetData(n: NotificationType): [IconNames, [string, string], React.Re
       return [
         'bell',
         colorPairs.blue,
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {/* @ts-ignore */}
           {n.message}
         </Text>,

@@ -87,11 +87,11 @@ const PoolUnstake: FC = () => {
     <>
       <div className={cn('flexbox-list p-16 mb-32', s.stakeBlock)}>
         <div className="flex flow-row mr-16">
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             Staked balance
           </Text>
           <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, activeToken.symbol)) ?? '-'}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(stakedBalance, {
                 decimals: activeToken.decimals,
               }) ?? '-'}
@@ -99,11 +99,11 @@ const PoolUnstake: FC = () => {
           </Tooltip>
         </div>
         <div className="flex flow-row">
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             Wallet balance
           </Text>
           <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, activeToken.symbol)) ?? '-'}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(walletBalance, {
                 decimals: activeToken.decimals,
               }) ?? '-'}
@@ -138,12 +138,12 @@ const PoolUnstake: FC = () => {
             <Alert
               message={
                 <div className="flex flow-row row-gap-16 align-start">
-                  <Text type="p2" weight="semibold" color="blue">
+                  <Text type="body2" weight="semibold" color="blue">
                     You can still deposit {activeToken.symbol} in SMART Yield’s Junior or Senior Tranches and earn
                     interest for your funds.
                   </Text>
                   <Link to="/smart-yield" className="link-blue">
-                    <Text type="p2" weight="bold" className="text-underline">
+                    <Text type="body2" weight="bold" className="text-underline">
                       Go to SMART yield
                     </Text>
                   </Link>
@@ -157,11 +157,11 @@ const PoolUnstake: FC = () => {
               className="mb-32"
               message={
                 <div className="flex flow-row row-gap-16 align-start">
-                  <Text type="p2" weight="semibold" color="blue">
+                  <Text type="body2" weight="semibold" color="blue">
                     You can still deposit BOND in the DAO governance to earn interest for your funds.
                   </Text>
                   <Link to="/governance" className="link-blue">
-                    <Text type="p2" weight="bold" className="text-underline">
+                    <Text type="body2" weight="bold" className="text-underline">
                       Go to governance staking
                     </Text>
                   </Link>

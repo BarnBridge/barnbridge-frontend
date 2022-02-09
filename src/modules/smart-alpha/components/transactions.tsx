@@ -92,7 +92,7 @@ export const TransactionsTable = ({
   return (
     <section className="card">
       <header className="card-header flex align-center pv-12">
-        <Text type="p1" weight="semibold">
+        <Text type="body1" weight="semibold">
           Transaction history
         </Text>
 
@@ -148,7 +148,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
               className="mr-16"
             />
             <ExplorerAddressLink address={item.tokenAddress}>
-              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" color="primary" className="mb-4">
                 {item.tokenSymbol}
               </Text>
             </ExplorerAddressLink>
@@ -160,11 +160,11 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
       heading: `Side / transaction`,
       render: item => (
         <div style={{ whiteSpace: 'nowrap' }}>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          <Text type="body1" weight="semibold" color="primary" className="mb-4">
             {item.tranche === 'SENIOR' ? 'Senior' : null}
             {item.tranche === 'JUNIOR' ? 'Junior' : null}
           </Text>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {transactionTypeLabelMap[item.transactionType] || null}
           </Text>
         </div>
@@ -179,11 +179,15 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
 
         return (
           <div style={{ whiteSpace: 'nowrap' }}>
-            <Text type="p1" weight="semibold" color={isIncome ? 'green' : 'red'} tooltip={formatUSD(item.amountInUSD)}>
+            <Text
+              type="body1"
+              weight="semibold"
+              color={isIncome ? 'green' : 'red'}
+              tooltip={formatUSD(item.amountInUSD)}>
               {isIncome ? '+' : '-'} {formatToken(BigNumber.from(item.amount))}
             </Text>
             <Text
-              type="small"
+              type="caption"
               weight="semibold"
               color="secondary"
               tooltip={formatToken(BigNumber.from(item.amountInQuoteAsset), {
@@ -224,10 +228,10 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
         const date = new Date(item.blockTimestamp * 1000);
         return (
           <>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            <Text type="body1" weight="semibold" color="primary" className="mb-4">
               {formatDate(date)}
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {formatTime(date)}
             </Text>
           </>

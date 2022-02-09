@@ -238,7 +238,7 @@ const SeniorTranche: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Senior deposit
       </Text>
-      <Text type="p2" weight="semibold" className="mb-32">
+      <Text type="body2" weight="semibold" className="mb-32">
         Choose the amount of tokens you want to deposit in the senior bond. Make sure you double check the amounts,
         including reward at maturity and maturity date.
       </Text>
@@ -322,7 +322,7 @@ const SeniorTranche: React.FC = () => {
                         );
                         setBondGain(undefined);
                       }}>
-                      <Text type="p2" weight="semibold" color="primary">
+                      <Text type="body2" weight="semibold" color="primary">
                         {opt}
                       </Text>
                     </button>
@@ -393,34 +393,34 @@ const SeniorTranche: React.FC = () => {
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Redeemable amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(getHumanValue(reward, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Deposited amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(bnAmount)} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Maturity in
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {maturityDays} days
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   APY
                 </Text>
-                <Text type="p1" weight="semibold" color="green">
+                <Text type="body1" weight="semibold" color="green">
                   {formatPercent(apy)}
                 </Text>
               </div>

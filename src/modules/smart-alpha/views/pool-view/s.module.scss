@@ -223,7 +223,7 @@
   background-color: var(--theme-red-color);
   padding: 4px 4px 4px 12px;
   border-radius: 12px;
-  font: var(--font-sm-bold);
+  font: var(--font-caption-bold);
   position: relative;
 
   &::before {
@@ -245,7 +245,7 @@
   border: 1px solid var(--theme-border-color);
   padding: 3px 12px;
   border-radius: 12px;
-  font: var(--font-sm-bold);
+  font: var(--font-caption-bold);
   position: relative;
 
   &::before {

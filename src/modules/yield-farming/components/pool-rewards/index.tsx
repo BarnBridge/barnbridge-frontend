@@ -36,13 +36,13 @@ const PoolRewards: React.FC = () => {
 
   return (
     <div className={s.component}>
-      <Text type="lb2" weight="semibold" color="red" className="mb-16">
+      <Text type="caption" weight="semibold" color="red" className="mb-16">
         My Rewards
       </Text>
 
       <div className={s.list}>
         <div>
-          <Text type="p2" color="secondary" className="mb-4">
+          <Text type="body2" color="secondary" className="mb-4">
             Current reward
           </Text>
           <div className="flex col-gap-16 align-center">
@@ -63,7 +63,7 @@ const PoolRewards: React.FC = () => {
           </div>
         </div>
         <div>
-          <Text type="p2" color="secondary" className="mb-4">
+          <Text type="body2" color="secondary" className="mb-4">
             Bond Balance
           </Text>
           <div className="flex col-gap-16 align-center">
@@ -77,7 +77,7 @@ const PoolRewards: React.FC = () => {
           <Hint
             text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake."
             className="mb-4">
-            <Text type="p2" color="secondary">
+            <Text type="body2" color="secondary">
               Potential reward this epoch
             </Text>
           </Hint>

@@ -38,11 +38,11 @@ const Columns: ColumnsType<TableEntity> = [
           />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.pool?.smartYieldAddress} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+              <Text type="body1" weight="semibold" color="primary" className="mr-4">
                 {entity.pool?.underlyingSymbol}
               </Text>
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {entity.pool?.market?.name}
             </Text>
           </div>
@@ -57,7 +57,7 @@ const Columns: ColumnsType<TableEntity> = [
         <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
           {shortenAddr(entity.transactionHash)}
         </ExplorerTxLink>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           {formatDateTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
@@ -76,13 +76,13 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <>
           <Tooltip title={formatBigValue(entity.tokensIn, entity.pool?.underlyingDecimals)}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(entity.tokensIn, {
                 tokenName: entity.pool?.contracts.smartYield?.symbol,
               })}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(valueInUSD)}
           </Text>
         </>
@@ -98,13 +98,13 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <>
           <Tooltip title={formatBigValue(entity.underlyingOut, entity.pool?.underlyingDecimals)}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(entity.underlyingOut, {
                 tokenName: entity.pool?.underlyingSymbol,
               })}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(getAmountInUSD(entity.underlyingOut, entity.pool?.underlyingSymbol))}
           </Text>
         </>
@@ -120,13 +120,13 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <>
           <Tooltip title={formatBigValue(entity.forfeits ?? BigNumber.ZERO, entity.pool?.underlyingDecimals)}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(entity.forfeits, {
                 tokenName: entity.pool?.underlyingSymbol,
               })}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(getAmountInUSD(entity.forfeits, entity.pool?.underlyingSymbol))}
           </Text>
         </>
@@ -137,7 +137,7 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Withdraw type',
     align: 'right',
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="primary">
+      <Text type="body1" weight="semibold" color="primary">
         {JuniorPastPositionTypes.get(entity.transactionType)}
       </Text>
     ),
@@ -247,7 +247,7 @@ const PastPositionsTable: React.FC<Props> = props => {
         current: state.page,
         position: ['bottomRight'],
         showTotal: (total: number, [from, to]: [number, number]) => (
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             Showing {from} to {to} out of {total} entries
           </Text>
         ),

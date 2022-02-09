@@ -57,11 +57,11 @@ const Columns: ColumnsType<TableEntity> = [
           )}
           <Grid flow="row" gap={4} className="ml-auto">
             <ExplorerAddressLink address={entity.underlyingTokenAddress} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" color="primary" className="mb-4">
                 {entity.underlyingTokenSymbol}
               </Text>
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {entity.poolEntity?.market?.name}
             </Text>
           </Grid>
@@ -74,10 +74,10 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="body1" weight="semibold" color="primary" className="mb-4">
           {capitalize(entity.tranche)}
         </Text>
-        <Text type="small" weight="semibold">
+        <Text type="caption" weight="semibold">
           {HistoryShortTypes.get(entity.transactionType)}
         </Text>
       </>
@@ -92,14 +92,14 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <Tooltip
           title={
-            <Text type="small" weight="semibold" color="primary">
+            <Text type="caption" weight="semibold" color="primary">
               {formatToken(entity.amount, {
                 tokenName: entity.poolEntity?.contracts.smartYield.symbol,
                 decimals: entity.poolEntity?.underlyingDecimals,
               })}
             </Text>
           }>
-          <Text type="p1" weight="semibold" color={isPositive ? 'green' : 'red'}>
+          <Text type="body1" weight="semibold" color={isPositive ? 'green' : 'red'}>
             {isPositive ? '+' : '-'}{' '}
             {formatToken(entity.amount, {
               tokenName: entity.isTokenAmount
@@ -107,7 +107,7 @@ const Columns: ColumnsType<TableEntity> = [
                 : entity.underlyingTokenSymbol,
             })}
           </Text>
-          <Text type="small" weight="semibold">
+          <Text type="caption" weight="semibold">
             {formatUSD(entity.computedAmount)}
           </Text>
         </Tooltip>
@@ -120,7 +120,7 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <Grid flow="row" gap={4}>
           <ExplorerTxLink address={entity.transactionHash}>
-            <Text type="p1" weight="semibold" color="blue">
+            <Text type="body1" weight="semibold" color="blue">
               {shortenAddr(entity.transactionHash)}
             </Text>
           </ExplorerTxLink>
@@ -133,10 +133,10 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="body1" weight="semibold" color="primary" className="mb-4">
           {formatDate(entity.blockTimestamp * 1_000)}
         </Text>
-        <Text type="small" weight="semibold">
+        <Text type="caption" weight="semibold">
           {formatTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
@@ -294,7 +294,7 @@ const HistoryTable: React.FC = () => {
     <div className="card">
       <div className="card-header pv-12">
         <Grid flow="col" colsTemplate="1fr max-content" align="center">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             Transaction history
           </Text>
           <HistoryTableFilter originators={pools} value={filters} onChange={handleFiltersApply} />
@@ -311,7 +311,7 @@ const HistoryTable: React.FC = () => {
           current: state.page,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} entries
             </Text>
           ),

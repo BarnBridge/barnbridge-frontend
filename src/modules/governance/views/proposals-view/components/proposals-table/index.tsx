@@ -24,7 +24,7 @@ const columns: ColumnType<LiteProposalEntity>[] = [
     render: data => (
       <Grid flow="row" gap={8}>
         <Link to={`proposals/${data.proposalId}`}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             PID-{data.proposalId}: {data.title}
           </Text>
         </Link>
@@ -32,7 +32,7 @@ const columns: ColumnType<LiteProposalEntity>[] = [
           <ProposalStatusTag state={data.state} />
           <UseLeftTime end={data.stateTimeLeftTs} delay={1_000}>
             {leftTime => (
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 {leftTime > 0 ? getFormattedDuration(0, data.stateTimeLeftTs) : ''}
               </Text>
             )}
@@ -68,7 +68,7 @@ const columns: ColumnType<LiteProposalEntity>[] = [
               alignItems: 'center',
             }}>
             <Progress value={forRate.toNumber()} color="green" />
-            <Text type="p2" weight="semibold" color="secondary" align="right">
+            <Text type="body2" weight="semibold" color="secondary" align="right">
               {forRate.toFormat(2)}%
             </Text>
           </div>
@@ -80,7 +80,7 @@ const columns: ColumnType<LiteProposalEntity>[] = [
               alignItems: 'center',
             }}>
             <Progress value={againstRate.toNumber()} color="red" />
-            <Text type="p2" weight="semibold" color="secondary" align="right">
+            <Text type="body2" weight="semibold" color="secondary" align="right">
               {againstRate.toFormat(2)}%
             </Text>
           </div>

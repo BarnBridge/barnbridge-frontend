@@ -7,7 +7,7 @@
   width: 100%;
 
   th {
-    font: var(--font-sm);
+    font: var(--font-caption);
     font-weight: 600;
     color: var(--theme-secondary-color);
     padding: 24px;
@@ -83,7 +83,7 @@
       border-top: 1px solid var(--border-color);
       border-bottom: 1px solid var(--border-color);
       padding: 20px 12px;
-      font: var(--font-sm-semibold);
+      font: var(--font-caption-semibold);
       color: var(--theme-secondary-color);
 
       [data-theme='dark'] & {

@@ -51,7 +51,7 @@ const SelectTranche: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Select your preferred tranche
       </Text>
-      <Text type="p2" weight="semibold" color="secondary" className="mb-32">
+      <Text type="body2" weight="semibold" color="secondary" className="mb-32">
         You can choose between fixed, or variable interest.
         <br />
         Be aware of the risk involved and read the warnings before going further
@@ -62,21 +62,21 @@ const SelectTranche: React.FC = () => {
           <Hint
             text={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
+                <Text type="body2">
                   Senior tranches are ERC-721 non-fungible tokens which provide guaranteed yield for the life of the
                   bonds.
                 </Text>
                 <ExternalLink href="https://docs.barnbridge.com/sy-specs/senior-tranches">Learn more</ExternalLink>
               </Grid>
             }>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               Senior tranche
             </Text>
           </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          <Text type="body1" weight="semibold" color="primary" className="mb-8">
             Fixed APY
           </Text>
-          <Text type="p1" weight="bold" color="green">
+          <Text type="body1" weight="bold" color="green">
             {formatPercent(pool.state.seniorApy)}
           </Text>
         </RadioCard>
@@ -85,21 +85,21 @@ const SelectTranche: React.FC = () => {
           <Hint
             text={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
+                <Text type="body2">
                   Junior tranches are ERC-20 tokens which provide liquidity and buy risk from the senior bond investors.
                   The risk here is the risk of the underlying asset annuities going down.
                 </Text>
                 <ExternalLink href="https://docs.barnbridge.com/sy-specs/junior-tranches">Learn more</ExternalLink>
               </Grid>
             }>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               Junior tranche
             </Text>
           </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="mb-8">
+          <Text type="body1" weight="semibold" color="primary" className="mb-8">
             Variable APY
           </Text>
-          <Text type="p1" weight="bold" color="purple">
+          <Text type="body1" weight="bold" color="purple">
             {formatPercent(pool.state.juniorApy)}
           </Text>
         </RadioCard>

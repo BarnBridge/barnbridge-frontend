@@ -49,12 +49,12 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
         />
         <div className="flex flow-row">
           <ExplorerAddressLink address={entity.smartYieldAddress} className="flex flow-col mb-4">
-            <Text type="p1" weight="semibold" color="blue" className="mr-4">
+            <Text type="body1" weight="semibold" color="blue" className="mr-4">
               {entity.underlyingSymbol ?? '-'}
             </Text>
             <Icon name="external" size={8} color="blue" />
           </ExplorerAddressLink>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {entity.market?.name ?? '-'}
           </Text>
         </div>
@@ -66,7 +66,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => (
       <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
         <Icon name={entity.network.meta.logo} />
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {entity.network.type}
         </Text>
       </div>
@@ -78,7 +78,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => (
       <>
         <Text
-          type="p1"
+          type="body1"
           weight="semibold"
           color="primary"
           className="mb-4"
@@ -90,7 +90,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
             compact: true,
           }) ?? '-'}
         </Text>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           {formatUSD(entity.feesAmountUSDToken) ?? '-'}
         </Text>
       </>
@@ -151,11 +151,11 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
                   </Text>
                   <div className="flex align-center justify-center mb-8">
                     <IconOld name="warning-circle-outlined" className="mr-8" />
-                    <Text type="p2" weight="semibold" align="center" color="red">
+                    <Text type="body2" weight="semibold" align="center" color="red">
                       Warning
                     </Text>
                   </div>
-                  <Text type="p2" weight="semibold" align="center" color="secondary" className="mb-32">
+                  <Text type="body2" weight="semibold" align="center" color="secondary" className="mb-32">
                     Transferring fees earns no profits for the caller - this function just transfers the fees to the DAO
                     Treasury. Make sure you are willing to spend the gas to send this transaction!
                   </Text>
@@ -350,18 +350,18 @@ export const SYSection = ({
             <Icon name="smart-yield" />
           </div>
           <div className="flex flow-row row-gap-4 mr-64">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               SMART Yield
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Fees
             </Text>
           </div>
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Total fees accrued
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatUSD(total) ?? '-'}
             </Text>
           </div>

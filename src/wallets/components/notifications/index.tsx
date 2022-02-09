@@ -22,7 +22,7 @@ const Notifications: React.FC = () => {
         ) : (
           <ZeroNotificationsSvg width={138} height={128} />
         )}
-        <Text type="p1" color="secondary" align="center">
+        <Text type="body1" color="secondary" align="center">
           There are no notifications to show
         </Text>
       </Grid>

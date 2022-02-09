@@ -91,7 +91,7 @@ export const PortfolioPositions = () => {
             children: (
               <div className="flex flex-grow align-center">
                 <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={32} className="mr-16" />
-                <Text type="p2" weight="semibold" color="primary">
+                <Text type="body2" weight="semibold" color="primary">
                   {item.poolName}
                 </Text>
                 {item.userHasActivePosition ? (
@@ -126,7 +126,7 @@ export const PortfolioPositions = () => {
       </Text>
       <Dropdown items={tranches ?? []} size="large" className="mb-32" style={{ maxWidth: 360 }}>
         <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={32} className="mr-16" />
-        <Text type="p2" weight="semibold" color="primary">
+        <Text type="body2" weight="semibold" color="primary">
           {activePool.poolName}
         </Text>
         {activePool.userHasActivePosition ? (
@@ -190,7 +190,7 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
 
   return (
     <section className="card flex flow-row p-24">
-      <Text type="p1" weight="semibold" color="primary" className="mb-24 text-center">
+      <Text type="body1" weight="semibold" color="primary" className="mb-24 text-center">
         Wallet balance
       </Text>
       <div className="flex justify-center align-center mb-8">
@@ -208,7 +208,7 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
       <div className={classNames(s.positionsWalletSecondaryValues, 'mb-32')}>
         <div className={s.positionsWalletSecondaryValue}>
           <Text
-            type="small"
+            type="caption"
             weight="semibold"
             color="secondary"
             tooltip={
@@ -227,7 +227,7 @@ const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
         </div>
         <div className={s.positionsWalletSecondaryValue}>
           <Text
-            type="small"
+            type="caption"
             weight="semibold"
             color="secondary"
             tooltip={
@@ -366,10 +366,10 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
           alignContent: 'center',
           textAlign: 'center',
         }}>
-        <Text type="p1" weight="semibold" color="primary" className="mb-8">
+        <Text type="body1" weight="semibold" color="primary" className="mb-8">
           Empty entry queue
         </Text>
-        <Text type="small" weight="semibold" color="secondary" className="mb-8">
+        <Text type="caption" weight="semibold" color="secondary" className="mb-8">
           Your entry queue for {pool.poolName} is currently empty.
         </Text>
 
@@ -387,7 +387,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   return (
     <section className="card">
       <header className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           Entry queue
         </Text>
       </header>
@@ -395,20 +395,20 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
         <dl>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Underlying in queue
               </Text>
             </dt>
             <dd className="flex align-center">
               <TokenIcon name={poolToken?.icon} className="mr-8" />
-              <Text type="p1" weight="bold" color="primary">
+              <Text type="body1" weight="bold" color="primary">
                 {formatToken(underlyingInQueue.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </dd>
           </div>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Redeemable tokens
               </Text>
             </dt>
@@ -421,12 +421,12 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
                 className="mr-8"
               />
               {redeemableTokens?.gt(0) ? (
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(redeemableTokens.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                 </Text>
               ) : (
                 <Text
-                  type="p1"
+                  type="body1"
                   weight="semibold"
                   color="secondary"
                   tooltip={`Because entry queue conditions may change if other users add or remove ${
@@ -441,24 +441,24 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
           </div>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Entry epoch
               </Text>
             </dt>
             <dd>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 #{epoch ?? '-'}
               </Text>
             </dd>
           </div>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Redeemable in
               </Text>
             </dt>
             <dd>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {redeemableTokens?.gt(0) ? (
                   'Redeem now'
                 ) : (
@@ -467,7 +467,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
                       const tne = tillNextEpoch(pool);
 
                       return (
-                        <Text type="p1" weight="semibold">
+                        <Text type="body1" weight="semibold">
                           {getFormattedDuration(tne)}
                         </Text>
                       );
@@ -501,10 +501,10 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
           title="Redeem tokens"
           header={
             <div className="container-box flex flow-row">
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                 Redeemable tokens
               </Text>
-              <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+              <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(redeemableTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                 <TokenIcon
                   name={poolToken?.icon}
@@ -615,10 +615,10 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
           alignContent: 'center',
           textAlign: 'center',
         }}>
-        <Text type="p1" weight="semibold" color="primary" className="mb-8">
+        <Text type="body1" weight="semibold" color="primary" className="mb-8">
           Empty exit queue
         </Text>
-        <Text type="small" weight="semibold" color="secondary" className="mb-8">
+        <Text type="caption" weight="semibold" color="secondary" className="mb-8">
           Your exit queue for {pool.poolName} is currently empty.
         </Text>
       </section>
@@ -628,7 +628,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   return (
     <section className="card">
       <header className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           Exit queue
         </Text>
       </header>
@@ -636,7 +636,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
         <dl>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Tokens in queue
               </Text>
             </dt>
@@ -648,26 +648,26 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
                 outline={isSenior ? 'green' : 'purple'}
                 className="mr-8"
               />
-              <Text type="p1" weight="bold" color="primary">
+              <Text type="body1" weight="bold" color="primary">
                 {formatToken(tokensInQueue.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
             </dd>
           </div>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Redeemable underlying
               </Text>
             </dt>
             <dd className="flex align-center">
               <TokenIcon name={poolToken?.icon} className="mr-8" />
               {redeemableUnderlying?.gt(0) ? (
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(redeemableUnderlying.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                 </Text>
               ) : (
                 <Text
-                  type="p1"
+                  type="body1"
                   weight="semibold"
                   color="secondary"
                   tooltip={`Because exit queue conditions may change if other users add or remove either senior or junior tokens, the amount of ${pool.poolToken.symbol} you will be able to redeem when the next epoch starts may differ. This value will become fixed whenever the new epoch starts, and all queued withdrawals are executed.`}>
@@ -678,24 +678,24 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
           </div>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Entry epoch
               </Text>
             </dt>
             <dd>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 #{epoch ?? '-'}
               </Text>
             </dd>
           </div>
           <div className="flex align-center justify-space-between mb-24">
             <dt>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Redeemable in
               </Text>
             </dt>
             <dd>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {redeemableUnderlying?.gt(0) ? (
                   'Redeem now'
                 ) : (
@@ -704,7 +704,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
                       const tne = tillNextEpoch(pool);
 
                       return (
-                        <Text type="p1" weight="semibold">
+                        <Text type="body1" weight="semibold">
                           {getFormattedDuration(tne)}
                         </Text>
                       );
@@ -738,10 +738,10 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
           title="Redeem underlying"
           header={
             <div className="container-box flex flow-row">
-              <Text type="small" weight="semibold" color="secondary" className="mb-4">
+              <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                 Redeemable underlying
               </Text>
-              <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+              <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                 {formatToken(redeemableUnderlying?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                 <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
               </Text>

@@ -41,7 +41,7 @@ const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
   const content = (
     <Grid flow="row" gap={24}>
       <Grid flow="row" gap={8}>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Number of zeros
         </Text>
         <Grid flow="col" gap={16}>
@@ -57,7 +57,7 @@ const AddZerosPopup: React.FC<PopoverProps & AddZerosPopupProps> = props => {
           <Input type="number" value={value} max={max} placeholder={`Max ${max}`} onChange={handleChange} />
         </Grid>
       </Grid>
-      <Text type="p2" weight="semibold" color="secondary">
+      <Text type="body2" weight="semibold" color="secondary">
         Use the options above to add trailing zeros to the input amount.
       </Text>
       <Grid flow="col" gap={16} justify="space-between">

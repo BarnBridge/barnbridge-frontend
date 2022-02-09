@@ -19,10 +19,10 @@ const Columns: ColumnsType<APIVoterEntity> = [
         <div className="flex col-gap-16 align-center">
           <Identicon address={value} width={32} height={32} />
           <ExplorerAddressLink address={value} variation="link">
-            <Text type="p1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
+            <Text type="body1" weight="semibold" ellipsis className="hidden-mobile hidden-tablet">
               {value}
             </Text>
-            <Text type="p1" weight="semibold" wrap={false} className="hidden-desktop">
+            <Text type="body1" weight="semibold" wrap={false} className="hidden-desktop">
               {shortenAddr(value)}
             </Text>
           </ExplorerAddressLink>
@@ -36,7 +36,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
-      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+      <Text type="body1" weight="semibold" color="primary" className="ml-auto">
         {formatBigValue(value, 2, '-', 2)}
       </Text>
     ),
@@ -47,7 +47,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
     width: 200,
     align: 'right',
     render: (value: BigNumber) => (
-      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+      <Text type="body1" weight="semibold" color="primary" className="ml-auto">
         {formatBigValue(value, 2, '-', 2)}
       </Text>
     ),
@@ -58,7 +58,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
     width: 150,
     align: 'right',
     render: (value: number) => (
-      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+      <Text type="body1" weight="semibold" color="primary" className="ml-auto">
         {value}
       </Text>
     ),
@@ -69,7 +69,7 @@ const Columns: ColumnsType<APIVoterEntity> = [
     width: 150,
     align: 'right',
     render: (value: number) => (
-      <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+      <Text type="body1" weight="semibold" color="primary" className="ml-auto">
         {value}
       </Text>
     ),
@@ -108,7 +108,7 @@ const VotersTable: React.FC<VotersTableProps> = props => {
   return (
     <div className={cn('card', className)}>
       <div className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           Voter weights
         </Text>
       </div>
@@ -124,10 +124,10 @@ const VotersTable: React.FC<VotersTableProps> = props => {
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
             <>
-              <Text type="p2" weight="semibold" color="secondary" className="hidden-mobile">
+              <Text type="body2" weight="semibold" color="secondary" className="hidden-mobile">
                 Showing {from} to {to} out of {total} stakers
               </Text>
-              <Text type="p2" weight="semibold" color="secondary" className="hidden-tablet hidden-desktop">
+              <Text type="body2" weight="semibold" color="secondary" className="hidden-tablet hidden-desktop">
                 {from}..{to} of {total}
               </Text>
             </>

@@ -26,10 +26,12 @@ const columns: ColumnType<FaucetType>[] = [
             className="mr-16"
           />
           <div>
-            <div className="text-p1 fw-semibold mb-4">{item.name}</div>
-            {item.label && <div className="text-sm fw-semibold color-secondary">{item.label}</div>}
+            <div className="text-body1 fw-semibold mb-4">{item.name}</div>
+            {item.label && <div className="text-caption fw-semibold color-secondary">{item.label}</div>}
             {item.markets && (
-              <div className="text-sm fw-semibold color-secondary">{item.markets.map(m => m.name).join(' / ')}</div>
+              <div className="text-caption fw-semibold color-secondary">
+                {item.markets.map(m => m.name).join(' / ')}
+              </div>
             )}
           </div>
         </div>
@@ -42,7 +44,7 @@ const columns: ColumnType<FaucetType>[] = [
     render: function YourBalance(item) {
       const wallet = useWallet();
       return (
-        <div className="text-p1 fw-semibold">
+        <div className="text-body1 fw-semibold">
           {formatToken((item.name === 'kETH' ? wallet.ethBalance : item.token?.balance)?.unscaleBy(item.decimals)) ??
             '-'}
         </div>

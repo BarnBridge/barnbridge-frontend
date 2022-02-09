@@ -151,23 +151,23 @@ const PortfolioDelegate: FC = () => {
       <Form form={form} className="flex flow-row row-gap-32 p-24" disabled={isSubmitting}>
         <div className="container-box flex flow-col col-gap-44">
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Current voting type
             </Text>
             <div className="flex flow-col col-gap-8 align-center">
-              <Text type="p1" weight="bold" color="primary">
+              <Text type="body1" weight="bold" color="primary">
                 {isDelegated ? 'Delegate voting' : 'Manual voting'}
               </Text>
             </div>
           </div>
           {isDelegated && (
             <div className="flex flow-row row-gap-4">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Delegated address
               </Text>
               <div className="flex flow-col col-gap-8 align-center">
                 <ExplorerAddressLink address={userDelegatedTo}>
-                  <Text type="p1" weight="bold" color="primary">
+                  <Text type="body1" weight="bold" color="primary">
                     {shortenAddr(userDelegatedTo)}
                   </Text>
                 </ExplorerAddressLink>
@@ -182,7 +182,7 @@ const PortfolioDelegate: FC = () => {
                 selected={field.value === MANUAL_KEY}
                 onClick={() => form.updateValue('votingType', MANUAL_KEY)}>
                 <div className="flex flow-col col-gap-40 align-center">
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     Manual voting
                   </Text>
                   {field.value === MANUAL_KEY && <StatusTag text="ACTIVE" color="green" />}
@@ -192,7 +192,7 @@ const PortfolioDelegate: FC = () => {
                 selected={field.value === DELEGATED_KEY}
                 onClick={() => form.updateValue('votingType', DELEGATED_KEY)}>
                 <div className="flex flow-col col-gap-40 align-center">
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     Delegate voting
                   </Text>
                   {field.value === DELEGATED_KEY && <StatusTag text="ACTIVE" color="green" />}
@@ -225,23 +225,23 @@ const PortfolioDelegate: FC = () => {
             votingType === DELEGATED_KEY ? (
               <div className="container-box flex flow-col col-gap-40">
                 <div className="flow flow-row row-gap-4">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Delegate {projectToken.symbol} amount
                   </Text>
                   <div className="flex flow-col col-gap-8 align-center">
-                    <Text type="p1" weight="bold" color="primary">
+                    <Text type="body1" weight="bold" color="primary">
                       {formatToken(bondBalance) ?? '-'}
                     </Text>
                     <TokenIcon name={projectToken.icon as TokenIconNames} />
                   </div>
                 </div>
                 <div className="flow flow-row row-gap-4">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Delegate address
                   </Text>
                   <div className="flex flow-col col-gap-8 align-center">
                     <Identicon address={delegateAddress} />
-                    <Text type="p1" weight="bold" color="primary">
+                    <Text type="body1" weight="bold" color="primary">
                       {shortenAddr(delegateAddress)}
                     </Text>
                   </div>

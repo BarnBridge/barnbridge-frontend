@@ -42,42 +42,40 @@ body.mobile-menu-open {
 }
 
 :root {
-  --font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+  --font-family: Prompt, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
   --font-size-h1: 32px;
   --font-size-h2: 24px;
   --font-size-h3: 18px;
-  --font-size-p1: 16px;
-  --font-size-p2: 14px;
-  --font-size-lb1: 14px;
-  --font-size-lb2: 12px;
-  --font-size-sm: 12px;
+  --font-size-body1: 16px;
+  --font-size-body2: 14px;
+  --font-size-caption: 12px;
 
   --font-h1: var(--font-size-h1) / 1.25 var(--font-family);
   --font-h1-bold: bold var(--font-h1);
   --font-h1-semibold: 600 var(--font-h1);
+  --font-h1-medium: 500 var(--font-h1);
   --font-h2: var(--font-size-h2) / 1.3333333333 var(--font-family);
   --font-h2-bold: bold var(--font-h2);
   --font-h2-semibold: 600 var(--font-h2);
+  --font-h2-medium: 500 var(--font-h2);
   --font-h3: var(--font-size-h3) / 1.3333333333 var(--font-family);
   --font-h3-bold: bold var(--font-h3);
   --font-h3-semibold: 600 var(--font-h3);
-  --font-p1: var(--font-size-p1) / 1.5 var(--font-family);
-  --font-p1-bold: bold var(--font-p1);
-  --font-p1-semibold: 600 var(--font-p1);
-  --font-p2: var(--font-size-p2) / 1.7142857143 var(--font-family);
-  --font-p2-bold: bold var(--font-p2);
-  --font-p2-semibold: 600 var(--font-p2);
-  --font-lb1: var(--font-size-lb1) / 1.7142857143 var(--font-family);
-  --font-lb1-bold: bold var(--font-lb1);
-  --font-lb1-semibold: 600 var(--font-lb1);
-  --font-lb2: var(--font-size-lb2) / 1.3333333333 var(--font-family);
-  --font-lb2-bold: bold var(--font-lb2);
-  --font-lb2-semibold: 600 var(--font-lb2);
-  --font-sm: var(--font-size-sm) / 1.3333333333 var(--font-family);
-  --font-sm-bold: bold var(--font-sm);
-  --font-sm-semibold: 600 var(--font-sm);
+  --font-h3-medium: 500 var(--font-h3);
+  --font-body1: var(--font-size-body1) / 1.5 var(--font-family);
+  --font-body1-bold: bold var(--font-body1);
+  --font-body1-semibold: 600 var(--font-body1);
+  --font-body1-medium: 500 var(--font-body1);
+  --font-body2: var(--font-size-body2) / 1.7142857143 var(--font-family);
+  --font-body2-bold: bold var(--font-body2);
+  --font-body2-semibold: 600 var(--font-body2);
+  --font-body2-medium: 500 var(--font-body2);
+  --font-caption: var(--font-size-caption) / 1.3333333333 var(--font-family);
+  --font-caption-bold: bold var(--font-caption);
+  --font-caption-semibold: 600 var(--font-caption);
+  --font-caption-medium: 500 var(--font-caption);
 
   --theme-body-color: #f8f8f9; // grey50
   --theme-card-color: #fff;

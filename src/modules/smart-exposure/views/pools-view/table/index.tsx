@@ -29,7 +29,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
             <div className="flex">
               <TokenIcon name={tokenA?.icon} className="mr-8" />
               <div>
-                <div className="text-p1 fw-semibold color-primary">{formatPercent(Number(item.tokenARatio))}</div>
+                <div className="text-body1 fw-semibold color-primary">{formatPercent(Number(item.tokenARatio))}</div>
                 <RatioLabel current={Number(item.state.tokenACurrentRatio)} target={Number(item.tokenARatio)} />
               </div>
             </div>
@@ -37,7 +37,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
               <div className="flex">
                 <TokenIcon name={tokenB?.icon} className="mr-8" />
                 <div>
-                  <div className="text-p1 fw-semibold color-primary">{formatPercent(Number(item.tokenBRatio))}</div>
+                  <div className="text-body1 fw-semibold color-primary">{formatPercent(Number(item.tokenBRatio))}</div>
                   <RatioLabel current={Number(item.state.tokenBCurrentRatio)} target={Number(item.tokenBRatio)} />
                 </div>
               </div>
@@ -55,7 +55,7 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
       </div>
     ),
     render: item => (
-      <div className="text-p1 fw-semibold color-primary">
+      <div className="text-body1 fw-semibold color-primary">
         {formatUSD(Number(item.state.tokenALiquidity) + Number(item.state.tokenBLiquidity))}
       </div>
     ),
@@ -120,8 +120,8 @@ const tableColumns: ColumnType<TranchesItemApiType>[] = [
     ),
     render: item => (
       <>
-        <div className="text-p1 fw-semibold color-primary">{formatUSD(item.state.eTokenPrice)}</div>
-        <div className="text-sm fw-semibold color-secondary text-nowrap">per {item.eTokenSymbol}</div>
+        <div className="text-body1 fw-semibold color-primary">{formatUSD(item.state.eTokenPrice)}</div>
+        <div className="text-caption fw-semibold color-secondary text-nowrap">per {item.eTokenSymbol}</div>
       </>
     ),
   },
@@ -158,7 +158,7 @@ type RatioLabelPropsType = {
 const RatioLabel: React.FC<RatioLabelPropsType> = ({ current, target }) => {
   if (current < target) {
     return (
-      <div className="text-sm fw-semibold color-red flex">
+      <div className="text-caption fw-semibold color-red flex">
         {formatPercent(current)}
         <Icon name="arrow" rotate={45} className="mr-8" size={16} color="red" />
       </div>
@@ -166,12 +166,12 @@ const RatioLabel: React.FC<RatioLabelPropsType> = ({ current, target }) => {
   }
   if (current > target) {
     return (
-      <div className="text-sm fw-semibold color-green flex">
+      <div className="text-caption fw-semibold color-green flex">
         {formatPercent(current)}
         <Icon name="arrow" rotate={315} className="mr-8" size={16} color="green" />
       </div>
     );
   }
 
-  return <div className="text-sm fw-semibold color-secondary flex">{formatPercent(current)}</div>;
+  return <div className="text-caption fw-semibold color-secondary flex">{formatPercent(current)}</div>;
 };

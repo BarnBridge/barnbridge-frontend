@@ -15,20 +15,20 @@ const AbrogationDetailsCard: React.FC = () => {
   return (
     <div className="card">
       <div className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           Details
         </Text>
       </div>
       <Grid flow="col" gap={32} justify="space-between" padding={24}>
         <Grid flow="col" gap={32}>
           <Grid flow="row" gap={4}>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Created by
             </Text>
             <Grid flow="col" gap={8}>
               <Identicon address={abrogationCtx.abrogation?.caller} width={24} height={24} />
               <ExplorerAddressLink address={abrogationCtx.abrogation?.caller}>
-                <Text type="p1" weight="semibold" color="blue">
+                <Text type="body1" weight="semibold" color="blue">
                   {shortenAddr(abrogationCtx.abrogation?.caller)}
                 </Text>
               </ExplorerAddressLink>
@@ -38,10 +38,10 @@ const AbrogationDetailsCard: React.FC = () => {
       </Grid>
       <Divider />
       <Grid flow="row" gap={16} padding={24}>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Description
         </Text>
-        <Text type="p1" color="primary" wrap>
+        <Text type="body1" color="primary" wrap>
           {abrogationCtx.abrogation?.description}
         </Text>
       </Grid>

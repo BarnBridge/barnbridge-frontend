@@ -41,11 +41,11 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
           />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.smartYieldAddress} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+              <Text type="body1" weight="semibold" color="primary" className="mr-4">
                 {entity.underlyingSymbol}
               </Text>
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {entity.market?.name}
             </Text>
           </div>
@@ -74,14 +74,14 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
               scale: entity.underlyingDecimals,
               decimals: entity.underlyingDecimals,
             })}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(entity.smartYieldBalance, {
                 scale: entity.underlyingDecimals,
                 tokenName: entity.contracts.smartYield?.symbol,
               })}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(valueInUSD)}
           </Text>
         </>
@@ -93,7 +93,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
       <Hint
         text={
           <Grid flow="row" gap={8} align="start">
-            <Text type="p2">
+            <Text type="body2">
               The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
               positions might differ.
             </Text>
@@ -109,7 +109,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     align: 'right',
     sorter: (a, b) => a.state.juniorApy - b.state.juniorApy,
     render: (_, entity) => (
-      <Text type="p1" weight="semibold" color="purple">
+      <Text type="body1" weight="semibold" color="purple">
         {formatPercent(entity.state.juniorApy)}
       </Text>
     ),
@@ -119,7 +119,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
       <Hint
         text={
           <Grid flow="row" gap={8} align="start">
-            <Text type="p2">
+            <Text type="body2">
               This is the amount of time you would have to wait if you chose to go through the 2 step withdrawal
               process.
             </Text>
@@ -137,7 +137,7 @@ const Columns: ColumnsType<ActivePositionsTableEntity> = [
     render: (_, entity) => (
       <UseLeftTime end={entity.smartYieldAbond.maturesAt * 1_000} delay={1_000}>
         {leftTime => (
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {leftTime > 0 ? getFormattedDuration(0, entity.smartYieldAbond.maturesAt * 1_000) : ''}
           </Text>
         )}

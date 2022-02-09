@@ -200,7 +200,7 @@ const ProposalCreateView: React.FC = () => {
         <div className={cn(s.cardsContainer, 'mb-40')}>
           <div className="card">
             <div className="card-header">
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 Proposal description
               </Text>
             </div>
@@ -224,7 +224,7 @@ const ProposalCreateView: React.FC = () => {
 
           <div className="card">
             <div className="card-header">
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 Actions
               </Text>
             </div>

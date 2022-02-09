@@ -89,7 +89,7 @@ const ProposalStatusCard: React.FC = () => {
             {getEventIcon(index, event.name)}
             <div className="flex flow-row">
               <div className="flex align-center">
-                <Text type="p1" weight="semibold" color="primary" className="mr-8">
+                <Text type="body1" weight="semibold" color="primary" className="mr-8">
                   {APIProposalStateMap.get(event.name as APIProposalState)}
                 </Text>
 
@@ -102,7 +102,7 @@ const ProposalStatusCard: React.FC = () => {
 
               <UseLeftTime end={event.endTimestamp * 1_000} delay={5_000} onEnd={() => reload()}>
                 {() => (
-                  <Text type="p2" weight="semibold" color="secondary">
+                  <Text type="body2" weight="semibold" color="secondary">
                     {formatEventTime(event.name, event.startTimestamp, event.endTimestamp)}
                   </Text>
                 )}

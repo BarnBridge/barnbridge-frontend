@@ -45,11 +45,11 @@ const Select: React.FC<SelectProps<AntdSelectValue>> = <T extends AntdSelectValu
           label={
             <Grid flow="col" gap={12}>
               {label && (
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   {label}
                 </Text>
               )}
-              <Text type="p2" weight="semibold" color="primary">
+              <Text type="body2" weight="semibold" color="primary">
                 {option.label}
               </Text>
             </Grid>

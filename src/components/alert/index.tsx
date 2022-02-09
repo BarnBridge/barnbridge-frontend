@@ -54,12 +54,12 @@ export const Alert: React.FC<AlertPropsType> = ({ type, className, children, tit
       <Icon name={getIconName(type)} size={24} className="mr-16" />
       <div>
         {title ? (
-          <Text type="p2" weight="bold" className="mb-4">
+          <Text type="body2" weight="bold" className="mb-4">
             {title}
           </Text>
         ) : null}
         {children ? (
-          <Text type="p2" weight="semibold">
+          <Text type="body2" weight="semibold">
             {children}
           </Text>
         ) : null}

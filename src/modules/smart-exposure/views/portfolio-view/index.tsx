@@ -27,7 +27,7 @@ const PortfolioView: React.FC = () => {
         <button type="button" className={cn('tab-card', { active: !activePool })} onClick={() => setActivePool(null)}>
           <TokenIcon name="all" size={40} className="mr-16" />
           <div>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               All pairs
             </Text>
           </div>
@@ -50,7 +50,7 @@ const PortfolioView: React.FC = () => {
                 className="mr-16"
               />
               <div>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {pool.poolName}
                 </Text>
               </div>

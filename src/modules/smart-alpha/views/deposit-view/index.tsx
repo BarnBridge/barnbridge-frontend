@@ -102,23 +102,23 @@ const DepositView = () => {
           <div className="flex align-center">
             <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
             <div>
-              <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+              <Text type="body1" weight="semibold" color="primary" tag="h2" className="mb-4">
                 {pool.poolName}
               </Text>
-              <Text type="small" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 Epoch {pool.state.epoch}
               </Text>
             </div>
           </div>
           <div>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               Wallet balance
             </Text>
             <div className="flex align-center">
-              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+              <Text type="body1" weight="semibold" color="primary" className="mr-4">
                 {formatToken(poolTokenContract?.getBalanceOf()?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {pool.poolToken.symbol}
               </Text>
             </div>
@@ -126,20 +126,20 @@ const DepositView = () => {
           <Switch>
             <Route path="/smart-alpha/pools/:id/deposit/senior">
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                   Side
                 </Text>
-                <Text type="p1" weight="semibold" color="primary" className="mr-4">
+                <Text type="body1" weight="semibold" color="primary" className="mr-4">
                   Senior
                 </Text>
               </div>
             </Route>
             <Route path="/smart-alpha/pools/:id/deposit/junior">
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                   Side
                 </Text>
-                <Text type="p1" weight="semibold" color="primary" className="mr-4">
+                <Text type="body1" weight="semibold" color="primary" className="mr-4">
                   Junior
                 </Text>
               </div>

@@ -79,14 +79,14 @@ const DaoRewardCard: FC<{}> = () => {
         </div>
         <div className="flex-grow">
           <div className="flex justify-space-between align-center wrap mb-4">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               DAO Rewards
             </Text>
 
             {daoReward?.isEnded === false && (
               <StatusTag
                 text={
-                  <Text type="lb2" weight="bold" color="green">
+                  <Text type="caption" weight="bold" color="green">
                     ACTIVE
                   </Text>
                 }
@@ -96,7 +96,7 @@ const DaoRewardCard: FC<{}> = () => {
             {daoReward?.isEnded && (
               <StatusTag
                 text={
-                  <Text type="lb2" weight="bold" color="green">
+                  <Text type="caption" weight="bold" color="green">
                     ENDED
                   </Text>
                 }
@@ -124,33 +124,33 @@ const DaoRewardCard: FC<{}> = () => {
         />
         <div className="flex flow-row">
           <div className="flex align-center justify-space-between mb-24">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               APR
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatPercent(apr) ?? '-'}
             </Text>
           </div>
           {activeTab === 'dao' && (
             <>
               <div className="flex align-center justify-space-between mb-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Staked {ProjectToken.symbol}
                 </Text>
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatToken(daoBarnContract.bondStaked) ?? '-'}
                   </Text>
                 </div>
               </div>
               <div className="flex align-center justify-space-between mb-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Weekly {ProjectToken.symbol} rewards
                 </Text>
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatToken(daoReward?.weeklyRewards) ?? '-'}
                   </Text>
                 </div>
@@ -160,23 +160,23 @@ const DaoRewardCard: FC<{}> = () => {
           {activeTab === 'my' && (
             <>
               <div className="flex align-center justify-space-between mb-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Your Staked {ProjectToken.symbol}
                 </Text>
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatToken(daoBarnContract.balance) ?? '-'}
                   </Text>
                 </div>
               </div>
               <div className="flex align-center justify-space-between mb-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Your {ProjectToken.symbol} rewards
                 </Text>
                 <div className="flex align-center">
                   <TokenIcon name={ProjectToken.icon} size={16} className="mr-8" />
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatToken(totalToClaim) ?? '-'}
                   </Text>
                 </div>

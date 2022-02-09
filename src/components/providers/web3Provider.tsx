@@ -231,11 +231,11 @@ const Web3Provider: FC = props => {
                 onClick={() => switchNetwork(network.id)}>
                 <Icon name={network.meta.logo} size={40} className="mr-12" />
                 <div className="flex flow-row align-start">
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {network.meta.name}
                   </Text>
                   {network === activeNetwork && (
-                    <Text type="small" weight="semibold" color="secondary">
+                    <Text type="caption" weight="semibold" color="secondary">
                       Connected
                     </Text>
                   )}

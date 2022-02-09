@@ -26,7 +26,7 @@ const SimulatedProposalActionModal: React.FC<SimulatedProposalActionModalProps> 
             <Text type="h3" weight="semibold" color="primary">
               Action could not be simulated
             </Text>
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               We run a simulation for every action before adding it to the proposal. The following action failed to
               simulate:
             </Text>
@@ -38,7 +38,7 @@ const SimulatedProposalActionModal: React.FC<SimulatedProposalActionModalProps> 
             signature={functionSignature}
             callData={functionEncodedParams}
           />
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             If you think this is a mistake, you can still add this action to the proposal.
           </Text>
         </Grid>

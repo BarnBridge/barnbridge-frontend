@@ -127,7 +127,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
       <Text type="h3" weight="bold" color="primary" tag="h3" className="mb-16">
         {isSenior ? 'Senior' : 'Junior'} deposit
       </Text>
-      <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
+      <Text type="body2" weight="semibold" color="secondary" tag="p" className="mb-32">
         Choose the amount of tokens you want to deposit in the {tranche} side. Make sure you double check the amounts.
       </Text>
 
@@ -136,11 +136,11 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
           <Hint
             text={`This amount of ${pool.poolToken.symbol} is already in the deposit queue and will be considered towards your overall position in the next epoch.`}
             className="mb-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Balance in deposit queue
             </Text>
           </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+          <Text type="body1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(depositQueueBalance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
             <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
           </Text>
@@ -153,11 +153,11 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
               pool.poolToken.symbol
             } to the deposit queue.`}
             className="mb-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Unclaimed {tranche} tokens
             </Text>
           </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+          <Text type="body1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(unclaimedTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
             <TokenIcon
               className="ml-8"
@@ -171,7 +171,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
         </div>
       </div>
 
-      <Text type="small" weight="semibold" color="secondary" className="mb-8">
+      <Text type="caption" weight="semibold" color="secondary" className="mb-8">
         {pool.poolToken.symbol} amount
       </Text>
       <TokenAmount
@@ -213,9 +213,9 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
           title="Initiate deposit"
           header={
             <div className="flex flow-row row-gap-16">
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 Your balance of{' '}
-                <Text tag="span" type="p2" weight="bold" color="primary">
+                <Text tag="span" type="body2" weight="bold" color="primary">
                   {formatToken(BigNumber.from(tokenState), { decimals: pool.poolToken.decimals })}{' '}
                   {pool.poolToken.symbol}
                 </Text>{' '}
@@ -223,19 +223,19 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
               </Text>
               <div className="container-box flex flow-col col-gap-32">
                 <div className="flex flow-row">
-                  <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                     Deposited amount
                   </Text>
-                  <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                  <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(BigNumber.from(tokenState)) ?? '-'}
                     <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
                   </Text>
                 </div>
                 <div className="flex flow-row">
-                  <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                     Redeemable unclaimed tokens
                   </Text>
-                  <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                  <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(unclaimedTokens?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                     <TokenIcon
                       name={poolToken?.icon}

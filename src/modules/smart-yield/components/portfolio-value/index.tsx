@@ -124,7 +124,7 @@ const PortfolioValue: React.FC<Props> = props => {
     <AntdSpin spinning={state.loading}>
       <div className="card">
         <div className="card-header flex align-center justify-space-between pv-12">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {title}
           </Text>
           <Select options={DAYS_FILTER} value={daysFilter} onChange={value => setDaysFilter(Number(value))} />
@@ -150,12 +150,12 @@ const PortfolioValue: React.FC<Props> = props => {
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
-                  <Text type="p2" tag="span" weight="semibold" color="primary">
+                  <Text type="body2" tag="span" weight="semibold" color="primary">
                     {value instanceof Date ? formatDateTime(value) : ''}
                   </Text>
                 )}
                 formatter={(value: number) => (
-                  <Text type="p2" tag="span" weight="semibold" style={{ color }}>
+                  <Text type="body2" tag="span" weight="semibold" style={{ color }}>
                     {formatUSDValue(value)}
                   </Text>
                 )}

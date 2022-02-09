@@ -25,7 +25,7 @@ const AbrogationProposalModalInner: React.FC<AbrogationProposalModalProps> = pro
       <Grid flow="row" gap={16} align="center">
         <Grid flow="col" gap={8} align="start" width={1070}>
           <Icon name="warning-outlined" />
-          <Text type="p1" weight="semibold" color="red">
+          <Text type="body1" weight="semibold" color="red">
             Abrogation proposal
           </Text>
         </Grid>

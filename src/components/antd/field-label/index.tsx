@@ -19,7 +19,7 @@ const FieldLabel: FCx<FieldLabelProps> = props => {
         <div className="flex flow-col col-gap-4 align-center">
           <Hint text={hint}>
             {typeof label === 'string' ? (
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {label}
               </Text>
             ) : (

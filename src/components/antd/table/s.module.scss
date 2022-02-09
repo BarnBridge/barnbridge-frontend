@@ -10,7 +10,7 @@
   }
 
   :global(.ant-table-thead .ant-table-cell) {
-    font: var(--font-sm);
+    font: var(--font-caption);
     font-weight: 600;
     padding: 16px 24px;
     background: var(--theme-card-color);
@@ -86,7 +86,7 @@
     border-radius: 0 0 4px 4px;
 
     :global(.ant-pagination-total-text) {
-      font: var(--font-p2);
+      font: var(--font-body2);
       font-weight: 600;
       width: 100%;
       color: var(--theme-secondary-color);

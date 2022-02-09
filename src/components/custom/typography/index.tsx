@@ -8,7 +8,7 @@ import s from './s.module.scss';
 
 export type TextProps = {
   tag?: keyof JSX.IntrinsicElements;
-  type: 'h1' | 'h2' | 'h3' | 'p1' | 'p2' | 'lb1' | 'lb2' | 'small';
+  type: 'h1' | 'h2' | 'h3' | 'body1' | 'body2' | 'caption';
   weight?: 'semibold' | 'bold';
   color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'purple' | 'yellow';
   align?: 'left' | 'center' | 'right';
@@ -42,7 +42,7 @@ export const Text: React.FC<TextProps> = React.memo(props => {
   return tooltip ? (
     <Tooltip
       title={tooltip}
-      className={cn(s.tooltip, 'text-p2', 'primary-color')}
+      className={cn(s.tooltip, 'text-body2', 'primary-color')}
       // overlayStyle={overlayStyle}
       // overlayInnerStyle={overlayStyle}
     >
@@ -75,7 +75,7 @@ export const Hint: React.FC<HintProps> = props => {
       <span>{children}</span>
       <Tooltip
         title={text}
-        className={cn(s.tooltip, 'text-p2', 'primary-color')}
+        className={cn(s.tooltip, 'text-body2', 'primary-color')}
         overlayStyle={overlayStyle}
         overlayInnerStyle={overlayStyle}>
         <Icon name="info" size={16} className={s.icon} color="icon" />

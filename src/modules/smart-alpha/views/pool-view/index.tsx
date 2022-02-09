@@ -118,10 +118,10 @@ const PoolView = () => {
         <div className="flex flex-grow align-center">
           <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
           <div>
-            <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+            <Text type="body1" weight="semibold" color="primary" tag="h2" className="mb-4">
               {pool.poolName}
             </Text>
-            <Text type="small" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               Epoch {smartAlphaContract?.epoch ?? pool.state.epoch ?? '-'}
             </Text>
           </div>
@@ -136,7 +136,7 @@ const PoolView = () => {
             Simulate
           </Link>
           {isDisabled ? (
-            <Tooltip title={<Text type="p1">FLOKI deposits have been disabled</Text>}>
+            <Tooltip title={<Text type="body1">FLOKI deposits have been disabled</Text>}>
               <Link
                 to={`/smart-alpha/portfolio`}
                 variation="primary"
@@ -156,7 +156,7 @@ const PoolView = () => {
       <div className={classNames(s.cards, 'mb-12')}>
         <section className={classNames(s.epochCard, s.epochCardPrimary)}>
           <div className={s.epochCardTitleWrap}>
-            <Text type="lb2" weight="bold" tag="h3" color="red" className={s.epochCardTitle}>
+            <Text type="caption" weight="bold" tag="h3" color="red" className={s.epochCardTitle}>
               EPOCH {smartAlphaContract?.epoch ?? '-'} - IN PROGRESS
             </Text>
           </div>
@@ -170,7 +170,7 @@ const PoolView = () => {
                   Junior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Upside leverage
                 <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
               </Text>
@@ -189,7 +189,7 @@ const PoolView = () => {
                   Junior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside leverage
                 <InfoTooltip>
                   How much of every 1% move to the downside in the underlying asset a junior position will have exposure
@@ -210,7 +210,7 @@ const PoolView = () => {
                   Senior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Upside exposure rate
                 <InfoTooltip>
                   How much of every 1% move to the upside in the underlying asset a senior position will have exposure
@@ -228,7 +228,7 @@ const PoolView = () => {
                   Senior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside protection rate
                 <InfoTooltip>
                   How much the underlying asset can decline before a senior position takes on losses.
@@ -240,13 +240,13 @@ const PoolView = () => {
             <dl>
               <div className={s.epochCardDlRow}>
                 <dt>
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     {pool.poolToken.symbol} epoch entry price
                   </Text>
                 </dt>
                 <dd className="flex align-center">
                   <Text
-                    type="p1"
+                    type="body1"
                     weight="semibold"
                     color="primary"
                     tooltip={formatToken(smartAlphaContract?.epochEntryPrice?.unscaleBy(entryPriceDecimals), {
@@ -264,7 +264,7 @@ const PoolView = () => {
               </div>
               <div className={s.epochCardDlRow}>
                 <dt className="flex align-center">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Senior liquidity
                   </Text>
                   <span
@@ -274,11 +274,11 @@ const PoolView = () => {
                 </dt>
                 <dd className="flex align-center">
                   <Text
-                    type="p1"
+                    type="body1"
                     weight="semibold"
                     color="primary"
                     tooltip={
-                      <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                      <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                         <span>
                           {formatToken(
                             smartAlphaContract?.epochSeniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
@@ -310,7 +310,7 @@ const PoolView = () => {
               </div>
               <div className={s.epochCardDlRow}>
                 <dt className="flex align-center">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Junior liquidity
                   </Text>
                   <span
@@ -320,11 +320,11 @@ const PoolView = () => {
                 </dt>
                 <dd className="flex align-center">
                   <Text
-                    type="p1"
+                    type="body1"
                     weight="semibold"
                     color="primary"
                     tooltip={
-                      <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                      <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                         <span>
                           {formatToken(
                             smartAlphaContract?.epochJuniorLiquidity?.unscaleBy(pool.poolToken.decimals) ??
@@ -361,10 +361,10 @@ const PoolView = () => {
               }
             />
             <div className="flex align-center">
-              <Text type="small" weight="semibold" color="green">
+              <Text type="caption" weight="semibold" color="green">
                 {formatPercent(smartAlphaContract?.epochSeniorLiquidityRate) ?? '-'}
               </Text>
-              <Text type="small" weight="semibold" color="purple" className="ml-auto">
+              <Text type="caption" weight="semibold" color="purple" className="ml-auto">
                 {formatPercent(smartAlphaContract?.epochJuniorLiquidityRate) ?? '-'}
               </Text>
             </div>
@@ -377,7 +377,7 @@ const PoolView = () => {
         </section>
         <section className={classNames(s.epochCard, s.epochCardSecondary)}>
           <div className={s.epochCardTitleWrap}>
-            <Text type="lb2" weight="bold" tag="h3" color="secondary" className={s.epochCardTitle}>
+            <Text type="caption" weight="bold" tag="h3" color="secondary" className={s.epochCardTitle}>
               EPOCH {smartAlphaContract?.currentEpoch !== undefined ? smartAlphaContract?.currentEpoch + 1 : '-'} -
               ESTIMATES
             </Text>
@@ -392,7 +392,7 @@ const PoolView = () => {
                   Junior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Upside leverage
                 <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
               </Text>
@@ -411,7 +411,7 @@ const PoolView = () => {
                   Junior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside leverage
                 <InfoTooltip>
                   How much of every 1% move to the downside in the underlying asset a junior position will have exposure
@@ -432,7 +432,7 @@ const PoolView = () => {
                   Senior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Upside exposure rate
                 <InfoTooltip>
                   How much of every 1% move to the upside in the underlying asset a senior position will have exposure
@@ -449,7 +449,7 @@ const PoolView = () => {
                   Senior
                 </Badge>
               </div>
-              <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+              <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                 Downside protection rate
                 <InfoTooltip>
                   How much the underlying asset can decline before a senior position takes on losses.
@@ -461,13 +461,13 @@ const PoolView = () => {
             <dl>
               <div className={s.epochCardDlRow}>
                 <dt>
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     {pool.poolToken.symbol} epoch entry price
                   </Text>
                 </dt>
                 <dd className="flex align-center">
                   <Text
-                    type="p1"
+                    type="body1"
                     weight="semibold"
                     color="primary"
                     tooltip={formatToken(nextEpochEstimates[4]?.unscaleBy(entryPriceDecimals), {
@@ -485,7 +485,7 @@ const PoolView = () => {
               </div>
               <div className={s.epochCardDlRow}>
                 <dt className="flex align-center">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Senior liquidity
                   </Text>
                   <span
@@ -495,11 +495,11 @@ const PoolView = () => {
                 </dt>
                 <dd className="flex align-center">
                   <Text
-                    type="p1"
+                    type="body1"
                     weight="semibold"
                     color="primary"
                     tooltip={
-                      <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                      <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                         <span>
                           {formatToken(nextEpochEstimates[1]?.unscaleBy(pool.poolToken.decimals), {
                             tokenName: pool.poolToken.symbol,
@@ -523,7 +523,7 @@ const PoolView = () => {
               </div>
               <div className={s.epochCardDlRow}>
                 <dt className="flex align-center">
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Junior liquidity
                   </Text>
                   <span
@@ -533,11 +533,11 @@ const PoolView = () => {
                 </dt>
                 <dd className="flex align-center">
                   <Text
-                    type="p1"
+                    type="body1"
                     weight="semibold"
                     color="primary"
                     tooltip={
-                      <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                      <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                         <span>
                           {formatToken(nextEpochEstimates[0]?.unscaleBy(pool.poolToken.decimals), {
                             tokenName: pool.poolToken.symbol,
@@ -569,10 +569,10 @@ const PoolView = () => {
               }
             />
             <div className="flex align-center">
-              <Text type="small" weight="semibold" color="green">
+              <Text type="caption" weight="semibold" color="green">
                 {formatPercent(nextEpochSeniorLiquidityRate) ?? '-'}
               </Text>
-              <Text type="small" weight="semibold" color="purple" className="ml-auto">
+              <Text type="caption" weight="semibold" color="purple" className="ml-auto">
                 {formatPercent(nextEpochJuniorLiquidityRate) ?? '-'}
               </Text>
             </div>
@@ -619,7 +619,7 @@ const PoolView = () => {
             if (smartAlphaContract?.requireEpochAdvance) {
               return (
                 <Text
-                  type="small"
+                  type="caption"
                   tooltip={
                     <span>
                       Epochs are automatically advanced whenever an action occurs - however, until that happens, they
@@ -646,10 +646,10 @@ const PoolView = () => {
             if (tillNextEpoch > 0) {
               return (
                 <>
-                  <Text type="p2" weight="bold" color="primary" className="ml-auto">
+                  <Text type="body2" weight="bold" color="primary" className="ml-auto">
                     {getFormattedDuration(tillNextEpoch / 1_000)}
                   </Text>
-                  <Text type="p2" weight="semibold" color="secondary" className="ml-4">
+                  <Text type="body2" weight="semibold" color="secondary" className="ml-4">
                     until next epoch
                   </Text>
                 </>
@@ -680,10 +680,10 @@ const PoolView = () => {
             <div className="flex align-center">
               <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
               <div>
-                <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+                <Text type="body1" weight="semibold" color="primary" tag="h2" className="mb-4">
                   Previous epochs
                 </Text>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {pool.poolName}
                 </Text>
               </div>

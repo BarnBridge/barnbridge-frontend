@@ -205,7 +205,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
       <div className={s.cards}>
         <section className="card">
           <header className="card-header">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Epoch outcomes (before fees)
             </Text>
           </header>
@@ -214,7 +214,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
               <dl>
                 <div className="flex align-center mb-24 ph-24">
                   <dt className="mr-8">
-                    <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                       Senior performance
                       <InfoTooltip>
                         Change in the fair price of the senior token over the course of the epoch
@@ -222,14 +222,14 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                     </Text>
                   </dt>
                   <dd className="ml-auto">
-                    <Text type="p1" weight="semibold" color="primary">
+                    <Text type="body1" weight="semibold" color="primary">
                       {formatPercent(seniorProfitsRate) ?? '-'}
                     </Text>
                   </dd>
                 </div>
                 <div className="flex align-center mb-24 ph-24">
                   <dt className="mr-8">
-                    <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                       Senior downside protection (Absolute %)
                       <InfoTooltip>
                         How much the underlying asset can decline before a senior position takes on losses.
@@ -237,14 +237,14 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                     </Text>
                   </dt>
                   <dd className="ml-auto">
-                    <Text type="p1" weight="bold" color="primary">
+                    <Text type="body1" weight="bold" color="primary">
                       {formatPercent(protection?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
                     </Text>
                   </dd>
                 </div>
                 <div className="flex align-center mb-24 ph-24">
                   <dt className="mr-8">
-                    <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                       Senior upside exposure (Relative %)
                       <InfoTooltip>
                         How much of every 1% move to the upside in the underlying asset a senior position will have
@@ -253,7 +253,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                     </Text>
                   </dt>
                   <dd className="ml-auto">
-                    <Text type="p1" weight="semibold" color="primary">
+                    <Text type="body1" weight="semibold" color="primary">
                       {formatPercent(exposure?.unscaleBy(SMART_ALPHA_DECIMALS)) ?? '-'}
                     </Text>
                   </dd>
@@ -261,7 +261,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                 <hr className="mb-24" />
                 <div className="flex align-center mb-24 ph-24">
                   <dt className="mr-8">
-                    <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                       Junior performance
                       <InfoTooltip>
                         Change in the fair price of the junior token over the course of the epoch
@@ -269,14 +269,14 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                     </Text>
                   </dt>
                   <dd className="ml-auto">
-                    <Text type="p1" weight="semibold" color="primary">
+                    <Text type="body1" weight="semibold" color="primary">
                       {formatPercent(juniorProfitsRate) ?? '-'}
                     </Text>
                   </dd>
                 </div>
                 <div className="flex align-center mb-24 ph-24">
                   <dt className="mr-8">
-                    <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                       Upside leverage
                       <InfoTooltip>
                         How much of every 1% move to the upside in the underlying asset a senior position will have
@@ -285,14 +285,14 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                     </Text>
                   </dt>
                   <dd className="ml-auto">
-                    <Text type="p1" weight="semibold" color="primary">
+                    <Text type="body1" weight="semibold" color="primary">
                       {upsideLeverage ? `${upsideLeverage.toFormat(2)}x` : '-'}
                     </Text>
                   </dd>
                 </div>
                 <div className="flex align-center ph-24">
                   <dt className="mr-8">
-                    <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
+                    <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4">
                       Downside leverage
                       <InfoTooltip>
                         How much of every 1% move to the downside in the underlying asset a junior position will have
@@ -306,7 +306,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                   </dt>
                   <dd className="ml-auto">
                     <Text
-                      type="p1"
+                      type="body1"
                       weight="semibold"
                       color="primary"
                       tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
@@ -320,7 +320,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
         </section>
         <section className="card">
           <header className="card-header">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Performance
             </Text>
           </header>
@@ -355,7 +355,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                               style={{ '--dot-color': entry.color } as React.CSSProperties}>
                               <div className="flex flow-row">
                                 <Text
-                                  type="small"
+                                  type="caption"
                                   weight="semibold"
                                   color="secondary"
                                   className={classNames(s.legendTitle, 'mb-4')}>
@@ -363,7 +363,7 @@ export const Simulate: FC<Props> = ({ pool }: Props) => {
                                   {entry.value === 'seniorProfitsRate' && 'Senior performance'}
                                   {entry.value === 'juniorProfitsRate' && 'Junior performance'}
                                 </Text>
-                                <Text type="p1" weight="bold" color="primary">
+                                <Text type="body1" weight="bold" color="primary">
                                   {(entry.value === 'pricePerfRate' && formatPercent(pricePerfRate)) ?? '-%'}
                                   {(entry.value === 'seniorProfitsRate' && formatPercent(seniorProfitsRate)) ?? '-%'}
                                   {(entry.value === 'juniorProfitsRate' && formatPercent(juniorProfitsRate)) ?? '-%'}

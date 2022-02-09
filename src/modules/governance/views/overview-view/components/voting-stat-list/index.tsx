@@ -45,12 +45,12 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
         <Grid flow="row" gap={48}>
           <Hint
             text={
-              <Text type="p2">
+              <Text type="body2">
                 This number shows the amount of ${projectToken.symbol} (and their USD value) currently staked in the
                 DAO.
               </Text>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               {projectToken.symbol} Staked
             </Text>
           </Hint>
@@ -59,7 +59,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               <Text type="h2" weight="bold" color="primary" wrap>
                 {formatToken(daoCtx.daoBarn.bondStaked)}
               </Text>
-              <Text type="p1" color="secondary">
+              <Text type="body1" color="secondary">
                 {projectToken.symbol}
               </Text>
               <Tooltip
@@ -78,7 +78,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 <Icon name="insured" color="green" size={32} />
               </Tooltip>
             </Grid>
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               {formatUSD(convertTokenInUSD(daoCtx.daoBarn.bondStaked, projectToken.symbol))}
             </Text>
           </Grid>
@@ -90,7 +90,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Hint
             text={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
+                <Text type="body2">
                   This number shows the amount of v{projectToken.symbol} currently minted. This number may differ from
                   the amount of ${projectToken.symbol} staked because of the multiplier mechanic
                 </Text>
@@ -102,7 +102,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 </ExternalLink>
               </Grid>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               V{capitalize(projectToken.symbol)}
             </Text>
           </Hint>
@@ -119,7 +119,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Hint
             text={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
+                <Text type="body2">
                   This counter shows the average amount of time ${projectToken.symbol} stakers locked their deposits in
                   order to take advantage of the voting power bonus.
                 </Text>
@@ -131,7 +131,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 </ExternalLink>
               </Grid>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               Avg. Lock Time
             </Text>
           </Hint>
@@ -139,7 +139,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             <Text type="h2" weight="bold" color="primary" wrap>
               {overview?.avgLockTimeSeconds ? getFormattedDuration(overview?.avgLockTimeSeconds) : '-'}
             </Text>
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               average time
             </Text>
           </Grid>
@@ -151,13 +151,13 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Grid flow="row" gap={48}>
             <Hint
               text={
-                <Text type="p2">
+                <Text type="body2">
                   This number shows the ${projectToken.symbol} token rewards distributed so far out of the total of{' '}
                   {formatToken(daoCtx.daoReward.pullFeature?.totalAmount)} that are going to be available for the DAO
                   Staking.
                 </Text>
               }>
-              <Text type="lb2" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 {projectToken.symbol} Rewards
               </Text>
             </Hint>
@@ -169,7 +169,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                   </Text>
                 )}
               </UseLeftTime>
-              <Text type="p1" color="secondary">
+              <Text type="body1" color="secondary">
                 out of {formatToken(daoCtx.daoReward.pullFeature?.totalAmount)}
               </Text>
             </Grid>
@@ -182,7 +182,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           <Hint
             text={
               <Grid flow="row" gap={8} align="start">
-                <Text type="p2">
+                <Text type="body2">
                   This number shows the amount of v{projectToken.symbol} that is delegated to other addresses.
                 </Text>
                 <ExternalLink
@@ -193,7 +193,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
                 </ExternalLink>
               </Grid>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               Delegated
             </Text>
           </Hint>
@@ -201,7 +201,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
             <Text type="h2" weight="bold" color="primary" wrap>
               {formatToken(overview?.totalDelegatedPower)}
             </Text>
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               out of{' '}
               {formatToken((projectToken.contract as Erc20Contract).totalSupply?.unscaleBy(projectToken.decimals))}
             </Text>
@@ -213,12 +213,12 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
         <Grid flow="row" gap={48}>
           <Hint
             text={
-              <Text type="p2">
+              <Text type="body2">
                 This card shows the number of holders of ${projectToken.symbol} and compares it to the number of stakers
                 and voters in the DAO.
               </Text>
             }>
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               Addresses
             </Text>
           </Hint>
@@ -227,11 +227,11 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
               <Text type="h2" weight="bold" color="primary" wrap>
                 {overview?.holdersStakingExcluded}
               </Text>
-              <Text type="p1" color="secondary">
+              <Text type="body1" color="secondary">
                 holders
               </Text>
             </Grid>
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               {overview?.barnUsers} stakers & {overview?.voters} voters
             </Text>
           </Grid>
@@ -242,7 +242,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
         <>
           <div className="card p-24">
             <Grid flow="row" gap={48}>
-              <Text type="lb2" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 Annual Percentage Rate (APR)
               </Text>
               <Grid flow="row" gap={4}>
@@ -254,7 +254,7 @@ const VotingStatList: React.FC<VotingStatListProps> = props => {
           </div>
           <div className="card p-24">
             <Grid flow="row" gap={48}>
-              <Text type="lb2" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 Weekly {ProjectToken.symbol} Rewards
               </Text>
               <Grid flow="row" gap={4}>

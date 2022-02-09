@@ -74,17 +74,17 @@ const ChangeTrancheView: React.FC = () => {
         <div className="flex">
           <TokenIconPair name1={tokenA?.icon} name2={tokenB?.icon} size={40} className="mr-16" />
           <div>
-            <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
+            <div className="text-body1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
               tokenA?.symbol
             } / ${Number(tranche.tokenBRatio) * 100}% ${tokenB?.symbol}`}</div>
-            <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
+            <div className="text-caption fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">9.789</span>
-            <span className="text-sm fw-semibold color-secondary">25:75_WBTC_ETH</span>
+            <span className="text-body1 fw-semibold color-primary mr-8">9.789</span>
+            <span className="text-caption fw-semibold color-secondary">25:75_WBTC_ETH</span>
           </div>
         </div>
       </div>
@@ -97,19 +97,19 @@ const ChangeTrancheView: React.FC = () => {
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
           Change tranche
         </Text>
-        <Text type="p2" weight="semibold" color="secondary" className="mb-32">
+        <Text type="body2" weight="semibold" color="secondary" className="mb-32">
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse efficitur odio nunc, a sodales ligula
           varius nec. Phasellus venenatis nulla mi, sit amet rutrum lorem semper et
         </Text>
         <form>
           <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">Select new tranche</span>
+            <span className="text-caption fw-semibold color-secondary">Select new tranche</span>
           </div>
           <DropdownList items={tokens.map(token => ({ children: token.name, onClick: () => setSelectedToken(token) }))}>
             {({ ref, setOpen, open }) => (
               <button type="button" ref={ref} onClick={() => setOpen(isOpen => !isOpen)} className="token-select mb-32">
                 <TokenIconPair name1={tokenA?.icon} name2={tokenB?.icon} size={24} className="mr-16" />
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {selectedToken.name}
                 </Text>
                 <Icon
@@ -124,7 +124,7 @@ const ChangeTrancheView: React.FC = () => {
           </DropdownList>
 
           <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
+            <span className="text-caption fw-semibold color-secondary">75:25_WBTC_ETH amount</span>
           </div>
           <TokenAmount
             before={<TokenIconPair name1={tokenA?.icon} name2={tokenB?.icon} size={24} />}
@@ -137,7 +137,7 @@ const ChangeTrancheView: React.FC = () => {
           />
 
           <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">50:50_WBTC_ETH amount</span>
+            <span className="text-caption fw-semibold color-secondary">50:50_WBTC_ETH amount</span>
           </div>
           <TokenAmountPreview
             before={<TokenIconPair name1={tokenA?.icon} name2={tokenB?.icon} size={24} />}
