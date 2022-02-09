@@ -5,6 +5,12 @@
   grid-gap: 32px;
 }
 
+.tabsCondensed {
+  button {
+    padding: 8px;
+  }
+}
+
 .poolCard {
   display: flex;
   flex-direction: column;

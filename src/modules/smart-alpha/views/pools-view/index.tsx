@@ -13,6 +13,7 @@ import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Tabs } from 'components/custom/tabs';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
@@ -43,14 +44,30 @@ const epochTabs = [
   },
 ];
 
+export enum ViewTypeKey {
+  list = 'list',
+  cards = 'cards',
+}
+
+const viewTabs = [
+  {
+    id: ViewTypeKey.list,
+    children: <Icon name="list-view" />,
+  },
+  {
+    id: ViewTypeKey.cards,
+    children: <Icon name="cards-view" />,
+  },
+];
+
 type TreasuryFilterType = {
   token: string;
 };
 
 const PoolsView = () => {
   const { data, loading } = useFetchSaPools();
-  const [layout, setLayout] = useState<'cards' | 'list'>('list');
   const [epochType, setEpochType] = useState<EpochTypeKey>(EpochTypeKey.current);
+  const [viewType, setViewType] = useState<ViewTypeKey>(ViewTypeKey.list);
 
   const { innerWidth } = useWindowSize();
 
@@ -133,8 +150,8 @@ const PoolsView = () => {
   return (
     <>
       <div className="flex flow-col wrap col-gap-32 row-gap-16 mb-32">
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="caption" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Epoch TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -142,8 +159,8 @@ const PoolsView = () => {
           </Text>
         </div>
 
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="caption" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Entry Queue TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -151,8 +168,8 @@ const PoolsView = () => {
           </Text>
         </div>
 
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="caption" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Exit Queue TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -160,8 +177,8 @@ const PoolsView = () => {
           </Text>
         </div>
 
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="caption" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Exited TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -175,12 +192,14 @@ const PoolsView = () => {
         </Text>
         <div className="flex wrap col-gap-16 row-gap-16 align-center">
           <Tabs<EpochTypeKey> tabs={epochTabs} activeKey={epochType} onClick={setEpochType} variation="elastic" />
+
           {forceCardsView ? null : (
-            <Button
-              variation="ghost-alt"
-              icon={layout === 'cards' ? 'list-view' : 'cards-view'}
-              iconPosition="only"
-              onClick={() => setLayout(prevLayout => (prevLayout === 'cards' ? 'list' : 'cards'))}
+            <Tabs<ViewTypeKey>
+              tabs={viewTabs}
+              activeKey={viewType}
+              onClick={setViewType}
+              variation="elastic"
+              className={s.tabsCondensed}
             />
           )}
           <TableFilter<TreasuryFilterType>
@@ -190,7 +209,7 @@ const PoolsView = () => {
           />
         </div>
       </div>
-      {forceCardsView || layout === 'cards' ? (
+      {forceCardsView || viewType === ViewTypeKey.cards ? (
         <Cards items={items} epochType={epochType} />
       ) : (
         <TableLayout items={items} epochType={epochType} loading={loading} />
