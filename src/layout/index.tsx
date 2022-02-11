@@ -21,6 +21,7 @@ const SmartYieldView = lazy(() => import('modules/smart-yield'));
 const SmartAlphaView = lazy(() => import('modules/smart-alpha'));
 const SmartExposureView = lazy(() => import('modules/smart-exposure'));
 const FaucetsView = lazy(() => import('modules/faucets'));
+const BondTransitionView = lazy(() => import('modules/bond-transition'));
 
 const LayoutView: React.FC = () => {
   const { activeNetwork } = useNetwork();
@@ -52,6 +53,7 @@ const LayoutView: React.FC = () => {
                     )}
                   />
                 )}
+                {features.bondTransition && <Route path="/bond-transition" exact component={BondTransitionView} />}
                 {[AvalancheNetwork, AvalancheTestnetNetwork, BinanceNetwork, BinanceTestnetNetwork].includes(
                   activeNetwork,
                 ) && <Redirect to="/smart-alpha" />}

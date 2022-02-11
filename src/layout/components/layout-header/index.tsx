@@ -44,6 +44,7 @@ const LayoutHeader: React.FC = () => {
           <Route path="/smart-exposure">SMART Exposure</Route>
           <Route path="/smart-alpha">SMART Alpha</Route>
           <Route path="/faucets">Faucets</Route>
+          <Route path="/bond-transition">BOND Transition</Route>
           <Route path="*">BarnBridge</Route>
         </Switch>
       </Text>
