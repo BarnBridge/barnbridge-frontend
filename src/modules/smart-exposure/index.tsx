@@ -2,6 +2,7 @@ import React, { Suspense, lazy } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import AntdSpin from 'antd/lib/spin';
 
+import { Alert } from 'components/alert';
 import { HorizontalMenu } from 'components/custom/tabs';
 import { Icon } from 'components/icon';
 import SeAPIProvider from 'modules/smart-exposure/api';
@@ -42,6 +43,9 @@ const SmartExposureView: React.FC = () => {
     <>
       <HorizontalMenu tabs={tabs} />
       <div className="content-container-fix content-container">
+        <Alert type="warning" className="mb-32">
+          SMART Exposure is no longer accepting user deposits. You are still able to withdraw your funds.
+        </Alert>
         <SeAPIProvider>
           <SEPoolsProvider>
             <Suspense fallback={<AntdSpin />}>

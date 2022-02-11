@@ -39,6 +39,7 @@ export const AvalancheDevConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
     ausdc: '',
     ausdt: '',
@@ -50,6 +51,7 @@ export const AvalancheDevConfig: NetworkConfig = {
     bb_ausdt: '',
     bb_agusd: '',
     bb_adai: '',
+    bb_arai: '',
     bb_crusdc: '',
     bb_crusdt: '',
     bb_crdai: '',
@@ -64,6 +66,7 @@ export const AvalancheDevConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
   },
   contracts: {
@@ -91,7 +94,7 @@ export const AvalancheTestnetNetwork: Web3Network = {
   meta: {
     chainId: AVALANCHE_TEST_CHAIN_ID,
     name: 'Avalanche Testnet (Fuji)',
-    logo: 'avalanche-logo',
+    logo: 'avalanche-testnet-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,

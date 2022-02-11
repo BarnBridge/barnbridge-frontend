@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import AntdNotification from 'antd/lib/notification';
-import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
 import { formatUSD } from 'web3/utils';
 
@@ -9,6 +8,7 @@ import { PeriodChartTabs, PeriodTabsKey } from 'components/custom/tabs';
 import { ETokenPriceType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
+import { formatDateTime } from 'utils/date';
 
 type PropsType = {
   poolAddress: string;
@@ -69,9 +69,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
-                  <span className="text-p2 fw-semibold color-primary">
-                    {value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
-                  </span>
+                  <span className="text-p2 fw-semibold color-primary">{value ? formatDateTime(value) : ''}</span>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
                   <span className="text-p2 fw-semibold color-red">{formatUSD(value)}</span>

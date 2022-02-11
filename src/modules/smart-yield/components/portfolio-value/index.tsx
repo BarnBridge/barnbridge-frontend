@@ -1,7 +1,6 @@
 import React from 'react';
 import AntdSpin from 'antd/lib/spin';
 import addDays from 'date-fns/addDays';
-import format from 'date-fns/format';
 import startOfDay from 'date-fns/startOfDay';
 import * as ReCharts from 'recharts';
 import { formatUSDValue } from 'web3/utils';
@@ -10,6 +9,8 @@ import Select, { SelectOption } from 'components/antd/select';
 import { Text } from 'components/custom/typography';
 import { useSyAPI } from 'modules/smart-yield/api';
 import { useWallet } from 'wallets/walletProvider';
+
+import { formatDateTime } from 'utils/date';
 
 const DAYS_FILTER: SelectOption[] = [
   {
@@ -150,7 +151,7 @@ const PortfolioValue: React.FC<Props> = props => {
                 separator=""
                 labelFormatter={value => (
                   <Text type="p2" tag="span" weight="semibold" color="primary">
-                    {value instanceof Date ? format(value, 'MM.dd.yyyy HH:mm') : ''}
+                    {value instanceof Date ? formatDateTime(value) : ''}
                   </Text>
                 )}
                 formatter={(value: number) => (

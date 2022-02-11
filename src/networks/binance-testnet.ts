@@ -5,8 +5,6 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
 const RPC_HTTPS_URL = `https://data-seed-prebsc-2-s1.binance.org:8545`;
-const RPC_WSS_URL = ``;
-
 const EXPLORER_URL = 'https://testnet.bscscan.com';
 
 export const BINANCE_TEST_CHAIN_ID = 97;
@@ -39,6 +37,7 @@ export const BinanceDevConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
     ausdc: '',
     ausdt: '',
@@ -50,6 +49,7 @@ export const BinanceDevConfig: NetworkConfig = {
     bb_ausdt: '',
     bb_agusd: '',
     bb_adai: '',
+    bb_arai: '',
     bb_crusdc: '',
     bb_crusdt: '',
     bb_crdai: '',
@@ -64,6 +64,7 @@ export const BinanceDevConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
   },
   contracts: {
@@ -91,11 +92,11 @@ export const BinanceTestnetNetwork: Web3Network = {
   meta: {
     chainId: BINANCE_TEST_CHAIN_ID,
     name: 'BSC Testnet',
-    logo: 'binance-logo',
+    logo: 'binance-testnet-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
-    wssUrl: RPC_WSS_URL,
+    wssUrl: '',
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {

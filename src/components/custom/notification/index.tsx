@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import * as dateFns from 'date-fns';
-import format from 'date-fns/format';
 import isThisWeek from 'date-fns/isThisWeek';
 import isToday from 'date-fns/isToday';
 import { useContractManager } from 'web3/components/contractManagerProvider';
@@ -11,7 +10,7 @@ import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, getHumanValue, shortenAddr } from 'web3/utils';
 
 import { ExplorerAddressLink } from 'components/button';
-import IconNotification from 'components/custom/icon-notification';
+import { IconNotification } from 'components/custom/icon-notification';
 import { Text } from 'components/custom/typography';
 import { Icon, IconNames } from 'components/icon';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -21,6 +20,7 @@ import { useReload } from 'hooks/useReload';
 import NotificationIcon from './icon';
 
 import { getRelativeTime } from 'utils';
+import { formatDate, formatTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -282,16 +282,16 @@ function getIcon(name: IconNames, colors: [string, string], bubble: boolean) {
   );
 }
 
-function formatTime(date: Date): string {
+function formatNotificationTime(date: Date): string {
   if (isToday(date)) {
-    return format(date, 'HH:mm');
+    return formatTime(date);
   }
 
   if (isThisWeek(date)) {
-    return format(date, 'EEEEEE');
+    return formatDate(date, { weekday: 'short' });
   }
 
-  return format(date, 'dd MMM yyyy');
+  return formatDate(date);
 }
 
 type Props = {
@@ -309,7 +309,7 @@ export const Notification: React.FC<Props> = ({ n }) => {
       {getIcon(iconName, colors, isUnread)}
       <div style={{ flexGrow: 1 }}>{content}</div>
       <time className={s.time} dateTime={date.toJSON()} title={date.toJSON()}>
-        {formatTime(date)}
+        {formatNotificationTime(date)}
       </time>
     </div>
   );

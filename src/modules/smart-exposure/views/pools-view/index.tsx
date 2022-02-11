@@ -1,6 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
 import cn from 'classnames';
-import { format } from 'date-fns';
 import { formatUSD } from 'web3/utils';
 
 import Tooltip from 'components/antd/tooltip';
@@ -15,6 +14,7 @@ import { PoolApiType, useSeAPI } from 'modules/smart-exposure/api';
 import { PairsTable } from './table';
 
 import { getRelativeTime } from 'utils';
+import { formatDateTime } from 'utils/date';
 
 const PoolsView: React.FC = () => {
   const [pools, setPools] = useState<PoolApiType[]>([]);
@@ -149,9 +149,7 @@ const PoolsView: React.FC = () => {
                   Last rebalance
                 </Text>
                 <Text type="p1" weight="semibold" color="primary" className="flex align-center">
-                  {pool.state.lastRebalance
-                    ? format(new Date(pool.state.lastRebalance * 1000), 'dd.MM.yyyy HH:mm')
-                    : 'Always'}
+                  {pool.state.lastRebalance ? formatDateTime(pool.state.lastRebalance * 1000) : 'Always'}
                 </Text>
               </div>
             </div>

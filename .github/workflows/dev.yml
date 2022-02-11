@@ -52,23 +52,23 @@ jobs:
           name: dev-frontend
           path: build
 
-      - name: Notify Slack success
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: slackapi/slack-github-action@v1.15.0
-        with:
-          channel-id: infrastructure-notifications
-          slack-message: ":white_check_mark: barnbridge-frontend dev build"
-
-      - name: Notify Slack failure
-        if: failure()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: slackapi/slack-github-action@v1.15.0
-        with:
-          channel-id: infrastructure-notifications
-          slack-message: ":octagonal_sign: barnbridge-frontend build FAILED"
+#      - name: Notify Slack success
+#        if: success()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#        uses: slackapi/slack-github-action@v1.15.0
+#        with:
+#          channel-id: infrastructure-notifications
+#          slack-message: ":white_check_mark: barnbridge-frontend dev build"
+#
+#      - name: Notify Slack failure
+#        if: failure()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#        uses: slackapi/slack-github-action@v1.15.0
+#        with:
+#          channel-id: infrastructure-notifications
+#          slack-message: ":octagonal_sign: barnbridge-frontend build FAILED"
 
   deploy:
     needs: build
@@ -112,20 +112,20 @@ jobs:
             sleep 5
           done
 
-      - name: Notify Slack success
-        if: success()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: slackapi/slack-github-action@v1.15.0
-        with:
-          channel-id: infrastructure-notifications
-          slack-message: ":white_check_mark: barnbridge-frontend dev deployment successful"
-
-      - name: Notify Slack failure
-        if: failure()
-        env:
-          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-        uses: slackapi/slack-github-action@v1.15.0
-        with:
-          channel-id: infrastructure-notifications
-          slack-message: ":octagonal_sign: barnbridge-frontend dev deployment FAILED"
+#      - name: Notify Slack success
+#        if: success()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#        uses: slackapi/slack-github-action@v1.15.0
+#        with:
+#          channel-id: infrastructure-notifications
+#          slack-message: ":white_check_mark: barnbridge-frontend dev deployment successful"
+#
+#      - name: Notify Slack failure
+#        if: failure()
+#        env:
+#          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+#        uses: slackapi/slack-github-action@v1.15.0
+#        with:
+#          channel-id: infrastructure-notifications
+#          slack-message: ":octagonal_sign: barnbridge-frontend dev deployment FAILED"

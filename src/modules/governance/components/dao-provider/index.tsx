@@ -1,11 +1,13 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import { useContract } from 'web3/components/contractManagerProvider';
+import { useContractManager } from 'web3/components/contractManagerProvider';
 import Erc20Contract from 'web3/erc20Contract';
 
+import { MerkleDistributor, useAirdrop } from 'airdrop/airdrop';
 import { useConfig } from 'components/providers/configProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import useMergeState from 'hooks/useMergeState';
+import { useReload } from 'hooks/useReload';
 import { APIProposalStateId } from 'modules/governance/api';
 import DaoBarnContract from 'modules/governance/contracts/daoBarn';
 import DaoGovernanceContract from 'modules/governance/contracts/daoGovernance';
@@ -34,6 +36,7 @@ type DAOContextType = DAOProviderState & {
   daoBarn: DaoBarnContract;
   daoGovernance: DaoGovernanceContract;
   daoReward: DaoRewardContract;
+  airdrop?: MerkleDistributor;
   actions: {
     activate: () => Promise<void>;
     hasActiveProposal: () => Promise<boolean>;
@@ -52,23 +55,28 @@ const DAOProvider: React.FC = props => {
 
   const config = useConfig();
   const walletCtx = useWallet();
+  const [reloadReward] = useReload();
 
-  const daoBarn = useContract<DaoBarnContract>(config.contracts.dao?.barn!, () => {
+  const { getContract } = useContractManager();
+
+  const daoBarn = getContract(config.contracts.dao?.barn!, () => {
     return new DaoBarnContract(config.contracts.dao?.barn!);
   });
-  const daoGovernance = useContract<DaoGovernanceContract>(config.contracts.dao?.governance!, () => {
+  const daoGovernance = getContract(config.contracts.dao?.governance!, () => {
     return new DaoGovernanceContract(config.contracts.dao?.governance!);
   });
-  const daoReward = useContract<DaoRewardContract>(config.contracts.dao?.reward!, () => {
+  const daoReward = getContract(config.contracts.dao?.reward!, () => {
     return new DaoRewardContract(config.contracts.dao?.reward!);
   });
+  const airdropDaoConfig = config.contracts.airdrop?.dao;
+  const airdrop = useAirdrop(airdropDaoConfig?.merkleDistributor, airdropDaoConfig?.data);
   const { projectToken } = useKnownTokens();
 
   const [state, setState] = useMergeState<DAOProviderState>(InitialState);
 
   React.useEffect(() => {
     daoGovernance.loadCommonData();
-    daoReward.loadCommonData();
+    daoReward.loadCommonData().then(reloadReward);
     daoBarn.loadCommonData();
   }, []);
 
@@ -80,6 +88,7 @@ const DAOProvider: React.FC = props => {
     if (walletCtx.account) {
       daoGovernance.loadUserData();
       daoReward.loadUserData();
+      airdrop?.loadUserData();
       daoBarn.loadUserData();
       bondContract.loadAllowance(config.contracts.dao?.barn!).catch(Error);
     }
@@ -155,6 +164,7 @@ const DAOProvider: React.FC = props => {
         ...state,
         daoBarn,
         daoReward,
+        airdrop,
         daoGovernance,
         actions: {
           activate,

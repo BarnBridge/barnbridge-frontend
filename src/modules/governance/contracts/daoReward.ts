@@ -49,6 +49,38 @@ class DaoRewardContract extends Web3Contract {
     return totalAmount.multipliedBy(now - startTs).div(totalDuration);
   }
 
+  get weeklyRewards(): BigNumber | undefined {
+    if (!this.pullFeature) {
+      return undefined;
+    }
+
+    const { totalDuration, totalAmount } = this.pullFeature;
+
+    return totalAmount.dividedBy(totalDuration).multipliedBy(7 * 24 * 60 * 60);
+  }
+
+  get isStarted(): Boolean | undefined {
+    if (!this.pullFeature) {
+      return undefined;
+    }
+
+    const { startTs } = this.pullFeature;
+    const now = Date.now() / 1_000;
+
+    return startTs <= now;
+  }
+
+  get isEnded(): Boolean | undefined {
+    if (!this.pullFeature) {
+      return undefined;
+    }
+
+    const { startTs, endTs } = this.pullFeature;
+    const now = Date.now() / 1_000;
+
+    return startTs <= now && endTs < now;
+  }
+
   async loadCommonData(): Promise<void> {
     const [pullFeature] = await this.batch([{ method: 'pullFeature' }]);
 
@@ -66,9 +98,11 @@ class DaoRewardContract extends Web3Contract {
     const account = this.account;
     this.assertAccount();
 
-    const [toClaim] = await this.batch([{ method: 'claim', callArgs: { from: account } }]);
-
+    const [toClaim] = await this.batch([
+      { method: 'claim', callArgs: { from: account }, onError: () => BigNumber.ZERO },
+    ]);
     this.toClaim = BigNumber.from(toClaim)?.unscaleBy(18); /// TODO: re-check
+
     this.emit(Web3Contract.UPDATE_DATA);
   }
 

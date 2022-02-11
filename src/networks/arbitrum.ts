@@ -6,7 +6,6 @@ import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networ
 
 const RPC_KEY = 'a48fe2240ca64ae1bb90de52285923ce';
 const RPC_HTTPS_URL = `https://arbitrum-mainnet.infura.io/v3/${RPC_KEY}`;
-const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '';
 const EXPLORER_URL = 'https://arbiscan.io';
@@ -42,6 +41,7 @@ export const ArbitrumConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
     ausdc: '',
     ausdt: '',
@@ -53,6 +53,7 @@ export const ArbitrumConfig: NetworkConfig = {
     bb_ausdt: '',
     bb_agusd: '',
     bb_adai: '',
+    bb_arai: '',
     bb_crusdc: '',
     bb_crusdt: '',
     bb_crdai: '',
@@ -67,6 +68,7 @@ export const ArbitrumConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
   },
   contracts: {
@@ -98,7 +100,7 @@ export const ArbitrumNetwork: Web3Network = {
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
-    wssUrl: RPC_WSS_URL,
+    wssUrl: '',
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {

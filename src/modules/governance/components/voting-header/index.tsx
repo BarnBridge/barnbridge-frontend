@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Spin } from 'antd';
+import BigNumber from 'bignumber.js';
 import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatBigValue, formatToken } from 'web3/utils';
 
+import { MerkleDistributor } from 'airdrop/airdrop';
 import Button from 'components/antd/button';
-import Divider from 'components/antd/divider';
+import Modal from 'components/antd/modal';
 import Skeleton from 'components/antd/skeleton';
 import Tooltip from 'components/antd/tooltip';
 import { ExternalLink } from 'components/button';
@@ -14,8 +16,8 @@ import { Hint, Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { UseLeftTime } from 'hooks/useLeftTime';
-import useMergeState from 'hooks/useMergeState';
 import { useDAO } from 'modules/governance/components/dao-provider';
+import DaoRewardContract from 'modules/governance/contracts/daoReward';
 import { useWallet } from 'wallets/walletProvider';
 
 import VotingDetailedModal from '../voting-detailed-modal';
@@ -24,24 +26,18 @@ import { getFormattedDuration, getNowTs, inRange } from 'utils';
 
 import s from './s.module.scss';
 
-type VotingHeaderState = {
-  claiming: boolean;
-  showDetailedView: boolean;
-};
-
-const InitialState: VotingHeaderState = {
-  claiming: false,
-  showDetailedView: false,
-};
-
 const VotingHeader: React.FC = () => {
   const daoCtx = useDAO();
   const walletCtx = useWallet();
   const { projectToken } = useKnownTokens();
-  const [state, setState] = useMergeState<VotingHeaderState>(InitialState);
 
-  const { toClaim } = daoCtx.daoReward;
-  const bondBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
+  const [showDetailedView, setShowDetailedView] = useState(false);
+  const [claimModalVisible, setClaimModalVisible] = useState(false);
+  const [claimingReward, setClaimingReward] = useState<DaoRewardContract | MerkleDistributor | undefined>();
+
+  const totalToClaim = daoCtx.daoReward.toClaim?.plus(daoCtx.airdrop?.toClaim ?? 0);
+
+  const projectTokenBalance = (projectToken.contract as Erc20Contract).balance?.unscaleBy(projectToken.decimals);
   const { votingPower, userLockedUntil } = daoCtx.daoBarn;
   const [multiplier, setMultiplier] = useState(1);
 
@@ -58,15 +54,28 @@ const VotingHeader: React.FC = () => {
   }
 
   function handleClaim() {
-    setState({ claiming: true });
+    if (daoCtx.daoReward.toClaim?.gt(0) && daoCtx.airdrop?.toClaim?.gt(0)) {
+      setClaimModalVisible(true);
+    } else if (daoCtx.airdrop?.toClaim?.gt(0) && daoCtx.airdrop) {
+      handleRewardClaim(daoCtx.airdrop);
+    } else if (daoCtx.daoReward.toClaim?.gt(0) && daoCtx.daoReward) {
+      handleRewardClaim(daoCtx.daoReward);
+    }
+  }
 
-    daoCtx.daoReward
+  function handleRewardClaim(reward: DaoRewardContract | MerkleDistributor) {
+    setClaimingReward(reward);
+
+    reward
       .claim()
       .catch(Error)
+      .then(() => reward.loadUserData())
+      .catch(Error)
+      .then(() => (projectToken.contract as Erc20Contract).loadBalance())
+      .catch(Error)
       .then(() => {
-        // daoCtx.daoReward.reload(); /// TODO: check
-        (projectToken.contract as Erc20Contract).loadBalance().catch(Error);
-        setState({ claiming: false });
+        setClaimingReward(undefined);
+        setClaimModalVisible(false);
       });
   }
 
@@ -75,45 +84,43 @@ const VotingHeader: React.FC = () => {
       <Text type="lb2" weight="semibold" color="red" className="mb-16">
         My Voting Power
       </Text>
-      <Grid flow="col" gap={24} className={s.items}>
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+      <div className={s.items}>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Current reward
           </Text>
           <Grid flow="col" gap={16} align="center">
             <Tooltip
-              title={formatToken(toClaim ?? 0, {
+              title={formatToken(totalToClaim ?? 0, {
                 decimals: projectToken.decimals,
               })}>
               <Text type="h3" weight="bold" color="primary">
-                {formatToken(toClaim ?? 0, {
+                {formatToken(totalToClaim ?? 0, {
                   hasLess: true,
                 })}
               </Text>
             </Tooltip>
             <TokenIcon name={projectToken.icon} />
-            <Button type="light" disabled={toClaim?.isZero()} onClick={handleClaim}>
-              {!state.claiming ? 'Claim' : <Spin spinning />}
+            <Button type="light" disabled={!totalToClaim?.gt(0)} onClick={handleClaim}>
+              {claimingReward ? <Spin spinning /> : 'Claim'}
             </Button>
           </Grid>
-        </Grid>
-        <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
-            Bond Balance
+        </div>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
+            {projectToken.symbol} Balance
           </Text>
           <Grid flow="col" gap={16} align="center">
-            <Skeleton loading={bondBalance === undefined}>
+            <Skeleton loading={projectTokenBalance === undefined}>
               <Text type="h3" weight="bold" color="primary">
-                {formatToken(bondBalance)}
+                {formatToken(projectTokenBalance)}
               </Text>
             </Skeleton>
             <TokenIcon name={projectToken.icon} />
           </Grid>
-        </Grid>
-        <Divider type="vertical" />
-        <Grid flow="row" gap={4}>
-          <Text type="p2" color="secondary">
+        </div>
+        <div>
+          <Text type="p2" color="secondary" className="mb-4">
             Total voting power
           </Text>
           <Grid flow="col" gap={16} align="center">
@@ -122,68 +129,116 @@ const VotingHeader: React.FC = () => {
                 {formatToken(votingPower)}
               </Text>
             </Skeleton>
-            <Button type="light" onClick={() => setState({ showDetailedView: true })}>
+            <Button type="light" onClick={() => setShowDetailedView(true)}>
               Detailed view
             </Button>
 
-            {state.showDetailedView && <VotingDetailedModal onCancel={() => setState({ showDetailedView: false })} />}
+            {showDetailedView && <VotingDetailedModal onCancel={() => setShowDetailedView(false)} />}
           </Grid>
-        </Grid>
+        </div>
 
         <UseLeftTime end={userLockedUntil ?? 0} delay={1_000} onEnd={handleLeftTimeEnd}>
           {leftTime => {
             const leftMultiplier = (multiplier - 1) * (leftTime / loadedUserLockedUntil) + 1;
 
             return leftMultiplier > 1 ? (
-              <>
-                <Divider type="vertical" />
-                <Grid flow="row" gap={4}>
-                  <Hint
-                    text={
-                      <>
-                        <Text type="p2">
-                          The multiplier mechanic allows users to lock $BOND for a period up to 1 year and get a bonus
-                          of up to 2x vBOND. The bonus is linear, as per the following example:
-                        </Text>
-                        <ul>
-                          <li>
-                            <Text type="p2">lock 1000 $BOND for 1 year → get back 2000 vBOND</Text>
-                          </li>
-                          <li>
-                            <Text type="p2">lock 1000 $BOND for 6 months → get back 1500 vBOND</Text>
-                          </li>
-                        </ul>
-                        <ExternalLink
-                          href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
-                          variation="link">
-                          Learn more
-                        </ExternalLink>
-                      </>
-                    }>
-                    <Text type="p2" color="secondary">
-                      Multiplier & Lock timer
-                    </Text>
-                  </Hint>
-
-                  <Grid flow="col" gap={8} align="center">
-                    <Tooltip title={`x${leftMultiplier}`}>
-                      <Text type="lb1" weight="bold" color="red" className={s.ratio}>
-                        {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
+              <div>
+                <Hint
+                  text={
+                    <>
+                      <Text type="p2">
+                        The multiplier mechanic allows users to lock ${projectToken.symbol} for a period up to 1 year
+                        and get a bonus of up to 2x v{projectToken.symbol}. The bonus is linear, as per the following
+                        example:
                       </Text>
-                    </Tooltip>
-                    <Text type="p2" color="secondary">
-                      for
+                      <ul>
+                        <li>
+                          <Text type="p2">
+                            lock 1000 ${projectToken.symbol} for 1 year → get back 2000 v{projectToken.symbol}
+                          </Text>
+                        </li>
+                        <li>
+                          <Text type="p2">
+                            lock 1000 ${projectToken.symbol} for 6 months → get back 1500 v{projectToken.symbol}
+                          </Text>
+                        </li>
+                      </ul>
+                      <ExternalLink
+                        href="https://docs.barnbridge.com/governance/barnbridge-dao/multiplier-and-voting-power"
+                        variation="link">
+                        Learn more
+                      </ExternalLink>
+                    </>
+                  }
+                  className="mb-4">
+                  <Text type="p2" color="secondary">
+                    Multiplier & Lock timer
+                  </Text>
+                </Hint>
+
+                <Grid flow="col" gap={8} align="center">
+                  <Tooltip title={`x${leftMultiplier}`}>
+                    <Text type="lb1" weight="bold" color="red" className={s.ratio}>
+                      {inRange(multiplier, 1, 1.01) ? '>' : ''} {formatBigValue(leftMultiplier, 2, '-', 2)}x
                     </Text>
-                    <Text type="h3" weight="bold" color="primary">
-                      {getFormattedDuration(0, userLockedUntil)}
-                    </Text>
-                  </Grid>
+                  </Tooltip>
+                  <Text type="p2" color="secondary">
+                    for
+                  </Text>
+                  <Text type="h3" weight="bold" color="primary">
+                    {getFormattedDuration(0, userLockedUntil)}
+                  </Text>
                 </Grid>
-              </>
+              </div>
             ) : undefined;
           }}
         </UseLeftTime>
-      </Grid>
+      </div>
+
+      {claimModalVisible && (
+        <Modal visible onCancel={() => setClaimModalVisible(false)}>
+          <div className="flex flow-row">
+            <div className="flex flow-row mb-32">
+              <Text type="h3" weight="semibold" color="primary" className="mb-8">
+                Claim your reward
+              </Text>
+              <Text type="p2" weight="semibold" color="secondary">
+                Select the reward contract you want to claim your reward from
+              </Text>
+            </div>
+            <div className="flex flow-row row-gap-24">
+              {[daoCtx.airdrop, daoCtx.daoReward].map((reward, rewardIndex) =>
+                reward ? (
+                  <Spin key={reward.address} spinning={claimingReward === reward}>
+                    <button
+                      type="button"
+                      className="button-ghost p-24"
+                      style={{ width: '100%' }}
+                      disabled={!!claimingReward || !reward?.toClaim?.gt(BigNumber.ZERO)}
+                      onClick={() => handleRewardClaim(reward)}>
+                      <div className="flex flow-col align-center justify-space-between full-width">
+                        <Text type="p1" weight="semibold" color="primary">
+                          Reward contract {rewardIndex + 1}
+                        </Text>
+                        <div className="flex flow-row align-end">
+                          <Text type="lb2" weight="semibold" color="secondary" className="mb-8">
+                            Reward
+                          </Text>
+                          <Text type="p1" weight="semibold" color="primary" className="mr-4">
+                            {formatToken(reward?.toClaim, {
+                              tokenName: projectToken.symbol,
+                            })}
+                          </Text>
+                        </div>
+                      </div>
+                    </button>
+                  </Spin>
+                ) : null,
+              )}
+            </div>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

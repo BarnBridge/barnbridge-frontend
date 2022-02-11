@@ -41,3 +41,48 @@ export function getDurationDate(startDate: Date, duration: string): Date | undef
       return undefined;
   }
 }
+
+// function prepareDate(maybeDate): Date | null {
+//   var d = new Date(maybeDate);
+
+//   return d instanceof Date && !isNaN(d.valueOf()) ? d : null;
+// }
+
+export function formatDateTime(
+  date: Date | number | string,
+  options: Intl.DateTimeFormatOptions = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+  },
+): string {
+  if (!date) return '';
+  if (typeof date === 'number' || typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  return date.toLocaleString(navigator.language ?? navigator.languages, options);
+}
+
+export function formatDate(date: Date | number | string, options?: Intl.DateTimeFormatOptions): string {
+  if (!date) return '';
+  if (typeof date === 'number' || typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  return date.toLocaleDateString(navigator.language ?? navigator.languages, options);
+}
+
+export function formatTime(
+  date: Date | number | string,
+  options: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit' },
+): string {
+  if (!date) return '';
+  if (typeof date === 'number' || typeof date === 'string') {
+    date = new Date(date);
+  }
+
+  return date.toLocaleTimeString(navigator.language ?? navigator.languages, options);
+}

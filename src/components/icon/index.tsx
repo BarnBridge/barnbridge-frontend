@@ -83,7 +83,9 @@ type NonStaticNames =
   | 'twitter'
   | 'discord'
   | 'github'
-  | 'circle-arrow';
+  | 'circle-arrow'
+  | 'plus-circle'
+  | 'minus-circle';
 
 type StaticNames =
   | 'menu-faucet'
@@ -95,7 +97,23 @@ type StaticNames =
   | 'menu-docs'
   | 'menu-theme-light'
   | 'menu-theme-dark'
-  | 'menu-theme-auto';
+  | 'menu-theme-auto'
+  | 'dao-circle'
+  | 'sy-circle'
+  | 'notification'
+  | 'notification-active'
+  | 'mainnet-logo'
+  | 'testnet-logo'
+  | 'kovan-logo'
+  | 'polygon-logo'
+  | 'avalanche-logo'
+  | 'avalanche-testnet-logo'
+  | 'binance-logo'
+  | 'binance-testnet-logo'
+  | 'optimistic-logo'
+  | 'optimistic-kovan-logo'
+  | 'arbitrum-logo'
+  | 'arbitrum-testnet-logo';
 
 export type IconNames = NonStaticNames | StaticNames;
 
@@ -110,12 +128,28 @@ const staticNamesList: StaticNames[] = [
   'menu-theme-light',
   'menu-theme-dark',
   'menu-theme-auto',
+  'dao-circle',
+  'sy-circle',
+  'notification',
+  'notification-active',
+  'mainnet-logo',
+  'testnet-logo',
+  'kovan-logo',
+  'polygon-logo',
+  'avalanche-logo',
+  'avalanche-testnet-logo',
+  'binance-logo',
+  'binance-testnet-logo',
+  'optimistic-logo',
+  'optimistic-kovan-logo',
+  'arbitrum-logo',
+  'arbitrum-testnet-logo',
 ];
 
 export type IconProps = {
   name: IconNames;
   size?: number | string;
-  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'icon';
+  color?: 'primary' | 'secondary' | 'red' | 'green' | 'blue' | 'yellow' | 'icon';
   rotate?: number;
   className?: string;
   style?: React.CSSProperties;

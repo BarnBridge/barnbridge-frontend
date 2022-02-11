@@ -24,3 +24,11 @@
   user-select: none;
   pointer-events: none;
 }
+
+.pageSpinnerContainer {
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-red-color);
+}

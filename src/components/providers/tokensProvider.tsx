@@ -15,6 +15,8 @@ import { BinanceNetwork } from 'networks/binance';
 import { BinanceTestnetNetwork } from 'networks/binance-testnet';
 import { KovanNetwork } from 'networks/kovan';
 import { MainnetNetwork } from 'networks/mainnet';
+import { OptimisticKovanNetwork } from 'networks/optimistic-kovan';
+import { OptimisticMainnetNetwork } from 'networks/optimistic-mainnet';
 import { PolygonNetwork } from 'networks/polygon';
 import { TestnetNetwork } from 'networks/testnet';
 
@@ -56,6 +58,8 @@ export enum Tokens {
   CAKE = 'CAKE',
   AAVE = 'AAVE',
   DPI = 'DPI',
+  FLOKI = 'FLOKI',
+  SNX = 'SNX',
 }
 
 export type BaseTokenType = {
@@ -239,6 +243,20 @@ const DPI: BaseTokenType = {
   icon: 'dpi',
 };
 
+const FLOKI: BaseTokenType = {
+  symbol: Tokens.FLOKI,
+  name: 'FLOKI',
+  decimals: 9,
+  icon: 'floki',
+};
+
+const SNX: BaseTokenType = {
+  symbol: Tokens.SNX,
+  name: 'SNX',
+  decimals: 18,
+  icon: 'snx',
+};
+
 export const ProjectToken: BaseTokenType & {
   address: string;
 } = {
@@ -246,13 +264,46 @@ export const ProjectToken: BaseTokenType & {
   address: '0x0391d2021f89dc339f60fff84546ea23e337750f',
 };
 
+export enum Assets {
+  BTC = 'BTC',
+  ETH = 'ETH',
+  USD = 'USD',
+}
+
+export type BaseAssetType = {
+  symbol: string;
+  decimals: number;
+  icon: TokenIconNames;
+};
+
+const BTC: BaseAssetType = {
+  symbol: Assets.BTC,
+  decimals: WBTC.decimals,
+  icon: 'wbtc',
+};
+const ETH: BaseAssetType = {
+  symbol: Assets.ETH,
+  decimals: WETH.decimals,
+  icon: 'eth',
+};
+const USD: BaseAssetType = {
+  symbol: Assets.USD,
+  decimals: 2,
+  icon: 'usd',
+};
+
 export type TokenType = BaseTokenType & {
+  price?: BigNumber;
+};
+
+type AssetType = BaseAssetType & {
   price?: BigNumber;
 };
 
 export type TokensContextType = {
   version: number;
   getToken(symbol?: string, network?: Web3Network): TokenType | undefined;
+  getAsset(symbol?: string): AssetType | undefined;
   getAmountInUSD(
     amount: BigNumber | undefined,
     source: string | undefined,
@@ -339,7 +390,13 @@ async function getUniV2Price(poolAddress: string): Promise<BigNumber | undefined
 }
 
 async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork): Promise<BigNumber | undefined> {
-  if (network === MainnetNetwork || network === KovanNetwork || network === TestnetNetwork) {
+  if (symbol.toUpperCase() === 'USD') {
+    return new BigNumber(1);
+  }
+
+  if (
+    [MainnetNetwork, KovanNetwork, TestnetNetwork, OptimisticKovanNetwork, OptimisticMainnetNetwork].includes(network)
+  ) {
     switch (symbol.toUpperCase()) {
       case 'BTC':
       case 'WBTC':
@@ -388,6 +445,12 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'DPI':
         // Chainlink: DPI/USD
         return getChainlinkFeedPrice('0x68f1b8317c19ff02fb68a8476c1d3f9fc5139c0a', MainnetHttpsWeb3Provider);
+      case 'FLOKI':
+        // Chainlink: FLOKI/USD
+        return getChainlinkFeedPrice('0xfbafc1f5b1b37cc0763780453d1ea635520708f2', MainnetHttpsWeb3Provider);
+      case 'SNX':
+        // Chainlink: SNX/USD
+        return getChainlinkFeedPrice('0xdc3ea94cd0ac27d9a86c180091e7f78c683d3699', MainnetHttpsWeb3Provider);
       case 'GUSD':
         // Coingecko API: GUSD/USD
         return getGeckoPrice('gemini-dollar');
@@ -514,6 +577,9 @@ async function getPriceFor(symbol: string, network: Web3Network = MainnetNetwork
       case 'USDT':
         // Chainlink: USDT/USD
         return getChainlinkFeedPrice('0xb97ad0e74fa7d920791e90258a6e2085088b4320', BinanceHttpsWeb3Provider);
+      case 'FLOKI':
+        // Chainlink: FLOKI/USD
+        return getChainlinkFeedPrice('0x19018cb4e5228a433ca0469e11e04ad47679b97d', BinanceHttpsWeb3Provider);
       default:
         return getPriceFor(symbol, MainnetNetwork);
     }
@@ -553,7 +619,11 @@ const ALL_TOKENS: BaseTokenType[] = [
   CAKE,
   FEI,
   DPI,
+  FLOKI,
+  SNX,
 ];
+
+const ALL_ASSETS: BaseAssetType[] = [BTC, ETH, USD];
 
 const TokensProvider: FC = props => {
   const { children } = props;
@@ -561,6 +631,7 @@ const TokensProvider: FC = props => {
   const { activeNetwork } = useNetwork();
   const [reload, version] = useReload();
   const tokensRef = useRef<Map<string, TokenType>>(new Map());
+  const assetsRef = useRef<Map<string, AssetType>>(new Map());
 
   useEffect(() => {
     const promises = ALL_TOKENS.map(async token => {
@@ -571,6 +642,20 @@ const TokensProvider: FC = props => {
 
         tokensRef.current.set(token.symbol.toUpperCase(), newToken);
         newToken.price = await getPriceFor(token.symbol, activeNetwork);
+        reload();
+      } catch (e) {
+        console.error(e);
+      }
+    });
+
+    ALL_ASSETS.forEach(async asset => {
+      try {
+        const newAsset: AssetType = {
+          ...asset,
+        };
+
+        assetsRef.current.set(asset.symbol.toUpperCase(), newAsset);
+        newAsset.price = await getPriceFor(asset.symbol, activeNetwork);
         reload();
       } catch (e) {
         console.error(e);
@@ -596,7 +681,8 @@ const TokensProvider: FC = props => {
       }
 
       Array.from(tokensRef.current).forEach(([k, t]) => {
-        console.log(`[New Token Price] ${t.symbol} = $${t.price?.toFixed(3) ?? '-'}`);
+        const price = t.price?.gte(0.001) ? t.price?.toFixed(3) : t.price?.toNumber();
+        console.log(`[New Token Price] ${t.symbol} = $${price ?? '-'}`);
       });
     })();
   }, []);
@@ -638,6 +724,10 @@ const TokensProvider: FC = props => {
     [],
   );
 
+  const getAsset = useCallback((symbol: string | undefined): AssetType | undefined => {
+    return symbol ? assetsRef.current.get(symbol.toUpperCase()) : undefined;
+  }, []);
+
   const getAmountInUSD = useCallback(
     (amount: BigNumber | undefined, source: string | undefined, network?: Web3Network): BigNumber | undefined => {
       if (!amount || !source) {
@@ -658,6 +748,7 @@ const TokensProvider: FC = props => {
   const value: TokensContextType = {
     version,
     getToken,
+    getAsset,
     getAmountInUSD,
   };
 
@@ -666,37 +757,12 @@ const TokensProvider: FC = props => {
 
 export default TokensProvider;
 
-type AssetType = {
-  icon: TokenIconNames;
-  decimals: number;
-};
-
-export function getAsset(symbol: string): AssetType | undefined {
-  switch (symbol) {
-    case 'BTC':
-      return {
-        icon: 'wbtc',
-        decimals: WBTC.decimals,
-      };
-    case 'ETH':
-      return {
-        icon: 'eth',
-        decimals: WETH.decimals,
-      };
-    case 'USD':
-      return {
-        icon: 'usd',
-        decimals: 2,
-      };
-    default:
-      return undefined;
-  }
-}
-
+/** @deprecated */
 export function isEthAsset(symbol: string) {
   return symbol.toUpperCase() === 'ETH';
 }
 
+/** @deprecated */
 export function isUsdAsset(symbol: string) {
   return symbol.toUpperCase() === 'USD';
 }

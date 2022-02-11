@@ -1,7 +1,7 @@
 .footer {
   background: var(--theme-body-color);
   grid-area: footer;
-  padding: 16px 64px 0;
+  padding: 16px var(--horizontal-padding) 0;
   margin: auto 0 0;
 }
 

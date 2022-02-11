@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
@@ -9,6 +8,8 @@ import { Text } from 'components/custom/typography';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { TokenIcon, TokenIconNames, TokenIconPair } from 'components/token-icon';
 import { TransactionApiType, useSeAPI } from 'modules/smart-exposure/api';
+
+import { formatDate, formatTime } from 'utils/date';
 
 export const TransactionsTable = ({
   transactionType,
@@ -185,10 +186,10 @@ export const TransactionsTable = ({
           return (
             <>
               <Text type="p1" weight="semibold" color="primary" className="mb-4">
-                {format(date, 'dd.MM.yyyy')}
+                {formatDate(date)}
               </Text>
               <Text type="small" weight="semibold" color="secondary">
-                {format(date, 'HH:mm')}
+                {formatTime(date)}
               </Text>
             </>
           );

@@ -6,6 +6,7 @@ import TxConfirmModal from 'web3/components/tx-confirm-modal';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
 
+import { Alert } from 'components/alert';
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
 import { Dropdown } from 'components/custom/dropdown';
@@ -14,7 +15,7 @@ import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
@@ -36,7 +37,7 @@ export const PortfolioPositions = () => {
   const { tranche } = useParams<{ tranche: 'senior' | 'junior' }>();
   const { account } = useWallet();
   const { data } = useFetchSaPools({ userAddress: account });
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const [reload] = useReload();
 
   const activePoolAddress = useMemo(() => {
@@ -146,7 +147,7 @@ export const PortfolioPositions = () => {
 
 const WalletBalance = ({ pool, tranche, smartAlphaContract }) => {
   const network = useNetwork();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const poolToken = getToken(pool.poolToken.symbol);
   const oracleToken = getAsset(pool.oracleAssetSymbol);
   const isSenior = tranche === 'senior';
@@ -277,7 +278,7 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   const history = useHistory();
   const config = useConfig();
   const wallet = useWallet();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const { getOrCreateContract } = useContractFactory();
   const [reload, version] = useReload();
 
@@ -354,6 +355,8 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
   }
 
   if (underlyingInQueue.eq(0)) {
+    const isDisabled = config.contracts.sa?.pools?.[pool.poolAddress]?.depositDisabled ?? false;
+
     return (
       <section
         className="card p-24"
@@ -369,9 +372,14 @@ const EntryQueue = ({ pool, tranche, smartAlphaContract }) => {
         <Text type="small" weight="semibold" color="secondary" className="mb-8">
           Your entry queue for {pool.poolName} is currently empty.
         </Text>
-        <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
-          Deposit {pool.poolToken.symbol}
-        </Link>
+
+        {isDisabled ? (
+          <Alert type="warning">FLOKI deposits have been disabled</Alert>
+        ) : (
+          <Link variation="text" to={`/smart-alpha/pools/${pool.poolAddress}/deposit/${tranche}`}>
+            Deposit {pool.poolToken.symbol}
+          </Link>
+        )}
       </section>
     );
   }
@@ -521,7 +529,7 @@ const ExitQueue = ({ pool, tranche, smartAlphaContract }) => {
   const history = useHistory();
   const config = useConfig();
   const wallet = useWallet();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const { getOrCreateContract } = useContractFactory();
   const [reload, version] = useReload();
 

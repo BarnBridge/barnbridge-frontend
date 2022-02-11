@@ -1,7 +1,6 @@
 import React, { FC } from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
@@ -21,6 +20,8 @@ import {
 } from 'modules/smart-yield/api';
 import { useRewardPool } from 'modules/smart-yield/providers/reward-pool-provider';
 import { useWallet } from 'wallets/walletProvider';
+
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -140,7 +141,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
               </Text>
             </ExplorerTxLink>
             <Text type="small" weight="semibold" color="secondary">
-              {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+              {formatDateTime(entity.blockTimestamp * 1_000)}
             </Text>
           </>
         );

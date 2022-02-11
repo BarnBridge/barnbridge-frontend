@@ -1,16 +1,17 @@
 import { useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import { format } from 'date-fns';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
-import { ExplorerAddressLink } from 'components/button';
+import { ExplorerAddressLink, ExplorerTxLink } from 'components/button';
 import { ColumnType, Table, TableFooter } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { TransactionApiType, useFetchTransactions } from 'modules/smart-alpha/api';
+
+import { formatDate, formatTime } from 'utils/date';
 
 const transactionTypeLabelMap = {
   JUNIOR_ENTRY: 'Junior entry',
@@ -119,7 +120,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     {
       heading: 'Token Name',
       render: function Render(item) {
-        const { getToken } = useTokens();
+        const { getToken, getAsset } = useTokens();
 
         const poolToken = getToken(item.poolTokenSymbol);
         const oracleToken = getAsset(item.oracleAssetSymbol);
@@ -172,6 +173,7 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     {
       heading: `Amount`,
       render: function Render(item) {
+        const { getAsset } = useTokens();
         const isIncome = checkIsIncome(item.transactionType, !!accountAddress);
         const oracleToken = getAsset(item.oracleAssetSymbol);
 
@@ -211,9 +213,9 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
     {
       heading: 'Transaction Hash',
       render: item => (
-        <ExplorerAddressLink address={item.transactionHash} variation="link">
+        <ExplorerTxLink address={item.transactionHash} variation="link">
           {shortenAddr(item.transactionHash, 6, 4)}
-        </ExplorerAddressLink>
+        </ExplorerTxLink>
       ),
     },
     {
@@ -223,10 +225,10 @@ function getColumns(accountAddress?: string): ColumnType<TransactionApiType>[] {
         return (
           <>
             <Text type="p1" weight="semibold" color="primary" className="mb-4">
-              {format(date, 'dd.MM.yyyy')}
+              {formatDate(date)}
             </Text>
             <Text type="small" weight="semibold" color="secondary">
-              {format(date, 'HH:mm')}
+              {formatTime(date)}
             </Text>
           </>
         );

@@ -1,6 +1,5 @@
 import React from 'react';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import { useContractManager } from 'web3/components/contractManagerProvider';
 import { formatBigValue, formatPercent, formatUSD, getHumanValue } from 'web3/utils';
 
@@ -22,6 +21,7 @@ import { PoolsSYPool, usePools } from 'modules/smart-yield/providers/pools-provi
 import { useWallet } from 'wallets/walletProvider';
 
 import { getFormattedDuration } from 'utils';
+import { formatDate } from 'utils/date';
 
 type ActivePositionProps = {
   pool: PoolsSYPool;
@@ -293,7 +293,7 @@ const ActivePosition: React.FC<ActivePositionProps> = props => {
                   Maturity date
                 </Text>
                 <Text type="p1" weight="semibold" color="primary">
-                  {format(maturesAt, 'dd.MM.yyyy')}
+                  {formatDate(maturesAt)}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">

@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import AntdNotification from 'antd/lib/notification';
 import classNames from 'classnames';
-import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
 
 import Spin from 'components/antd/spin';
@@ -13,6 +12,7 @@ import { useWallet } from 'wallets/walletProvider';
 
 import { numberFormat } from 'utils';
 import { formatTick, generateTicks } from 'utils/chart';
+import { formatDateTime } from 'utils/date';
 
 type Props = {
   poolAddress?: string;
@@ -108,7 +108,7 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
                   separator=""
                   labelFormatter={value => (
                     <Text type="p2" tag="span" weight="semibold" color="primary">
-                      {typeof value === 'string' ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
+                      {typeof value === 'string' ? formatDateTime(value) : ''}
                     </Text>
                   )}
                   formatter={(value: number, _: any, { dataKey, payload }: any) => (

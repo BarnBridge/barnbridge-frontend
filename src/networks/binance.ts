@@ -5,8 +5,6 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
 const RPC_HTTPS_URL = `https://bsc-dataseed1.ninicoin.io`;
-const RPC_WSS_URL = ``;
-
 const EXPLORER_URL = 'https://bscscan.com';
 
 export const BINANCE_CHAIN_ID = 56;
@@ -39,6 +37,7 @@ export const BinanceDevConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '0x2b3f34e9d4b127797ce6244ea341a83733ddd6e4',
     wmatic: '',
     ausdc: '',
     ausdt: '',
@@ -50,6 +49,7 @@ export const BinanceDevConfig: NetworkConfig = {
     bb_ausdt: '',
     bb_agusd: '',
     bb_adai: '',
+    bb_arai: '',
     bb_crusdc: '',
     bb_crusdt: '',
     bb_crdai: '',
@@ -64,11 +64,17 @@ export const BinanceDevConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
   },
   contracts: {
     sa: {
       loupe: '0x525fbAa28220027e65785D6fa67595Df6a6F4C28',
+      pools: {
+        '0xf88b77681bfa3a05790c2491f021ff085a1bded5': {
+          depositDisabled: true,
+        },
+      },
     },
   },
 };
@@ -95,7 +101,7 @@ export const BinanceNetwork: Web3Network = {
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
-    wssUrl: RPC_WSS_URL,
+    wssUrl: '',
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {

@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import AntdNotification from 'antd/lib/notification';
 import classNames from 'classnames';
-import { format } from 'date-fns';
 import * as ReCharts from 'recharts';
 import { formatPercent, formatUSD } from 'web3/utils';
 
@@ -12,6 +11,7 @@ import { Text } from 'components/custom/typography';
 import { RatioDeviationType, TrancheApiType, TrancheLiquidityType, useSeAPI } from 'modules/smart-exposure/api';
 
 import { formatTick } from 'utils/chart';
+import { formatDateTime } from 'utils/date';
 
 export enum TabsKey {
   ratio = 'ratio',
@@ -103,9 +103,7 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
           <ReCharts.Tooltip
             separator=""
             labelFormatter={value => (
-              <span className="text-p2 fw-semibold color-primary">
-                {value ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
-              </span>
+              <span className="text-p2 fw-semibold color-primary">{value ? formatDateTime(value) : ''}</span>
             )}
             formatter={(value: number, _: any, { dataKey }: any) => (
               <span className="text-p2 fw-semibold color-red">{`${Number(value) * 100}%` ?? ''}</span>
@@ -188,7 +186,7 @@ const TrancheLiquidity = ({
               separator=""
               labelFormatter={value => (
                 <Text type="p2" tag="span" weight="semibold" color="primary">
-                  {typeof value === 'string' ? format(new Date(value), 'MM.dd.yyyy HH:mm') : ''}
+                  {typeof value === 'string' ? formatDateTime(value) : ''}
                 </Text>
               )}
               formatter={(value: number, _: any, { dataKey }: any) => (

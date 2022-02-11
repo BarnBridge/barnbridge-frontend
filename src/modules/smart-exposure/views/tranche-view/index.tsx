@@ -61,11 +61,11 @@ const TrancheView: React.FC = () => {
         </div>
 
         <div className="flex col-gap-24 ml-auto">
-          <Link
+          {/* <Link
             to={`${location.pathname}/deposit`}
             className={classNames('button-primary', { disabled: !wallet.account })}>
             Deposit
-          </Link>
+          </Link> */}
           <Link
             to={`${location.pathname}/withdraw`}
             className={classNames('button-ghost', { disabled: !wallet.account })}>

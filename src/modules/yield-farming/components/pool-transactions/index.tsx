@@ -1,7 +1,6 @@
 ﻿import React, { FC, useEffect, useMemo, useState } from 'react';
 import { SelectValue } from 'antd/lib/select';
 import { ColumnsType } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select, { SelectOption } from 'components/antd/select';
@@ -17,6 +16,8 @@ import { useWallet } from 'wallets/walletProvider';
 
 import { useYfPool } from '../../providers/pool-provider';
 import { useYFPools } from '../../providers/pools-provider';
+
+import { formatDateTime } from 'utils/date';
 
 type TableEntity = APIYFPoolTransaction;
 
@@ -130,7 +131,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
             </Text>
           </ExplorerTxLink>
           <Text type="small" weight="semibold" color="secondary">
-            {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+            {formatDateTime(entity.blockTimestamp * 1_000)}
           </Text>
         </>
       ),

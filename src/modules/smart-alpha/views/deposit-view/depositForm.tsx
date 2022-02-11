@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -13,7 +13,7 @@ import { TokenAmount } from 'components/custom/token-amount-new';
 import { Hint, Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
 import { useConfig } from 'components/providers/configProvider';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
@@ -36,7 +36,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
 
   const { contracts } = useConfig();
   const wallet = useWallet();
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const [reload, version] = useReload();
 
   const [tokenState, setTokenState] = useState('');

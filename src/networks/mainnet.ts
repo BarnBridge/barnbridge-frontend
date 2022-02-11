@@ -6,7 +6,7 @@ import { isDevelopmentMode } from 'utils';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
+const RPC_KEY = !isDevelopmentMode ? '6c58700fe84943eb83c4cd5c23dff3d8' : 'aacf4c6a162a483eab3163105bebe222';
 const RPC_HTTPS_URL = `https://mainnet.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://mainnet.infura.io/ws/v3/${RPC_KEY}`;
 
@@ -54,6 +54,7 @@ export const MainnetConfig: NetworkConfig = {
     dai: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
     rai: '0x03ab458634910aad20ef5f1c8ee96f1d6ac54919',
     stkaave: '0x4da27a545c0c5b758a6ba100e3a049001de870f5',
+    floki: '0x43f11c02439e2736800433b4594994bd43cd066d',
     wmatic: '',
     ausdc: '0xBcca60bB61934080951369a648Fb03DF4F96263C',
     ausdt: '0x3Ed3B47Dd13EC9a98b44e6204A523E766B225811',
@@ -65,6 +66,7 @@ export const MainnetConfig: NetworkConfig = {
     bb_ausdt: '0x660dAF6643191cF0eD045B861D820F283cA078fc',
     bb_agusd: '0x6324538cc222b43490dd95CEBF72cf09d98D9dAe',
     bb_adai: '0x6c9DaE2C40b1e5883847bF5129764e76Cb69Fc57',
+    bb_arai: '0x4db6fb0218ce5da392f1e6475a554bafcb62ef30',
     bb_crusdc: '0x62e479060c89C48199FC7ad43b1432CC585BA1b9',
     bb_crusdt: '0xc45F49bE156888a1C0C93dc0fE7dC89091E291f5',
     bb_crdai: '0x89d82FdF095083Ded96B48FC6462Ed5dBD14151f',
@@ -79,6 +81,7 @@ export const MainnetConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    floki: '0xfbafc1f5b1b37cc0763780453d1ea635520708f2',
     wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {
@@ -91,7 +94,7 @@ export const MainnetConfig: NetworkConfig = {
     dao: {
       governance: '0x4cAE362D7F227e3d306f70ce4878E245563F3069',
       barn: '0x10e138877df69Ca44Fdc68655f86c88CDe142D7F',
-      reward: '0x9d0CF50547D848cC4b6A12BeDCF7696e9b334a22',
+      reward: '0x85B86b749aD4B898407aC3c86DbA8d13E652e521',
     },
     se: {
       ePoolPeriphery: '0x33c8d6f8271675eda1a0e72558d4904c96c7a888',
@@ -99,6 +102,17 @@ export const MainnetConfig: NetworkConfig = {
     },
     sa: {
       loupe: '0xb7D7E8F3526187e065bc674b19E0BBa42B569f6d',
+      pools: {
+        '0x6acb5f6d4c7e2ca6fe3b7cac13ca6b3ea6c9ee01': {
+          depositDisabled: true,
+        },
+      },
+    },
+    airdrop: {
+      dao: {
+        merkleDistributor: '0x209df5e74795da85c08cfc919b91231c9760a596',
+        data: require(`airdrop/mainnet-proof.json`),
+      },
     },
   },
 };

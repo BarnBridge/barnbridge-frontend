@@ -10,6 +10,7 @@
   z-index: 3;
 
   @media (max-width: 768px) {
+    overflow: auto hidden;
     padding: 24px;
   }
 
@@ -68,10 +69,7 @@
   display: flex;
   align-items: center;
   border: 1px solid var(--theme-body-color);
-
-  &:global(.ant-popover-open) {
-    border-color: var(--theme-border-color);
-  }
+  gap: 8px;
 }
 
 .queuedPositions {

@@ -1,6 +1,5 @@
-import React, { FC, useState } from 'react';
+import { useState } from 'react';
 import BigNumber from 'bignumber.js';
-import cn from 'classnames';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken } from 'web3/utils';
 
@@ -14,7 +13,7 @@ import { useYFPools } from '../../providers/pools-provider';
 
 import s from './s.module.scss';
 
-const PoolRewards: FC = () => {
+const PoolRewards: React.FC = () => {
   const walletCtx = useWallet();
   const yfPoolsCtx = useYFPools();
   const { projectToken } = useKnownTokens();
@@ -36,13 +35,13 @@ const PoolRewards: FC = () => {
   }, undefined);
 
   return (
-    <div className={cn(s.component, 'flex flow-row pv-24 ph-64')}>
+    <div className={s.component}>
       <Text type="lb2" weight="semibold" color="red" className="mb-16">
         My Rewards
       </Text>
 
-      <div className="flex col-gap-24">
-        <div className="flex flow-row">
+      <div className={s.list}>
+        <div>
           <Text type="p2" color="secondary" className="mb-4">
             Current reward
           </Text>
@@ -63,8 +62,7 @@ const PoolRewards: FC = () => {
             )}
           </div>
         </div>
-        <div className="v-divider" />
-        <div className="flex flow-row">
+        <div>
           <Text type="p2" color="secondary" className="mb-4">
             Bond Balance
           </Text>
@@ -75,10 +73,11 @@ const PoolRewards: FC = () => {
             <TokenIcon name={projectToken.icon} />
           </div>
         </div>
-        <div className="v-divider" />
-        <div className="flex flow-row">
-          <Hint text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake.">
-            <Text type="p2" color="secondary" className="mb-4">
+        <div>
+          <Hint
+            text="This number shows the $BOND rewards you would potentially be able to harvest this epoch, but is subject to change - in case more users deposit, or you withdraw some of your stake."
+            className="mb-4">
+            <Text type="p2" color="secondary">
               Potential reward this epoch
             </Text>
           </Hint>

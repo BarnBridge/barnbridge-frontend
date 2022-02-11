@@ -7,7 +7,7 @@ import Web3Contract from 'web3/web3Contract';
 import { Link } from 'components/button';
 import { Spinner } from 'components/custom/spinner';
 import { Text } from 'components/custom/typography';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { useReload } from 'hooks/useReload';
@@ -21,7 +21,7 @@ const DepositView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const [reload] = useReload();
   const { data: pool } = useFetchPool(poolAddress);
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
 
   const { getOrCreateContract, Listeners } = useContractFactory();
 

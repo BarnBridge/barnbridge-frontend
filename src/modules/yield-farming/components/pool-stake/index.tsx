@@ -193,7 +193,7 @@ const PoolStake: FC = () => {
         />
       )}
 
-      <div className="flex align-center justify-end">
+      <footer className="flex wrap align-center justify-end">
         {allowance?.eq(BigNumber.ZERO) && (
           <button type="button" className="button-primary mr-16" disabled={enabling} onClick={handleEnable}>
             {enabling && <Spin spinning />}
@@ -215,7 +215,7 @@ const PoolStake: FC = () => {
           {staking && <Spin spinning />}
           Stake
         </button>
-      </div>
+      </footer>
 
       {confirmModalVisible && (
         <TxConfirmModal

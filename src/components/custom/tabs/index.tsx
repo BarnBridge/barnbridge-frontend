@@ -2,6 +2,8 @@ import React, { CSSProperties, FC, HTMLProps, ReactNode } from 'react';
 import { NavLink, NavLinkProps } from 'react-router-dom';
 import cn from 'classnames';
 
+import { Icon } from 'components/icon';
+
 import s from './s.module.scss';
 
 type NavTabProps = NavLinkProps | HTMLProps<HTMLAnchorElement>;
@@ -28,20 +30,27 @@ export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) 
           '--tabs-bg': `var(${typeof shadows === 'string' ? shadows : '--theme-body-color'})`,
         } as CSSProperties
       }>
-      {tabs.map(({ className, children, ...restTab }, idx) => {
+      {tabs.map(({ className, children, style, ...restTab }, idx) => {
         // @ts-ignore
         if (restTab.to) {
           return (
             // @ts-ignore
-            <NavLink key={idx} className={cn(s.tab, className)} activeClassName={s.active} {...restTab}>
+            <NavLink key={idx} className={cn(s.tab, className)} activeClassName={s.active} style={style} {...restTab}>
               {children}
             </NavLink>
           );
         }
 
         return (
-          <a key={idx} className={cn(s.tab, className)} rel="noopener noreferrer" target="_blank" {...restTab}>
+          <a
+            key={idx}
+            className={cn(s.tab, className)}
+            rel="noopener noreferrer"
+            target="_blank"
+            style={style as CSSProperties}
+            {...restTab}>
             {children}
+            <Icon name="external" size={8} className={s.externalIcon} />
           </a>
         );
       })}
@@ -52,6 +61,14 @@ export const NavTabs: FC<NavTabsProps> = ({ className, tabs, shadows = false }) 
 export const HorizontalMenu: FC<NavTabsProps> = ({ className, ...rest }) => {
   return <NavTabs {...rest} className={cn(s.horizontalMenu, className)} />;
 };
+
+// export const HorizontalMenu: FC<NavTabsProps> = ({ className, ...rest }) => {
+//   return (
+//     <div className={cn(s.horizontalMenu, className)}>
+//       <NavTabs {...rest} />
+//     </div>
+//   );
+// };
 
 type TabProps<T> = {
   id: T;
@@ -96,7 +113,7 @@ export const Tabs = <T extends string>(props: TabsProps<T>) => {
       {tabs.map(({ id, className, onClick, ...tabRest }) => (
         <button
           key={id}
-          className={cn(s.tab, className, {
+          className={cn(variation === 'elastic' ? s.elasticTab : s.tab, className, {
             [s.active]: id === activeKey,
             [s.small]: size === 'small',
           })}

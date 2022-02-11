@@ -1,7 +1,21 @@
-import { IconNames } from 'components/custom/icon';
+import { IconNames } from 'components/icon';
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 export const DEFAULT_RPC_POOLING_INTERVAL = 12_000;
+
+export type AirdropClaimType = {
+  index: number;
+  amount: string;
+  proof: string[];
+};
+
+export type AirdropDataType = {
+  merkleRoot: string;
+  tokenTotal: string;
+  claims: {
+    [address: string]: AirdropClaimType;
+  };
+};
 
 export type NetworkConfig = {
   title: string;
@@ -42,6 +56,7 @@ export type NetworkConfig = {
     | 'dai'
     | 'rai'
     | 'stkaave'
+    | 'floki'
     | 'wmatic'
     | 'ausdc'
     | 'ausdt'
@@ -53,21 +68,38 @@ export type NetworkConfig = {
     | 'bb_ausdt'
     | 'bb_agusd'
     | 'bb_adai'
+    | 'bb_arai'
     | 'bb_crusdc'
     | 'bb_crusdt'
     | 'bb_crdai',
     string
   >;
-  feeds: Record<'btc' | 'eth' | 'bond' | 'univ2' | 'usdc' | 'usdt' | 'susd' | 'dai' | 'stkaave' | 'wmatic', string>;
+  feeds: Record<
+    'btc' | 'eth' | 'bond' | 'univ2' | 'usdc' | 'usdt' | 'susd' | 'dai' | 'stkaave' | 'floki' | 'wmatic',
+    string
+  >;
   contracts: {
     yf?: Record<'staking' | 'stable' | 'unilp' | 'bond', string>;
-    dao?: Record<'governance' | 'barn' | 'reward', string>;
+    dao?: {
+      governance: string;
+      barn: string;
+      reward: string;
+    };
     se?: Record<'ePoolPeriphery' | 'ePoolHelper', string>;
-    sa?: Record<'loupe', string>;
+    sa?: {
+      loupe: string;
+      pools?: Record<string, { depositDisabled: boolean }>;
+    };
     faucets?: Record<
       'compFauceteer' | 'compUsdc' | 'compDai' | 'aaveFauceteer' | 'aaveUsdc' | 'aaveUsdt' | 'aaveDai',
       string
     >;
+    airdrop?: {
+      dao?: {
+        merkleDistributor: string;
+        data: AirdropDataType;
+      };
+    };
   };
 };
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { ColumnsType } from 'antd/lib/table/interface';
-import format from 'date-fns/format';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 
 import Select from 'components/antd/select';
@@ -14,6 +13,8 @@ import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon, TokenIconNames } from 'components/token-icon';
 import { APISYJuniorBonds, useSyAPI } from 'modules/smart-yield/api';
 import { useSYPool } from 'modules/smart-yield/providers/pool-provider';
+
+import { formatDate, formatDateTime, formatTime } from 'utils/date';
 
 type TableEntity = APISYJuniorBonds;
 
@@ -97,7 +98,7 @@ const Columns: ColumnsType<TableEntity> = [
           </Text>
         </ExplorerTxLink>
         <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy HH:mm')}
+          {formatDateTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
     ),
@@ -108,10 +109,10 @@ const Columns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.maturityDate * 1_000, 'MM.dd.yyyy')}
+          {formatDate(entity.maturityDate * 1_000)}
         </Text>
         <Text type="small" weight="semibold">
-          {format(entity.maturityDate * 1_000, 'HH:mm')}
+          {formatTime(entity.maturityDate * 1_000)}
         </Text>
       </>
     ),

@@ -40,8 +40,10 @@ export type TokenIconNames =
   | 'balancer'
   | 'uma'
   | 'dpi'
+  | 'floki'
   | 'all'
-  | 'warn-circle';
+  | 'warn-circle'
+  | 'snx';
 
 type TokenIconProps = {
   name: TokenIconNames | undefined;
@@ -53,7 +55,7 @@ type TokenIconProps = {
   outline?: 'green' | 'purple' | ['green', 'purple'] | ['purple', 'green'];
 };
 
-const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai', 'xsushi', 'sushi'];
+const staticNames: TokenIconNames[] = ['aave', 'stkaave', 'cream', 'bond', 'uniswap', 'rai', 'xsushi', 'sushi', 'snx'];
 
 const svgPath = `${process.env.PUBLIC_URL}/token-icons-sprite.svg`;
 

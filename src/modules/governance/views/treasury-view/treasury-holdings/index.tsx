@@ -1,6 +1,5 @@
 import { CSSProperties, FC, useEffect, useMemo, useState } from 'react';
 import BigNumber from 'bignumber.js';
-import format from 'date-fns/format';
 import Erc20Contract from 'web3/erc20Contract';
 import { formatToken, formatUSD, shortenAddr } from 'web3/utils';
 import Web3Contract from 'web3/web3Contract';
@@ -23,6 +22,8 @@ import {
   useFetchTreasuryTokens,
 } from 'modules/governance/api';
 import { MarketMeta } from 'modules/smart-yield/providers/markets';
+
+import { formatDate, formatTime } from 'utils/date';
 
 type ExtendedAPITreasuryToken = APITreasuryToken & {
   balanceAmount: BigNumber | undefined;
@@ -74,10 +75,10 @@ const Columns: ColumnType<ExtendedAPITreasuryHistory>[] = [
     render: entity => (
       <>
         <Text type="p1" weight="semibold" color="primary" className="mb-4">
-          {format(entity.blockTimestamp * 1_000, 'MM.dd.yyyy')}
+          {formatDate(entity.blockTimestamp * 1_000)}
         </Text>
         <Text type="small" weight="semibold" color="secondary">
-          {format(entity.blockTimestamp * 1_000, 'HH:mm')}
+          {formatTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
     ),
@@ -274,25 +275,43 @@ const TreasuryHoldings: FC = () => {
 
   return (
     <>
-      <Text type="h2" weight="bold" color="primary" className="mb-4">
-        {formatUSD(totalHoldingsUSD) ?? '-'}
+      <Text
+        type="h2"
+        weight="bold"
+        color="primary"
+        className="mb-4"
+        tooltip={formatUSD(totalHoldingsUSD) ?? '-'}
+        style={{ display: 'inline-block' }}>
+        {formatUSD(totalHoldingsUSD, { compact: true }) ?? '-'}
       </Text>
       <Text type="p2" weight="semibold" color="secondary" className="mb-32">
         Total holdings balance
       </Text>
-      <div className="grid gap-16 mb-32" style={{ gridTemplateColumns: 'repeat(3, 1fr)' } as CSSProperties}>
+      <div
+        className="mb-32"
+        style={
+          {
+            display: 'grid',
+            gap: '16px',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, max-content))',
+          } as CSSProperties
+        }>
         {tokensSource.map(item => (
-          <div key={item.address} className="card flex flow-col col-gap-12 align-center p-24">
-            <TokenIcon name={item.token?.icon} className="mr-8" size={32} />
-            <div className="flex flow-row row-gap-4">
-              <Text type="p1" weight="semibold" color="primary">
-                {item.symbol ?? '-'}
-              </Text>
-              <Text type="small" weight="semibold" color="secondary">
-                {item.token?.name ?? '-'}
-              </Text>
+          <div
+            key={item.address}
+            className="card flex flow-col wrap justify-space-between col-gap-12 row-gap-8 align-center p-24">
+            <div className="flex col-gap-12">
+              <TokenIcon name={item.token?.icon} size={32} />
+              <div className="flex flow-row row-gap-4">
+                <Text type="p1" weight="semibold" color="primary">
+                  {item.symbol ?? '-'}
+                </Text>
+                <Text type="small" weight="semibold" color="secondary">
+                  {item.token?.name ?? '-'}
+                </Text>
+              </div>
             </div>
-            <div className="flex flow-row row-gap-4 align-end ml-auto">
+            <div className="flex flow-row row-gap-4">
               <Text type="p1" weight="semibold" color="primary">
                 {formatToken(item.balanceAmount) ?? '-'}
               </Text>
@@ -304,7 +323,7 @@ const TreasuryHoldings: FC = () => {
         ))}
       </div>
       <div className="card">
-        <div className="card-header flex flow-col align-center justify-space-between pv-12">
+        <div className="card-header" style={{ justifyContent: 'space-between' }}>
           <Text type="p1" weight="semibold" color="primary">
             Transaction history
           </Text>

@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { isMobile } from 'react-device-detect';
+import React, { useMemo, useState } from 'react';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
+import Tooltip from 'components/antd/tooltip';
 import { Button, Link } from 'components/button';
 import { Badge } from 'components/custom/badge';
 import { Spinner } from 'components/custom/spinner';
@@ -13,15 +13,15 @@ import { Text } from 'components/custom/typography';
 import { Modal } from 'components/modal';
 import { useConfig } from 'components/providers/configProvider';
 import { useNetwork } from 'components/providers/networkProvider';
-import { getAsset, isUsdAsset, useTokens } from 'components/providers/tokensProvider';
+import { isUsdAsset, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
 import { UseLeftTime } from 'hooks/useLeftTime';
 import { useReload } from 'hooks/useReload';
 import { useFetchPool } from 'modules/smart-alpha/api';
 import { TradeLinks, hasTradeOption } from 'modules/smart-alpha/components/trade';
-import LoupeContract from 'modules/smart-alpha/contracts/loupeContract';
 import SmartAlphaContract, { SMART_ALPHA_DECIMALS } from 'modules/smart-alpha/contracts/smartAlphaContract';
+import { useNextEpochEstimate } from 'modules/smart-alpha/hooks/next-epoch-estimate';
 import { useWallet } from 'wallets/walletProvider';
 
 import { TransactionsTable } from '../../components/transactions';
@@ -38,10 +38,9 @@ const PoolView = () => {
   const { id: poolAddress } = useParams<{ id: string }>();
   const history = useHistory();
   const location = useLocation();
-  const config = useConfig();
   const network = useNetwork();
   const { data: pool, loaded } = useFetchPool(poolAddress);
-  const { getToken } = useTokens();
+  const { getToken, getAsset } = useTokens();
   const wallet = useWallet();
   const [reload] = useReload();
   const [queueStateVisible, setQueueStateVisible] = useState(false);
@@ -49,6 +48,7 @@ const PoolView = () => {
   const [epochAdvancing, setEpochAdvancing] = useState(false);
   const [displayTradeLinks, setDisplayTradeLinks] = useState(false);
   const { getOrCreateContract } = useContractFactory();
+  const config = useConfig();
 
   const smartAlphaContract = useMemo(() => {
     if (!pool) {
@@ -69,74 +69,13 @@ const PoolView = () => {
     );
   }, [pool]);
 
-  const loupeContract = useMemo(() => {
-    const loupeAddress = config.contracts.sa?.loupe;
-
-    if (!loupeAddress) {
-      return;
-    }
-
-    return getOrCreateContract(loupeAddress, () => {
-      return new LoupeContract(loupeAddress);
-    });
-  }, [pool]);
-
-  const [nextEpochEstimates, setNextEpochEstimates] = useState<(BigNumber | undefined)[]>([]);
-
-  useEffect(() => {
-    if (!smartAlphaContract?.address || !loupeContract) {
-      return;
-    }
-
-    loupeContract.getEstimateNextEpoch(smartAlphaContract.address).then(result => {
-      setNextEpochEstimates(result);
-    });
-  }, [smartAlphaContract, loupeContract]);
-
-  const nextEpochSeniorLiquidityRate = useMemo(() => {
-    if (!nextEpochEstimates[0] || !nextEpochEstimates[1]) {
-      return 0;
-    }
-
-    const totalLiquidity = nextEpochEstimates[0].plus(nextEpochEstimates[1]);
-    return nextEpochEstimates[1]?.div(totalLiquidity).toNumber();
-  }, [nextEpochEstimates]);
-
-  const nextEpochJuniorLiquidityRate = useMemo(() => {
-    if (!nextEpochEstimates[0] || !nextEpochEstimates[1]) {
-      return 0;
-    }
-
-    const totalLiquidity = nextEpochEstimates[0].plus(nextEpochEstimates[1]);
-    return nextEpochEstimates[0]?.div(totalLiquidity).toNumber();
-  }, [nextEpochEstimates]);
-
-  const nextEpochUpsideLeverage = useMemo(() => {
-    if (!nextEpochEstimates[0] || !nextEpochEstimates[1] || !nextEpochEstimates[2]) {
-      return undefined;
-    }
-
-    if (nextEpochEstimates[0].eq(0)) {
-      return new BigNumber(1);
-    }
-
-    return nextEpochEstimates[1]
-      .div(nextEpochEstimates[0])
-      .multipliedBy(new BigNumber(1).minus(nextEpochEstimates[2].unscaleBy(SMART_ALPHA_DECIMALS)!))
-      .plus(1);
-  }, [nextEpochEstimates]);
-
-  const nextEpochDownsideLeverage = useMemo(() => {
-    if (!nextEpochEstimates[0] || !nextEpochEstimates[1]) {
-      return undefined;
-    }
-
-    if (nextEpochEstimates[0].eq(0)) {
-      return new BigNumber(1);
-    }
-
-    return nextEpochEstimates[1].div(nextEpochEstimates[0]).plus(1);
-  }, [nextEpochEstimates]);
+  const {
+    nextEpochEstimates,
+    nextEpochSeniorLiquidityRate,
+    nextEpochJuniorLiquidityRate,
+    nextEpochUpsideLeverage,
+    nextEpochDownsideLeverage,
+  } = useNextEpochEstimate(smartAlphaContract?.address);
 
   if (!pool) {
     if (loaded) {
@@ -166,6 +105,8 @@ const PoolView = () => {
     }
   }
 
+  const isDisabled = config.contracts.sa?.pools?.[pool.poolAddress]?.depositDisabled ?? false;
+
   return (
     <div className="container-limit">
       <div className="mb-16">
@@ -194,11 +135,22 @@ const PoolView = () => {
           <Link to={`${location.pathname}/simulate-epoch`} variation="text">
             Simulate
           </Link>
-          {!isMobile ? (
+          {isDisabled ? (
+            <Tooltip title={<Text type="p1">FLOKI deposits have been disabled</Text>}>
+              <Link
+                to={`/smart-alpha/portfolio`}
+                variation="primary"
+                aria-disabled={!wallet.account}
+                icon="danger"
+                iconPosition="left">
+                Go to Portfolio
+              </Link>
+            </Tooltip>
+          ) : (
             <Link to={`${location.pathname}/deposit`} variation="primary" aria-disabled={!wallet.account}>
               Deposit
             </Link>
-          ) : null}
+          )}
         </div>
       </div>
       <div className={classNames(s.cards, 'mb-12')}>

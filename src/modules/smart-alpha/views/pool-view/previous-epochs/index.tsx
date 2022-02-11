@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import useDebounce from '@rooks/use-debounce';
 import classNames from 'classnames';
-import { format } from 'date-fns';
 import { formatNumber, formatPercent } from 'web3/utils';
 
 import { Button } from 'components/button';
@@ -11,6 +10,8 @@ import { Input } from 'components/input';
 import { Tokens, useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { EpochApiType, useFetchPreviousEpochs } from 'modules/smart-alpha/api';
+
+import { formatDateTime } from 'utils/date';
 
 import s from './s.module.scss';
 
@@ -128,13 +129,13 @@ function Epoch({
             Epoch {item.id}
           </Text>
           <time className={classNames(s.time, 'ml-auto')} dateTime={startDate.toJSON()}>
-            {format(startDate, 'dd.MM.yyyy - hh:mm')}
+            {formatDateTime(startDate)}
           </time>
           <Text type="small" weight="semibold" color="secondary" className="mh-8">
             -
           </Text>
           <time className={s.time} dateTime={endDate.toJSON()}>
-            {format(endDate, 'dd.MM.yyyy - hh:mm')}
+            {formatDateTime(endDate)}
           </time>
         </header>
         <dl className={s.list}>

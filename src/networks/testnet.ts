@@ -2,9 +2,11 @@ import { toHex } from 'web3-utils';
 
 import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
+import { isDevelopmentMode } from 'utils';
+
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = 'aacf4c6a162a483eab3163105bebe222';
+const RPC_KEY = !isDevelopmentMode ? '6c58700fe84943eb83c4cd5c23dff3d8' : 'aacf4c6a162a483eab3163105bebe222';
 const RPC_HTTPS_URL = `https://kovan.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
@@ -49,6 +51,7 @@ export const TestnetConfig: NetworkConfig = {
     dai: '0xEa8BE82DF1519D4a25E2539bcA0342a1203CD591',
     rai: '',
     stkaave: '0xf2fbf9a6710afda1c4aab2e922de9d69e0c97fd2',
+    floki: '',
     wmatic: '',
     ausdc: '0xe12AFeC5aa12Cf614678f9bFeeB98cA9Bb95b5B0',
     ausdt: '0xFF3c8bc103682FA918c954E84F5056aB4DD5189d',
@@ -60,6 +63,7 @@ export const TestnetConfig: NetworkConfig = {
     bb_ausdt: '0x73d82Cd31CEe823B75E2078dbf16e11C7C174a6E',
     bb_agusd: '',
     bb_adai: '0xc62441DE5dD50b4ee18265d5AD66FAAB2EEBc4Fe',
+    bb_arai: '',
     bb_crusdc: '0xEd515cC6470f075bd32899dB8a42ddB75f43a4f1',
     bb_crusdt: '',
     bb_crdai: '',
@@ -74,6 +78,7 @@ export const TestnetConfig: NetworkConfig = {
     susd: '0x8e0b7e6062272B5eF4524250bFFF8e5Bd3497757',
     dai: '0xAed0c38402a5d19df6E4c03F4E2DceD6e29c1ee9',
     stkaave: '0x547a514d5e3769680Ce22B2361c10Ea13619e8a9',
+    floki: '',
     wmatic: '0x7bAC85A8a13A4BcD8abb3eB7d6b4d632c5a57676',
   },
   contracts: {

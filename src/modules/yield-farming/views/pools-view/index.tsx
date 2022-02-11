@@ -1,13 +1,14 @@
 import { FC } from 'react';
-import { isMobile } from 'react-device-detect';
 
 import { Text } from 'components/custom/typography';
+import { Warnings } from 'components/warning';
 import SyAPIProvider from 'modules/smart-yield/api';
 import RewardPoolsProvider from 'modules/smart-yield/providers/reward-pools-provider';
 import AggregatedPoolCard from 'modules/smart-yield/views/pools-view/aggregated-pool-card';
 import PoolsTransactions from 'modules/yield-farming/components/pools-transactions';
 import { useWallet } from 'wallets/walletProvider';
 
+import DaoRewardCard from '../../components/dao-reward-card';
 import PoolCard from '../../components/pool-card';
 import PoolChart from '../../components/pool-chart';
 import PoolRewards from '../../components/pool-rewards';
@@ -21,7 +22,8 @@ const PoolsView: FC = () => {
 
   return (
     <SyAPIProvider>
-      {!isMobile && walletCtx.isActive && <PoolRewards />}
+      {walletCtx.isActive && <PoolRewards />}
+      <Warnings />
       <div className="content-container-fix content-container">
         <RewardPoolsProvider>
           <PoolStats className="mb-64" />
@@ -32,8 +34,9 @@ const PoolsView: FC = () => {
             Overview
           </Text>
           <div className={s.poolCards}>
-            <AggregatedPoolCard />
             <PoolCard poolId={YFPoolID.UNILP} />
+            <DaoRewardCard />
+            <AggregatedPoolCard />
             <PoolCard poolId={YFPoolID.STABLE} />
             <PoolCard poolId={YFPoolID.BOND} />
           </div>

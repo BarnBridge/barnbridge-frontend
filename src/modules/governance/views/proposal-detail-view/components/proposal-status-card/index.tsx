@@ -1,5 +1,4 @@
 import React from 'react';
-import format from 'date-fns/format';
 import formatDistance from 'date-fns/formatDistance';
 
 import { ExplorerTxLink } from 'components/button';
@@ -10,6 +9,8 @@ import { UseLeftTime } from 'hooks/useLeftTime';
 import { APIProposalState, APIProposalStateMap } from 'modules/governance/api';
 
 import { useProposal } from '../../providers/ProposalProvider';
+
+import { formatDateTime } from 'utils/date';
 
 function getEventIcon(index: number, name: string): React.ReactNode {
   if (
@@ -47,14 +48,14 @@ function formatEventTime(name: string, start: number, end: number): string {
       APIProposalState.ABROGATED,
     ].includes(name as any)
   ) {
-    return format(mStart, 'dd MMM yyyy - HH:mm');
+    return formatDateTime(mStart);
   }
 
   if (end > 0) {
     const mEnd = new Date(end * 1_000);
 
     if (mEnd <= now) {
-      return `Ended at ${format(mEnd, 'dd MMM yyyy - HH:mm')}`;
+      return `Ended at ${formatDateTime(mEnd)}`;
     }
 
     const dist = formatDistance(mEnd, now, {

@@ -13,7 +13,7 @@ import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Text } from 'components/custom/typography';
 import { Icon } from 'components/icon';
-import { getAsset, useTokens } from 'components/providers/tokensProvider';
+import { useTokens } from 'components/providers/tokensProvider';
 import {
   AvalancheHttpsWeb3Provider,
   BinanceHttpsWeb3Provider,
@@ -44,7 +44,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
   {
     heading: <div>Token Name</div>,
     render: function Render(entity) {
-      const { getToken } = useTokens();
+      const { getToken, getAsset } = useTokens();
       const token = getToken(entity.poolToken.symbol, entity.network);
       const oracle = getAsset(entity.oracleAssetSymbol);
 
@@ -71,7 +71,7 @@ const columns: ColumnType<ExtendedPoolApiType>[] = [
     render: entity => {
       return (
         <div className="flex flow-col col-gap-8 align-center container-box ph-12 pv-8 fit-width">
-          <IconOld name={entity.network.meta.logo} />
+          <Icon name={entity.network.meta.logo} />
           <Text type="p2" weight="semibold" color="secondary">
             {entity.network.type}
           </Text>

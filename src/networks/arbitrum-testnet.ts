@@ -4,17 +4,15 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '6c58700fe84943eb83c4cd5c23dff3d8';
 const RPC_HTTPS_URL = `https://rinkeby.arbitrum.io/rpc`;
-const RPC_WSS_URL = `wss://kovan.infura.io/ws/v3/${RPC_KEY}`;
 
 const EXPLORER_KEY = '';
 const EXPLORER_URL = 'https://testnet.arbiscan.io';
 const EXPLORER_API_URL = 'https://api-testnet.arbiscan.io';
 
-export const ARBITRUM_CHAIN_ID = 421611;
+export const ARBITRUM_TESTNET_CHAIN_ID = 421611;
 
-export const ArbitrumConfig: NetworkConfig = {
+export const ArbitrumTestnetConfig: NetworkConfig = {
   title: 'BarnBridge Arbitrum',
   features: {
     smartAlpha: true,
@@ -42,6 +40,7 @@ export const ArbitrumConfig: NetworkConfig = {
     dai: '',
     rai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
     ausdc: '',
     ausdt: '',
@@ -53,6 +52,7 @@ export const ArbitrumConfig: NetworkConfig = {
     bb_ausdt: '',
     bb_agusd: '',
     bb_adai: '',
+    bb_arai: '',
     bb_crusdc: '',
     bb_crusdt: '',
     bb_crdai: '',
@@ -67,6 +67,7 @@ export const ArbitrumConfig: NetworkConfig = {
     susd: '',
     dai: '',
     stkaave: '',
+    floki: '',
     wmatic: '',
   },
   contracts: {
@@ -76,8 +77,8 @@ export const ArbitrumConfig: NetworkConfig = {
   },
 };
 
-export const ArbitrumMetamaskChain: MetamaskAddEthereumChain = {
-  chainId: toHex(ARBITRUM_CHAIN_ID),
+export const ArbitrumTestnetMetamaskChain: MetamaskAddEthereumChain = {
+  chainId: toHex(ARBITRUM_TESTNET_CHAIN_ID),
   chainName: 'Arbitrum Testnet',
   nativeCurrency: {
     name: 'Ethereum',
@@ -92,13 +93,13 @@ export const ArbitrumTestnetNetwork: Web3Network = {
   id: 'arbitrum-testnet',
   type: 'Arbitrum',
   meta: {
-    chainId: ARBITRUM_CHAIN_ID,
+    chainId: ARBITRUM_TESTNET_CHAIN_ID,
     name: 'Arbitrum Testnet',
-    logo: 'arbitrum-logo',
+    logo: 'arbitrum-testnet-logo',
   },
   rpc: {
     httpsUrl: RPC_HTTPS_URL,
-    wssUrl: RPC_WSS_URL,
+    wssUrl: '',
     poolingInterval: DEFAULT_RPC_POOLING_INTERVAL,
   },
   explorer: {
@@ -107,6 +108,6 @@ export const ArbitrumTestnetNetwork: Web3Network = {
     url: EXPLORER_URL,
     apiUrl: EXPLORER_API_URL,
   },
-  metamaskChain: ArbitrumMetamaskChain,
-  config: ArbitrumConfig,
+  metamaskChain: ArbitrumTestnetMetamaskChain,
+  config: ArbitrumTestnetConfig,
 };
