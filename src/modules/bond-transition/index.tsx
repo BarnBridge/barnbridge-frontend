@@ -12,19 +12,27 @@ import { TokenIcon } from '../../components/token-icon';
 import { useWallet } from '../../wallets/walletProvider';
 
 import s from './s.module.scss';
+import { isNumber } from 'lodash';
+import { formatToken } from '../../web3/utils';
 
 const BondTransitionView = () => {
   const [bondType, setBondType] = useState('bond');
   const [fromAmount, setFromAmount] = useState('0');
   const [toAmount, setToAmount] = useState('0');
   const walletCtx = useWallet();
-  //todo: get from account
-  const maxAmount = 1000;
+  const maxAmount = walletCtx.isActive ? walletCtx.ethBalance?.toNumber() : undefined;
   //todo: will be fetched from api
   const transactionFee = 0;
+  const fromAmountValid = isNumber(+fromAmount) && +fromAmount > 0 && maxAmount && +fromAmount <= maxAmount;
+  const toAmountValid = isNumber(+toAmount) && +toAmount > 0 && maxAmount && +toAmount <= maxAmount;
+  const isSubmitDisabled = walletCtx.isActive && !fromAmountValid && !toAmountValid;
   const handleSubmit = () => {
-    // todo: implement
+    if (!walletCtx.isActive) {
+      walletCtx.showWalletsModal();
+    }
+    // todo: implement open modal
   };
+
   return (
     <div className={s.container}>
       <article className="card flex flow-row p-32 mb-40">
@@ -53,11 +61,18 @@ const BondTransitionView = () => {
           />
         </div>
         <div>
-          <Text type="small" weight="semibold" color="secondary" wrap className="block mb-8">
-            From
-          </Text>
+          <div className="flex justify-space-between mb-8">
+            <Text type="small" weight="semibold" color="secondary" wrap className="block">
+              From
+            </Text>
+            {walletCtx.isActive && walletCtx.ethBalance && (
+              <Text type='small' weight='semibold' color='secondary' wrap className='block'>
+                {`Available: ${formatToken(walletCtx.ethBalance)}`}
+              </Text>
+            )}
+          </div>
           <TokenAmount
-            before={<TokenIcon name="bond" />}
+            before={<TokenIcon name="eth" />}
             value={fromAmount}
             onChange={setFromAmount}
             max={maxAmount}
@@ -102,8 +117,8 @@ const BondTransitionView = () => {
           }
           className="mb-32"
         />
-        <Button variation="primary" onClick={handleSubmit}>
-          Transfer
+        <Button variation="primary" onClick={handleSubmit} disabled={isSubmitDisabled}>
+          {walletCtx.isActive ? 'Transfer' : 'Connect Wallet'}
         </Button>
       </article>
     </div>
