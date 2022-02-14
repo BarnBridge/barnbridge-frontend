@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import { Text } from 'components/custom/typography';
 import { Form, FormItem, useForm } from 'components/custom/form';
@@ -27,6 +27,8 @@ const BondTransitionView = () => {
   const maxAmount = walletCtx.isActive ? walletCtx.ethBalance?.toNumber() : undefined;
   //todo: will be fetched from api
   const transactionFee = 0;
+  //todo: can be changed in future
+  const ratio = 1;
   const form = useForm<FormType>({
     validationScheme: {
       from: {
@@ -61,12 +63,18 @@ const BondTransitionView = () => {
       // todo: implement open modal
     },
   });
-  const { formState, watch } = form;
+  const { formState, watch, updateValue } = form;
   const from = watch('from');
   const to = watch('to');
-  const bnFrom = BigNumber.from(from);
-  const bnTo = BigNumber.from(to);
   const canSubmit = !walletCtx.isActive || formState.isDirty && formState.isValid;
+  useEffect(() => {
+    const toWithRation = (BigNumber.from(from) || new BigNumber(0)).toNumber() * ratio;
+    updateValue('to', `${toWithRation}`);
+  }, [from]);
+  useEffect(() => {
+    const fromWithRation = (BigNumber.from(to) || new BigNumber(0)).toNumber() * ratio;
+    updateValue('from', `${fromWithRation}`);
+  }, [to]);
 
   return (
     <div className={s.container}>
