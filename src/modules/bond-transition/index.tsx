@@ -17,6 +17,9 @@ import BondIcon from '../../resources/svg/bond-eth.svg';
 import BarnIcon from '../../resources/svg/barn.svg';
 import TxConfirmModal from '../../web3/components/tx-confirm-modal';
 import { useKnownTokens } from '../../components/providers/knownTokensProvider';
+import ContractListener from '../../web3/components/contract-listener';
+import { useWeb3Contract } from '../../hooks/useContract';
+import Web3Contract from '../../web3/web3Contract';
 
 type FormType = {
   from: string;
@@ -30,6 +33,16 @@ const BondTransitionView = () => {
   const [isSubmitting, setSubmitting] = useState(false);
   const walletCtx = useWallet();
   const { projectToken } = useKnownTokens();
+  // const bondTransitionContract = useWeb3Contract(//
+  //   () => {
+  //     return new Web3Contract([], 'address', 'bondTransition');
+  //   },
+  //   {
+  //     afterInit: contract => {
+  //       console.log(contract);
+  //     },
+  //   },
+  // );
   const maxAmount = walletCtx.isActive ? walletCtx.ethBalance?.toNumber() : undefined;
   //todo: will be fetched from api
   const transactionFee = 0;
@@ -230,6 +243,7 @@ const BondTransitionView = () => {
           onConfirm={({ gasPrice }) => handleConfirm(gasPrice)}
         />
       )}
+      {/*<ContractListener contract={bondTransitionContract} />*/}
     </>
   );
 };
