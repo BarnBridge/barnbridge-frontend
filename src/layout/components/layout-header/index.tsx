@@ -187,9 +187,9 @@ const LayoutHeader: React.FC = () => {
         </Switch>
       </div>
       <nav className={classNames(s.nav, 'hidden-mobile', 'hidden-tablet')}>
-        <Link variation="text-alt" to="/" className={s.navGroupLink}>
+        {/* <Link variation="text-alt" to="/" className={s.navGroupLink}>
           Home
-        </Link>
+        </Link> */}
         <div className={s.navGroup}>
           <button className={s.navGroupTitle}>
             Products
@@ -209,7 +209,7 @@ const LayoutHeader: React.FC = () => {
         </div>
         <div className={s.navGroup}>
           <button className={s.navGroupTitle}>
-            Governance
+            DAO
             <Icon name="chevron" size={16} className="ml-4" rotate={90} />
           </button>
           <div className={s.navDropdown}>
