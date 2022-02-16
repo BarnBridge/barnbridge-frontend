@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import classNames from 'classnames';
+import { nanoid } from 'nanoid';
 import { shortenAddr } from 'web3/utils';
 
 import Popover from 'components/antd/popover';
@@ -45,18 +46,7 @@ const LayoutHeader: React.FC = () => {
       <div className={s.title}>
         <Switch>
           <Route path="/yield-farming">
-            <Icon
-              name="menu-yf"
-              size={40}
-              style={
-                {
-                  '--icon-display__light': 'none',
-                  '--icon-display__dark': 'none',
-                  '--icon-display__hover': 'block',
-                } as React.CSSProperties
-              }
-              className="mr-12"
-            />
+            <Logo name="menu-yf" className="mr-12" />
             <div>
               <Text type="caption" weight="bold" color="blue">
                 Yield
@@ -67,18 +57,7 @@ const LayoutHeader: React.FC = () => {
             </div>
           </Route>
           <Route path="/governance">
-            <Icon
-              name="menu-dao"
-              size={40}
-              style={
-                {
-                  '--icon-display__light': 'none',
-                  '--icon-display__dark': 'none',
-                  '--icon-display__hover': 'block',
-                } as React.CSSProperties
-              }
-              className="mr-12"
-            />
+            <Logo name="menu-dao" className="mr-12" />
             <div>
               <Text type="body1" weight="medium">
                 Governance
@@ -86,18 +65,7 @@ const LayoutHeader: React.FC = () => {
             </div>
           </Route>
           <Route path="/smart-yield">
-            <Icon
-              name="menu-sy"
-              size={40}
-              style={
-                {
-                  '--icon-display__light': 'none',
-                  '--icon-display__dark': 'none',
-                  '--icon-display__hover': 'block',
-                } as React.CSSProperties
-              }
-              className="mr-12"
-            />
+            <Logo name="menu-sy" className="mr-12" />
             <div>
               <Text type="caption" weight="bold" color="red">
                 SMART
@@ -108,18 +76,7 @@ const LayoutHeader: React.FC = () => {
             </div>
           </Route>
           <Route path="/smart-exposure">
-            <Icon
-              name="menu-se"
-              size={40}
-              style={
-                {
-                  '--icon-display__light': 'none',
-                  '--icon-display__dark': 'none',
-                  '--icon-display__hover': 'block',
-                } as React.CSSProperties
-              }
-              className="mr-12"
-            />
+            <Logo name="menu-se" className="mr-12" />
             <div>
               <Text type="caption" weight="bold" color="red">
                 SMART
@@ -130,18 +87,7 @@ const LayoutHeader: React.FC = () => {
             </div>
           </Route>
           <Route path="/smart-alpha">
-            <Icon
-              name="menu-sa"
-              size={40}
-              style={
-                {
-                  '--icon-display__light': 'none',
-                  '--icon-display__dark': 'none',
-                  '--icon-display__hover': 'block',
-                } as React.CSSProperties
-              }
-              className="mr-12"
-            />
+            <Logo name="menu-sa" className="mr-12" />
             <div>
               <Text type="caption" weight="bold" color="red">
                 SMART
@@ -241,6 +187,34 @@ const LayoutHeader: React.FC = () => {
 };
 
 export default LayoutHeader;
+
+const Logo: React.FC<{ name: IconNames; size?: number; className?: string }> = ({ name, size = 40, ...rest }) => {
+  const id = useMemo(nanoid, []);
+
+  return (
+    <svg width={size} height={size} {...rest}>
+      <mask id={id}>
+        <rect width={size} height={size} fill="white" />
+        <circle cx="75%" cy="75%" r="30%" fill="black" />
+      </mask>
+      <g mask={`url(#${id})`}>
+        <Icon
+          name={name}
+          size={size}
+          style={
+            {
+              '--icon-display__light': 'none',
+              '--icon-display__dark': 'none',
+              '--icon-display__hover': 'block',
+            } as React.CSSProperties
+          }
+        />
+      </g>
+      {/* @ts-ignore */}
+      <TokenIcon name="bond" size="50%" x="50%" y="50%" />
+    </svg>
+  );
+};
 
 const PositionsAction: React.FC = () => {
   const { data } = useFetchQueuePositions();
