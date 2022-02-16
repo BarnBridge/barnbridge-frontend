@@ -7,7 +7,6 @@ import uniqBy from 'lodash/uniqBy';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Select from 'components/antd/select';
-import { Link } from 'components/button';
 import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Tabs } from 'components/custom/tabs';

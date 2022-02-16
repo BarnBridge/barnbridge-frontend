@@ -4,13 +4,14 @@ import classNames from 'classnames';
 import { shortenAddr } from 'web3/utils';
 
 import Popover from 'components/antd/popover';
+import Tooltip from 'components/antd/tooltip';
 import { Button, ExplorerAddressLink, Link } from 'components/button';
 import { Badge, SquareBadge } from 'components/custom/badge';
 import IconOld from 'components/custom/icon';
 import { IconNotification } from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { Icon } from 'components/icon';
+import { Icon, IconNames } from 'components/icon';
 import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
@@ -233,6 +234,7 @@ const LayoutHeader: React.FC = () => {
         <NetworkAction />
         <WalletAction />
         <NotificationsAction />
+        <ToggleThemeButton />
       </div>
     </header>
   );
@@ -531,5 +533,39 @@ const NotificationsAction: React.FC = () => {
         </IconNotification>
       </button>
     </>
+  );
+};
+
+const ToggleThemeButton = () => {
+  const { toggleTheme, selectedTheme } = useGeneral();
+
+  let text;
+  let iconName: IconNames;
+
+  if (selectedTheme === 'light') {
+    text = 'Light Theme';
+    iconName = 'light-mode';
+  } else if (selectedTheme === 'dark') {
+    text = 'Dark Theme';
+    iconName = 'dark-mode';
+  } else {
+    text = 'Auto Theme (OS)';
+    iconName = 'auto';
+  }
+
+  return (
+    <Tooltip title={text} placement="topLeft">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className={classNames(s.actionButton, 'hidden-mobile hidden-tablet')}
+        style={{
+          position: 'fixed',
+          right: '8px',
+          bottom: '8px',
+        }}>
+        <Icon name={iconName} size={24} />
+      </button>
+    </Tooltip>
   );
 };
