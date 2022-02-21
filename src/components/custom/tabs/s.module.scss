@@ -95,14 +95,14 @@
   &[disabled],
   &[aria-disabled='true'],
   &.disabled {
-    cursor: not-allowed;
+    pointer-events: none;
     color: #aaafb3;
   }
 }
 
 a.tab {
   &:not([href]) {
-    cursor: not-allowed;
+    pointer-events: none;
     color: #aaafb3;
 
     > svg {
