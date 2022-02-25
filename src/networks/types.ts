@@ -30,6 +30,7 @@ export type NetworkConfig = {
     gasFees?: boolean;
     addBondToken?: boolean;
     smartAlphaKPIOptions?: boolean;
+    bondTransition?: boolean;
   };
   wallets: {
     portisId: string;

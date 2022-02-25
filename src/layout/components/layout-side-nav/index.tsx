@@ -143,6 +143,21 @@ const LayoutSideNav: React.FC = () => {
               </div>
             </NavLink>
           )}
+          {features.bondTransition && (
+            <NavLink to="/bond-transition" className={s.button} activeClassName={s.active}>
+              <Tooltip title={displayTooltip && 'BOND Transition'} placement="right">
+                <Icon name="menu-se" size={40} />
+              </Tooltip>
+              <div className={s.btnContent}>
+                <Text type="lb2" weight="bold" className={s.btnLabel} color="red">
+                  BOND
+                </Text>
+                <Text type="lb1" weight="semibold" className={s.btnText}>
+                  Transition
+                </Text>
+              </div>
+            </NavLink>
+          )}
         </nav>
         <div className={s.bottom}>
           <NotificationsAction displayTooltip={displayTooltip} />
