@@ -103,10 +103,10 @@ const RatioDeviation = ({ trancheAddress, periodFilter }: { trancheAddress: stri
           <ReCharts.Tooltip
             separator=""
             labelFormatter={value => (
-              <span className="text-p2 fw-semibold color-primary">{value ? formatDateTime(value) : ''}</span>
+              <span className="text-body2 fw-semibold color-primary">{value ? formatDateTime(value) : ''}</span>
             )}
             formatter={(value: number, _: any, { dataKey }: any) => (
-              <span className="text-p2 fw-semibold color-red">{`${Number(value) * 100}%` ?? ''}</span>
+              <span className="text-body2 fw-semibold color-red">{`${Number(value) * 100}%` ?? ''}</span>
             )}
           />
           <ReCharts.Area
@@ -185,12 +185,16 @@ const TrancheLiquidity = ({
             <ReCharts.Tooltip
               separator=""
               labelFormatter={value => (
-                <Text type="p2" tag="span" weight="semibold" color="primary">
+                <Text type="body2" tag="span" weight="semibold" color="primary">
                   {typeof value === 'string' ? formatDateTime(value) : ''}
                 </Text>
               )}
               formatter={(value: number, _: any, { dataKey }: any) => (
-                <Text type="p2" tag="span" weight="semibold" color={dataKey === 'tokenALiquidity' ? 'yellow' : 'blue'}>
+                <Text
+                  type="body2"
+                  tag="span"
+                  weight="semibold"
+                  color={dataKey === 'tokenALiquidity' ? 'yellow' : 'blue'}>
                   {formatUSD(value)}
                 </Text>
               )}

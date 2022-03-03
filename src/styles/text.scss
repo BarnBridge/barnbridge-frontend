@@ -1,18 +1,24 @@
 @font-face {
-  font-family: Montserrat;
-  src: url('../resources/fonts/Montserrat-Regular.ttf');
+  font-family: Prompt;
+  src: url('../resources/fonts/Prompt-Regular.ttf');
 }
 
 @font-face {
-  font-family: Montserrat;
+  font-family: Prompt;
+  font-weight: 500;
+  src: url('../resources/fonts/Prompt-Medium.ttf');
+}
+
+@font-face {
+  font-family: Prompt;
   font-weight: 600;
-  src: url('../resources/fonts/Montserrat-SemiBold.ttf');
+  src: url('../resources/fonts/Prompt-SemiBold.ttf');
 }
 
 @font-face {
-  font-family: Montserrat;
+  font-family: Prompt;
   font-weight: 700;
-  src: url('../resources/fonts/Montserrat-Bold.ttf');
+  src: url('../resources/fonts/Prompt-Bold.ttf');
 }
 
 @mixin text-ellipsis {
@@ -59,24 +65,16 @@ $text-aligns: left, center, right;
   font: var(--font-h3);
 }
 
-.text-p1 {
-  font: var(--font-p1);
+.text-body1 {
+  font: var(--font-body1);
 }
 
-.text-p2 {
-  font: var(--font-p2);
+.text-body2 {
+  font: var(--font-body2);
 }
 
-.text-lb1 {
-  font: var(--font-lb1);
-}
-
-.text-lb2 {
-  font: var(--font-lb2);
-}
-
-.text-sm {
-  font: var(--font-sm);
+.text-caption {
+  font: var(--font-caption);
 }
 
 .fw-bold.fw-bold {

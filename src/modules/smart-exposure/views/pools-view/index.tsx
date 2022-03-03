@@ -65,10 +65,10 @@ const PoolsView: React.FC = () => {
                 className="mr-16"
               />
               <div>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {pool.poolName}
                 </Text>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Pools
                 </Text>
               </div>
@@ -84,7 +84,7 @@ const PoolsView: React.FC = () => {
         })}
       </div>
 
-      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
+      <Text type="body1" weight="semibold" color="secondary" className="mb-4">
         Total value locked
       </Text>
       <div className="mb-40 flex align-center">
@@ -124,31 +124,31 @@ const PoolsView: React.FC = () => {
                   className="mr-16"
                 />
                 <div>
-                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  <Text type="body1" weight="semibold" color="primary" className="mb-4">
                     {pool.poolName} total liquidity
                   </Text>
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     {formatUSD(pool.state.poolLiquidity)}
                   </Text>
                 </div>
               </div>
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
+                <Text type="caption" weight="semibold" color="secondary" className="flex align-middle col-gap-4 mb-4">
                   Rebalancing Strategy
                   <InfoTooltip>
                     Rebalancing of the tranche is triggered based on the conditions the pool is set up with. They can be
                     either time or deviation based.
                   </InfoTooltip>
                 </Text>
-                <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                   Every {getRelativeTime(pool.state.rebalancingInterval) || '0 seconds'}
                 </Text>
               </div>
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                   Last rebalance
                 </Text>
-                <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                   {pool.state.lastRebalance ? formatDateTime(pool.state.lastRebalance * 1000) : 'Always'}
                 </Text>
               </div>

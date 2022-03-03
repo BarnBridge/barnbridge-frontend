@@ -81,7 +81,7 @@ const ProposalsViewInner: React.FC = () => {
 
             {hasCreateRestrictions && !canCreateProposal && (
               <Grid flow="col" gap={8} align="center">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   You are not able to create a proposal.
                 </Text>
                 <Popover
@@ -90,18 +90,18 @@ const ProposalsViewInner: React.FC = () => {
                   overlayStyle={{ width: 520 }}
                   content={
                     <Grid flow="row" gap={8}>
-                      <Text type="p2" weight="semibold">
+                      <Text type="body2" weight="semibold">
                         There are 2 possible reasons for why you can’t create a proposal:
                       </Text>
 
                       <ul>
                         <li>
-                          <Text type="p2" weight="semibold">
+                          <Text type="body2" weight="semibold">
                             You already are the creator of an ongoing proposal
                           </Text>
                         </li>
                         <li>
-                          <Text type="p2" weight="semibold">
+                          <Text type="body2" weight="semibold">
                             You don’t have enough voting power to create a proposal. The creator of a proposal needs to
                             have a voting power of at least {daoCtx.minThreshold}% of the amount of $
                             {ProjectToken.symbol} staked in the DAO.

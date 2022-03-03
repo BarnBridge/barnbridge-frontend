@@ -5,34 +5,65 @@
   grid-gap: 32px;
 }
 
+.tabsCondensed {
+  button {
+    padding: 8px;
+  }
+}
+
 .poolCard {
   display: flex;
   flex-direction: column;
   position: relative;
+  cursor: pointer;
 
-  &::before {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: 100%;
-    height: 4px;
-    background-color: var(--theme-border-color);
-    border-radius: 0 4px 4px;
+  &:hover {
+    border-color: var(--theme-red-color);
   }
 
-  &::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    width: calc(var(--pool-card-progress, 0) * 1%);
-    height: 4px;
-    background-image: linear-gradient(90deg, #4f6ae6 0%, #00d395 100%);
-    border-radius: 0 4px 4px;
-  }
+  // &::before {
+  //   content: '';
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 0;
+  //   right: 0;
+  //   width: 100%;
+  //   height: 4px;
+  //   background-color: var(--theme-border-color);
+  //   border-radius: 0 4px 4px;
+  // }
+
+  // &::after {
+  //   content: '';
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 0;
+  //   right: 0;
+  //   width: calc(var(--pool-card-progress, 0) * 1%);
+  //   height: 4px;
+  //   background-image: linear-gradient(90deg, #4f6ae6 0%, #00d395 100%);
+  //   border-radius: 0 4px 4px;
+  // }
+}
+
+.poolCardHeader {
+  justify-content: center;
+  align-items: flex-start;
+  height: 93px;
+  padding-top: 36px;
+}
+
+.poolCardTokenContainer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  padding: 7px;
+  display: flex;
+  background-color: var(--theme-card-color);
+  border-radius: 50%;
+  border: 1px solid;
+  border-color: inherit;
 }
 
 .poolCardDlRow {
@@ -51,7 +82,19 @@
   }
 }
 
-.poolCardFooter {
-  margin-top: auto;
-  padding: 0 24px 24px;
+.poolCardDlGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid var(--theme-border-color);
+  padding: 0 24px;
+
+  & > *:not(:first-child) {
+    border-left: 1px solid var(--theme-border-color);
+    text-align: right;
+  }
 }
+
+// .poolCardFooter {
+//   margin-top: auto;
+//   padding: 0 24px 24px;
+// }

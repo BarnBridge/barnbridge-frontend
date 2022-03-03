@@ -114,7 +114,7 @@ const StakeForm: FC = () => {
   return (
     <>
       <form className="flex flow-row full-height">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Amount
         </Text>
         <Controller
@@ -140,7 +140,7 @@ const StakeForm: FC = () => {
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
-              <Text type="small" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 {(fieldState.error as any)?.message}
               </Text>
             </>
@@ -275,7 +275,7 @@ const UnstakeForm: FC = () => {
   return (
     <>
       <form className="flex flow-row full-height">
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Amount
         </Text>
         <Controller
@@ -301,7 +301,7 @@ const UnstakeForm: FC = () => {
                 slider
                 placeholder={`0 (Max ${maxAmountUnscaled?.toNumber() ?? 0})`}
               />
-              <Text type="small" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 {(fieldState.error as any)?.message}
               </Text>
             </>
@@ -340,7 +340,7 @@ const UnstakeForm: FC = () => {
           header={
             <div className="flex col-gap-64 align-center justify-center">
               <div>
-                <Text type="p1" weight="semibold" color="secondary">
+                <Text type="body1" weight="semibold" color="secondary">
                   Unstake
                 </Text>
                 <div className="flex col-gap-8 align-center justify-center">
@@ -359,7 +359,7 @@ const UnstakeForm: FC = () => {
 
               {isClaimUnstake && (
                 <div>
-                  <Text type="p1" weight="semibold" color="secondary">
+                  <Text type="body1" weight="semibold" color="secondary">
                     Claim
                   </Text>
                   {rewardTokens.map(rewardToken => {
@@ -417,11 +417,11 @@ const Stake: FCx = props => {
       <div className="flex flow-row flex-grow p-24">
         <div className={cn('flexbox-list p-16 mb-32', s.stakeBlock)}>
           <div className="flex flow-row mr-16">
-            <Text type="small" weight="semibold" color="secondary" className="mb-8">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-8">
               Staked balance
             </Text>
             <Tooltip title={formatUSD(convertTokenInUSD(stakedBalance, smartYield.symbol!)) ?? '-'}>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(stakedBalance, {
                   decimals: smartYield.decimals,
                 }) ?? '-'}
@@ -429,11 +429,11 @@ const Stake: FCx = props => {
             </Tooltip>
           </div>
           <div className="flex flow-row">
-            <Text type="small" weight="semibold" color="secondary" className="mb-8">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-8">
               Wallet balance
             </Text>
             <Tooltip title={formatUSD(convertTokenInUSD(walletBalance, smartYield.symbol!)) ?? '-'}>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(walletBalance, {
                   decimals: smartYield.decimals,
                 }) ?? '-'}

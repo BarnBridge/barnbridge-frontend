@@ -59,19 +59,19 @@ const ProposalDetailsCard: React.FC = () => {
   return (
     <div className="card">
       <div className="card-header">
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           Details
         </Text>
       </div>
       <div className="card-row flexbox-list p-24" style={{ '--gap': '32px' } as React.CSSProperties}>
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-4">
             Created by
           </Text>
           <Grid flow="col" gap={8}>
             <Identicon address={proposalCtx.proposal?.proposer} width={24} height={24} />
             <ExplorerAddressLink address={proposalCtx.proposal?.proposer}>
-              <Text type="p1" weight="semibold" color="blue">
+              <Text type="body1" weight="semibold" color="blue">
                 {shortenAddr(proposalCtx.proposal?.proposer)}
               </Text>
             </ExplorerAddressLink>
@@ -80,7 +80,7 @@ const ProposalDetailsCard: React.FC = () => {
         <div>
           <Hint
             text={`If the creator’s vBOND balance falls below ${minThreshold}% of the total amount of $BOND staked in the DAO the proposal can be cancelled by anyone.`}>
-            <Text type="small" weight="semibold" color="secondary" className="mb-4">
+            <Text type="caption" weight="semibold" color="secondary" className="mb-4">
               Creator threshold
             </Text>
           </Hint>
@@ -89,7 +89,7 @@ const ProposalDetailsCard: React.FC = () => {
               <>
                 <Icon name={isThresholdBelow ? 'close-circle-outlined' : 'check-circle-outlined'} />
                 <Skeleton loading={proposal === undefined}>
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {isThresholdBelow ? 'Below 1%' : 'Above 1%'}
                   </Text>
                 </Skeleton>
@@ -106,15 +106,15 @@ const ProposalDetailsCard: React.FC = () => {
         </div>
       </div>
       <Grid className="card-row p-24" flow="row" gap={16}>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Description
         </Text>
-        <Text type="p1" color="primary" wrap>
+        <Text type="body1" color="primary" wrap>
           {proposal?.description}
         </Text>
       </Grid>
       <Grid className="card-row p-24" flow="row" gap={16}>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           Actions
         </Text>
         {proposal?.targets.map((target: string, index: number) => (

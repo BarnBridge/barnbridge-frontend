@@ -45,14 +45,14 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
               display: 'flex',
               whiteSpace: 'nowrap',
             }}>
-            <Text type="p1" weight="semibold" color="primary" className="mr-4">
+            <Text type="body1" weight="semibold" color="primary" className="mr-4">
               {pool.token?.name}
             </Text>
-            <Text type="p1" weight="semibold">
+            <Text type="body1" weight="semibold">
               ({pool.underlyingSymbol})
             </Text>
           </div>
-          <Text type="small" weight="semibold">
+          <Text type="caption" weight="semibold">
             {pool.market?.name}
           </Text>
         </div>
@@ -63,15 +63,15 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
             title={formatToken(pool.contracts.underlying.balance, {
               scale: pool.underlyingDecimals,
             })}>
-            <Text type="small" weight="semibold" className="mb-4">
+            <Text type="caption" weight="semibold" className="mb-4">
               Wallet balance
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               <span className="grid flow-col col-gap-8 align-center">
                 {formatToken(pool.contracts.underlying.balance, {
                   scale: pool.underlyingDecimals,
                 })}
-                <Text type="small" tag="span" weight="semibold" color="secondary">
+                <Text type="caption" tag="span" weight="semibold" color="secondary">
                   {pool.underlyingSymbol}
                 </Text>
               </span>
@@ -82,15 +82,15 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
               title={formatToken(pool.contracts.smartYield.balance, {
                 scale: pool.underlyingDecimals,
               })}>
-              <Text type="small" weight="semibold" className="mb-4">
+              <Text type="caption" weight="semibold" className="mb-4">
                 Portfolio balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 <span className="grid flow-col col-gap-8 align-center">
                   {formatToken(pool.contracts.smartYield.balance, {
                     scale: pool.underlyingDecimals,
                   })}
-                  <Text type="small" tag="span" weight="semibold" color="secondary">
+                  <Text type="caption" tag="span" weight="semibold" color="secondary">
                     {pool.contracts.smartYield.symbol}
                   </Text>
                 </span>
@@ -99,20 +99,20 @@ const DepositHeader: React.FC<Props> = ({ className }) => {
           )}
           {isSeniorDeposit && (
             <div>
-              <Text type="small" weight="semibold" className="mb-4">
+              <Text type="caption" weight="semibold" className="mb-4">
                 Senior APY
               </Text>
-              <Text type="p1" weight="semibold" color="green">
+              <Text type="body1" weight="semibold" color="green">
                 {formatPercent(pool.state.seniorApy)}
               </Text>
             </div>
           )}
           {isJuniorDeposit && (
             <div>
-              <Text type="small" weight="semibold" className="mb-4">
+              <Text type="caption" weight="semibold" className="mb-4">
                 Junior APY
               </Text>
-              <Text type="p1" weight="semibold" color="purple">
+              <Text type="body1" weight="semibold" color="purple">
                 {formatPercent(pool.state.juniorApy)}
               </Text>
             </div>

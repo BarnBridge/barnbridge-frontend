@@ -122,16 +122,16 @@ const GasFeeList: React.FC<GasFeeListProps> = props => {
             <RadioButton
               key={option.key}
               label={
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {option.name}
                 </Text>
               }
               hint={
                 <Grid flow="col" gap={4}>
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {option.value}
                   </Text>
-                  <Text type="p2" weight="semibold" color="secondary">
+                  <Text type="body2" weight="semibold" color="secondary">
                     Gwei
                   </Text>
                 </Grid>

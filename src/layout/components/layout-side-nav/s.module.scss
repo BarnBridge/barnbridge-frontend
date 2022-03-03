@@ -1,6 +1,6 @@
 .wrap {
-  position: relative;
-  z-index: 1;
+  position: absolute;
+  z-index: 4;
 }
 
 .aside {
@@ -9,7 +9,6 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
-  width: 72px;
   height: 100vh;
   padding: 24px 16px;
   overflow: hidden;
@@ -18,14 +17,7 @@
   border-right: 1px solid var(--theme-border-color);
   transition: all 0.2s linear;
 
-  &.expanded {
-    width: 216px;
-
-    .logoLabel,
-    .btnContent {
-      visibility: visible;
-    }
-  }
+  width: 300px;
 
   @media (max-width: 768px) {
     position: fixed;
@@ -47,22 +39,22 @@
 .logoContainer {
   flex-shrink: 0;
   display: flex;
-  margin-bottom: 48px;
+  margin-bottom: 24px;
   overflow: hidden;
   padding: 0 8px;
   transition: width 0.3s linear;
 }
 
-.logo {
-  flex-shrink: 0;
-  display: flex;
-}
+// .logo {
+//   flex-shrink: 0;
+//   display: flex;
+// }
 
 .logoLabel {
   flex-shrink: 0;
   margin-left: 12px;
   overflow: hidden;
-  visibility: hidden;
+  // visibility: hidden;
 }
 
 .button {
@@ -94,7 +86,7 @@
 
   .btnContent {
     margin-left: 16px;
-    visibility: hidden;
+    // visibility: hidden;
 
     > div {
       white-space: nowrap;
@@ -158,7 +150,7 @@
   position: fixed;
   right: 0;
   top: 0;
-  visibility: hidden;
+  // visibility: hidden;
   width: 0;
   z-index: 9;
 
@@ -171,13 +163,13 @@
 .closeButton {
   background-color: transparent;
   border: 0;
-  display: none;
+  // display: none;
   height: 24px;
   margin-right: 12px;
   padding: 0;
   width: 24px;
 
-  @media (max-width: 768px) {
-    display: block;
-  }
+  // @media (max-width: 768px) {
+  //   display: block;
+  // }
 }

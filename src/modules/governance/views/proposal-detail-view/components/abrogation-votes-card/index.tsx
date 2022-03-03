@@ -76,7 +76,7 @@ const AbrogationVotesCard: React.FC = () => {
     <>
       <div className="card">
         <div className="card-header flex justify-space-between">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             Abrogation proposal votes
           </Text>
           <Button type="link" onClick={handleShowVotersModal}>
@@ -86,14 +86,14 @@ const AbrogationVotesCard: React.FC = () => {
         <Grid className="card-row p-24" flow="row" gap={32}>
           <Grid flow="row" gap={16}>
             <Grid flow="col" justify="space-between">
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 For
               </Text>
               <Grid flow="col" gap={8}>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {abrogationCtx.abrogation?.forVotes.toFormat(2)}
                 </Text>
-                <Text type="p1" color="secondary">
+                <Text type="body1" color="secondary">
                   ({abrogationCtx.forRate?.toFixed(2)}%)
                 </Text>
               </Grid>
@@ -106,14 +106,14 @@ const AbrogationVotesCard: React.FC = () => {
           </Grid>
           <Grid flow="row" gap={16}>
             <Grid flow="col" justify="space-between">
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 Against
               </Text>
               <Grid flow="col" gap={8}>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {abrogationCtx.abrogation?.againstVotes.toFormat(2)}
                 </Text>
-                <Text type="p1" color="secondary">
+                <Text type="body1" color="secondary">
                   ({abrogationCtx.againstRate?.toFixed(2)}%)
                 </Text>
               </Grid>
@@ -127,10 +127,10 @@ const AbrogationVotesCard: React.FC = () => {
         </Grid>
         <Grid className="card-row p-24" flow="row" gap={24}>
           <Grid flow="row" gap={8}>
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               Your voting power for this proposal
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatBigValue(abrogationCtx.votingPower, 2)}
             </Text>
           </Grid>

@@ -72,7 +72,7 @@ const MarketsView: FC = () => {
                 size={24}
                 className="mr-16"
               />
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {market.name}
               </Text>
               {market.warning && (
@@ -93,7 +93,7 @@ const MarketsView: FC = () => {
           );
         })}
       </div>
-      <Text type="p1" weight="semibold" color="secondary" className="mb-4">
+      <Text type="body1" weight="semibold" color="secondary" className="mb-4">
         Total value locked
       </Text>
       <div className="mb-40 flex align-center">
@@ -137,19 +137,19 @@ const MarketsView: FC = () => {
                   className="mr-16"
                 />
                 <div>
-                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  <Text type="body1" weight="semibold" color="primary" className="mb-4">
                     {selectedMarket.name}
                   </Text>
-                  <Text type="small" weight="semibold" color="secondary">
+                  <Text type="caption" weight="semibold" color="secondary">
                     Markets
                   </Text>
                 </div>
               </div>
               <div>
-                <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                   Total value locked
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatUSD(poolsCtx.getMarketTVL(selectedMarket.id))}
                 </Text>
               </div>

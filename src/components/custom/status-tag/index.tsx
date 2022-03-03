@@ -17,7 +17,7 @@ const StatusTag: React.FC<StatusTagProps> = props => {
 
   return (
     <div className={cn(s.statusTag, className, s[color])} style={style}>
-      <Text type="lb2" tag="label" weight="bold">
+      <Text type="caption" tag="label" weight="bold">
         {text}
       </Text>
     </div>

@@ -114,7 +114,7 @@ const KpiOptionView: FC = () => {
           size={36}
           className="mr-16"
         />
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           {kpiOption.poolToken.symbol}
         </Text>
       </div>

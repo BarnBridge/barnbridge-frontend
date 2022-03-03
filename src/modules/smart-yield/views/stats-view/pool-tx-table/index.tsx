@@ -60,11 +60,11 @@ const Columns: ColumnsType<TableEntity> = [
                 entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.address : entity.underlyingTokenAddress
               }
               className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+              <Text type="body1" weight="semibold" color="primary" className="mr-4">
                 {entity.isTokenAmount ? entity.poolEntity?.contracts.smartYield.symbol : entity.underlyingTokenSymbol}
               </Text>
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {entity.poolEntity?.market?.name}
             </Text>
           </div>
@@ -76,10 +76,10 @@ const Columns: ColumnsType<TableEntity> = [
     title: 'Tranche / Transaction',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="body1" weight="semibold" color="primary" className="mb-4">
           {capitalize(entity.tranche)}
         </Text>
-        <Text type="small" weight="semibold">
+        <Text type="caption" weight="semibold">
           {HistoryShortTypes.get(entity.transactionType)}
         </Text>
       </>
@@ -94,7 +94,7 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <Tooltip
           title={
-            <Text type="small" weight="semibold" color="primary">
+            <Text type="caption" weight="semibold" color="primary">
               {formatToken(entity.amount, {
                 tokenName: entity.isTokenAmount
                   ? entity.poolEntity?.contracts.smartYield.symbol
@@ -103,10 +103,10 @@ const Columns: ColumnsType<TableEntity> = [
               })}
             </Text>
           }>
-          <Text type="p1" weight="semibold" color={isPositive ? 'green' : 'red'}>
+          <Text type="body1" weight="semibold" color={isPositive ? 'green' : 'red'}>
             {isPositive ? '+' : '-'} {formatToken(entity.amount)}
           </Text>
-          <Text type="small" weight="semibold">
+          <Text type="caption" weight="semibold">
             {formatUSD(entity.computedAmount)}
           </Text>
         </Tooltip>
@@ -119,7 +119,7 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <Grid flow="row" gap={4}>
           <ExplorerAddressLink address={entity.accountAddress}>
-            <Text type="p1" weight="semibold" color="blue">
+            <Text type="body1" weight="semibold" color="blue">
               {shortenAddr(entity.accountAddress)}
             </Text>
           </ExplorerAddressLink>
@@ -132,7 +132,7 @@ const Columns: ColumnsType<TableEntity> = [
     render: (_, entity) => (
       <Grid flow="row" gap={4}>
         <ExplorerTxLink address={entity.transactionHash}>
-          <Text type="p1" weight="semibold" color="blue">
+          <Text type="body1" weight="semibold" color="blue">
             {shortenAddr(entity.transactionHash)}
           </Text>
         </ExplorerTxLink>
@@ -144,10 +144,10 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="body1" weight="semibold" color="primary" className="mb-4">
           {formatDate(entity.blockTimestamp * 1_000)}
         </Text>
-        <Text type="small" weight="semibold">
+        <Text type="caption" weight="semibold">
           {formatTime(entity.blockTimestamp * 1_000)}
         </Text>
       </>
@@ -332,7 +332,7 @@ const PoolTxTable: React.FC<Props> = ({ tabs }) => {
           current: state.page,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} entries
             </Text>
           ),

@@ -77,7 +77,7 @@ const Statistics: FCx<StatisticsProps> = ({
     <>
       <section className={cn('card', s.statistics, className)}>
         <header className="card-header">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             My statistics
           </Text>
         </header>
@@ -171,7 +171,7 @@ const Statistics: FCx<StatisticsProps> = ({
                     />
                     <Tooltip
                       title={
-                        <Text type="p2" weight="semibold" color="primary">
+                        <Text type="body2" weight="semibold" color="primary">
                           {formatToken(kpiContract.getClaimFor(token.address), {
                             decimals: token.decimals,
                             scale: token.decimals,
@@ -195,7 +195,7 @@ const Statistics: FCx<StatisticsProps> = ({
                 </div>
               );
             })}
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               My current reward{kpiOption.rewardTokens.length! > 1 ? 's' : ''}
             </Text>
           </div>

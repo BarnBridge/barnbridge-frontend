@@ -102,7 +102,7 @@ export const TableFooter: React.FC<TableFooterType> = ({ children, text, total, 
   return (
     <div className={classNames(s.tableFooter, 'p-24')}>
       {generatedText ? (
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {generatedText}
         </Text>
       ) : null}

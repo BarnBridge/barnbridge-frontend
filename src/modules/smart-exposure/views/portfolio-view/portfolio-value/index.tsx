@@ -56,7 +56,7 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
   return (
     <section className={classNames('card', className)}>
       <header className="card-header flex align-center" style={{ padding: '16px 16px 16px 24px' }}>
-        <Text type="p1" weight="semibold">
+        <Text type="body1" weight="semibold">
           Portfolio value
         </Text>
         <PeriodChartTabs activeKey={periodFilter} onClick={setPeriodFilter} size="small" className="ml-auto" />
@@ -66,7 +66,7 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
           {dataList.length === 0 ? (
             <div className="flex flow-row row-gap-24 align-center justify-center pv-48">
               <EmptyChartSvg />
-              <Text type="p1" color="secondary">
+              <Text type="body1" color="secondary">
                 Not enough data to plot a graph
               </Text>
             </div>
@@ -107,13 +107,13 @@ export const PortfolioValue: React.FC<Props> = ({ poolAddress, className }) => {
                 <ReCharts.Tooltip
                   separator=""
                   labelFormatter={value => (
-                    <Text type="p2" tag="span" weight="semibold" color="primary">
+                    <Text type="body2" tag="span" weight="semibold" color="primary">
                       {typeof value === 'string' ? formatDateTime(value) : ''}
                     </Text>
                   )}
                   formatter={(value: number, _: any, { dataKey, payload }: any) => (
                     <Text
-                      type="p2"
+                      type="body2"
                       tag="span"
                       weight="semibold"
                       color={dataKey === 'portfolioValueSE' ? 'red' : 'blue'}>

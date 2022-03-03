@@ -126,7 +126,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
         onFinish={handleSubmit}>
         {voteState === VoteAbrogationState.VoteInitiate && (
           <Grid flow="row" gap={16} padding={32}>
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               {proposalCtx.proposal?.title}
             </Text>
           </Grid>
@@ -137,46 +137,46 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
               <Text type="h2" weight="bold" color="primary">
                 {formatBigValue(proposalCtx.votingPower, 2)}
               </Text>
-              <Text type="p1" weight="semibold" color="secondary">
+              <Text type="body1" weight="semibold" color="secondary">
                 Votes
               </Text>
             </Grid>
             {(voteState === VoteAbrogationState.VoteFor || voteState === VoteAbrogationState.VoteAgainst) && (
               <Grid flow="row" gap={8}>
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   You are about to vote {voteState === VoteAbrogationState.VoteFor ? 'FOR' : 'AGAINST'} the abrogation
                   proposal for
                 </Text>
-                <Text type="p2" weight="semibold" color="secondary">
+                <Text type="body2" weight="semibold" color="secondary">
                   &ldquo;{proposalCtx.proposal?.title}&rdquo;
                 </Text>
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   You can change your vote later.
                 </Text>
               </Grid>
             )}
             {voteState === VoteAbrogationState.VoteChange && (
               <Grid flow="row" gap={8}>
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   You are about to change your vote on the abrogation proposal for
                 </Text>
-                <Text type="p2" weight="semibold" color="secondary">
+                <Text type="body2" weight="semibold" color="secondary">
                   &ldquo;{proposalCtx.proposal?.title}&rdquo;
                 </Text>
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
                 </Text>
               </Grid>
             )}
             {voteState === VoteAbrogationState.VoteCancel && (
               <Grid flow="row" gap={8}>
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   You are about to cancel your vote on the abrogation proposal for
                 </Text>
-                <Text type="p2" weight="semibold" color="secondary">
+                <Text type="body2" weight="semibold" color="secondary">
                   &ldquo;{proposalCtx.proposal?.title}&dquo;
                 </Text>
-                <Text type="p2" color="secondary">
+                <Text type="body2" color="secondary">
                   Are you sure you want to continue? You can change your vote again later.
                 </Text>
               </Grid>
@@ -196,7 +196,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                 <Grid gap={16} colsTemplate="1fr 1fr">
                   <RadioButton
                     label={
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="body1" weight="semibold" color="primary">
                         For
                       </Text>
                     }
@@ -204,7 +204,7 @@ const AbrogationVoteModal: React.FC<AbrogationVoteModalProps> = props => {
                   />
                   <RadioButton
                     label={
-                      <Text type="p1" weight="semibold" color="primary">
+                      <Text type="body1" weight="semibold" color="primary">
                         Against
                       </Text>
                     }

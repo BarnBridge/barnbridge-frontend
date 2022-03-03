@@ -31,12 +31,12 @@ const WalletDepositConfirmModal: React.FC<WalletDepositConfirmModalProps> = prop
               Are you sure you want to deposit?
             </Text>
 
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               You are about to deposit {formatToken(deposit)} ${projectToken.symbol}.
               <br />
               You have an active lock for {getFormattedDuration(0, lockDuration)}.
             </Text>
-            <Text type="p2" weight="bold" color="primary">
+            <Text type="body2" weight="bold" color="primary">
               All deposits you make until the lock timer ends will be locked for the same duration.
             </Text>
           </Grid>

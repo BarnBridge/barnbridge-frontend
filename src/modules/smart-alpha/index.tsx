@@ -3,7 +3,6 @@ import { Redirect, Route, Switch } from 'react-router-dom';
 
 import { Spinner } from 'components/custom/spinner';
 import { HorizontalMenu } from 'components/custom/tabs';
-import { Icon } from 'components/icon';
 import { useNetwork } from 'components/providers/networkProvider';
 import { useWallet } from 'wallets/walletProvider';
 
@@ -24,7 +23,8 @@ const SmartAlphaView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="overview" className="mr-8" size={24} /> Pools
+          {/* <Icon name="overview" className="mr-8" size={24} /> */}
+          Pools
         </>
       ),
       to: '/smart-alpha/pools',
@@ -32,7 +32,8 @@ const SmartAlphaView: React.FC = () => {
     {
       children: (
         <>
-          <Icon name="wallet" className="mr-8" size={24} /> Portfolio
+          {/* <Icon name="wallet" className="mr-8" size={24} /> */}
+          Portfolio
         </>
       ),
       to: '/smart-alpha/portfolio',
@@ -43,7 +44,8 @@ const SmartAlphaView: React.FC = () => {
           {
             children: (
               <>
-                <Icon name="pools" className="mr-8" size={24} /> KPI Options
+                {/* <Icon name="pools" className="mr-8" size={24} /> */}
+                KPI Options
               </>
             ),
             to: '/smart-alpha/kpi-options',

@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import useWindowSize from '@rooks/use-window-size';
 import BigNumber from 'bignumber.js';
 import classNames from 'classnames';
@@ -7,12 +7,12 @@ import uniqBy from 'lodash/uniqBy';
 import { formatNumber, formatPercent, formatToken, formatUSD } from 'web3/utils';
 
 import Select from 'components/antd/select';
-import { Button, Link } from 'components/button';
 import { ColumnType, Table } from 'components/custom/table';
 import TableFilter, { TableFilterType } from 'components/custom/table-filter';
 import { Tabs } from 'components/custom/tabs';
 import { InfoTooltip } from 'components/custom/tooltip';
 import { Text } from 'components/custom/typography';
+import { Icon } from 'components/icon';
 import { useTokens } from 'components/providers/tokensProvider';
 import { TokenIcon } from 'components/token-icon';
 import { useContractFactory } from 'hooks/useContract';
@@ -43,14 +43,30 @@ const epochTabs = [
   },
 ];
 
+export enum ViewTypeKey {
+  list = 'list',
+  cards = 'cards',
+}
+
+const viewTabs = [
+  {
+    id: ViewTypeKey.list,
+    children: <Icon name="list-view" />,
+  },
+  {
+    id: ViewTypeKey.cards,
+    children: <Icon name="cards-view" />,
+  },
+];
+
 type TreasuryFilterType = {
   token: string;
 };
 
 const PoolsView = () => {
   const { data, loading } = useFetchSaPools();
-  const [layout, setLayout] = useState<'cards' | 'list'>('list');
   const [epochType, setEpochType] = useState<EpochTypeKey>(EpochTypeKey.current);
+  const [viewType, setViewType] = useState<ViewTypeKey>(ViewTypeKey.list);
 
   const { innerWidth } = useWindowSize();
 
@@ -133,8 +149,8 @@ const PoolsView = () => {
   return (
     <>
       <div className="flex flow-col wrap col-gap-32 row-gap-16 mb-32">
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Epoch TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -142,8 +158,8 @@ const PoolsView = () => {
           </Text>
         </div>
 
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Entry Queue TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -151,8 +167,8 @@ const PoolsView = () => {
           </Text>
         </div>
 
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Exit Queue TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -160,8 +176,8 @@ const PoolsView = () => {
           </Text>
         </div>
 
-        <div className="card p-24" style={{ minWidth: '200px' }}>
-          <Text type="small" weight="semibold" color="secondary" className="mb-4">
+        <div className="card p-24" style={{ minWidth: '200px', flexGrow: 1 }}>
+          <Text type="caption" weight="medium" color="secondary" className="mb-4">
             Exited TVL
           </Text>
           <Text type="h3" weight="bold" color="primary">
@@ -175,12 +191,14 @@ const PoolsView = () => {
         </Text>
         <div className="flex wrap col-gap-16 row-gap-16 align-center">
           <Tabs<EpochTypeKey> tabs={epochTabs} activeKey={epochType} onClick={setEpochType} variation="elastic" />
+
           {forceCardsView ? null : (
-            <Button
-              variation="ghost-alt"
-              icon={layout === 'cards' ? 'list-view' : 'cards-view'}
-              iconPosition="only"
-              onClick={() => setLayout(prevLayout => (prevLayout === 'cards' ? 'list' : 'cards'))}
+            <Tabs<ViewTypeKey>
+              tabs={viewTabs}
+              activeKey={viewType}
+              onClick={setViewType}
+              variation="elastic"
+              className={s.tabsCondensed}
             />
           )}
           <TableFilter<TreasuryFilterType>
@@ -190,7 +208,7 @@ const PoolsView = () => {
           />
         </div>
       </div>
-      {forceCardsView || layout === 'cards' ? (
+      {forceCardsView || viewType === ViewTypeKey.cards ? (
         <Cards items={items} epochType={epochType} />
       ) : (
         <TableLayout items={items} epochType={epochType} loading={loading} />
@@ -222,7 +240,7 @@ const PoolCardCurrent = ({ item }: { item: PoolApiType }) => {
   const upsideLeverage = juniorLiquidity.gt(0)
     ? seniorLiquidity.div(juniorLiquidity).multipliedBy(new BigNumber(1).minus(upsideRate)).plus(1)
     : new BigNumber(1);
-  const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
+  // const downsideLeverage = juniorLiquidity.gt(0) ? seniorLiquidity.div(juniorLiquidity).plus(1) : new BigNumber(1);
 
   return (
     <PoolCardInner
@@ -230,10 +248,10 @@ const PoolCardCurrent = ({ item }: { item: PoolApiType }) => {
       epoch={item.state.epoch}
       juniorLiquidity={juniorLiquidity}
       seniorLiquidity={seniorLiquidity}
-      upsideRate={upsideRate}
+      // upsideRate={upsideRate}
       downsideRate={downsideRate}
       upsideLeverage={upsideLeverage}
-      downsideLeverage={downsideLeverage}
+      // downsideLeverage={downsideLeverage}
       isEstimate={false}
     />
   );
@@ -242,9 +260,11 @@ const PoolCardCurrent = ({ item }: { item: PoolApiType }) => {
 const PoolCardEstimate = ({ item }: { item: PoolApiType }) => {
   const [reload] = useReload();
   const { getOrCreateContract } = useContractFactory();
-  const { nextEpochEstimates, nextEpochUpsideLeverage, nextEpochDownsideLeverage } = useNextEpochEstimate(
-    item.poolAddress,
-  );
+  const {
+    nextEpochEstimates,
+    nextEpochUpsideLeverage,
+    // nextEpochDownsideLeverage
+  } = useNextEpochEstimate(item.poolAddress);
 
   const smartAlphaContract = useMemo(() => {
     return getOrCreateContract(
@@ -267,10 +287,10 @@ const PoolCardEstimate = ({ item }: { item: PoolApiType }) => {
       epoch={smartAlphaContract.currentEpoch ? smartAlphaContract.currentEpoch + 1 : undefined}
       juniorLiquidity={nextEpochEstimates[0]?.unscaleBy(item.poolToken.decimals)}
       seniorLiquidity={nextEpochEstimates[1]?.unscaleBy(item.poolToken.decimals)}
-      upsideRate={nextEpochEstimates[2]?.unscaleBy(SMART_ALPHA_DECIMALS)}
+      // upsideRate={nextEpochEstimates[2]?.unscaleBy(SMART_ALPHA_DECIMALS)}
       downsideRate={nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS)}
       upsideLeverage={nextEpochUpsideLeverage}
-      downsideLeverage={nextEpochDownsideLeverage}
+      // downsideLeverage={nextEpochDownsideLeverage}
       isEstimate
     />
   );
@@ -281,81 +301,106 @@ const PoolCardInner = ({
   epoch,
   juniorLiquidity,
   seniorLiquidity,
-  upsideRate,
+  // upsideRate,
   downsideRate,
   upsideLeverage,
-  downsideLeverage,
+  // downsideLeverage,
   isEstimate,
 }: {
   item: PoolApiType;
   epoch?: number;
   juniorLiquidity: BigNumber | undefined;
   seniorLiquidity: BigNumber | undefined;
-  upsideRate: BigNumber | undefined;
+  // upsideRate: BigNumber | undefined;
   downsideRate: BigNumber | undefined;
   upsideLeverage: BigNumber | undefined;
-  downsideLeverage: BigNumber | undefined;
+  // downsideLeverage: BigNumber | undefined;
   isEstimate: boolean;
 }) => {
   const location = useLocation();
+  const history = useHistory();
   const { getToken, getAsset } = useTokens();
   const poolToken = getToken(item.poolToken.symbol);
   const oracleToken = getAsset(item.oracleAssetSymbol);
 
-  const tokenInOracleValueLeverage =
-    downsideRate && poolToken?.price && oracleToken?.price
-      ? poolToken.price?.multipliedBy(new BigNumber(1).minus(downsideRate))?.dividedBy(oracleToken.price)
-      : undefined;
+  // const tokenInOracleValueLeverage =
+  //   downsideRate && poolToken?.price && oracleToken?.price
+  //     ? poolToken.price?.multipliedBy(new BigNumber(1).minus(downsideRate))?.dividedBy(oracleToken.price)
+  //     : undefined;
 
-  const tokenInOracleValue =
-    poolToken?.price && oracleToken?.price ? poolToken.price?.dividedBy(oracleToken.price) : undefined;
+  // const tokenInOracleValue =
+  //   poolToken?.price && oracleToken?.price ? poolToken.price?.dividedBy(oracleToken.price) : undefined;
 
   return (
     <section
+      onClick={() => history.push(`${location.pathname}/${item.poolAddress}`)}
       className={classNames(s.poolCard, 'card')}
-      style={
-        (!isEstimate
-          ? { '--pool-card-progress': ((item.epochDuration - tillNextEpoch(item)) / item.epochDuration) * 100 }
-          : {}) as React.CSSProperties
-      }>
-      <header className="card-header flex align-center mb-32">
+      // style={
+      //   (!isEstimate
+      //     ? { '--pool-card-progress': ((item.epochDuration - tillNextEpoch(item)) / item.epochDuration) * 100 }
+      //     : {}) as React.CSSProperties
+      // }
+    >
+      <div className={s.poolCardTokenContainer}>
         <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} />
-        <div>
-          <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+      </div>
+      <header className={classNames(s.poolCardHeader, 'card-header')}>
+        <div className="text-center">
+          <Text type="body2" weight="semibold" color="primary" tag="h2">
             {item.poolName}
           </Text>
-          <Text type="small" weight="semibold" color="red" tag="small">
+          <Text type="caption" weight="medium" color="red" tag="small">
             Epoch {epoch ?? '-'}
           </Text>
         </div>
-        {!isEstimate && (
-          <div className="ml-auto" style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
-            <Text type="small" weight="semibold" color="secondary" tag="small" className="mb-4">
-              Epoch ends in
-            </Text>
-            <UseLeftTime delay={1_000}>
-              {() => (
-                <Text type="p1" weight="semibold">
-                  {getFormattedDuration(tillNextEpoch(item), undefined, {
-                    format: ['months', 'days', 'hours', 'minutes'],
-                  })}
-                </Text>
-              )}
-            </UseLeftTime>
-          </div>
-        )}
       </header>
       <dl>
+        <div className={classNames(s.poolCardDlGrid, 'mb-24')}>
+          <div className={s.poolCardDlGridCell}>
+            <Text type="caption" weight="semibold" color="green" className="mt-16 mb-4">
+              Senior
+            </Text>
+            <Text
+              type="caption"
+              weight="medium"
+              color="secondary"
+              className="flex align-middle col-gap-4 mb-4"
+              tag="dt">
+              Downside protection
+              <InfoTooltip>Senior positions will only start taking losses beyond this decline</InfoTooltip>
+            </Text>
+            <Text type="body1" weight="semibold" tag="dd" className="mb-16">
+              {formatPercent(downsideRate)}
+            </Text>
+          </div>
+          <div className={s.poolCardDlGridCell}>
+            <Text type="caption" weight="semibold" color="purple" className="mt-16 mb-4">
+              Junior
+            </Text>
+            <Text
+              type="caption"
+              weight="medium"
+              color="secondary"
+              className="flex align-middle justify-end col-gap-4 mb-4"
+              tag="dt">
+              Upside leverage
+              <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
+            </Text>
+            <Text type="body1" weight="semibold" tag="dd" className="mb-16">
+              {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
+            </Text>
+          </div>
+        </div>
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+          <Text type="caption" weight="medium" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Epoch senior liquidity
           </Text>
           <dd className="flex align-center">
             <Text
-              type="p1"
-              weight="semibold"
+              type="body2"
+              weight="medium"
               tooltip={
-                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                   <span>
                     {formatToken(seniorLiquidity, {
                       tokenName: item.poolToken.symbol,
@@ -370,41 +415,29 @@ const PoolCardInner = ({
             <TokenIcon name={poolToken?.icon} className="ml-8" />
           </dd>
         </div>
-        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+        {/* <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="caption" weight="medium" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Upside exposure rate
             <InfoTooltip>
               Senior positions will only receive this much of every percentage point gain in the underlying asset
             </InfoTooltip>
           </Text>
           <dd>
-            <Text type="p1" weight="semibold" color="green">
+            <Text type="body1" weight="semibold" color="green">
               {formatPercent(upsideRate)}
             </Text>
           </dd>
-        </div>
-        <div className={classNames(s.poolCardDlRow, 'mb-16')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
-            Downside protection rate
-            <InfoTooltip>Senior positions will only start taking losses beyond this decline</InfoTooltip>
-          </Text>
-          <dd>
-            <Text type="p1" weight="semibold" color="green">
-              {formatPercent(downsideRate)}
-            </Text>
-          </dd>
-        </div>
-        <hr className="mb-24" />
+        </div> */}
         <div className={classNames(s.poolCardDlRow, 'mb-24')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+          <Text type="caption" weight="medium" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Epoch junior liquidity
           </Text>
           <dd className="flex align-center">
             <Text
-              type="p1"
-              weight="semibold"
+              type="body2"
+              weight="medium"
               tooltip={
-                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                   <span>
                     {formatToken(juniorLiquidity, {
                       tokenName: item.poolToken.symbol,
@@ -419,19 +452,8 @@ const PoolCardInner = ({
             <TokenIcon name={poolToken?.icon} className="ml-8" />
           </dd>
         </div>
-        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
-            Upside leverage
-            <InfoTooltip>Junior positions will have their upside amplified by this much</InfoTooltip>
-          </Text>
-          <dd>
-            <Text type="p1" weight="semibold" color="purple">
-              {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
-            </Text>
-          </dd>
-        </div>
-        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+        {/* <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="caption" weight="medium" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             Downside leverage
             <InfoTooltip>
               {`How much of every 1% move to the downside in ${item.poolToken.symbol} price a junior position will have exposure to.`}
@@ -444,7 +466,7 @@ const PoolCardInner = ({
           </Text>
           <dd>
             <Text
-              type="p1"
+              type="body1"
               weight="semibold"
               color="purple"
               tooltip={`You have this amount of downside leverage, until the ${
@@ -456,31 +478,48 @@ const PoolCardInner = ({
               {downsideLeverage ? `≤${formatNumber(downsideLeverage)}x` : `-`}
             </Text>
             <div className="flex align-center justify-end">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="medium" color="secondary">
                 {formatToken(tokenInOracleValueLeverage) ?? '-'}
               </Text>
               <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
             </div>
           </dd>
-        </div>
-        <hr className="mb-24" />
-        <div className={classNames(s.poolCardDlRow, 'mb-24')}>
-          <Text type="small" weight="semibold" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+        </div> */}
+        {/* <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+          <Text type="caption" weight="medium" color="secondary" className="flex align-middle col-gap-4" tag="dt">
             {poolToken?.symbol} current price
           </Text>
           <dd className="flex align-center justify-end">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(tokenInOracleValue) ?? '-'}
             </Text>
             <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
           </dd>
-        </div>
+        </div> */}
+        {!isEstimate && (
+          <div className={classNames(s.poolCardDlRow, 'mb-24')}>
+            <Text type="caption" weight="medium" color="secondary" className="flex align-middle col-gap-4" tag="dt">
+              Epoch ends in
+            </Text>
+            <dd className="flex align-center justify-end">
+              <UseLeftTime delay={1_000}>
+                {() => (
+                  <Text type="body2" weight="medium">
+                    {getFormattedDuration(tillNextEpoch(item), undefined, {
+                      format: ['months', 'days', 'hours', 'minutes'],
+                    })}
+                  </Text>
+                )}
+              </UseLeftTime>
+            </dd>
+          </div>
+        )}
       </dl>
-      <footer className={s.poolCardFooter}>
+      {/* <footer className={s.poolCardFooter}>
         <Link variation="ghost" to={`${location.pathname}/${item.poolAddress}`}>
           View details
         </Link>
-      </footer>
+      </footer> */}
     </section>
   );
 };
@@ -499,10 +538,10 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
             <div className="flex align-center">
               <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
               <div>
-                <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+                <Text type="body2" weight="semibold" color="primary" tag="h2" className="mb-4">
                   {item.poolName}
                 </Text>
-                <Text type="small" weight="semibold" color="red" tag="small">
+                <Text type="caption" weight="medium" color="red" tag="small" style={{ display: 'block' }}>
                   Epoch {item.state.epoch}
                 </Text>
               </div>
@@ -519,7 +558,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
                 const tne = tillNextEpoch(item);
 
                 return (
-                  <Text type="p1" weight="semibold">
+                  <Text type="body1" weight="semibold">
                     {getFormattedDuration(tne, undefined, {
                       format: ['months', 'days', 'hours', 'minutes'],
                     })}
@@ -532,6 +571,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
       },
       {
         heading: 'Epoch senior liquidity',
+        align: 'right',
         render: function Render(item) {
           const { getToken } = useTokens();
           const poolToken = getToken(item.poolToken.symbol);
@@ -539,10 +579,10 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
           return (
             <div className="flex align-center justify-end">
               <Text
-                type="p1"
+                type="body1"
                 weight="semibold"
                 tooltip={
-                  <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                  <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                     <span>
                       {formatToken(item.state.seniorLiquidity, {
                         tokenName: item.poolToken.symbol,
@@ -575,7 +615,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         align: 'right',
         render: item => {
           return (
-            <Text type="p1" weight="semibold" color="green">
+            <Text type="body1" weight="semibold" color="green">
               {formatPercent(Number(item.state.upsideExposureRate))}
             </Text>
           );
@@ -595,7 +635,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         align: 'right',
         render: item => {
           return (
-            <Text type="p1" weight="semibold" color="green">
+            <Text type="body1" weight="semibold" color="green">
               {formatPercent(Number(item.state.downsideProtectionRate))}
             </Text>
           );
@@ -611,10 +651,10 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
           return (
             <div className="flex align-center justify-end">
               <Text
-                type="p1"
+                type="body1"
                 weight="semibold"
                 tooltip={
-                  <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                  <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                     <span>
                       {formatToken(item.state.juniorLiquidity, {
                         tokenName: item.poolToken.symbol,
@@ -652,7 +692,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
             : new BigNumber(1);
 
           return (
-            <Text type="p1" weight="semibold" color="purple">
+            <Text type="body1" weight="semibold" color="purple">
               {upsideLeverage ? `${formatNumber(upsideLeverage)}x` : `-`}
             </Text>
           );
@@ -698,7 +738,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
           return (
             <>
               <Text
-                type="p1"
+                type="body1"
                 weight="semibold"
                 color="purple"
                 tooltip={`You have this amount of downside leverage, until the ${
@@ -711,7 +751,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
               </Text>
 
               <div className="flex align-center justify-end">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="medium" color="secondary">
                   {formatToken(tokenInOracleValueLeverage) ?? '-'}
                 </Text>
                 <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
@@ -733,7 +773,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
 
           return (
             <div className="flex align-center justify-end">
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatToken(tokenInOracleValue) ?? '-'}
               </Text>
               <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
@@ -756,10 +796,10 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
           <div className="flex align-center">
             <TokenIcon name={poolToken?.icon} size={40} bubble2Name={oracleToken?.icon} className="mr-16" />
             <div>
-              <Text type="p1" weight="semibold" color="primary" tag="h2" className="mb-4">
+              <Text type="body2" weight="semibold" color="primary" tag="h2" className="mb-4">
                 {item.poolName}
               </Text>
-              <Text type="small" weight="semibold" color="red" tag="small">
+              <Text type="caption" weight="medium" color="red" tag="small" style={{ display: 'block' }}>
                 Epoch {item.state.epoch}
               </Text>
             </div>
@@ -769,6 +809,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
     },
     {
       heading: 'Epoch senior liquidity',
+      align: 'right',
       render: function Render(item) {
         const { getToken } = useTokens();
         const poolToken = getToken(item.poolToken.symbol);
@@ -779,10 +820,10 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         return (
           <div className="flex align-center justify-end">
             <Text
-              type="p1"
+              type="body1"
               weight="semibold"
               tooltip={
-                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                   <span>
                     {formatToken(seniorLiquidity, {
                       tokenName: item.poolToken.symbol,
@@ -816,7 +857,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         const upsideRate = nextEpochEstimates[2]?.unscaleBy(SMART_ALPHA_DECIMALS);
 
         return (
-          <Text type="p1" weight="semibold" color="green">
+          <Text type="body1" weight="semibold" color="green">
             {formatPercent(upsideRate)}
           </Text>
         );
@@ -838,7 +879,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         const downsideRate = nextEpochEstimates[3]?.unscaleBy(SMART_ALPHA_DECIMALS);
 
         return (
-          <Text type="p1" weight="semibold" color="green">
+          <Text type="body1" weight="semibold" color="green">
             {formatPercent(downsideRate)}
           </Text>
         );
@@ -856,10 +897,10 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         return (
           <div className="flex align-center justify-end">
             <Text
-              type="p1"
+              type="body1"
               weight="semibold"
               tooltip={
-                <Text type="p2" color="primary" className="flex flow-row row-gap-4">
+                <Text type="body2" color="primary" className="flex flow-row row-gap-4">
                   <span>
                     {formatToken(juniorLiquidity, {
                       tokenName: item.poolToken.symbol,
@@ -890,7 +931,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         const { nextEpochUpsideLeverage } = useNextEpochEstimate(item.poolAddress);
 
         return (
-          <Text type="p1" weight="semibold" color="purple">
+          <Text type="body1" weight="semibold" color="purple">
             {nextEpochUpsideLeverage ? `${formatNumber(nextEpochUpsideLeverage)}x` : `-`}
           </Text>
         );
@@ -930,7 +971,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
         return (
           <>
             <Text
-              type="p1"
+              type="body1"
               weight="semibold"
               color="purple"
               tooltip={`You have this amount of downside leverage, until the ${
@@ -943,7 +984,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
             </Text>
 
             <div className="flex align-center justify-end">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="medium" color="secondary">
                 {formatToken(tokenInOracleValueLeverage) ?? '-'}
               </Text>
               <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />
@@ -965,7 +1006,7 @@ function getColumns(epochType: EpochTypeKey): ColumnType<PoolApiType>[] {
 
         return (
           <div className="flex align-center justify-end">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(tokenInOracleValue) ?? '-'}
             </Text>
             <TokenIcon name={oracleToken?.icon} size={16} className="ml-4" />

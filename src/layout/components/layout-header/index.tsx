@@ -1,22 +1,28 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Route, Switch } from 'react-router-dom';
-import cn from 'classnames';
+import classNames from 'classnames';
+import { nanoid } from 'nanoid';
 import { shortenAddr } from 'web3/utils';
 
 import Popover from 'components/antd/popover';
+import Tooltip from 'components/antd/tooltip';
 import { Button, ExplorerAddressLink, Link } from 'components/button';
 import { Badge, SquareBadge } from 'components/custom/badge';
 import IconOld from 'components/custom/icon';
+import { IconNotification } from 'components/custom/icon-notification';
 import Identicon from 'components/custom/identicon';
 import { Text } from 'components/custom/typography';
-import { Icon } from 'components/icon';
+import { Icon, IconNames } from 'components/icon';
+import { Modal } from 'components/modal';
 import { useGeneral } from 'components/providers/generalProvider';
 import { useKnownTokens } from 'components/providers/knownTokensProvider';
 import { useNetwork } from 'components/providers/networkProvider';
+import { useNotifications } from 'components/providers/notificationsProvider';
 import { useTokens } from 'components/providers/tokensProvider';
 import { useWeb3 } from 'components/providers/web3Provider';
 import { TokenIcon } from 'components/token-icon';
 import { useFetchQueuePositions } from 'modules/smart-alpha/api';
+import Notifications from 'wallets/components/notifications';
 import GnosisSafeConfig from 'wallets/connectors/gnosis-safe';
 import MetamaskWalletConfig, { MetamaskConnector } from 'wallets/connectors/metamask';
 import { useWallet } from 'wallets/walletProvider';
@@ -30,23 +36,138 @@ const LayoutHeader: React.FC = () => {
   const { activeNetwork } = useNetwork();
 
   return (
-    <header className={s.component}>
-      <button type="button" className={s.burger} onClick={() => setNavOpen(!navOpen)}>
-        <Icon name={navOpen ? 'close' : 'burger'} className="hidden-desktop" color="icon" />
-        <Icon name="arrow" rotate={navOpen ? 180 : 0} size={12} className="hidden-mobile hidden-tablet" />
+    <header className={s.header}>
+      <button
+        type="button"
+        className={classNames(s.actionButton, 'hidden-desktop', 'mr-16')}
+        onClick={() => setNavOpen(!navOpen)}>
+        <Icon name={navOpen ? 'close' : 'burger'} color="icon" />
       </button>
-      <IconOld name="bond-square-token" className={s.logo} />
-      <Text type="h3" weight="semibold" color="primary" className={s.title}>
+      <div className={s.title}>
         <Switch>
-          <Route path="/yield-farming">Yield Farming</Route>
-          <Route path="/governance">Governance</Route>
-          <Route path="/smart-yield">SMART Yield</Route>
-          <Route path="/smart-exposure">SMART Exposure</Route>
-          <Route path="/smart-alpha">SMART Alpha</Route>
-          <Route path="/faucets">Faucets</Route>
-          <Route path="*">BarnBridge</Route>
+          <Route path="/yield-farming">
+            <Logo name="menu-yf" className="mr-12" />
+            <div>
+              <Text type="caption" weight="bold" color="blue">
+                Yield
+              </Text>
+              <Text type="body1" weight="medium">
+                Farming
+              </Text>
+            </div>
+          </Route>
+          <Route path="/governance">
+            <Logo name="menu-dao" className="mr-12" />
+            <div>
+              <Text type="body1" weight="medium">
+                Governance
+              </Text>
+            </div>
+          </Route>
+          <Route path="/smart-yield">
+            <Logo name="menu-sy" className="mr-12" />
+            <div>
+              <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text>
+              <Text type="body1" weight="medium">
+                Yield
+              </Text>
+            </div>
+          </Route>
+          <Route path="/smart-exposure">
+            <Logo name="menu-se" className="mr-12" />
+            <div>
+              <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text>
+              <Text type="body1" weight="medium">
+                Exposure
+              </Text>
+            </div>
+          </Route>
+          <Route path="/smart-alpha">
+            <Logo name="menu-sa" className="mr-12" />
+            <div>
+              <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text>
+              <Text type="body1" weight="medium">
+                Alpha
+              </Text>
+            </div>
+          </Route>
+          <Route path="/faucets">
+            <Icon
+              name="menu-sa"
+              size={40}
+              style={
+                {
+                  '--icon-display__light': 'none',
+                  '--icon-display__dark': 'none',
+                  '--icon-display__hover': 'block',
+                } as React.CSSProperties
+              }
+              className="mr-12"
+            />
+            <div>
+              {/* <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text> */}
+              <Text type="body1" weight="medium">
+                Faucets
+              </Text>
+            </div>
+          </Route>
+          <Route path="*">
+            <IconOld name="bond-square-token" width={40} height={40} className="mr-12" />
+            <div>
+              {/* <Text type="caption" weight="bold" color="red">
+                SMART
+              </Text> */}
+              <Text type="body1" weight="medium">
+                BarnBridge
+              </Text>
+            </div>
+          </Route>
         </Switch>
-      </Text>
+      </div>
+      <nav className={classNames(s.nav, 'hidden-mobile', 'hidden-tablet')}>
+        {/* <Link variation="text-alt" to="/" className={s.navGroupLink}>
+          Home
+        </Link> */}
+        <div className={s.navGroup}>
+          <button className={s.navGroupTitle}>
+            Products
+            <Icon name="chevron" size={16} className="ml-4" rotate={90} />
+          </button>
+          <div className={s.navDropdown}>
+            <Link variation="text-alt" to="/smart-yield">
+              SMART Yield
+            </Link>
+            <Link variation="text-alt" to="/smart-alpha">
+              SMART Alpha
+            </Link>
+            <Link variation="text-alt" to="/smart-exposure">
+              SMART Exposure
+            </Link>
+          </div>
+        </div>
+        <div className={s.navGroup}>
+          <button className={s.navGroupTitle}>
+            DAO
+            <Icon name="chevron" size={16} className="ml-4" rotate={90} />
+          </button>
+          <div className={s.navDropdown}>
+            <Link variation="text-alt" to="/yield-farming">
+              Yield Farming
+            </Link>
+            <Link variation="text-alt" to="/governance">
+              Governance
+            </Link>
+          </div>
+        </div>
+      </nav>
       <div className="flex align-center col-gap-16 ml-auto">
         {!isProductionMode && (
           <Switch>
@@ -58,12 +179,42 @@ const LayoutHeader: React.FC = () => {
         {activeNetwork.config.features.addBondToken && <AddTokenAction />}
         <NetworkAction />
         <WalletAction />
+        <NotificationsAction />
+        <ToggleThemeButton />
       </div>
     </header>
   );
 };
 
 export default LayoutHeader;
+
+const Logo: React.FC<{ name: IconNames; size?: number; className?: string }> = ({ name, size = 40, ...rest }) => {
+  const id = useMemo(nanoid, []);
+
+  return (
+    <svg width={size} height={size} {...rest}>
+      <mask id={id}>
+        <rect width={size} height={size} fill="white" />
+        <circle cx="75%" cy="75%" r="30%" fill="black" />
+      </mask>
+      <g mask={`url(#${id})`}>
+        <Icon
+          name={name}
+          size={size}
+          style={
+            {
+              '--icon-display__light': 'none',
+              '--icon-display__dark': 'none',
+              '--icon-display__hover': 'block',
+            } as React.CSSProperties
+          }
+        />
+      </g>
+      {/* @ts-ignore */}
+      <TokenIcon name="bond" size="50%" x="50%" y="50%" />
+    </svg>
+  );
+};
 
 const PositionsAction: React.FC = () => {
   const { data } = useFetchQueuePositions();
@@ -82,9 +233,9 @@ const PositionsAction: React.FC = () => {
       visible={visible}
       onVisibleChange={setVisible}
       content={
-        <div className={cn('card', s.notifications)}>
+        <div className={classNames('card', s.notifications)}>
           <div className="card-header flex">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Queued positions
             </Text>
           </div>
@@ -97,10 +248,10 @@ const PositionsAction: React.FC = () => {
                 <li key={idx} className={s.queuedPosition}>
                   <TokenIcon name={poolToken?.icon} bubble2Name={oracleToken?.icon} size={40} className="mr-16" />
                   <div className="mr-16">
-                    <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                    <Text type="body1" weight="semibold" color="primary" className="mb-4">
                       {item.poolName}
                     </Text>
-                    <Text type="small" weight="semibold" color="secondary">
+                    <Text type="caption" weight="semibold" color="secondary">
                       {`${item.tranche === 'SENIOR' ? 'Senior' : 'Junior'} ${item.queueType} queue`}
                     </Text>
                   </div>
@@ -149,7 +300,7 @@ const AddTokenAction: React.FC = () => {
   }
 
   return wallet.meta === MetamaskWalletConfig ? (
-    <button type="button" onClick={handleAddProjectToken} className={cn(s.actionButton, 'hidden-mobile')}>
+    <button type="button" onClick={handleAddProjectToken} className={classNames(s.actionButton, 'hidden-mobile')}>
       <IconOld name="bond-add-token" />
     </button>
   ) : null;
@@ -163,11 +314,11 @@ const NetworkAction: React.FC = () => {
     <button
       type="button"
       onClick={() => showNetworkSelect()}
-      className={cn(s.actionButton, 'hidden-mobile hidden-tablet')}>
-      <Icon name={activeNetwork.meta.logo} size={24} className="mr-8" />
-      <Text type="p2" weight="semibold" color="secondary">
+      className={classNames(s.actionButton, 'hidden-mobile hidden-tablet')}>
+      <Icon name={activeNetwork.meta.logo} size={24} />
+      {/* <Text type="body2" weight="semibold" color="secondary">
         {activeNetwork.meta.name}
-      </Text>
+      </Text> */}
     </button>
   );
 };
@@ -197,7 +348,7 @@ const WalletAction: React.FC = () => {
                 <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
               )}
               <ExplorerAddressLink address={wallet.account}>
-                <Text type="p1" weight="semibold" color="blue">
+                <Text type="body1" weight="semibold" color="blue">
                   {wallet.ens.name || shortenAddr(wallet.account, 8, 8)}
                 </Text>
               </ExplorerAddressLink>
@@ -205,7 +356,7 @@ const WalletAction: React.FC = () => {
             <div className="pv-24 ph-32">
               <div className="flex align-center mb-32">
                 <Icon name="status" className="mr-16" color="secondary" />
-                <Text type="p1" color="secondary" className="mr-16">
+                <Text type="body1" color="secondary" className="mr-16">
                   Status
                 </Text>
                 <Badge color="green" className="ml-auto">
@@ -214,10 +365,10 @@ const WalletAction: React.FC = () => {
               </div>
               <div className="flex align-center mb-32">
                 <Icon name="wallet" className="mr-16" color="secondary" />
-                <Text type="p1" color="secondary" className="mr-16">
+                <Text type="body1" color="secondary" className="mr-16">
                   Wallet
                 </Text>
-                <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+                <Text type="body1" weight="semibold" color="primary" className="ml-auto">
                   {wallet.connecting?.name}
                 </Text>
               </div>
@@ -267,7 +418,7 @@ const WalletAction: React.FC = () => {
               <Identicon address={wallet.account} width={40} height={40} className="mr-16" />
             )}
             <ExplorerAddressLink address={wallet.account}>
-              <Text type="p1" weight="semibold" color="blue">
+              <Text type="body1" weight="semibold" color="blue">
                 {wallet.ens.name || shortenAddr(wallet.account, 8, 8)}
               </Text>
             </ExplorerAddressLink>
@@ -275,7 +426,7 @@ const WalletAction: React.FC = () => {
           <div className="pv-24 ph-32">
             <div className="flex align-center mb-32">
               <Icon name="status" className="mr-16" color="secondary" />
-              <Text type="p1" color="secondary" className="mr-16">
+              <Text type="body1" color="secondary" className="mr-16">
                 Status
               </Text>
               <Badge color="green" className="ml-auto">
@@ -284,19 +435,19 @@ const WalletAction: React.FC = () => {
             </div>
             <div className="flex align-center mb-32">
               <Icon name="wallet" className="mr-16" color="secondary" />
-              <Text type="p1" color="secondary" className="mr-16">
+              <Text type="body1" color="secondary" className="mr-16">
                 Wallet
               </Text>
-              <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+              <Text type="body1" weight="semibold" color="primary" className="ml-auto">
                 {wallet.meta?.name}
               </Text>
             </div>
             <div className="flex align-center">
               <Icon name="network" className="mr-16" color="secondary" />
-              <Text type="p1" color="secondary" className="mr-16">
+              <Text type="body1" color="secondary" className="mr-16">
                 Network
               </Text>
-              <Text type="p1" weight="semibold" color="primary" className="ml-auto">
+              <Text type="body1" weight="semibold" color="primary" className="ml-auto">
                 {activeNetwork.meta.name}
               </Text>
             </div>
@@ -319,5 +470,76 @@ const WalletAction: React.FC = () => {
         <div className="hidden-mobile">{wallet.ens.name || shortenAddr(wallet.account, 4, 3)}</div>
       </button>
     </Popover>
+  );
+};
+
+const NotificationsAction: React.FC = () => {
+  const { setNotificationsReadUntil, notifications, notificationsReadUntil } = useNotifications();
+  const [open, setOpen] = useState(false);
+
+  const markAllAsRead = () => {
+    if (notifications.length) {
+      setNotificationsReadUntil(Math.max(...notifications.map(n => n.startsOn)));
+    }
+  };
+  const hasUnread = notificationsReadUntil ? notifications.some(n => n.startsOn > notificationsReadUntil) : false;
+
+  return (
+    <>
+      {open && (
+        <Modal heading="Notifications" closeHandler={() => setOpen(false)}>
+          <div className="flex">
+            {hasUnread && (
+              <Button type="button" variation="link" className="ml-auto" onClick={markAllAsRead}>
+                Mark all as read
+              </Button>
+            )}
+          </div>
+          <Notifications />
+        </Modal>
+      )}
+      <button
+        type="button"
+        className={classNames(s.actionButton, 'hidden-mobile hidden-tablet')}
+        onClick={() => setOpen(prevOpen => !prevOpen)}>
+        <IconNotification width={24} height={24} notificationSize={8} bubble={hasUnread} className={s.notificationIcon}>
+          <Icon name="bell" />
+        </IconNotification>
+      </button>
+    </>
+  );
+};
+
+const ToggleThemeButton = () => {
+  const { toggleTheme, selectedTheme } = useGeneral();
+
+  let text;
+  let iconName: IconNames;
+
+  if (selectedTheme === 'light') {
+    text = 'Light Theme';
+    iconName = 'light-mode';
+  } else if (selectedTheme === 'dark') {
+    text = 'Dark Theme';
+    iconName = 'dark-mode';
+  } else {
+    text = 'Auto Theme (OS)';
+    iconName = 'auto';
+  }
+
+  return (
+    <Tooltip title={text} placement="topLeft">
+      <button
+        type="button"
+        onClick={toggleTheme}
+        className={classNames(s.actionButton, 'hidden-mobile hidden-tablet')}
+        style={{
+          position: 'fixed',
+          right: '8px',
+          bottom: '8px',
+        }}>
+        <Icon name={iconName} size={24} />
+      </button>
+    </Tooltip>
   );
 };

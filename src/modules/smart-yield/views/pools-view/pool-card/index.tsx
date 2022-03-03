@@ -87,7 +87,7 @@ export const PoolCard: FC<PoolCardProps> = props => {
             size={36}
             className="mr-16"
           />
-          <Text type="p1" weight="semibold">
+          <Text type="body1" weight="semibold">
             {smartYield.symbol}
           </Text>
         </header>

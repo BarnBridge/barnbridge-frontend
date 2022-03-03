@@ -39,7 +39,7 @@ const ProposalAbrogationCard: React.FC = () => {
     <>
       <div className="card">
         <div className="card-header">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             Abrogation proposal
           </Text>
         </div>
@@ -51,37 +51,37 @@ const ProposalAbrogationCard: React.FC = () => {
           )}
           {proposalCtx.isCanceled === false && (
             <Grid flow="row" gap={24}>
-              <Text type="p1" color="primary">
+              <Text type="body1" color="primary">
                 This is a special type of proposal, with the following thresholds:
               </Text>
               <ul>
                 <li>
-                  <Text type="p1" color="primary">
+                  <Text type="body1" color="primary">
                     Acceptance criteria: 50% of staked BOND
                   </Text>
                 </li>
                 <li>
-                  <Text type="p1" color="primary">
+                  <Text type="body1" color="primary">
                     A proposal can only have one associated abrogation proposal at any given time
                   </Text>
                 </li>
                 <li>
-                  <Text type="p1" color="primary">
+                  <Text type="body1" color="primary">
                     Anyone can vote on these proposals
                   </Text>
                 </li>
                 <li>
-                  <Text type="p1" color="primary">
+                  <Text type="body1" color="primary">
                     There is a new snapshot for voter balances - taken at Abrogation Proposal’s start time
                   </Text>
                 </li>
                 <li>
-                  <Text type="p1" color="primary">
+                  <Text type="body1" color="primary">
                     Abrogation Proposal’s duration is never greater than the Initial Proposal’s queue period
                   </Text>
                 </li>
                 <li>
-                  <Text type="p1" color="primary">
+                  <Text type="body1" color="primary">
                     When someone goes to execute the Initial Proposal - there is a check if an Abrogation Proposal that
                     met its acceptance criteria exists
                   </Text>
@@ -99,7 +99,7 @@ const ProposalAbrogationCard: React.FC = () => {
 
                 {!hasThreshold && (
                   <Grid flow="col" gap={8} align="center">
-                    <Text type="small" weight="semibold" color="secondary">
+                    <Text type="caption" weight="semibold" color="secondary">
                       You are not able to abrogate proposal.
                     </Text>
                     <Popover
@@ -107,7 +107,7 @@ const ProposalAbrogationCard: React.FC = () => {
                       placement="bottomLeft"
                       overlayStyle={{ width: 520 }}
                       content={
-                        <Text type="p2" weight="semibold">
+                        <Text type="body2" weight="semibold">
                           You don’t have enough voting power to create an abrogation proposal. The creator of an
                           abrogation proposal needs to have a voting power of at least {daoCtx.minThreshold}% of the
                           amount of $BOND staked in the DAO.
@@ -125,7 +125,7 @@ const ProposalAbrogationCard: React.FC = () => {
           {proposalCtx.isCanceled === true && (
             <Grid flow="row" gap={24}>
               {proposalCtx.proposal?.state === APIProposalState.QUEUED && (
-                <Text type="p1" color="primary">
+                <Text type="body1" color="primary">
                   Abrogation proposal currently in progress.
                 </Text>
               )}

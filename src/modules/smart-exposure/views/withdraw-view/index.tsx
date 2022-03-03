@@ -80,44 +80,44 @@ const WithdrawView: React.FC = () => {
         <div className="flex">
           <TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={40} className="mr-16" />
           <div>
-            <div className="text-p1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
+            <div className="text-body1 fw-semibold color-primary mr-4">{`${Number(tranche.tokenARatio) * 100}% ${
               tranche.tokenA.symbol
             } / ${Number(tranche.tokenBRatio) * 100}% ${tranche.tokenB.symbol}`}</div>
-            <div className="text-sm fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
+            <div className="text-caption fw-semibold color-secondary">{`${tokenA?.name} / ${tokenB?.name}`}</div>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.tokenA.symbol} balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet {tranche.tokenA.symbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">
+            <span className="text-body1 fw-semibold color-primary mr-8">
               {formatToken(tokenAContract.getBalanceOf(wallet.account), {
                 scale: tranche.tokenA.decimals,
               }) ?? '-'}
             </span>
-            <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol}</span>
+            <span className="text-captionption fw-semibold color-secondary">{tranche.tokenA.symbol}</span>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.tokenB.symbol} balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet {tranche.tokenB.symbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">
+            <span className="text-body1 fw-semibold color-primary mr-8">
               {' '}
               {formatToken(tokenBContract.getBalanceOf(wallet.account), {
                 scale: tranche.tokenB.decimals,
               }) ?? '-'}
             </span>
-            <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol}</span>
+            <span className="text-caption fw-semibold color-secondary">{tranche.tokenB.symbol}</span>
           </div>
         </div>
         <div>
-          <div className="text-sm fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
+          <div className="text-caption fw-semibold color-secondary mb-4">Wallet {tranche.eTokenSymbol} balance</div>
           <div>
-            <span className="text-p1 fw-semibold color-primary mr-8">
+            <span className="text-body1 fw-semibold color-primary mr-8">
               {formatToken(tokenEContract.getBalanceOf(wallet.account), {
                 scale: tokenEContract.decimals,
               }) ?? '-'}
             </span>
-            <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
+            <span className="text-caption fw-semibold color-secondary">{tranche.eTokenSymbol}</span>
           </div>
         </div>
       </div>
@@ -130,7 +130,7 @@ const WithdrawView: React.FC = () => {
         <Text type="h3" weight="semibold" color="primary" className="mb-16">
           Withdraw
         </Text>
-        <Text type="p2" weight="semibold" color="secondary" className="mb-32">
+        <Text type="body2" weight="semibold" color="secondary" className="mb-32">
           {activeTab === 'multiple'
             ? 'Withdraw from your position by burning eTokens of this tranche for the underlying tranche tokens according to the current tranche ratio.'
             : 'Withdraw from your position by burning eTokens of this tranche for one of the underlying tranche tokens. The second underlying token will be swapped for the token you want to receive, which is where the slippage and deadline parameters will be used.'}

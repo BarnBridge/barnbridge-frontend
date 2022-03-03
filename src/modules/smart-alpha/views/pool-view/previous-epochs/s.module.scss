@@ -22,7 +22,7 @@
   color: #fff;
   display: grid;
   place-items: center;
-  font: var(--font-sm-bold);
+  font: var(--font-caption-bold);
   padding: 4px;
 }
 
@@ -117,7 +117,7 @@
   background: var(--theme-body-color);
   border-radius: 42px;
   padding: 4px 16px;
-  font: var(--font-sm-semibold);
+  font: var(--font-caption-semibold);
 }
 
 .list {

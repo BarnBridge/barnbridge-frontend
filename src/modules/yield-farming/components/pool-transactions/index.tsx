@@ -62,11 +62,11 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           <div className="flex flow-col col-gap-16 align-center">
             <TokenIcon name={knownToken.icon} size={40} />
             <div>
-              <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {entity.actionType === APIYFPoolActionType.DEPOSIT && 'Stake'}
                 {entity.actionType === APIYFPoolActionType.WITHDRAW && 'Unstake'}
               </Text>
-              <Text type="small" weight="semibold" wrap={false}>
+              <Text type="caption" weight="semibold" wrap={false}>
                 {knownToken.name}
               </Text>
             </div>
@@ -90,14 +90,14 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
 
         return (
           <>
-            <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+            <Text type="body1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
               {isStake ? '+' : '-'}
               {formatToken(amount, {
                 tokenName: knownToken.symbol,
                 decimals: knownToken.decimals,
               }) ?? '-'}
             </Text>
-            <Text type="small" weight="semibold" wrap={false}>
+            <Text type="caption" weight="semibold" wrap={false}>
               {formatUSD(convertTokenInUSD(amount, knownToken.symbol))}
             </Text>
           </>
@@ -112,7 +112,7 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
           render: function Render(_, entity) {
             return (
               <ExplorerAddressLink address={entity.userAddress} variation="link">
-                <Text type="p1" weight="semibold">
+                <Text type="body1" weight="semibold">
                   {shortenAddr(entity.userAddress)}
                 </Text>
               </ExplorerAddressLink>
@@ -126,11 +126,11 @@ function getColumns(isAll: boolean): ColumnsType<TableEntity> {
       render: (_, entity) => (
         <>
           <ExplorerTxLink address={entity.transactionHash} variation="link" className="mb-4">
-            <Text type="p1" weight="semibold">
+            <Text type="body1" weight="semibold">
               {shortenAddr(entity.transactionHash)}
             </Text>
           </ExplorerTxLink>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatDateTime(entity.blockTimestamp * 1_000)}
           </Text>
         </>
@@ -338,7 +338,7 @@ const PoolTransactions: FC = () => {
           pageSize: state.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} transactions
             </Text>
           ),

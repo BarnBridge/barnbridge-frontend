@@ -1,11 +1,11 @@
 .recharts-legend-item-text {
-  font-size: var(--font-size-p2);
+  font-size: var(--font-size-body2);
   font-weight: 600;
-  line-height: calc(var(--font-size-p2) + 10px);
+  line-height: calc(var(--font-size-body2) + 10px);
 }
 
 .chart-label {
-  font: var(--font-sm);
+  font: var(--font-caption);
   font-weight: 600;
   background: var(--bg-color, var(--theme-body-color));
   color: var(--theme-secondary-color);
@@ -26,8 +26,8 @@
 }
 
 .recharts-text.recharts-cartesian-axis-tick-value {
-  font-size: var(--font-size-sm);
-  line-height: calc(var(--font-size-sm) + 4px);
+  font-size: var(--font-size-caption);
+  line-height: calc(var(--font-size-caption) + 4px);
   color: var(--theme-default-color);
 }
 

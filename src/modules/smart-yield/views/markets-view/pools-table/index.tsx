@@ -58,7 +58,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
             />
             <div>
               <div className="mb-4 flex align-center">
-                <Text type="p1" weight="semibold" wrap={false} color="primary" className="mr-4">
+                <Text type="body1" weight="semibold" wrap={false} color="primary" className="mr-4">
                   {entity.underlyingSymbol}
                 </Text>
                 {marketInsuranceLink ? (
@@ -90,7 +90,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
                   </Tooltip>
                 ) : null}
               </div>
-              <Text type="small" weight="semibold" wrap={false}>
+              <Text type="caption" weight="semibold" wrap={false}>
                 {entity.token?.name}
               </Text>
             </div>
@@ -112,23 +112,23 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
           <Tooltip
             title={
               <>
-                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                <Text type="body1" weight="semibold" color="primary" className="mb-4">
                   {formatToken(entity.state.seniorLiquidity, {
                     tokenName: entity.underlyingSymbol,
                   })}
                 </Text>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatUSD(sum)}
                 </Text>
               </>
             }>
-            <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
+            <Text type="body1" weight="semibold" color="primary" wrap={false} className="mb-4">
               {formatToken(entity.state.seniorLiquidity, {
                 tokenName: entity.underlyingSymbol,
                 compact: true,
               })}
             </Text>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {formatUSD(sum, {
                 compact: true,
               })}
@@ -141,7 +141,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
       heading: (
         <Hint
           text={
-            <Text type="p2" className="mb-8">
+            <Text type="body2" className="mb-8">
               The Senior APY shown is the maximum theoretically possible daily rate for senior bonds.
             </Text>
           }>
@@ -149,7 +149,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
         </Hint>
       ),
       render: entity => (
-        <Text type="p1" weight="semibold" color="green">
+        <Text type="body1" weight="semibold" color="green">
           {formatPercent(entity.state.seniorApy)}
         </Text>
       ),
@@ -168,23 +168,23 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
           <Tooltip
             title={
               <>
-                <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                <Text type="body1" weight="semibold" color="primary" className="mb-4">
                   {formatToken(entity.state.juniorLiquidity, {
                     tokenName: entity.underlyingSymbol,
                   })}
                 </Text>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatUSD(sum)}
                 </Text>
               </>
             }>
-            <Text type="p1" weight="semibold" color="primary" wrap={false} className="mb-4">
+            <Text type="body1" weight="semibold" color="primary" wrap={false} className="mb-4">
               {formatToken(entity.state.juniorLiquidity, {
                 tokenName: entity.underlyingSymbol,
                 compact: true,
               })}
             </Text>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {formatUSD(sum, {
                 compact: true,
               })}
@@ -198,11 +198,11 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
         <Hint
           text={
             <>
-              <Text type="p2" className="mb-16">
+              <Text type="body2" className="mb-16">
                 The Junior (Variable) APY is estimated based on the current state of the pool. The actual APY you get
                 for your positions might differ.
               </Text>
-              <Text type="p2" className="mb-8">
+              <Text type="body2" className="mb-8">
                 The number next to it is the SMART Yield junior rewards APR. You can add that by staking tokens in
                 Pools. Below it, is the average Junior (Variable) APY for the past 30 days.
               </Text>
@@ -230,7 +230,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
         return (
           <>
             <div className="flex align-center col-gap-8">
-              <Text type="p1" weight="semibold" color="purple">
+              <Text type="body1" weight="semibold" color="purple">
                 {formatPercent(entity.state.juniorApy)}
               </Text>
               {entity.contracts.rewardPool?.rewardTokensCount! > 1 ? (
@@ -241,7 +241,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
                 <AprLabel icons={['bond']}>+{formatPercent(entity.apr ?? 0)} APR</AprLabel>
               ) : null}
             </div>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {formatPercent(entity.state.juniorAPYPast30DAvg)}
             </Text>
           </>
@@ -252,7 +252,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
       heading: (
         <Hint
           text={
-            <Text type="p2" className="mb-8">
+            <Text type="body2" className="mb-8">
               The originator APY is the APY that deposits get on the 3rd party lending provider. This number includes
               any governance token rewards.
             </Text>
@@ -261,7 +261,7 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
         </Hint>
       ),
       render: entity => (
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           {formatPercent(entity.state.originatorNetApy)}
         </Text>
       ),
@@ -274,12 +274,12 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
               const { getAmountInUSD } = useTokens();
               return (
                 <>
-                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  <Text type="body1" weight="semibold" color="primary" className="mb-4">
                     {formatToken(entity.juniorBalance?.unscaleBy(entity.underlyingDecimals), {
                       tokenName: entity.juniorTokenSymbol,
                     }) ?? '-'}
                   </Text>
-                  <Text type="small" weight="semibold" wrap={false}>
+                  <Text type="caption" weight="semibold" wrap={false}>
                     {formatUSD(
                       getAmountInUSD(
                         entity.juniorBalance
@@ -299,12 +299,12 @@ function getTableColumns(showWalletBalance: boolean, activeMarket: MarketMeta): 
               const { getAmountInUSD } = useTokens();
               return (
                 <>
-                  <Text type="p1" weight="semibold" color="primary" className="mb-4">
+                  <Text type="body1" weight="semibold" color="primary" className="mb-4">
                     {formatToken(entity.seniorBalance?.unscaleBy(entity.underlyingDecimals), {
                       tokenName: entity.underlyingSymbol,
                     }) ?? '-'}
                   </Text>
-                  <Text type="small" weight="semibold" wrap={false}>
+                  <Text type="caption" weight="semibold" wrap={false}>
                     {formatUSD(
                       getAmountInUSD(
                         entity.seniorBalance?.unscaleBy(entity.underlyingDecimals),

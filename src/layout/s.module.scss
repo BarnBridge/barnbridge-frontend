@@ -1,13 +1,3 @@
-.layout {
-  display: flex;
-  min-height: 100vh;
-  background: var(--theme-body-color);
-
-  @media (max-width: 768px) {
-    display: block;
-  }
-}
-
 .main {
   grid-area: content;
   flex-grow: 1;

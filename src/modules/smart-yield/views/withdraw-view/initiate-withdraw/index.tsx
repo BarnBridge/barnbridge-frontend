@@ -76,7 +76,7 @@ const InitiateWithdraw: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Initiate Withdraw
       </Text>
-      <Text type="p2" weight="semibold" className="mb-32">
+      <Text type="body2" weight="semibold" className="mb-32">
         In order to access your liquidity and profits you can withdraw it from the pool.
         <br />
         To do so, you have 2 options:
@@ -85,15 +85,15 @@ const InitiateWithdraw: React.FC = () => {
       <Grid flow="col" gap={32} colsTemplate="1fr 1fr" className="mb-32">
         <RadioCard selected={type === WITHDRAW_TWO_STEP_KEY} onClick={handleTwoStepType}>
           <Icon name="withdrawal_regular" width={64} height={64} className="mb-16" />
-          <Text type="p1" weight="semibold" color="primary" className="mb-16">
+          <Text type="body1" weight="semibold" color="primary" className="mb-16">
             2 step withdraw
           </Text>
-          <Text type="small" weight="semibold" className="mb-4">
+          <Text type="caption" weight="semibold" className="mb-4">
             Wait time
           </Text>
           <UseLeftTime end={(pool?.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
             {leftTime => (
-              <Text type="p1" weight="semibold" color="primary" className="mb-16">
+              <Text type="body1" weight="semibold" color="primary" className="mb-16">
                 {leftTime > 0
                   ? getFormattedDuration(0, (pool?.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)
                   : '0s'}
@@ -108,7 +108,7 @@ const InitiateWithdraw: React.FC = () => {
             <Hint
               text={
                 <Grid flow="row" gap={8} align="start">
-                  <Text type="p2">
+                  <Text type="body2">
                     This value is based on current junior token prices. At the actual maturity date of the junior bond,
                     the price may differ and be higher or lower.
                   </Text>
@@ -120,24 +120,24 @@ const InitiateWithdraw: React.FC = () => {
                   </ExternalLink>
                 </Grid>
               }>
-              <Text type="small" weight="semibold" className="mb-4">
+              <Text type="caption" weight="semibold" className="mb-4">
                 Total withdrawable amount
               </Text>
             </Hint>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatBigValue(getHumanValue(totalWithdrawable, pool?.underlyingDecimals))} {pool?.underlyingSymbol}
             </Text>
           </Tooltip>
         </RadioCard>
         <RadioCard selected={type === WITHDRAW_INSTANT_KEY} onClick={handleInstantType}>
           <Icon name="withdrawal_instant" width={64} height={64} className="mb-16" />
-          <Text type="p1" weight="semibold" color="primary" className="mb-16">
+          <Text type="body1" weight="semibold" color="primary" className="mb-16">
             Instant withdraw
           </Text>
-          <Text type="small" weight="semibold" className="mb-4">
+          <Text type="caption" weight="semibold" className="mb-4">
             Wait time
           </Text>
-          <Text type="p1" weight="semibold" color="primary" className="mb-16">
+          <Text type="body1" weight="semibold" color="primary" className="mb-16">
             None
           </Text>
           <Tooltip
@@ -145,15 +145,15 @@ const InitiateWithdraw: React.FC = () => {
               getHumanValue(totalInstantWithdrawable, pool?.underlyingDecimals),
               pool?.underlyingDecimals,
             )}>
-            <Text type="small" weight="semibold" className="mb-4">
+            <Text type="caption" weight="semibold" className="mb-4">
               Total withdrawable amount
             </Text>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatBigValue(getHumanValue(totalInstantWithdrawable, pool?.underlyingDecimals))}{' '}
               {pool?.underlyingSymbol}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="red">
+          <Text type="caption" weight="semibold" color="red">
             Forfeits: {formatBigValue(getHumanValue(forfeits, pool?.underlyingDecimals), pool?.underlyingDecimals)}{' '}
             {pool?.underlyingSymbol} <Icon name="arrow-top-right" width={9} height={8} rotate={90} color="red" />
           </Text>

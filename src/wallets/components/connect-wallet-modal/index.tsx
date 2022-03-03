@@ -50,7 +50,7 @@ const ConnectWalletModal: React.FC<ConnectWalletModalProps> = props => {
           <Text type="h2" weight="bold" color="primary">
             Connect Wallet
           </Text>
-          <Text type="p1" color="secondary">
+          <Text type="body1" color="secondary">
             Please select the wallet of your liking
           </Text>
         </Grid>

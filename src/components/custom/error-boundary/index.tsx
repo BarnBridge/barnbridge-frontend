@@ -43,7 +43,7 @@ export default class ErrorBoundary extends React.Component<any, State> {
             </Text>
           }
           subTitle={
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Sorry, something went wrong.
             </Text>
           }

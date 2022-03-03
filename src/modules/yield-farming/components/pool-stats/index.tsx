@@ -61,7 +61,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
         <div className="flex flow-row">
           <div className="flex align-center justify-space-between mb-48">
             <Hint text="This number shows the Total Value Locked across the yield farming pool(s), and governance staking.">
-              <Text type="lb2" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 Total Value Locked
               </Text>
             </Hint>
@@ -103,7 +103,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
                   {formatToken(yfTotalSupply) ?? '-'} that are going to be available for Yield Farming.
                 </>
               }>
-              <Text type="lb2" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 Bond Rewards
               </Text>
             </Hint>
@@ -112,7 +112,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             <Text type="h2" weight="bold" color="primary" className="mb-4">
               {formatToken(yfDistributedRewards) ?? '-'}
             </Text>
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               out of {formatToken(yfTotalSupply) ?? '-'}
             </Text>
           </div>
@@ -122,7 +122,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
       <div className="card p-24">
         <div className="flex flow-row">
           <div className="flex align-center justify-space-between mb-48">
-            <Text type="lb2" weight="semibold" color="red">
+            <Text type="caption" weight="semibold" color="red">
               Bond Price
             </Text>
           </div>
@@ -131,7 +131,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
               {formatUSD(projectToken.price) ?? '-'}
             </Text>
             <ExternalLink href={links.uniswapSwap}>
-              <Text type="p1" weight="semibold" color="blue">
+              <Text type="body1" weight="semibold" color="blue">
                 Uniswap market
               </Text>
             </ExternalLink>
@@ -147,7 +147,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
                   epochs that last a week. You can deposit to the pool(s) during the duration of an epoch and receive
                   rewards proportional to the time they are staked, but the funds must stay staked until the clock runs
                   out and the epoch ends in order to be able to harvest the rewards.">
-              <Text type="lb2" weight="semibold" color="red">
+              <Text type="caption" weight="semibold" color="red">
                 Time Left
               </Text>
             </Hint>
@@ -164,7 +164,7 @@ const PoolStats: React.FC<Props> = ({ className }) => {
             ) : (
               '-'
             )}
-            <Text type="p1" color="secondary">
+            <Text type="body1" color="secondary">
               until next epoch
             </Text>
           </div>

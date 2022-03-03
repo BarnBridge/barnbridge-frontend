@@ -1,5 +1,4 @@
 import React, { FC, useState } from 'react';
-import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import ContractListener from 'web3/components/contract-listener';
 import TxConfirmModal, { ConfirmTxModalArgs } from 'web3/components/tx-confirm-modal';
@@ -7,6 +6,7 @@ import { formatToken } from 'web3/utils';
 
 import Spin from 'components/antd/spin';
 import Tooltip from 'components/antd/tooltip';
+import { Button, Link } from 'components/button';
 import { Tabs } from 'components/custom/tabs';
 import { Hint, Text } from 'components/custom/typography';
 import { TokenIcon } from 'components/token-icon';
@@ -107,7 +107,7 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
             size={36}
             className="mr-16"
           />
-          <Text type="p1" weight="semibold">
+          <Text type="body1" weight="semibold">
             {kpiOption.poolToken.symbol}
           </Text>
         </header>
@@ -250,14 +250,14 @@ export const KpiOptionCard: FC<KpiOptionCardProps> = props => {
           </dl>
         )}
         <footer className={s.footer}>
-          <Link className="button-primary full-width" to={`/smart-alpha/kpi-options/${kpiOption.poolAddress}`}>
+          <Link variation="primary" className="full-width" to={`/smart-alpha/kpi-options/${kpiOption.poolAddress}`}>
             View pool
           </Link>
           {walletCtx.isActive && activeTab === TypeKey.my && (
-            <button type="button" className="button-ghost" disabled={!kpiContract.hasToClaim()} onClick={handleClaim}>
+            <Button type="button" variation="ghost" disabled={!kpiContract.hasToClaim()} onClick={handleClaim}>
               {claiming && <Spin type="circle" />}
               Claim
-            </button>
+            </Button>
           )}
         </footer>
       </section>

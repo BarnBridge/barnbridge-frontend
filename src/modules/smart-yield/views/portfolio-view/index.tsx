@@ -16,10 +16,10 @@ const PortfolioView: React.FC = () => {
         <NavLink to="/smart-yield/portfolio" exact className="tab-card" activeClassName="active">
           <Icon name="statistics" width={53} height={40} className="mr-16" />
           <div>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Overview
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Statistics
             </Text>
           </div>
@@ -27,10 +27,10 @@ const PortfolioView: React.FC = () => {
         <NavLink to="/smart-yield/portfolio/senior" className="tab-card" activeClassName="active">
           <Icon name="senior_tranche_simplified" width={53} height={40} className="mr-16" />
           <div>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Senior tranche
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Positions
             </Text>
           </div>
@@ -38,10 +38,10 @@ const PortfolioView: React.FC = () => {
         <NavLink to="/smart-yield/portfolio/junior" className="tab-card" activeClassName="active">
           <Icon name="junior_tranche_simplified" width={53} height={40} className="mr-16" />
           <div>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               Junior tranche
             </Text>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Positions
             </Text>
           </div>

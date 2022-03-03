@@ -1,9 +1,8 @@
 .alert {
-  font: var(--font-p2);
-  font-weight: 600;
+  font: var(--font-body2-medium);
   padding: 16px 24px;
   display: flex;
-  border-radius: 4px;
+  border-radius: 8px;
 
   a {
     color: inherit;
@@ -12,19 +11,16 @@
 }
 
 .info {
-  background: rgba(79, 106, 229, 0.04);
-  border: 1px solid rgba(79, 106, 229, 0.32);
+  background: rgba(68, 139, 244, 0.08);
   color: var(--theme-blue-color);
 }
 
 .warning {
-  background: rgba(var(--theme-yellow-color-rgb), 0.04);
-  border: 1px solid rgba(var(--theme-yellow-color-rgb), 0.32);
+  background: rgba(255, 167, 64, 0.08);
   color: var(--theme-yellow-color);
 }
 
 .error {
-  background: rgba(var(--theme-red-color-rgb), 0.04);
-  border: 1px solid rgba(204, 167, 77, 0.32);
+  background: rgba(255, 67, 57, 0.08);
   color: var(--theme-red-color);
 }

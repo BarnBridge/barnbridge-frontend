@@ -31,11 +31,11 @@ const TokenNameColumn: React.FC = () => {
       />
       <div className="flex flow-row">
         <ExplorerAddressLink address={pool?.underlyingAddress} className="flex flow-col mb-4">
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          <Text type="body1" weight="semibold" color="primary" className="mb-4">
             {pool?.underlyingSymbol}
           </Text>
         </ExplorerAddressLink>
-        <Text type="small" weight="semibold" color="secondary">
+        <Text type="caption" weight="semibold" color="secondary">
           {pool?.market?.name}
         </Text>
       </div>
@@ -61,11 +61,11 @@ const Columns: ColumnsType<TableEntity> = [
               decimals: entity.underlyingTokenDecimals,
               tokenName: entity.underlyingTokenSymbol,
             })}>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            <Text type="body1" weight="semibold" color="primary" className="mb-4">
               {formatToken(entity.depositedAmount) ?? '-'}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(convertTokenInUSD(entity.depositedAmount, entity.underlyingTokenSymbol)) ?? '-'}
           </Text>
         </>
@@ -85,11 +85,11 @@ const Columns: ColumnsType<TableEntity> = [
               decimals: entity.underlyingTokenDecimals,
               tokenName: entity.underlyingTokenSymbol,
             })}>
-            <Text type="p1" weight="semibold" color="primary" className="mb-4">
+            <Text type="body1" weight="semibold" color="primary" className="mb-4">
               {formatToken(entity.redeemableAmount) ?? '-'}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(convertTokenInUSD(entity.redeemableAmount, entity.underlyingTokenSymbol)) ?? '-'}
           </Text>
         </>
@@ -101,7 +101,7 @@ const Columns: ColumnsType<TableEntity> = [
     render: function Render(_, entity) {
       return (
         <ExplorerAddressLink address={entity.accountAddress}>
-          <Text type="p1" weight="semibold" color="blue">
+          <Text type="body1" weight="semibold" color="blue">
             {shortenAddr(entity.accountAddress)}
           </Text>
         </ExplorerAddressLink>
@@ -114,11 +114,11 @@ const Columns: ColumnsType<TableEntity> = [
       return (
         <>
           <ExplorerAddressLink address={entity.transactionHash} className="mb-4">
-            <Text type="p1" weight="semibold" color="blue">
+            <Text type="body1" weight="semibold" color="blue">
               {shortenAddr(entity.transactionHash)}
             </Text>
           </ExplorerAddressLink>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatDateTime(entity.blockTimestamp * 1_000)}
           </Text>
         </>
@@ -130,10 +130,10 @@ const Columns: ColumnsType<TableEntity> = [
     align: 'right',
     render: (_, entity) => (
       <>
-        <Text type="p1" weight="semibold" color="primary" className="mb-4">
+        <Text type="body1" weight="semibold" color="primary" className="mb-4">
           {formatDate(entity.maturityDate * 1_000)}
         </Text>
-        <Text type="small" weight="semibold">
+        <Text type="caption" weight="semibold">
           {formatTime(entity.maturityDate * 1_000)}
         </Text>
       </>
@@ -322,7 +322,7 @@ const SeniorBondsTable: React.FC<Props> = ({ tabs }) => {
           current: state.page,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} entries
             </Text>
           ),

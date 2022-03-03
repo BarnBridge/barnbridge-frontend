@@ -100,7 +100,7 @@ const TransactionCustomization: React.FC<TransactionCustomizationProps> = props 
               type="number"
               className={s.deadlineInput}
               suffix={
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   minutes
                 </Text>
               }
@@ -143,7 +143,7 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
   return (
     <section className={cn(s.container, className)}>
       <header className="flex ph-24 pv-16">
-        <Text type="p2" weight="semibold" color="secondary">
+        <Text type="body2" weight="semibold" color="secondary">
           {props.children}
         </Text>
         <Popover
@@ -170,11 +170,11 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
         {showSlippage && (
           <div className="flex mb-24">
             <Hint text={slippageHint}>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Slippage tolerance
               </Text>
             </Hint>
-            <Text type="small" weight="semibold" color="primary" className="ml-auto">
+            <Text type="caption" weight="semibold" color="primary" className="ml-auto">
               {slippage}%
             </Text>
           </div>
@@ -182,11 +182,11 @@ const TransactionDetails: React.FC<TransactionDetailsProps> = props => {
         {showDeadline && (
           <div className="flex">
             <Hint text="Your transaction will revert if it isn't mined in this amount of time.">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Transaction deadline
               </Text>
             </Hint>
-            <Text type="small" weight="semibold" color="primary" className="ml-auto">
+            <Text type="caption" weight="semibold" color="primary" className="ml-auto">
               {deadline} minutes
             </Text>
           </div>

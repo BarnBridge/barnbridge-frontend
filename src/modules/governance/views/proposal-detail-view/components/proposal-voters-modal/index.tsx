@@ -26,7 +26,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
         <Grid flow="col" gap={8} align="center">
           <Identicon address={address} width={32} height={32} />
           <ExplorerAddressLink address={address}>
-            <Text type="p1" weight="semibold" color="blue">
+            <Text type="body1" weight="semibold" color="blue">
               {shortenAddr(address)}
             </Text>
           </ExplorerAddressLink>
@@ -40,7 +40,7 @@ const Columns: ColumnsType<APIVoteEntity> = [
     width: '38%',
     align: 'right',
     render: (power: BigNumber) => (
-      <Text type="p1" weight="semibold" color="primary" className={s.powerCell}>
+      <Text type="body1" weight="semibold" color="primary" className={s.powerCell}>
         {formatBigValue(power, 2, '-', 2)}
       </Text>
     ),
@@ -51,11 +51,11 @@ const Columns: ColumnsType<APIVoteEntity> = [
     width: '27%',
     render: (support: boolean) =>
       support ? (
-        <Text type="lb2" weight="semibold" className={s.forTag}>
+        <Text type="caption" weight="semibold" className={s.forTag}>
           For
         </Text>
       ) : (
-        <Text type="lb2" weight="semibold" className={s.againstTag}>
+        <Text type="caption" weight="semibold" className={s.againstTag}>
           Against
         </Text>
       ),
@@ -105,7 +105,7 @@ const ProposalVotersModalInner: React.FC<ProposalVotersModalProps> = props => {
           pageSize: proposalVotesCtx.pageSize,
           position: ['bottomRight'],
           showTotal: (total: number, [from, to]: [number, number]) => (
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Showing {from} to {to} out of {total} votes
             </Text>
           ),

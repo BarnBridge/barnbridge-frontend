@@ -102,10 +102,10 @@ export const TransactionsTable = ({
               className="mr-16"
             />
             <div>
-              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" color="primary" className="mb-4">
                 {item.eTokenSymbol}
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {item.transactionType === 'WITHDRAW' ? 'Withdraw' : 'Deposit'} – multiple tokens
               </Text>
             </div>
@@ -118,12 +118,12 @@ export const TransactionsTable = ({
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
               <TokenIcon name={getTokenIconBySymbol(item.tokenA.symbol) as TokenIconNames} size={16} className="mr-4" />
-              <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
+              <Text type="body1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}
                 {formatToken(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals))}
               </Text>
             </div>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {formatUSD(BigNumber.from(item.amountA)?.unscaleBy(item.tokenA.decimals)?.multipliedBy(item.tokenAPrice))}
             </Text>
           </div>
@@ -136,12 +136,12 @@ export const TransactionsTable = ({
           <div style={{ whiteSpace: 'nowrap' }}>
             <div className="flex align-center mb-4">
               <TokenIcon name={getTokenIconBySymbol(item.tokenB.symbol) as TokenIconNames} size={16} className="mr-4" />
-              <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
+              <Text type="body1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'red' : 'green'}>
                 {item.transactionType === 'DEPOSIT' ? '-' : '+'}
                 {formatToken(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals))}
               </Text>
             </div>
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {formatUSD(BigNumber.from(item.amountB)?.unscaleBy(item.tokenB.decimals)?.multipliedBy(item.tokenBPrice))}
             </Text>
           </div>
@@ -150,7 +150,7 @@ export const TransactionsTable = ({
       {
         heading: 'Pool token amount',
         render: item => (
-          <Text type="p1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'green' : 'red'}>
+          <Text type="body1" weight="semibold" color={item.transactionType === 'DEPOSIT' ? 'green' : 'red'}>
             {item.transactionType === 'DEPOSIT' ? '+' : '-'}
             {formatToken(BigNumber.from(item.amountEToken)?.dividedBy(item.sFactorE))}
           </Text>
@@ -185,10 +185,10 @@ export const TransactionsTable = ({
           const date = new Date(item.blockTimestamp * 1000);
           return (
             <>
-              <Text type="p1" weight="semibold" color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" color="primary" className="mb-4">
                 {formatDate(date)}
               </Text>
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {formatTime(date)}
               </Text>
             </>

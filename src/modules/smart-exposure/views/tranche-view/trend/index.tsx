@@ -39,7 +39,7 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
   return (
     <section className="card">
       <header className="card-header flex align-center" style={{ padding: '16px 16px 16px 24px' }}>
-        <div className="text-p1 fw-semibold color-primary mr-8">eToken price trend</div>
+        <div className="text-body1 fw-semibold color-primary mr-8">eToken price trend</div>
         <PeriodChartTabs activeKey={activeTab} onClick={setActiveTab} size="small" className="ml-auto" />
       </header>
       <div className="p-24">
@@ -69,10 +69,10 @@ export const PriceTrend: React.FC<PropsType> = ({ poolAddress, trancheAddress })
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
-                  <span className="text-p2 fw-semibold color-primary">{value ? formatDateTime(value) : ''}</span>
+                  <span className="text-body2 fw-semibold color-primary">{value ? formatDateTime(value) : ''}</span>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
-                  <span className="text-p2 fw-semibold color-red">{formatUSD(value)}</span>
+                  <span className="text-body2 fw-semibold color-red">{formatUSD(value)}</span>
                 )}
               />
               <ReCharts.Area

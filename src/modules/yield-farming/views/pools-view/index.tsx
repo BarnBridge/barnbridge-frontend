@@ -30,7 +30,7 @@ const PoolsView: FC = () => {
           <Text type="h1" weight="bold" color="primary" className="mb-16">
             Pools
           </Text>
-          <Text type="p1" weight="semibold" color="secondary" className="mb-32">
+          <Text type="body1" weight="semibold" color="secondary" className="mb-32">
             Overview
           </Text>
           <div className={s.poolCards}>

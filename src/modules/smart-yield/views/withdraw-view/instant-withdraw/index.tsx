@@ -143,7 +143,7 @@ const InstantWithdraw: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Instant withdraw
       </Text>
-      <Text type="p2" weight="semibold" className="mb-32">
+      <Text type="body2" weight="semibold" className="mb-32">
         Choose the amount of junior tokens you want to redeem. Make sure you double check the amounts, including the
         amount you forfeit. &nbsp;
         <ExternalLink href="#">Learn more</ExternalLink>
@@ -179,12 +179,12 @@ const InstantWithdraw: React.FC = () => {
           extra={
             <div className="grid flow-col col-gap-8 justify-center">
               {priceReversible ? (
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatBigValue(1 / pool.state.jTokenPrice)} {pool.contracts.smartYield.symbol} per{' '}
                   {pool.underlyingSymbol}
                 </Text>
               ) : (
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatBigValue(pool.state.jTokenPrice)} {pool.underlyingSymbol} per{' '}
                   {pool.contracts.smartYield.symbol}
                 </Text>
@@ -240,33 +240,33 @@ const InstantWithdraw: React.FC = () => {
 
         <div className="card mb-32">
           <div className="pv-24 ph-24">
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Transaction summary
             </Text>
           </div>
           <Divider />
           <div className="pv-24 ph-24">
             <div className="grid flow-col justify-space-between mb-16">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Forfeited balance
               </Text>
-              <Text type="p2" weight="semibold" color="red">
+              <Text type="body2" weight="semibold" color="red">
                 {formatBigValue(forfeits ?? BigNumber.ZERO, pool.underlyingDecimals)} {pool.underlyingSymbol}
               </Text>
             </div>
             <div className="grid flow-col justify-space-between mb-16">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Transaction fees
               </Text>
-              <Text type="p2" weight="semibold" color="primary">
+              <Text type="body2" weight="semibold" color="primary">
                 0 {pool.underlyingSymbol} (0%)
               </Text>
             </div>
             <div className="grid flow-col justify-space-between">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Minimum received
               </Text>
-              <Text type="p2" weight="semibold" color="primary">
+              <Text type="body2" weight="semibold" color="primary">
                 {formatBigValue(minimumReceived ?? BigNumber.ZERO)} {pool.underlyingSymbol}
               </Text>
             </div>
@@ -290,26 +290,26 @@ const InstantWithdraw: React.FC = () => {
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Minimum received
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(minimumReceived ?? BigNumber.ZERO)} {pool.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Withdrawal type
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   Instant
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Wait time
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   None
                 </Text>
               </div>

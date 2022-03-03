@@ -70,7 +70,7 @@ const Launch = ({ launchDate }: { launchDate: Date }) => {
           <Text type="h1" weight="bold" color="primary" className="mb-8">
             We are launching soon!
           </Text>
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             You can play with the simulator in the meantime
           </Text>
         </div>

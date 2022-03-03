@@ -149,7 +149,7 @@ const ApyTrend: React.FC = () => {
   return (
     <section className="card">
       <header className={cn('card-header flex align-center', s.header)}>
-        <div className="text-p1 fw-semibold color-primary">APY trend</div>
+        <div className="text-body1 fw-semibold color-primary">APY trend</div>
         <Tabs
           tabs={tabs}
           activeKey={activeTab}
@@ -189,12 +189,12 @@ const ApyTrend: React.FC = () => {
               <ReCharts.Tooltip
                 separator=""
                 labelFormatter={value => (
-                  <Text type="p2" tag="span" weight="semibold" color="primary">
+                  <Text type="body2" tag="span" weight="semibold" color="primary">
                     {Number.isFinite(value) ? formatDateTime(value) : ''}
                   </Text>
                 )}
                 formatter={(value: number, _: any, { dataKey }: any) => (
-                  <Text type="p2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
+                  <Text type="body2" tag="span" weight="semibold" color={dataKey === 'seniorApy' ? 'green' : 'purple'}>
                     {formatPercent(value)}
                   </Text>
                 )}

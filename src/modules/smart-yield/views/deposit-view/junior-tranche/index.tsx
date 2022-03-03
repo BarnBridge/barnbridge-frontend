@@ -221,7 +221,7 @@ const JuniorTranche: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         Junior deposit
       </Text>
-      <Text type="p2" weight="semibold" className="mb-32">
+      <Text type="body2" weight="semibold" className="mb-32">
         Choose the amount of junior tokens you want to purchase.
       </Text>
       <Form
@@ -253,12 +253,12 @@ const JuniorTranche: React.FC = () => {
           extra={
             <div className="grid flow-col col-gap-8 justify-center">
               {priceReversible ? (
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatBigValue(1 / (pool?.state.jTokenPrice ?? 1))} {pool?.contracts.smartYield.symbol} per{' '}
                   {pool?.underlyingSymbol}
                 </Text>
               ) : (
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {formatBigValue(pool?.state.jTokenPrice)} {pool?.underlyingSymbol} per{' '}
                   {pool?.contracts.smartYield.symbol}
                 </Text>
@@ -314,28 +314,28 @@ const JuniorTranche: React.FC = () => {
         </Form.Item>
         <div className="card mb-32">
           <div className="pv-24 ph-24">
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Transaction summary
             </Text>
           </div>
           <Divider />
           <div className="pv-24 ph-24">
             <div className="grid flow-col justify-space-between mb-16">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Protocol fees
               </Text>
-              <Text type="p2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
+              <Text type="body2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
                 {formatBigValue(bnAmount?.multipliedBy(juniorFee ?? 0).dividedBy(1e18))} {pool?.underlyingSymbol} (
                 {formatPercent(juniorFee?.dividedBy(1e18))})
               </Text>
             </div>
             <div className="grid flow-col justify-space-between">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Minimum received
               </Text>
               <Form.Item dependencies={['from', 'slippage']} noStyle>
                 {() => (
-                  <Text type="p2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
+                  <Text type="body2" weight="semibold" color="primary" style={{ wordBreak: 'break-word' }}>
                     {formatBigValue(getMinAmount() ?? BigNumber.ZERO)} {pool?.contracts.smartYield.symbol}
                   </Text>
                 )}
@@ -369,26 +369,26 @@ const JuniorTranche: React.FC = () => {
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Minimum received
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(getMinAmount())} {pool?.contracts.smartYield.symbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Deposited
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(bnAmount)} {pool?.underlyingSymbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Transaction fees
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(bnAmount?.multipliedBy(juniorFee ?? 0).dividedBy(1e18))} {pool?.underlyingSymbol} (
                   {formatPercent(juniorFee?.dividedBy(1e18))})
                 </Text>

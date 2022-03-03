@@ -24,8 +24,8 @@
 }
 
 .tab {
-  font: var(--font-p1);
-  font-weight: 600;
+  font: var(--font-body1);
+  font-weight: 500;
   // margin-right: 32px;
   color: var(--theme-secondary-color);
   display: flex;
@@ -117,8 +117,8 @@ a.tab {
   display: inline-flex;
   max-width: 100%;
 
-  background: rgba(113, 121, 128, 0.08);
-  border-radius: 22px;
+  background: var(--theme-grey200-color);
+  border-radius: 8px;
   padding: 4px;
   flex-shrink: 0;
 
@@ -126,25 +126,24 @@ a.tab {
     background: rgba(147, 148, 150, 0.08);
   }
 
-  .elasticToggle {
-    position: absolute;
-    height: calc(100% - 8px);
-    transition: left 0.2s linear;
+  // .elasticToggle {
+  //   position: absolute;
+  //   height: calc(100% - 8px);
+  //   transition: left 0.2s linear;
 
-    background-color: var(--theme-card-color);
-    box-shadow: var(--theme-card-shadow);
-    border-radius: 20px;
+  //   background-color: var(--theme-card-color);
+  //   box-shadow: var(--theme-card-shadow);
+  //   border-radius: 6px;
 
-    [data-theme='dark'] & {
-      background: #43484d;
-      box-shadow: 0 0 0.5px rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
-    }
-  }
+  //   [data-theme='dark'] & {
+  //     background: #43484d;
+  //     box-shadow: 0 0 0.5px rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
+  //   }
+  // }
 }
 
 .elasticTab {
-  font: var(--font-sm);
-  font-weight: 600;
+  font: var(--font-body2-medium);
   color: var(--theme-secondary-color);
   display: flex;
   align-items: center;
@@ -156,7 +155,7 @@ a.tab {
   white-space: nowrap;
   scroll-snap-align: start;
   flex-grow: 1;
-  border-radius: 20px;
+  border-radius: 6px;
 
   &:disabled {
     cursor: not-allowed;
@@ -165,17 +164,25 @@ a.tab {
   &:not(:disabled):hover {
     color: var(--theme-primary-color);
 
-    > svg {
-      color: var(--theme-red-color);
-    }
+    // > svg {
+    //   color: var(--theme-red-color);
+    // }
   }
 
   &.active {
     color: var(--theme-primary-color);
+    background-color: var(--theme-card-color);
+    box-shadow: var(--theme-card-shadow);
+    border-radius: 6px;
 
-    > svg {
-      color: var(--theme-red-color);
+    [data-theme='dark'] & {
+      background: #43484d;
+      box-shadow: 0 0 0.5px rgba(255, 255, 255, 0.4), 0 8px 16px rgba(0, 0, 0, 0.08);
     }
+
+    // > svg {
+    //   color: var(--theme-red-color);
+    // }
   }
 
   &.small {
@@ -189,5 +196,5 @@ a.tab {
   scroll-padding: 0 var(--horizontal-padding);
   background: var(--theme-card-color);
   border-bottom: 1px solid var(--theme-border-color);
-  height: 73px;
+  justify-content: center;
 }

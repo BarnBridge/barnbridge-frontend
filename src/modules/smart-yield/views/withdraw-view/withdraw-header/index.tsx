@@ -28,14 +28,14 @@ const WithdrawHeader: React.FC = () => {
               display: 'flex',
               whiteSpace: 'nowrap',
             }}>
-            <Text type="p1" weight="semibold" color="primary" className="mr-4">
+            <Text type="body1" weight="semibold" color="primary" className="mr-4">
               {pool.token?.name}
             </Text>
-            <Text type="p1" weight="semibold">
+            <Text type="body1" weight="semibold">
               ({pool.underlyingSymbol})
             </Text>
           </div>
-          <Text type="small" weight="semibold">
+          <Text type="caption" weight="semibold">
             {pool.market?.name}
           </Text>
         </div>
@@ -45,13 +45,13 @@ const WithdrawHeader: React.FC = () => {
           getHumanValue(pool.contracts.underlying.balance, pool.underlyingDecimals),
           pool.underlyingDecimals,
         )}>
-        <Text type="small" weight="semibold" className="mb-4">
+        <Text type="caption" weight="semibold" className="mb-4">
           Wallet balance
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           <span className="grid flow-col col-gap-8 align-center">
             {formatBigValue(getHumanValue(pool.contracts.underlying.balance, pool.underlyingDecimals))}
-            <Text type="small" tag="span" weight="semibold" color="secondary">
+            <Text type="caption" tag="span" weight="semibold" color="secondary">
               {pool.underlyingSymbol}
             </Text>
           </span>
@@ -62,13 +62,13 @@ const WithdrawHeader: React.FC = () => {
           getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals),
           pool.underlyingDecimals,
         )}>
-        <Text type="small" weight="semibold" className="mb-4">
+        <Text type="caption" weight="semibold" className="mb-4">
           Portfolio balance
         </Text>
-        <Text type="p1" weight="semibold" color="primary">
+        <Text type="body1" weight="semibold" color="primary">
           <span className="grid flow-col col-gap-8 align-center">
             {formatBigValue(getHumanValue(pool.contracts.smartYield.balance, pool.underlyingDecimals))}
-            <Text type="small" tag="span" weight="semibold" color="secondary">
+            <Text type="caption" tag="span" weight="semibold" color="secondary">
               {pool.contracts.smartYield.symbol}
             </Text>
           </span>

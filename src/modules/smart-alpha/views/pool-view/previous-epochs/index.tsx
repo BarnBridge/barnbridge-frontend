@@ -125,13 +125,13 @@ function Epoch({
           'mt-8': !isFirst,
         })}>
         <header className="flex align-center mb-24">
-          <Text type="p1" weight="semibold" tag="h3">
+          <Text type="body1" weight="semibold" tag="h3">
             Epoch {item.id}
           </Text>
           <time className={classNames(s.time, 'ml-auto')} dateTime={startDate.toJSON()}>
             {formatDateTime(startDate)}
           </time>
-          <Text type="small" weight="semibold" color="secondary" className="mh-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mh-8">
             -
           </Text>
           <time className={s.time} dateTime={endDate.toJSON()}>
@@ -141,22 +141,22 @@ function Epoch({
         <dl className={s.list}>
           <div className={s.listGroup}>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Senior liquidity
               </Text>
               <div className="flex align-center mb-4">
-                <Text type="p2" weight="semibold" className="mr-4" tooltip={item.seniorLiquidity}>
+                <Text type="body2" weight="semibold" className="mr-4" tooltip={item.seniorLiquidity}>
                   {formatNumber(Number(item.seniorLiquidity), { decimals: 4 })}
                 </Text>
                 <TokenIcon name={poolToken?.icon} size={16} />
               </div>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Junior liquidity
               </Text>
               <div className="flex align-center">
-                <Text type="p2" weight="semibold" className="mr-4" tooltip={item.juniorLiquidity}>
+                <Text type="body2" weight="semibold" className="mr-4" tooltip={item.juniorLiquidity}>
                   {formatNumber(Number(item.juniorLiquidity), { decimals: 4 })}
                 </Text>
                 <TokenIcon name={poolToken?.icon} size={16} />
@@ -166,19 +166,19 @@ function Epoch({
 
           <div className={s.listGroup}>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Upside leverage
               </Text>
-              <Text type="p2" weight="semibold" color="purple">
+              <Text type="body2" weight="semibold" color="purple">
                 {formatNumber(upsideLeverage || 1, { decimals: 2 })}x
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Downside leverage
               </Text>
               <Text
-                type="p2"
+                type="body2"
                 weight="semibold"
                 color="purple"
                 tooltip="You have this amount of downside leverage, until the underlying token's price drops by more than the senior downside protection - after which there is no more downside leverage - or you can consider it as being 1x">
@@ -186,18 +186,18 @@ function Epoch({
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Upside exposure rate
               </Text>
-              <Text type="p2" weight="semibold" color="green">
+              <Text type="body2" weight="semibold" color="green">
                 {formatPercent(Number(item.upsideExposureRate))}
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Downside protection rate
               </Text>
-              <Text type="p2" weight="semibold" color="green">
+              <Text type="body2" weight="semibold" color="green">
                 {formatPercent(Number(item.downsideProtectionRate))}
               </Text>
             </div>
@@ -205,42 +205,42 @@ function Epoch({
 
           <div className={s.listGroup}>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Junior price start
               </Text>
-              <Text type="p2" weight="semibold" color="primary" tooltip={item.juniorTokenPriceStart}>
+              <Text type="body2" weight="semibold" color="primary" tooltip={item.juniorTokenPriceStart}>
                 {formatNumber(Number(item.juniorTokenPriceStart), { decimals: 4 })}
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Junior Profits
               </Text>
-              <Text type="p2" weight="semibold" color="primary" tooltip={item.juniorProfits}>
+              <Text type="body2" weight="semibold" color="primary" tooltip={item.juniorProfits}>
                 {formatNumber(Number(item.juniorProfits), { decimals: 4 })}
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Senior price start
               </Text>
-              <Text type="p2" weight="semibold" color="primary" tooltip={item.seniorTokenPriceStart}>
+              <Text type="body2" weight="semibold" color="primary" tooltip={item.seniorTokenPriceStart}>
                 {formatNumber(Number(item.seniorTokenPriceStart), { decimals: 4 })}
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 Senior Profits
               </Text>
-              <Text type="p2" weight="semibold" color="primary" tooltip={item.seniorProfits}>
+              <Text type="body2" weight="semibold" color="primary" tooltip={item.seniorProfits}>
                 {formatNumber(Number(item.seniorProfits), { decimals: 4 })}
               </Text>
             </div>
             <div>
-              <Text type="small" weight="semibold" className="mb-8" color="secondary">
+              <Text type="caption" weight="semibold" className="mb-8" color="secondary">
                 {poolTokenSymbol} Epoch entry price
               </Text>
-              <Text type="p2" weight="semibold" color="primary" tooltip={item.entryPrice}>
+              <Text type="body2" weight="semibold" color="primary" tooltip={item.entryPrice}>
                 {formatNumber(Number(item.entryPrice), { decimals: 4 })}
               </Text>
             </div>

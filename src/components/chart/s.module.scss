@@ -5,7 +5,7 @@
 }
 
 .tooltipTitle {
-  font: var(--font-p2);
+  font: var(--font-body2);
   font-weight: 600;
   padding: 8px;
   color: var(--theme-primary-color);
@@ -26,7 +26,7 @@
 }
 
 .tooltipName {
-  font: var(--font-sm);
+  font: var(--font-caption);
   font-weight: 600;
   color: var(--theme-secondary-color);
   position: relative;
@@ -47,7 +47,7 @@
 }
 
 .tooltipValue {
-  font: var(--font-p2);
+  font: var(--font-body2);
   font-weight: 600;
   color: var(--theme-primary-color);
   margin: 0;
@@ -69,7 +69,7 @@
 }
 
 .legendItem {
-  font: var(--font-sm);
+  font: var(--font-caption);
   font-weight: 600;
   background: var(--theme-body-color);
   color: var(--theme-secondary-color);

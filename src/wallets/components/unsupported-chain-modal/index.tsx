@@ -22,10 +22,10 @@ const UnsupportedChainModal: FC<UnsupportedChainModalProps> = props => {
           <Text type="h2" weight="bold" color="primary">
             Wrong network
           </Text>
-          <Text type="p1" weight="semibold" color="secondary">
+          <Text type="body1" weight="semibold" color="secondary">
             Please switch your wallet network to {activeNetwork.meta.name} to use the app
           </Text>
-          <Text type="p1" color="secondary">
+          <Text type="body1" color="secondary">
             If you still encounter problems, you may want to switch to a different wallet
           </Text>
         </Grid>

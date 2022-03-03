@@ -27,7 +27,7 @@ const WalletLockConfirmModal: React.FC<WalletLockConfirmModalProps> = props => {
             <Text type="h3" weight="semibold" color="primary">
               Are you sure you want to lock your balance?
             </Text>
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               You are about to lock {formatToken(balance)} $BOND for {getFormattedDuration(0, duration)}.
               <br />
               <br />
@@ -41,7 +41,7 @@ const WalletLockConfirmModal: React.FC<WalletLockConfirmModalProps> = props => {
               <br />
               <br />
             </Text>
-            <Text type="p2" weight="bold" color="primary">
+            <Text type="body2" weight="bold" color="primary">
               The multiplier you get for locking tokens only applies to your voting power, it does not earn more
               rewards.
             </Text>

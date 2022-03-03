@@ -15,7 +15,7 @@ const UserRejectedModal: React.FC<ModalProps> = props => {
           <Text type="h3" weight="semibold" color="primary" className="mb-8">
             Error
           </Text>
-          <Text type="p2" weight="semibold" color="secondary">
+          <Text type="body2" weight="semibold" color="secondary">
             Transaction rejected
           </Text>
         </div>

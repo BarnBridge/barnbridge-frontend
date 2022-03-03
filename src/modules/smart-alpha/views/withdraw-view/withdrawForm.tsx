@@ -127,7 +127,7 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
       <Text type="h3" weight="bold" color="primary" tag="h3" className="mb-16">
         {isSenior ? 'Senior' : 'Junior'} withdraw
       </Text>
-      <Text type="p2" weight="semibold" color="secondary" tag="p" className="mb-32">
+      <Text type="body2" weight="semibold" color="secondary" tag="p" className="mb-32">
         Choose the amount of tokens you want to withdraw from the {tranche} side. Make sure you double check the
         amounts.
       </Text>
@@ -137,11 +137,11 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
           <Hint
             text="This amount of junior/senior tokens is already in the withdrawal queue and will be subtracted from your overall position in the next epoch."
             className="mb-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Balance in withdraw queue
             </Text>
           </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+          <Text type="body1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(withdrawQueueBalance?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
             <TokenIcon
               name={poolToken?.icon}
@@ -157,18 +157,18 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
           <Hint
             text={`This amount of ${poolToken?.icon} is available to be redeemed from withdrawals made in previous epochs. It will be automatically redeemed if you add more junior/senior tokens to the withdrawal queue.`}
             className="mb-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Unclaimed {tranche} tokens
             </Text>
           </Hint>
-          <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+          <Text type="body1" weight="semibold" color="primary" className="flex align-center">
             {formatToken(unclaimedUnderlying?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
             <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
           </Text>
         </div>
       </div>
 
-      <Text type="small" weight="semibold" color="secondary" className="mb-8">
+      <Text type="caption" weight="semibold" color="secondary" className="mb-8">
         {tokenContract?.symbol ?? '-'} amount
       </Text>
       <TokenAmount
@@ -211,9 +211,9 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
           title="Initiate withdrawal"
           header={
             <div className="flex flow-row row-gap-16">
-              <Text type="p2" weight="semibold" color="secondary">
+              <Text type="body2" weight="semibold" color="secondary">
                 Your balance of{' '}
-                <Text tag="span" type="p2" weight="bold" color="primary">
+                <Text tag="span" type="body2" weight="bold" color="primary">
                   {formatToken(BigNumber.from(tokenState), {
                     tokenName: tokenContract?.symbol,
                   })}
@@ -223,10 +223,10 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
               </Text>
               <div className="container-box flex flow-col col-gap-32">
                 <div className="flex flow-row">
-                  <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                     Withdraw amount
                   </Text>
-                  <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                  <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(BigNumber.from(tokenState)) ?? '-'}
                     <TokenIcon
                       name={poolToken?.icon}
@@ -238,10 +238,10 @@ export const WithdrawForm = ({ pool, tokenContract }: Props) => {
                   </Text>
                 </div>
                 <div className="flex flow-row">
-                  <Text type="small" weight="semibold" color="secondary" className="mb-4">
+                  <Text type="caption" weight="semibold" color="secondary" className="mb-4">
                     Redeemable unclaimed underlying
                   </Text>
-                  <Text type="p1" weight="semibold" color="primary" className="flex align-center">
+                  <Text type="body1" weight="semibold" color="primary" className="flex align-center">
                     {formatToken(unclaimedUnderlying?.unscaleBy(pool.poolToken.decimals)) ?? '-'}
                     <TokenIcon name={poolToken?.icon} size={16} className="ml-8" />
                   </Text>

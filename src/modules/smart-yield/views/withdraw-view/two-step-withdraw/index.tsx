@@ -101,7 +101,7 @@ const TwoStepWithdraw: React.FC = () => {
       <Text type="h3" weight="semibold" color="primary" className="mb-16">
         2 step withdraw
       </Text>
-      <Text type="p2" weight="semibold" className="mb-32">
+      <Text type="body2" weight="semibold" className="mb-32">
         Choose the amount of junior tokens you want to redeem through the 2 step process. Make sure you understand what
         this purchase of a junior bond means, and double check the amount and wait time. &nbsp;
         <ExternalLink href="https://integrations.barnbridge.com/specs/smart-yield-specifications#steps-for-exit">
@@ -144,19 +144,19 @@ const TwoStepWithdraw: React.FC = () => {
 
         <div className="card mb-32">
           <div className="pv-24 ph-24">
-            <Text type="p2" weight="semibold" color="secondary">
+            <Text type="body2" weight="semibold" color="secondary">
               Transaction summary
             </Text>
           </div>
           <Divider />
           <div className="pv-24 ph-24">
             <div className="grid flow-col justify-space-between mb-16">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Wait time
               </Text>
               <UseLeftTime end={(pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000} delay={1_000}>
                 {leftTime => (
-                  <Text type="p2" weight="semibold" color="primary">
+                  <Text type="body2" weight="semibold" color="primary">
                     {leftTime > 0
                       ? getFormattedDuration(0, (pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)
                       : '0s'}
@@ -165,10 +165,10 @@ const TwoStepWithdraw: React.FC = () => {
               </UseLeftTime>
             </div>
             <div className="grid flow-col justify-space-between">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Transaction fees
               </Text>
-              <Text type="p2" weight="semibold" color="primary">
+              <Text type="body2" weight="semibold" color="primary">
                 0 {pool.underlyingSymbol} (0%)
               </Text>
             </div>
@@ -192,26 +192,26 @@ const TwoStepWithdraw: React.FC = () => {
           header={
             <div className="grid flow-col col-gap-32">
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Token amount
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatBigValue(form.getFieldsValue().to)} {pool.contracts.smartYield.symbol}
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Withdrawal type
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   2 step
                 </Text>
               </div>
               <div className="grid flow-row row-gap-4">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   Wait time
                 </Text>
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {getFormattedDuration(0, (pool.contracts.smartYield.abond?.maturesAt ?? 0) * 1_000)}
                 </Text>
               </div>

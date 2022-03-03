@@ -42,54 +42,52 @@ body.mobile-menu-open {
 }
 
 :root {
-  --font-family: Montserrat, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+  --font-family: Prompt, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
     'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 
   --font-size-h1: 32px;
   --font-size-h2: 24px;
   --font-size-h3: 18px;
-  --font-size-p1: 16px;
-  --font-size-p2: 14px;
-  --font-size-lb1: 14px;
-  --font-size-lb2: 12px;
-  --font-size-sm: 12px;
+  --font-size-body1: 16px;
+  --font-size-body2: 14px;
+  --font-size-caption: 12px;
 
   --font-h1: var(--font-size-h1) / 1.25 var(--font-family);
   --font-h1-bold: bold var(--font-h1);
   --font-h1-semibold: 600 var(--font-h1);
+  --font-h1-medium: 500 var(--font-h1);
   --font-h2: var(--font-size-h2) / 1.3333333333 var(--font-family);
   --font-h2-bold: bold var(--font-h2);
   --font-h2-semibold: 600 var(--font-h2);
+  --font-h2-medium: 500 var(--font-h2);
   --font-h3: var(--font-size-h3) / 1.3333333333 var(--font-family);
   --font-h3-bold: bold var(--font-h3);
   --font-h3-semibold: 600 var(--font-h3);
-  --font-p1: var(--font-size-p1) / 1.5 var(--font-family);
-  --font-p1-bold: bold var(--font-p1);
-  --font-p1-semibold: 600 var(--font-p1);
-  --font-p2: var(--font-size-p2) / 1.7142857143 var(--font-family);
-  --font-p2-bold: bold var(--font-p2);
-  --font-p2-semibold: 600 var(--font-p2);
-  --font-lb1: var(--font-size-lb1) / 1.7142857143 var(--font-family);
-  --font-lb1-bold: bold var(--font-lb1);
-  --font-lb1-semibold: 600 var(--font-lb1);
-  --font-lb2: var(--font-size-lb2) / 1.3333333333 var(--font-family);
-  --font-lb2-bold: bold var(--font-lb2);
-  --font-lb2-semibold: 600 var(--font-lb2);
-  --font-sm: var(--font-size-sm) / 1.3333333333 var(--font-family);
-  --font-sm-bold: bold var(--font-sm);
-  --font-sm-semibold: 600 var(--font-sm);
+  --font-h3-medium: 500 var(--font-h3);
+  --font-body1: var(--font-size-body1) / 1.5 var(--font-family);
+  --font-body1-bold: bold var(--font-body1);
+  --font-body1-semibold: 600 var(--font-body1);
+  --font-body1-medium: 500 var(--font-body1);
+  --font-body2: var(--font-size-body2) / 1.7142857143 var(--font-family);
+  --font-body2-bold: bold var(--font-body2);
+  --font-body2-semibold: 600 var(--font-body2);
+  --font-body2-medium: 500 var(--font-body2);
+  --font-caption: var(--font-size-caption) / 1.3333333333 var(--font-family);
+  --font-caption-bold: bold var(--font-caption);
+  --font-caption-semibold: 600 var(--font-caption);
+  --font-caption-medium: 500 var(--font-caption);
 
-  --theme-body-color: #f8f8f9; // grey50
+  --theme-body-color: var(--theme-grey100-color);
   --theme-card-color: #fff;
   --theme-overlay-color: #fff;
   --theme-mask-color: rgba(19, 32, 43, 0.8);
-  --theme-border-color: #e3e4e6; // grey100
+  --theme-border-color: var(--theme-grey200-color);
   --theme-border-color-rgb: 227, 228, 230;
   --theme-icon-color: #aaafb3; // grey300
   --theme-icon-hover-color: #060a0d; // grey900
 
-  --theme-primary-color: #060a0d; // grey900
-  --theme-secondary-color: #717980; // grey500
+  --theme-primary-color: var(--theme-grey900-color);
+  --theme-secondary-color: var(--theme-grey500-color);
   --theme-secondary-color-rgb: 113, 121, 128; // grey500
   --theme-default-color: #aaafb3; // grey300
 
@@ -112,11 +110,11 @@ body.mobile-menu-open {
 
   --theme-green700-color: #007f59;
 
-  --theme-blue-color: #4f6ae5; // blue500
-  --theme-blue-color-rgb: 79, 106, 230; // blue500
+  --theme-blue-color: #448bf4;
+  --theme-blue-color-rgb: 68, 139, 244;
   --theme-blue400-color: #7288ea;
 
-  --theme-yellow-color: #cca74d; // yellow600
+  --theme-yellow-color: #cc8633; // yellow600
   --theme-yellow-color-rgb: 204, 167, 77; // yellow600
 
   --theme-purple-color: #a26ee3; // purple500
@@ -125,13 +123,21 @@ body.mobile-menu-open {
 
   --theme-grey-color: #c6c9cc;
   --theme-grey-color-rgb: 198, 201, 204;
-  --theme-grey200-color: #c6c9cc;
+  --theme-grey100-color: #f7f8fa;
+  --theme-grey200-color: #f0f2f5;
   --theme-grey300-color: #aaafb3;
-  --theme-grey900-color: #060a0d;
+  --theme-grey500-color: #7588a3;
+  --theme-grey900-color: #1f252e;
 
   --theme-white-color: #fff;
 
   --horizontal-padding: 64px;
+}
+
+@media (max-width: 1200px) {
+  :root {
+    --horizontal-padding: 32px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -161,6 +167,7 @@ body.mobile-menu-open {
   --theme-input-placeholder: #606268;
 
   --theme-grey-color: #606268;
+  --theme-grey500-color: #47566b;
 }
 
 :focus:not(:focus-visible) {
@@ -175,6 +182,17 @@ button {
   cursor: pointer;
   font-family: inherit;
   transition: all 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background: var(--theme-body-color);
+
+  @media (max-width: 768px) {
+    display: block;
+  }
 }
 
 #root[inert] {

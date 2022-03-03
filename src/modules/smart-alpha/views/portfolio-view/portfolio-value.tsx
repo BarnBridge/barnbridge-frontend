@@ -26,7 +26,7 @@ export const PortfolioValue: React.FC = () => {
   return (
     <section className="card">
       <header className="card-header flex align-center pv-16">
-        <Text type="p1" weight="semibold">
+        <Text type="body1" weight="semibold">
           Portfolio value
         </Text>
         <PortfolioPeriodChartTabs activeKey={periodFilter} onClick={setPeriodFilter} size="small" className="ml-auto" />

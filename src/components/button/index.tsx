@@ -72,7 +72,14 @@ const ButtonContent: React.FC<ButtonContentProps> = ({ size, icon, iconPosition,
 };
 
 interface CommonProps extends ButtonContentProps {
-  variation?: 'primary' | 'secondary' | 'ghost' | 'ghost-alt' | 'text' | 'text-alt' | 'link';
+  variation?:
+    | 'primary'
+    | 'secondary'
+    | 'ghost' // TODO: deprecated
+    | 'ghost-alt' // TODO: deprecated
+    | 'text'
+    | 'text-alt'
+    | 'link';
   className?: string;
 }
 

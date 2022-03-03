@@ -39,11 +39,11 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
           />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.pool.smartYieldAddress} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+              <Text type="body1" weight="semibold" color="primary" className="mr-4">
                 {entity.pool.underlyingSymbol}
               </Text>
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {entity.pool.market?.name}
             </Text>
           </div>
@@ -56,7 +56,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
       <Hint
         text={
           <Grid flow="row" gap={8} align="start">
-            <Text type="p2">
+            <Text type="body2">
               This value is based on current junior token prices. At the actual maturity date of the junior bond, the
               price may differ and be higher or lower.
             </Text>
@@ -82,12 +82,12 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
               getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals),
               entity.pool.underlyingDecimals,
             )}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatBigValue(getHumanValue(entity.jBond.tokens, entity.pool.underlyingDecimals))}
               {` ${entity.pool.contracts.smartYield?.symbol}`}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(valueInUSD)}
           </Text>
         </>
@@ -102,7 +102,7 @@ const Columns: ColumnsType<LockedPositionsTableEntity> = [
     render: (_, entity) => (
       <UseLeftTime end={entity.jBond.maturesAt * 1_000} delay={1_000}>
         {leftTime => (
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {leftTime > 0 ? getFormattedDuration(0, entity.jBond.maturesAt * 1_000) : 'Redeem now'}
           </Text>
         )}

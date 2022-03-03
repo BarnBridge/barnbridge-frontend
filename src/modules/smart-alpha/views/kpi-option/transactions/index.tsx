@@ -35,10 +35,10 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
               outline={['purple', 'green']}
             />
             <div>
-              <Text type="p1" weight="semibold" wrap={false} color="primary" className="mb-4">
+              <Text type="body1" weight="semibold" wrap={false} color="primary" className="mb-4">
                 {entity.transactionType}
               </Text>
-              <Text type="small" weight="semibold" wrap={false}>
+              <Text type="caption" weight="semibold" wrap={false}>
                 {kpiOption.poolToken.symbol}
               </Text>
             </div>
@@ -63,14 +63,14 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
                   decimals: kpiOption.poolToken.decimals,
                 }) ?? '-'
               }>
-              <Text type="p1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
+              <Text type="body1" weight="semibold" wrap={false} color={isStake ? 'green' : 'red'} className="mb-4">
                 {isStake ? '+' : '-'}
                 {formatToken(amount, {
                   tokenName: kpiOption.poolToken.symbol,
                 }) ?? '-'}
               </Text>
             </Tooltip>
-            <Text type="small" weight="semibold" wrap={false}>
+            <Text type="caption" weight="semibold" wrap={false}>
               {formatUSD(amountInUSD)}
             </Text>
           </>
@@ -83,7 +83,7 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
             heading: 'Address',
             render: entity => (
               <ExplorerAddressLink address={entity.userAddress} className="link-blue">
-                <Text type="p1" weight="semibold">
+                <Text type="body1" weight="semibold">
                   {shortenAddr(entity.userAddress)}
                 </Text>
               </ExplorerAddressLink>
@@ -96,11 +96,11 @@ function getColumns(kpiOption: KpiOptionType, isAll: boolean): ColumnType<KpiTra
       render: entity => (
         <>
           <ExplorerTxLink address={entity.transactionHash} className="link-blue mb-4">
-            <Text type="p1" weight="semibold">
+            <Text type="body1" weight="semibold">
               {shortenAddr(entity.transactionHash)}
             </Text>
           </ExplorerTxLink>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatDateTime(entity.blockTimestamp * 1_000)}
           </Text>
         </>

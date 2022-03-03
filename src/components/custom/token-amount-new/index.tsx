@@ -80,7 +80,7 @@ export const TokenAmount: FC<TokenAmountType> = forwardRef<HTMLInputElement, Tok
         </div>
         {!!errors.length &&
           errors.map((error, idx) => (
-            <Text key={idx} type="small" weight="semibold" color="red" style={{ marginTop: '8px' }}>
+            <Text key={idx} type="caption" weight="semibold" color="red" style={{ marginTop: '8px' }}>
               {error}
             </Text>
           ))}
@@ -170,7 +170,7 @@ export const TokenSelect: FC<TokenSelectType> = ({ value, onChange, tokens, clas
           className={cn(s.tokenAmountSelectToken, className)}
           style={style}>
           {foundToken ? <TokenIcon name={foundToken.icon as TokenIconNames} size={24} className="mr-16" /> : null}
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {foundToken?.symbol}
           </Text>
           <Icon

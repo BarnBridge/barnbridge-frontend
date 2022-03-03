@@ -193,7 +193,7 @@ export const Swap = ({
   return (
     <form onSubmit={handleSubmit}>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{selectedTokenSymbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary">{selectedTokenSymbol} amount</span>
       </div>
       <TokenAmount
         before={<TokenSelect value={selectedTokenSymbol} onChange={setSelectedTokenSymbol} tokens={tokens} />}
@@ -220,8 +220,8 @@ export const Swap = ({
       <div className="css-grid mb-32" style={{ '--gap': '32px' } as React.CSSProperties}>
         <div>
           <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
-            <span className="text-sm fw-semibold color-secondary ml-auto">
+            <span className="text-caption fw-semibold color-secondary">{tranche.tokenA.symbol} amount</span>
+            <span className="text-caption fw-semibold color-secondary ml-auto">
               {numberFormat(Number(tranche.tokenARatio) * 100, { minimumFractionDigits: 2 })}%
             </span>
           </div>
@@ -235,8 +235,8 @@ export const Swap = ({
         </div>
         <div>
           <div className="flex mb-8">
-            <span className="text-sm fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
-            <span className="text-sm fw-semibold color-secondary ml-auto">
+            <span className="text-caption fw-semibold color-secondary">{tranche.tokenB.symbol} amount</span>
+            <span className="text-caption fw-semibold color-secondary ml-auto">
               {numberFormat(Number(tranche.tokenBRatio) * 100, { minimumFractionDigits: 2 })}%
             </span>
           </div>

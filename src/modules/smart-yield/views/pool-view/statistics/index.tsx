@@ -67,7 +67,7 @@ const Statistics: FC<Props> = props => {
     <>
       <section className={cn('card', s.statistics, className)}>
         <header className="card-header">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             My statistics
           </Text>
         </header>
@@ -135,7 +135,7 @@ const Statistics: FC<Props> = props => {
                   <TokenIcon name={rewardToken.icon} size="24" className="mr-8" style={{ flexShrink: 0 }} />
                   <Tooltip
                     title={
-                      <Text type="p2" weight="semibold" color="primary">
+                      <Text type="body2" weight="semibold" color="primary">
                         {formatToken(rewardPool.getClaimFor(rewardToken.address), {
                           decimals: rewardToken.decimals,
                           scale: rewardToken.decimals,
@@ -158,7 +158,7 @@ const Statistics: FC<Props> = props => {
                 </div>
               </div>
             ))}
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               My current reward{rewardTokens.length! > 1 ? 's' : ''}
             </Text>
           </div>

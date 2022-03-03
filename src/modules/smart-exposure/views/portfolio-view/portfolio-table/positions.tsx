@@ -23,7 +23,7 @@ const columns: ColumnType<TranchesItemApiType>[] = [
             className="mr-16"
             style={{ flexShrink: 0 }}
           />
-          <div className="text-p1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
+          <div className="text-body1 fw-semibold color-primary mr-4">{item.eTokenSymbol}</div>
         </div>
       );
     },
@@ -37,8 +37,8 @@ const columns: ColumnType<TranchesItemApiType>[] = [
 
       return (
         <>
-          <div className="text-p1 fw-semibold color-primary mb-4">{formatToken(unscaledBalance) ?? '–'}</div>
-          <div className="text-sm fw-semibold color-secondary">
+          <div className="text-body1 fw-semibold color-primary mb-4">{formatToken(unscaledBalance) ?? '–'}</div>
+          <div className="text-caption fw-semibold color-secondary">
             {formatUSD(unscaledBalance?.multipliedBy(item.state.eTokenPrice)) ?? '–'}
           </div>
         </>

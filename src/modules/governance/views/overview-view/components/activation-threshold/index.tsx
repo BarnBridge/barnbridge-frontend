@@ -38,12 +38,12 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
       <Grid flow="row" gap={24} align="start">
         <Hint
           text={
-            <Text type="p2">
+            <Text type="body2">
               For the DAO to be activated, a threshold of {formatToken(config.dao?.activationThreshold)} $
               {projectToken.symbol} tokens staked has to be met.
             </Text>
           }>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             Activation threshold
           </Text>
         </Hint>
@@ -61,10 +61,10 @@ const ActivationThreshold: React.FC<ActivationThresholdProps> = props => {
         </Grid>
         <Grid flow="col" gap={8}>
           <TokenIcon name={projectToken.icon} />
-          <Text type="p1" weight="bold" color="primary">
+          <Text type="body1" weight="bold" color="primary">
             {formatToken(daoCtx.bondStaked)}
           </Text>
-          <Text type="p1" weight="semibold" color="secondary">
+          <Text type="body1" weight="semibold" color="secondary">
             / {formatToken(config.dao?.activationThreshold)} already staked.
           </Text>
         </Grid>

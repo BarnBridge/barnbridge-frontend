@@ -136,7 +136,7 @@ export const SingleTokenForm = ({
   return (
     <form onSubmit={submitHandler}>
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
+        <span className="text-caption fw-semibold color-secondary">{tranche.eTokenSymbol} amount</span>
       </div>
       <TokenAmount
         before={<TokenIconPair name1={tokenAIcon} name2={tokenBIcon} size={24} />}
@@ -158,8 +158,8 @@ export const SingleTokenForm = ({
         }}
       />
       <div className="flex mb-8">
-        <span className="text-sm fw-semibold color-secondary">{selectedToken?.symbol} amount</span>
-        {/* <span className="text-sm fw-semibold color-secondary ml-auto">
+        <span className="text-caption fw-semibold color-secondary">{selectedToken?.symbol} amount</span>
+        {/* <span className="text-caption fw-semibold color-secondary ml-auto">
           Current ratio:{' '}
           {formatPercent(
             Number(selectedToken?.symbol === tranche.tokenA.symbol ? tranche.tokenARatio : tranche.tokenBRatio),
@@ -200,10 +200,10 @@ export const SingleTokenForm = ({
         className="mb-32"
         items={[
           [
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Transaction fees
             </Text>,
-            <Text type="p2" weight="semibold" color="primary">
+            <Text type="body2" weight="semibold" color="primary">
               {formatUSD(
                 BigNumber.from(tokenEState)?.multipliedBy(tranche.state.eTokenPrice).multipliedBy(feeRate) ?? 0,
               )}{' '}
@@ -211,10 +211,10 @@ export const SingleTokenForm = ({
             </Text>,
           ],
           [
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               {selectedTokenSymbol} amount
             </Text>,
-            <Text type="p1" weight="bold" color="primary">
+            <Text type="body1" weight="bold" color="primary">
               {formatToken(selectedTokenValueMinusSlippage?.unscaleBy(selectedTokenDecimals)) || '0'}{' '}
               {selectedTokenSymbol}
             </Text>,

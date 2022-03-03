@@ -35,7 +35,7 @@ const PoolHeader: FC = () => {
     <>
       <Link to="/yield-farming" className="flex inline align-center mb-16">
         <Icon name="arrow-back" width={14} height={14} className="mr-8" />
-        <Text type="p1" weight="semibold" color="secondary">
+        <Text type="body1" weight="semibold" color="secondary">
           Pools
         </Text>
       </Link>
@@ -47,52 +47,52 @@ const PoolHeader: FC = () => {
           className="mr-16"
         />
         <div>
-          <Text type="p1" weight="semibold" color="primary" className="mb-4">
+          <Text type="body1" weight="semibold" color="primary" className="mb-4">
             {poolMeta.label}
           </Text>
-          <Text type="small" weight="semibold" color="red">
+          <Text type="caption" weight="semibold" color="red">
             Epoch {poolMeta.contract.lastActiveEpoch} / {poolMeta.contract.totalEpochs}
           </Text>
         </div>
       </div>
       <div className="card p-24 flexbox-grid mb-24">
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             Pool balance
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {formatUSD(poolBalance) ?? '-'}
           </Text>
         </div>
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             Effective pool balance
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {formatUSD(effectivePoolBalance) ?? '-'}
           </Text>
         </div>
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             APR
           </Text>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {!isEnded ? formatPercent(apy) ?? '-' : 0}
           </Text>
         </div>
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             Weekly rewards
           </Text>
           <div className="flex align-center">
             <TokenIcon name={projectToken.icon} size={16} className="mr-8" />
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {!isEnded ? formatNumber(poolMeta.contract.epochReward) ?? '-' : 0}
             </Text>
           </div>
         </div>
         <div>
-          <Text type="small" weight="semibold" color="secondary" className="mb-8">
+          <Text type="caption" weight="semibold" color="secondary" className="mb-8">
             Pool distribution
           </Text>
           <div className={s.stakedBar}>

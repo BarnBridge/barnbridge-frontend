@@ -144,7 +144,7 @@ export function FieldLabel(props: CP<FieldLabelProps>) {
         <div className="flex flow-col col-gap-4 align-center">
           <Hint text={hint}>
             {typeof label === 'string' ? (
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 {label}
               </Text>
             ) : (
@@ -175,7 +175,7 @@ export function FormError(props: CP<FormErrorProps>) {
   }
 
   return (
-    <Text type="small" weight="semibold" color="red">
+    <Text type="caption" weight="semibold" color="red">
       {err.message ?? children}
     </Text>
   );

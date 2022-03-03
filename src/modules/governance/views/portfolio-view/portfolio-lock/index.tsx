@@ -159,24 +159,24 @@ const PortfolioLock: FC = () => {
       <Form form={form} className="flex flow-row row-gap-32 p-24" disabled={isSubmitting}>
         <div className="container-box flex flow-col col-gap-44">
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Portfolio balance
             </Text>
             <div className="flex flow-col col-gap-8 align-center">
-              <Text type="p1" weight="bold" color="primary">
+              <Text type="body1" weight="bold" color="primary">
                 {formatToken(stakedBalance) ?? '-'}
               </Text>
               <TokenIcon name={projectToken.icon as TokenIconNames} />
             </div>
           </div>
           <div className="flex flow-row row-gap-4">
-            <Text type="small" weight="semibold" color="secondary">
+            <Text type="caption" weight="semibold" color="secondary">
               Lock duration
             </Text>
             <div className="flex flow-col col-gap-8 align-center">
               <UseLeftTime end={(userLockedUntil ?? getUnixTime(new Date())) * 1_000} delay={1_000}>
                 {leftTime => (
-                  <Text type="p1" weight="bold" color="primary">
+                  <Text type="body1" weight="bold" color="primary">
                     {getFormattedDuration(leftTime / 1_000)?.trim() || '0s'}
                   </Text>
                 )}
@@ -223,7 +223,7 @@ const PortfolioLock: FC = () => {
           title="Are you sure you want to lock your balance?"
           header={
             <div className="flex flow-row row-gap-16">
-              <Text type="p2" weight="bold" color="secondary">
+              <Text type="body2" weight="bold" color="secondary">
                 You are about to lock{' '}
                 <span className="primary-color">
                   {formatToken(stakedBalance)} {projectToken.symbol}
@@ -233,7 +233,7 @@ const PortfolioLock: FC = () => {
                 You cannot undo this or partially lock your balance. Locked tokens will be unavailable for withdrawal
                 until the lock timer ends. All future deposits you make will be locked for the same time.
               </Text>
-              <Text type="p2" weight="bold" color="primary">
+              <Text type="body2" weight="bold" color="primary">
                 The multiplier you get for locking tokens only applies to your voting power, it does not earn more
                 rewards.
               </Text>

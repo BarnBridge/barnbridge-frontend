@@ -15,17 +15,17 @@ const ProposalQuorumCard: React.FC = () => {
     <div className="card">
       <div className="card-header">
         <Hint text="Quorum is the percentage of the amount of tokens staked in the DAO that support for a proposal must be greater than for the proposal to be considered valid. For example, if the Quorum % is set to 20%, then more than 20% of the amount of tokens staked in the DAO must vote to approve a proposal for the vote to be considered valid.">
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             Quorum
           </Text>
         </Hint>
       </div>
       <Grid className="p-24" flow="row" gap={16}>
         <Grid flow="col" gap={8}>
-          <Text type="p1" weight="semibold" color="primary">
+          <Text type="body1" weight="semibold" color="primary">
             {proposalCtx.quorum?.toFixed(2)}%
           </Text>
-          <Text type="p1" color="secondary">
+          <Text type="body1" color="secondary">
             (&gt; {proposalCtx.proposal?.minQuorum}% required)
           </Text>
         </Grid>

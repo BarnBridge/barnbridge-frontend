@@ -39,11 +39,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
           />
           <div className="flex flow-row">
             <ExplorerAddressLink address={entity.smartYield.address} className="flex flow-col mb-4">
-              <Text type="p1" weight="semibold" color="primary" className="mr-4">
+              <Text type="body1" weight="semibold" color="primary" className="mr-4">
                 {entity.meta.underlyingSymbol}
               </Text>
             </ExplorerAddressLink>
-            <Text type="small" weight="semibold">
+            <Text type="caption" weight="semibold">
               {market?.name}
             </Text>
           </div>
@@ -69,13 +69,13 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
               tokenName: entity.smartYield.symbol,
               decimals: entity.smartYield.decimals,
             })}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(val, {
                 tokenName: entity.smartYield.symbol,
               })}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(valInUSD)}
           </Text>
         </>
@@ -87,11 +87,11 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
       <Hint
         text={
           <>
-            <Text type="p2" className="mb-16">
+            <Text type="body2" className="mb-16">
               The Junior APY is estimated based on the current state of the pool. The actual APY you get for your
               positions might differ.
             </Text>
-            <Text type="p2" className="mb-8">
+            <Text type="body2" className="mb-8">
               The number below is the SMART Yield junior rewards APR. You can add that by staking tokens in Pools
             </Text>
             <ExternalLink href="https://docs.barnbridge.com/beginners-guide-to-smart-yield#junior-apy">
@@ -118,7 +118,7 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
 
       return (
         <div>
-          <Text type="p1" weight="semibold" color="purple">
+          <Text type="body1" weight="semibold" color="purple">
             {formatPercent(pool.state.juniorApy)}
           </Text>
           {entity.rewardPool?.rewardTokensCount! > 1 ? (
@@ -147,13 +147,13 @@ const Columns: ColumnsType<StakedPositionsTableEntity> = [
               tokenName: bondToken.symbol,
               decimals: bondToken.decimals,
             })}>
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               {formatToken(bondToClaim, {
                 tokenName: bondToken.symbol,
               })}
             </Text>
           </Tooltip>
-          <Text type="small" weight="semibold" color="secondary">
+          <Text type="caption" weight="semibold" color="secondary">
             {formatUSD(bondToClaimInUSD)}
           </Text>
         </>

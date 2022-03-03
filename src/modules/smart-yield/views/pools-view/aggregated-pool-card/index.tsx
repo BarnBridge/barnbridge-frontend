@@ -71,12 +71,12 @@ const AggregatedPoolCard: FCx = props => {
         </div>
         <div className="flex-grow">
           <div className="flex justify-space-between align-center wrap mb-4">
-            <Text type="p1" weight="semibold" color="primary">
+            <Text type="body1" weight="semibold" color="primary">
               SMART Yield Pools
             </Text>
             <StatusTag
               text={
-                <Text type="lb2" weight="bold" color="green">
+                <Text type="caption" weight="bold" color="green">
                   ACTIVE
                 </Text>
               }
@@ -105,30 +105,30 @@ const AggregatedPoolCard: FCx = props => {
           <div className="flex flow-row">
             <div key={bondToken.symbol} className="flex align-center justify-space-between mb-24">
               <Hint text={`This number shows the $${bondToken.symbol} token rewards distributed per day.`}>
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   {bondToken.symbol} daily reward
                 </Text>
               </Hint>
               <div className="flex align-center">
                 <TokenIcon name={bondToken.icon} size={16} className="mr-8" />
-                <Text type="p1" weight="semibold" color="primary">
+                <Text type="body1" weight="semibold" color="primary">
                   {formatToken(totalDailyRewards.get(bondToken.address)) ?? '-'}
                 </Text>
               </div>
             </div>
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Pool balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(totalPoolSizeInUSD) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 Effective pool balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(totalPoolSizeInUSD) ?? '-'}
               </Text>
             </div>
@@ -139,30 +139,30 @@ const AggregatedPoolCard: FCx = props => {
           <div className="flex flow-row">
             {Array.from(rewardTokens.values()).map(rewardToken => (
               <div key={rewardToken.symbol} className="flex align-center justify-space-between mb-24">
-                <Text type="small" weight="semibold" color="secondary">
+                <Text type="caption" weight="semibold" color="secondary">
                   My potential {rewardToken.symbol} reward
                 </Text>
                 <div className="flex align-center">
                   <TokenIcon name={rewardToken.icon} size={16} className="mr-8" />
-                  <Text type="p1" weight="semibold" color="primary">
+                  <Text type="body1" weight="semibold" color="primary">
                     {formatToken(totalPotentialRewards.get(rewardToken.address)) ?? '-'}
                   </Text>
                 </div>
               </div>
             ))}
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 My pool balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(totalStakedInUSD) ?? '-'}
               </Text>
             </div>
             <div className="flex align-center justify-space-between mb-24">
-              <Text type="small" weight="semibold" color="secondary">
+              <Text type="caption" weight="semibold" color="secondary">
                 My effective pool balance
               </Text>
-              <Text type="p1" weight="semibold" color="primary">
+              <Text type="body1" weight="semibold" color="primary">
                 {formatUSD(totalStakedInUSD) ?? '-'}
               </Text>
             </div>
