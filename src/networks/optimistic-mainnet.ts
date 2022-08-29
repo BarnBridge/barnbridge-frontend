@@ -4,11 +4,11 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = '37be407c6e72476aa174bc8657c8a787';
+const RPC_KEY = process.env.INFURA_KEY;
 const RPC_HTTPS_URL = `https://optimism-mainnet.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://optimism-mainnet.infura.io/ws/v3/${RPC_KEY}`;
 
-const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
+const EXPLORER_KEY = process.env.ETHERSCAN_KEY as string;
 const EXPLORER_URL = 'https://optimistic.etherscan.io';
 const EXPLORER_API_URL = 'https://api-optimistic.etherscan.io';
 

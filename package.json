@@ -20,7 +20,9 @@
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "storybook": "start-storybook -p 6006 -s public",
     "build-storybook": "build-storybook -s public",
-    "deploy-storybook": "storybook-to-ghpages"
+    "deploy-storybook": "storybook-to-ghpages",
+    "s3:clean": "aws s3 rm s3://prod-appplugdefibarnbridgecom-origin --recursive",
+    "s3:deploy": "aws s3 cp ./build s3://prod-appplugdefibarnbridgecom-origin --recursive"
   },
   "engines": {
     "node": "> 12.x",
@@ -172,7 +174,7 @@
     "@types/react-router-dom": "5.1.8",
     "@types/recharts": "1.8.19",
     "@types/wolfy87-eventemitter": "5.2.0",
-    "dotenv": "10.0.0",
+    "dotenv": "^10.0.0",
     "eslint": "8.5.0",
     "eslint-config-prettier": "8.3.0",
     "eslint-config-react-app": "7.0.0",

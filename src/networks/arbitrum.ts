@@ -4,10 +4,10 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = 'a48fe2240ca64ae1bb90de52285923ce';
+const RPC_KEY = process.env.INFURA_KEY;
 const RPC_HTTPS_URL = `https://arbitrum-mainnet.infura.io/v3/${RPC_KEY}`;
 
-const EXPLORER_KEY = '';
+const EXPLORER_KEY = process.env.ETHERSCAN_KEY as string;
 const EXPLORER_URL = 'https://arbiscan.io';
 const EXPLORER_API_URL = 'https://api.arbiscan.io';
 

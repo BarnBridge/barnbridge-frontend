@@ -6,11 +6,11 @@ import { isDevelopmentMode } from 'utils';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = !isDevelopmentMode ? '6c58700fe84943eb83c4cd5c23dff3d8' : 'aacf4c6a162a483eab3163105bebe222';
+const RPC_KEY = !isDevelopmentMode ? '0bac7e2e77594ff7adaffc9ef084e7a1' : 'aacf4c6a162a483eab3163105bebe222';
 const RPC_HTTPS_URL = `https://mainnet.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://mainnet.infura.io/ws/v3/${RPC_KEY}`;
 
-const EXPLORER_KEY = '4RSJUUZQFMXUAUUJP5FI5UR5U59N7UIA32';
+const EXPLORER_KEY = 'fxh*THX0cmu6wtb@cvu';
 const EXPLORER_URL = 'https://etherscan.io';
 const EXPLORER_API_URL = 'https://api.etherscan.io';
 
@@ -37,7 +37,7 @@ export const MainnetConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: isDevelopmentMode ? 'https://alpha-v2.api.barnbridge.com' : 'https://api-v2.barnbridge.com',
+    baseUrl: isDevelopmentMode ? 'https://alpha-v2.api.barnbridge.com' : 'https://api-v2.nz.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,

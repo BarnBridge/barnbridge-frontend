@@ -4,7 +4,7 @@ import { MetamaskAddEthereumChain } from 'wallets/connectors/metamask';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = 'ec7bd85d0babc7ec3e63aa71e7544214914fa01c';
+const RPC_KEY = process.env.INFURA_KEY;
 const RPC_HTTPS_URL = `https://rpc-mainnet.maticvigil.com/v1/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://rpc-mainnet.maticvigil.com/ws/v1/${RPC_KEY}`;
 
@@ -32,7 +32,7 @@ export const PolygonConfig: NetworkConfig = {
     trezorAppUrl: 'https://app.barnbridge.com/',
   },
   api: {
-    baseUrl: 'https://prod-poly-v2.api.barnbridge.com',
+    baseUrl: 'https://prod-poly-v2.api.nz.barnbridge.com',
   },
   dao: {
     activationThreshold: 400_000,
