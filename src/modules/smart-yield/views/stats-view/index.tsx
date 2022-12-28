@@ -73,7 +73,7 @@ const StatsView: React.FC = () => {
                 Withdraw
               </Link>
             )}
-            <Link
+            {/* <Link
               to={{
                 pathname: `/smart-yield/deposit`,
                 search: `?m=${syPool.marketId}&t=${syPool.tokenId}`,
@@ -81,7 +81,7 @@ const StatsView: React.FC = () => {
               className="button-primary"
               {...{ disabled: !wallet.isActive || market?.depositDisabled === true }}>
               Deposit
-            </Link>
+            </Link> */}
             {config.features.faucets && (
               <Link to="/faucets" className="button-ghost ml-auto">
                 Faucets

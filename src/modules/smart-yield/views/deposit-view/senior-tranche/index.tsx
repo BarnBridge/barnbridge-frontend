@@ -78,7 +78,7 @@ const SeniorTranche: React.FC = () => {
   const uAllowed = uToken?.isAllowedOf(pool?.providerAddress!);
   const uAllowance = uToken?.getAllowanceOf(pool?.providerAddress!);
   const maxAmount = BigNumber.min(uAllowance ?? 0, uBalance ?? 0).unscaleBy(pool?.underlyingDecimals);
-  const formDisabled = !uAllowed;
+  // const formDisabled = !uAllowed;
   const bnAmount = amount ? BigNumber.from(amount) : undefined;
 
   React.useEffect(() => {
@@ -375,12 +375,12 @@ const SeniorTranche: React.FC = () => {
           </Button>
           <div className="flex">
             {uAllowed === false && (
-              <button type="button" className="button-ghost mr-24" disabled={isApproving} onClick={handleTokenEnable}>
+              <button type="button" className="button-ghost mr-24" disabled={true} onClick={handleTokenEnable}>
                 <Spin spinning={isApproving} />
                 Enable {pool?.underlyingSymbol}
               </button>
             )}
-            <Button type="submit" variation="primary" disabled={formDisabled} loading={state.isSaving}>
+            <Button type="submit" variation="primary" disabled={true} loading={state.isSaving}>
               Deposit
             </Button>
           </div>

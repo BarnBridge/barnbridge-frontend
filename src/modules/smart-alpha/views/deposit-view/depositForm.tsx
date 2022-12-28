@@ -199,10 +199,7 @@ export const DepositForm = ({ pool, smartAlphaContract, poolTokenContract }: Pro
             <Icon name="chevron" size={16} color="icon" className="ml-12 mr-12" />
           </>
         )}
-        <Button
-          variation="primary"
-          disabled={saving || !isPoolTokenEnabled || !tokenState}
-          onClick={() => setConfirmModalVisible(true)}>
+        <Button variation="primary" disabled={true} onClick={() => setConfirmModalVisible(true)}>
           {saving && <Spinner className="mr-8" />}
           Deposit
         </Button>
