@@ -6,7 +6,7 @@ import { isDevelopmentMode } from 'utils';
 
 import { DEFAULT_RPC_POOLING_INTERVAL, NetworkConfig, Web3Network } from 'networks/types';
 
-const RPC_KEY = 'd7d82974dce64b228ba8fbcaeffa212f'; //!isDevelopmentMode ? '6c58700fe84943eb83c4cd5c23dff3d8' : 'aacf4c6a162a483eab3163105bebe222';
+const RPC_KEY = !isDevelopmentMode ? '6c58700fe84943eb83c4cd5c23dff3d8' : 'aacf4c6a162a483eab3163105bebe222';
 const RPC_HTTPS_URL = `https://mainnet.infura.io/v3/${RPC_KEY}`;
 const RPC_WSS_URL = `wss://mainnet.infura.io/ws/v3/${RPC_KEY}`;
 
