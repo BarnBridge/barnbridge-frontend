@@ -61,7 +61,7 @@ const JuniorTranche: React.FC = () => {
   const uAllowed = uToken?.isAllowedOf(pool?.providerAddress!);
   const uAllowance = uToken?.getAllowanceOf(pool?.providerAddress!);
   const maxAmount = BigNumber.min(uAllowance ?? 0, uBalance ?? 0).unscaleBy(pool?.underlyingDecimals);
-  const formDisabled = !uAllowed;
+  // const formDisabled = !uAllowed;
   const [isApproving, setApproving] = React.useState<boolean>(false);
   const [amount, setAmount] = React.useState('');
   const bnAmount = amount ? BigNumber.from(amount) : undefined;
@@ -350,12 +350,12 @@ const JuniorTranche: React.FC = () => {
           </button>
           <div className="flex">
             {uAllowed === false && (
-              <button type="button" className="button-ghost mr-24" disabled={isApproving} onClick={handleTokenEnable}>
+              <button type="button" className="button-ghost mr-24" disabled={true} onClick={handleTokenEnable}>
                 <Spin spinning={isApproving} />
                 Enable {pool?.underlyingSymbol}
               </button>
             )}
-            <button type="submit" className="button-primary" disabled={formDisabled}>
+            <button type="submit" className="button-primary" disabled={true}>
               <Spin spinning={state.isSaving} />
               Deposit
             </button>

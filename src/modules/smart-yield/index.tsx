@@ -16,7 +16,7 @@ import RewardPoolsProvider from './providers/reward-pools-provider';
 const MarketsView = lazy(() => import('./views/markets-view'));
 const StatsView = lazy(() => import('./views/stats-view'));
 const PortfolioView = lazy(() => import('./views/portfolio-view'));
-const DepositView = lazy(() => import('./views/deposit-view'));
+// const DepositView = lazy(() => import('./views/deposit-view'));
 const WithdrawView = lazy(() => import('./views/withdraw-view'));
 const PoolsView = lazy(() => import('./views/pools-view'));
 const PoolView = lazy(() => import('./views/pool-view'));
@@ -128,7 +128,7 @@ const SmartYieldView: React.FC = () => {
                   <>
                     {wallet.isActive ? (
                       <PoolProvider>
-                        <Route path="/smart-yield/deposit" component={DepositView} />
+                        {/* <Route path="/smart-yield/deposit" component={DepositView} /> */}
                         <Route path="/smart-yield/withdraw" component={WithdrawView} />
                       </PoolProvider>
                     ) : (
