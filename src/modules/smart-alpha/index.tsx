@@ -9,7 +9,7 @@ import { useWallet } from 'wallets/walletProvider';
 
 const PoolsView = lazy(() => import(/* webpackChunkName: "sa-pools-view" */ './views/pools-view'));
 const PoolView = lazy(() => import(/* webpackChunkName: "sa-pool-view" */ './views/pool-view'));
-const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
+// const DepositView = lazy(() => import(/* webpackChunkName: "sa-deposit-view" */ './views/deposit-view'));
 const WithdrawView = lazy(() => import(/* webpackChunkName: "sa-withdraw-view" */ './views/withdraw-view'));
 const PortfolioView = lazy(() => import(/* webpackChunkName: "sa-portfolio-view" */ './views/portfolio-view'));
 const SimulateEpoch = lazy(() => import(/* webpackChunkName: "sa-simulate-epoch-view" */ './views/simulate-epoch'));
@@ -64,9 +64,9 @@ const SmartAlphaView: React.FC = () => {
             <Route path="/smart-alpha/pools/:id" exact>
               <PoolView />
             </Route>
-            <Route path="/smart-alpha/pools/:id/deposit">
+            {/* <Route path="/smart-alpha/pools/:id/deposit">
               <DepositView />
-            </Route>
+            </Route> */}
             <Route path="/smart-alpha/pools/:id/withdraw/:tranche(senior|junior)">
               <WithdrawView />
             </Route>
